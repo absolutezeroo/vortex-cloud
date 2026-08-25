@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4452ba4492acfc8b44d316102c4a930cc7ec1fe6dd6dbc7902d20de0aad41aa5"
+generated_digest: "sha256:0cd3da76c2447b9e2e5d2968777361c1ec31260da92bbd0814b30673b3d771d1"
 generated:
   id: cf_9b2bc02215
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "3 fields: int32, string, int32"
     evidence: ev_1771c6e09a51
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_b8d56000158f
+    evidence: ev_17b79ddcc56e
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, string, int32"
@@ -38,10 +38,10 @@ generated:
     symbol: SendMsgComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b8d56000158f
+  - id: ev_17b79ddcc56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SendMsgMessageEvent.java
     symbol: SendMsgMessageEvent
     line: 10

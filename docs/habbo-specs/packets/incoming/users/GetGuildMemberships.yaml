@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c5c40e912b1ba3d52159c47d0303c5db6b425d39d9c5bbb6bf8ca697e2828ea3"
+generated_digest: "sha256:69e466573053908a1d03b1c9b148e4545cef6b41c469ea1c44b352dedf65f0cd"
 generated:
   name: GetGuildMemberships
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_5f67e706c08f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_f2e7e0ad42ee
+    evidence: ev_d1de42857d3a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetGuildMembershipsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f2e7e0ad42ee
+  - id: ev_d1de42857d3a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildMembershipsMessageEvent.java
     symbol: GetGuildMembershipsMessageEvent
     line: 11

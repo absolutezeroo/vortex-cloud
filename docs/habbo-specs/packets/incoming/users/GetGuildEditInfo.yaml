@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:17a0c9ec84e35b14e878a2500ef59bb2b319fd2e860c3c596d6a41614ed4b72d"
+generated_digest: "sha256:3288046b5da71798b09b4945e583ff47341651d54decb72c2c041d0c8d263a1c"
 generated:
   name: GetGuildEditInfo
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_4bf2932dffe2
+    - ev_9b0fdec904c6
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_41b3f81beadc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_4bf2932dffe2
+    evidence: ev_9b0fdec904c6
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetGuildEditInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4bf2932dffe2
+  - id: ev_9b0fdec904c6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildEditInfoMessageEvent.java
     symbol: GetGuildEditInfoMessageEvent
     line: 23

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2373f1616dded09c4e3b874150ec68f3ea30795f6d74eced79c43c206f853856"
+generated_digest: "sha256:e4fdc2014bb8df973c0186e48c0d1f95a8e36d85669b71936a14cdc79afc352d"
 generated:
   id: room.room_dimmer_save_preset
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

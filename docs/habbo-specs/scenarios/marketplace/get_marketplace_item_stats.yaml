@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fe0ab743273937a6e7af538359d69c60430b2c1608af24bcbac9564bd98c3654"
+generated_digest: "sha256:71bf9aafb50deee42eb49c576334b6c3fbb0812fff6fe849d7ca4b4898c6c738"
 generated:
   feature: marketplace.get_marketplace_item_stats
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f68085d67443
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MarketplaceItemStats
-      evidence: ev_48b19413cd53
+      evidence: ev_2e22f3413a80
   - scenario: marketplace.get_marketplace_item_stats.guard_1
     title: "get marketplace item stats: the guard 'offerCount == 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f33bb5b555e7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MarketplaceItemStats
-      evidence: ev_48b19413cd53
+      evidence: ev_2e22f3413a80
   - scenario: marketplace.get_marketplace_item_stats.success
     title: "get marketplace item stats: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - MarketplaceItemStatsEvent
       evidence: ev_94f5fde4e905
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MarketplaceItemStats
-      evidence: ev_48b19413cd53
+      evidence: ev_2e22f3413a80
   evidence:
-  - id: ev_48b19413cd53
+  - id: ev_2e22f3413a80
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceItemStatsEvent.java
     symbol: GetMarketplaceItemStatsEvent
     line: 8

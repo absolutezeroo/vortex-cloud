@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:23fc7268e47dedc58531974625ea1e5c147d52f82a23ae688c28351b9d07817b"
+generated_digest: "sha256:099c242b53441b8dce2f2f4c807fc7cceb350b1eaa3f8b548d507fd6e3990207"
 generated:
   name: AvatarEffectExpired
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d12a22a818e1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5300e7985971
+    evidence: ev_1e64637b6e92
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: AvatarEffectExpiredMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5300e7985971
+  - id: ev_1e64637b6e92
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/AvatarEffectExpiredMessageComposer.java
     symbol: AvatarEffectExpiredMessageComposer
     line: 16

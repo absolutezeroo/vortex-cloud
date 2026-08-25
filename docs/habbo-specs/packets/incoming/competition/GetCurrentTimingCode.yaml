@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e336cefe88f5ab09075448378a4dba9306a6c030fb06550ce89edeb0d2f6c06f"
+generated_digest: "sha256:99cd549011c17878f8060382af9ddafd4d44491e36fdbfd7edea64cfb3c485ff"
 generated:
   name: GetCurrentTimingCode
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_0ef1e556583f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_38ae0c7e27eb
+    evidence: ev_a20ef386df4a
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: GetCurrentTimingCodeComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_38ae0c7e27eb
+  - id: ev_a20ef386df4a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetCurrentTimingCodeMessageEvent.java
     symbol: GetCurrentTimingCodeMessageEvent
     line: 13

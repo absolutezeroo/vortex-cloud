@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:34c09eb9d62499c6191287efcd53bfe26fdad527dd82ba005805573310b69eb3"
+generated_digest: "sha256:4d9d5c3ad059f18dccee63417b666c954b71a836cb5384b56bd3467d7f0c4683"
 generated:
   name: UnbanUserFromRoom
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_cf30f2f4e006
+    - ev_726f4116c803
   - index: 1
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_cf30f2f4e006
+    - ev_726f4116c803
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_170e2a2becc4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_cf30f2f4e006
+    evidence: ev_726f4116c803
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -78,10 +78,10 @@ generated:
     symbol: UnbanUserFromRoomComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cf30f2f4e006
+  - id: ev_726f4116c803
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/UnbanUserFromRoomMessageEvent.java
     symbol: UnbanUserFromRoomMessageEvent
     line: 9

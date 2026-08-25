@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:53bfe795ff113ecad4eeb12a37ed8f609f258afd8ee388ceb635535149bf2659"
+generated_digest: "sha256:9e0038f25c125fade18d4262522dd7b5d98d7b797c8ea6321de8ae281f8e90e2"
 generated:
   name: RoomAdError
   direction: outgoing
@@ -51,14 +51,14 @@ generated:
     - int32
     - string
     evidence: ev_194a98152b7b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_6b7bacaa1ee6
+    evidence: ev_74fc94988b29
   evidence:
   - id: ev_194a98152b7b
     kind: client_parser
@@ -76,10 +76,10 @@ generated:
     symbol: RoomAdErrorMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6b7bacaa1ee6
+  - id: ev_74fc94988b29
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/RoomAdErrorMessageComposer.java
     symbol: RoomAdErrorMessageComposer
     line: 17

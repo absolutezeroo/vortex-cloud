@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d5691e97502540f0a9712d771adc8935293fc851a40598ed7695dfeb9a53f8c6"
+generated_digest: "sha256:33240eaf2d9331c5d2827ee9b9c634e784b8d22c31a44a2201168003181b8785"
 generated:
   id: cf_28f0906257
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: string, int32, int32, int32, int32, boolean, boolean"
     evidence: ev_c8dffcef2fe4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: string, int32, int32, int32, int32, boolean, boolean"
-    evidence: ev_1e163eb3acab
+    evidence: ev_db0354a3cb7b
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: string, int32, array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_1905
     line: 36
     note: official client build WIN63-202607011411-782849652
-  - id: ev_1e163eb3acab
+  - id: ev_db0354a3cb7b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/SellablePetPalettesMessageComposer.java
     symbol: SellablePetPalettesMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1924ba355064f6a6fdda34cd559105ecfb09de8bd0e7b0e1f217a43f57c6948f"
+generated_digest: "sha256:fc966e4d127757e704c43a9398ebb260a4b560afe50f31b22e38e15bba022c75"
 generated:
   feature: messenger.messenger_init
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bafd0e4f30d0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_566aa2c961cc
+      evidence: ev_60115188cffb
   - scenario: messenger.messenger_init.guard_1
     title: "messenger init: the guard 'selfEntity is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8db29db3d5af
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_566aa2c961cc
+      evidence: ev_60115188cffb
   - scenario: messenger.messenger_init.guard_2
     title: "messenger init: the guard '_idToName.TryGetValue(playerId, out string? x)' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_566aa2c961cc
+      evidence: ev_60115188cffb
   - scenario: messenger.messenger_init.guard_3
     title: "messenger init: the guard 'string.IsNullOrWhiteSpace(dbName)' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_566aa2c961cc
+      evidence: ev_60115188cffb
   - scenario: messenger.messenger_init.success
     title: "messenger init: the request is accepted"
     given:
@@ -126,16 +126,16 @@ generated:
       - FriendListUpdate
       - MessengerInit
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_566aa2c961cc
+      evidence: ev_60115188cffb
   evidence:
-  - id: ev_566aa2c961cc
+  - id: ev_60115188cffb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/MessengerInitMessageEvent.java
     symbol: MessengerInitMessageEvent
     line: 12

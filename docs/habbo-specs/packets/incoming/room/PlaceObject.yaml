@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e46261d0bf3c1926aacb25e6fdf98975106e9b2495285e68206bd0bb734e5623"
+generated_digest: "sha256:5aad040a897e981b5a9c9a682d7e6f9b298a38faf294b2b7e98721e9957d9fc1"
 generated:
   name: PlaceObject
   direction: incoming
@@ -42,13 +42,13 @@ generated:
     types:
     - int32
     evidence: ev_c409c59808e3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_3f14b03037d4
+    evidence: ev_637e62301919
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: PlaceObjectComposer
     line: 16
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3f14b03037d4
+  - id: ev_637e62301919
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PlaceObjectMessageEvent.java
     symbol: PlaceObjectMessageEvent
     line: 15

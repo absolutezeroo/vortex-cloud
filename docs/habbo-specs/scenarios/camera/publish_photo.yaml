@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:090a995be04683a64ddc3caedfcfa8fe9e06dd94dc7b7ca35d62d97dbfa144e2"
+generated_digest: "sha256:539038d676d5dce76083b4dd76bd738590d5ed74d1b9b2e92d981ccb7ecc6cca"
 generated:
   feature: camera.publish_photo
   scenarios:
@@ -31,18 +31,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_acc0e494f3b8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotEnoughBalance
       - CameraPublishStatus
-      evidence: ev_b229988521ac
+      evidence: ev_ec6527d1e881
   evidence:
-  - id: ev_b229988521ac
+  - id: ev_ec6527d1e881
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/PublishPhotoMessageEvent.java
     symbol: PublishPhotoMessageEvent
     line: 23

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5bf48be92cc356a3340b6a27c529d30e829d61c19784896feb31f1a1c2276ced"
+generated_digest: "sha256:f26270c6b0a42c29141ef066ec50db52a72ba3df995e3d0a2b45359124663c6c"
 generated:
   name: NavigatorSavedSearches
   direction: outgoing
@@ -91,7 +91,7 @@ generated:
     partial: true
     types: []
     evidence: ev_35abfb5f615c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -101,7 +101,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_3898a5d19b5d
+    evidence: ev_04fd6fabb05e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -135,10 +135,10 @@ generated:
     symbol: NavigatorSavedSearchesMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3898a5d19b5d
+  - id: ev_04fd6fabb05e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorSavedSearchesMessageComposer.java
     symbol: NavigatorSavedSearchesMessageComposer
     line: 18

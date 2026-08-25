@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3123f2ab501178415ef67f49191c38d8038c15de863a3409b6192e43be50d74b"
+generated_digest: "sha256:98d44677548b81586640e5b826a28b2633d11c5b5aade3cde2588b1f423da866"
 generated:
   feature: sound.get_official_song_id
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b412d942cf61
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - OfficialSongId
-      evidence: ev_9c9063a3c86a
+      evidence: ev_3d1f09715c85
   evidence:
-  - id: ev_9c9063a3c86a
+  - id: ev_3d1f09715c85
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetOfficialSongIdMessageEvent.java
     symbol: GetOfficialSongIdMessageEvent
     line: 10

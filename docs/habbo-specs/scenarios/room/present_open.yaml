@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f207e4bbcd2efd7c2f11a87b2fbb05c69e18b6b92b94b2a0ef32ced10f46803b"
+generated_digest: "sha256:3dfa371a784159a901c3c5d9d5f1adfbd7b8b5b48e29cecdf4bc13c070d533c9"
 generated:
   feature: room.present_open
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_845cc9ed930f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_1
     title: "present open: the guard 'contents is null' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_845cc9ed930f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,26 +71,26 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_10
-    title: "present open: the guard '!isMember' holds"
+    title: "present open: the guard 'offer is null' holds"
     given:
-      guard: "!isMember"
+      guard: offer is null
       guard_holds: "true"
     when:
       packet: PresentOpen
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while '!isMember' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PresentOpen sent while 'offer is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d53218d99bdd
-    - origin: arcturus
+      evidence: ev_b43e4f79cdaa
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,18 +100,18 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_11
-    title: "present open: the guard 'group is null' holds"
+    title: "present open: the guard 'groupId <= 0' holds"
     given:
-      guard: group is null
+      guard: groupId <= 0
       guard_holds: "true"
     when:
       packet: PresentOpen
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while 'group is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PresentOpen sent while 'groupId <= 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_2
     title: "present open: the guard 'offer is null || offer.Products.Length == 0' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_845cc9ed930f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_3
     title: "present open: the guard '!_state.ItemsById.TryGetValue(itemId, out IRoomItem? item...' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_4
     title: "present open: the guard '!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)' holds"
     given:
@@ -206,7 +206,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,7 +216,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_5
     title: "present open: the guard '!_ctx.RoomObject.ExtraData.TryGetSection( ExtraDataSectio...' holds"
     given:
@@ -235,7 +235,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dfd698b29c69
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -245,7 +245,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_6
     title: "present open: the guard '_root.ValueKind != JsonValueKind.Object' holds"
     given:
@@ -264,7 +264,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f9ffda870b1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -274,8 +274,66 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_7
+    title: "present open: the guard '!_root.TryGetProperty(name, out element)' holds"
+    given:
+      guard: "!_root.TryGetProperty(name, out element)"
+      guard_holds: "true"
+    when:
+      packet: PresentOpen
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PresentOpen sent while '!_root.TryGetProperty(name, out element)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0f9ffda870b1
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - Whisper
+      - UnseenItems
+      - FurniListInvalidate
+      - PresentOpened
+      - ObjectRemove
+      - HeightMapUpdate
+      evidence: ev_c4fa7e863527
+  - scenario: room.present_open.guard_8
+    title: "present open: the guard 'element.ValueKind == JsonValueKind.Null' holds"
+    given:
+      guard: element.ValueKind == JsonValueKind.Null
+      guard_holds: "true"
+    when:
+      packet: PresentOpen
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PresentOpen sent while 'element.ValueKind == JsonValueKind.Null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0f9ffda870b1
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - Whisper
+      - UnseenItems
+      - FurniListInvalidate
+      - PresentOpened
+      - ObjectRemove
+      - HeightMapUpdate
+      evidence: ev_c4fa7e863527
+  - scenario: room.present_open.guard_9
     title: "present open: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -293,7 +351,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -303,65 +361,7 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_8
-    title: "present open: the guard 'offer is null' holds"
-    given:
-      guard: offer is null
-      guard_holds: "true"
-    when:
-      packet: PresentOpen
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while 'offer is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b43e4f79cdaa
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - Whisper
-      - UnseenItems
-      - FurniListInvalidate
-      - PresentOpened
-      - ObjectRemove
-      - HeightMapUpdate
-      evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_9
-    title: "present open: the guard 'groupId <= 0' holds"
-    given:
-      guard: groupId <= 0
-      guard_holds: "true"
-    when:
-      packet: PresentOpen
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while 'groupId <= 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d53218d99bdd
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - Whisper
-      - UnseenItems
-      - FurniListInvalidate
-      - PresentOpened
-      - ObjectRemove
-      - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   - scenario: room.present_open.success
     title: "present open: the request is accepted"
     given:
@@ -381,7 +381,7 @@ generated:
       - BadgeReceivedEvent
       - PresentOpened
       evidence: ev_0c987f4ea07c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -391,12 +391,12 @@ generated:
       - PresentOpened
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_32e21d9223f1
+      evidence: ev_c4fa7e863527
   evidence:
-  - id: ev_32e21d9223f1
+  - id: ev_c4fa7e863527
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/recycler/PresentOpenMessageEvent.java
     symbol: PresentOpenMessageEvent
     line: 19
@@ -414,7 +414,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/ExtraDataReader.cs
     symbol: ExtraDataReader
-    line: 23
+    line: 35
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -449,7 +449,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 602
+    line: 588
   - id: ev_dfd698b29c69
     kind: emulator_flow
     authority: vortex_emulator

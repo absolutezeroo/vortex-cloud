@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e117a1d328367160e34eddca7ecc09bb3c9157d448c5ee5797a3a44a28caf261"
+generated_digest: "sha256:3a5f5c9f330a73864baf2e40bfaec3b50aa01db42093bb1c0c51fa563f074f2a"
 generated:
   name: ModAlert
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1887e8c65f56
+    - ev_591292e94055
   - index: 1
     name: message
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1887e8c65f56
+    - ev_591292e94055
   - index: 2
     name: cfh_topic
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1887e8c65f56
+    - ev_591292e94055
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -53,7 +53,7 @@ generated:
     partial: true
     types: []
     evidence: ev_0c5b1aba72a8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -61,7 +61,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_1887e8c65f56
+    evidence: ev_591292e94055
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -88,10 +88,10 @@ generated:
     symbol: ModAlertComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1887e8c65f56
+  - id: ev_591292e94055
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModAlertMessageEvent.java
     symbol: ModAlertMessageEvent
     line: 16

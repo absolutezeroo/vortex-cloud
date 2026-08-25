@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:acf7d10770e8bf56802ebcff867410ed065bf23256f499be169412df31640cbe"
+generated_digest: "sha256:0068f7540ebfd6e10f82f8ad107bf28704b1b11b4a7551ca55f93427996cbc56"
 generated:
   name: SSOTicket
   direction: incoming
@@ -48,13 +48,13 @@ generated:
     - string
     - int32
     evidence: ev_9638ba62aba9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_fa782cdd6ebf
+    evidence: ev_1111fd915cdf
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: SSOTicketComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fa782cdd6ebf
+  - id: ev_1111fd915cdf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/SSOTicketMessageEvent.java
     symbol: SSOTicketMessageEvent
     line: 50

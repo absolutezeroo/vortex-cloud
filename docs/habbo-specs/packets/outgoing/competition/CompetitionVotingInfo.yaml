@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5d8002afcc7b4a7ff626d93bebbc90ad0e840dce0c707b7544444444e9e11aca"
+generated_digest: "sha256:70b852a2377f96ad4cc7399da8a29474f01d00bf472fbcf5f264c38f5ca1c296"
 generated:
   name: CompetitionVotingInfo
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_2b4f037125a6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - string
     - int32
     - int32
-    evidence: ev_f77da34f50bd
+    evidence: ev_ae65dc2c3456
   evidence:
   - id: ev_a2a26ec817e6
     kind: client_parser
@@ -90,10 +90,10 @@ generated:
     symbol: CompetitionVotingInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f77da34f50bd
+  - id: ev_ae65dc2c3456
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CompetitionVotingInfoMessageComposer.java
     symbol: CompetitionVotingInfoMessageComposer
     line: 21

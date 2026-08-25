@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4566ff466ed5b797d124caa2bb7b3a5be2626264f467c93493f97d2890523707"
+generated_digest: "sha256:888dbaf9c0e16cf25389bf39cd4a73ddf88bab91ff0804b840c16b82cdc1882d"
 generated:
   name: FriendListFragment
   direction: outgoing
@@ -198,7 +198,7 @@ generated:
     - int32
     - int32
     evidence: ev_ee871cd7b6aa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 17
     partial: false
@@ -220,7 +220,7 @@ generated:
     - boolean
     - boolean
     - short
-    evidence: ev_b534a6b2fcdd
+    evidence: ev_e46d7b712aee
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -248,10 +248,10 @@ generated:
     symbol: FriendListFragmentMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b534a6b2fcdd
+  - id: ev_e46d7b712aee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendListFragmentMessageComposer.java
     symbol: FriendListFragmentMessageComposer
     line: 29

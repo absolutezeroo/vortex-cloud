@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8887e51f1b0e2ac1aa1ef07ba2d0124523dd7222fd8d29e6c6305d5bd36da169"
+generated_digest: "sha256:3f82e7ffaae356e93a45bf234f5dd070ccd3266300aa9592f7df70851d92c1de"
 generated:
   id: cf_e4140d57ea
   kind: field_type
   subject: "incoming/CloseIssues: type of field 2"
   packet: CloseIssues
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "ticket_id: int32"
-    evidence: ev_bf4882dbd736
+    evidence: ev_bc802ae183fc
   - origin: vortex
     authority: vortex_emulator
     claim: "count: array"
     evidence: ev_778eb9eefac1
   evidence:
-  - id: ev_bf4882dbd736
+  - id: ev_bc802ae183fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CloseIssuesMessageEvent.java
     symbol: CloseIssuesMessageEvent
     line: 12

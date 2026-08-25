@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3b6df4ab4c62d35f37d359996e1d8215664e738387d95e7a2062f70a3aaf69e7"
+generated_digest: "sha256:d2803ae6ac34350a5aabc8e9960595d4c6ae3eed1608b6b8f370d89da39f334d"
 generated:
   name: TradingCompleted
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_9c72b3fa1fae
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_6317e7bacc24
+    evidence: ev_0264400af0e0
   evidence:
   - id: ev_9c72b3fa1fae
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: TradingCompletedParser
     line: 15
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6317e7bacc24
+  - id: ev_0264400af0e0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingCompletedMessageComposer.java
     symbol: TradingCompletedMessageComposer
     line: 9

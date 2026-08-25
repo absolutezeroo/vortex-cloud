@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:adc4e8bafa4a45043c1573857775186c2e6f43a55d3ddb8a378f0b4356119a55"
+generated_digest: "sha256:5f7b5822bf8c79891195dc41371245f6e8a5b0308e7a5a9af6d9b9a92bdd1a83"
 generated:
   feature: room.room_dimmer_save_preset
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7db0b67a96c1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_392f516e1ec0
+      evidence: ev_bc4c7a351257
   - scenario: room.room_dimmer_save_preset.guard_1
     title: "room dimmer save preset: the guard 'state is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7db0b67a96c1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_392f516e1ec0
+      evidence: ev_bc4c7a351257
   - scenario: room.room_dimmer_save_preset.guard_2
     title: "room dimmer save preset: the guard 'dimmer is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_392f516e1ec0
+      evidence: ev_bc4c7a351257
   - scenario: room.room_dimmer_save_preset.guard_3
     title: "room dimmer save preset: the guard 'presetNumber is < 1 or > PresetCount' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1ec75b49676b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_392f516e1ec0
+      evidence: ev_bc4c7a351257
   - scenario: room.room_dimmer_save_preset.success
     title: "room dimmer save preset: the request is accepted"
     given:
@@ -128,17 +128,17 @@ generated:
       emits:
       - RoomDimmerPresets
       evidence: ev_1ec75b49676b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_392f516e1ec0
+      evidence: ev_bc4c7a351257
   evidence:
-  - id: ev_392f516e1ec0
+  - id: ev_bc4c7a351257
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RoomDimmerSavePresetMessageEvent.java
     symbol: RoomDimmerSavePresetMessageEvent
     line: 21

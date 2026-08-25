@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:555300235775068e3c962fe9519850759c7e3211a6907920e6c7002df2d7dd11"
+generated_digest: "sha256:c448a081f4f149e5044d20a1b8946b2a39549b7d6f0e06af2629b5dd4e46953e"
 generated:
   id: uk_b81a4f55c0
   subject: "outgoing/TalentTrack: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: TalentTrackMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2c284ec6b3ed
+  - id: ev_66f8102c91e9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/achievements/talenttrack/TalentTrackMessageComposer.java
     symbol: TalentTrackMessageComposer
     line: 26

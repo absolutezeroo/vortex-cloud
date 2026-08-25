@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a35e473002cfe473794d0159fcfc34f16edcd5faf46575186d9bffcca04a3e16"
+generated_digest: "sha256:2395a6d4addb3d37ad1cfc24690922b97eb911cfcebc2040ab210e066204a63b"
 generated:
   name: GetCraftingRecipe
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_424d14a192f6
+    - ev_426470a97f67
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_a5b2bfd22e31
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_424d14a192f6
+    evidence: ev_426470a97f67
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: GetCraftingRecipeComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_424d14a192f6
+  - id: ev_426470a97f67
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/crafting/GetCraftingRecipeEvent.java
     symbol: GetCraftingRecipeEvent
     line: 11

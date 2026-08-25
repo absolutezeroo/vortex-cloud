@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f74df75ccfede6c4a3ada39274f029471a16f3d279ce87b16c5617f030266a3c"
+generated_digest: "sha256:5299a2ad7cfcbec5fd791369d6846df40e31f57fa32df6ebfc5e67c1af4d7b47"
 generated:
   name: ModerateThread
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d8b3336337c7
+    - ev_3dc5d38843f6
   - index: 1
     name: thread_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d8b3336337c7
+    - ev_3dc5d38843f6
   - index: 2
     name: state
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d8b3336337c7
+    - ev_3dc5d38843f6
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_a52d25ce9cd8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_d8b3336337c7
+    evidence: ev_3dc5d38843f6
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -102,10 +102,10 @@ generated:
     symbol: ModerateThreadComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d8b3336337c7
+  - id: ev_3dc5d38843f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/ModerateThreadMessageEvent.java
     symbol: ModerateThreadMessageEvent
     line: 20

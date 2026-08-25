@@ -16,7 +16,16 @@ internal sealed class ExtraDataWriter
             return;
         }
 
-        _root = JsonNode.Parse(extraData) as JsonObject ?? [];
+        try
+        {
+            _root = JsonNode.Parse(extraData) as JsonObject ?? [];
+        }
+        catch (JsonException)
+        {
+            // Same reasoning as ExtraDataReader: a malformed row is started over rather than thrown
+            // on. What was in it was unreadable anyway.
+            _root = [];
+        }
     }
 
     public string UpdateSection<TSection>(string name, TSection section)

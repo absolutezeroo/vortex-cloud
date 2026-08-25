@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5974627287416e7f6ace74cd1f72032e854de717bd944acccde05e5d790d4750"
+generated_digest: "sha256:075e1004d81200a08896d4b1caf77d804298405f3d4be2f1679d1b2d9360b958"
 generated:
   name: CommandBot
   direction: incoming
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_e861dbb04d33
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -69,7 +69,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_aba982f1be68
+    evidence: ev_39a4f1030999
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -96,10 +96,10 @@ generated:
     symbol: CommandBotComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_aba982f1be68
+  - id: ev_39a4f1030999
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/CommandBotEvent.java
     symbol: CommandBotEvent
     line: 23

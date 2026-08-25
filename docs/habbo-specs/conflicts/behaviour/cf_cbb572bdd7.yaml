@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7f77161d4b5421fc0588c739f04646179d09157c190d99821a0aafa5fc8371ef"
+generated_digest: "sha256:5c31f6933715ba9e114d87b604eb3bb42d3089d16237e310c84ed09e5dfc970f"
 generated:
   id: cf_cbb572bdd7
   kind: behaviour
   subject: "GetRoomVisits: packets emitted in response"
   packet: GetRoomVisits
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ModToolUserRoomVisits
-    evidence: ev_dd471a377e3e
+    evidence: ev_d94132821a78
   - origin: vortex
     authority: vortex_emulator
     claim: RoomVisitsEvent
     evidence: ev_b48b47abc4e6
   evidence:
-  - id: ev_dd471a377e3e
+  - id: ev_d94132821a78
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetRoomVisitsMessageEvent.java
     symbol: GetRoomVisitsMessageEvent
     line: 11

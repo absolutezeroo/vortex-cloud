@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:33d6ba4c1445c5ec18121c37e6d7d3057a00cfffb6ba5e6c6d1f17425adc1c36"
+generated_digest: "sha256:77471aeee8eb84a5e6a1323b97c0cb85928fe25aa2b9ee24c66e740bc0f708e2"
 generated:
   name: MuteAllInRoom
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_0e3f1c03fc67
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_ff76a922f148
+    evidence: ev_f6e47e0b32cd
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: MuteAllInRoomComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ff76a922f148
+  - id: ev_f6e47e0b32cd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/MuteAllInRoomEvent.java
     symbol: MuteAllInRoomEvent
     line: 9

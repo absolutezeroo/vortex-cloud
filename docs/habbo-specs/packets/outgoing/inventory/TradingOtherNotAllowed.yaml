@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ae3396429a0fa33025c9049841e1e9dbafb9aee11d404d50ce5feeb1116b243"
+generated_digest: "sha256:7235607fe462669b0be192129f1fe3e6c999b50a4ac7ff037e506440fd5a6194"
 generated:
   name: TradingOtherNotAllowed
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_7812f7dacb81
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_24ea67bdebc2
+    evidence: ev_7772e10698cb
   evidence:
   - id: ev_7812f7dacb81
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: TradingOtherNotAllowedParser
     line: 15
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_24ea67bdebc2
+  - id: ev_7772e10698cb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingOtherNotAllowedMessageComposer.java
     symbol: TradingOtherNotAllowedMessageComposer
     line: 9

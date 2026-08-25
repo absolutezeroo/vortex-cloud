@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:712ecc5043e34d8413ac0feaf2f036d9e285fda012bd1f472f93650d51f6a566"
+generated_digest: "sha256:75632475df7c6ff7744ac6cd7588e991688cda9aab0cddd6fac187a6b88b980d"
 generated:
   name: GetModeratorRoomInfo
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6f175b18047f
+    - ev_f51682767c04
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_e90d46d32805
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_6f175b18047f
+    evidence: ev_f51682767c04
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetModeratorRoomInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6f175b18047f
+  - id: ev_f51682767c04
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetModeratorRoomInfoMessageEvent.java
     symbol: GetModeratorRoomInfoMessageEvent
     line: 12

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:93e96e70e1eb68aa571c64ac9c5302f693ef266b2b5eebd6e5b1cfe5365c5d6b"
+generated_digest: "sha256:716e114a053ac8433df9d04fb46212a3a914537d71ad445047590506ddd33d40"
 generated:
   feature: catalog.get_gift_wrapping_configuration
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - GiftWrappingConfigurationEvent
       evidence: ev_4838deaee1b1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GiftWrappingConfiguration
-      evidence: ev_20ebdb218d62
+      evidence: ev_1b0da768935b
   evidence:
-  - id: ev_20ebdb218d62
+  - id: ev_1b0da768935b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetGiftWrappingConfigurationEvent.java
     symbol: GetGiftWrappingConfigurationEvent
     line: 8

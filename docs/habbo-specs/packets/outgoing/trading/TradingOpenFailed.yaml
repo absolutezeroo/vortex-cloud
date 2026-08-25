@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d71c5665a57c0567f5d634ecc8d7433ab73d530987f9a69f459290583b459ad8"
+generated_digest: "sha256:43ecef71cc55cd7e2007146f5b2d6df247b6cebf97950697655dbbad900d57b9"
 generated:
   name: TradingOpenFailed
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_273802c8a913
+    - ev_fb0f1c3252a2
   - index: 1
     name: unknown_1
     type: string
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_273802c8a913
+    - ev_fb0f1c3252a2
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_273802c8a913
+    evidence: ev_fb0f1c3252a2
   evidence:
-  - id: ev_273802c8a913
+  - id: ev_fb0f1c3252a2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingOpenFailedMessageComposer.java
     symbol: TradingOpenFailedMessageComposer
     line: 28

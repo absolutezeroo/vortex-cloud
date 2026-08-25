@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fccea2fe69d115d106d92f03f4b5a587f7c1400b5bf89a37104f385526ce2ba6"
+generated_digest: "sha256:de90dbcf30c2b105fb20b164e7501c0071d6852bcc7df77bb2a07700af2f95d1"
 generated:
   name: GuideSessionError
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_048657aaf013
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5ba5a9b8d1a4
+    evidence: ev_254881401510
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -86,10 +86,10 @@ generated:
     symbol: GuideSessionErrorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5ba5a9b8d1a4
+  - id: ev_254881401510
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideSessionErrorMessageComposer.java
     symbol: GuideSessionErrorMessageComposer
     line: 19

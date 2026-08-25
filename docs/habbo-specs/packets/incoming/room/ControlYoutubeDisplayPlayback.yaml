@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b77ecb89a40db2e04d6ca5b8e83d41a75fa130fe6aae7e91e0de8ad17a506f9"
+generated_digest: "sha256:a6e1b02a5f834dd0fac47eb892aba2ffc72a6db9ef27cea9277f2827fd856bda"
 generated:
   name: ControlYoutubeDisplayPlayback
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_7bc18ffe0bc8
+    - ev_bfa4160a31f5
   - index: 1
     name: state
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_7bc18ffe0bc8
+    - ev_bfa4160a31f5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_5b0db0b16cbf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_7bc18ffe0bc8
+    evidence: ev_bfa4160a31f5
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -77,10 +77,10 @@ generated:
     symbol: ControlYoutubeDisplayPlaybackComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7bc18ffe0bc8
+  - id: ev_bfa4160a31f5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/youtube/ControlYoutubeDisplayPlaybackMessageEvent.java
     symbol: ControlYoutubeDisplayPlaybackMessageEvent
     line: 48

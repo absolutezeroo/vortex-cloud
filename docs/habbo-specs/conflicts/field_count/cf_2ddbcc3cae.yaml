@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:65d74ba08087eaeacf0c6cd857787a504cb78fef62c19a0f99ec4b3126d57401"
+generated_digest: "sha256:d3476457e606c625d31b7082543a0b1c11d0fc4a438d5eb96695b75ed6b865c4"
 generated:
   id: cf_2ddbcc3cae
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, int32"
     evidence: ev_9cbfb46e7189
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: string, int32"
-    evidence: ev_456600aaf11d
+    evidence: ev_f6d29a9bbfa1
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: string, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: ItemRemoveMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_456600aaf11d
+  - id: ev_f6d29a9bbfa1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemRemoveMessageComposer.java
     symbol: ItemRemoveMessageComposer
     line: 16

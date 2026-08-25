@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:98289af89ba5ed1db417acdb08c8c7641d110911998636b8189bded6b8fbbcbb"
+generated_digest: "sha256:77ed4f1cfb700854e384dacda7bcadbf2d91341c9e03e796c1c14c16d6d5b5aa"
 generated:
   id: cf_96bdada2c4
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "14 fields: int32, int32, int32, boolean, boolean, boolean, int32, int32, boolean, boolean, boolean, int32, boolean, boolean, string, int32, int32, int32, int32"
     evidence: ev_10a92303241b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "8 fields: int32, int32, int32, boolean, boolean, boolean, int32, int32"
-    evidence: ev_4c3fdc18e3f9
+    evidence: ev_4794dbe4ed0d
   evidence:
   - id: ev_10a92303241b
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_1926
     line: 152
     note: official client build WIN63-202607011411-782849652
-  - id: ev_4c3fdc18e3f9
+  - id: ev_4794dbe4ed0d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/AccountPreferencesMessageComposer.java
     symbol: AccountPreferencesMessageComposer
     line: 17

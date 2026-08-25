@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b6e5852c815f1dedea6e3579d53e3a9e210ee6bedd0fc78355eb3a3662d97ae9"
+generated_digest: "sha256:4b6b3ebb5f98be3bc4dcf2c9d3ec452f503c3e680bf3744053a786ee9288918b"
 generated:
   id: uk_543fd53504
   subject: "incoming/ModMessage: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3552
     line: 26
     note: "the client constructs this composer at 2 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/moderation/ModActionCtrl.as:322 with 4 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_44e6fc7a5ed2
+  - id: ev_364da72c2746
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModMessageMessageEvent.java
     symbol: ModMessageMessageEvent
     line: 12

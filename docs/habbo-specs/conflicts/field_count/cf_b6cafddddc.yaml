@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8ef5e1d1c4ab025ade3b1e93ba9c4c0cbb24ed2ff986dc72aea7c85f5c39725e"
+generated_digest: "sha256:2cbe2f6699b9f9ac33124a1758f253ca03cec7a1c04a2a90b01db586747b5ee8"
 generated:
   id: cf_b6cafddddc
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "4 fields: string, int32, int32, string, int32, int32"
     evidence: ev_1b4cfb45cfe0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: string, int32, int32, string, int32, int32"
-    evidence: ev_0f18cb27db18
+    evidence: ev_714196e68832
   evidence:
   - id: ev_1b4cfb45cfe0
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: RoomPollResultParser
     line: 46
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_0f18cb27db18
+  - id: ev_714196e68832
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/infobus/RoomPollResultMessageComposer.java
     symbol: RoomPollResultMessageComposer
     line: 19

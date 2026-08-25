@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:00358bc2b2a6e375aed562b34d66eea919ef334bdc2bd2b8fe5a8f8a999f074f"
+generated_digest: "sha256:979197605d7d8b12064a37d400a6b478d996d3a3722c41c2042ce3dbdc6c4107"
 generated:
   id: cf_e0fae606de
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32, string, string"
     evidence: ev_0e475eba71df
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: int32"
-    evidence: ev_b52b7e621841
+    evidence: ev_32ea0ad1b1ca
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: NavigatorLiftedRoomsParser
     line: 20
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_b52b7e621841
+  - id: ev_32ea0ad1b1ca
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorLiftedRoomsMessageComposer.java
     symbol: NavigatorLiftedRoomsMessageComposer
     line: 9

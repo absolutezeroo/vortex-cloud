@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:896e134257ff637f7ee3d9ea943f228873704a8faea9830f7f935017a05a8780"
+generated_digest: "sha256:38ecc827d89f3a1af0f456f248d5491382f117b366b1e07492b943483f97af76"
 generated:
   feature: users.get_guild_editor_data
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_08bd509e14e9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditorData
-      evidence: ev_c4f2cc7dfef7
+      evidence: ev_a4ea70433f10
   - scenario: users.get_guild_editor_data.success
     title: "get guild editor data: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - GuildEditorData
       evidence: ev_08bd509e14e9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditorData
-      evidence: ev_c4f2cc7dfef7
+      evidence: ev_a4ea70433f10
   evidence:
-  - id: ev_c4f2cc7dfef7
+  - id: ev_a4ea70433f10
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildEditorDataMessageEvent.java
     symbol: GetGuildEditorDataMessageEvent
     line: 8

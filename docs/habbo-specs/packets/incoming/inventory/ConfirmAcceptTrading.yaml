@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b6bce7289f554cc19708412df0f02ff2f468fcd273f9b9b0270bc97c91d61332"
+generated_digest: "sha256:acdbb9756a839d8b954d6dc15e4f1d8851791b29784754fb43622848c8480fc4"
 generated:
   name: ConfirmAcceptTrading
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_cbc146311762
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_8817fa47059b
+    evidence: ev_b663268805e9
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: ConfirmAcceptTradingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8817fa47059b
+  - id: ev_b663268805e9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/ConfirmAcceptTradingEvent.java
     symbol: ConfirmAcceptTradingEvent
     line: 9

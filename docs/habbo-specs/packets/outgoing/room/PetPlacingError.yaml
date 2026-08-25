@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:22db640a578c7a06f0e1236f5f7156ccfd3f9c55a9468fba0f5f2cd180d6dbb7"
+generated_digest: "sha256:61fd9fc4543893eaee89e13899cdea302e8d2416e2a26f5261596b2fa31c85ca"
 generated:
   name: PetPlacingError
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_33bcff606b75
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_29543efa1c79
+    evidence: ev_aa40008b8c3a
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -86,10 +86,10 @@ generated:
     symbol: PetPlacingErrorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_29543efa1c79
+  - id: ev_aa40008b8c3a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/PetPlacingErrorMessageComposer.java
     symbol: PetPlacingErrorMessageComposer
     line: 22

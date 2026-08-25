@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:294ed420bc8b7eda45651b04f1c7a7f9f03d570b23c39a3a5ea42c2ea66590a8"
+generated_digest: "sha256:6faff96ef428a12744a8e94f05c91e357d29b42b9a2c3b747093b57bc500194a"
 generated:
   name: RoomOccupiedTiles
   direction: outgoing
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_36e4655c2bca
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_0ae73659da00
+    evidence: ev_89840ec2648e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -94,10 +94,10 @@ generated:
     symbol: RoomOccupiedTilesMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0ae73659da00
+  - id: ev_89840ec2648e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/floorplaneditor/RoomOccupiedTilesMessageComposer.java
     symbol: RoomOccupiedTilesMessageComposer
     line: 18

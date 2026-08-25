@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9957394f4f6ae7236e0c7c14609966c27d18fa086b6b9980ee3ce0cd9028a53e"
+generated_digest: "sha256:ed1a39513f633c0ff7881f782b9f7752db052ca9f501e9da199e8091a6b8ef54"
 generated:
   name: OfferRewardDelivered
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_5ac2493e47dc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_37aa711c4a9b
+    evidence: ev_53eac9e8900d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -96,10 +96,10 @@ generated:
     symbol: OfferRewardDeliveredMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_37aa711c4a9b
+  - id: ev_53eac9e8900d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/OfferRewardDeliveredMessageComposer.java
     symbol: OfferRewardDeliveredMessageComposer
     line: 16

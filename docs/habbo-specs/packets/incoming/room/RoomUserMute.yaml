@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:569afc8bec6e8aa3d9adc724c37264d2fe1f3c24b16d370db655b56220659e9e"
+generated_digest: "sha256:2a5304bfa5d9b424e561f0fa3d7e90d9e251e9b19667e83da8060d26def078c9"
 generated:
   name: RoomUserMute
   direction: incoming
@@ -24,23 +24,23 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1c9cad18c9ee
+    - ev_2ed4fb87efb2
   - index: 1
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1c9cad18c9ee
+    - ev_2ed4fb87efb2
   - index: 2
     name: minutes
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1c9cad18c9ee
+    - ev_2ed4fb87efb2
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -48,12 +48,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_1c9cad18c9ee
+    evidence: ev_2ed4fb87efb2
   evidence:
-  - id: ev_1c9cad18c9ee
+  - id: ev_2ed4fb87efb2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/RoomUserMuteMessageEvent.java
     symbol: RoomUserMuteMessageEvent
     line: 13

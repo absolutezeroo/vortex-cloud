@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2574123cf9e7d4a12b49a87da1f8a19138fa88eabec134212d2c852afa44e48f"
+generated_digest: "sha256:9a7ddefe57d19aa9f4fe6a278499806ed85e1389e8c188cfd30152eafaf4adcd"
 generated:
   name: UpdateHomeRoom
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_053ec3a7f3cc
-    - ev_ae62feb93e3c
+    - ev_af9f9f0c14b3
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_053ec3a7f3cc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_ae62feb93e3c
+    evidence: ev_af9f9f0c14b3
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: UpdateHomeRoomComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ae62feb93e3c
+  - id: ev_af9f9f0c14b3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/UpdateHomeRoomMessageEvent.java
     symbol: UpdateHomeRoomMessageEvent
     line: 8

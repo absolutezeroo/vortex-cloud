@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d434918d7442522e2b1b942a53b2d2146f594bbc62d33f51f8e084cda757e09c"
+generated_digest: "sha256:3f7bd1226377cd17c0d680b33e32c3cad4c79086d73209004ed759bf9ded5abc"
 generated:
   feature: room.command_bot
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_27143b751641
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - UserNameChanged
       - BotError
       - Users
-      evidence: ev_aba982f1be68
+      evidence: ev_39a4f1030999
   - scenario: room.command_bot.success
     title: "command bot: the request is accepted"
     given:
@@ -58,7 +58,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_27143b751641
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -66,12 +66,12 @@ generated:
       - UserNameChanged
       - BotError
       - Users
-      evidence: ev_aba982f1be68
+      evidence: ev_39a4f1030999
   evidence:
-  - id: ev_aba982f1be68
+  - id: ev_39a4f1030999
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/CommandBotEvent.java
     symbol: CommandBotEvent
     line: 23

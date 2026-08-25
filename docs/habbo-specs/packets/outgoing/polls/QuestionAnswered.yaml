@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fb7e10e337c335d397023a12f870d74c4150175470e554fe4e8cceb93c072d77"
+generated_digest: "sha256:99c1eff581b2efe7d33b5cd0ad23f95c1b2ea7d939fdd1d9139a02c72762c98f"
 generated:
   name: QuestionAnswered
   direction: outgoing
@@ -70,7 +70,7 @@ generated:
     - string
     - int32
     evidence: ev_10d5056ef7a9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 7
     partial: false
@@ -82,7 +82,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_cb592dbe9e80
+    evidence: ev_e9eea4970d25
   evidence:
   - id: ev_10d5056ef7a9
     kind: client_parser
@@ -92,10 +92,10 @@ generated:
     symbol: _SafeCls_3020
     line: 45
     note: official client build WIN63-202607011411-782849652
-  - id: ev_cb592dbe9e80
+  - id: ev_e9eea4970d25
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/infobus/QuestionAnsweredMessageComposer.java
     symbol: QuestionAnsweredMessageComposer
     line: 21

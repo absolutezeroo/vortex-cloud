@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c9709bee5d4ac88c4569989f7c0e2b136ef60b5554e930b8b74fe00f11ee2482"
+generated_digest: "sha256:3dc52aad0120f9add715c29efb795e49711910e345872f5239b346d4f8d27c0d"
 generated:
   name: UserNameChanged
   direction: outgoing
@@ -58,7 +58,7 @@ generated:
     - int32
     - string
     evidence: ev_aac7e30f228a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_97469e0ba058
+    evidence: ev_8f173ebfb589
   evidence:
   - id: ev_9db12d79c767
     kind: client_parser
@@ -84,10 +84,10 @@ generated:
     symbol: UserNameChangedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_97469e0ba058
+  - id: ev_8f173ebfb589
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserNameChangedMessageComposer.java
     symbol: UserNameChangedMessageComposer
     line: 32

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e7d54360551c1ad76cd0cfbf997d64ddae67433d9326bfa755ca7d47c759cc0"
+generated_digest: "sha256:9325cf044280590fe192d49a6b2762a4c3f3a326d399e9a54938b10e448e662d"
 generated:
   name: FriendNotification
   direction: outgoing
@@ -57,7 +57,7 @@ generated:
     - string
     - string
     evidence: ev_9166438b4ae1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -65,7 +65,7 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_f005523bb695
+    evidence: ev_865df2e64737
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -92,10 +92,10 @@ generated:
     symbol: FriendNotificationMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f005523bb695
+  - id: ev_865df2e64737
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendNotificationMessageComposer.java
     symbol: FriendNotificationMessageComposer
     line: 27

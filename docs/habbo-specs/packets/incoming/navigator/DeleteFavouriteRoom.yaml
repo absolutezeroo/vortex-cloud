@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5814c178558eb1af5e9b21d343942848673531afa8086bdfcde2647af990ac15"
+generated_digest: "sha256:8098dee7ec80603dcb2f33994883ceb50263ea516fa35f829038eaa381556853"
 generated:
   name: DeleteFavouriteRoom
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_b389c31a3632
-    - ev_eebc1a8e26e6
+    - ev_9d1b57f076ea
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_b389c31a3632
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_eebc1a8e26e6
+    evidence: ev_9d1b57f076ea
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: DeleteFavouriteRoomComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eebc1a8e26e6
+  - id: ev_9d1b57f076ea
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/DeleteFavouriteRoomMessageEvent.java
     symbol: DeleteFavouriteRoomMessageEvent
     line: 10

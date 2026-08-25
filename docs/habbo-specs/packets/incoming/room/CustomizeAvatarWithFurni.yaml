@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2f1b8df949917be301b4e5787afc711dd66827edc20ba7ea3e3b5eb64f447dbe"
+generated_digest: "sha256:7d6db2efacf13ff2c66f7611768a92d3d75470f40ae1c5078415a0cf22df9b6e"
 generated:
   name: CustomizeAvatarWithFurni
   direction: incoming
@@ -24,7 +24,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_533f6f514f5a
+    - ev_76659faa1cc8
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -32,13 +32,13 @@ generated:
     partial: true
     types: []
     evidence: ev_9a65673904ea
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_533f6f514f5a
+    evidence: ev_76659faa1cc8
   evidence:
   - id: ev_9a65673904ea
     kind: client_composer
@@ -48,10 +48,10 @@ generated:
     symbol: CustomizeAvatarWithFurniComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_533f6f514f5a
+  - id: ev_76659faa1cc8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/CustomizeAvatarWithFurniMessageEvent.java
     symbol: CustomizeAvatarWithFurniMessageEvent
     line: 26

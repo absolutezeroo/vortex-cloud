@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b87b030f521baf69acd042b5aa62ffaaf4672b4f242afd81429cb201dc5740f4"
+generated_digest: "sha256:695381d068c42f00eafde6914c8e878241e3428bc99c2dd52ac483ec5be1849b"
 generated:
   id: uk_de43603bcb
   subject: "incoming/GuildForumMarkAsRead: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GuildForumMarkAsRead
   known_evidence:
-  - id: ev_aa442dbf47b6
+  - id: ev_973a0616038a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GuildForumMarkAsReadEvent.java
     symbol: GuildForumMarkAsReadEvent
     line: 8

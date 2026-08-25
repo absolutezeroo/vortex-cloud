@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:51a4d6df93e12c63033cfd098701981b6bef35db3ca7f9c5678161587949854b"
+generated_digest: "sha256:322c0b92ced99945bd821a6bb5fe690ecc0fa754bb17fd648caad3274eb4884d"
 generated:
   name: WelcomeGiftChangeEmailResult
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_b61f05d78666
+    - ev_197822606088
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_b61f05d78666
+    evidence: ev_197822606088
   evidence:
-  - id: ev_b61f05d78666
+  - id: ev_197822606088
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/WelcomeGiftChangeEmailResultMessageComposer.java
     symbol: WelcomeGiftChangeEmailResultMessageComposer
     line: 20

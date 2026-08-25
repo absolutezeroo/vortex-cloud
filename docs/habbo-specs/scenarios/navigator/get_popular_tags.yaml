@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:38b893b00f68473c86e20a38aa5c219df200ddc2d99745f7763ddfd3b476ea9d"
+generated_digest: "sha256:8e7effdd6818dd103e48da1ac8f8a29b8e29866c24d0a618e7fafd896bb029f3"
 generated:
   feature: navigator.get_popular_tags
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - PopularRoomTagsResult
       evidence: ev_53096f2bd97d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PopularRoomTagsResult
-      evidence: ev_7da6beaedcb9
+      evidence: ev_d890202bee8f
   evidence:
-  - id: ev_7da6beaedcb9
+  - id: ev_d890202bee8f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetPopularRoomTagsMessageEvent.java
     symbol: GetPopularRoomTagsMessageEvent
     line: 9

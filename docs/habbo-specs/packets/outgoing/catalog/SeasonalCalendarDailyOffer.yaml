@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:758a2507f2f3247a74d0e3b190822f81c5a84338d42652cf50202d985645b8a6"
+generated_digest: "sha256:0b6fa86be16af349e161b9d982a1a09c12d0df8a5e1420ab524792aa5af87d08"
 generated:
   name: SeasonalCalendarDailyOffer
   direction: outgoing
@@ -45,13 +45,13 @@ generated:
     partial: true
     types: []
     evidence: ev_294b620e692d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: true
     types:
     - int32
-    evidence: ev_cb5b2b4b68dc
+    evidence: ev_8db493c04d8d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -75,10 +75,10 @@ generated:
     symbol: SeasonalCalendarDailyOfferMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cb5b2b4b68dc
+  - id: ev_8db493c04d8d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SeasonalCalendarDailyOfferMessageComposer.java
     symbol: SeasonalCalendarDailyOfferMessageComposer
     line: 18

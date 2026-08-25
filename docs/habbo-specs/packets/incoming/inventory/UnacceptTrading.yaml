@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fd69cfa8db5c353d8cb9b6a7d367cfbc01ff5a381a5eb0bf7e4f24f4021d80a5"
+generated_digest: "sha256:a569f3b8e844c840a24b03e1da5a7edb3b2984cb86511a74328d3325fc0097c8"
 generated:
   name: UnacceptTrading
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_a056e8aa8c7c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_ab35e435353f
+    evidence: ev_154a1479237d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: UnacceptTradingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ab35e435353f
+  - id: ev_154a1479237d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/UnacceptTradingEvent.java
     symbol: UnacceptTradingEvent
     line: 9

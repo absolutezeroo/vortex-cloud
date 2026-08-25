@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b8cbc15cbea88b9b97371ea9fe7fef3e5ba8de891733d08564d43ebcde19089a"
+generated_digest: "sha256:581ca6303898c50040ec66d25686ba937ad6cb2d304619b9c1f30c245072a898"
 generated:
   id: uk_0680d14542
   subject: "outgoing/PollContents: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3396
     line: 67
     note: official client build WIN63-202607011411-782849652
-  - id: ev_121e96246ba6
+  - id: ev_bfc409983970
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/PollContentsMessageComposer.java
     symbol: PollContentsMessageComposer
     line: 17

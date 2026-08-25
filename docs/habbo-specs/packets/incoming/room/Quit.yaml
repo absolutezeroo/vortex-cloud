@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f2a243487824e1c1eaa98dc819a612c57722f84b00e8eec521783f147f6c0ffd"
+generated_digest: "sha256:eed70b4930bf12e82052636936f2aac32c4391485ee896ea60b32a41bd85c909"
 generated:
   name: Quit
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_b6525a2dc5e1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_8c0c6b8df13a
+    evidence: ev_b3ef77c49ed9
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: QuitComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8c0c6b8df13a
+  - id: ev_b3ef77c49ed9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/QuitMessageEvent.java
     symbol: QuitMessageEvent
     line: 10

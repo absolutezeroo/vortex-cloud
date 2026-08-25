@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:db80b8a6af46145a5734976bba4ac0aae0db9938368f2d49dd3069348f5a980d"
+generated_digest: "sha256:6cc09f056e994f86565593da2fe25c5f5fac4bbe2a998fac02420756b653ef53"
 generated:
   feature: room.change_motto
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2aec8f9f5aa3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserChange
-      evidence: ev_89bfb8547eaa
+      evidence: ev_2407931e65ff
   - scenario: room.change_motto.guard_1
     title: "change motto: the guard 'snapshot.PlayerId <= 0 || !_roomGrain._state.AvatarsByPla...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserChange
-      evidence: ev_89bfb8547eaa
+      evidence: ev_2407931e65ff
   - scenario: room.change_motto.guard_2
     title: "change motto: the guard '_registry is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserChange
-      evidence: ev_89bfb8547eaa
+      evidence: ev_2407931e65ff
   - scenario: room.change_motto.success
     title: "change motto: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - UserChange
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserChange
-      evidence: ev_89bfb8547eaa
+      evidence: ev_2407931e65ff
   evidence:
-  - id: ev_89bfb8547eaa
+  - id: ev_2407931e65ff
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ChangeMottoMessageEvent.java
     symbol: ChangeMottoMessageEvent
     line: 11

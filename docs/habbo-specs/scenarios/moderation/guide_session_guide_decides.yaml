@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6d88dbc7f4c3cd8d0a5f03e14e5a9c8b1c6976b73ddf13398b41ec66ce6adc32"
+generated_digest: "sha256:c08f4644c4f024654771244d6d052557592580cf6ddd3ea1927ece100d2a5644"
 generated:
   feature: moderation.guide_session_guide_decides
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a96cf2a06b36
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.guard_1
     title: "guide session guide decides: the guard '!_requesterByOfferedGuide.Remove(guideId, out int request...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.guard_2
     title: "guide session guide decides: the guard '!_pendingByRequester.TryGetValue(requesterId, out Pending...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.guard_3
     title: "guide session guide decides: the guard 'accepted' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.guard_4
     title: "guide session guide decides: the guard 'nextGuideId == 0' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.guard_5
     title: "guide session guide decides: the guard '_registry is null' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   - scenario: moderation.guide_session_guide_decides.success
     title: "guide session guide decides: the request is accepted"
     given:
@@ -169,16 +169,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_180137861fc1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a458dc8242dc
+      evidence: ev_ca005b696e7a
   evidence:
-  - id: ev_a458dc8242dc
+  - id: ev_ca005b696e7a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionGuideDecidesMessageEvent.java
     symbol: GuideSessionGuideDecidesMessageEvent
     line: 9

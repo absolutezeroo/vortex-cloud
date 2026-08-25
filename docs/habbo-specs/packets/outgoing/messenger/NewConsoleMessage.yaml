@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4288c04f651c5079cc3bd8fc030465a50460d55ae013577bef0cd54d91a5a024"
+generated_digest: "sha256:26da0e7a9f3997decfa24ae6e8b6607b74fe68674f057a0d8c3f0b777db1e14e"
 generated:
   name: NewConsoleMessage
   direction: outgoing
@@ -97,7 +97,7 @@ generated:
     - string
     - string
     evidence: ev_7a0440d85a72
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -106,7 +106,7 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_860f3b76f439
+    evidence: ev_a217987f380a
   - origin: vortex
     authority: vortex_emulator
     field_count: 9
@@ -131,10 +131,10 @@ generated:
     symbol: NewConsoleMessageMessage
     line: 16
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_860f3b76f439
+  - id: ev_a217987f380a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/NewConsoleMessageMessageComposer.java
     symbol: NewConsoleMessageMessageComposer
     line: 28

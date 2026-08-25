@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a954f6d930e5aefbd90f314eac2e6ed490f2d6bebbc834507b109cf768c7463e"
+generated_digest: "sha256:4d4984dbdd70e7ccdbbbdc6fcf2e8ad5ad6ba6ae2120a1c878e85d26bc9734d8"
 generated:
   name: PickupObject
   direction: incoming
@@ -44,14 +44,14 @@ generated:
     - int32
     - boolean
     evidence: ev_f2e533dcad6f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_143cee93285c
+    evidence: ev_3387b273f393
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -78,10 +78,10 @@ generated:
     symbol: PickupObjectComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_143cee93285c
+  - id: ev_3387b273f393
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PickupObjectMessageEvent.java
     symbol: PickupObjectMessageEvent
     line: 12

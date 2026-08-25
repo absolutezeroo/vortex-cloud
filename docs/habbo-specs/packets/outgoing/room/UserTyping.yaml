@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3bfd717f9a45300baf1ffbd303297f3d0124de5c60f3cbe6639b628f9466c075"
+generated_digest: "sha256:2824df112d2324ec1bda975509582ac676aff6ac4ec6647db574b651705d9d05"
 generated:
   name: UserTyping
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - int32
     - int32
     evidence: ev_e108ba49efad
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_729c6921f84c
+    evidence: ev_31f62727d44a
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: UserTypingMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_729c6921f84c
+  - id: ev_31f62727d44a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserTypingMessageComposer.java
     symbol: UserTypingMessageComposer
     line: 18

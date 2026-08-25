@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c2b58498faba3298cfb97be07c917ca9c4e6d4672d2796515e177d4f81318fb3"
+generated_digest: "sha256:4d90ea063017c9d40f29bbbf66c27cf97d4bc11a72258080f18fbdcf01428d47"
 generated:
   id: cf_b8f7a6d2ae
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_a74d45ef0f43
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_7e27b691954b
+    evidence: ev_464edaa78bd2
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: IgnoreResultMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7e27b691954b
+  - id: ev_464edaa78bd2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/IgnoreResultMessageComposer.java
     symbol: IgnoreResultMessageComposer
     line: 22

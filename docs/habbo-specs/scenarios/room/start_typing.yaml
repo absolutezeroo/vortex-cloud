@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c99beabc26b9aab22c3c90f2099d3d008eac7e5f78127b2fcb371d4f6cd0357a"
+generated_digest: "sha256:3993c07368636684d7071447ae44d94070458d2fe7d7254991d25decd0d0e887"
 generated:
   feature: room.start_typing
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8f8a0eacf698
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c76578200479
+      evidence: ev_10e3725a94ad
   - scenario: room.start_typing.guard_1
     title: "start typing: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c76578200479
+      evidence: ev_10e3725a94ad
   - scenario: room.start_typing.guard_2
     title: "start typing: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c76578200479
+      evidence: ev_10e3725a94ad
   - scenario: room.start_typing.success
     title: "start typing: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - UserTyping
       evidence: ev_8f8a0eacf698
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c76578200479
+      evidence: ev_10e3725a94ad
   evidence:
-  - id: ev_c76578200479
+  - id: ev_10e3725a94ad
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/StartTypingMessageEvent.java
     symbol: StartTypingMessageEvent
     line: 8

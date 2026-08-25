@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a88e079e07e36fc96a25bbb2dcea6b329f46dca7c8c52753d60974259cf130ca"
+generated_digest: "sha256:8ca6cbb3f41d6c72f8bea0eee3b8046b8409d3a2382a416a58412192e8a30b42"
 generated:
   feature: users.unignore_user
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_939c64a827dd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_9440756ea989
+      evidence: ev_ea86ba10f265
   - scenario: users.unignore_user.guard_1
     title: "unignore user: the guard '!_ignoredIds.Remove(targetId.Value)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_9440756ea989
+      evidence: ev_ea86ba10f265
   - scenario: users.unignore_user.success
     title: "unignore user: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7e2402878ca8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_9440756ea989
+      evidence: ev_ea86ba10f265
   evidence:
-  - id: ev_9440756ea989
+  - id: ev_ea86ba10f265
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/UnignoreUserMessageEvent.java
     symbol: UnignoreUserMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f3573e6599973e79cbb91dc405005d534eb089ccc0debe14f8f1ade10e88868c"
+generated_digest: "sha256:7d5ff300e8ac33818030befc48309fbbbf4ae725de362ef75ba9d2c5356f77ca"
 generated:
   feature: messenger.set_relationship_status
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_755dc7c0e2b5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FriendListUpdate
-      evidence: ev_cbcd1a6ab7d2
+      evidence: ev_5a3988a750fc
   - scenario: messenger.set_relationship_status.guard_1
     title: "set relationship status: the guard '!_friends.TryGetValue(friendKey, out MessengerFriendSnaps...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FriendListUpdate
-      evidence: ev_cbcd1a6ab7d2
+      evidence: ev_5a3988a750fc
   - scenario: messenger.set_relationship_status.success
     title: "set relationship status: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_755dc7c0e2b5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FriendListUpdate
-      evidence: ev_cbcd1a6ab7d2
+      evidence: ev_5a3988a750fc
   evidence:
-  - id: ev_cbcd1a6ab7d2
+  - id: ev_5a3988a750fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SetRelationshipStatusMessageEvent.java
     symbol: SetRelationshipStatusMessageEvent
     line: 11

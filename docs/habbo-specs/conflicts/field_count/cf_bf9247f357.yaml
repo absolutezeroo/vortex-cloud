@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1061104d2214aac52fcfdbb6a432568c0891d8c29fd67defd6fa72e1cd7d2331"
+generated_digest: "sha256:565bd87b752b412d8159013d6b5621050ae50ff8c0fd15c58dd00cd5f8544545"
 generated:
   id: cf_bf9247f357
   kind: field_count
   subject: "incoming/ModBan: field count"
   packet: ModBan
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, string, int32, int32, boolean"
-    evidence: ev_8bc16fae4610
+    evidence: ev_e727e3a71b13
   - origin: vortex
     authority: vortex_emulator
     claim: "6 fields: int32, string, int32, int32, boolean, int32"
     evidence: ev_1585c5ffe8ee
   evidence:
-  - id: ev_8bc16fae4610
+  - id: ev_e727e3a71b13
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModBanMessageEvent.java
     symbol: ModBanMessageEvent
     line: 25

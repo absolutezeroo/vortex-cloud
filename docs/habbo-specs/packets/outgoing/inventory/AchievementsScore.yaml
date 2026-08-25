@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2ae123fdad6d84b2b6610e1f9ad5ea5426754c831d80486bb9c11b0f94ab4930"
+generated_digest: "sha256:429763101c467ad2dded617bb260dce7a185140bb455de12b66f536598561922"
 generated:
   name: AchievementsScore
   direction: outgoing
@@ -41,13 +41,13 @@ generated:
     types:
     - int32
     evidence: ev_a49b84f89d55
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_a22a4c70d182
+    evidence: ev_410fca66d992
   evidence:
   - id: ev_286b0b332402
     kind: client_parser
@@ -65,10 +65,10 @@ generated:
     symbol: _SafeCls_2637
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_a22a4c70d182
+  - id: ev_410fca66d992
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/AchievementsScoreMessageComposer.java
     symbol: AchievementsScoreMessageComposer
     line: 16

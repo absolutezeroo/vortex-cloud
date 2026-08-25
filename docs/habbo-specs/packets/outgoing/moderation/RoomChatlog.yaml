@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2b6f11a1b5c5aa0e6278b935a905dd0c58ea90e69469496e6a2d5c22cd1bd1e7"
+generated_digest: "sha256:54e2cecff3c765184735ac75452f6e11c87884c1cf9cbe7219e9a47c08053cbb"
 generated:
   name: RoomChatlog
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 1
     name: unknown_1
     type: short
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 3
     name: unknown_3
     type: byte
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 5
     name: unknown_5
     type: string
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 6
     name: unknown_6
     type: byte
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 8
     name: unknown_8
     type: short
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 9
     name: unknown_9
     type: string
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 11
     name: unknown_11
     type: string
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 12
     name: unknown_12
     type: string
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   - index: 13
     name: unknown_13
     type: boolean
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ef29b286b16e
+    - ev_cc8b650f6290
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -145,7 +145,7 @@ generated:
     - string
     - short
     evidence: ev_17bbd22aa99f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 14
     partial: false
@@ -164,7 +164,7 @@ generated:
     - string
     - string
     - boolean
-    evidence: ev_ef29b286b16e
+    evidence: ev_cc8b650f6290
   evidence:
   - id: ev_17bbd22aa99f
     kind: client_parser
@@ -174,10 +174,10 @@ generated:
     symbol: _SafeCls_3715
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_ef29b286b16e
+  - id: ev_cc8b650f6290
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/RoomChatlogMessageComposer.java
     symbol: RoomChatlogMessageComposer
     line: 23

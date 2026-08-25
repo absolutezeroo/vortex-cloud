@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:17326f803c082115891c22614b9dae62f9d24f32d4c9addcca94fe5d2f1327fd"
+generated_digest: "sha256:4c23f82b75605a558b455c78728e74e2fdd48a93017159613f0f43d11e458839"
 generated:
   name: SnowWarsLoadingArena
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dc908da45cff
+    - ev_1fa91c2530a8
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dc908da45cff
+    - ev_1fa91c2530a8
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_dc908da45cff
+    evidence: ev_1fa91c2530a8
   evidence:
-  - id: ev_dc908da45cff
+  - id: ev_1fa91c2530a8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsLoadingArenaComposer.java
     symbol: SnowWarsLoadingArenaComposer
     line: 14

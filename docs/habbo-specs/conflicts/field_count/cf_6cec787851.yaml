@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e689c4459cbb7d15e0aa400f4248c045911df9f67437768dedf2c853fe279637"
+generated_digest: "sha256:175ace9d846f8b55d02a56ecb5bd83b54b10ee314239d593373cd34b29500c34"
 generated:
   id: cf_6cec787851
   kind: field_count
   subject: "outgoing/NavigatorMetaData: field count"
   packet: NavigatorMetaData
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "9 fields: int32, string, int32, string, int32, string, int32, string, int32"
-    evidence: ev_a1c89cf55fb5
+    evidence: ev_46466f49d0ea
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
     evidence: ev_01a493ab0f97
   evidence:
-  - id: ev_a1c89cf55fb5
+  - id: ev_46466f49d0ea
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorMetaDataMessageComposer.java
     symbol: NavigatorMetaDataMessageComposer
     line: 9

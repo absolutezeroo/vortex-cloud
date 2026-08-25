@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:76c795f6b8aaa0e0f74c1af36892d47074a663277da3a95113f853df890ba634"
+generated_digest: "sha256:930663cd6fe40c7dd13696535fb00e89d933812ea39bb1cd8405e377698cb814"
 generated:
   feature: crafting.get_crafting_recipe
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cad0c195d78e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CraftableProducts
-      evidence: ev_424d14a192f6
+      evidence: ev_426470a97f67
   evidence:
-  - id: ev_424d14a192f6
+  - id: ev_426470a97f67
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/crafting/GetCraftingRecipeEvent.java
     symbol: GetCraftingRecipeEvent
     line: 11

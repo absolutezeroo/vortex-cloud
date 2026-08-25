@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4d41154878b2bd96bf09e5aeeb8f662609f34fce6ef1b09727e24c036b5031c3"
+generated_digest: "sha256:61d69f397a59ffc82c5f1af3237b9369d7e1b08cbb732b334de0bd86d49f6beb"
 generated:
   feature: preferences.set_ignore_room_invites
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_04ce85b231e9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eeeee4bcba72
+      evidence: ev_0ac0919b0e07
   - scenario: preferences.set_ignore_room_invites.success
     title: "set ignore room invites: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_04ce85b231e9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eeeee4bcba72
+      evidence: ev_0ac0919b0e07
   evidence:
-  - id: ev_eeeee4bcba72
+  - id: ev_0ac0919b0e07
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetIgnoreRoomInvitesMessageEvent.java
     symbol: SetIgnoreRoomInvitesMessageEvent
     line: 9

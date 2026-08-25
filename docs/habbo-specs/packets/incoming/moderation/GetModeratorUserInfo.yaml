@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c7f232486db37e3a83e876927cff82fd916daacaee408386866a1a26204d1ff0"
+generated_digest: "sha256:43606019fd772a9ba83e62c1ef0547f97644deca5fe98ae67c2d5ffb86693aea"
 generated:
   name: GetModeratorUserInfo
   direction: incoming
@@ -39,12 +39,12 @@ generated:
     partial: true
     types: []
     evidence: ev_70355e6a6c63
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_9151a8340a92
+    evidence: ev_a05c71201b3c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -69,10 +69,10 @@ generated:
     symbol: GetModeratorUserInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9151a8340a92
+  - id: ev_a05c71201b3c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetModeratorUserInfoMessageEvent.java
     symbol: GetModeratorUserInfoMessageEvent
     line: 11

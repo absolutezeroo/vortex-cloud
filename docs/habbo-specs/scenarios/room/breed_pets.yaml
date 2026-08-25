@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2702a75479c1e334a51c630163842edd849fc48e7ea2d0750ca1abd962eed6e9"
+generated_digest: "sha256:3a3927d9db9ea3747e74422989e43b46db918ee3bd04ff8076225a351834c547"
 generated:
   feature: room.breed_pets
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_01eee9e5476a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.guard_1
     title: "breed pets: the guard '!_roomGrain._state.PetsById.TryGetValue(petOneId, out Pet...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3aeea05728f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.guard_2
     title: "breed pets: the guard 'petOne.Type != petTwo.Type' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3aeea05728f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.guard_3
     title: "breed pets: the guard '!petTwo.CanBreed' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3aeea05728f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.guard_4
     title: "breed pets: the guard 'effectIds.Count == 0' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_fe1afccfe33a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.success
     title: "breed pets: the request is accepted"
     given:
@@ -148,16 +148,16 @@ generated:
       - ConfirmBreedingRequestEvent
       - PetBreedingEvent
       evidence: ev_01eee9e5476a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dd94059ba81b
+      evidence: ev_a78a45b7847f
   evidence:
-  - id: ev_dd94059ba81b
+  - id: ev_a78a45b7847f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/BreedPetsMessageEvent.java
     symbol: BreedPetsMessageEvent
     line: 10

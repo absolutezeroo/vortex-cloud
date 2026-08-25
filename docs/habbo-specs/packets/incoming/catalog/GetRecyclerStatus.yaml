@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8f519573f2f1fb9415887de768148eab550a57a51c536b80d7dee5cabd8d4ea5"
+generated_digest: "sha256:c115a2998f9e86de2f383ca88b9d5a3f1b863f401657f2134d749cc093f37aa4"
 generated:
   name: GetRecyclerStatus
   direction: incoming
@@ -25,12 +25,12 @@ generated:
     partial: false
     types: []
     evidence: ev_4bb6528c8756
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_abedc1494cd6
+    evidence: ev_918701b20764
   evidence:
   - id: ev_4bb6528c8756
     kind: client_call_site
@@ -40,10 +40,10 @@ generated:
     symbol: _SafeCls_2061
     line: 18
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/catalog/HabboCatalog.as:1078 with 0 argument(s)"
-  - id: ev_abedc1494cd6
+  - id: ev_918701b20764
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/recycler/GetRecyclerStatusMessageEvent.java
     symbol: GetRecyclerStatusMessageEvent
     line: 8

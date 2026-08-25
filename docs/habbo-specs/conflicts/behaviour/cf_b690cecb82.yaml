@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:25aa56dfdbcc5d18c6267da31b59d56a62ae7d6f130a5f26a50f136665d16075"
+generated_digest: "sha256:a1982d0eadab1a8c9231f00ba77b05ee08c20ac2474e45c6c24056673a0c28a7"
 generated:
   id: cf_b690cecb82
   kind: behaviour
   subject: "ScrGetUserInfo: packets emitted in response"
   packet: ScrGetUserInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ScrSendUserInfo
-    evidence: ev_452ccb1e0f92
+    evidence: ev_ff6679876b95
   - origin: vortex
     authority: vortex_emulator
     claim: unresolved then AccountPreferencesEvent
     evidence: ev_fa113598f480
   evidence:
-  - id: ev_452ccb1e0f92
+  - id: ev_ff6679876b95
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ScrGetUserInfoMessageEvent.java
     symbol: ScrGetUserInfoMessageEvent
     line: 8

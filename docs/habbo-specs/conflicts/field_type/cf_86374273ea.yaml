@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3d73a772f669ee99589bb0f31bc59b4f0ca6361e8b3bff092e619af7f8278a06"
+generated_digest: "sha256:664a95bd8144fd9af830e1e4adb331b03ad82225aee680349bbf85d1a6e8c0a7"
 generated:
   id: cf_86374273ea
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "success: boolean"
     evidence: ev_592067985367
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_0: int32"
-    evidence: ev_194854845bf8
+    evidence: ev_4eae831a4b79
   - origin: vortex
     authority: vortex_emulator
     claim: "success: boolean"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_4176
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_194854845bf8
+  - id: ev_4eae831a4b79
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FindFriendsProcessResultMessageComposer.java
     symbol: FindFriendsProcessResultMessageComposer
     line: 18

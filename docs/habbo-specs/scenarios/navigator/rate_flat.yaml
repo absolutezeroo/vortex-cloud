@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e31202d618074dbaccc75b27b25eec522fb587efd522917c81494453129ab87c"
+generated_digest: "sha256:dcc013a09d9e58d2e33ef90d46086b265d5e59b7cf25d22151f344244db4e123"
 generated:
   feature: navigator.rate_flat
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_87f8b30763fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   - scenario: navigator.rate_flat.guard_1
     title: "rate flat: the guard 'sign == 0 || _state.RoomSnapshot.OwnerId == actor' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   - scenario: navigator.rate_flat.guard_2
     title: "rate flat: the guard 'alreadyRated' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   - scenario: navigator.rate_flat.guard_3
     title: "rate flat: the guard 'entity is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   - scenario: navigator.rate_flat.guard_4
     title: "rate flat: the guard '_registry is null' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   - scenario: navigator.rate_flat.success
     title: "rate flat: the request is accepted"
     given:
@@ -146,16 +146,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_83c34ca6af81
+      evidence: ev_09ad6301bf9e
   evidence:
-  - id: ev_83c34ca6af81
+  - id: ev_09ad6301bf9e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RateFlatMessageEvent.java
     symbol: RateFlatMessageEvent
     line: 8

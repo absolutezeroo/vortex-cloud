@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:388d0cbf7ddb4288e751752f326276240c4109e793c65f87922f610489fe16b0"
+generated_digest: "sha256:f481f4ee5a2549503f8ea47629b3af6ed5391a866f4c4b8598c5b562b90a7db7"
 generated:
   name: PetExperience
   direction: outgoing
@@ -67,7 +67,7 @@ generated:
     partial: true
     types: []
     evidence: ev_8ae4b0d6a30c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -75,7 +75,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_7e5aa6139d41
+    evidence: ev_e9787df98c23
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -110,10 +110,10 @@ generated:
     symbol: PetExperienceMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7e5aa6139d41
+  - id: ev_e9787df98c23
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetExperienceMessageComposer.java
     symbol: PetExperienceMessageComposer
     line: 18

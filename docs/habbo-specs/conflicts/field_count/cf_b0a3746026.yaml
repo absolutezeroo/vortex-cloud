@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f98ed521e85da6a5f2048983c14aef24f4072b867151ae78ca37ff7ff9805233"
+generated_digest: "sha256:8ed1576ab0648a40dc12819f3112dc8f74dd899421116523f35e92515dc5732d"
 generated:
   id: cf_b0a3746026
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, string"
     evidence: ev_ab7401957138
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_93ad03a7f341
+    evidence: ev_a3d3a22fc526
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, string"
@@ -50,10 +50,10 @@ generated:
     symbol: FlatCreatedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_93ad03a7f341
+  - id: ev_a3d3a22fc526
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/FlatCreatedMessageComposer.java
     symbol: FlatCreatedMessageComposer
     line: 16

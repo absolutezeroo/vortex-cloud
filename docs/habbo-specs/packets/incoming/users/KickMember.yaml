@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c07d226375b2d30d5eeb3392eaee623e61c25e11e3ee2c568c94e61ea9fb625e"
+generated_digest: "sha256:eabbd149a4c595a6619e4020f8de8717aa86ed6d5de96fcfec64babf472de3c7"
 generated:
   name: KickMember
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_052b54c0e5c1
+    - ev_5a67319ee97f
   - index: 1
     name: user_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_052b54c0e5c1
+    - ev_5a67319ee97f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_431f24580bcf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_052b54c0e5c1
+    evidence: ev_5a67319ee97f
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -80,10 +80,10 @@ generated:
     symbol: KickMemberComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_052b54c0e5c1
+  - id: ev_5a67319ee97f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/KickMemberMessageEvent.java
     symbol: KickMemberMessageEvent
     line: 18

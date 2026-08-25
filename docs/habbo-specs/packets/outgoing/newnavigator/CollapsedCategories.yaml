@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2a0908ae22ea33ae17e94311e19b7701886a93b1f360f2528b1f43d59cee6dc0"
+generated_digest: "sha256:6ba35e2cccc2d4b19172946ad2e7dacabf3a53c4ef5a555c43a5f45dd1ea7c53"
 generated:
   name: CollapsedCategories
   direction: outgoing
@@ -44,7 +44,7 @@ generated:
     - int32
     - string
     evidence: ev_8291ad89050c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 47
     partial: false
@@ -96,7 +96,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_582ed212262a
+    evidence: ev_c48987a82271
   evidence:
   - id: ev_8291ad89050c
     kind: client_parser
@@ -106,10 +106,10 @@ generated:
     symbol: CollapsedCategoriesMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_582ed212262a
+  - id: ev_c48987a82271
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CollapsedCategoriesMessageComposer.java
     symbol: CollapsedCategoriesMessageComposer
     line: 9

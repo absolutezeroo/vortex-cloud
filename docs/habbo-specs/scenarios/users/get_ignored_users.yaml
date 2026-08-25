@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:60fa65b26d45d8ee3d09337e92650619abe7d8f6b41518d240c93a7133f600d9"
+generated_digest: "sha256:b2ef0c48df48e3087913e7cf878b33ff25458f47f796049676f87465555f12b6"
 generated:
   feature: users.get_ignored_users
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_13ade511745d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoredUsers
-      evidence: ev_bb79c2bde95f
+      evidence: ev_3386de46d70a
   - scenario: users.get_ignored_users.success
     title: "get ignored users: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - IgnoredUsers
       evidence: ev_13ade511745d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoredUsers
-      evidence: ev_bb79c2bde95f
+      evidence: ev_3386de46d70a
   evidence:
-  - id: ev_bb79c2bde95f
+  - id: ev_3386de46d70a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/GetIgnoredUsersMessageEvent.java
     symbol: GetIgnoredUsersMessageEvent
     line: 8

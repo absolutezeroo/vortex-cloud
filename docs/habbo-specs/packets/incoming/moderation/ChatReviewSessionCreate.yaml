@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1f9543efa23cbb82d8fbcc106d3d53c8b3eda58eae2115e52e209670a05a9dc9"
+generated_digest: "sha256:98b0fe87311aaeedabbe9704720caf89b70b009a7e86c1c62ce9c1e660a776ee"
 generated:
   name: ChatReviewSessionCreate
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f5d39d81d77e
+    - ev_415f728bcc01
   - index: 1
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f5d39d81d77e
+    - ev_415f728bcc01
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_e25d6bee9c46
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_f5d39d81d77e
+    evidence: ev_415f728bcc01
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -78,10 +78,10 @@ generated:
     symbol: ChatReviewSessionCreateComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f5d39d81d77e
+  - id: ev_415f728bcc01
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ChatReviewSessionCreateMessageEvent.java
     symbol: ChatReviewSessionCreateMessageEvent
     line: 16

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:22d1f6101dd8577bba5060b3c9f21061c9a3496559bbf03e687fa57fb0cb0946"
+generated_digest: "sha256:1a744f671c9b74872c7fd485dc462672eeb474667e5b88e9af454cdefdf8cc1f"
 generated:
   feature: catalog.has_active_advertisement
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_614cdf3234fd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomAdPurchaseInfo
-      evidence: ev_1d87a1044b66
+      evidence: ev_9d0184fc3bfa
   - scenario: catalog.has_active_advertisement.success
     title: "has active advertisement: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - RoomAdPurchaseInfoEvent
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomAdPurchaseInfo
-      evidence: ev_1d87a1044b66
+      evidence: ev_9d0184fc3bfa
   evidence:
-  - id: ev_1d87a1044b66
+  - id: ev_9d0184fc3bfa
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/promotions/GetRoomAdPurchaseInfoEvent.java
     symbol: GetRoomAdPurchaseInfoEvent
     line: 12

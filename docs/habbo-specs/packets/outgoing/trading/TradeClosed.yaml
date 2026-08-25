@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c597866f787b7abd98d8504f93ebc5acee10e3e25a62082da0ea19c065875b85"
+generated_digest: "sha256:6f99335bb0b80ee66b3763d3ce7283402a53f6e153e410cd2c6bb18753570c77"
 generated:
   name: TradeClosed
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_fdab39c2d4b2
+    - ev_68d4a856c3cf
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_fdab39c2d4b2
+    - ev_68d4a856c3cf
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_fdab39c2d4b2
+    evidence: ev_68d4a856c3cf
   evidence:
-  - id: ev_fdab39c2d4b2
+  - id: ev_68d4a856c3cf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradeClosedComposer.java
     symbol: TradeClosedComposer
     line: 20

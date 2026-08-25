@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:061fb7794c44a3841d57d8f0f3a71d9bd1d7bf9b1d5dd096d1037ca9e7571bb4"
+generated_digest: "sha256:df4db08fb796b1f9b6c8e6c91b3e020aa416f2617b57b99262e549bfd509daaf"
 generated:
   name: GetJukeboxPlayList
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_3fdf8746501b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_84b20a5349c1
+    evidence: ev_3d8adc6239e7
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetJukeboxPlayListComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_84b20a5349c1
+  - id: ev_3d8adc6239e7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetJukeboxPlayListMessageEvent.java
     symbol: GetJukeboxPlayListMessageEvent
     line: 10

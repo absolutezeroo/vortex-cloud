@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1fe432a92ec0b99a0d3c41421743e901d5e5c76f3715190c47e726095aaa50fb"
+generated_digest: "sha256:6274c5bf1db3ff3d67bd4b61899016af48f2e7fb0861964cf1d16574522d411f"
 generated:
   id: uk_8daf9656d2
   subject: "incoming/CallForHelpFromPhoto: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CallForHelpFromPhotoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_aca004c561e8
+  - id: ev_a65c8c5d36de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromPhotoMessageEvent.java
     symbol: CallForHelpFromPhotoMessageEvent
     line: 17

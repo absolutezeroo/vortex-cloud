@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ea890893328a9ead6d2498a7f7e1259e0242ca07498a7f2ea36cf820e1787865"
+generated_digest: "sha256:60bc8575b954ff2f979d802afa9a3390805173b40006aecaf30d2a1dc439d3ff"
 generated:
   name: GuideSessionCreate
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_7b78106c60e0
+    - ev_84c3d6b0c749
     - ev_00f802e3be5d
   - index: 1
     name: message
@@ -33,7 +33,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_7b78106c60e0
+    - ev_84c3d6b0c749
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_ea82abb97ef2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_7b78106c60e0
+    evidence: ev_84c3d6b0c749
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GuideSessionCreateComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7b78106c60e0
+  - id: ev_84c3d6b0c749
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionCreateMessageEvent.java
     symbol: GuideSessionCreateMessageEvent
     line: 10

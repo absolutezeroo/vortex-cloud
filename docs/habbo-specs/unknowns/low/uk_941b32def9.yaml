@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1897d84a251cdf93b64db1497f0c9b26db6f2204a971582c4fc011f27b9e820c"
+generated_digest: "sha256:22ab9c5585bfb8f58597d2fffc51796f1c4dd617ecc120ff9e32af8a36dca875"
 generated:
   id: uk_941b32def9
   subject: "outgoing/MysteryPrize: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: MysteryPrize
   known_evidence:
-  - id: ev_5f41d6d33e4d
+  - id: ev_b2fd5f8d378f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/MysteryPrizeComposer.java
     symbol: MysteryPrizeComposer
     line: 8

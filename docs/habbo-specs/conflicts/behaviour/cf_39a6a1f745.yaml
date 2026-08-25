@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e7bcde745f95c1ebe51fe74783cf4c8d1082747a0c95f2de355e425b8460680d"
+generated_digest: "sha256:baf5dd6e9ba2892a2356c03d07bb3a34ee192d95265237882e37a1b9b9e6de95"
 generated:
   id: cf_39a6a1f745
   kind: behaviour
   subject: "CheckUserName: packets emitted in response"
   packet: CheckUserName
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ChangeNameCheckResult
-    evidence: ev_a6736c1a918f
+    evidence: ev_6a870ce9c1a8
   - origin: vortex
     authority: vortex_emulator
     claim: CheckUserNameResult
     evidence: ev_233f63fc1946
   evidence:
-  - id: ev_a6736c1a918f
+  - id: ev_6a870ce9c1a8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/CheckUserNameMessageEvent.java
     symbol: CheckUserNameMessageEvent
     line: 15

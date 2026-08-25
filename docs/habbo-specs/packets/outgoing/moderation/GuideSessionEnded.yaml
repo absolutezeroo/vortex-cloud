@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8bee4112565d41ad96b5a1bbeb7050308a851be8dc03ed35026047dadf349ea4"
+generated_digest: "sha256:e458279b9c48d5adac688d902abf12ac9c066c11da17580743d46d576eb45564"
 generated:
   name: GuideSessionEnded
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b9a8ff444648
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_4f1fc6677f70
+    evidence: ev_76b25a2093ba
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -86,10 +86,10 @@ generated:
     symbol: GuideSessionEndedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4f1fc6677f70
+  - id: ev_76b25a2093ba
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideSessionEndedMessageComposer.java
     symbol: GuideSessionEndedMessageComposer
     line: 18

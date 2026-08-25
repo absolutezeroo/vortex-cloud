@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:12eed8f8e9375cdd19ff3f6c9af2eb8cc392ef380c01462408ef58261c880fec"
+generated_digest: "sha256:5784d25688916b4122c629f4e3b50041f40f71b7643659c1d266e9c11280adac"
 generated:
   name: PollError
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_bf2a0d7ff0e4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_b0f8b53e254f
+    evidence: ev_cf4ffc76116a
   evidence:
   - id: ev_bf2a0d7ff0e4
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: _SafeCls_2966
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_b0f8b53e254f
+  - id: ev_cf4ffc76116a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/PollErrorMessageComposer.java
     symbol: PollErrorMessageComposer
     line: 9

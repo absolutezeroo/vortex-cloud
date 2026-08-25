@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:caded37d943a0ec976b578fe4690a6b18e2ecf2bc59aba695c442b1b9ee271bb"
+generated_digest: "sha256:0a4e17145ce70aa4d700dfc1f4be85d33a7b1d0bcb4918c8454797bf3a2b5ea4"
 generated:
   name: GetCfhChatlog
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_25ea1d7d0c1a
+    - ev_65046d0a63cd
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_5b5e56bed32b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_25ea1d7d0c1a
+    evidence: ev_65046d0a63cd
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetCfhChatlogComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_25ea1d7d0c1a
+  - id: ev_65046d0a63cd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetCfhChatlogMessageEvent.java
     symbol: GetCfhChatlogMessageEvent
     line: 17

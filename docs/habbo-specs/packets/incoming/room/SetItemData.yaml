@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2b6959d1837da54c3a90c81cb853f4732627512610c771718bf3aeafaf78a354"
+generated_digest: "sha256:f9bfc82b7db8f8fce36472c92f1e4c66d9b4a90ffbd95849366e4a8e3a41af20"
 generated:
   name: SetItemData
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_cac27e5381ab
-    - ev_5d6a57de2d9a
+    - ev_f64ee2c8a2d4
   - index: 1
     name: color
     type: string
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_cac27e5381ab
-    - ev_5d6a57de2d9a
+    - ev_f64ee2c8a2d4
   - index: 2
     name: text
     type: string
@@ -42,7 +42,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_cac27e5381ab
-    - ev_5d6a57de2d9a
+    - ev_f64ee2c8a2d4
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6b4852c4fae7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_5d6a57de2d9a
+    evidence: ev_f64ee2c8a2d4
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -91,10 +91,10 @@ generated:
     symbol: SetItemDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5d6a57de2d9a
+  - id: ev_f64ee2c8a2d4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetItemDataMessageEvent.java
     symbol: SetItemDataMessageEvent
     line: 18

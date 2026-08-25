@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bbbc0d50225c97047bf8c4440b499bfe977e1e88eb8a1550f425527a5d70ee4e"
+generated_digest: "sha256:8f83a97760749e83ffc69642dfb5309499dedd1c3b1938316b0bfa2f64e19f60"
 generated:
   name: AmbassadorVisitCommand
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_56f20ca563af
+    - ev_d5cd874a5e67
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_56f20ca563af
+    evidence: ev_d5cd874a5e67
   evidence:
-  - id: ev_56f20ca563af
+  - id: ev_d5cd874a5e67
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/ambassadors/AmbassadorVisitCommandEvent.java
     symbol: AmbassadorVisitCommandEvent
     line: 11

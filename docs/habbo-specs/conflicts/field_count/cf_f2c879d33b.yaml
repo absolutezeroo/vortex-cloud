@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2c3dd777167828ac874442c4a7c752bfbea9ab7a7110e4d380213de71d42f385"
+generated_digest: "sha256:f11b19755cd39d6cf49033a7343b9a266454fd88ec50d31f9ada7e80c9c14280"
 generated:
   id: cf_f2c879d33b
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "3 fields: unknown, string, int32"
     evidence: ev_5ce7c6e480f1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_3d435bdd22ea
+    evidence: ev_ef83570fa232
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, string, int32"
@@ -38,10 +38,10 @@ generated:
     symbol: OpenFlatConnectionComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3d435bdd22ea
+  - id: ev_ef83570fa232
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/OpenFlatConnectionMessageEvent.java
     symbol: OpenFlatConnectionMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6c280ffc2e1652d92dff9ccdc2dbda2c8381b648ed87d2fc080f042e1ad7f135"
+generated_digest: "sha256:baa0c8c989b5f146bee580da0539d3b65a5adf860414450f9a60a1f2803a9045"
 generated:
   id: uk_75c0185c45
   subject: "outgoing/SnowWarsFullGameStatus: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsFullGameStatus
   known_evidence:
-  - id: ev_c2cd32451808
+  - id: ev_320de4a1b646
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsFullGameStatusComposer.java
     symbol: SnowWarsFullGameStatusComposer
     line: 8

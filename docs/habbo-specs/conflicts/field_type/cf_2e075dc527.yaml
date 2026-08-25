@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3a38375c1c9beed408454dc1f691f2bb05b79906685c58eeb9d34666d56fb669"
+generated_digest: "sha256:9a7d4744d13af0acda5f430979f5888e4d448f98665f0ce5d34ae4767df7f0de"
 generated:
   id: cf_2e075dc527
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "final_status: int32"
     evidence: ev_b22d1d6e8961
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_3: int32"
-    evidence: ev_f11d9c4521fe
+    evidence: ev_d221b18a8e12
   - origin: vortex
     authority: vortex_emulator
     claim: "final_statuses: array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_4349
     line: 29
     note: official client build WIN63-202607011411-782849652
-  - id: ev_f11d9c4521fe
+  - id: ev_d221b18a8e12
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guardians/ChatReviewSessionResultsMessageComposer.java
     symbol: ChatReviewSessionResultsMessageComposer
     line: 22

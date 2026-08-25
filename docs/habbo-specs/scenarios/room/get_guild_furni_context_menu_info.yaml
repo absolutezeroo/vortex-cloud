@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:64ad957100d027ba246d49ad161a3fa747cddbe152e5ca4a5d2b120f058a4079"
+generated_digest: "sha256:f7e7be2d9fd001a5dc1b4750280126c814a4fce19cee44ba85e617ab2262466e"
 generated:
   feature: room.get_guild_furni_context_menu_info
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca92d06cb268
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildFurniContextMenuInfo
-      evidence: ev_4f0c10067e4f
+      evidence: ev_98dae203e680
   - scenario: room.get_guild_furni_context_menu_info.guard_1
     title: "get guild furni context menu info: the guard 'details is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca92d06cb268
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildFurniContextMenuInfo
-      evidence: ev_4f0c10067e4f
+      evidence: ev_98dae203e680
   - scenario: room.get_guild_furni_context_menu_info.guard_2
     title: "get guild furni context menu info: the guard 'group is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildFurniContextMenuInfo
-      evidence: ev_4f0c10067e4f
+      evidence: ev_98dae203e680
   - scenario: room.get_guild_furni_context_menu_info.success
     title: "get guild furni context menu info: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - GuildFurniContextMenuInfo
       evidence: ev_16d7894ffd8f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildFurniContextMenuInfo
-      evidence: ev_4f0c10067e4f
+      evidence: ev_98dae203e680
   evidence:
-  - id: ev_4f0c10067e4f
+  - id: ev_98dae203e680
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildFurniContextMenuInfoMessageEvent.java
     symbol: GetGuildFurniContextMenuInfoMessageEvent
     line: 11

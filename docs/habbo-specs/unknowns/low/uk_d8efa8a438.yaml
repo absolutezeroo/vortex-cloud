@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b1287db05cfe576bcc6fd12d60eadc4225cb2fc5837c53d244577f7035d55abb"
+generated_digest: "sha256:11e10e67b00f28dcc828e853ee4a3935912779d03af84c86f419960438045935"
 generated:
   id: uk_d8efa8a438
   subject: "outgoing/CompetitionStatus: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CompetitionStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a74387ec6555
+  - id: ev_b1d97a66dc6e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/CompetitionStatusMessageComposer.java
     symbol: CompetitionStatusMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9ec12187a1a269fab8d9bfd0a1e492df4b554ab455ffc583ad01142af5a8b69c"
+generated_digest: "sha256:ac91d04759a26267b5e6766b3c4b1e751e16131aef8010b76c66698b86422718"
 generated:
   name: RemainingMutePeriod
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_34b68c62d537
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_84452fc4f51d
+    evidence: ev_4a1acc280762
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: RemainingMutePeriodMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_84452fc4f51d
+  - id: ev_4a1acc280762
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/RemainingMutePeriodMessageComposer.java
     symbol: RemainingMutePeriodMessageComposer
     line: 15

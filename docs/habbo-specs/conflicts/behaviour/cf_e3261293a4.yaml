@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:6bfad38cb9a1548a27956588699aaf0fca33be0b6a2f5066927a11f8f179c24a"
+generated_digest: "sha256:0023d6f4be85d909389c61b53eb6f409a665d164f2c70b386387f53f613a8821"
 generated:
   id: cf_e3261293a4
   kind: behaviour
   subject: "GetHabboGroupDetails: packets emitted in response"
   packet: GetHabboGroupDetails
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: HabboGroupDetails
-    evidence: ev_1851fd4b283c
+    evidence: ev_1ff9859a49ee
   - origin: vortex
     authority: vortex_emulator
     claim: GuildEditorData then HabboGroupDetails
     evidence: ev_47032a3756bb
   evidence:
-  - id: ev_1851fd4b283c
+  - id: ev_1ff9859a49ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetHabboGroupDetailsMessageEvent.java
     symbol: GetHabboGroupDetailsMessageEvent
     line: 15

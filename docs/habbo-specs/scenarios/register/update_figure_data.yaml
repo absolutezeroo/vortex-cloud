@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cf55a429bbda3d0f2301aac5d159e4e532728de1007ec0090f22f5496a7635dd"
+generated_digest: "sha256:7405e839894bbe8ef20ca97c9d3dbb008821f278137cc1aec7d02ef82c4c5797"
 generated:
   feature: register.update_figure_data
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c1a848c3d73c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FigureUpdate
-      evidence: ev_de56f817adf8
+      evidence: ev_ff862bc62256
   - scenario: register.update_figure_data.guard_1
     title: "update figure data: the guard 'message.Figure.Length > FigureString.MaxLength' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c1a848c3d73c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FigureUpdate
-      evidence: ev_de56f817adf8
+      evidence: ev_ff862bc62256
   - scenario: register.update_figure_data.guard_2
     title: "update figure data: the guard '!await MayWearAsync(message.Figure, ctx.PlayerId, ct).Con...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c1a848c3d73c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FigureUpdate
-      evidence: ev_de56f817adf8
+      evidence: ev_ff862bc62256
   - scenario: register.update_figure_data.guard_3
     title: "update figure data: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FigureUpdate
-      evidence: ev_de56f817adf8
+      evidence: ev_ff862bc62256
   - scenario: register.update_figure_data.success
     title: "update figure data: the request is accepted"
     given:
@@ -128,17 +128,17 @@ generated:
       emits:
       - FigureUpdateEvent
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FigureUpdate
-      evidence: ev_de56f817adf8
+      evidence: ev_ff862bc62256
   evidence:
-  - id: ev_de56f817adf8
+  - id: ev_ff862bc62256
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/UpdateFigureDataMessageEvent.java
     symbol: UpdateFigureDataMessageEvent
     line: 19

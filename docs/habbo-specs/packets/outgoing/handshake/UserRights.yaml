@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9a0d496e7c4b02cf77e259cdf19c17067baf21832098fffd0210c2862db3c31c"
+generated_digest: "sha256:5db179dae43a4eba161f2d272a168467d62b266aa32fa2fe2a0c9b4b2237803b"
 generated:
   name: UserRights
   direction: outgoing
@@ -58,7 +58,7 @@ generated:
     - int32
     - boolean
     evidence: ev_739ca4c3187b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_c1d8c614cc5a
+    evidence: ev_e58b21c53d1d
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -93,10 +93,10 @@ generated:
     symbol: UserRightsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c1d8c614cc5a
+  - id: ev_e58b21c53d1d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/UserRightsMessageComposer.java
     symbol: UserRightsMessageComposer
     line: 20

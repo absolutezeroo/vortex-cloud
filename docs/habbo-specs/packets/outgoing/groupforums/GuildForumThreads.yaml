@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d371bf1941792584ef7a112d51bddfe0af6be5cba3b833f812ee1d6cb386e3ce"
+generated_digest: "sha256:5b1ae29f0fbb78c7eae1ff66ff0c2e7406c6120a48e48db36f02382f19e2faf3"
 generated:
   name: GuildForumThreads
   direction: outgoing
@@ -52,7 +52,7 @@ generated:
     - int32
     - int32
     evidence: ev_25040f13874a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: true
@@ -60,7 +60,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_2a868f625ab7
+    evidence: ev_e12fca687071
   evidence:
   - id: ev_25040f13874a
     kind: client_parser
@@ -70,10 +70,10 @@ generated:
     symbol: GuildForumThreadsParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_2a868f625ab7
+  - id: ev_e12fca687071
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/GuildForumThreadsMessageComposer.java
     symbol: GuildForumThreadsMessageComposer
     line: 28

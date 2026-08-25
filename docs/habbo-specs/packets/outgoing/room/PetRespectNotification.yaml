@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3e17ba9583529eda09ec6efc738469a18591dafcbfcab8b83727caa2552763c8"
+generated_digest: "sha256:9e43dfff733b44c3ba8647a191db83da412edae6bd8d5554be5b07e0627d548b"
 generated:
   name: PetRespectNotification
   direction: outgoing
@@ -81,14 +81,14 @@ generated:
     - int32
     - int32
     evidence: ev_c9f238623a32
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: true
     types:
     - int32
     - int32
-    evidence: ev_1342ecb1aac5
+    evidence: ev_6b8279f40c50
   evidence:
   - id: ev_c9f238623a32
     kind: client_parser
@@ -98,10 +98,10 @@ generated:
     symbol: _SafeCls_2668
     line: 30
     note: official client build WIN63-202607011411-782849652
-  - id: ev_1342ecb1aac5
+  - id: ev_6b8279f40c50
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetRespectNotificationMessageComposer.java
     symbol: PetRespectNotificationMessageComposer
     line: 26

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7b34cea4785a36bce60f0e7c2f4340f2195b560f7034410eb5a2d60f4bdbf5f1"
+generated_digest: "sha256:9e8dd45c1f78aee74b4f95bce7c1317024275c0a02b515c9538cbd8045146c02"
 generated:
   name: OpenFlatConnection
   direction: incoming
@@ -58,14 +58,14 @@ generated:
     - string
     - int32
     evidence: ev_5ce7c6e480f1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_3d435bdd22ea
+    evidence: ev_ef83570fa232
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -92,10 +92,10 @@ generated:
     symbol: OpenFlatConnectionComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3d435bdd22ea
+  - id: ev_ef83570fa232
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/OpenFlatConnectionMessageEvent.java
     symbol: OpenFlatConnectionMessageEvent
     line: 10

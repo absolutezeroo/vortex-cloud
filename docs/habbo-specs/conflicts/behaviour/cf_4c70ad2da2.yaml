@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:299bbc10d049080847f7f6988e72ff106461d4c138009e4c37fd8fd6aee74f23"
+generated_digest: "sha256:86e0f589b94a5046b816bef55d388065049b399bdd9b200b985ae56abcfbd2fa"
 generated:
   id: cf_4c70ad2da2
   kind: behaviour
   subject: "RemoveAllRights: packets emitted in response"
   packet: RemoveAllRights
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: NoSuchFlat
-    evidence: ev_c808b5968e2d
+    evidence: ev_d9bdd3e8c230
   - origin: vortex
     authority: vortex_emulator
     claim: FlatControllersEvent then YouAreController then WiredPermissionsEvent then YouAreOwner then YouAreNotController
     evidence: ev_235aa2ae57eb
   evidence:
-  - id: ev_c808b5968e2d
+  - id: ev_d9bdd3e8c230
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RemoveAllRightsMessageEvent.java
     symbol: RemoveAllRightsMessageEvent
     line: 15

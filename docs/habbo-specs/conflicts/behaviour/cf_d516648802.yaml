@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a649bc800aa2244aa367a20d2b35da575a673f70948669df1620fa463a361f56"
+generated_digest: "sha256:7e42a4a5caa3f379b4f77424c30adf1d7058c23cdb48df3cefa82aa203857324"
 generated:
   id: cf_d516648802
   kind: behaviour
   subject: "GetCfhStatus: packets emitted in response"
   packet: GetCfhStatus
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: SanctionStatus
-    evidence: ev_476e0479e573
+    evidence: ev_038cb4a178c0
   - origin: vortex
     authority: vortex_emulator
     claim: SanctionStatusEvent
     evidence: ev_b79590e81136
   evidence:
-  - id: ev_476e0479e573
+  - id: ev_038cb4a178c0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/helper/GetCfhStatusMessageEvent.java
     symbol: GetCfhStatusMessageEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:450ec8e34a4428bfba08245dcb1fbcd8d60941e182854ec05e690bc56c41c60b"
+generated_digest: "sha256:c64ea2e8fd00d6a701e4ddd5a547d9da31ecfee4486b26465616078ffa48b892"
 generated:
   feature: navigator.get_room_count_by_owner
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - CanCreateRoom
       evidence: ev_8527e203d9ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CanCreateRoom
-      evidence: ev_98808f6aa35f
+      evidence: ev_208e06afb238
   evidence:
-  - id: ev_98808f6aa35f
+  - id: ev_208e06afb238
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/CanCreateRoomMessageEvent.java
     symbol: CanCreateRoomMessageEvent
     line: 10

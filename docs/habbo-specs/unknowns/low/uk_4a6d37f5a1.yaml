@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:28c639af1636586e1067068ae0b68fb8fa47fc3a890945a4322ef48b5e21ac7c"
+generated_digest: "sha256:ae9501ff7481736a1f1fc41a79d892d3b1bce5fb8471c8555fea318c0d193ebe"
 generated:
   id: uk_4a6d37f5a1
   subject: "outgoing/HabboClubExtendOffer: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: HabboClubExtendOfferMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_531cf67746ff
+  - id: ev_bb64b0f22c37
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/HabboClubExtendOfferMessageComposer.java
     symbol: HabboClubExtendOfferMessageComposer
     line: 27

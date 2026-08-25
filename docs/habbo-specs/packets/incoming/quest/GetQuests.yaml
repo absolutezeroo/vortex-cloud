@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f21a7e4f555274ebecef28330514a7739b817c2643b29286858611b9df064bba"
+generated_digest: "sha256:fe9bbea3a683fffab3f49ff066f502e986672ab8d3e3e83edd2176046029102e"
 generated:
   name: GetQuests
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_0adf08e69c0d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_a0175d5aa843
+    evidence: ev_ab59d553aa3d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetQuestsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a0175d5aa843
+  - id: ev_ab59d553aa3d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/quests/GetQuestsEvent.java
     symbol: GetQuestsEvent
     line: 13

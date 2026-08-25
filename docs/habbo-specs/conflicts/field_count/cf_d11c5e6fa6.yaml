@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:540e1c16390c8fe1857c90b4cf488e327046a89ff2a3a4c6db8fbd7f0136be17"
+generated_digest: "sha256:7105af8691363ca7664461ebac11f474b9d61b0ea8810531c54ddd6c6704d2b0"
 generated:
   id: cf_d11c5e6fa6
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "19 fields: boolean, string, int32, int32, int32, int32, boolean, string, string, int32, string, int32, int32, int32, string, string, boolean, boolean, int32"
     evidence: ev_fb9ed13776e9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: boolean"
-    evidence: ev_c2ecf64edaae
+    evidence: ev_00f5615d00a1
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: boolean, block"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_3479
     line: 25
     note: official client build WIN63-202607011411-782849652
-  - id: ev_c2ecf64edaae
+  - id: ev_00f5615d00a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/quests/QuestCancelledMessageComposer.java
     symbol: QuestCancelledMessageComposer
     line: 15

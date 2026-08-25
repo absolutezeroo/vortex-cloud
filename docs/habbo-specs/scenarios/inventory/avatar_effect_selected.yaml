@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:326a0ac3543c7d451794c0884f4ff68e518183c3999704dbd0ad40e8357b0030"
+generated_digest: "sha256:5f24866a91c7a05eec9900ac6fa2eb1be04bc459ee02b373a59fad3fbcc52015"
 generated:
   feature: inventory.avatar_effect_selected
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f3075d7b8ac
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   - scenario: inventory.avatar_effect_selected.guard_1
     title: "avatar effect selected: the guard 'wearable is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7ef4c91324dc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   - scenario: inventory.avatar_effect_selected.guard_2
     title: "avatar effect selected: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   - scenario: inventory.avatar_effect_selected.guard_3
     title: "avatar effect selected: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   - scenario: inventory.avatar_effect_selected.guard_4
     title: "avatar effect selected: the guard 'CurrentEffectId == effectId' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   - scenario: inventory.avatar_effect_selected.success
     title: "avatar effect selected: the request is accepted"
     given:
@@ -149,16 +149,16 @@ generated:
       - AvatarEffectExpired
       - AvatarEffectSelected
       evidence: ev_04e643c029b0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1a867fdc8190
+      evidence: ev_fb9b1707694e
   evidence:
-  - id: ev_1a867fdc8190
+  - id: ev_fb9b1707694e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/AvatarEffectSelectedEvent.java
     symbol: AvatarEffectSelectedEvent
     line: 7

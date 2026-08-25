@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a586dd428b9f5abdcd8b1975613bd290f1211dcd33940091caf5046d6a19b7fb"
+generated_digest: "sha256:482adea449654d1c21a8a91be5ba0dcec2e30dda6b456ee61165e025d3f23554"
 generated:
   id: uk_df3cf77cee
   subject: "outgoing/TradingAccept: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: TradingAcceptParser
     line: 29
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_540d3c09e069
+  - id: ev_8cc53aa2df75
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingAcceptMessageComposer.java
     symbol: TradingAcceptMessageComposer
     line: 16

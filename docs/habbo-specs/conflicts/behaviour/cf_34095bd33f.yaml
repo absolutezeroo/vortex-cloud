@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a3c612772b150b86883bfa9e262db39132351702cc2cb73760d163df667d3ea8"
+generated_digest: "sha256:3139629c870442750ca493035bc1c6b36ec60458d91babcc017d8de5c5336f1f"
 generated:
   id: cf_34095bd33f
   kind: behaviour
   subject: "GetProductOffer: packets emitted in response"
   packet: GetProductOffer
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ProductOffer
-    evidence: ev_d4b6852769b5
+    evidence: ev_617fb133799f
   - origin: vortex
     authority: vortex_emulator
     claim: ProductOfferEvent
     evidence: ev_42689782a458
   evidence:
-  - id: ev_d4b6852769b5
+  - id: ev_617fb133799f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetProductOfferEvent.java
     symbol: GetProductOfferEvent
     line: 12

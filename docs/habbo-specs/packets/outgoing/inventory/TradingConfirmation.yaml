@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a5dc1d73749e1c925f43624fa2ab2b07fa8793d5d4f5483bc42e4a0535926805"
+generated_digest: "sha256:c0901f71eec2ef371e0cadda29d78c1433e8c4594373ffa5a59c5c97b19b284c"
 generated:
   name: TradingConfirmation
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_b309f291d215
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_b5e1aa73a420
+    evidence: ev_ef8f5f6d5b3c
   evidence:
   - id: ev_b309f291d215
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: TradingConfirmationParser
     line: 15
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_b5e1aa73a420
+  - id: ev_ef8f5f6d5b3c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingConfirmationMessageComposer.java
     symbol: TradingConfirmationMessageComposer
     line: 9

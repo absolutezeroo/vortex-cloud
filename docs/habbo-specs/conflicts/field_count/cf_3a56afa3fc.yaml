@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:73cd2fbf52ff9688d6885af362f34f0b8b61bb4b7c24b541c4479ba0af264cda"
+generated_digest: "sha256:b31225d5ce73f7c9d8293c1d0c75c7f9cce5700aebc3522fd523a7722274a7c2"
 generated:
   id: cf_3a56afa3fc
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, int32, string, string, string, string"
     evidence: ev_4f18a7f528cf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: int32, int32, string, string, string, string"
-    evidence: ev_e2cb95095ffb
+    evidence: ev_621b18a8627d
   evidence:
   - id: ev_4f18a7f528cf
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: YoutubeDisplayPlaylistsMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_e2cb95095ffb
+  - id: ev_621b18a8627d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/youtube/YoutubeDisplayPlaylistsMessageComposer.java
     symbol: YoutubeDisplayPlaylistsMessageComposer
     line: 22

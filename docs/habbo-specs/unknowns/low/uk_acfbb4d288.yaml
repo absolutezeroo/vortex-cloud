@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a673f1ecf533527d88c059c4f0744a390e1c990bd574ca3c6b6ce71ecfc73040"
+generated_digest: "sha256:9c26c5c8c4ba95721d2d929a4bae5b6eb1ac24c8e017e0000fa7c97272e80b3e"
 generated:
   id: uk_acfbb4d288
   subject: "outgoing/UserTags: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UserTags
   known_evidence:
-  - id: ev_bf29c580abfb
+  - id: ev_97f59de47934
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserTagsMessageComposer.java
     symbol: UserTagsMessageComposer
     line: 16

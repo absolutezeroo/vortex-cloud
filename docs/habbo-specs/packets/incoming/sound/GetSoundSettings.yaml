@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9424fb79b0663bf6a454bfa01b5eb10fbe79b8e769509b69bf78565c8eb6c9e4"
+generated_digest: "sha256:3893513ef59de30d463fd3655a6a3c0aad350f1699ff57e7cfd65afbb140be94"
 generated:
   name: GetSoundSettings
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_fa35b76716d5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_35e0c7c1c5ac
+    evidence: ev_0c90e4e3c098
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetSoundSettingsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_35e0c7c1c5ac
+  - id: ev_0c90e4e3c098
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSoundSettingsEvent.java
     symbol: GetSoundSettingsEvent
     line: 8

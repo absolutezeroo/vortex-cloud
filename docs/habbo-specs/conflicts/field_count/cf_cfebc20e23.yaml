@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a8ede9e853fd8d563c45de6cb0c5188deccd639fbedf6a6fc2dfa00b31508fb9"
+generated_digest: "sha256:0a9b8c083681bcc95d01acf082c43327cbb942f69c9967bca7fbeb72e990e3e7"
 generated:
   id: cf_cfebc20e23
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, string, string, boolean"
     evidence: ev_f26e247139a0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, string, string, boolean"
-    evidence: ev_da45cbb907cd
+    evidence: ev_ebeee12f3c85
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_2997
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_da45cbb907cd
+  - id: ev_ebeee12f3c85
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/PerkAllowancesMessageComposer.java
     symbol: PerkAllowancesMessageComposer
     line: 21

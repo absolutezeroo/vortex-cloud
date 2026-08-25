@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:82b27cf269ee1a9ebe3a4e4e9d19a8ecfc9936c3b4c1b2174c0cfab077f00da6"
+generated_digest: "sha256:6817f4da7ad6638e5939d8833045e9fb011f0e3662230445088047d4332823f8"
 generated:
   name: CallForHelpPendingCallsDeleted
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_3d7fd2ad4a5b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_8330cccba926
+    evidence: ev_83681d489cb5
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -60,10 +60,10 @@ generated:
     symbol: CallForHelpPendingCallsDeletedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8330cccba926
+  - id: ev_83681d489cb5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CallForHelpPendingCallsDeletedMessageComposer.java
     symbol: CallForHelpPendingCallsDeletedMessageComposer
     line: 9

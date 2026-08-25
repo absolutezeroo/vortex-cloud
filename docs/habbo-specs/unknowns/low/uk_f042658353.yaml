@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:183e5ffbda785e577dcabe9c8f11e37ea802237d317508646ed29ce00ca4800d"
+generated_digest: "sha256:2c35306e446dac2982f2e01b2f66869f7e189151bb37ae2ad42637c02ffeefe5"
 generated:
   id: uk_f042658353
   subject: "outgoing/PhoneCollectionState: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: PhoneCollectionStateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_15ecbafd44dc
+  - id: ev_a63e91660ae3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/verification/PhoneCollectionStateMessageComposer.java
     symbol: PhoneCollectionStateMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a85eff3b08442bbf55f25443c0578e2ef7186c7f50004b54ae0d3ac6ed37459f"
+generated_digest: "sha256:3eaf60e0c5ed78b92350c2d7ea81c8f3da9739ea220ea00395ce7a2d3bcc688b"
 generated:
   id: cf_f9c2359ba2
   kind: field_type
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "unknown_10: int32"
     evidence: ev_b94c4184b991
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_10: int32"
-    evidence: ev_df40ed879f0f
+    evidence: ev_de30cf77c116
   - origin: vortex
     authority: vortex_emulator
     claim: "reward_user_limits: array"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_4122
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_df40ed879f0f
+  - id: ev_de30cf77c116
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/CommunityGoalProgressMessageComposer.java
     symbol: CommunityGoalProgressMessageComposer
     line: 43

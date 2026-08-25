@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e2964d675edb4465dd2360f7525e0789e7991803c6a919a5d9feefb37995974"
+generated_digest: "sha256:d35593f1278cbcd0baf7f09b0e78710dd16fcd944826bcbe83135c4f19c8e053"
 generated:
   name: PresentOpened
   direction: outgoing
@@ -92,7 +92,7 @@ generated:
     - boolean
     - string
     evidence: ev_a6bb116fe03a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 7
     partial: false
@@ -104,7 +104,7 @@ generated:
     - string
     - boolean
     - string
-    evidence: ev_28c0dd85577f
+    evidence: ev_79ed5874a1f4
   - origin: vortex
     authority: vortex_emulator
     field_count: 7
@@ -135,10 +135,10 @@ generated:
     symbol: PresentOpenedMessage
     line: 18
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_28c0dd85577f
+  - id: ev_79ed5874a1f4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/PresentOpenedMessageComposer.java
     symbol: PresentOpenedMessageComposer
     line: 20

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b6e9470d8df97ceb25842ba34e5105164e40cd1bd59a142e7245527ddd0d1c94"
+generated_digest: "sha256:5dccb748f53449d0121ce83be3d11185719f477a226bf73a2b4bc8c2705d75f1"
 generated:
   feature: room.set_youtube_display_playlist
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2bf8d434399d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - YoutubeVideo
-      evidence: ev_ab3437eee505
+      evidence: ev_336ff5327904
   evidence:
-  - id: ev_ab3437eee505
+  - id: ev_336ff5327904
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/youtube/SetYoutubeDisplayPlaylistMessageEvent.java
     symbol: SetYoutubeDisplayPlaylistMessageEvent
     line: 18

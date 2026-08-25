@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8f2ba962dc3bc8ea3d2048beb60b613d6782c3f747ee245c07ba7ed7f838b202"
+generated_digest: "sha256:9791cc5fa9e1ad361843911d4d1d947317dab881002e1e0b3e6c7a873d4d674b"
 generated:
   name: FriendRequests
   direction: outgoing
@@ -79,7 +79,7 @@ generated:
     partial: true
     types: []
     evidence: ev_71ca5b5e5872
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -89,7 +89,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_ca2690311287
+    evidence: ev_523e944f53b9
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -116,10 +116,10 @@ generated:
     symbol: FriendRequestsMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ca2690311287
+  - id: ev_523e944f53b9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendRequestsMessageComposer.java
     symbol: FriendRequestsMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f54ae1afb2bc86249c5febdd0981f58f0f6a248d0dde1bcd6ae2cb42b5adf081"
+generated_digest: "sha256:9359569e98976e2c91940b012d61aea26e1cbc86c1a361a90d09c010816d8556"
 generated:
   id: uk_5a27be7c57
   subject: "outgoing/OfficialRooms: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: OfficialRoomsMessage
     line: 15
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_37a5ba067c43
+  - id: ev_a4be9776be21
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/OfficialRoomsMessageComposer.java
     symbol: OfficialRoomsMessageComposer
     line: 28

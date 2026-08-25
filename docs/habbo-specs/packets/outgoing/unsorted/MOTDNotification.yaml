@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:201f70277eff68275d07e45db20cb5a38627d5950c9c37a7db9b987361ca10c4"
+generated_digest: "sha256:8f290b8ebbdafac5c2ce937e8af142cb6ef5fa347e125b3ee5f9984e9dab0148"
 generated:
   name: MOTDNotification
   direction: outgoing
@@ -43,7 +43,7 @@ generated:
     - int32
     - string
     evidence: ev_09f1408756fe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -51,7 +51,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_a728076bc8c7
+    evidence: ev_dee2a7b72d62
   evidence:
   - id: ev_09f1408756fe
     kind: client_parser
@@ -61,10 +61,10 @@ generated:
     symbol: _SafeCls_2787
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_a728076bc8c7
+  - id: ev_dee2a7b72d62
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/MOTDNotificationMessageComposer.java
     symbol: MOTDNotificationMessageComposer
     line: 25

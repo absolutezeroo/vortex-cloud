@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:86641b52cd937482dded0ac082206dbe9246a4bf3bc0cacf9f476911455a000f"
+generated_digest: "sha256:2f9ca1db7b81f289435e2ebedc8d505623a7a9d7dd15ce297e8b075d7cfb498b"
 generated:
   name: HotelViewHideCommunityVoteButton
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8e87ebfe6a4
+    - ev_03ba8a2bca49
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_c8e87ebfe6a4
+    evidence: ev_03ba8a2bca49
   evidence:
-  - id: ev_c8e87ebfe6a4
+  - id: ev_03ba8a2bca49
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/HotelViewHideCommunityVoteButtonComposer.java
     symbol: HotelViewHideCommunityVoteButtonComposer
     line: 15

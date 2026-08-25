@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:813f4e5e4ee638fca63d14382760eb068f4c8ce4e3c5a89ab50822a7383c60dc"
+generated_digest: "sha256:e1c8546757d11acd2aef0ede7045f6d441f2f9bb23f476e18cbcd5a52af02102"
 generated:
   id: uk_31064e1893
   subject: "outgoing/BotInventory: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3735
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_0fe9cc81d066
+  - id: ev_85bb9a090488
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/BotInventoryMessageComposer.java
     symbol: BotInventoryMessageComposer
     line: 18

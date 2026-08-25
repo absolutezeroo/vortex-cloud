@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:513883f97ae3bf91ca4e89f1a9231c243d5b4e355f10375b808f1248acccde75"
+generated_digest: "sha256:29bcde3ed1323eb813e625c8091b8e1ab8f4313ea7da96fcad3dc587358bd2e4"
 generated:
   name: RoomRequestBannedUsers
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_3c019349e919
+    - ev_a23c741f386e
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_3c019349e919
+    evidence: ev_a23c741f386e
   evidence:
-  - id: ev_3c019349e919
+  - id: ev_a23c741f386e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RoomRequestBannedUsersEvent.java
     symbol: RoomRequestBannedUsersEvent
     line: 11

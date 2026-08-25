@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b8f3d208a0e886103f90cd4c39fc17b3772cfeed102868420d78473e0cd8b53b"
+generated_digest: "sha256:7db664dca5cf155bfc53654830be3bf1dbb6c992f15ff83019de6283dafa23da"
 generated:
   feature: room.set_clothing_change_data
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a42d2d83d3e7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e40d70583310
+      evidence: ev_514c5f13d28b
   evidence:
-  - id: ev_e40d70583310
+  - id: ev_514c5f13d28b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetClothingChangeDataMessageEvent.java
     symbol: SetClothingChangeDataMessageEvent
     line: 10

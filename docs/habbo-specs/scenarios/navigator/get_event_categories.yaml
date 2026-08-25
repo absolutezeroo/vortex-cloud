@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:58a6fbba259e04fd914f160957f458dfaf77fddd473184bc1eeda1a24dda097c"
+generated_digest: "sha256:0dded20a876a5bd872325f425bb0e6d089f24f764d1725450d3c7ade52d62f72"
 generated:
   feature: navigator.get_event_categories
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ccbd19c08c4a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserEventCats
-      evidence: ev_eb509893c99e
+      evidence: ev_940f8a9b5ec1
   - scenario: navigator.get_event_categories.success
     title: "get event categories: the request is accepted"
     given:
@@ -57,17 +57,17 @@ generated:
       - CanCreateRoomEvent
       - UserEventCats
       evidence: ev_b46938ec853d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserEventCats
-      evidence: ev_eb509893c99e
+      evidence: ev_940f8a9b5ec1
   evidence:
-  - id: ev_eb509893c99e
+  - id: ev_940f8a9b5ec1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetUserEventCatsMessageEvent.java
     symbol: GetUserEventCatsMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d101748f7d5bdbce8dcf83a3251cc935aa3486723e19855ae2cdc30a96ba05c4"
+generated_digest: "sha256:c91a1c72fc0d27e4ebb11915187fa115ad62897291674a5946af4573dca90bcc"
 generated:
   name: Game2GetAccountGameStatus
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_22081b76bf9c
+    - ev_a38a27cdd49b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -40,13 +40,13 @@ generated:
     partial: true
     types: []
     evidence: ev_4b08b7116d62
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_22081b76bf9c
+    evidence: ev_a38a27cdd49b
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -70,10 +70,10 @@ generated:
     symbol: Game2GetAccountGameStatusComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_22081b76bf9c
+  - id: ev_a38a27cdd49b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/Game2GetAccountGameStatusMessageEvent.java
     symbol: Game2GetAccountGameStatusMessageEvent
     line: 8

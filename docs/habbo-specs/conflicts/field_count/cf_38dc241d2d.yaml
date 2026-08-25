@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:99b5c22fb117ab1376b7cadca8eb0af101cdb317736f938cfbb82dfdd5a17900"
+generated_digest: "sha256:3890aa539b43298009f46a4d56e817d89082ca25f2ee331d7dec967c9f0e4101"
 generated:
   id: cf_38dc241d2d
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, string, string, int32, int32, short, string"
     evidence: ev_c8dbd634e2f1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "15 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, string, string, int32, int32, string"
-    evidence: ev_aff65edeb5bd
+    evidence: ev_0b0db7eba757
   evidence:
   - id: ev_c8dbd634e2f1
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: AchievementsParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_aff65edeb5bd
+  - id: ev_0b0db7eba757
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/achievements/AchievementsMessageComposer.java
     symbol: AchievementsMessageComposer
     line: 24

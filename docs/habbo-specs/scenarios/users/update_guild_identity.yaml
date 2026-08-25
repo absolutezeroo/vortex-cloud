@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2f303a0c9434ca0b789c50b4e1b71c01acaefdc674b3a956928b97c2836ff17e"
+generated_digest: "sha256:c260f6dedea9a6cfd088ca31cdd6dad8131640f53336b410eaa56e0984eaf053"
 generated:
   feature: users.update_guild_identity
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da86beca341d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5b7f12f1d4c6
+      evidence: ev_0639f8321120
   - scenario: users.update_guild_identity.guard_1
     title: "update guild identity: the guard 'GroupNameRules.Validate(name, maxNameLength) is string re...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_861d7eb0e4b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5b7f12f1d4c6
+      evidence: ev_0639f8321120
   - scenario: users.update_guild_identity.success
     title: "update guild identity: the request is accepted"
     given:
@@ -79,16 +79,16 @@ generated:
       - GroupDetailsChanged
       - GuildEditFailed
       evidence: ev_09932710687b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5b7f12f1d4c6
+      evidence: ev_0639f8321120
   evidence:
-  - id: ev_5b7f12f1d4c6
+  - id: ev_0639f8321120
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildIdentityMessageEvent.java
     symbol: UpdateGuildIdentityMessageEvent
     line: 12

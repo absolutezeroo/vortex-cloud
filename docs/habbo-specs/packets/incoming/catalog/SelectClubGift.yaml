@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:55da09e76f00804f6bb8ce62682697b27538de8eb9dbd25fabcf33fb67e8d990"
+generated_digest: "sha256:8d3842f0ad158f92e404421f04dc76edff93c9704b8ed998bf2cc8eb84bd15ad"
 generated:
   name: SelectClubGift
   direction: incoming
@@ -41,13 +41,13 @@ generated:
     types:
     - string
     evidence: ev_9b4c085ff249
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_a4c825f97017
+    evidence: ev_d72f1911f56e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: SelectClubGiftComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a4c825f97017
+  - id: ev_d72f1911f56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/SelectClubGiftEvent.java
     symbol: SelectClubGiftEvent
     line: 20

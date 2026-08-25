@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0846486163979b0ad7d69ee278b581633e22c260d4d672e945ba08b7453e19d4"
+generated_digest: "sha256:9c579a7ac526ddff8a729294c773828063650414e7e2fb821adb687997d18361"
 generated:
   feature: catalog.get_flat_categories
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_234fbe9c2c98
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_1
     title: "get flat categories: the guard '!navigatorProvider.GetFlatCategories().Any(c => c.Id == m...' holds"
     given:
@@ -61,14 +61,14 @@ generated:
       - PurchaseError
       - PurchaseOK
       evidence: ev_234fbe9c2c98
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_10
     title: "get flat categories: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
@@ -87,14 +87,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_11
     title: "get flat categories: the guard 'hasExplicitRights' holds"
     given:
@@ -113,14 +113,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_2
     title: "get flat categories: the guard 'controllerLevel < RoomControllerType.Rights' holds"
     given:
@@ -142,14 +142,14 @@ generated:
       - PurchaseError
       - PurchaseOK
       evidence: ev_234fbe9c2c98
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_3
     title: "get flat categories: the guard 'ex.BalanceFailure is not null' holds"
     given:
@@ -171,14 +171,14 @@ generated:
       - PurchaseError
       - PurchaseOK
       evidence: ev_234fbe9c2c98
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_4
     title: "get flat categories: the guard 'ctx.Origin == ActionOrigin.System' holds"
     given:
@@ -197,14 +197,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_5
     title: "get flat categories: the guard 'origin == ActionOrigin.System' holds"
     given:
@@ -223,14 +223,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_6
     title: "get flat categories: the guard 'isExplicitOwner' holds"
     given:
@@ -249,14 +249,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_7
     title: "get flat categories: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
@@ -275,14 +275,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_8
     title: "get flat categories: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
@@ -301,14 +301,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_9
     title: "get flat categories: the guard 'group.IsAdmin' holds"
     given:
@@ -327,14 +327,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.success
     title: "get flat categories: the request is accepted"
     given:
@@ -355,19 +355,19 @@ generated:
       - PurchaseError
       - PurchaseOK
       evidence: ev_09b06dd2911b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PurchaseOK
       - RoomPromotion
       - PurchaseError
-      evidence: ev_8e18463f4b92
+      evidence: ev_938626d61bc2
   evidence:
-  - id: ev_8e18463f4b92
+  - id: ev_938626d61bc2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/promotions/PurchaseRoomAdMessageEvent.java
     symbol: PurchaseRoomAdMessageEvent
     line: 19

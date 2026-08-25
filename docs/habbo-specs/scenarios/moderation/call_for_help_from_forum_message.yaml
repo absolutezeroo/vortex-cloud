@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ef7117ea36044716e2c31f94a6fe5f7a1850fc67a4f77f82f8aa3e28d259b508"
+generated_digest: "sha256:a4ebcfcac78be780ba5ae43767d86d6955449fa7911ca2f2fe66767ebbd1389e"
 generated:
   feature: moderation.call_for_help_from_forum_message
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2d6bee40665f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_883fb94c49fb
+      evidence: ev_9bf86c149daf
   - scenario: moderation.call_for_help_from_forum_message.guard_1
     title: "call for help from forum message: the guard 'postId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_883fb94c49fb
+      evidence: ev_9bf86c149daf
   - scenario: moderation.call_for_help_from_forum_message.success
     title: "call for help from forum message: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2d6bee40665f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_883fb94c49fb
+      evidence: ev_9bf86c149daf
   evidence:
-  - id: ev_883fb94c49fb
+  - id: ev_9bf86c149daf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromForumMessageMessageEvent.java
     symbol: CallForHelpFromForumMessageMessageEvent
     line: 15

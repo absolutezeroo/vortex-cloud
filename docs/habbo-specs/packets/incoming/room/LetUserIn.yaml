@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e9ff08c92b270c081b651936ff1b2e66d7a06c8ba363955dad765e042026fce"
+generated_digest: "sha256:04fa7a7492698b02c12e6e0d3a38ce7ba42657fdf2f3805361c92a31f0194f1c"
 generated:
   name: LetUserIn
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bc75f4b39963
+    - ev_ef036baa527e
   - index: 1
     name: accepted
     type: boolean
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bc75f4b39963
+    - ev_ef036baa527e
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_9feb73f936bc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - boolean
-    evidence: ev_bc75f4b39963
+    evidence: ev_ef036baa527e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -79,10 +79,10 @@ generated:
     symbol: LetUserInComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bc75f4b39963
+  - id: ev_ef036baa527e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/LetUserInMessageEvent.java
     symbol: LetUserInMessageEvent
     line: 12

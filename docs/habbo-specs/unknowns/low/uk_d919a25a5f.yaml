@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:022405fc9e8105ddfae992850edfa92044b72ed329412713b0c6b6f68e037a62"
+generated_digest: "sha256:c1b76e76e5b8f9eaa724248745cf1727d292ffcb4fa58c77338915c4730b2dd1"
 generated:
   id: uk_d919a25a5f
   subject: "outgoing/WiredValidationError: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3324
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_fce989b22df1
+  - id: ev_ff1fdec9acae
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/WiredValidationErrorMessageComposer.java
     symbol: WiredValidationErrorMessageComposer
     line: 15

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f61c6aac2cd519d2de5a7c8b4cc7ceeab35f667a3dbce433fdec9ba42c5bbf75"
+generated_digest: "sha256:b84621361c8d748e1875e99d91a5a820594e123680c74bde355931bfc5c1256a"
 generated:
   name: GetGameList
   direction: incoming
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e66e4f1acc99
+    evidence: ev_877660b0a378
   evidence:
-  - id: ev_e66e4f1acc99
+  - id: ev_877660b0a378
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GetGameListMessageEvent.java
     symbol: GetGameListMessageEvent
     line: 8

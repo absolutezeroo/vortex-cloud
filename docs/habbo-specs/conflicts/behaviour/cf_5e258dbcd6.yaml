@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fb54ece2f0df84bc00ab11c8379802273555feeaa4d922b70f8ea42526f710f2"
+generated_digest: "sha256:19717010a17af9d95367790f044e250d515b8c0d8f7b286a4ecaee9ab91aacbe"
 generated:
   id: cf_5e258dbcd6
   kind: behaviour
   subject: "GetGuideReportingStatus: packets emitted in response"
   packet: GetGuideReportingStatus
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuideReportingStatus then GuideReportingStatus then GuideReportingStatus
-    evidence: ev_68f9a7c26702
+    evidence: ev_2bd4d6d60836
   - origin: vortex
     authority: vortex_emulator
     claim: GuideReportingStatus
     evidence: ev_e24732cec86e
   evidence:
-  - id: ev_68f9a7c26702
+  - id: ev_2bd4d6d60836
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetGuideReportingStatusMessageEvent.java
     symbol: GetGuideReportingStatusMessageEvent
     line: 12

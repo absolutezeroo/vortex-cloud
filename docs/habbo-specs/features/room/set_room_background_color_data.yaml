@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0181eb63f81f402e09914bfc1a1f5319793367153f8ec0868021e35e4c79d2db"
+generated_digest: "sha256:dcbcac734db613a27928fac63685a651b163bee2f5effc57d4db5fa86c4516af"
 generated:
   id: room.set_room_background_color_data
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

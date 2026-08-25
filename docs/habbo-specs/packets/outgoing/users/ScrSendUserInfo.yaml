@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:57200ac6dc05274ad884d403a85147deeac366c55a475ac713ab824ddf8b0b1e"
+generated_digest: "sha256:30b9b51dc0ef1d9016a6edb03f82c60b74e20a57c9272fc2c538f059d54ccd80"
 generated:
   name: ScrSendUserInfo
   direction: outgoing
@@ -131,7 +131,7 @@ generated:
     - int32
     - int32
     evidence: ev_fdfd63013daa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 21
     partial: false
@@ -157,7 +157,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_df2a4b6acb26
+    evidence: ev_2c11fb994c47
   - origin: vortex
     authority: vortex_emulator
     field_count: 11
@@ -192,10 +192,10 @@ generated:
     symbol: ScrSendUserInfoMessage
     line: 19
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_df2a4b6acb26
+  - id: ev_2c11fb994c47
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/ScrSendUserInfoMessageComposer.java
     symbol: ScrSendUserInfoMessageComposer
     line: 41

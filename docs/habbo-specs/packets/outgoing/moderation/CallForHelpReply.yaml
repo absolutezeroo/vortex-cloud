@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:598ac0c16d950ca3e93d1f69639e3a006e934159c46a90946d41a1043a5156b9"
+generated_digest: "sha256:60f6d2e575909dfa8db6741fd294b9ccd57f980224bb11d31f392fb41a121537"
 generated:
   name: CallForHelpReply
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_61621cec42ba
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_43ce942f8e77
+    evidence: ev_eb83baf91d6f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: CallForHelpReplyMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_43ce942f8e77
+  - id: ev_eb83baf91d6f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/CallForHelpReplyMessageComposer.java
     symbol: CallForHelpReplyMessageComposer
     line: 15

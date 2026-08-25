@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:07afaf1fc7e5e075e5ab0dc63598555bf7b0634b0c649af843c477ce77ba9370"
+generated_digest: "sha256:e6e31fed69e8fa32c21436e715efb92059064ebfcf4b579ea03b7e901e439e60"
 generated:
   name: LoadGameUrl
   direction: outgoing
@@ -52,7 +52,7 @@ generated:
     - string
     - string
     evidence: ev_09f77c1644e3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -60,7 +60,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_5b862f27df2c
+    evidence: ev_c01a99eadd8d
   evidence:
   - id: ev_09f77c1644e3
     kind: client_parser
@@ -70,10 +70,10 @@ generated:
     symbol: LoadGameUrlMessageParser
     line: 33
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_5b862f27df2c
+  - id: ev_c01a99eadd8d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LoadGameUrlMessageComposer.java
     symbol: LoadGameUrlMessageComposer
     line: 9

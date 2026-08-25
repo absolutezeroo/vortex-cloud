@@ -49,11 +49,12 @@ prose, when something moves.
 | The family fallback is counted | `Vortex.furniture.logic.fallback{logic_name,family}` | ✅ |
 | Both definition indexes published as one version | `FurnitureDefinitionSetTests` — one `Volatile.Write` over `{ById, ByName, Version}` | ✅ |
 | A reader sees version N or N+1, never a mix | same test | ✅ |
-| StuffData round-trip, per type | — | ❌ |
+| StuffData round-trip, per type | `StuffDataRoundTripTests` — 22 cases over the eight encodings | ✅ |
 
-> `StuffDataType` has eight encodings and no test walks a value out and back through each. That is the
-> gap most likely to be a live bug: an encoding that does not round-trip shows
-> up as a dialog that opens blank, which reads as an unimplemented furni.
+> It found two. `extra_data` is a free string column — imports, admin edits and one-off SQL write it
+> too — and both a malformed value and `{"stuff":null}` threw, inside a room's activation. One bad row
+> stopped a whole room from opening. Both are guarded now: an item with no readable state is a
+> defaulted item, and a room nobody can enter is worse.
 
 ## Architecture (§12.3, §10)
 
@@ -64,14 +65,15 @@ prose, when something moves.
 | `RoomGrain` is not `[Reentrant]` | `RoomGrainConcurrencyTests` | ✅ |
 | No manual locks, no `Task.Run` inside Rooms | same test | ✅ |
 | Every tuning knob is wired to configuration | `ConfiguredBudgetTests` | ✅ |
-| Partials carry no concrete logics | — | ❌ |
+| Partials carry no concrete logics | `check-architecture-walls.mjs` wall 6 — no `[RoomObjectLogic]` in the grain, and a 900-line façade ceiling | ✅ |
 | Single-silo singletons are registered as such | `SingleSiloInventoryTests` — 14 providers, 2 aggregators | ✅ |
 | `STATE.yaml` keeps its schema | `WorkflowStateTests`, inside `VortexCloudFastCheck` | ✅ |
 
-> `check-architecture-walls.mjs` holds five other boundaries CONTEXT.md states in prose — handlers
-> stay orchestration-only, the admin surface writes through grains, protocol does not leak into
-> contracts, a password is verified in one place — but none of them is the partials rule. That one is
-> still prose, and prose erodes; it is small enough to encode the same way when somebody wants it.
+> Two halves, because one of them cannot be read from code. The exact half is that no concrete
+> furniture behaviour is declared inside the grain. The proxy half is size: a façade that reaches nine
+> hundred lines has stopped being one whatever it contains. `RoomGrain.Settings.cs` is at 847 and is
+> the file to watch — crossing the ceiling means a System is waiting to be lifted out of it, not that
+> the number needs raising.
 
 ## Protocol and specs (§6.10, §6.11)
 
@@ -82,13 +84,17 @@ prose, when something moves.
 | Outgoing layouts compared against the build we target | `As3ClientAnalyzer` binds the parser behind each `MessageEvent`; 514 of 842 outgoing specs carry WIN63 evidence, was 17 | ✅ |
 | `bootstrap` is reproducible — unchanged checkout, identical tree | `habbo-spec validate` in `VortexCloudFastCheck`; 3668 spec files | ✅ |
 | Hand-written `verified:` / `manual:` survive regeneration | digest check; an edit inside `generated:` blocks rather than reverts | ✅ |
-| Daybreak and Arcturus are distinct origins, each with a SHA | — | ❌ |
+| Daybreak and Arcturus are distinct origins, each with a SHA | reference trees are named after their directory (`habbo-arcturus-daybreak`); the SHA is read from `.git/HEAD` when there is one | ⚠️ |
 
-> Today every tree with the Arcturus java layout is labelled `arcturus`, so
-> `HABBO-ARCTURUS-DAYBREAK` reports as Arcturus. With one reference tree present that is a mislabel
-> rather than a merge; it becomes a real problem the moment a second one lands, because two derived
-> emulators agreeing would read as corroboration instead of as one lineage repeating itself. The tree
-> here is not a git checkout, so the SHA half needs a source that has one.
+> The origin half is done: two derived emulators can no longer be merged into one authority, so
+> agreement between them will read as two sources rather than as one lineage repeating itself. The
+> SHA half is implemented and inert — the tree present was copied rather than cloned and has no
+> `.git`, so nothing is recorded. ⚠️ rather than ✅ because the code is there and untested against a
+> real checkout.
+>
+> Fixing this also caught a test that had stopped testing: `ExternalTreeAnalyzerTests` selected the
+> tree by the literal id `"arcturus"` and returned early when it did not match, so eight assertions
+> quietly became no-ops. It selects by kind now.
 
 ## Persistence (§6.12)
 
@@ -125,15 +131,11 @@ prose, when something moves.
 
 ## What is not met
 
-Five, and none of them blocks anything shipped:
+Two, plus one implemented-but-unproven:
 
-1. **StuffData round-trip per type** — the one worth doing next. Eight encodings, no test.
-2. **Daybreak / Arcturus provenance** — a mislabel today, a merged authority the day a second
-   reference tree appears.
-3. **Partials carry no concrete logics** — the one architecture rule of §12.3 still living only in
-   prose. The other seven are tests.
-4. **Wired `ExecutionId` / room-scoped trace** — the in-room log already answers this inside one room.
-5. **Hydration benchmark** — waiting on OQ-7 rather than on effort.
+1. **Wired `ExecutionId` / room-scoped trace** — the in-room log already answers this inside one room.
+2. **Hydration benchmark** — waiting on OQ-7 rather than on effort.
+3. ⚠️ **Provenance SHA** — written, and inert until a reference tree arrives as a git checkout.
 
 And one that is not a test at all: refusing a benchmark regression is a person reading the baseline in
 review. Writing that down is the honest version; pretending a script does it would be worse than the

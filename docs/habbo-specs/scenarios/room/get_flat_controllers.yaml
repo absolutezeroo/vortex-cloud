@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9a5cbfa0b9c4065f723da848fc97a0b3a964b7526d6f04afd671d6b5184f296d"
+generated_digest: "sha256:4780ca18008524cc498c578fe4f63608d97ce0551591447eb0a0320aec231591"
 generated:
   feature: room.get_flat_controllers
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_392abf549ae0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FlatControllers
-      evidence: ev_c4c38d9116d6
+      evidence: ev_45d7f642be3c
   - scenario: room.get_flat_controllers.success
     title: "get flat controllers: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - FlatControllersEvent
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FlatControllers
-      evidence: ev_c4c38d9116d6
+      evidence: ev_45d7f642be3c
   evidence:
-  - id: ev_c4c38d9116d6
+  - id: ev_45d7f642be3c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetFlatControllersMessageEvent.java
     symbol: GetFlatControllersMessageEvent
     line: 10

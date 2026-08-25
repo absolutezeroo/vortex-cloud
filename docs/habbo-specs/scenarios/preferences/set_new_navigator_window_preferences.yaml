@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a0ff5d8c291585ef6e90838ae0001f39cf28294c732ce6505ceee69ebc79e6b7"
+generated_digest: "sha256:c020f1a3454405788514cff117eeb2f4fc59a0f505798d1af84ad89a22f3dfe9"
 generated:
   feature: preferences.set_new_navigator_window_preferences
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_24a9acc32789
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_095c7ff1abc2
+      evidence: ev_78fb1d07af8a
   evidence:
-  - id: ev_095c7ff1abc2
+  - id: ev_78fb1d07af8a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/SetNewNavigatorWindowPreferencesMessageEvent.java
     symbol: SetNewNavigatorWindowPreferencesMessageEvent
     line: 8

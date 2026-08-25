@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:714b9c0c59e0de32c42168e113d34e79109114298ac9b63770da075390606e42"
+generated_digest: "sha256:8e0618db4f3f081fc8b5715364b67be4b00295bfce995c100ce3ffd27c571039"
 generated:
   feature: sound.get_now_playing
   scenarios:
@@ -31,18 +31,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c65d069ade81
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - JukeboxSongDisks
       - UserSongDisksInventory
-      evidence: ev_844d920cc624
+      evidence: ev_0c29e0399130
   evidence:
-  - id: ev_844d920cc624
+  - id: ev_0c29e0399130
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetNowPlayingMessageEvent.java
     symbol: GetNowPlayingMessageEvent
     line: 10

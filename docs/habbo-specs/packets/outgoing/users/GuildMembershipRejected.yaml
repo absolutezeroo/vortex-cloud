@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b7ed17d4a51db4ce442da0d0dae1a6f33bfc810f5ac18fa053b10d92d34a3451"
+generated_digest: "sha256:426e2c507f41c865eed4ede9ead4afa3fa36fabb659ae3fa42a76dc8d4662391"
 generated:
   name: GuildMembershipRejected
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_63605472b1c3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_dbdfa2cca9ca
+    evidence: ev_9529aeea1bd3
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GuildMembershipRejectedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dbdfa2cca9ca
+  - id: ev_9529aeea1bd3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildMembershipRejectedMessageComposer.java
     symbol: GuildMembershipRejectedMessageComposer
     line: 16

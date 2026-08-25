@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c9582744c863482d0175b7b94ab6626e8eb275c313597006de2da334ccaa5441"
+generated_digest: "sha256:c03ba0e1e157d7bf926c4c627716d332b6649d489737d2b57cf07c3c20206846"
 generated:
   id: campaign.open_campaign_calendar_door_as_staff
   domain: campaign
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

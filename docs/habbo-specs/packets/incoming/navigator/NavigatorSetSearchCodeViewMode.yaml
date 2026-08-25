@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:07ff588a93c443f694f74602daac3815a5664446c1ae9294e8a8ae4566331e21"
+generated_digest: "sha256:be6d07ccb70479ac1280b687f2934e043fe6cd6088b0e505fb0db1e0e795dd4e"
 generated:
   name: NavigatorSetSearchCodeViewMode
   direction: incoming
@@ -34,7 +34,7 @@ generated:
     semantic_type: NavigatorViewModeType
     evidence:
     - ev_8f48dcf930e0
-    - ev_6a29f427856c
+    - ev_a73336ef98c7
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -50,14 +50,14 @@ generated:
     - string
     - unknown
     evidence: ev_8f48dcf930e0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_6a29f427856c
+    evidence: ev_a73336ef98c7
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: NavigatorSetSearchCodeViewModeComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6a29f427856c
+  - id: ev_a73336ef98c7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorSetSearchCodeViewModeMessageEvent.java
     symbol: NavigatorSetSearchCodeViewModeMessageEvent
     line: 10

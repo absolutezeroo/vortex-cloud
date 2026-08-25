@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:56c3c1ad4f251b0e88030ff9cfceaeb56f820b74dcc704ed3ddb36fc15c155ef"
+generated_digest: "sha256:d26647b23f51390fd3a34f2fd8acf07713c9c5255630898945d3b5d8cd2b68b3"
 generated:
   id: uk_ee51d51e03
   subject: "outgoing/PopularRoomTagsResult: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: PopularRoomTagsResultMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd990557914f
+  - id: ev_386560798047
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/PopularRoomTagsResultMessageComposer.java
     symbol: PopularRoomTagsResultMessageComposer
     line: 17

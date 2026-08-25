@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cb068035434fd1f39d19328ff437842921d3c3ae5f85560a0de1df6c74f80f7f"
+generated_digest: "sha256:1bfdc94d700aabee5b44c8814e3b4ca268799f06e907db621c8c7bc925832126"
 generated:
   id: avatar.save_wardrobe_outfit
   domain: avatar
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

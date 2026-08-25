@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8ed75375da75061988f0ca1bb73df0fc314b1ff4c0103fe2eb129d8494682ee9"
+generated_digest: "sha256:54ecf1f8c01d466f2a80942d7d58c0b5d44798537643796cfd6285e362bae511"
 generated:
   name: Wardrobe
   direction: outgoing
@@ -78,7 +78,7 @@ generated:
     partial: true
     types: []
     evidence: ev_624ef66c7629
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -88,7 +88,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_d3bbcf4d1f9c
+    evidence: ev_578be0d82cab
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -115,10 +115,10 @@ generated:
     symbol: WardrobeMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d3bbcf4d1f9c
+  - id: ev_578be0d82cab
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/WardrobeMessageComposer.java
     symbol: WardrobeMessageComposer
     line: 16

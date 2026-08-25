@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:39b67db57438219d47523ad2d5441d63508cc1eef5580e5dea0914c417c8b6a1"
+generated_digest: "sha256:2cad311cb585e5c8f86c7d7b752d8f5a107b4c5d725ba0c85d52c02fd74af50c"
 generated:
   name: NavigatorRemoveCollapsedCategory
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_b518f984711c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_719c69ee65d4
+    evidence: ev_e55ed25ac34b
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: NavigatorRemoveCollapsedCategoryComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_719c69ee65d4
+  - id: ev_e55ed25ac34b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorRemoveCollapsedCategoryMessageEvent.java
     symbol: NavigatorRemoveCollapsedCategoryMessageEvent
     line: 13

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3b9cfcde1b5889915c29ac77fde2f88a94013d7b82bed2a04ee83732924294b3"
+generated_digest: "sha256:648f172a1c6a290bdbc41a06bb15f375c4e95407420e6d6c1408b730a6dc849d"
 generated:
   name: AvatarEffects
   direction: outgoing
@@ -100,7 +100,7 @@ generated:
     partial: true
     types: []
     evidence: ev_bdc991dfe607
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 9
     partial: false
@@ -114,7 +114,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_03745a072899
+    evidence: ev_2a1c64fe99d8
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -140,10 +140,10 @@ generated:
     symbol: AvatarEffectsMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_03745a072899
+  - id: ev_2a1c64fe99d8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/AvatarEffectsMessageComposer.java
     symbol: AvatarEffectsMessageComposer
     line: 23

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d19378aa488ffe48c16ad05546eabd1f2638af17a1c4ea1c768e0224aa03754f"
+generated_digest: "sha256:063c60dafee93289812cfaa79fb32905f3665dd05aa9f11ea14513c7fe6e2b98"
 generated:
   name: ProductOffer
   direction: outgoing
@@ -155,12 +155,12 @@ generated:
     - boolean
     - string
     evidence: ev_4bf467f6effb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_bfa94738b33a
+    evidence: ev_6d793891a155
   evidence:
   - id: ev_4bf467f6effb
     kind: client_parser
@@ -170,10 +170,10 @@ generated:
     symbol: _SafeCls_2250
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_bfa94738b33a
+  - id: ev_6d793891a155
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/ProductOfferMessageComposer.java
     symbol: ProductOfferMessageComposer
     line: 16

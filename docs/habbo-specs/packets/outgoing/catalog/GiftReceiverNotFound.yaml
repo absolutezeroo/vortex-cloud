@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:18a89765fb0e1fc8ba395b931837c5be75b7425627d233cc0e4e9518bc72d25b"
+generated_digest: "sha256:27b7ef3ca46b3ae256ac14a0da271292fe13ff4eae52d394ac5859e9fd5784f5"
 generated:
   name: GiftReceiverNotFound
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_cb66dba54004
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e89376a6bdc6
+    evidence: ev_e1e2abf24a56
   evidence:
   - id: ev_cb66dba54004
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: _SafeCls_2879
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e89376a6bdc6
+  - id: ev_e1e2abf24a56
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/GiftReceiverNotFoundMessageComposer.java
     symbol: GiftReceiverNotFoundMessageComposer
     line: 9

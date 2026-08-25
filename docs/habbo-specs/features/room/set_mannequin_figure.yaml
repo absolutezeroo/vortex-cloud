@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:da1d14dadcc4694b74ae9c039c4f1d1be2f767a538fc08725aaa35745fcde507"
+generated_digest: "sha256:588c38a58f60b243fc79d451e734b170998b9cf0499bbf278b77134be44eb11d"
 generated:
   id: room.set_mannequin_figure
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

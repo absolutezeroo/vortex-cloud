@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e1711be7a2588ce8b743ec80f373993e13c7e10ea328efea6836a30bfa41c7ac"
+generated_digest: "sha256:beb8877157aa51bd6c00554c590cf436e292d4a90b439c819129de51978f6e7b"
 generated:
   id: uk_11e651067b
   subject: "outgoing/SnowWarsLevelData: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsLevelData
   known_evidence:
-  - id: ev_33125f808ccb
+  - id: ev_bf0988e8bc26
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsLevelDataComposer.java
     symbol: SnowWarsLevelDataComposer
     line: 8

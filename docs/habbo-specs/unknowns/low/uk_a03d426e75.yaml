@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ddd5ffd3e24f6e805ee39278d99ab94420d5b46261c97add913d1f4ad5c5b65a"
+generated_digest: "sha256:dac01d152ebfc46147b4ec43d0f12256c96f7f002c2ddba739058ffe9c74a976"
 generated:
   id: uk_a03d426e75
   subject: "outgoing/SnowWarsResetTimer: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsResetTimer
   known_evidence:
-  - id: ev_77e69f3a1b63
+  - id: ev_3b06f044c472
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsResetTimerComposer.java
     symbol: SnowWarsResetTimerComposer
     line: 9

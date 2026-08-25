@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0de4f5f81ccdc6bb0a1600392ede275f738ec289ccf8e325f3861082e471e96c"
+generated_digest: "sha256:beb468c09a0f8b5c6b06dbe084f756a67e18cf24e4fc1e7afac7783942dffc1d"
 generated:
   name: PopularRoomsSearch
   direction: incoming
@@ -48,14 +48,14 @@ generated:
     - string
     - int32
     evidence: ev_09086796dd57
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_9c4f861f2bff
+    evidence: ev_7d1f9954102b
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -81,10 +81,10 @@ generated:
     symbol: PopularRoomsSearchComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9c4f861f2bff
+  - id: ev_7d1f9954102b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/PopularRoomsSearchMessageEvent.java
     symbol: PopularRoomsSearchMessageEvent
     line: 11

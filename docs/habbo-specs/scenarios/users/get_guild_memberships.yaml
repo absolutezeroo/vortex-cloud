@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2abf6ae95f6fad14a7eb80a6aedb48f21dc6560876b9386a0efbd475c9abfbc6"
+generated_digest: "sha256:11d070c045e431f79357ceee5e691143cbd6e44391478c001fa53a27e4446da8"
 generated:
   feature: users.get_guild_memberships
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b88de3409bfe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberships
-      evidence: ev_f2e7e0ad42ee
+      evidence: ev_d1de42857d3a
   - scenario: users.get_guild_memberships.guard_1
     title: "get guild memberships: the guard 'groupIds.Count == 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberships
-      evidence: ev_f2e7e0ad42ee
+      evidence: ev_d1de42857d3a
   - scenario: users.get_guild_memberships.guard_2
     title: "get guild memberships: the guard 'match is not null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_35934eb1b8df
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberships
-      evidence: ev_f2e7e0ad42ee
+      evidence: ev_d1de42857d3a
   - scenario: users.get_guild_memberships.success
     title: "get guild memberships: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - GuildMemberships
       evidence: ev_35934eb1b8df
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberships
-      evidence: ev_f2e7e0ad42ee
+      evidence: ev_d1de42857d3a
   evidence:
-  - id: ev_f2e7e0ad42ee
+  - id: ev_d1de42857d3a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildMembershipsMessageEvent.java
     symbol: GetGuildMembershipsMessageEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e320ee38916d0ebf0ec4a5c2ef9a3c36190fdfe72bdef4071d48c0d3a2af1277"
+generated_digest: "sha256:88e3244c946da549fa418811f82728f60c8def1af576ab7a059a48d5410c5618"
 generated:
   id: cf_5baffed48d
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "5 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string"
     evidence: ev_f94842b82dc8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "10 fields: int32, int32, int32, int32, int32, int32, int32, int32, string, string"
-    evidence: ev_8843b698e5a9
+    evidence: ev_0718ce23804f
   - origin: vortex
     authority: vortex_emulator
     claim: "13 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string"
@@ -50,10 +50,10 @@ generated:
     symbol: SlideObjectBundleMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8843b698e5a9
+  - id: ev_0718ce23804f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/SlideObjectBundleMessageComposer.java
     symbol: SlideObjectBundleMessageComposer
     line: 56

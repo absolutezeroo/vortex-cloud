@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a3e354c99a7d5014bad31faac542d185b4e85aeb16f72309fe665741c866e0d6"
+generated_digest: "sha256:378041fc0583b1aee431a0933ae1710112e89be1a9cbd4a0d5207a2f07fbe027"
 generated:
   name: InfoFeedEnable
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - boolean
     evidence: ev_976b0c61a0c0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_5dc3fb64177a
+    evidence: ev_293563b63a3e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: InfoFeedEnableMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5dc3fb64177a
+  - id: ev_293563b63a3e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/InfoFeedEnableMessageComposer.java
     symbol: InfoFeedEnableMessageComposer
     line: 15

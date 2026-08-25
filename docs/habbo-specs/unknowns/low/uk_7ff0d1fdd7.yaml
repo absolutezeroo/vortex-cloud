@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7a7c57aad879556a4483cebc35738aa1fc8400a51c38ea88e65ce8a40c12fd31"
+generated_digest: "sha256:5339bb89918c6b2bd79f1ad963cc5698e08f04aa3390e5498d1e36428f8be1f1"
 generated:
   id: uk_7ff0d1fdd7
   subject: "outgoing/GenericErrorMessages: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GenericErrorMessages
   known_evidence:
-  - id: ev_3bf6ec1e4010
+  - id: ev_4b4239153b7d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/GenericErrorMessagesComposer.java
     symbol: GenericErrorMessagesComposer
     line: 23

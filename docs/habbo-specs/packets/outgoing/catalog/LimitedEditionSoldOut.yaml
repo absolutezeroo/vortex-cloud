@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6d1690af8dfa2d814215ec90d9a7e7cfa9c9d2ded0b8ab55d15d5134a6e38192"
+generated_digest: "sha256:ee4774c68e8e93490d066fd02e69c5f7ba82bb750720add8830bf80a0234e954"
 generated:
   name: LimitedEditionSoldOut
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6657b3553d42
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_9089b321f53e
+    evidence: ev_77e4a5233bcb
   evidence:
   - id: ev_6657b3553d42
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: _SafeCls_3332
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_9089b321f53e
+  - id: ev_77e4a5233bcb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/LimitedEditionSoldOutMessageComposer.java
     symbol: LimitedEditionSoldOutMessageComposer
     line: 9

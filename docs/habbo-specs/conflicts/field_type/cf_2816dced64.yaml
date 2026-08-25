@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:43d01f62d724d253f3e59fd41804c36842ef757e5213644fdf2db3799326d516"
+generated_digest: "sha256:b1c50795fc6913eb5aecca9ef248e3a43540642a60e7c6b77939728db7b7d5b5"
 generated:
   id: cf_2816dced64
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "localization_id: int32"
     evidence: ev_506c5c024bb6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "pet_name: string"
-    evidence: ev_2d77f3b37bc3
+    evidence: ev_1e71d2e544b5
   - origin: vortex
     authority: vortex_emulator
     claim: "localization_id: string"
@@ -38,10 +38,10 @@ generated:
     symbol: GetSellablePetPalettesComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2d77f3b37bc3
+  - id: ev_1e71d2e544b5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetSellablePetPalettesEvent.java
     symbol: GetSellablePetPalettesEvent
     line: 14

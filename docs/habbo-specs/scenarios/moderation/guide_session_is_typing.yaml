@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ff77368da085d6b827cbf1f7c8e9a05039b87da31e45b1c31b2c6035e8f71d41"
+generated_digest: "sha256:50052bae8cfe355139546e6bd337a47c97a981eafb99157eae95b494383180d0"
 generated:
   feature: moderation.guide_session_is_typing
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f7060238b52c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6a3b968af9b8
+      evidence: ev_85109204b6fc
   - scenario: moderation.guide_session_is_typing.guard_1
     title: "guide session is typing: the guard 'partnerId <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f7060238b52c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6a3b968af9b8
+      evidence: ev_85109204b6fc
   - scenario: moderation.guide_session_is_typing.success
     title: "guide session is typing: the request is accepted"
     given:
@@ -78,16 +78,16 @@ generated:
       emits:
       - GuideSessionPartnerIsTyping
       evidence: ev_5771ef6178a9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6a3b968af9b8
+      evidence: ev_85109204b6fc
   evidence:
-  - id: ev_6a3b968af9b8
+  - id: ev_85109204b6fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionIsTypingMessageEvent.java
     symbol: GuideSessionIsTypingMessageEvent
     line: 10

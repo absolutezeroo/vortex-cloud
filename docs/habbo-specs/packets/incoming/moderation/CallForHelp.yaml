@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:be690ad0fb021b2dc24eb593a8e83f54374a69be70e0e904026e2e6a9a5acf2b"
+generated_digest: "sha256:e538f4d704892365f318613b19d0c12f1675a85e426e702c6ab48a063b5c4332"
 generated:
   name: CallForHelp
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_960812c49958
+    - ev_46b03744cd97
   - index: 1
     name: topic
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_960812c49958
+    - ev_46b03744cd97
   - index: 2
     name: user_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_960812c49958
+    - ev_46b03744cd97
   - index: 3
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_960812c49958
+    - ev_46b03744cd97
   - index: 4
     name: unknown_4
     type: int32
@@ -54,7 +54,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_960812c49958
+    - ev_46b03744cd97
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_104a452a07f1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -78,7 +78,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_960812c49958
+    evidence: ev_46b03744cd97
   - origin: vortex
     authority: vortex_emulator
     field_count: 8
@@ -110,10 +110,10 @@ generated:
     symbol: CallForHelpComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_960812c49958
+  - id: ev_46b03744cd97
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpMessageEvent.java
     symbol: CallForHelpMessageEvent
     line: 18

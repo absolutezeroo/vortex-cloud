@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2180a7cca96c7d12e26a20f0e7c25b9c5b26e73f97f8b91c49cda21cc04eb13d"
+generated_digest: "sha256:7223eb314447ca5a79a911bb575e26f68b55f709eb6cc3016ec6117408397a19"
 generated:
   feature: game.get_resolution_achievements
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3f015a72be01
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - AchievementResolutions
-      evidence: ev_b35255e6bbbd
+      evidence: ev_7b3a819bcebb
   - scenario: game.get_resolution_achievements.guard_1
     title: "get resolution achievements: the guard 'statue is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_08de7d6ac017
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - AchievementResolutions
-      evidence: ev_b35255e6bbbd
+      evidence: ev_7b3a819bcebb
   - scenario: game.get_resolution_achievements.success
     title: "get resolution achievements: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_08de7d6ac017
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - AchievementResolutions
-      evidence: ev_b35255e6bbbd
+      evidence: ev_7b3a819bcebb
   evidence:
-  - id: ev_b35255e6bbbd
+  - id: ev_7b3a819bcebb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/unknown/GetResolutionAchievementsMessageEvent.java
     symbol: GetResolutionAchievementsMessageEvent
     line: 8

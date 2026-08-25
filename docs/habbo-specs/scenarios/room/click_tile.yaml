@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a495da741d84791760ef14f2c57ed0aa03a879388160b3fa28364294868851df"
+generated_digest: "sha256:1ca1c5875840f32d402d47d219654b8493af8fdfcbf549ea36bba72cbd2bc8f6"
 generated:
   feature: room.click_tile
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8e5182848732
+      evidence: ev_f034e257c0f5
   - scenario: room.click_tile.guard_1
     title: "click tile: the guard '!tile.Has(RoomTileFlags.TileClickListener)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c26714967e6b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8e5182848732
+      evidence: ev_f034e257c0f5
   - scenario: room.click_tile.guard_2
     title: "click tile: the guard 'ctx.PlayerId <= 0 || !_roomGrain._state.AvatarsByPlayerId...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8e5182848732
+      evidence: ev_f034e257c0f5
   - scenario: room.click_tile.success
     title: "click tile: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3dfe9ba800df
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8e5182848732
+      evidence: ev_f034e257c0f5
   evidence:
-  - id: ev_8e5182848732
+  - id: ev_f034e257c0f5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/MoveAvatarMessageEvent.java
     symbol: MoveAvatarMessageEvent
     line: 30

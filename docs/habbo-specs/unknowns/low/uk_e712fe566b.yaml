@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7ccdb8d47fb7b9da4d65622958d9f381c8d7fbd8a8a386add6e6e83620f444ed"
+generated_digest: "sha256:674b9c06fd61c534ae0078e65514529c42f1cc245f34416cabb2bbbfc3182170"
 generated:
   id: uk_e712fe566b
   subject: "outgoing/PlayListSongAdded: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: PlayListSongAddedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bbc1c5293ef0
+  - id: ev_24641564a6eb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/PlayListSongAddedMessageComposer.java
     symbol: PlayListSongAddedMessageComposer
     line: 16

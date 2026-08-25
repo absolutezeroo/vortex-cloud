@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3d7f4ddbeae9f04badbd7b580d157942bb05d3fe03d81d209111ef081415722b"
+generated_digest: "sha256:780616acb3c01788f56225ce195c8d54c0b86ff9ad46f0987d67b2ac5cf81afb"
 generated:
   feature: moderation.call_for_help
   scenarios:
@@ -31,7 +31,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b0e68097239e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -46,12 +46,12 @@ generated:
       - CallForHelpResult
       - IgnoreResult
       - IssueCloseNotification
-      evidence: ev_960812c49958
+      evidence: ev_46b03744cd97
   evidence:
-  - id: ev_960812c49958
+  - id: ev_46b03744cd97
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpMessageEvent.java
     symbol: CallForHelpMessageEvent
     line: 18

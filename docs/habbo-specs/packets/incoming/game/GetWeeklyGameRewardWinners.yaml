@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:77f5d123110c76034fb662c378dc24630dba0611de800accf2ce8309abf9650d"
+generated_digest: "sha256:4c82483d284688a77aea1c5dceedc81b96876771c8fe346574a3c2f7b429ab43"
 generated:
   name: GetWeeklyGameRewardWinners
   direction: incoming
@@ -24,7 +24,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_be5c9d28a6d1
+    - ev_ca81527c6a2d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -38,13 +38,13 @@ generated:
     partial: true
     types: []
     evidence: ev_cc8ec60c125c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_be5c9d28a6d1
+    evidence: ev_ca81527c6a2d
   evidence:
   - id: ev_9857763e2ba4
     kind: client_composer
@@ -62,10 +62,10 @@ generated:
     symbol: GetWeeklyGameRewardWinnersComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_be5c9d28a6d1
+  - id: ev_ca81527c6a2d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GetWeeklyGameRewardWinnersEvent.java
     symbol: GetWeeklyGameRewardWinnersEvent
     line: 7

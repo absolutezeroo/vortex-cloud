@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2ec1459af6953db5ac752aac46f191414b1057d46e00279748d70bade742c959"
+generated_digest: "sha256:ddee51f2df5eb878eaf66a633174d0d186249866e50005b46f90b8a4d8fbf297"
 generated:
   feature: moderation.get_guide_reporting_status
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cd5f03a6d068
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideReportingStatus
       - GuideReportingStatus
       - GuideReportingStatus
-      evidence: ev_68f9a7c26702
+      evidence: ev_2bd4d6d60836
   - scenario: moderation.get_guide_reporting_status.guard_1
     title: "get guide reporting status: the guard 'session is null' holds"
     given:
@@ -59,14 +59,14 @@ generated:
       emits:
       - GuideReportingStatus
       evidence: ev_cd5f03a6d068
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideReportingStatus
       - GuideReportingStatus
       - GuideReportingStatus
-      evidence: ev_68f9a7c26702
+      evidence: ev_2bd4d6d60836
   - scenario: moderation.get_guide_reporting_status.success
     title: "get guide reporting status: the request is accepted"
     given:
@@ -85,19 +85,19 @@ generated:
       emits:
       - GuideReportingStatus
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideReportingStatus
       - GuideReportingStatus
       - GuideReportingStatus
-      evidence: ev_68f9a7c26702
+      evidence: ev_2bd4d6d60836
   evidence:
-  - id: ev_68f9a7c26702
+  - id: ev_2bd4d6d60836
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetGuideReportingStatusMessageEvent.java
     symbol: GetGuideReportingStatusMessageEvent
     line: 12

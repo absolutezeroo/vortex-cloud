@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dac430b7a15e78d4a129a609d38845f70afa1b148a5cab4e27eba215e2feb1b8"
+generated_digest: "sha256:7a0c554b1e238020019971d80a85be92533f16b1064c5a5012cecbd4bc5c59f5"
 generated:
   id: cf_a01d40cc48
   kind: field_count
   subject: "incoming/ModKick: field count"
   packet: ModKick
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_29132b00b365
+    evidence: ev_907a939ef104
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: int32, string, int32, int32"
     evidence: ev_ffcb4df078eb
   evidence:
-  - id: ev_29132b00b365
+  - id: ev_907a939ef104
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModKickMessageEvent.java
     symbol: ModKickMessageEvent
     line: 8

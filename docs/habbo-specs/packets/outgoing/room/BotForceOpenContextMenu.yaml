@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7ecb7e2b16021e069411b0436ded64c96c3ef9375f9ad31d4939d4bb2378866e"
+generated_digest: "sha256:ed95f14c421648956c06a04496ea523ea809ce72608e0b6707aa249963e145da"
 generated:
   name: BotForceOpenContextMenu
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_fbce3ac0f737
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8f2f198a59c5
+    evidence: ev_bed293853c04
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -86,10 +86,10 @@ generated:
     symbol: BotForceOpenContextMenuMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8f2f198a59c5
+  - id: ev_bed293853c04
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/BotForceOpenContextMenuMessageComposer.java
     symbol: BotForceOpenContextMenuMessageComposer
     line: 15

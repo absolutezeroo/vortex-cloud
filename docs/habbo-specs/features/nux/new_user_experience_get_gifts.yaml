@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ff742431ebdc0bb079da2cd4a4f7af2bb55d1820d41394bcae69110160e5b91e"
+generated_digest: "sha256:df8d990ad42210145c67ed99de7e004859c06e0d5f0a791c35036310cdfff6b5"
 generated:
   id: nux.new_user_experience_get_gifts
   domain: nux
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

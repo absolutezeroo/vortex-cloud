@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a2661fcbba3524bd75da8441e13d762fbbf8c378e715ecbc95076d050bb07532"
+generated_digest: "sha256:260593264cf6a97e57e1ce9d5e502f30ab4f072ca9de3d15fc6c16fb11a1110f"
 generated:
   id: cf_e94f6cd6d6
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32"
     evidence: ev_596234f6f9b9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_0ae73659da00
+    evidence: ev_89840ec2648e
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_4415
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_0ae73659da00
+  - id: ev_89840ec2648e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/floorplaneditor/RoomOccupiedTilesMessageComposer.java
     symbol: RoomOccupiedTilesMessageComposer
     line: 18

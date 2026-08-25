@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6844914e29e0b9f110c920ca2f3ca708bd35481c4c6e54da578a5dea8af2fb8e"
+generated_digest: "sha256:c8606dd1991cf31c536223faff2c75e9172dc6bd63c261a8a4695bb4f948d111"
 generated:
   name: HabboBroadcast
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_68749fe91f02
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_22a282da1698
+    evidence: ev_f10039509e42
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: HabboBroadcastMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_22a282da1698
+  - id: ev_f10039509e42
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/HabboBroadcastMessageComposer.java
     symbol: HabboBroadcastMessageComposer
     line: 20

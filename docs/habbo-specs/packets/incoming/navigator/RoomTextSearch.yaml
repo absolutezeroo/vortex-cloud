@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:107ebd2126c5388fda91408238f0ac0d1904f390bd00d65c225d89bd9dcac6d1"
+generated_digest: "sha256:00012ae64ed005228d81ffad9a4a995b739fbdb59981b438bfd2791ce5cf4c18"
 generated:
   name: RoomTextSearch
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_8713db8b88e3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_eb310346e111
+    evidence: ev_503f60dfcd7f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RoomTextSearchComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eb310346e111
+  - id: ev_503f60dfcd7f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/RoomTextSearchMessageEvent.java
     symbol: RoomTextSearchMessageEvent
     line: 17

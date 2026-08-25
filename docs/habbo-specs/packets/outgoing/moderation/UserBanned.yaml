@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f469a1c817f7aaa2ef35032f6dda39d51080c75d287b1156d7443e8b87b3231e"
+generated_digest: "sha256:454b2620c9c0bfe0c7465c923974c8a7bc73191cf7d0f300cb891303d707936d"
 generated:
   name: UserBanned
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_7424864c3415
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_9e32a56e47c6
+    evidence: ev_49a006c7240c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: UserBannedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9e32a56e47c6
+  - id: ev_49a006c7240c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/UserBannedMessageComposer.java
     symbol: UserBannedMessageComposer
     line: 15

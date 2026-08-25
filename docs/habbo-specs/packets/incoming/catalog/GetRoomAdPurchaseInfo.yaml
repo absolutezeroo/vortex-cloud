@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e41945f280b70b3dd7fe9064c18b81094b15543ff1e79a158e759bf41cc9ee1"
+generated_digest: "sha256:13c1426f7f50f261048f0748ccf6f473b68a70388fc1323baa11d42953e6a81f"
 generated:
   name: GetRoomAdPurchaseInfo
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_1bcc935f15c9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_1d87a1044b66
+    evidence: ev_9d0184fc3bfa
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetRoomAdPurchaseInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1d87a1044b66
+  - id: ev_9d0184fc3bfa
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/promotions/GetRoomAdPurchaseInfoEvent.java
     symbol: GetRoomAdPurchaseInfoEvent
     line: 12

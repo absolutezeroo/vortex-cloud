@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8abeb0092f57f18378d34804e5749777e4d8e4a13d656d3551aa2385c4d19664"
+generated_digest: "sha256:e653e0735f4b6571d2f0a0acf06c4d1bb626f352ab50ada8c3d76745e9f5b1e5"
 generated:
   feature: room.rentable_space_rent
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1dd7e39f6eb4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_1
     title: "rentable space rent: the guard 'failureCode is not null' holds"
     given:
@@ -57,11 +57,11 @@ generated:
       - RentableSpaceRentFailed
       - RentableSpaceStatus
       evidence: ev_1dd7e39f6eb4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_2
     title: "rentable space rent: the guard '_terms is null' holds"
     given:
@@ -80,11 +80,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_3
     title: "rentable space rent: the guard '_space?.RenterPlayerEntityId is not null && _space.Rented...' holds"
     given:
@@ -103,11 +103,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_4
     title: "rentable space rent: the guard '!hasHc' holds"
     given:
@@ -126,11 +126,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_5
     title: "rentable space rent: the guard 'alreadyRenting' holds"
     given:
@@ -149,11 +149,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_6
     title: "rentable space rent: the guard 'furniEntity is null' holds"
     given:
@@ -172,11 +172,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_7
     title: "rentable space rent: the guard '!result.Succeeded' holds"
     given:
@@ -195,11 +195,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.guard_8
     title: "rentable space rent: the guard '_registry is null' holds"
     given:
@@ -218,11 +218,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   - scenario: room.rentable_space_rent.success
     title: "rentable space rent: the request is accepted"
     given:
@@ -242,16 +242,16 @@ generated:
       - RentableSpaceRentFailed
       - RentableSpaceStatus
       evidence: ev_1dd7e39f6eb4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4416956a41fc
+      evidence: ev_cc88415ff021
   evidence:
-  - id: ev_4416956a41fc
+  - id: ev_cc88415ff021
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/rentablespace/RentableSpaceRentMessageEvent.java
     symbol: RentableSpaceRentMessageEvent
     line: 10

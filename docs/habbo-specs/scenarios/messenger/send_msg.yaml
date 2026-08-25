@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7d659e8b83d24fd60b9d2d00203826d592c94ec650e9b993e5b9f78a1b35021a"
+generated_digest: "sha256:c34b3c02da2d66f450ded8cdfce0f4fba4cf3d6353f5c4ea84921ebc9c0cf7fe"
 generated:
   feature: messenger.send_msg
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bfa8681ffc27
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.guard_1
     title: "send msg: the guard '!_friends.ContainsKey(receiverId)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_564bd0580d41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.guard_2
     title: "send msg: the guard '_blockedIds.Contains(receiverId.Value)' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_564bd0580d41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.guard_3
     title: "send msg: the guard 'selfEntity is null || receiverEntity is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_564bd0580d41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.guard_4
     title: "send msg: the guard '_ignoredIds.Contains(senderId.Value)' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_564bd0580d41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.success
     title: "send msg: the request is accepted"
     given:
@@ -148,16 +148,16 @@ generated:
       - InstantMessageError
       - NewConsoleMessage
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b8d56000158f
+      evidence: ev_17b79ddcc56e
   evidence:
-  - id: ev_b8d56000158f
+  - id: ev_17b79ddcc56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SendMsgMessageEvent.java
     symbol: SendMsgMessageEvent
     line: 10

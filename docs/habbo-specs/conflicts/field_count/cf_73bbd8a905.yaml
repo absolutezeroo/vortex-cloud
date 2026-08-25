@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:610c751b051d4010d78352c0cff401919588c7f80a2cd47d49e6314cf84b2c9a"
+generated_digest: "sha256:dcb4edb008d16de502a56fd86c524404a9b68f0c74774f309b7028737ac37b97"
 generated:
   id: cf_73bbd8a905
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, string, string, string"
     evidence: ev_617316e0ec41
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, int32, string, string, string"
-    evidence: ev_3898a5d19b5d
+    evidence: ev_04fd6fabb05e
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_2204
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_3898a5d19b5d
+  - id: ev_04fd6fabb05e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorSavedSearchesMessageComposer.java
     symbol: NavigatorSavedSearchesMessageComposer
     line: 18

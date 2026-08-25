@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:abb89f5165357e5a4d7710e6ef6205174dce7151578d4895a417aa1f62168802"
+generated_digest: "sha256:73fb221ff3caf8cc41d4deb2b0612388422b5e24ec6b2dec433f81be3e8c1aef"
 generated:
   name: PurchaseVipMembershipExtension
   direction: incoming
@@ -40,12 +40,12 @@ generated:
     types:
     - int32
     evidence: ev_de48c6422925
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_60507bc9ce44
+    evidence: ev_b7b37eb21cd8
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: PurchaseVipMembershipExtensionComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_60507bc9ce44
+  - id: ev_b7b37eb21cd8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseVipMembershipExtensionEvent.java
     symbol: PurchaseVipMembershipExtensionEvent
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ec2bed0e015dedfff7e10a2dcd78a8cdb573901911b12ea4bdec7307946229ce"
+generated_digest: "sha256:461ce738b40b28f1215a6c06e30617138758ee869e364c9e1ea85ce619d27b37"
 generated:
   name: SnowWarsRemoveUser
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_439e02bb257b
+    - ev_2d4eb2c5ac68
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_439e02bb257b
+    evidence: ev_2d4eb2c5ac68
   evidence:
-  - id: ev_439e02bb257b
+  - id: ev_2d4eb2c5ac68
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsRemoveUserComposer.java
     symbol: SnowWarsRemoveUserComposer
     line: 9

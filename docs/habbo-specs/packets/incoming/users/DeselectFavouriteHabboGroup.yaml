@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5a77f91ebb8e90ec01273a710ae803fb26ce82280776bd22df8e8a35aa8aa79"
+generated_digest: "sha256:b32a71f7652649683f69b733ab478e1d09e076e692994d558f26c63475ab90c3"
 generated:
   name: DeselectFavouriteHabboGroup
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_15c51b12a874
+    - ev_473263751f14
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b3e0c2f2f171
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_15c51b12a874
+    evidence: ev_473263751f14
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: DeselectFavouriteHabboGroupComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_15c51b12a874
+  - id: ev_473263751f14
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/DeselectFavouriteHabboGroupMessageEvent.java
     symbol: DeselectFavouriteHabboGroupMessageEvent
     line: 12

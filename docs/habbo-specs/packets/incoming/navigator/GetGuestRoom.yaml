@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:88fc1df0fdd6c3929235c16284ecff1a78bca90c316e83d7056e0f14be597be0"
+generated_digest: "sha256:004e428662642fb4632cd30b76cfd7cf8bc341b8be9e6b47fb822a05896a06b8"
 generated:
   name: GetGuestRoom
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_11f9bd3e71e5
-    - ev_229493220f24
+    - ev_3c5f7d7443f6
   - index: 1
     name: enter_room
     type: boolean
@@ -58,7 +58,7 @@ generated:
     - boolean
     - boolean
     evidence: ev_11f9bd3e71e5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_229493220f24
+    evidence: ev_3c5f7d7443f6
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -93,10 +93,10 @@ generated:
     symbol: GetGuestRoomComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_229493220f24
+  - id: ev_3c5f7d7443f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetGuestRoomMessageEvent.java
     symbol: GetGuestRoomMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:46ac539c32420440e61a507909382603a19c818ca192654cd74217d214b084fe"
+generated_digest: "sha256:f0f238e37a3924b4e1b0bb798a73cfb01aba8dfdb2d90aaec6a6eeff1bd6da7e"
 generated:
   name: AddSpamWallPostIt
   direction: incoming
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_5d8684f868eb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -79,7 +79,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_641845222196
+    evidence: ev_20b368f50d54
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -107,10 +107,10 @@ generated:
     symbol: AddSpamWallPostItComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_641845222196
+  - id: ev_20b368f50d54
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/AddSpamWallPostItMessageEvent.java
     symbol: AddSpamWallPostItMessageEvent
     line: 19

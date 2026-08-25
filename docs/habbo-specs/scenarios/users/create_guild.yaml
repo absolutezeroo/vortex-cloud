@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c3ed95f1f5e8232e4dd515115ef1bc1be6e4da21953dd865ecde42ed019037a"
+generated_digest: "sha256:caf54f57a4bd35f1cba3cb93241755aedb14bbd5bb7e0cd09e1a08b697910c72"
 generated:
   feature: users.create_guild
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_abaf62c0326b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_1
     title: "create guild: the guard 'groupId is null' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_abaf62c0326b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_2
     title: "create guild: the guard 'preflightRoom is null || preflightRoom.PlayerEntityId != ...' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_3
     title: "create guild: the guard '!ownerExists' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_4
     title: "create guild: the guard 'creatingContext.Cancel' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_5
     title: "create guild: the guard 'room is null || room.PlayerEntityId != ownerId || room.Gr...' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_6
     title: "create guild: the guard 'ownerEntity is null' holds"
     given:
@@ -206,7 +206,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,7 +216,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_7
     title: "create guild: the guard '!purchase.Succeeded' holds"
     given:
@@ -235,7 +235,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -245,7 +245,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_8
     title: "create guild: the guard 'credits <= 0 || _state.ClubLevel == 0' holds"
     given:
@@ -264,7 +264,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -274,7 +274,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.guard_9
     title: "create guild: the guard '_registry is null' holds"
     given:
@@ -293,7 +293,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -303,7 +303,7 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   - scenario: users.create_guild.success
     title: "create guild: the request is accepted"
     given:
@@ -322,7 +322,7 @@ generated:
       emits:
       - GuildCreated
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -332,12 +332,12 @@ generated:
       - GuildEditFailed
       - PurchaseOK
       - GuildCreated
-      evidence: ev_2b31ac43a317
+      evidence: ev_13f312c48deb
   evidence:
-  - id: ev_2b31ac43a317
+  - id: ev_13f312c48deb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/CreateGuildMessageEvent.java
     symbol: CreateGuildMessageEvent
     line: 23

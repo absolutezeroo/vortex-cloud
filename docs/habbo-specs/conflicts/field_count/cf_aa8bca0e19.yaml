@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:df60ab20038bd60124a4058dc41cc757ae362c13ae00f782d50e33c7aa1765a0"
+generated_digest: "sha256:6790c14bd61213c099fb781187f5bf16488743fbc7c24474538b74b577a8d9d9"
 generated:
   id: cf_aa8bca0e19
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: string, int32, string, string"
     evidence: ev_031395435afe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: string"
-    evidence: ev_fce989b22df1
+    evidence: ev_ff1fdec9acae
   evidence:
   - id: ev_031395435afe
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3324
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_fce989b22df1
+  - id: ev_ff1fdec9acae
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/WiredValidationErrorMessageComposer.java
     symbol: WiredValidationErrorMessageComposer
     line: 15

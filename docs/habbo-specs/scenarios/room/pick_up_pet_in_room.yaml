@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4d268eae9acf28c06feb6a50a5cbbef428dc96dad224bce8a058aca49dfa1f61"
+generated_digest: "sha256:83c76e4c0ec558839b59e01a8cc2532c2f1145d9f124d15cb6bab2c5c9d73963"
 generated:
   feature: room.pick_up_pet_in_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d4c75baab22
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetAddedToInventory
-      evidence: ev_f78f1b432d0d
+      evidence: ev_2d4dbcb0c12b
   - scenario: room.pick_up_pet_in_room.guard_1
     title: "pick up pet in room: the guard 'pet is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetAddedToInventory
-      evidence: ev_f78f1b432d0d
+      evidence: ev_2d4dbcb0c12b
   - scenario: room.pick_up_pet_in_room.guard_2
     title: "pick up pet in room: the guard '_registry is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetAddedToInventory
-      evidence: ev_f78f1b432d0d
+      evidence: ev_2d4dbcb0c12b
   - scenario: room.pick_up_pet_in_room.success
     title: "pick up pet in room: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - UserRemove
       evidence: ev_2332e0618219
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetAddedToInventory
-      evidence: ev_f78f1b432d0d
+      evidence: ev_2d4dbcb0c12b
   evidence:
-  - id: ev_f78f1b432d0d
+  - id: ev_2d4dbcb0c12b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/RemovePetFromFlatMessageEvent.java
     symbol: RemovePetFromFlatMessageEvent
     line: 15

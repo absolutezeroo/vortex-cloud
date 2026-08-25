@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cb6a9f9938e71c567d31ee2bfa635ebcafa5312f3cd52bbc0f807437897aa020"
+generated_digest: "sha256:17e94a55fd9a067ceff435751519c01ab7236bae1fe48108164d24fec89714b0"
 generated:
   name: PetSupplementedNotification
   direction: outgoing
@@ -49,7 +49,7 @@ generated:
     - int32
     - int32
     evidence: ev_66fc5708fd69
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_169a13b36b02
+    evidence: ev_6b45ba012c63
   evidence:
   - id: ev_66fc5708fd69
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: _SafeCls_3613
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_169a13b36b02
+  - id: ev_6b45ba012c63
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/PetSupplementedNotificationMessageComposer.java
     symbol: PetSupplementedNotificationMessageComposer
     line: 19

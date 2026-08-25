@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e9aef63121cfeac13f2f92b8226d9af6b10923211cbb2820cee8e042b3095656"
+generated_digest: "sha256:765d5beba8081eccad1f5331b67f5a1867635ac549c85c276851e4dc997c7047"
 generated:
   name: SpinWheelOfFortune
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_dffd03d7990d
-    - ev_2d62cc7c2c26
+    - ev_684ba718e481
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b376d0bf634e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_2d62cc7c2c26
+    evidence: ev_684ba718e481
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: SpinWheelOfFortuneComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2d62cc7c2c26
+  - id: ev_684ba718e481
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SpinWheelOfFortuneMessageEvent.java
     symbol: SpinWheelOfFortuneMessageEvent
     line: 10

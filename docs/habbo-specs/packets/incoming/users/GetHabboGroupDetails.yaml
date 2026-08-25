@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fbae957ced74afdbb8739b08980c7def1790729c61ddeaf1f42b2e9857c9f45a"
+generated_digest: "sha256:35c4eaae2dd4eb0582f7635d3b69e2d2c6b60877e462f653bc2d668a2dbde258"
 generated:
   name: GetHabboGroupDetails
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1851fd4b283c
+    - ev_1ff9859a49ee
   - index: 1
     name: new_window
     type: boolean
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1851fd4b283c
+    - ev_1ff9859a49ee
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_91b220ba91bc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - boolean
-    evidence: ev_1851fd4b283c
+    evidence: ev_1ff9859a49ee
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -79,10 +79,10 @@ generated:
     symbol: GetHabboGroupDetailsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1851fd4b283c
+  - id: ev_1ff9859a49ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetHabboGroupDetailsMessageEvent.java
     symbol: GetHabboGroupDetailsMessageEvent
     line: 15

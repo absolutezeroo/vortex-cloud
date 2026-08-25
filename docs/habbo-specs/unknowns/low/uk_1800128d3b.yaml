@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:eb4b4aa875de2f6938daefe35e3a36e91268f600f313f6b33c9af57135ac79ee"
+generated_digest: "sha256:bc9d530341849e64bff06d8c19aa36680f1b0ae6ae141aeaf41657612e56dca8"
 generated:
   id: uk_1800128d3b
   subject: "outgoing/HeightMapUpdate: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: HeightMapUpdateMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5eb2eb68a319
+  - id: ev_bdf6d4808635
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/HeightMapUpdateMessageComposer.java
     symbol: HeightMapUpdateMessageComposer
     line: 37

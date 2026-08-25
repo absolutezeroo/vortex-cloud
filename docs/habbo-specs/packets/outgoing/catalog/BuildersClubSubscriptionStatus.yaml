@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:345ed6c0a3dab45fa58769feac20600430bf09d0804b101af0d9b070d1af9971"
+generated_digest: "sha256:d1ff3ba93d0c8b8f8cca8db8087c297eb7fdbb6976cd6c777ba438af28c81b58"
 generated:
   name: BuildersClubSubscriptionStatus
   direction: outgoing
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     evidence: ev_1c9386bf2920
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 8
     partial: false
@@ -81,7 +81,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_58e6731a917a
+    evidence: ev_dd8536987835
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -109,10 +109,10 @@ generated:
     symbol: BuildersClubSubscriptionStatusMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_58e6731a917a
+  - id: ev_dd8536987835
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/BuildersClubSubscriptionStatusMessageComposer.java
     symbol: BuildersClubSubscriptionStatusMessageComposer
     line: 17

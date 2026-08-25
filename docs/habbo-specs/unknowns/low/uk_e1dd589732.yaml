@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9dc4e45089e085be443a0a60f383bc48fb9c1fbda72afdb18aece94cb206fb0c"
+generated_digest: "sha256:25809f7d130b63412b32592aef46daec2cde18565beeb836d480d6f0e8de9a56"
 generated:
   id: uk_e1dd589732
   subject: "outgoing/NewFriendRequest: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: NewFriendRequestMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3436122cfc80
+  - id: ev_c67426f4e109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/NewFriendRequestMessageComposer.java
     symbol: NewFriendRequestMessageComposer
     line: 16

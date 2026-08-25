@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a6fc37ea50c8342e1a56a6fc971b0629f7a534185322edc09e6f00bc58a11e81"
+generated_digest: "sha256:f313eca8ac79e06252ba50511790d2aca32ee37d0199423e7e93cce13ce2857a"
 generated:
   name: GetFlatControllers
   direction: incoming
@@ -42,12 +42,12 @@ generated:
     types:
     - unknown
     evidence: ev_b2f90fd91afa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_c4c38d9116d6
+    evidence: ev_45d7f642be3c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: GetFlatControllersComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c4c38d9116d6
+  - id: ev_45d7f642be3c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetFlatControllersMessageEvent.java
     symbol: GetFlatControllersMessageEvent
     line: 10

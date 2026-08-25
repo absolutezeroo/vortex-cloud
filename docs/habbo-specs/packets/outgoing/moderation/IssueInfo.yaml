@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d8d22a81cc8a7534f36b629103b674dd05a81de2a9e0a4309824eff145b5a039"
+generated_digest: "sha256:0d94fce6b6aa125e662de10fcaa12819d6c306e9202c5144f5fc1a4cd91a2c9c"
 generated:
   name: IssueInfo
   direction: outgoing
@@ -205,12 +205,12 @@ generated:
     partial: true
     types: []
     evidence: ev_7bb3e5c29ba5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_3dcfc33f48ef
+    evidence: ev_b323ea68725e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -235,10 +235,10 @@ generated:
     symbol: IssueInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3dcfc33f48ef
+  - id: ev_b323ea68725e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/IssueInfoMessageComposer.java
     symbol: IssueInfoMessageComposer
     line: 16

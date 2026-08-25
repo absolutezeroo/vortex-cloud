@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ed2bd1ddd94fc624635b9a81b3ee96d6b0f02c2848a78c19c409be40f7baf890"
+generated_digest: "sha256:92ad5e9cb576bca2f49be85e8b937cbc812ecbaf181f3318931f0cd1eaade340"
 generated:
   name: OfficialSongId
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_37ce2df6ff71
+    - ev_1a01dbdfeabf
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_37ce2df6ff71
+    - ev_1a01dbdfeabf
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -41,14 +41,14 @@ generated:
     partial: true
     types: []
     evidence: ev_26b33c218a90
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_37ce2df6ff71
+    evidence: ev_1a01dbdfeabf
   evidence:
   - id: ev_26b33c218a90
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: OfficialSongIdMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_37ce2df6ff71
+  - id: ev_1a01dbdfeabf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/OfficialSongIdMessageComposer.java
     symbol: OfficialSongIdMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ee17fac05519d73bf497f7577d269c74633fa89ed557b145bfd200542c3120cb"
+generated_digest: "sha256:6ed761d38f9ca4db71fae9a1d4351dbcd2d71a7501ab006a6beecc76580216dc"
 generated:
   id: cf_99facea3aa
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, boolean"
     evidence: ev_0c745e8e6f1d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: string, boolean"
-    evidence: ev_02d6d67f71b6
+    evidence: ev_0d2cad1426c9
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: string, boolean"
@@ -50,10 +50,10 @@ generated:
     symbol: CompleteDiffieHandshakeMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_02d6d67f71b6
+  - id: ev_0d2cad1426c9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/CompleteDiffieHandshakeMessageComposer.java
     symbol: CompleteDiffieHandshakeMessageComposer
     line: 22

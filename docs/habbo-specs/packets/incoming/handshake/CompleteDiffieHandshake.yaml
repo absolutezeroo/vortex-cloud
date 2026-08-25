@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fd0b1c3d3e0c80cd61c1ca8212ba1e6bd0c5e5876f04196f00dd675b6414e283"
+generated_digest: "sha256:84158425918415e9559e878a18aacab0ab79e884ef36987c21f575c29202a983"
 generated:
   name: CompleteDiffieHandshake
   direction: incoming
@@ -41,13 +41,13 @@ generated:
     types:
     - string
     evidence: ev_ad129fe464f4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_b65f089b022b
+    evidence: ev_e887cfd51cb0
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: CompleteDiffieHandshakeComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b65f089b022b
+  - id: ev_e887cfd51cb0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/CompleteDiffieHandshakeEvent.java
     symbol: CompleteDiffieHandshakeEvent
     line: 16

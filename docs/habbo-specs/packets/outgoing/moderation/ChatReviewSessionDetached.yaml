@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5c46a18cf4bb4d0a0ac2a7dd4f73a8cf042469ee07c2aa4a00c7ea9e0241a1ff"
+generated_digest: "sha256:43c43c37462472f7a7d6a17cb94d45892c63a3b6cc106f807f813a6b8b398fc1"
 generated:
   name: ChatReviewSessionDetached
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_cafdd2b92dca
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_a752efc3a6ce
+    evidence: ev_c1ef93dc9d68
   evidence:
   - id: ev_a16d0ae68112
     kind: client_parser
@@ -54,10 +54,10 @@ generated:
     symbol: ChatReviewSessionDetachedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a752efc3a6ce
+  - id: ev_c1ef93dc9d68
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guardians/ChatReviewSessionDetachedMessageComposer.java
     symbol: ChatReviewSessionDetachedMessageComposer
     line: 9

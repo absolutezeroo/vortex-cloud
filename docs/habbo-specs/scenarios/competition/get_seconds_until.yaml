@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ff6fbd9c6f9e3cbbc48637e8fc53db2b9d639cf053291d4d6b6d5e0fef3b3dcc"
+generated_digest: "sha256:c3c6f90fbaa17dfe6bc9f001d7ca9fe7d7e1f86af5fc37e3d2e151bb31e62a2a"
 generated:
   feature: competition.get_seconds_until
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_26a46a9ca486
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SecondsUntil
-      evidence: ev_3021e64545d9
+      evidence: ev_19874b785d5f
   evidence:
-  - id: ev_3021e64545d9
+  - id: ev_19874b785d5f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetSecondsUntilMessageEvent.java
     symbol: GetSecondsUntilMessageEvent
     line: 14

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f05072dcc0f13e8bd14f2d83ee0110b407df7b7d678b2faf4e9fc7b02668c013"
+generated_digest: "sha256:6a4b251d52ab20dadcbb7ce220985873a945d2b3af57c1307fc2993651a34f56"
 generated:
   name: FigureUpdate
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - string
     - string
     evidence: ev_c922c4146816
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_ecd41425200b
+    evidence: ev_b00d2c5f7fe0
   evidence:
   - id: ev_c922c4146816
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_3038
     line: 36
     note: official client build WIN63-202607011411-782849652
-  - id: ev_ecd41425200b
+  - id: ev_b00d2c5f7fe0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/FigureUpdateMessageComposer.java
     symbol: FigureUpdateMessageComposer
     line: 16

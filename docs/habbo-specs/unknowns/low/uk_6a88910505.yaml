@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:493e0edeb6fb64e2488c3d62719203a098dfb23edbe176c6586b702bbd390f19"
+generated_digest: "sha256:21f7ce75fff69cfa28a2304a035f7e36b03509400b73c3c6134e8ec1c6bb0914"
 generated:
   id: uk_6a88910505
   subject: "outgoing/SanctionStatus: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2564
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_88f3293174c2
+  - id: ev_4d72f65a3e64
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/SanctionStatusMessageComposer.java
     symbol: SanctionStatusMessageComposer
     line: 26

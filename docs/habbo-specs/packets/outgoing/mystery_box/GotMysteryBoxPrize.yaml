@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c2a61f97086fe60ac873fce975379cb8577c37868ee917591a2083de88a7381a"
+generated_digest: "sha256:65e82e040a82ffa906253df3e419aa608fba9b6b012e72d52edd858f3b55ac93"
 generated:
   name: GotMysteryBoxPrize
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_f2449f569f63
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_457520ddb228
+    evidence: ev_919f8a5e06b5
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GotMysteryBoxPrizeMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_457520ddb228
+  - id: ev_919f8a5e06b5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/events/mysticbox/GotMysteryBoxPrizeMessageComposer.java
     symbol: GotMysteryBoxPrizeMessageComposer
     line: 17

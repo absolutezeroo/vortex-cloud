@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f676613167a89fb988d177fe89da6dbd77d59bc577649c7f3e7d1b25218dd25f"
+generated_digest: "sha256:9059c0b2e98e52b6b94de9a7baef289209585204e70193e6386257eff7f0608d"
 generated:
   name: QuestionInfo
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_6adcf2854cbe
+    evidence: ev_96dcde2fffb5
   evidence:
-  - id: ev_6adcf2854cbe
+  - id: ev_96dcde2fffb5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/quests/QuestionInfoComposer.java
     symbol: QuestionInfoComposer
     line: 9

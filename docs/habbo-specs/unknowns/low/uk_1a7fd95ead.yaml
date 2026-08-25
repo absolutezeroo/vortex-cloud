@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c3f246db92a63a8fb0aee73a1ed54fffc98e154b56875ee287df4605384883a4"
+generated_digest: "sha256:a5497f4f416dec6438056dbd55600ffeb045eef76655f7aea0dfd555ff63fe49"
 generated:
   id: uk_1a7fd95ead
   subject: "outgoing/UnkownPetPackage: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UnkownPetPackage
   known_evidence:
-  - id: ev_1ddea2b7c611
+  - id: ev_3a8ed0d1510a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/UnkownPetPackageComposer.java
     symbol: UnkownPetPackageComposer
     line: 17

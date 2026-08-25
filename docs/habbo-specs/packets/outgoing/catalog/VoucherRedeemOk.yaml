@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:57882b9794c00ca873044bc1b577c7adc962483bc8aedb40a2b7d74655011959"
+generated_digest: "sha256:92160669114c161ef34944aa42beff4f47f69aa0a886c67204f22f588cc73ba8"
 generated:
   name: VoucherRedeemOk
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_e3e1046cbd00
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_bdab8a6c455e
+    evidence: ev_9d4fddea2d4e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: VoucherRedeemOkMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bdab8a6c455e
+  - id: ev_9d4fddea2d4e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/VoucherRedeemOkMessageComposer.java
     symbol: VoucherRedeemOkMessageComposer
     line: 9

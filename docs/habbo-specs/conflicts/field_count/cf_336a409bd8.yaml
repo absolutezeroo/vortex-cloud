@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ffc9a2746069db0aa8a38efe39fceeaa0a4c9e9c52c5ecfc11c78f79e163ba0a"
+generated_digest: "sha256:77ba76df58d9bfeaf16409e264b864270b0bec2bdc38359f1b928d13fe68a71c"
 generated:
   id: cf_336a409bd8
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32, boolean, string, string, string, string, string, string, string, string"
     evidence: ev_fbfff98925ec
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "8 fields: int32, int32, int32, boolean, string, string, string, string"
-    evidence: ev_00ae510d4cfd
+    evidence: ev_da67be2d5491
   - origin: vortex
     authority: vortex_emulator
     claim: "12 fields: int32, int32, int32, boolean, string, string, string, string, string, string, string, string"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2138
     line: 34
     note: official client build WIN63-202607011411-782849652
-  - id: ev_00ae510d4cfd
+  - id: ev_da67be2d5491
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/GuideReportingStatusMessageComposer.java
     symbol: GuideReportingStatusMessageComposer
     line: 22

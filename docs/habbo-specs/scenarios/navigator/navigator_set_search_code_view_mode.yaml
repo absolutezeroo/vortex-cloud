@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:35d64c9bc159049770e45009bc6689f79be2117312b00880c92e59c2fb3e21ab"
+generated_digest: "sha256:86e7df5a6e709803a305c32715153113ee4162022d06e746fdfb3ec20511baba"
 generated:
   feature: navigator.navigator_set_search_code_view_mode
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_35857a488036
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6a29f427856c
+      evidence: ev_a73336ef98c7
   - scenario: navigator.navigator_set_search_code_view_mode.success
     title: "navigator set search code view mode: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1267b6ab719b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6a29f427856c
+      evidence: ev_a73336ef98c7
   evidence:
-  - id: ev_6a29f427856c
+  - id: ev_a73336ef98c7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorSetSearchCodeViewModeMessageEvent.java
     symbol: NavigatorSetSearchCodeViewModeMessageEvent
     line: 10

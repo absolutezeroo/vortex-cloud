@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fa3d7453dc356eaa9151ee1a5c8834207ce3c2e2bb89ecff69c4c21c43c1ec6d"
+generated_digest: "sha256:2d831bf9ceca558295be55efed6f8f6e91639bddd4af98e57a2f212d92c12d77"
 generated:
   id: cf_c936069c0e
   kind: field_count
   subject: "incoming/ConfirmPetBreeding: field count"
   packet: ConfirmPetBreeding
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, string, int32, int32"
-    evidence: ev_c647ade53c05
+    evidence: ev_834a5a718393
   - origin: vortex
     authority: vortex_emulator
     claim: "1 fields: int32"
     evidence: ev_20c5d0b4786f
   evidence:
-  - id: ev_c647ade53c05
+  - id: ev_834a5a718393
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/ConfirmPetBreedingEvent.java
     symbol: ConfirmPetBreedingEvent
     line: 10

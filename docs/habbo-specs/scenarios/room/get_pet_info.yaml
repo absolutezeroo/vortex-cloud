@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4f2abfd3a4a8fcc54da4c4047c21be38a620e6afa27ca6ebbeafaea87dc3457b"
+generated_digest: "sha256:4fbf80b68981616545a7d82f142f8cbf8da1e6e3b4bd8d78099e262dbb81273f"
 generated:
   feature: room.get_pet_info
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_08242e595499
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInfo
-      evidence: ev_d391ef4721de
+      evidence: ev_eff3eb411455
   - scenario: room.get_pet_info.guard_1
     title: "get pet info: the guard 'pet is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_08242e595499
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInfo
-      evidence: ev_d391ef4721de
+      evidence: ev_eff3eb411455
   - scenario: room.get_pet_info.guard_2
     title: "get pet info: the guard '_idToName.TryGetValue(playerId, out string? x)' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInfo
-      evidence: ev_d391ef4721de
+      evidence: ev_eff3eb411455
   - scenario: room.get_pet_info.guard_3
     title: "get pet info: the guard 'string.IsNullOrWhiteSpace(dbName)' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInfo
-      evidence: ev_d391ef4721de
+      evidence: ev_eff3eb411455
   - scenario: room.get_pet_info.success
     title: "get pet info: the request is accepted"
     given:
@@ -128,17 +128,17 @@ generated:
       emits:
       - PetInfo
       evidence: ev_08242e595499
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInfo
-      evidence: ev_d391ef4721de
+      evidence: ev_eff3eb411455
   evidence:
-  - id: ev_d391ef4721de
+  - id: ev_eff3eb411455
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/GetPetInfoMessageEvent.java
     symbol: GetPetInfoMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9362bcd2bc9f2390fad0b8af63b883ac482cdb9ddb6712400d79fcc92d6e2b73"
+generated_digest: "sha256:4b58a4d54ca3fd71ce94f0448c4b207f003e2a7f1a457f31e46847ef7c449861"
 generated:
   id: messenger.friend_furni_confirm_lock
   domain: messenger
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

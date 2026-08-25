@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:324968d66b8c99ba9417d7ef04295b13c991b615a69d5e34635fe64489f3844c"
+generated_digest: "sha256:2722eed443265fa0b8aae7b8e654ba77fac784e8c651aa5960363743844005d2"
 generated:
   name: GetRelationshipStatusInfo
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_ee8c80c7a5fa
+    - ev_463c147f250f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_973873c56be2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_ee8c80c7a5fa
+    evidence: ev_463c147f250f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetRelationshipStatusInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ee8c80c7a5fa
+  - id: ev_463c147f250f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetRelationshipStatusInfoMessageEvent.java
     symbol: GetRelationshipStatusInfoMessageEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2a6de816c5a0d75f1673eb88b852bf1b8294eb1f6fabc9c7df5e62edece44bd6"
+generated_digest: "sha256:b24ba16422e958701ce0c85d9063510ec34b74290f262836b999474c14e15dac"
 generated:
   feature: room.compost_plant
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3c8a5114b819
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectAdd
-      evidence: ev_09f560792d3a
+      evidence: ev_b716fdc95c4c
   - scenario: room.compost_plant.guard_1
     title: "compost plant: the guard '!_roomGrain._state.PetsById.TryGetValue(petId, out PetSna...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a24ca6ca32d9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectAdd
-      evidence: ev_09f560792d3a
+      evidence: ev_b716fdc95c4c
   - scenario: room.compost_plant.guard_2
     title: "compost plant: the guard 'plant.OwnerId != ctx.PlayerId && _roomGrain._state.RoomSn...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a24ca6ca32d9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectAdd
-      evidence: ev_09f560792d3a
+      evidence: ev_b716fdc95c4c
   - scenario: room.compost_plant.guard_3
     title: "compost plant: the guard 'entity is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a24ca6ca32d9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectAdd
-      evidence: ev_09f560792d3a
+      evidence: ev_b716fdc95c4c
   - scenario: room.compost_plant.success
     title: "compost plant: the request is accepted"
     given:
@@ -128,17 +128,17 @@ generated:
       emits:
       - UserRemove
       evidence: ev_3c8a5114b819
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectAdd
-      evidence: ev_09f560792d3a
+      evidence: ev_b716fdc95c4c
   evidence:
-  - id: ev_09f560792d3a
+  - id: ev_b716fdc95c4c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/CompostPlantMessageEvent.java
     symbol: CompostPlantMessageEvent
     line: 22

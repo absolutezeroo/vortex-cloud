@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0e2355f0ed39be0569ebd2731a4667df6636fe998010b1574c57051644a5680e"
+generated_digest: "sha256:d1b59a7c33ded11be8968616c8d8be35fb06c2a2828351e7e574c96f6873726c"
 generated:
   id: cf_0678b43ee5
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, int32, int32, int32, string, int32, int32, int32, boolean, boolean, boolean, boolean, int32, boolean, int32, string, int32"
     evidence: ev_5376a3252d4b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_b63cae8ea216
+    evidence: ev_306594cbd14c
   evidence:
   - id: ev_5376a3252d4b
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_2513
     line: 38
     note: official client build WIN63-202607011411-782849652
-  - id: ev_b63cae8ea216
+  - id: ev_306594cbd14c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/FurniListMessageComposer.java
     symbol: FurniListMessageComposer
     line: 31

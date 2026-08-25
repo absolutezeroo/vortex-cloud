@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:359b5bcd7669364b715538825c815b17d859262dca8c53be11ea0ae1dd7ba42b"
+generated_digest: "sha256:25fa14c5db513804daaf631436b5607d54890cc356c6271af800a0ed815a12f1"
 generated:
   id: uk_a0626dacc4
   subject: "incoming/DeclineFriendRequest: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: DeclineFriendRequest
   known_evidence:
-  - id: ev_20efbdc63bc4
+  - id: ev_16b1668ef2d0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/DeclineFriendRequestEvent.java
     symbol: DeclineFriendRequestEvent
     line: 7

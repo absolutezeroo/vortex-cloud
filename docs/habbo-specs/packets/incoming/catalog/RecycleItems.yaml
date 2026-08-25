@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7bdeb7b2f6282860428f2366fae88d150cdaa8858d778265cbc4db5400507769"
+generated_digest: "sha256:555f25714f7b6464f8611a518a5cabbb7a386cd6583ed21ff86076ba53bc080d"
 generated:
   name: RecycleItems
   direction: incoming
@@ -24,14 +24,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2348add7b8a7
+    - ev_7904330016a2
   - index: 1
     name: item
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2348add7b8a7
+    - ev_7904330016a2
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,14 +39,14 @@ generated:
     partial: true
     types: []
     evidence: ev_a7fbb6f146d7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_2348add7b8a7
+    evidence: ev_7904330016a2
   evidence:
   - id: ev_a7fbb6f146d7
     kind: client_call_site
@@ -56,10 +56,10 @@ generated:
     symbol: _SafeCls_2312
     line: 23
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/catalog/HabboCatalog.as:1088 with 1 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_2348add7b8a7
+  - id: ev_7904330016a2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/recycler/RecycleItemsMessageEvent.java
     symbol: RecycleItemsMessageEvent
     line: 20

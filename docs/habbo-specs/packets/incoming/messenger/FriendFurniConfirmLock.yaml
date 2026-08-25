@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:871f13de48328b12e8cfa357bcf6ea7f7a24e0b546135c3649af4e7ec14ce9cd"
+generated_digest: "sha256:dcaf9f8d3b45ec4dad603160197ff9c40b5ef6599a13f79136f2745b1316c5ee"
 generated:
   name: FriendFurniConfirmLock
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_94da840eaeae
+    - ev_56878dd8e0b4
   - index: 1
     name: unknown_1
     type: boolean
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_94da840eaeae
+    - ev_56878dd8e0b4
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_b2d71f2c17c9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - boolean
-    evidence: ev_94da840eaeae
+    evidence: ev_56878dd8e0b4
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -78,10 +78,10 @@ generated:
     symbol: FriendFurniConfirmLockComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_94da840eaeae
+  - id: ev_56878dd8e0b4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/lovelock/FriendFurniConfirmLockMessageEvent.java
     symbol: FriendFurniConfirmLockMessageEvent
     line: 14

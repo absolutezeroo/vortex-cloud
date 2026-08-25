@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e9ff9e780fd03bd4dc5d335a2e3a366de2f84eaa27e9eecb7961cabcf016b428"
+generated_digest: "sha256:03bcbb35b4a8958cc49f59ed9dc5b844e865bc39a7f71c14ea0541a6ffe3b404"
 generated:
   id: cf_3bf4329ae6
   kind: field_count
   subject: "outgoing/GuildEditorData: field count"
   packet: GuildEditorData
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "17 fields: int32, int32, string, string, int32, int32, string, string, int32, int32, string, int32, int32, string, int32, int32, string"
-    evidence: ev_26af6933dc50
+    evidence: ev_e890a2f89ae7
   - origin: vortex
     authority: vortex_emulator
     claim: "10 fields: int32, array, int32, array, int32, array, int32, array, int32, array"
     evidence: ev_5efc23c38f8b
   evidence:
-  - id: ev_26af6933dc50
+  - id: ev_e890a2f89ae7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildEditorDataMessageComposer.java
     symbol: GuildEditorDataMessageComposer
     line: 11

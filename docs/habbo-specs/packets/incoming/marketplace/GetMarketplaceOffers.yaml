@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e7ea989c6b56db130c9e3ec3bfd4a5ee94e7b906b34257becef74567407655a5"
+generated_digest: "sha256:405d86cd874a1a83ef9205474f0fece78d5bf8288a8d03ccb95aa9574a7fd8a2"
 generated:
   name: GetMarketplaceOffers
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d506d4e7d61d
+    - ev_55e71fae8afe
   - index: 1
     name: max
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d506d4e7d61d
+    - ev_55e71fae8afe
   - index: 2
     name: query
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d506d4e7d61d
+    - ev_55e71fae8afe
   - index: 3
     name: type
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_d506d4e7d61d
+    - ev_55e71fae8afe
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_8d1e60dcc58c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -69,7 +69,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_d506d4e7d61d
+    evidence: ev_55e71fae8afe
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -97,10 +97,10 @@ generated:
     symbol: GetMarketplaceOffersComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d506d4e7d61d
+  - id: ev_55e71fae8afe
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceOffersMessageEvent.java
     symbol: GetMarketplaceOffersMessageEvent
     line: 17

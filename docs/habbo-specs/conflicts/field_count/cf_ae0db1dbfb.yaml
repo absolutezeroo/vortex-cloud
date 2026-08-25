@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:394189db1ef058afcaf80655e84a772915c09f1b701c69516a39471ea66fe3ca"
+generated_digest: "sha256:e24736072a50c0ff4d558fc05f112508bbf27f0b1716e706f010975c7646191e"
 generated:
   id: cf_ae0db1dbfb
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_d7f8443a46e2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_49414bae9b19
+    evidence: ev_807ceb1d22c7
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: CanCreateRoomMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_49414bae9b19
+  - id: ev_807ceb1d22c7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CanCreateRoomMessageComposer.java
     symbol: CanCreateRoomMessageComposer
     line: 17

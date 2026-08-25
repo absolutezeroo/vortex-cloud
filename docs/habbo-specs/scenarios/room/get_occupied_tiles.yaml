@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f4f764f671db589b7457387b91d9600f4e15f293debdb26b814d5f080e44c25b"
+generated_digest: "sha256:ae133fa281abb23bbf6f4fad8a97a0f4e3fefe31ff943ea7f3a5776ddca080e6"
 generated:
   feature: room.get_occupied_tiles
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_778cebc775a9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomOccupiedTiles
-      evidence: ev_7041c0fa6997
+      evidence: ev_8ecc3475bd12
   - scenario: room.get_occupied_tiles.guard_1
     title: "get occupied tiles: the guard 'size <= 0 || Width <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c26714967e6b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomOccupiedTiles
-      evidence: ev_7041c0fa6997
+      evidence: ev_8ecc3475bd12
   - scenario: room.get_occupied_tiles.success
     title: "get occupied tiles: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - RoomOccupiedTiles
       evidence: ev_5eb94974f51d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomOccupiedTiles
-      evidence: ev_7041c0fa6997
+      evidence: ev_8ecc3475bd12
   evidence:
-  - id: ev_7041c0fa6997
+  - id: ev_8ecc3475bd12
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/floorplaneditor/GetOccupiedTilesMessageEvent.java
     symbol: GetOccupiedTilesMessageEvent
     line: 8

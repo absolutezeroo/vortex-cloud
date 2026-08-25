@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:61f7e9072ff458783cde197956555d87e49fca530631dd2232a9cea35190105c"
+generated_digest: "sha256:c043c35f1fb36dbe753e8aee45493ee304c19ece73f3ee838ec8a6ffefd4ced1"
 generated:
   id: room.rentable_space_rent
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

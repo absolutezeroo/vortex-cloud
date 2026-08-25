@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:bb2bf71f94761764dfc6b2c42f5f470742667636f4ffe30b7931b17f28d7dd24"
+generated_digest: "sha256:19c9242449986fa393cca14aef26e94f46b7f791319bf449a7e7b811daa8991b"
 generated:
   id: cf_24f0337a59
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: boolean, string"
     evidence: ev_8b99b9b4b2ba
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: boolean"
-    evidence: ev_04d08745fdfd
+    evidence: ev_f78189b59d27
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: boolean, string"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_3506
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_04d08745fdfd
+  - id: ev_f78189b59d27
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/CatalogPublishedMessageComposer.java
     symbol: CatalogPublishedMessageComposer
     line: 9

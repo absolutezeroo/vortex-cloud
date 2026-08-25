@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:badff4a5226cc7bc4af9e1f14355f95053482b41754a4e113fb98e01e946ecc8"
+generated_digest: "sha256:0e6d9d87fa4efa35f2504f4a67189fd45ed736ad1281c57ad304f221046568bd"
 generated:
   id: cf_786cce12f9
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "6 fields: int32, int32, int32, int32, int32, int32"
     evidence: ev_1115b6afdc6a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: int32, int32, int32, int32, int32, int32"
-    evidence: ev_0666b3ef6ae1
+    evidence: ev_7c86045f67b5
   - origin: vortex
     authority: vortex_emulator
     claim: "1 fields: block"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_1713
     line: 29
     note: official client build WIN63-202607011411-782849652
-  - id: ev_0666b3ef6ae1
+  - id: ev_7c86045f67b5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/BundleDiscountRulesetMessageComposer.java
     symbol: BundleDiscountRulesetMessageComposer
     line: 15

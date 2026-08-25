@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ecac55d0cd75089a3426b77d2287e2580c38617f977612e6d2cc4b034cb76e98"
+generated_digest: "sha256:76b2944f355c7fc92fd6f2a087a9b6111dd0a0f46fee83ffbccaf4a96f8b1b43"
 generated:
   feature: users.scr_get_kickback_info
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_af154073e0b4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_cc2d4fb370a1
+      evidence: ev_289e4efe63fb
   - scenario: users.scr_get_kickback_info.success
     title: "scr get kickback info: the request is accepted"
     given:
@@ -55,16 +55,16 @@ generated:
       emits:
       - ScrSendKickbackInfo
       evidence: ev_07e22300391f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_cc2d4fb370a1
+      evidence: ev_289e4efe63fb
   evidence:
-  - id: ev_cc2d4fb370a1
+  - id: ev_289e4efe63fb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ScrGetKickbackInfoMessageEvent.java
     symbol: ScrGetKickbackInfoMessageEvent
     line: 8

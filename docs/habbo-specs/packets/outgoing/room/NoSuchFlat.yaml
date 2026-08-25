@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2cc64d8b3a7a77fcd448e3bbbb9dc7757243a35cfc533fbc3e8835456cdc6802"
+generated_digest: "sha256:2e0907aff5329643e9301eff340db3823b195d9ee765a40d78fcd6ce6eb0f301"
 generated:
   name: NoSuchFlat
   direction: outgoing
@@ -33,14 +33,14 @@ generated:
     types:
     - int32
     evidence: ev_98c2e4af165e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_e2a8c5e3060f
+    evidence: ev_fd16a3d799a2
   evidence:
   - id: ev_98c2e4af165e
     kind: client_parser
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_4335
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e2a8c5e3060f
+  - id: ev_fd16a3d799a2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/NoSuchFlatMessageComposer.java
     symbol: NoSuchFlatMessageComposer
     line: 18

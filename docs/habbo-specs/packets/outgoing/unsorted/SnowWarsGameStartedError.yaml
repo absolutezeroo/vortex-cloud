@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fdf5886bce3bf3644b43f6931eb065804b4f50891e4eb9959803f001ed9177c6"
+generated_digest: "sha256:9c2cfa0d48193907bfcb592c08e75bd73603492e5f1a71cf543277fb3b9497c0"
 generated:
   name: SnowWarsGameStartedError
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_8c69c3fd6308
+    - ev_bac8715f8c90
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8c69c3fd6308
+    evidence: ev_bac8715f8c90
   evidence:
-  - id: ev_8c69c3fd6308
+  - id: ev_bac8715f8c90
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsGameStartedErrorComposer.java
     symbol: SnowWarsGameStartedErrorComposer
     line: 8

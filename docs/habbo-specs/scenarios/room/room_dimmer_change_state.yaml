@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:96324204541a201d3eab54cdb336b16cb0388d3b3e993535fd1287d1ba8e213b"
+generated_digest: "sha256:107877e81dcf1d342b2602c794c0a9d096f984d5457488574e27d2ed59d82e1c"
 generated:
   feature: room.room_dimmer_change_state
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2c05e620c9b7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f92446459088
+      evidence: ev_2f7c417ae82f
   - scenario: room.room_dimmer_change_state.guard_1
     title: "room dimmer change state: the guard 'state is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2c05e620c9b7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f92446459088
+      evidence: ev_2f7c417ae82f
   - scenario: room.room_dimmer_change_state.guard_2
     title: "room dimmer change state: the guard 'dimmer is null' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f92446459088
+      evidence: ev_2f7c417ae82f
   - scenario: room.room_dimmer_change_state.success
     title: "room dimmer change state: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - RoomDimmerPresets
       evidence: ev_1ec75b49676b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f92446459088
+      evidence: ev_2f7c417ae82f
   evidence:
-  - id: ev_f92446459088
+  - id: ev_2f7c417ae82f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RoomDimmerChangeStateMessageEvent.java
     symbol: RoomDimmerChangeStateMessageEvent
     line: 13

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0f537ee0ffdbb849c74ad58f0ef335f4fa1f06e4b7525431d681afb722cb7d5a"
+generated_digest: "sha256:b069acf21c89bcc3d54cf973391c19ee60c24e85e57024eb9d838ef928e35a6e"
 generated:
   name: GuideSessionFeedback
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2010a5138424
+    - ev_a7d41bc3f531
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_a1ebcea38c41
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_2010a5138424
+    evidence: ev_a7d41bc3f531
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GuideSessionFeedbackComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2010a5138424
+  - id: ev_a7d41bc3f531
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionFeedbackMessageEvent.java
     symbol: GuideSessionFeedbackMessageEvent
     line: 9

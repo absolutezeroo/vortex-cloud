@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c8ab34719cf8085333fd230feb7b938378794c8fcfadacf5e2b54c35b215bcc5"
+generated_digest: "sha256:91128809791f8e0917b4bf0cfeaa01128705c9bf5f156e4b9476a6c4ee486471"
 generated:
   id: uk_bd113d7d15
   subject: "outgoing/ModeratorInit: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: ModeratorInitMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2edbb8b37b90
+  - id: ev_16bd68de434f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/ModeratorInitMessageComposer.java
     symbol: ModeratorInitMessageComposer
     line: 26

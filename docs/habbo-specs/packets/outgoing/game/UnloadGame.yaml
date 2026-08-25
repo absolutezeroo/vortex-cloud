@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b2654c4d55fd60a872fedb3300abe27d4472f05dd13211938cf896c25fe78e81"
+generated_digest: "sha256:ede514cc535b0dd5f1ec937723480763eb684574007078241edacc8a710f4640"
 generated:
   name: UnloadGame
   direction: outgoing
@@ -43,14 +43,14 @@ generated:
     - int32
     - string
     evidence: ev_30384db1c586
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_20f40ca2d38e
+    evidence: ev_f799e7698de9
   evidence:
   - id: ev_30384db1c586
     kind: client_parser
@@ -60,10 +60,10 @@ generated:
     symbol: UnloadGameMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_20f40ca2d38e
+  - id: ev_f799e7698de9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/UnloadGameMessageComposer.java
     symbol: UnloadGameMessageComposer
     line: 9

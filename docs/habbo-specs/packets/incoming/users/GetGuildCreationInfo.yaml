@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b65a2eea1f76cbd91ab83c9543b49c7b17d8471613e72dd4aa28579fcac80e93"
+generated_digest: "sha256:a90da2a784ea19bc335bf3f4b049ec97c1bd354011ff8ba6fcb82c8ad12dafb7"
 generated:
   name: GetGuildCreationInfo
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_f4d0422be43c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_cfab50454704
+    evidence: ev_ef973742a4c1
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetGuildCreationInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cfab50454704
+  - id: ev_ef973742a4c1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildCreationInfoMessageEvent.java
     symbol: GetGuildCreationInfoMessageEvent
     line: 13

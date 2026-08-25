@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a652a53ead89693935c5c46410f94b089c77df29fad0dbe316c0a3a023e6f663"
+generated_digest: "sha256:ff62acca7cff91f01e06fbcb84fbb5f1c003c0c04455cded4f2e250b66a7d65e"
 generated:
   name: FriendListUpdate
   direction: outgoing
@@ -369,7 +369,7 @@ generated:
     partial: true
     types: []
     evidence: ev_d3ddccd34dec
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 20
     partial: false
@@ -394,7 +394,7 @@ generated:
     - boolean
     - boolean
     - short
-    evidence: ev_41448effbcc6
+    evidence: ev_f9c83f185a12
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -422,10 +422,10 @@ generated:
     symbol: FriendListUpdateMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_41448effbcc6
+  - id: ev_f9c83f185a12
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendListUpdateMessageComposer.java
     symbol: FriendListUpdateMessageComposer
     line: 34

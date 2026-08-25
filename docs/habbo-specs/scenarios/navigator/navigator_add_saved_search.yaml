@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1c3f94b0a3ea55727ad7178480bb3212f275b4e45ba43f5717ee533376d21229"
+generated_digest: "sha256:01c07c1b823c70000b34c238a4adeb744f415d025b69483c902bd8fe34c2818c"
 generated:
   feature: navigator.navigator_add_saved_search
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bc4740ce9db2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSavedSearches
-      evidence: ev_0de0a2ca4ee0
+      evidence: ev_9d27f1b9d7eb
   - scenario: navigator.navigator_add_saved_search.success
     title: "navigator add saved search: the request is accepted"
     given:
@@ -55,17 +55,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bc4740ce9db2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSavedSearches
-      evidence: ev_0de0a2ca4ee0
+      evidence: ev_9d27f1b9d7eb
   evidence:
-  - id: ev_0de0a2ca4ee0
+  - id: ev_9d27f1b9d7eb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorAddSavedSearchEvent.java
     symbol: NavigatorAddSavedSearchEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cef07cc7463e723a5955e323b28d291f2deb825bd82b6c11e27c756e3356a136"
+generated_digest: "sha256:70890beb077d14df726dc0bd81d28b90838318a7c2143f10f21d2fb97e3b7f06"
 generated:
   feature: sound.add_jukebox_disk
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2a13c19722fd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7b2d1e07bb8a
+      evidence: ev_8ca52059ecf8
   evidence:
-  - id: ev_7b2d1e07bb8a
+  - id: ev_8ca52059ecf8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/AddJukeboxDiskEvent.java
     symbol: AddJukeboxDiskEvent
     line: 10

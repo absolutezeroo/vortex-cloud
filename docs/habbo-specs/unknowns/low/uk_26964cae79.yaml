@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a56ab55f6e54d884fea374588778c159e8df07d480df33216653597bba587d10"
+generated_digest: "sha256:4b9cd591610cf66c88f64561ac19b82e85557e9981c58284523fe0db2a228467"
 generated:
   id: uk_26964cae79
   subject: "incoming/StartSafetyQuiz: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: StartSafetyQuiz
   known_evidence:
-  - id: ev_e10c8fca3217
+  - id: ev_6031d10ca9f1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/StartSafetyQuizEvent.java
     symbol: StartSafetyQuizEvent
     line: 9

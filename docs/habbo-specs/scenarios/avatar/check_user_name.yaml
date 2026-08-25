@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ed492843eb7b0dbb6c997c6898aa762b690f654727884e02dbaf2d0a8c50cb7d"
+generated_digest: "sha256:47697f6aa978b882c340e7f6eac7e25a6fd3ac76d19a4b4cd2651203d848f798"
 generated:
   feature: avatar.check_user_name
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82bff245d7eb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   - scenario: avatar.check_user_name.guard_1
     title: "check user name: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   - scenario: avatar.check_user_name.guard_2
     title: "check user name: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   - scenario: avatar.check_user_name.guard_3
     title: "check user name: the guard 'foundId is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   - scenario: avatar.check_user_name.guard_4
     title: "check user name: the guard 'string.IsNullOrWhiteSpace(name) || count <= 0' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ede91c591c8c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   - scenario: avatar.check_user_name.success
     title: "check user name: the request is accepted"
     given:
@@ -152,17 +152,17 @@ generated:
       emits:
       - CheckUserNameResult
       evidence: ev_233f63fc1946
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ChangeNameCheckResult
-      evidence: ev_a6736c1a918f
+      evidence: ev_6a870ce9c1a8
   evidence:
-  - id: ev_a6736c1a918f
+  - id: ev_6a870ce9c1a8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/CheckUserNameMessageEvent.java
     symbol: CheckUserNameMessageEvent
     line: 15

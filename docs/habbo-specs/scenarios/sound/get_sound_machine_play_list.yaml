@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee1c44e70e30d9aa415319f49760f1550224a14eae8dc8655976808821923101"
+generated_digest: "sha256:c85cb622b4c6602f615a96d65531792b476143da4066c4b62d11d6ef3ad0c55a"
 generated:
   feature: sound.get_sound_machine_play_list
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b95f1041c033
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PlayList
-      evidence: ev_5a15d26400f0
+      evidence: ev_221d79dfb9ae
   evidence:
-  - id: ev_5a15d26400f0
+  - id: ev_221d79dfb9ae
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetSoundMachinePlayListMessageEvent.java
     symbol: GetSoundMachinePlayListMessageEvent
     line: 10

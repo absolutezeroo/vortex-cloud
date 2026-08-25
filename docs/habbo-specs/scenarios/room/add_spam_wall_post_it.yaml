@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d494ed009fee2a03306607e173571c91b8147c4222476c2f76f60f86b367a021"
+generated_digest: "sha256:6dd5819f6b7d084513776a5fa6e2ad51aac4b4f164a9eee97408f42b6eb095f2"
 generated:
   feature: room.add_spam_wall_post_it
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_50d33da533ef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_641845222196
+      evidence: ev_20b368f50d54
   - scenario: room.add_spam_wall_post_it.guard_1
     title: "add spam wall post it: the guard 'item?.Logic.StuffData is not ILegacyStuffData legacy' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_641845222196
+      evidence: ev_20b368f50d54
   - scenario: room.add_spam_wall_post_it.success
     title: "add spam wall post it: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_50d33da533ef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_641845222196
+      evidence: ev_20b368f50d54
   evidence:
-  - id: ev_641845222196
+  - id: ev_20b368f50d54
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/AddSpamWallPostItMessageEvent.java
     symbol: AddSpamWallPostItMessageEvent
     line: 19

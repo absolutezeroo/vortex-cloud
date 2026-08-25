@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2dbd5377acc81cd82a9fc10df7099dcd47e1e43206483c47587b1f3da2d65b0a"
+generated_digest: "sha256:a06265e71da72c206a26f61890725f6009726f8c4d3845e3c81cc7c15cc1bcd1"
 generated:
   name: SelectFavouriteHabboGroup
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_79adb2b4a4c1
+    - ev_d0368c2795a3
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_9b7a10f31728
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_79adb2b4a4c1
+    evidence: ev_d0368c2795a3
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: SelectFavouriteHabboGroupComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_79adb2b4a4c1
+  - id: ev_d0368c2795a3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/SelectFavouriteHabboGroupMessageEvent.java
     symbol: SelectFavouriteHabboGroupMessageEvent
     line: 13

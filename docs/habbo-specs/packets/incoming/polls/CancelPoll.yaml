@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6768379b3ba018f732910dbd2ebcbe710ade0c43125c19d8f181f96527c2eecc"
+generated_digest: "sha256:a68c233f22f09f7ee8cb3b726e32bba2961372ea317712f96659cec802077138"
 generated:
   name: CancelPoll
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_9d932d84e3cf
+    - ev_a3e3c3af4022
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_9d932d84e3cf
+    evidence: ev_a3e3c3af4022
   evidence:
-  - id: ev_9d932d84e3cf
+  - id: ev_a3e3c3af4022
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/polls/CancelPollEvent.java
     symbol: CancelPollEvent
     line: 17

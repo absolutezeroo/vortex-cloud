@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3e323c684b5df2cfbb50a24fd1ef9e262b1c630aa8e12417fcfc30ae0e021e55"
+generated_digest: "sha256:64df620c4e020fb0ad023c6745cc4a299fa2b52b41b5c01fa50ca9ebedbd2421"
 generated:
   id: uk_d2b6717d18
   subject: "incoming/PickupObject: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: PickupObjectComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_143cee93285c
+  - id: ev_3387b273f393
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PickupObjectMessageEvent.java
     symbol: PickupObjectMessageEvent
     line: 12

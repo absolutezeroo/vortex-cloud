@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bf121d525cac263d74b21437efaf80afb5ed7c4da7d66e11e5a0472ce9fa9571"
+generated_digest: "sha256:a0401cbd62ad60ccda271e74a8b1d96eb84319401162f8b8a503b0330780a0f9"
 generated:
   id: uk_50f148ae4e
   subject: "outgoing/TradeClosed: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradeClosed
   known_evidence:
-  - id: ev_fdab39c2d4b2
+  - id: ev_68d4a856c3cf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradeClosedComposer.java
     symbol: TradeClosedComposer
     line: 20

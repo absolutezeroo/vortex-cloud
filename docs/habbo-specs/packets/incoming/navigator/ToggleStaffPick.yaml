@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:75460793a644f2c98f16fb322ba204e6ef548852d4eae1f62861ec536acbf6ba"
+generated_digest: "sha256:543015ea84e7c1b48926eac2df46939c2e06a27261537d7a6c2cfe679e5816a9"
 generated:
   name: ToggleStaffPick
   direction: incoming
@@ -50,13 +50,13 @@ generated:
     - unknown
     - boolean
     evidence: ev_2aca5b9ed8ae
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_d55754d7c8cf
+    evidence: ev_984fd91a97b7
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: ToggleStaffPickComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d55754d7c8cf
+  - id: ev_984fd91a97b7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/ToggleStaffPickMessageEvent.java
     symbol: ToggleStaffPickMessageEvent
     line: 18

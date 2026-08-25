@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8cf30746f7092e562fc65d6838ddae6f7c819c1741e56f27ff5a916fa6b542f1"
+generated_digest: "sha256:0e3f2bd798b7c5d4851a55e448a584e55cb75774408276a1e85d098058e7b825"
 generated:
   feature: avatar.change_user_name
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_26f996b19e2c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_1
     title: "change user name: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_2
     title: "change user name: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_3
     title: "change user name: the guard 'foundId is null' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_4
     title: "change user name: the guard 'string.IsNullOrWhiteSpace(name) || count <= 0' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ede91c591c8c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_5
     title: "change user name: the guard 'snapshot.PlayerId <= 0 || !_roomGrain._state.AvatarsByPla...' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_6
     title: "change user name: the guard '_registry is null' holds"
     given:
@@ -206,7 +206,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,7 +216,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.guard_7
     title: "change user name: the guard '_state.NuxCompletedAt is not null' holds"
     given:
@@ -235,7 +235,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -245,7 +245,7 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   - scenario: avatar.change_user_name.success
     title: "change user name: the request is accepted"
     given:
@@ -265,7 +265,7 @@ generated:
       - ChangeUserNameResult
       - UserChange
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -275,12 +275,12 @@ generated:
       - ChangeNameUpdated
       - UserNameChanged
       - ChangeNameCheckResult
-      evidence: ev_c655992185b8
+      evidence: ev_4c3c90c8d78e
   evidence:
-  - id: ev_c655992185b8
+  - id: ev_4c3c90c8d78e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ChangeUserNameMessageEvent.java
     symbol: ChangeUserNameMessageEvent
     line: 29

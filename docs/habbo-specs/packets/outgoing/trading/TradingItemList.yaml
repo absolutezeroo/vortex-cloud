@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e1ac4742601a9076cd29128a218b9a60f83291f9d78d662d5d40d00d4a5bbb86"
+generated_digest: "sha256:a45066652c4e40ca9a10638fdcef77752649d504ea4079ee090733e0dc0c86e0"
 generated:
   name: TradingItemList
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 4
     name: unknown_4
     type: int32
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 7
     name: unknown_7
     type: boolean
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 12
     name: unknown_12
     type: int32
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   - index: 13
     name: unknown_13
     type: int32
@@ -129,9 +129,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4a883ea30e28
+    - ev_fc72e8e9afa9
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 14
     partial: true
@@ -150,12 +150,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_4a883ea30e28
+    evidence: ev_fc72e8e9afa9
   evidence:
-  - id: ev_4a883ea30e28
+  - id: ev_fc72e8e9afa9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingItemListMessageComposer.java
     symbol: TradingItemListMessageComposer
     line: 19

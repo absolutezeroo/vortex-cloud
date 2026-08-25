@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a76913ff3f4da71e8f78876b855c9a2c7c8a41123d323d5f392b553cd1fcc9f4"
+generated_digest: "sha256:2eeb29f521aaf07d46d19376890851d5c86a82ae3e62f0226461c1651f301d6d"
 generated:
   name: PlayListSongAdded
   direction: outgoing
@@ -67,7 +67,7 @@ generated:
     partial: true
     types: []
     evidence: ev_80253ae4b14e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -76,7 +76,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_bbc1c5293ef0
+    evidence: ev_24641564a6eb
   evidence:
   - id: ev_78ea69bb6b92
     kind: client_parser
@@ -94,10 +94,10 @@ generated:
     symbol: PlayListSongAddedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bbc1c5293ef0
+  - id: ev_24641564a6eb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/PlayListSongAddedMessageComposer.java
     symbol: PlayListSongAddedMessageComposer
     line: 16

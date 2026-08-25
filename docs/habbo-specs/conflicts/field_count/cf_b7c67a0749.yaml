@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:06c62c3197e77b347d896b64715a9b3939395425f37567d2d0d26e7ec41e84ba"
+generated_digest: "sha256:0bec13bfc778f92bb06ee0122d4a5ef868e06f279437fee3225eda4c734fa67e"
 generated:
   id: cf_b7c67a0749
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string"
     evidence: ev_334610642b41
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_167d45a6aa34
+    evidence: ev_4ca905388891
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, string"
@@ -50,10 +50,10 @@ generated:
     symbol: CantConnectMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_167d45a6aa34
+  - id: ev_4ca905388891
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/CantConnectMessageComposer.java
     symbol: CantConnectMessageComposer
     line: 32

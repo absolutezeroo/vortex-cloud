@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6b47d5cf193043a1ed085f1b1b04e607496a7022bbb6b890ee019fa60c963fde"
+generated_digest: "sha256:46bb05d45cdba4fed17f36e9d74722cfaeb9346cff8b4960ef57f7febe54a6c0"
 generated:
   id: uk_f542327956
   subject: "outgoing/GuildEditInfo: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: GuildEditInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_81c74ef1e9e9
+  - id: ev_37aef692ca1e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildEditInfoMessageComposer.java
     symbol: GuildEditInfoMessageComposer
     line: 16

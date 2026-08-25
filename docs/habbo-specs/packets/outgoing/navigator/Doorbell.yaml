@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9cbd6a0985c3c0be90f7ffa53f36710a810f9f6c436a2b9d56112dd2b0762eb7"
+generated_digest: "sha256:7c9c944aedc126de2dbf905f6797c645cfe0b9208fc6b200bc9d375d08112645"
 generated:
   name: Doorbell
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_edb3d3f6209c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_07b9fb21d249
+    evidence: ev_ee344a809726
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: DoorbellMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_07b9fb21d249
+  - id: ev_ee344a809726
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/DoorbellMessageComposer.java
     symbol: DoorbellMessageComposer
     line: 15

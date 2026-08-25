@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:130e81cffec05a8066b10c1dd2c734a6ddd10ff10978cc63ba00d39c62f9734d"
+generated_digest: "sha256:485530164b93fcf0ec5e68a334b83a8b6d146a3add6077d8bb07a43b1a2b41a2"
 generated:
   id: cf_d99e279ca1
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_ee871cd7b6aa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "17 fields: int32, int32, int32, int32, string, int32, boolean, boolean, string, int32, string, string, string, boolean, boolean, boolean, short"
-    evidence: ev_b534a6b2fcdd
+    evidence: ev_e46d7b712aee
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: int32, int32, int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: FriendListFragmentMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b534a6b2fcdd
+  - id: ev_e46d7b712aee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendListFragmentMessageComposer.java
     symbol: FriendListFragmentMessageComposer
     line: 29

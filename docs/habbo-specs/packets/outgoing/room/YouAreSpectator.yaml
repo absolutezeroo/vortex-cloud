@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:26f4c8075d79261bcc1576fa04fad8de2643b62af49fa34c27bbca06587051df"
+generated_digest: "sha256:a49788a800826c17f39d0e7c01555a6fefeeb08f53f32fe12164e350658039cf"
 generated:
   name: YouAreSpectator
   direction: outgoing
@@ -40,12 +40,12 @@ generated:
     types:
     - int32
     evidence: ev_f43f638587de
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_78351db18ebf
+    evidence: ev_1ceae2897604
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: YouAreSpectatorMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_78351db18ebf
+  - id: ev_1ceae2897604
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/YouAreSpectatorMessageComposer.java
     symbol: YouAreSpectatorMessageComposer
     line: 9

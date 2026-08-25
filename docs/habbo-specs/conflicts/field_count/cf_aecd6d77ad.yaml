@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e00c900d9aa4bee28836801d5e9fcebf172961536fe2ccfcc624e893e6f65960"
+generated_digest: "sha256:d3804cbd8e24304661a40245627e5d33b1b906b079430a4666f761fa93bae83c"
 generated:
   id: cf_aecd6d77ad
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "1 fields: int32"
     evidence: ev_98c2e4af165e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_e2a8c5e3060f
+    evidence: ev_fd16a3d799a2
   evidence:
   - id: ev_98c2e4af165e
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_4335
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e2a8c5e3060f
+  - id: ev_fd16a3d799a2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/NoSuchFlatMessageComposer.java
     symbol: NoSuchFlatMessageComposer
     line: 18

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cebffa504167579bb2f6b5d8e5f650758c75aa9369224a646e9f818eb4b99e4c"
+generated_digest: "sha256:c8bf4a21bb463fea1f05d22bac32896cbf4140bb03383fb073d3b2ad170831fa"
 generated:
   name: GuideSessionInviteRequester
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_e74cde07fa61
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_73f72abfe4bf
+    evidence: ev_4e5a872b5cf1
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GuideSessionInviteRequesterComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_73f72abfe4bf
+  - id: ev_4e5a872b5cf1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionInviteRequesterMessageEvent.java
     symbol: GuideSessionInviteRequesterMessageEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8fb75c185387b4b3b9a92f19963a1a9da47a6469897322beaed6994eb344ccc6"
+generated_digest: "sha256:64b725e6f5ad8b606af8a5605a7dfd45ea2d7344f25f7deeaada5cf54f91a569"
 generated:
   feature: groups.get_forums_list
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_40292ff8590b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumsList
-      evidence: ev_8408121caa5a
+      evidence: ev_b655b119054b
   - scenario: groups.get_forums_list.guard_1
     title: "get forums list: the guard 'groups.Count == 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumsList
-      evidence: ev_8408121caa5a
+      evidence: ev_b655b119054b
   - scenario: groups.get_forums_list.success
     title: "get forums list: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - ForumsList
       evidence: ev_40292ff8590b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumsList
-      evidence: ev_8408121caa5a
+      evidence: ev_b655b119054b
   evidence:
-  - id: ev_8408121caa5a
+  - id: ev_b655b119054b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetForumsListMessageEvent.java
     symbol: GetForumsListMessageEvent
     line: 22

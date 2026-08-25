@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ec814bd46f7e9420887d2df67f44228cc14ed87ace2aed88bd1f1cf6ff6148f1"
+generated_digest: "sha256:0369fc2bdc2ed212ff1e8b900c1c4511a8570af018c3e6c971c3e99aad656626"
 generated:
   name: IsFirstLoginOfDay
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - boolean
     evidence: ev_af44cb7a95b1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_fd133a9beaf6
+    evidence: ev_8d86a1579ace
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: IsFirstLoginOfDayMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fd133a9beaf6
+  - id: ev_8d86a1579ace
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/IsFirstLoginOfDayComposer.java
     symbol: IsFirstLoginOfDayComposer
     line: 15

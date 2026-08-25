@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:84695c2539c4bd5c7f3918b7e075478a36269285e85117cc84983ca6c79f38e5"
+generated_digest: "sha256:7f0be58d8f4842c679d414160bb3430872d8234ef51a25f44ca120060b4c96f8"
 generated:
   name: NoOwnedRoomsAlert
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_8c35ca7dd306
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_be4fef6f23ae
+    evidence: ev_bb6a4ccc7294
   evidence:
   - id: ev_a6386f502821
     kind: client_parser
@@ -54,10 +54,10 @@ generated:
     symbol: NoOwnedRoomsAlertMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_be4fef6f23ae
+  - id: ev_bb6a4ccc7294
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NoOwnedRoomsAlertMessageComposer.java
     symbol: NoOwnedRoomsAlertMessageComposer
     line: 9

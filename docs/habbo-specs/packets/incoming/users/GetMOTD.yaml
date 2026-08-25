@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:58455bf82d1c939f4a96bcd82a4b81ae11fb3aa3d09c3bf8f961b91343ba114f"
+generated_digest: "sha256:832b4f3542cfdf05c419adf0f204710c7da0902b6649957906ed13e755ed8553"
 generated:
   name: GetMOTD
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_feebca5cc9fe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_94d812fe315b
+    evidence: ev_9cb025d331d5
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetMOTDComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_94d812fe315b
+  - id: ev_9cb025d331d5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/GetMOTDMessageEvent.java
     symbol: GetMOTDMessageEvent
     line: 7

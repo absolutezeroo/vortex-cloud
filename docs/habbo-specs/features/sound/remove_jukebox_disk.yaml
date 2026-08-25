@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1a6c51461c3ae4d6e3b62c66206b677f27f6f9b8520b5df9323706a32d972562"
+generated_digest: "sha256:5f35cb8b35e5579f9067a6e38d4d8f2cc39cefeb146f01da93a42ab7077195e9"
 generated:
   id: sound.remove_jukebox_disk
   domain: sound
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

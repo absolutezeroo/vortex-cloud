@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b5210484aa065f5d8ad8106da8699826c3c1926f97e97e21d2778ed4e8c4cd4c"
+generated_digest: "sha256:b1aa767f743698d763c6629fc53cfdd7789f20d040f0ed5723ae0d5124ba8ffb"
 generated:
   name: RoomVisualizationSettings
   direction: outgoing
@@ -60,7 +60,7 @@ generated:
     - int32
     - int32
     evidence: ev_47b517892ed4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - boolean
     - int32
     - int32
-    evidence: ev_a7dcb89dfa07
+    evidence: ev_7b0441aad953
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -95,10 +95,10 @@ generated:
     symbol: RoomVisualizationSettingsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a7dcb89dfa07
+  - id: ev_7b0441aad953
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomVisualizationSettingsMessageComposer.java
     symbol: RoomVisualizationSettingsMessageComposer
     line: 16

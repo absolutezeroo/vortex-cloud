@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3f34d5f976aa773538ee931c30dd0eb92a9577ec32a563f271f5da3dd93e3c38"
+generated_digest: "sha256:1a8e82be24e301aeb5a8a11eb463522c0135b6d3ca0a53f49d3e77f8e17e5b2e"
 generated:
   id: cf_4ca1401910
   kind: field_count
   subject: "outgoing/CfhTopicsInit: field count"
   packet: CfhTopicsInit
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: int32, string, int32, string, int32, string"
-    evidence: ev_8a2b783a4827
+    evidence: ev_2882cbd3fc05
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
     evidence: ev_01c4bfbc4a41
   evidence:
-  - id: ev_8a2b783a4827
+  - id: ev_2882cbd3fc05
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/CfhTopicsInitMessageComposer.java
     symbol: CfhTopicsInitMessageComposer
     line: 13

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:cb46626b712f3f1ff9f9eeee1c762ea39710afc6e8d9924bc26f3b05caf0d86a"
+generated_digest: "sha256:85f64f7227fd19d81b6375d5ce230fd07d7195ca11bbcccd9d7cf4da3828cc8f"
 generated:
   id: cf_b7cc327efa
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "11 fields: int32, string, int32, int32, int32, string, int32, int32, int32, int32, int32"
     evidence: ev_5733a4e20178
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "8 fields: int32, string, int32, int32, int32, string, int32, int32"
-    evidence: ev_e09802f832c6
+    evidence: ev_4c33c7e077a4
   evidence:
   - id: ev_5733a4e20178
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3586
     line: 29
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e09802f832c6
+  - id: ev_4c33c7e077a4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetLevelNotificationMessageComposer.java
     symbol: PetLevelNotificationMessageComposer
     line: 16

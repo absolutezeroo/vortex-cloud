@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:cc2f3f4bca402a4cc9a20098c7f910e8fd653536b4eecbe6f52f2ccf10541c9f"
+generated_digest: "sha256:86de3ff781fe84872e8b288af7b82715df4d4a33640f4b32347608bca0e2fa1e"
 generated:
   id: uk_51b6e167b9
   subject: "outgoing/MarketPlaceOwnOffers: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3542
     line: 35
     note: official client build WIN63-202607011411-782849652
-  - id: ev_c5259be9d6cd
+  - id: ev_9487b9843b78
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/marketplace/MarketPlaceOwnOffersMessageComposer.java
     symbol: MarketPlaceOwnOffersMessageComposer
     line: 23

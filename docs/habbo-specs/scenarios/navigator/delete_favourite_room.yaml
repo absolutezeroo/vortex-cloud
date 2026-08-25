@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f1886c5d61f694fe613cde46bd97da21aa3e664afa0c5d8421996dfbc781e339"
+generated_digest: "sha256:a0cd832e1d88ebe465d9c404ce8087b20e3b6a7c4b1233f49fccd2c08072e79e"
 generated:
   feature: navigator.delete_favourite_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_17d7e7a65163
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FavouriteChanged
-      evidence: ev_eebc1a8e26e6
+      evidence: ev_9d1b57f076ea
   - scenario: navigator.delete_favourite_room.success
     title: "delete favourite room: the request is accepted"
     given:
@@ -55,17 +55,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_17d7e7a65163
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FavouriteChanged
-      evidence: ev_eebc1a8e26e6
+      evidence: ev_9d1b57f076ea
   evidence:
-  - id: ev_eebc1a8e26e6
+  - id: ev_9d1b57f076ea
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/DeleteFavouriteRoomMessageEvent.java
     symbol: DeleteFavouriteRoomMessageEvent
     line: 10

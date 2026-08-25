@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1300b423c2e77d473e20847f848914283ce689d4293d96fa961231a18bff4786"
+generated_digest: "sha256:b999a19be6a35a6c7836398b8e5fe4d73dcd2e50678430eeff438942dfa55b04"
 generated:
   feature: room.drop_carry_item
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dae6a9f8ee83
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CarryObject
-      evidence: ev_671d8b532f7e
+      evidence: ev_e2c0cd4f65c9
   - scenario: room.drop_carry_item.guard_1
     title: "drop carry item: the guard '!TryFindAvatar(playerId, out IRoomAvatar? avatar) || avat...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_315e04717bdc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CarryObject
-      evidence: ev_671d8b532f7e
+      evidence: ev_e2c0cd4f65c9
   - scenario: room.drop_carry_item.guard_2
     title: "drop carry item: the guard 'CarryItemId == itemId' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CarryObject
-      evidence: ev_671d8b532f7e
+      evidence: ev_e2c0cd4f65c9
   - scenario: room.drop_carry_item.success
     title: "drop carry item: the request is accepted"
     given:
@@ -103,17 +103,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_315e04717bdc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CarryObject
-      evidence: ev_671d8b532f7e
+      evidence: ev_e2c0cd4f65c9
   evidence:
-  - id: ev_671d8b532f7e
+  - id: ev_e2c0cd4f65c9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/DropCarryItemMessageEvent.java
     symbol: DropCarryItemMessageEvent
     line: 9

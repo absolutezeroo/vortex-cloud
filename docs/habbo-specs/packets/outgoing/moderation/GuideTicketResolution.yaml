@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d79573bcb33a46a0018d6c535ebef75d120f558488ebd1e493cb3fb3ebfa012c"
+generated_digest: "sha256:e95d56758a96e5a8920f4418c343d81e45d5b67b8f7f4cfb390f854aa270a675"
 generated:
   name: GuideTicketResolution
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_61b2a3e1ae2d
+    - ev_1e96d80aebee
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -33,13 +33,13 @@ generated:
     partial: true
     types: []
     evidence: ev_e9bc03f23ae8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_61b2a3e1ae2d
+    evidence: ev_1e96d80aebee
   evidence:
   - id: ev_e9bc03f23ae8
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: GuideTicketResolutionMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_61b2a3e1ae2d
+  - id: ev_1e96d80aebee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideTicketResolutionMessageComposer.java
     symbol: GuideTicketResolutionMessageComposer
     line: 18

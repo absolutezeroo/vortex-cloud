@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:a9d804566bdeceddc5659dbe0d08464ea8d8cec1003b16b378833fb8f0224d8c"
+generated_digest: "sha256:25f8fdcc583b4daea0c0c5ea329c2c8eb1715076f59d480fea19f9469c5d0293"
 generated:
   id: cf_9e087ae269
   kind: behaviour
   subject: "RequestFriend: packets emitted in response"
   packet: RequestFriend
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: MessengerError then MessengerError then MessengerError then MessengerError then MessengerError
-    evidence: ev_285dd2d2d268
+    evidence: ev_d8202bda7d37
   - origin: vortex
     authority: vortex_emulator
     claim: MessengerError then NewFriendRequest
     evidence: ev_22d108ba3e5f
   evidence:
-  - id: ev_285dd2d2d268
+  - id: ev_d8202bda7d37
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RequestFriendMessageEvent.java
     symbol: RequestFriendMessageEvent
     line: 23

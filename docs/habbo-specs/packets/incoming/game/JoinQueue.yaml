@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:619b50520d7bb3673ca0228b4728c5578e86a4f7a21e6b096161471e922a50f9"
+generated_digest: "sha256:e7a58aab0002525b6d942831070cfcd705a27138d31aa3b29ebe2509c28a7b42"
 generated:
   name: JoinQueue
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1f48cd69268a
+    - ev_f41c0896ea9b
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_1f48cd69268a
+    evidence: ev_f41c0896ea9b
   evidence:
-  - id: ev_1f48cd69268a
+  - id: ev_f41c0896ea9b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/JoinQueueMessageEvent.java
     symbol: JoinQueueMessageEvent
     line: 11

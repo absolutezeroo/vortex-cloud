@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d7fb9ea7cb44973771e0b9588fde4efe8800a6b398352fc43a6bf015e2a08656"
+generated_digest: "sha256:82c37b9b8196e670982295dd218d65ef38b7a14d40539b6679365a974aebb8b3"
 generated:
   name: RoomInviteError
   direction: outgoing
@@ -61,7 +61,7 @@ generated:
     types:
     - int32
     evidence: ev_183d1034e9bc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -69,7 +69,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_71b5035fb537
+    evidence: ev_d1287ef9e1b9
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -96,10 +96,10 @@ generated:
     symbol: RoomInviteErrorMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_71b5035fb537
+  - id: ev_d1287ef9e1b9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/RoomInviteErrorMessageComposer.java
     symbol: RoomInviteErrorMessageComposer
     line: 20

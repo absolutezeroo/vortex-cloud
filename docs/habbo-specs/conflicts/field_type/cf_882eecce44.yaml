@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f1590dbdd7d87c38d1c26fb38268ebfaf9651e570b9e716debb8c04b89140ed2"
+generated_digest: "sha256:089c2269ec4ef8e93e74a8e9e4cf527b8ee2d1920e207771e60b763689dc713e"
 generated:
   id: cf_882eecce44
   kind: field_type
   subject: "incoming/AddItemsToTrade: type of field 1"
   packet: AddItemsToTrade
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "item: int32"
-    evidence: ev_ebdc97e40a92
+    evidence: ev_0d4ffe42f7e0
   - origin: vortex
     authority: vortex_emulator
     claim: "count: array"
     evidence: ev_3dcb388e9569
   evidence:
-  - id: ev_ebdc97e40a92
+  - id: ev_0d4ffe42f7e0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/AddItemsToTradeEvent.java
     symbol: AddItemsToTradeEvent
     line: 10

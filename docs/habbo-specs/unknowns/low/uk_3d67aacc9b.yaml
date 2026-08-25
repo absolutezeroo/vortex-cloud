@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7156adebd2d3617ad4a09590ac507e132f28a3b0b83342075ec743a6132ded80"
+generated_digest: "sha256:ec3f5778ceefc1bbbe529a4e4e770366e475e85f4112586caf890650efd6687f"
 generated:
   id: uk_3d67aacc9b
   subject: "outgoing/WelcomeGiftStatus: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WelcomeGiftStatus
   known_evidence:
-  - id: ev_41a19443341b
+  - id: ev_01c688b02427
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/WelcomeGiftStatusMessageComposer.java
     symbol: WelcomeGiftStatusMessageComposer
     line: 23

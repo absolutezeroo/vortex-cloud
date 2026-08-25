@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:27898c33c59313dd2e71b7ff01f560b2089b1e5fa2d2595f7ba2f744a85b2b13"
+generated_digest: "sha256:d9f910f14f981de669288f68aaf4b6e53b23bdf27b02d9a393dd0baf4fc337e2"
 generated:
   feature: messenger.request_friend
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8655697b25d4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -41,7 +41,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_1
     title: "request friend: the guard 'targetId is null' holds"
     given:
@@ -62,7 +62,7 @@ generated:
       - MessengerError
       - NewFriendRequest
       evidence: ev_8655697b25d4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_2
     title: "request friend: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -99,7 +99,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_3
     title: "request friend: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -118,7 +118,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -127,7 +127,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_4
     title: "request friend: the guard 'foundId is null' holds"
     given:
@@ -146,7 +146,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -155,7 +155,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_5
     title: "request friend: the guard '_friends.Count >= maxFriends' holds"
     given:
@@ -174,7 +174,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -183,7 +183,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_6
     title: "request friend: the guard '_friends.ContainsKey(targetId)' holds"
     given:
@@ -202,7 +202,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -211,7 +211,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_7
     title: "request friend: the guard 'targetCountFriends >= maxFriends' holds"
     given:
@@ -230,7 +230,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -239,7 +239,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_8
     title: "request friend: the guard 'alreadyExists' holds"
     given:
@@ -258,7 +258,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -267,7 +267,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.guard_9
     title: "request friend: the guard '_registry is null' holds"
     given:
@@ -286,7 +286,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -295,7 +295,7 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   - scenario: messenger.request_friend.success
     title: "request friend: the request is accepted"
     given:
@@ -315,7 +315,7 @@ generated:
       - MessengerError
       - NewFriendRequest
       evidence: ev_09932710687b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -324,12 +324,12 @@ generated:
       - MessengerError
       - MessengerError
       - MessengerError
-      evidence: ev_285dd2d2d268
+      evidence: ev_d8202bda7d37
   evidence:
-  - id: ev_285dd2d2d268
+  - id: ev_d8202bda7d37
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RequestFriendMessageEvent.java
     symbol: RequestFriendMessageEvent
     line: 23

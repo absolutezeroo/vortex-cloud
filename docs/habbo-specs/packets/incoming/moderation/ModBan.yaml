@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:76e4f4d2ade8abbd4a784a4f7accc05a5be14510ee48036df0acecce9aa3916c"
+generated_digest: "sha256:d8b976b70b6cf43e4ff17586bde3a6d340d840389976e9c3a59c940bc01084c9"
 generated:
   name: ModBan
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8bc16fae4610
+    - ev_e727e3a71b13
   - index: 1
     name: message
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8bc16fae4610
+    - ev_e727e3a71b13
   - index: 2
     name: cfh_topic
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8bc16fae4610
+    - ev_e727e3a71b13
   - index: 3
     name: ban_type
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8bc16fae4610
+    - ev_e727e3a71b13
   - index: 4
     name: unknown_4
     type: boolean
@@ -54,7 +54,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_8bc16fae4610
+    - ev_e727e3a71b13
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_2a0615d6418f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -78,7 +78,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_8bc16fae4610
+    evidence: ev_e727e3a71b13
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -108,10 +108,10 @@ generated:
     symbol: ModBanComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8bc16fae4610
+  - id: ev_e727e3a71b13
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModBanMessageEvent.java
     symbol: ModBanMessageEvent
     line: 25

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0a214722cc9ff71e2d94b066a86d16a24d21412120511c20cac0c21c7584d871"
+generated_digest: "sha256:99835e02f0447e6ce7802ec0af8694f5d7509455a38f428bf1bf0a52cd8ef41f"
 generated:
   name: FavoriteMembershipUpdate
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_951f0a98b0f9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_104caac92c6f
+    evidence: ev_f85f902ef130
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: FavoriteMembershipUpdateMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_104caac92c6f
+  - id: ev_f85f902ef130
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/FavoriteMembershipUpdateMessageComposer.java
     symbol: FavoriteMembershipUpdateMessageComposer
     line: 19

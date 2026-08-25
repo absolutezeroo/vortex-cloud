@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ffdee4cf794e535989582d16218e39b9e31bd18329315c0e8eafb2ccc66695a1"
+generated_digest: "sha256:9b85bce9d4b6e3bda542f7be85c78f3cd4668aaf017e9a100b30080b070f29f0"
 generated:
   id: handshake.init_diffie_handshake
   domain: handshake
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

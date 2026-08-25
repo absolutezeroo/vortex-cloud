@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:da856bc2eea924a57ccebf287fc527eef0b525c2300021afb9e590d92bf8804c"
+generated_digest: "sha256:57345b08762ee83385d3258f704108fe2ad73785c1607f3548477cc65cb2a5e2"
 generated:
   id: uk_c7dfaab2f4
   subject: "outgoing/CollapsedCategories: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: CollapsedCategoriesMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_582ed212262a
+  - id: ev_c48987a82271
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CollapsedCategoriesMessageComposer.java
     symbol: CollapsedCategoriesMessageComposer
     line: 9

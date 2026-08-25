@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a207f7921199b1fa85ac3a1b8c3434f9adb8e53d69e780235455ba653094e6bb"
+generated_digest: "sha256:4b3a41bd3d8cbb4f8612ea75b74b22b8f09b22251ce9aba24dbab31bd008e33d"
 generated:
   name: CatalogPagesList
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 7
     name: unknown_7
     type: boolean
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   - index: 8
     name: unknown_8
     type: string
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9418c3d0f1de
+    - ev_25cfdde310b3
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -107,7 +107,7 @@ generated:
     - boolean
     - string
     evidence: ev_0eaf1997f54c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 9
     partial: false
@@ -121,7 +121,7 @@ generated:
     - int32
     - boolean
     - string
-    evidence: ev_9418c3d0f1de
+    evidence: ev_25cfdde310b3
   evidence:
   - id: ev_0eaf1997f54c
     kind: client_parser
@@ -131,10 +131,10 @@ generated:
     symbol: CatalogPagesListMessageParser
     line: 35
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_9418c3d0f1de
+  - id: ev_25cfdde310b3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/CatalogPagesListMessageComposer.java
     symbol: CatalogPagesListMessageComposer
     line: 34

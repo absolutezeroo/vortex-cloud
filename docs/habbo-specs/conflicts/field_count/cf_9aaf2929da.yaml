@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5a545393fcf79cc177d05ff0c46e15507287597f58f469a2447c09bdd3b0203d"
+generated_digest: "sha256:9d09700076ae6ba4fba15fef12e03d6413350cf3c772cdc3d1e5f8666ff07ecc"
 generated:
   id: cf_9aaf2929da
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "12 fields: int32, int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, boolean"
     evidence: ev_e10d4d0e91f7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: int32"
-    evidence: ev_526bb0d48eea
+    evidence: ev_8dadabebd28b
   - origin: vortex
     authority: vortex_emulator
     claim: "5 fields: int32, int32, block, boolean, boolean"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_3536
     line: 56
     note: official client build WIN63-202607011411-782849652
-  - id: ev_526bb0d48eea
+  - id: ev_8dadabebd28b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetFigureUpdateMessageComposer.java
     symbol: PetFigureUpdateMessageComposer
     line: 24

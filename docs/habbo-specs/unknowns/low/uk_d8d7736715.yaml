@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:24c8b08d9c1321bc55352e3a88eb45ed9caaab286473ddb3e9ed6563222acca7"
+generated_digest: "sha256:014bc1e2e95a049d007eed0b9f646eea37a03b0ab1f01b665b0b799687053f92"
 generated:
   id: uk_d8d7736715
   subject: "outgoing/GameList: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: GameListMessageParser
     line: 23
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_1a0145e38d07
+  - id: ev_e4ea95946e1f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/GameListMessageComposer.java
     symbol: GameListMessageComposer
     line: 10

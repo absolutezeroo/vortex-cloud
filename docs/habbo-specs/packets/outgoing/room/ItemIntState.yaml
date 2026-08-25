@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:82ed8471586e5fbf39c53306093046d234f8a8f5b0bb81ee9b67198df4d8d253"
+generated_digest: "sha256:95b2b815a01b130f39c9575a3f602d507509595da3aabf3286b22dae50ff19eb"
 generated:
   name: ItemIntState
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0fff7cfd0e40
+    - ev_19ab310c6109
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0fff7cfd0e40
+    - ev_19ab310c6109
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_0fff7cfd0e40
+    evidence: ev_19ab310c6109
   evidence:
-  - id: ev_0fff7cfd0e40
+  - id: ev_19ab310c6109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemIntStateComposer.java
     symbol: ItemIntStateComposer
     line: 17

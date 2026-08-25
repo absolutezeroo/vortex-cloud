@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cbbd86065580e5a07756fe848521ddd1bacb37e4ec34bd12e11ee61cd9f6e01f"
+generated_digest: "sha256:cb20c0cefa56cea4ab14220fb493aec1c71e1d72b61c071b92175c606660d3e4"
 generated:
   name: BannedUsersFromRoom
   direction: outgoing
@@ -62,7 +62,7 @@ generated:
     - int32
     - string
     evidence: ev_55118e4903db
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -71,7 +71,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_bd02948aeda3
+    evidence: ev_690bef591cac
   evidence:
   - id: ev_55118e4903db
     kind: client_parser
@@ -81,10 +81,10 @@ generated:
     symbol: _SafeCls_3887
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_bd02948aeda3
+  - id: ev_690bef591cac
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/BannedUsersFromRoomMessageComposer.java
     symbol: BannedUsersFromRoomMessageComposer
     line: 22

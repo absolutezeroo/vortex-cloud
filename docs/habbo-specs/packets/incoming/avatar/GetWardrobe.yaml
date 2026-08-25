@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1656ae11e6864dec2210a1df253105ab9aad2e5af9250f59ab4cfbe633c3dde6"
+generated_digest: "sha256:dd11c4e545982fe2cfaae3137fb8bdf32c10cb67b4da912883916453df8e10ab"
 generated:
   name: GetWardrobe
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_1252b1f85e6f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_2c747d4b3722
+    evidence: ev_b1d936fc63dc
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetWardrobeComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2c747d4b3722
+  - id: ev_b1d936fc63dc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetWardrobeMessageEvent.java
     symbol: GetWardrobeMessageEvent
     line: 8

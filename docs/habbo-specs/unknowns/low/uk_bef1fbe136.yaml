@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2f3d05d6b2a68785cebfd6946ef1b72511a1834d543b275edffaad289189e7e2"
+generated_digest: "sha256:87d04dd97e4d0fa9330cf2ee4cdda2f0c6b1fa6957977ae861e03efe22235b6a"
 generated:
   id: uk_bef1fbe136
   subject: "outgoing/Achievement: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: AchievementParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_159db837a6d2
+  - id: ev_56399cd3efb5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/achievements/AchievementMessageComposer.java
     symbol: AchievementMessageComposer
     line: 21

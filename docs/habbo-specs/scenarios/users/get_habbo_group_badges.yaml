@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0f521e45147c67747d989dc901818f99ce975cea70adb6f0ade241533278abb8"
+generated_digest: "sha256:c97bd3ca4127ecf62c13c1aff9ea0c6c0b53f83da0bc1eaf51f02e018aa54ba3"
 generated:
   feature: users.get_habbo_group_badges
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_aab60cf3bcef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e15859b40098
+      evidence: ev_510646997e08
   - scenario: users.get_habbo_group_badges.guard_1
     title: "get habbo group badges: the guard 'groupIds.Count == 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e15859b40098
+      evidence: ev_510646997e08
   - scenario: users.get_habbo_group_badges.success
     title: "get habbo group badges: the request is accepted"
     given:
@@ -78,16 +78,16 @@ generated:
       emits:
       - HabboGroupBadges
       evidence: ev_aab60cf3bcef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e15859b40098
+      evidence: ev_510646997e08
   evidence:
-  - id: ev_e15859b40098
+  - id: ev_510646997e08
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetHabboGroupBadgesMessageEvent.java
     symbol: GetHabboGroupBadgesMessageEvent
     line: 7

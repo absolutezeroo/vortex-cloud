@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:941471790ddf555a85cc4fd5707987ffaaf42db40bd461fc25ce43ec8d272408"
+generated_digest: "sha256:3cf2dc1b216246a38fa9fedb70b09de995a51dd6aee48beb210966b74c71cfc5"
 generated:
   id: room.open_mystery_trophy
   domain: room
@@ -176,7 +176,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/ExtraDataWriter.cs
     symbol: ExtraDataWriter
-    line: 22
+    line: 31
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator

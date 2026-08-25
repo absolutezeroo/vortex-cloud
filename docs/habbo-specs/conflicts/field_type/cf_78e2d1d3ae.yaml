@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fca71c3b593e12cd4296b1ebfce680bbe81d10626d31080e09552f6ec12f65f6"
+generated_digest: "sha256:4e66246c01011b2539aa681e684edbeb9202aaa1edd46d640c8ce2061d92554e"
 generated:
   id: cf_78e2d1d3ae
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "status: int32"
     evidence: ev_66de1871bf06
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_1: int32"
-    evidence: ev_29a30b11ad54
+    evidence: ev_b8b45694db65
   - origin: vortex
     authority: vortex_emulator
     claim: "statuses: array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_4242
     line: 35
     note: official client build WIN63-202607011411-782849652
-  - id: ev_29a30b11ad54
+  - id: ev_b8b45694db65
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guardians/ChatReviewSessionVotingStatusMessageComposer.java
     symbol: ChatReviewSessionVotingStatusMessageComposer
     line: 22

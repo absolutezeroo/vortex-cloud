@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:10648f56ff705277242217058bc861350e93c94accac0b382e83b37f65f78d40"
+generated_digest: "sha256:14394ef5d7a5c33ec3c932cbcf9fb2c5f8c19bfb0154cad8709b116a10f587bf"
 generated:
   feature: room.enter_one_way_door
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6307e5751d5d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_1
     title: "enter one way door: the guard '!_state.ItemsById.TryGetValue(itemId, out IRoomItem? item...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_2
     title: "enter one way door: the guard 'avatar.X != gate.X - dx || avatar.Y != gate.Y - dy' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_3
     title: "enter one way door: the guard '!MapModule.InBounds(exitIdx)' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_4
     title: "enter one way door: the guard '!exitFlags.Has(RoomTileFlags.Walkable) || exitFlags.Has(R...' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_5
     title: "enter one way door: the guard '!InBounds(tileIdx)' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_db615f36b20b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_6
     title: "enter one way door: the guard 'Z == z' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_7
     title: "enter one way door: the guard 'Rotation == rot' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_8
     title: "enter one way door: the guard 'HeadRotation == rot' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.success
     title: "enter one way door: the request is accepted"
     given:
@@ -240,16 +240,16 @@ generated:
       - OneWayDoorStatus
       - UserUpdate
       evidence: ev_03fde0fa4569
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e25970bdea34
+      evidence: ev_112d38b3f51d
   evidence:
-  - id: ev_e25970bdea34
+  - id: ev_112d38b3f51d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/EnterOneWayDoorMessageEvent.java
     symbol: EnterOneWayDoorMessageEvent
     line: 9

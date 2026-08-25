@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:41ae48527e2fb41929b21d922e479c239dd884ced7ebafa30491a23504855ae5"
+generated_digest: "sha256:5f461afdc0baf79d0d1fe100c673439f08803cb960e2f521ba4419d6177aabb2"
 generated:
   feature: quest.open_quest_tracker
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7dca240b5281
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quest
       - Quests
-      evidence: ev_0cbbd0a81c4a
+      evidence: ev_de4656c2f892
   - scenario: quest.open_quest_tracker.guard_1
     title: "open quest tracker: the guard 'tracked is null' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7dca240b5281
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quest
       - Quests
-      evidence: ev_0cbbd0a81c4a
+      evidence: ev_de4656c2f892
   - scenario: quest.open_quest_tracker.success
     title: "open quest tracker: the request is accepted"
     given:
@@ -82,18 +82,18 @@ generated:
       emits:
       - Quest
       evidence: ev_3e19f38401db
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quest
       - Quests
-      evidence: ev_0cbbd0a81c4a
+      evidence: ev_de4656c2f892
   evidence:
-  - id: ev_0cbbd0a81c4a
+  - id: ev_de4656c2f892
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/quests/OpenQuestTrackerEvent.java
     symbol: OpenQuestTrackerEvent
     line: 15

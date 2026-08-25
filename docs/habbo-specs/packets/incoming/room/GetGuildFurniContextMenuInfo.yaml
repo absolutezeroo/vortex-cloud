@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:02c0510bd3fb756d997347368794daeb0a1217e6a47cda5259cb8789e9b066b5"
+generated_digest: "sha256:eef596fbca8cdd4ae304d7e92a87ad811b57c53c2cfd4f5e65bc8a3f18a4b1f8"
 generated:
   name: GetGuildFurniContextMenuInfo
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_a15f1b8955ff
-    - ev_4f0c10067e4f
+    - ev_98dae203e680
   - index: 1
     name: guild_id
     type: int32
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_a15f1b8955ff
-    - ev_4f0c10067e4f
+    - ev_98dae203e680
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -50,14 +50,14 @@ generated:
     partial: true
     types: []
     evidence: ev_afba8cbfe437
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_4f0c10067e4f
+    evidence: ev_98dae203e680
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: GetGuildFurniContextMenuInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4f0c10067e4f
+  - id: ev_98dae203e680
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildFurniContextMenuInfoMessageEvent.java
     symbol: GetGuildFurniContextMenuInfoMessageEvent
     line: 11

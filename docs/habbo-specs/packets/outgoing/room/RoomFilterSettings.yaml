@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:84b609d073cb9d4ac81131ce0a432b0e8173e6aa1c515d95bbadc0fc76138295"
+generated_digest: "sha256:c5519217b5d4627df7066b05c13d185e8b2fa406755a09d9106ee50ced0fad0c"
 generated:
   name: RoomFilterSettings
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     partial: true
     types: []
     evidence: ev_83cca827d33a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_9d60f7d0bfb1
+    evidence: ev_0144dcf2e114
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: RoomFilterSettingsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9d60f7d0bfb1
+  - id: ev_0144dcf2e114
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomFilterSettingsMessageComposer.java
     symbol: RoomFilterSettingsMessageComposer
     line: 16

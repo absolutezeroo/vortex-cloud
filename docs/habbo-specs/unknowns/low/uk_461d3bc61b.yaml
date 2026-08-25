@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5fb45658a9d826388ede0d1f28424add2e7464c7a2cc1fe437d2c1932f339fb2"
+generated_digest: "sha256:ebc8f3d284291cdbc824347c1bb844480e807c800258ceacd5887b0d36b994a7"
 generated:
   id: uk_461d3bc61b
   subject: "outgoing/UnloadGame: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: UnloadGameMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_20f40ca2d38e
+  - id: ev_f799e7698de9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/UnloadGameMessageComposer.java
     symbol: UnloadGameMessageComposer
     line: 9

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3e7484fbc737f6a4eb55892e393b8f43dec0597514b178c72bebe6f2c5a52a3b"
+generated_digest: "sha256:d631fbdafd92984e5f4e703cef01c8bd68e4f852d4c920c9d9f01b1d44fe5a49"
 generated:
   name: NewsList
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 6
     name: unknown_6
     type: string
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   - index: 7
     name: unknown_7
     type: string
@@ -81,9 +81,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0705d78c5b55
+    - ev_b993d22fd512
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 8
     partial: false
@@ -96,12 +96,12 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_0705d78c5b55
+    evidence: ev_b993d22fd512
   evidence:
-  - id: ev_0705d78c5b55
+  - id: ev_b993d22fd512
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/NewsListComposer.java
     symbol: NewsListComposer
     line: 12

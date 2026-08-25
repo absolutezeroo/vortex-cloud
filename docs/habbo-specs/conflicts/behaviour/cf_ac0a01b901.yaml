@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:62c9052208f003ced6440bb3ca8e50a6047f9ff9e8e6465dbc90729273d32521"
+generated_digest: "sha256:305fde7eeab5e1b4b5f364b11a2c5dca0ddf9459a35404e230778a338d848250"
 generated:
   id: cf_ac0a01b901
   kind: behaviour
   subject: "RedeemVoucher: packets emitted in response"
   packet: RedeemVoucher
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: HotelWillCloseInMinutes then VoucherRedeemError
-    evidence: ev_039823ee340b
+    evidence: ev_be12cc28100c
   - origin: vortex
     authority: vortex_emulator
     claim: VoucherRedeemOk then VoucherRedeemError
     evidence: ev_f3f1a047aea8
   evidence:
-  - id: ev_039823ee340b
+  - id: ev_be12cc28100c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/RedeemVoucherMessageEvent.java
     symbol: RedeemVoucherMessageEvent
     line: 11

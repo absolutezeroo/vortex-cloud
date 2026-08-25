@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2f270ed1561351da176ca9071bee4eb32402cc432fd0cf058bc7df45c2fc560c"
+generated_digest: "sha256:470845a722246b9016b9e609ee21b511fe6b16371f2aeb9c143ff50a7743fd29"
 generated:
   id: cf_f150c8ed22
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_b1262bf927cc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_a39c8be198c6
+    evidence: ev_4a385e3f06f1
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: ExpressionMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a39c8be198c6
+  - id: ev_4a385e3f06f1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/ExpressionMessageComposer.java
     symbol: ExpressionMessageComposer
     line: 19

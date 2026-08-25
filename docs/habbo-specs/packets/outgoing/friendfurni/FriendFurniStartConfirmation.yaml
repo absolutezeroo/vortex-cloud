@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:77e6526533a80fe4a679b995233e6da3e3bb4cc3fdf9b1bb23eb4fa40056a708"
+generated_digest: "sha256:7b0b546b6a73c8fb9ac9c56efd36815df733962efe753f5fb87a031c2584694f"
 generated:
   name: FriendFurniStartConfirmation
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_7494edb23ff4
+    - ev_bdca9cd996eb
   - index: 1
     name: unknown_1
     type: boolean
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_7494edb23ff4
+    - ev_bdca9cd996eb
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -41,14 +41,14 @@ generated:
     partial: true
     types: []
     evidence: ev_b90ef502bc8f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - boolean
-    evidence: ev_7494edb23ff4
+    evidence: ev_bdca9cd996eb
   evidence:
   - id: ev_b90ef502bc8f
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: FriendFurniStartConfirmationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7494edb23ff4
+  - id: ev_bdca9cd996eb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/lovelock/FriendFurniStartConfirmationMessageComposer.java
     symbol: FriendFurniStartConfirmationMessageComposer
     line: 16

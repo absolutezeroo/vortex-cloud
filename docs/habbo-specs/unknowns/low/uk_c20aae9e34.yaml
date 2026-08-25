@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:96cf821c91a3ebc06e6f077c8cd314f6063fea12194c65b8199eb26bbcd2d8e7"
+generated_digest: "sha256:560bd7ff95dc879959c3cf6be6047caf7c0dca5286227f7b623094c3618d18b4"
 generated:
   id: uk_c20aae9e34
   subject: "outgoing/FlatControllers: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3442
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_9ab6058dfc21
+  - id: ev_ad9d9fc89389
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FlatControllersMessageComposer.java
     symbol: FlatControllersMessageComposer
     line: 19

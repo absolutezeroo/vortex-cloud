@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e105efdf65f5141da427e9e27a1e48592489c4f1195224cb64c96cf2684739ed"
+generated_digest: "sha256:eb386f3175745e5ee5ca31a5278973df44294278f19f6ce4a0308545f2ae59fb"
 generated:
   name: SetRandomState
   direction: incoming
@@ -52,14 +52,14 @@ generated:
     - int32
     - int32
     evidence: ev_48f5514c7ae2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_e2afe711c736
+    evidence: ev_7fdc5eee27e5
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -85,10 +85,10 @@ generated:
     symbol: SetRandomStateComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e2afe711c736
+  - id: ev_7fdc5eee27e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetRandomStateMessageEvent.java
     symbol: SetRandomStateMessageEvent
     line: 14

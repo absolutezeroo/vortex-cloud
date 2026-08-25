@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:695a9d918623167c7e5e8e1647a95a17827717f16813a3f14a88759976929e19"
+generated_digest: "sha256:6c448720f7eb36456e45b9f799ad2324cee0c37d264417d52936f65cf298f5a4"
 generated:
   name: SecondsUntil
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_6f89aceca88f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_939963c9c69f
+    evidence: ev_3b20f5d94c93
   evidence:
   - id: ev_901d7a618465
     kind: client_parser
@@ -72,10 +72,10 @@ generated:
     symbol: SecondsUntilMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_939963c9c69f
+  - id: ev_3b20f5d94c93
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/SecondsUntilMessageComposer.java
     symbol: SecondsUntilMessageComposer
     line: 17

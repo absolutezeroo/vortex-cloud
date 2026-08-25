@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c2cb68482f8502214132f61e0af039357e09f31a2a91a0727539a73fd57a6196"
+generated_digest: "sha256:4a51ed5d5b3cbe9a5d3cec7e9110008ad66c2ba2572b1451a24b20e41c7f3d1f"
 generated:
   id: uk_f8a5d47401
   subject: "outgoing/WiredEffectData: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: WiredEffectDataMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_e0250596522f
+  - id: ev_183e8a7682a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/WiredEffectDataMessageComposer.java
     symbol: WiredEffectDataMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e9553b5ecd639f3d88893e42d18bc2d98c446d0ba6e5f9c51d9bf31555ae6ab4"
+generated_digest: "sha256:f46935417142d3605ff143c3e3a81163b68f9e1d2ab9ae3ed19defc122440351"
 generated:
   name: SetUIFlags
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_adf6c8637823
+    - ev_a3f261b0f13c
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_40d1288b2a8a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_adf6c8637823
+    evidence: ev_a3f261b0f13c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: SetUIFlagsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_adf6c8637823
+  - id: ev_a3f261b0f13c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetUIFlagsMessageEvent.java
     symbol: SetUIFlagsMessageEvent
     line: 9

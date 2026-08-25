@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ed6f3d36f29757962b7e02e47825e2c52f59eccddb020bc8af0792d781b45f5"
+generated_digest: "sha256:e44328724ddd8aae0d9c5bbe2b10c07720f1c6c77ff192f8865d73a4900c9b57"
 generated:
   name: CameraPurchaseOK
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_ec9ed7f46a81
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_64de604792e9
+    evidence: ev_81a15901ad45
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -60,10 +60,10 @@ generated:
     symbol: CameraPurchaseOKMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_64de604792e9
+  - id: ev_81a15901ad45
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/CameraPurchaseOKMessageComposer.java
     symbol: CameraPurchaseOKMessageComposer
     line: 9

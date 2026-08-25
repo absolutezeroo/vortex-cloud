@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fec63dbc1a603f7e449c1f33ecbc7307f296e9f2cbf840923b49eb1ec0f4bcef"
+generated_digest: "sha256:0378364837ca986717401d09f7cc85f70de994f565e2f7b0ca979f4066e9613d"
 generated:
   name: CustomStackingHeightUpdate
   direction: outgoing
@@ -43,14 +43,14 @@ generated:
     - int32
     - int32
     evidence: ev_73a530ef4921
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_0b395198d796
+    evidence: ev_56c414540807
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -68,10 +68,10 @@ generated:
     symbol: CustomStackingHeightUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0b395198d796
+  - id: ev_56c414540807
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/CustomStackingHeightUpdateMessageComposer.java
     symbol: CustomStackingHeightUpdateMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1e88d259d03b621f86bdf7265b59a0902e8fd8d59ddf525a85689f3458d9d025"
+generated_digest: "sha256:d3e286e106643ebabde260878e822b5699d027bdbe07288a9fff6a09f88f04e2"
 generated:
   name: SetRelationshipStatus
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_f3d9003af4d3
-    - ev_cbcd1a6ab7d2
+    - ev_5a3988a750fc
   - index: 1
     name: relation_id
     type: int32
@@ -33,7 +33,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_f3d9003af4d3
-    - ev_cbcd1a6ab7d2
+    - ev_5a3988a750fc
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -49,14 +49,14 @@ generated:
     partial: true
     types: []
     evidence: ev_8718ed5f5e94
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_cbcd1a6ab7d2
+    evidence: ev_5a3988a750fc
   evidence:
   - id: ev_f3d9003af4d3
     kind: client_call_site
@@ -74,10 +74,10 @@ generated:
     symbol: SetRelationshipStatusComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cbcd1a6ab7d2
+  - id: ev_5a3988a750fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SetRelationshipStatusMessageEvent.java
     symbol: SetRelationshipStatusMessageEvent
     line: 11

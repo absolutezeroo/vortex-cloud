@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d97c5a86f6b3c8e79214e406bc396994ef14aa7650db9dd5427eccae7932ecc4"
+generated_digest: "sha256:3a607ccdefa1fbbdf5e26887d3dc603ff85ca6947733cc8a839911e94d5dea7d"
 generated:
   id: avatar.check_user_name
   domain: avatar
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

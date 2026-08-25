@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1cb2b5e187866960a7c704c907e29268a446971d55804fbf8df8e66b5c777423"
+generated_digest: "sha256:ca5bda72b0779e4c758973f99694b0c200bb3c8270b303642ccbcf29a2d03f97"
 generated:
   id: cf_3a6dd74546
   kind: behaviour
   subject: "GetRoomAdPurchaseInfo: packets emitted in response"
   packet: GetRoomAdPurchaseInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: RoomAdPurchaseInfo
-    evidence: ev_1d87a1044b66
+    evidence: ev_9d0184fc3bfa
   - origin: vortex
     authority: vortex_emulator
     claim: RoomAdPurchaseInfoEvent
     evidence: ev_30c3dfabb1ae
   evidence:
-  - id: ev_1d87a1044b66
+  - id: ev_9d0184fc3bfa
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/promotions/GetRoomAdPurchaseInfoEvent.java
     symbol: GetRoomAdPurchaseInfoEvent
     line: 12

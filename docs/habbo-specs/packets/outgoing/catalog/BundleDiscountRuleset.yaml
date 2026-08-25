@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2436e84ad87bbafb6e008165e1a948bba0c6cd90f54d236f7f0da2dbd6dec3cd"
+generated_digest: "sha256:eadab92036c44513779cadf17b97c74a4e8e8532d461f3777d3dccad9721bc67"
 generated:
   name: BundleDiscountRuleset
   direction: outgoing
@@ -91,7 +91,7 @@ generated:
     partial: true
     types: []
     evidence: ev_f66855c61a60
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -102,7 +102,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_0666b3ef6ae1
+    evidence: ev_7c86045f67b5
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -127,10 +127,10 @@ generated:
     symbol: BundleDiscountRulesetMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0666b3ef6ae1
+  - id: ev_7c86045f67b5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/BundleDiscountRulesetMessageComposer.java
     symbol: BundleDiscountRulesetMessageComposer
     line: 15

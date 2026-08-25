@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6e41b8d6306f12b65016ca70735fb1f84d26281c179e39e63b6846569ad18e58"
+generated_digest: "sha256:8a50b01eb2c3899b2888126ce6fba8006c5da877fab36d18a08e425c8e205c7b"
 generated:
   id: uk_57815c3c00
   subject: "outgoing/LeftQueue: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: LeftQueueMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_112519e23237
+  - id: ev_3e4994e486d0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LeftQueueMessageComposer.java
     symbol: LeftQueueMessageComposer
     line: 9

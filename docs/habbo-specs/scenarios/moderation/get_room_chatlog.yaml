@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6a4f47ddb214184190f39582f1415d36ded782f557c141267b90e67650099786"
+generated_digest: "sha256:e2999b01e023605c28d1723f90a68184315da8e1fbc930e7a2c0e7746978fb8e"
 generated:
   feature: moderation.get_room_chatlog
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0b68e4953420
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomChatlog
-      evidence: ev_13a454a446af
+      evidence: ev_e32607651e66
   - scenario: moderation.get_room_chatlog.guard_1
     title: "get room chatlog: the guard '!permissions.HasAny(Capabilities.Moderation.Chatlogs, Cap...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0b68e4953420
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomChatlog
-      evidence: ev_13a454a446af
+      evidence: ev_e32607651e66
   - scenario: moderation.get_room_chatlog.guard_2
     title: "get room chatlog: the guard 'playerId <= 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomChatlog
-      evidence: ev_13a454a446af
+      evidence: ev_e32607651e66
   - scenario: moderation.get_room_chatlog.success
     title: "get room chatlog: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - RoomChatlogEvent
       evidence: ev_0b68e4953420
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomChatlog
-      evidence: ev_13a454a446af
+      evidence: ev_e32607651e66
   evidence:
-  - id: ev_13a454a446af
+  - id: ev_e32607651e66
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetRoomChatlogMessageEvent.java
     symbol: GetRoomChatlogMessageEvent
     line: 12

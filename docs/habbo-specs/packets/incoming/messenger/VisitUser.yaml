@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5a3992ed4076ee7007cd3fb182534a8a3feba1fef6dc7a844fee4710a2c13f31"
+generated_digest: "sha256:aedff679e7302740559d95e631c273950d0378ef70d0589b15f6e3dff633cb38"
 generated:
   name: VisitUser
   direction: incoming
@@ -41,13 +41,13 @@ generated:
     types:
     - string
     evidence: ev_1a926b2d411c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_d60769819feb
+    evidence: ev_b3f57a983a5e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: VisitUserComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d60769819feb
+  - id: ev_b3f57a983a5e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/VisitUserMessageEvent.java
     symbol: VisitUserMessageEvent
     line: 16

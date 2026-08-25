@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ac42b7e14e02d1015bcd2f896eb8af3fe1ee73cdf5137d9c58c0acb6ebddc44b"
+generated_digest: "sha256:dbc84c50ec9f35c6b95abe0162c75d0aa793a6badead5ccc0c488df7d5205a82"
 generated:
   id: cf_19d153d071
   kind: behaviour
   subject: "GetRelationshipStatusInfo: packets emitted in response"
   packet: GetRelationshipStatusInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: RelationshipStatusInfo then RelationshipStatusInfo
-    evidence: ev_ee8c80c7a5fa
+    evidence: ev_463c147f250f
   - origin: vortex
     authority: vortex_emulator
     claim: RelationshipStatusInfoEvent
     evidence: ev_c2d88087cd11
   evidence:
-  - id: ev_ee8c80c7a5fa
+  - id: ev_463c147f250f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetRelationshipStatusInfoMessageEvent.java
     symbol: GetRelationshipStatusInfoMessageEvent
     line: 11

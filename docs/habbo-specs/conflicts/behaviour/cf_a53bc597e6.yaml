@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7c2d5ccd1382613ef263c43e1ef18abb1a0c5ed488faaf93971667a72f973d87"
+generated_digest: "sha256:82bd51b0f7a9171c128c5fa1e94a1b4db7e489d20de155ccdeae1a77697650ce"
 generated:
   id: cf_a53bc597e6
   kind: behaviour
   subject: "GetRoomSettings: packets emitted in response"
   packet: GetRoomSettings
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: RoomSettingsData
-    evidence: ev_f07514c3244b
+    evidence: ev_92eea08f9ac2
   - origin: vortex
     authority: vortex_emulator
     claim: RoomSettingsDataEvent
     evidence: ev_41f50501910b
   evidence:
-  - id: ev_f07514c3244b
+  - id: ev_92eea08f9ac2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetRoomSettingsMessageEvent.java
     symbol: GetRoomSettingsMessageEvent
     line: 10

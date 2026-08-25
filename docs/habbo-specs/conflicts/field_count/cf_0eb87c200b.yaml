@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e23c91e1470cfe34fd7e412730a619a91186b4fea944e08a49b74dc3e39fa884"
+generated_digest: "sha256:00a007e099be597e35a6030b38d144687fce73cc5fa4cd595b10e31a37ed9345"
 generated:
   id: cf_0eb87c200b
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "28 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, int32, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
     evidence: ev_932e3f586958
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "30 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
-    evidence: ev_2440daf3bc54
+    evidence: ev_0e04bc2bcf61
   - origin: vortex
     authority: vortex_emulator
     claim: "28 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, array, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_3619
     line: 211
     note: official client build WIN63-202607011411-782849652
-  - id: ev_2440daf3bc54
+  - id: ev_0e04bc2bcf61
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetInfoMessageComposer.java
     symbol: PetInfoMessageComposer
     line: 26

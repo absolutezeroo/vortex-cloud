@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d9955d9e182be1298a3bd5139248886fcdbdbf3533b732bbdd8809a8acb4d181"
+generated_digest: "sha256:b4a67df816c9f7d25568631ab075e94de0e6410bae0ef94fcc2d8a611f07eba5"
 generated:
   feature: groups.get_threads
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e7ca800ad2bd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ErrorReport
       - ForumData
       - GuildForumThreads
-      evidence: ev_8667852b897b
+      evidence: ev_b6b0d3281c8f
   - scenario: groups.get_threads.guard_1
     title: "get threads: the guard 'page is null' holds"
     given:
@@ -58,14 +58,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e7ca800ad2bd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ErrorReport
       - ForumData
       - GuildForumThreads
-      evidence: ev_8667852b897b
+      evidence: ev_b6b0d3281c8f
   - scenario: groups.get_threads.guard_2
     title: "get threads: the guard 'group is null || group.ForumSettings is null' holds"
     given:
@@ -84,14 +84,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ErrorReport
       - ForumData
       - GuildForumThreads
-      evidence: ev_8667852b897b
+      evidence: ev_b6b0d3281c8f
   - scenario: groups.get_threads.guard_3
     title: "get threads: the guard '!CanRead(group.ForumSettings, role)' holds"
     given:
@@ -110,14 +110,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ErrorReport
       - ForumData
       - GuildForumThreads
-      evidence: ev_8667852b897b
+      evidence: ev_b6b0d3281c8f
   - scenario: groups.get_threads.success
     title: "get threads: the request is accepted"
     given:
@@ -136,19 +136,19 @@ generated:
       emits:
       - ForumThreads
       evidence: ev_09932710687b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ErrorReport
       - ForumData
       - GuildForumThreads
-      evidence: ev_8667852b897b
+      evidence: ev_b6b0d3281c8f
   evidence:
-  - id: ev_8667852b897b
+  - id: ev_b6b0d3281c8f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetThreadsMessageEvent.java
     symbol: GetThreadsMessageEvent
     line: 12

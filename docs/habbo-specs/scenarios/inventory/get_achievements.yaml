@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:56f719fc27d816d1f19a1aba52907201918f431fab5cf580ea174291f15e89d2"
+generated_digest: "sha256:e349e805b2a4fbae95dfe741019343bb488a1b2beac126be90f799fdeee0bbad"
 generated:
   feature: inventory.get_achievements
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a7798658d9db
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Achievements
-      evidence: ev_77faa2ed35e1
+      evidence: ev_ce52f84194ad
   - scenario: inventory.get_achievements.guard_1
     title: "get achievements: the guard 'definitions.IsEmpty' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b6254b352078
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Achievements
-      evidence: ev_77faa2ed35e1
+      evidence: ev_ce52f84194ad
   - scenario: inventory.get_achievements.success
     title: "get achievements: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - AchievementsEvent
       evidence: ev_6a825bb2f759
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Achievements
-      evidence: ev_77faa2ed35e1
+      evidence: ev_ce52f84194ad
   evidence:
-  - id: ev_77faa2ed35e1
+  - id: ev_ce52f84194ad
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/achievements/GetAchievementsEvent.java
     symbol: GetAchievementsEvent
     line: 8

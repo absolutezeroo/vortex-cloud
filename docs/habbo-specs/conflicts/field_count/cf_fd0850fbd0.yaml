@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e0c5eb53b955b93c24a1f88cb37294bc0388dfb23171027fc76e5ce200cf96ce"
+generated_digest: "sha256:7f40e34c78bd6549a6cfc53d8832e46d004787ca7088e723395525d2e61cfb55"
 generated:
   id: cf_fd0850fbd0
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "3 fields: int32, int32, boolean"
     evidence: ev_f2e533dcad6f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_143cee93285c
+    evidence: ev_3387b273f393
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, boolean"
@@ -50,10 +50,10 @@ generated:
     symbol: PickupObjectComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_143cee93285c
+  - id: ev_3387b273f393
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PickupObjectMessageEvent.java
     symbol: PickupObjectMessageEvent
     line: 12

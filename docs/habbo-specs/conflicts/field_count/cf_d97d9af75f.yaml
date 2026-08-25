@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:39f1f18ed599f5444ce29c00e021d492d7198fd2765ceb7391e334de532492b3"
+generated_digest: "sha256:1f680663d0ae7d0149819e308baea236427cc88c52a19c352014ac43e9290324"
 generated:
   id: cf_d97d9af75f
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "5 fields: int32, int32, int32, int32, int32"
     evidence: ev_68ba38324449
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "10 fields: int32, int32, int32, int32, int32, int32, int32, int32, int32, int32"
-    evidence: ev_9a111e3796fe
+    evidence: ev_991f7155ac72
   evidence:
   - id: ev_68ba38324449
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_4056
     line: 60
     note: official client build WIN63-202607011411-782849652
-  - id: ev_9a111e3796fe
+  - id: ev_991f7155ac72
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/NowPlayingMessageComposer.java
     symbol: NowPlayingMessageComposer
     line: 20

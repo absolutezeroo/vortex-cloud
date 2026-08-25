@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:45d91ffb4d7b9b82d2510051b3dbb315d2d66574722daa02bac2dcac5dd58996"
+generated_digest: "sha256:e5f7f4d455fd27e81f4cc3a707758bc654138abb3a98e0ab5836f49229f7e38a"
 generated:
   name: BuyMarketplaceOffer
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_494594a64c59
+    - ev_f0c1fa94e7f5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_023db322aa83
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_494594a64c59
+    evidence: ev_f0c1fa94e7f5
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: BuyMarketplaceOfferComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_494594a64c59
+  - id: ev_f0c1fa94e7f5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/BuyMarketplaceOfferMessageEvent.java
     symbol: BuyMarketplaceOfferMessageEvent
     line: 8

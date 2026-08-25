@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fea69f30f334806ab53e1d4b97d4985484d6f12ab69124246c776897057f061a"
+generated_digest: "sha256:676fb2905123c82d87993a6a76ef2c1d34abe506ba2cfff1444931f4b6f0f8e3"
 generated:
   id: cf_3814e339a4
   kind: field_count
@@ -29,10 +29,10 @@ generated:
     authority: multi_implementation
     claim: "2 fields: int32, block"
     evidence: ev_126e24886c2d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "16 fields: int32, int32, int32, int32, string, int32, int32, string, int32, int32, int32, int32, string, int32, int32, string"
-    evidence: ev_4e9b229af0e8
+    evidence: ev_ff156edc6bb1
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -62,10 +62,10 @@ generated:
     symbol: UserUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4e9b229af0e8
+  - id: ev_ff156edc6bb1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserUpdateMessageComposer.java
     symbol: UserUpdateMessageComposer
     line: 38

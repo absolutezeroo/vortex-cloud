@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ef24446267a1b2bc73c2bccde015d574a138972c0936a4e935186071ee2981f"
+generated_digest: "sha256:811c1cb80d6decdae0ecb376d067792d201538c75bad1de62e38713ce06cd986"
 generated:
   name: EmailStatusResult
   direction: outgoing
@@ -49,7 +49,7 @@ generated:
     - boolean
     - boolean
     evidence: ev_3738e7130f43
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - string
     - boolean
     - boolean
-    evidence: ev_04b66d098f7d
+    evidence: ev_3e3629712b89
   evidence:
   - id: ev_3738e7130f43
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: _SafeCls_1994
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_04b66d098f7d
+  - id: ev_3e3629712b89
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/EmailStatusResultMessageComposer.java
     symbol: EmailStatusResultMessageComposer
     line: 19

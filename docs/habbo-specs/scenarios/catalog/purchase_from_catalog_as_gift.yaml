@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7fc9a6a8033ff775c12482e9a30b9f133ff8d09fea468c84d3c999401cf028ac"
+generated_digest: "sha256:ed7c19fd878eaf047e9ee4e39be7b16822d5ee686cbcced8a5fc2cc5e23c5038"
 generated:
   feature: catalog.purchase_from_catalog_as_gift
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3fee5aa08d6a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -64,7 +64,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_1
     title: "purchase from catalog as gift: the guard 'receiverId is null' holds"
     given:
@@ -85,7 +85,7 @@ generated:
       - GiftReceiverNotFoundEvent
       - PurchaseOK
       evidence: ev_3fee5aa08d6a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -117,7 +117,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_10
     title: "purchase from catalog as gift: the guard '_registry is null' holds"
     given:
@@ -136,7 +136,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -168,7 +168,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_2
     title: "purchase from catalog as gift: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -187,7 +187,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -219,7 +219,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_3
     title: "purchase from catalog as gift: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -238,7 +238,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -270,7 +270,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_4
     title: "purchase from catalog as gift: the guard 'foundId is null' holds"
     given:
@@ -289,7 +289,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -321,7 +321,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_5
     title: "purchase from catalog as gift: the guard 'receiverId.Value <= 0' holds"
     given:
@@ -340,7 +340,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_b43e4f79cdaa
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -372,7 +372,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_6
     title: "purchase from catalog as gift: the guard '!snapshot.OffersById.TryGetValue(offerId, out CatalogOffe...' holds"
     given:
@@ -391,7 +391,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_b43e4f79cdaa
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -423,7 +423,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_7
     title: "purchase from catalog as gift: the guard '!offer.CanGift' holds"
     given:
@@ -442,7 +442,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_b43e4f79cdaa
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -474,7 +474,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_8
     title: "purchase from catalog as gift: the guard '!result.Succeeded' holds"
     given:
@@ -493,7 +493,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_b43e4f79cdaa
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -525,7 +525,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_9
     title: "purchase from catalog as gift: the guard 'credits <= 0 || _state.ClubLevel == 0' holds"
     given:
@@ -544,7 +544,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -576,7 +576,7 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.success
     title: "purchase from catalog as gift: the request is accepted"
     given:
@@ -596,7 +596,7 @@ generated:
       - GiftReceiverNotFoundEvent
       - PurchaseOK
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -628,12 +628,12 @@ generated:
       - PurchaseOK
       - PurchaseError
       - PurchaseError
-      evidence: ev_b2e01469d96f
+      evidence: ev_24d5bc76ecea
   evidence:
-  - id: ev_b2e01469d96f
+  - id: ev_24d5bc76ecea
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseFromCatalogAsGiftEvent.java
     symbol: PurchaseFromCatalogAsGiftEvent
     line: 41

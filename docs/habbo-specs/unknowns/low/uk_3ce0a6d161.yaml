@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e6047657e1871acfc11b0230cad98c757638570fd83197fa2dd9e325173f0e7f"
+generated_digest: "sha256:38bb505f30b5e6caaeec415829ce2bcd0318a4a341bc27429e22cd80466e9015"
 generated:
   id: uk_3ce0a6d161
   subject: "outgoing/NewUserExperienceGiftOffer: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: _SafeCls_3894
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_467683c35b6e
+  - id: ev_8cc1adfe7699
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/nux/NewUserExperienceGiftOfferMessageComposer.java
     symbol: NewUserExperienceGiftOfferMessageComposer
     line: 18

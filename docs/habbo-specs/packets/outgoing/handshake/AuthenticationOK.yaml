@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7e88a2229ada39372a3e08ea5d3979517c005a01d4fd1a5529ce51fed43695c2"
+generated_digest: "sha256:d2fd7accaf64e2813f3ebfcdb92fc08fe8ddddcec9f9db2e5e02c3f7b22bb68a"
 generated:
   name: AuthenticationOK
   direction: outgoing
@@ -67,12 +67,12 @@ generated:
     - int32
     - int32
     evidence: ev_febc4be08fc9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_66f30b9186e5
+    evidence: ev_abde97df5c93
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: AuthenticationOKMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_66f30b9186e5
+  - id: ev_abde97df5c93
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/AuthenticationOKMessageComposer.java
     symbol: AuthenticationOKMessageComposer
     line: 9

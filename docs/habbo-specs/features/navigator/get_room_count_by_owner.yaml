@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f22a40cda0f568482cd0ead13ae63dfef75780f844df3c42f5e8f57561d2979f"
+generated_digest: "sha256:688b6b1bdba84d337153743e92a16fc58eb42110e63f7e68c03fd0b47b3932c4"
 generated:
   id: navigator.get_room_count_by_owner
   domain: navigator
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

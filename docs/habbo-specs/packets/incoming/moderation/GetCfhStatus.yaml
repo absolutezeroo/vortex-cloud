@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4d29079b5a15ab6c5bda2fb37a26c374939495c29c30373c88b4da851ad69edf"
+generated_digest: "sha256:59ee9dcde56f28f8967dd30398326d0c4bb0ff231cc7421391a4d7a192676090"
 generated:
   name: GetCfhStatus
   direction: incoming
@@ -33,12 +33,12 @@ generated:
     types:
     - boolean
     evidence: ev_b4c9645fea35
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_476e0479e573
+    evidence: ev_038cb4a178c0
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -62,10 +62,10 @@ generated:
     symbol: GetCfhStatusComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_476e0479e573
+  - id: ev_038cb4a178c0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/helper/GetCfhStatusMessageEvent.java
     symbol: GetCfhStatusMessageEvent
     line: 9

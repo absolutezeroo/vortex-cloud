@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a96b6e29c476ff9d9d59edc35755469304738adb08ab6f37a44959ea3e1af9d9"
+generated_digest: "sha256:17bd1cf78012b55f63aae8b086c1ab333566e4d6c0c3627e4bf14c4df62d57a2"
 generated:
   name: PostItPlaced
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - int32
     - int32
     evidence: ev_ea2414a5acb4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_13aa72688a74
+    evidence: ev_d80769095697
   evidence:
   - id: ev_ea2414a5acb4
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_2620
     line: 19
     note: official client build WIN63-202607011411-782849652
-  - id: ev_13aa72688a74
+  - id: ev_d80769095697
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/PostItPlacedMessageComposer.java
     symbol: PostItPlacedMessageComposer
     line: 18

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b4b5ae21f9e8f3f456b89eadb86b14affde541269d596d7f7807cbefbefa052a"
+generated_digest: "sha256:ed9fdd28a8611843eb93b80ebd745eb765dc105f36076abc8f47fecd5e30e976"
 generated:
   name: PlaceBot
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_380f84a21ec5
-    - ev_65af4b15c668
+    - ev_84ac7b883af8
   - index: 1
     name: x
     type: int32
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_380f84a21ec5
-    - ev_65af4b15c668
+    - ev_84ac7b883af8
   - index: 2
     name: y
     type: int32
@@ -42,7 +42,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_380f84a21ec5
-    - ev_65af4b15c668
+    - ev_84ac7b883af8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3ffcf6ea526a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_65af4b15c668
+    evidence: ev_84ac7b883af8
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -94,10 +94,10 @@ generated:
     symbol: PlaceBotComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_65af4b15c668
+  - id: ev_84ac7b883af8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/PlaceBotMessageEvent.java
     symbol: PlaceBotMessageEvent
     line: 10

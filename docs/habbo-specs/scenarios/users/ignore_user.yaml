@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ad98667f23bbe2afe206ff779c06598a7d967ecfc7309838bf560bb972ec1128"
+generated_digest: "sha256:fafaa47d0518caa3f001cccd82ec6298b1310215cf6147d78545c0cc3a83bf75"
 generated:
   feature: users.ignore_user
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4f953489e102
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_636e568dfb4a
+      evidence: ev_9877c69635f8
   - scenario: users.ignore_user.guard_1
     title: "ignore user: the guard '_ignoredIds.Contains(targetId.Value)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_636e568dfb4a
+      evidence: ev_9877c69635f8
   - scenario: users.ignore_user.guard_2
     title: "ignore user: the guard 'selfEntity is null || targetEntity is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e805723a88fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_636e568dfb4a
+      evidence: ev_9877c69635f8
   - scenario: users.ignore_user.success
     title: "ignore user: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - IgnoreResult
       evidence: ev_4f953489e102
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IgnoreResult
-      evidence: ev_636e568dfb4a
+      evidence: ev_9877c69635f8
   evidence:
-  - id: ev_636e568dfb4a
+  - id: ev_9877c69635f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/IgnoreUserMessageEvent.java
     symbol: IgnoreUserMessageEvent
     line: 12

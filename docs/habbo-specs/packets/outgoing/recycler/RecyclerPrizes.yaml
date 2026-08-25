@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:97057557505a206b8b581660e2c0103e7491675868901bdfdc2e637087172f3c"
+generated_digest: "sha256:3788adbf507182f18de1791f863f0b890070072b89503ab0e56a85cea7fa64d6"
 generated:
   name: RecyclerPrizes
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 6
     name: unknown_6
     type: string
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c53ea7285538
+    - ev_0a05247d7a82
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -103,7 +103,7 @@ generated:
     - int32
     - int32
     evidence: ev_76d02d68f83f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 8
     partial: false
@@ -116,7 +116,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_c53ea7285538
+    evidence: ev_0a05247d7a82
   evidence:
   - id: ev_76d02d68f83f
     kind: client_parser
@@ -134,10 +134,10 @@ generated:
     symbol: RecyclerPrizesMessageParser
     line: 17
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_c53ea7285538
+  - id: ev_0a05247d7a82
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/RecyclerPrizesMessageComposer.java
     symbol: RecyclerPrizesMessageComposer
     line: 14

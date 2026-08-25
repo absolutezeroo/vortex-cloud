@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d90a2dee82c3d73ecec9617779008fd21f678e43b65a0404b629fd1c259e1ff4"
+generated_digest: "sha256:cdba8378d0ef4f170afb472b8ec96a9795785b10b29c78461ec4c1e45c84c28b"
 generated:
   feature: catalog.builders_club_place_room_item
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a5bea35cc772
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_1
     title: "builders club place room item: the guard 'item is null' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a5bea35cc772
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_10
     title: "builders club place room item: the guard '!await _roomGrain.FurniModule.ValidateNewFloorItemPlaceme...' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_11
     title: "builders club place room item: the guard 'rentedSpace is null' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_2
     title: "builders club place room item: the guard 'playerId <= 0 || offerId <= 0' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_3
     title: "builders club place room item: the guard '!subscription.IsActive' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_4
     title: "builders club place room item: the guard 'offer is null' holds"
     given:
@@ -206,7 +206,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,7 +216,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_5
     title: "builders club place room item: the guard 'product is null || product.FurniDefinitionId <= 0' holds"
     given:
@@ -235,7 +235,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -245,7 +245,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_6
     title: "builders club place room item: the guard '!isActive' holds"
     given:
@@ -264,7 +264,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e81f0934fd67
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -274,7 +274,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_7
     title: "builders club place room item: the guard 'owned.Length >= furniLimit' holds"
     given:
@@ -293,7 +293,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c6396662000a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -303,7 +303,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_8
     title: "builders club place room item: the guard '!await ActionModule.PlaceFloorItemAsync(ctx, item, x, y, ...' holds"
     given:
@@ -322,7 +322,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0080929ab318
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -332,7 +332,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.guard_9
     title: "builders club place room item: the guard 'item is not IRoomFloorItem floorItem' holds"
     given:
@@ -351,7 +351,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -361,7 +361,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   - scenario: catalog.builders_club_place_room_item.success
     title: "builders club place room item: the request is accepted"
     given:
@@ -382,7 +382,7 @@ generated:
       - ObjectAdd
       - Users
       evidence: ev_0080929ab318
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -392,12 +392,12 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_3da8755a1513
+      evidence: ev_62338d616f96
   evidence:
-  - id: ev_3da8755a1513
+  - id: ev_62338d616f96
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubPlaceRoomItemMessageEvent.java
     symbol: BuildersClubPlaceRoomItemMessageEvent
     line: 15

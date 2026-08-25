@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f57a6d88fbc3fbfd9e58f5602d1a913790ebf33c22e3db765fdd4ace8c994c3d"
+generated_digest: "sha256:167854542d3ea0e2d78dd69302e26ec436a8c459bcbd42a3d30a0c346fea2933"
 generated:
   name: BuildersClubPlaceRoomItem
   direction: incoming
@@ -80,7 +80,7 @@ generated:
     - int32
     - int32
     evidence: ev_7f744d978465
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 7
     partial: false
@@ -92,7 +92,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_3da8755a1513
+    evidence: ev_62338d616f96
   - origin: vortex
     authority: vortex_emulator
     field_count: 7
@@ -123,10 +123,10 @@ generated:
     symbol: BuildersClubPlaceRoomItemComposer
     line: 15
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3da8755a1513
+  - id: ev_62338d616f96
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubPlaceRoomItemMessageEvent.java
     symbol: BuildersClubPlaceRoomItemMessageEvent
     line: 15

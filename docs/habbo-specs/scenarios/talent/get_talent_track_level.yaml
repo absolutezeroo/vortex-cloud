@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:16ecf8368410e1959a94085ebcb3848fb05951a923938557a62c5988e2caedd9"
+generated_digest: "sha256:b8f67f94d57bc9fa2e36c89e93e534147808d5814d151a4c9e1586bf037e07cd"
 generated:
   feature: talent.get_talent_track_level
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_363ccb5f8e0f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - TalentTrackLevel
-      evidence: ev_9213a40c14f4
+      evidence: ev_0f2aba9426bf
   evidence:
-  - id: ev_9213a40c14f4
+  - id: ev_0f2aba9426bf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetTalentTrackLevelMessageEvent.java
     symbol: GetTalentTrackLevelMessageEvent
     line: 8

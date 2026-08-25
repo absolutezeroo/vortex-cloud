@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f239a6db496853f5f27c8b72997ea1227dc4543477ab79126f31b8ad7df44b8f"
+generated_digest: "sha256:e21908437216ed9936bd180dcb0aadba88214e72264850609eea630012893d12"
 generated:
   id: cf_d4931b610a
   kind: field_count
@@ -29,10 +29,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, short"
     evidence: ev_b676dc5d48b6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, int32, short, short, short"
-    evidence: ev_a2d804f43f85
+    evidence: ev_24a7b46d4dce
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, array"
@@ -62,10 +62,10 @@ generated:
     symbol: HeightMapMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a2d804f43f85
+  - id: ev_24a7b46d4dce
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/HeightMapMessageComposer.java
     symbol: HeightMapMessageComposer
     line: 18

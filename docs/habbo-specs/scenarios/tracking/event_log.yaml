@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:522934732e6106f289c71591d0dde0051e87c0a5d5059d4e4fa108069a3f6fab"
+generated_digest: "sha256:dea3b576287a127730ca23662cdf3cf1290e28f1000b3c4dad3d175dcb303c58"
 generated:
   feature: tracking.event_log
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_782234ca990c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7518ebdf58b7
+      evidence: ev_ac1f4508f6c7
   evidence:
-  - id: ev_7518ebdf58b7
+  - id: ev_ac1f4508f6c7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/EventLogMessageEvent.java
     symbol: EventLogMessageEvent
     line: 9

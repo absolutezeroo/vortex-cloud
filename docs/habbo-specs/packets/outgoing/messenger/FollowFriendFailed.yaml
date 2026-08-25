@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e189857532832bcfe503d3ae6fbf4c239a748ec180254f0c6b4f385576211926"
+generated_digest: "sha256:4f2af79ace3c21fcc3b6f892b3e5a1b7a855b2d2250081faadac4955575450a0"
 generated:
   name: FollowFriendFailed
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d14ce611c6e1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_67e3cfb354d2
+    evidence: ev_cc1830b13444
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: FollowFriendFailedMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_67e3cfb354d2
+  - id: ev_cc1830b13444
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FollowFriendFailedMessageComposer.java
     symbol: FollowFriendFailedMessageComposer
     line: 20

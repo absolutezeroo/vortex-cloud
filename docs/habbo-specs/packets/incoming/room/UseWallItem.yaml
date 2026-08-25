@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3eede4366bc68f79e08f39c3a9fc45b6e41d3dd9f2ce8649ba71bc79cac60c67"
+generated_digest: "sha256:258dc6de50aee0b2932af1397f7662668c06978b34074dea896e3d59f50567ab"
 generated:
   name: UseWallItem
   direction: incoming
@@ -52,14 +52,14 @@ generated:
     - int32
     - int32
     evidence: ev_faa75559a5da
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_3ae454171d37
+    evidence: ev_e6b660096f4f
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -85,10 +85,10 @@ generated:
     symbol: UseWallItemComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3ae454171d37
+  - id: ev_e6b660096f4f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/UseWallItemMessageEvent.java
     symbol: UseWallItemMessageEvent
     line: 12

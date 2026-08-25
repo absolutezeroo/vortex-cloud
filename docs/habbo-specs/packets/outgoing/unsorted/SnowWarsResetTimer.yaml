@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:763788d38f2ad2ea95907c578dc2f4e8d6ef16f90b65263f33f6eb88281a2b0c"
+generated_digest: "sha256:edb138eb2243b77f75d7f93164e53aa6a9dee3e466e4ffb316c0e9afe38b6c00"
 generated:
   name: SnowWarsResetTimer
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_77e69f3a1b63
+    - ev_3b06f044c472
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_77e69f3a1b63
+    evidence: ev_3b06f044c472
   evidence:
-  - id: ev_77e69f3a1b63
+  - id: ev_3b06f044c472
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsResetTimerComposer.java
     symbol: SnowWarsResetTimerComposer
     line: 9

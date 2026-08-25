@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e3b682833b2e7f272c2f7b662552d2efbfe9034a1b9b59a2cf3cc9395979241f"
+generated_digest: "sha256:46ddb3b22e3a49bc294c1d283be21aef44b4118f396635f37991bd2306c669b9"
 generated:
   name: WelcomeGiftStatus
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_41a19443341b
+    - ev_01c688b02427
   - index: 1
     name: unknown_1
     type: boolean
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_41a19443341b
+    - ev_01c688b02427
   - index: 2
     name: unknown_2
     type: boolean
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_41a19443341b
+    - ev_01c688b02427
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_41a19443341b
+    - ev_01c688b02427
   - index: 4
     name: unknown_4
     type: boolean
@@ -57,9 +57,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_41a19443341b
+    - ev_01c688b02427
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -69,12 +69,12 @@ generated:
     - boolean
     - int32
     - boolean
-    evidence: ev_41a19443341b
+    evidence: ev_01c688b02427
   evidence:
-  - id: ev_41a19443341b
+  - id: ev_01c688b02427
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/WelcomeGiftStatusMessageComposer.java
     symbol: WelcomeGiftStatusMessageComposer
     line: 23

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:83cbb74c5bb40e0abd0cc41556ac6ee6c21893e37d8061bf332fb30ec288dee5"
+generated_digest: "sha256:3949935d778f701bd66f1398a5e02a65bb07ad1055e0f2fdf94af746e04bd10e"
 generated:
   id: cf_06703acd3d
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, int32, int32, boolean, string"
     evidence: ev_a6bb116fe03a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: string, int32, string, int32, string, boolean, string"
-    evidence: ev_28c0dd85577f
+    evidence: ev_79ed5874a1f4
   - origin: vortex
     authority: vortex_emulator
     claim: "7 fields: string, int32, string, int32, string, boolean, string"
@@ -50,10 +50,10 @@ generated:
     symbol: PresentOpenedMessage
     line: 18
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_28c0dd85577f
+  - id: ev_79ed5874a1f4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/PresentOpenedMessageComposer.java
     symbol: PresentOpenedMessageComposer
     line: 20

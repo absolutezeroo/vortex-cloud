@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d62e92f14f4110a0bb0067b26d01102492777a54e6811f31b562518b98cf3389"
+generated_digest: "sha256:accd3c5afc8512f94516d9e6425e32f775252e890c6ac50c36a4d527add11a11"
 generated:
   name: RoomChatSettings
   direction: outgoing
@@ -39,7 +39,7 @@ generated:
     partial: true
     types: []
     evidence: ev_ff979d56ad1b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -49,7 +49,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_ceb4f777926b
+    evidence: ev_1fec8be2f1c7
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -74,10 +74,10 @@ generated:
     symbol: RoomChatSettingsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ceb4f777926b
+  - id: ev_1fec8be2f1c7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomChatSettingsMessageComposer.java
     symbol: RoomChatSettingsMessageComposer
     line: 16

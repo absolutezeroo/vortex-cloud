@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5f906bf81ab2e3f0f025f31e277b3a3e86bb418e7ee91d0e3aded3299030df4c"
+generated_digest: "sha256:aee54b2debaddbfb7f96020841caf8af12dfe00f86e06bc961ddb14cf691764c"
 generated:
   id: uk_8b0ac936f5
   subject: "outgoing/SnowWarsLoadingArena: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsLoadingArena
   known_evidence:
-  - id: ev_dc908da45cff
+  - id: ev_1fa91c2530a8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsLoadingArenaComposer.java
     symbol: SnowWarsLoadingArenaComposer
     line: 14

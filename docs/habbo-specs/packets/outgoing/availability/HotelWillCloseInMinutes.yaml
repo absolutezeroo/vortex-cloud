@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a156e58ff1506bcf3f7a4bad49f8e003bb0ec1ff80c54a6e0327f12171c172ee"
+generated_digest: "sha256:b7dcfa00934d3be4c7cc9fd4a7a6d0978ae79a878cd19ec406b9c9d25dca71f1"
 generated:
   name: HotelWillCloseInMinutes
   direction: outgoing
@@ -34,13 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_3a3ff12efc59
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_940b9d9b2d9b
+    evidence: ev_98863a9ae897
   evidence:
   - id: ev_3a3ff12efc59
     kind: client_parser
@@ -50,10 +50,10 @@ generated:
     symbol: HotelWillCloseInMinutesMessageParser
     line: 22
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_940b9d9b2d9b
+  - id: ev_98863a9ae897
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/HotelWillCloseInMinutesMessageComposer.java
     symbol: HotelWillCloseInMinutesMessageComposer
     line: 15

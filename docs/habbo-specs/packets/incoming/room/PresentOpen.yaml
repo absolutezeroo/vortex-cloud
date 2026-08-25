@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e48a315accf2ae3c95a44254609acee14868d357571a8aa0ade58685f72a7bfc"
+generated_digest: "sha256:190f2b0aa3991aea21841fe5de0eb09f153975e12c9ddb05517eebb473adedc1"
 generated:
   name: PresentOpen
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_9afef2697f09
-    - ev_32e21d9223f1
+    - ev_c4fa7e863527
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_0987466ce579
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_32e21d9223f1
+    evidence: ev_c4fa7e863527
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: PresentOpenComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_32e21d9223f1
+  - id: ev_c4fa7e863527
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/recycler/PresentOpenMessageEvent.java
     symbol: PresentOpenMessageEvent
     line: 19

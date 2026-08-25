@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1957195e02375417096d2a59a3d88e0e8094d9f9e6fd8f0a8742fe6282483a44"
+generated_digest: "sha256:d64d60a0d777a5c18f6f127279faa5ba7e4d16b5df311bb474369d2889fd0df0"
 generated:
   name: CfhSanction
   direction: outgoing
@@ -107,14 +107,14 @@ generated:
     partial: true
     types: []
     evidence: ev_c1f96f635ad3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: true
     types:
     - int32
     - int32
-    evidence: ev_a93499914473
+    evidence: ev_846929880109
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -138,10 +138,10 @@ generated:
     symbol: CfhSanctionMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a93499914473
+  - id: ev_846929880109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CfhSanctionMessageComposer.java
     symbol: CfhSanctionMessageComposer
     line: 20

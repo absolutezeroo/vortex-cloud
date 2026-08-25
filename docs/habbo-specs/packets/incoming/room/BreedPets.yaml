@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0362afa9cb6e620b6385f6b25f5b534c14c61d0d976a24b7770c7d6f89a644b5"
+generated_digest: "sha256:10bcaad2936c0c115bf003968a7f8d9936bbe9cc5a31a8597ece9326c33ac39c"
 generated:
   name: BreedPets
   direction: incoming
@@ -26,21 +26,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dd94059ba81b
+    - ev_a78a45b7847f
   - index: 1
     name: pet_one
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_dd94059ba81b
+    - ev_a78a45b7847f
   - index: 2
     name: pet_two
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_dd94059ba81b
+    - ev_a78a45b7847f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -54,7 +54,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6fd5f6b1b33b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -62,7 +62,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_dd94059ba81b
+    evidence: ev_a78a45b7847f
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -88,10 +88,10 @@ generated:
     symbol: BreedPetsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd94059ba81b
+  - id: ev_a78a45b7847f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/BreedPetsMessageEvent.java
     symbol: BreedPetsMessageEvent
     line: 10

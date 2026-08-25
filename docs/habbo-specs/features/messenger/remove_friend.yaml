@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9e7e3a04fed645ef68a07bf331f1f34a5a3a1ff49ce16df9ee7bad2262f670e0"
+generated_digest: "sha256:efdf80c0438cd125806ab840e622cd3bc2a356fecd6bc8568c2c10ed9b0cdf92"
 generated:
   id: messenger.remove_friend
   domain: messenger
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

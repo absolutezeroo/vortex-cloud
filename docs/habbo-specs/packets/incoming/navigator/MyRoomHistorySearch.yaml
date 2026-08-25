@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:77a9b3935d19cf65777f85178e7a1a29f9988fe85863d0acb80362ac0a497b20"
+generated_digest: "sha256:34750e14caeb03d3694dff8b155ded684cb98687b794e8bb8738933ce2202c84"
 generated:
   name: MyRoomHistorySearch
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_9698b9d38eb8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e4f69a004d60
+    evidence: ev_4e6f951daaf3
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: MyRoomHistorySearchComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e4f69a004d60
+  - id: ev_4e6f951daaf3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyRoomHistorySearchMessageEvent.java
     symbol: MyRoomHistorySearchMessageEvent
     line: 8

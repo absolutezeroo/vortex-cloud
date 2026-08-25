@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3c71c4bef6fabc08b04f991c26d2a1f4887e857ebc7950b2237bc1f812d30554"
+generated_digest: "sha256:f09ffd3d3d264ba4d24ec55ba2678040726999f998caa36176a8fe2d48082f16"
 generated:
   name: GetGuildEditorData
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_8ce9d51efedb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_c4f2cc7dfef7
+    evidence: ev_a4ea70433f10
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetGuildEditorDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c4f2cc7dfef7
+  - id: ev_a4ea70433f10
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildEditorDataMessageEvent.java
     symbol: GetGuildEditorDataMessageEvent
     line: 8

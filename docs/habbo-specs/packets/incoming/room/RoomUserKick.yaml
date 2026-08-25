@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bb5b5e3bb474c6939af3477e5dc1d3fc2f87b4ff33e9296791e526d779a96d26"
+generated_digest: "sha256:9d3398b106dd218aaea37115322506d31c8cec218fd76ccb408f2fe732959e79"
 generated:
   name: RoomUserKick
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5b71d7a7d140
+    - ev_e01654f37c20
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5b71d7a7d140
+    evidence: ev_e01654f37c20
   evidence:
-  - id: ev_5b71d7a7d140
+  - id: ev_e01654f37c20
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/RoomUserKickMessageEvent.java
     symbol: RoomUserKickMessageEvent
     line: 16

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:64a6f1d07ad270f9399692a45ee766fcf14c0df8faac53a943a001b7dc2c45d6"
+generated_digest: "sha256:ab4780b6ed3f52918b347981bb67cb4435f9442d41dda910a55e63df2884edae"
 generated:
   id: uk_1eb0488bb7
   subject: "outgoing/UserSongDisksInventory: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: UserSongDisksInventoryMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_240e64708942
+  - id: ev_38fb843cfcb8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/UserSongDisksInventoryMessageComposer.java
     symbol: UserSongDisksInventoryMessageComposer
     line: 19

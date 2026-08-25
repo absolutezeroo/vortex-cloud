@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa9b3cfcc4afec86b302c1988d337a126ea29f740e68673ff1bb2c10118f3e19"
+generated_digest: "sha256:072544ea9fa4f8505255a2574f1cc7829b08d5f6b92a4884f004d13604b5ea61"
 generated:
   name: PetTrainingPanel
   direction: outgoing
@@ -72,7 +72,7 @@ generated:
     - int32
     - int32
     evidence: ev_e63be025a930
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -82,7 +82,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_620ba75f43ef
+    evidence: ev_e13fc2cdb549
   evidence:
   - id: ev_e63be025a930
     kind: client_parser
@@ -92,10 +92,10 @@ generated:
     symbol: PetTrainingPanelMessageParser
     line: 36
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_620ba75f43ef
+  - id: ev_e13fc2cdb549
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetTrainingPanelMessageComposer.java
     symbol: PetTrainingPanelMessageComposer
     line: 21

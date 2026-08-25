@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:01a8e1750dd3b6c759b17abf016e386a0c568d8b62ca18fd5a6d387f83eb87fa"
+generated_digest: "sha256:a13304bb1e307608322d64b1022b5fb1f41e9ba28c14826954f234b7b68d9436"
 generated:
   name: GetBotCommandConfigurationData
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_c31b4a158c03
-    - ev_2ab609649428
+    - ev_4cc8a3256c2a
   - index: 1
     name: command_id
     type: int32
@@ -50,14 +50,14 @@ generated:
     partial: true
     types: []
     evidence: ev_e4483f3192b2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_2ab609649428
+    evidence: ev_4cc8a3256c2a
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: GetBotCommandConfigurationDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2ab609649428
+  - id: ev_4cc8a3256c2a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/GetBotCommandConfigurationDataEvent.java
     symbol: GetBotCommandConfigurationDataEvent
     line: 11

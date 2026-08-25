@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:15452dfaceff3670d6ea9a92d7b6979589b4fd4132da71d751d1c7998e3b841e"
+generated_digest: "sha256:6591871f1258b5f5b2ab68c3558254af010464dba2869b79cdacc3a5a361aee0"
 generated:
   id: cf_63e5270af4
   kind: behaviour
   subject: "SelectFavouriteHabboGroup: packets emitted in response"
   packet: SelectFavouriteHabboGroup
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ExtendedProfile
-    evidence: ev_79adb2b4a4c1
+    evidence: ev_d0368c2795a3
   - origin: vortex
     authority: vortex_emulator
     claim: GroupDetailsChanged then FavoriteMembershipUpdate
     evidence: ev_3034e2af196c
   evidence:
-  - id: ev_79adb2b4a4c1
+  - id: ev_d0368c2795a3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/SelectFavouriteHabboGroupMessageEvent.java
     symbol: SelectFavouriteHabboGroupMessageEvent
     line: 13

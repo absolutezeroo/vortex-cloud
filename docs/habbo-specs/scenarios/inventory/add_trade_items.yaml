@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:630e86e3ad4360f62e2785008a83344172f071c5c29053f91b67a7c9cde26e62"
+generated_digest: "sha256:2f39ad509eb2306d1b30ffed6d8dddbafa5b251fc73fa6b1d5b755c947196fd5"
 generated:
   feature: inventory.add_trade_items
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_60dc82d4d60f
+      evidence: ev_27898759c449
   - scenario: inventory.add_trade_items.guard_1
     title: "add trade items: the guard '!TryGetSession(requesterId, out RoomTradeSession? session)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_60dc82d4d60f
+      evidence: ev_27898759c449
   - scenario: inventory.add_trade_items.guard_2
     title: "add trade items: the guard 'session.Phase != TradePhase.Building' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_60dc82d4d60f
+      evidence: ev_27898759c449
   - scenario: inventory.add_trade_items.success
     title: "add trade items: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_60dc82d4d60f
+      evidence: ev_27898759c449
   evidence:
-  - id: ev_60dc82d4d60f
+  - id: ev_27898759c449
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/AddItemToTradeEvent.java
     symbol: AddItemToTradeEvent
     line: 9

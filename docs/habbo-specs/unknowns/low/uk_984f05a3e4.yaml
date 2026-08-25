@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f3f203cf3e0fd33b9d063d1d56766ffc9535b9ab90c9d028ad8c3c5f50711c4c"
+generated_digest: "sha256:e989a8b1a97fe0534004ca0135c37ad63d468df12a81768a4c02e5381743bc81"
 generated:
   id: uk_984f05a3e4
   subject: "outgoing/FriendFurniStartConfirmation: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: FriendFurniStartConfirmationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7494edb23ff4
+  - id: ev_bdca9cd996eb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/lovelock/FriendFurniStartConfirmationMessageComposer.java
     symbol: FriendFurniStartConfirmationMessageComposer
     line: 16

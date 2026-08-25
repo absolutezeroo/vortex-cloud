@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3fdf6a65fa63e36409fb3254d8ba4063da49ad88d0bf640770c1534807ad91b7"
+generated_digest: "sha256:99b62c3730e6e9053fe4e0a3cbc6be55684907b13b2ef3cc5643db608a4bc9af"
 generated:
   id: catalog.get_owned_furniture_count
   domain: catalog
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bd4cc392f6221638bc8019eddc02a49b7ccfb79283bafb6855d67bc92b5dbb44"
+generated_digest: "sha256:624c4b67ee9c1b03101a09d8bf3f688a8c94c773b7ca47bf91f8d024d8e9b115"
 generated:
   name: UnseenItems
   direction: outgoing
@@ -64,7 +64,7 @@ generated:
     - int32
     - int32
     evidence: ev_daa4af4e1a22
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 16
     partial: false
@@ -85,7 +85,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_38bc7127caf2
+    evidence: ev_9b13f1e65de2
   evidence:
   - id: ev_daa4af4e1a22
     kind: client_parser
@@ -95,10 +95,10 @@ generated:
     symbol: _SafeCls_2693
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_38bc7127caf2
+  - id: ev_9b13f1e65de2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/UnseenItemsMessageComposer.java
     symbol: UnseenItemsMessageComposer
     line: 44

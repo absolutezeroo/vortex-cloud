@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dbfe809232dd7a9cd9fd9285252b0975eb61fdd182ee39e521386a0d6c72edec"
+generated_digest: "sha256:ceb6bc3dde00429cd1938108a6d58142d9c574f7efd0445e2b13c8195d2efd9b"
 generated:
   name: RoomDimmerChangeState
   direction: incoming
@@ -41,12 +41,12 @@ generated:
     partial: true
     types: []
     evidence: ev_647b65a2d35a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_f92446459088
+    evidence: ev_2f7c417ae82f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RoomDimmerChangeStateComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f92446459088
+  - id: ev_2f7c417ae82f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RoomDimmerChangeStateMessageEvent.java
     symbol: RoomDimmerChangeStateMessageEvent
     line: 13

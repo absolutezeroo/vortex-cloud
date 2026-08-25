@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:14998c0afa8987451a11ed9c84113d2939104634884f94c1dd11ecafcf221160"
+generated_digest: "sha256:6cc6c9c1221833ce391aabec78349d87fc1aecd8518feee803f359d39ef50028"
 generated:
   name: FlatAccessDenied
   direction: outgoing
@@ -50,13 +50,13 @@ generated:
     - int32
     - string
     evidence: ev_3688ae0b987a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_3fe201fb90b5
+    evidence: ev_cc51b57e283b
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: FlatAccessDeniedMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3fe201fb90b5
+  - id: ev_cc51b57e283b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FlatAccessDeniedMessageComposer.java
     symbol: FlatAccessDeniedMessageComposer
     line: 15

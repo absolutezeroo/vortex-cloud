@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4c1ff490b945ed541c013d58764c5bb0b2885c0749d6536857b3286e22988c8d"
+generated_digest: "sha256:c473f3b2dab353f2289d731f55bd609a3029cdaf87efed54020df2a3bcd1e382"
 generated:
   name: ExtendedProfileChanged
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_ae02c8d76df6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_6b82f7207274
+    evidence: ev_3a7056a83751
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: ExtendedProfileChangedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6b82f7207274
+  - id: ev_3a7056a83751
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/ExtendedProfileChangedMessageComposer.java
     symbol: ExtendedProfileChangedMessageComposer
     line: 15

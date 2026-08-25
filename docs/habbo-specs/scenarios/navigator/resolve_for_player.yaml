@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e997750608776e24a817fbd40904cec3b832e13a34ad5365a4050096c125336a"
+generated_digest: "sha256:40cde7746a5627a83d87b9e454fa3e325e012ff0e8bfc345ecd281e711046243"
 generated:
   feature: navigator.resolve_for_player
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_234b77f4e823
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_d55754d7c8cf
+      evidence: ev_984fd91a97b7
   - scenario: navigator.resolve_for_player.guard_1
     title: "resolve for player: the guard '!permissions.Has(Capabilities.Navigator.StaffPick)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_234b77f4e823
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_d55754d7c8cf
+      evidence: ev_984fd91a97b7
   - scenario: navigator.resolve_for_player.guard_2
     title: "resolve for player: the guard 'playerId <= 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_d55754d7c8cf
+      evidence: ev_984fd91a97b7
   - scenario: navigator.resolve_for_player.guard_3
     title: "resolve for player: the guard 'entity is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_d55754d7c8cf
+      evidence: ev_984fd91a97b7
   - scenario: navigator.resolve_for_player.success
     title: "resolve for player: the request is accepted"
     given:
@@ -127,17 +127,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_234b77f4e823
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_d55754d7c8cf
+      evidence: ev_984fd91a97b7
   evidence:
-  - id: ev_d55754d7c8cf
+  - id: ev_984fd91a97b7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/ToggleStaffPickMessageEvent.java
     symbol: ToggleStaffPickMessageEvent
     line: 18

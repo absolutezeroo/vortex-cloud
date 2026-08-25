@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:dee0c7d6644c6f7ed714a46fa9c4504e856df25658e30c784bace0af7c7f0265"
+generated_digest: "sha256:054bc0bd779412f2903186a38611ba4ac14c25c5034d61668c98b3b4c1ac2fda"
 generated:
   id: uk_e49af8571d
   subject: "outgoing/SnowWarsOnGameEnding: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsOnGameEnding
   known_evidence:
-  - id: ev_0e962696fcb5
+  - id: ev_fcdf9b3639bc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsOnGameEnding.java
     symbol: SnowWarsOnGameEnding
     line: 8

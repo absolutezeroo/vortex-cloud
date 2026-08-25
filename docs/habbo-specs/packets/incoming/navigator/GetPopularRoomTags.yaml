@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7c0b72afa5ad23c30084991f4a7fe973dbcb66e12ea0c101b2a3a4ac9d0ea3fe"
+generated_digest: "sha256:f76674c21d85217220b17b27721d6898577d0cdd4d6873036aab655866bd0082"
 generated:
   name: GetPopularRoomTags
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6181e260b9ae
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7da6beaedcb9
+    evidence: ev_d890202bee8f
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetPopularRoomTagsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7da6beaedcb9
+  - id: ev_d890202bee8f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetPopularRoomTagsMessageEvent.java
     symbol: GetPopularRoomTagsMessageEvent
     line: 9

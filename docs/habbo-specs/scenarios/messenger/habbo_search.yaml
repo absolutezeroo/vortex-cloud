@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f7db3ec69430f7d8bee1be1fbbc4d51fa9765041e39fead7998ed53eb12a9980"
+generated_digest: "sha256:491e20ffab79db93c00a5e439f3e227972b7e05597622ebbadc237ed66206346"
 generated:
   feature: messenger.habbo_search
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1158ba6f71e1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserSearchResult
-      evidence: ev_2e1b28f7a457
+      evidence: ev_28f454490450
   - scenario: messenger.habbo_search.guard_1
     title: "habbo search: the guard 'string.IsNullOrWhiteSpace(query)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserSearchResult
-      evidence: ev_2e1b28f7a457
+      evidence: ev_28f454490450
   - scenario: messenger.habbo_search.success
     title: "habbo search: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - HabboSearchResult
       evidence: ev_1158ba6f71e1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserSearchResult
-      evidence: ev_2e1b28f7a457
+      evidence: ev_28f454490450
   evidence:
-  - id: ev_2e1b28f7a457
+  - id: ev_28f454490450
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/HabboSearchMessageEvent.java
     symbol: HabboSearchMessageEvent
     line: 15

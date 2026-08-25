@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1bcf10bf634834c395574f2a66067b1a55beffab4eb9ad7fbcd3659b87ab6915"
+generated_digest: "sha256:986603d10e97cc38f3f4acd86f0817fb1f07de593011612d4e5ed89164fe0423"
 generated:
   feature: users.add_admin_rights_to_member
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f96a6171650d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_4144bb00d7d3
+      evidence: ev_c60b2dc014cd
   - scenario: users.add_admin_rights_to_member.guard_1
     title: "add admin rights to member: the guard 'group is null || group.OwnerPlayerEntityId != actor.Value...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_4144bb00d7d3
+      evidence: ev_c60b2dc014cd
   - scenario: users.add_admin_rights_to_member.guard_2
     title: "add admin rights to member: the guard 'member is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_4144bb00d7d3
+      evidence: ev_c60b2dc014cd
   - scenario: users.add_admin_rights_to_member.guard_3
     title: "add admin rights to member: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_4144bb00d7d3
+      evidence: ev_c60b2dc014cd
   - scenario: users.add_admin_rights_to_member.success
     title: "add admin rights to member: the request is accepted"
     given:
@@ -129,17 +129,17 @@ generated:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_4144bb00d7d3
+      evidence: ev_c60b2dc014cd
   evidence:
-  - id: ev_4144bb00d7d3
+  - id: ev_c60b2dc014cd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/AddAdminRightsToMemberMessageEvent.java
     symbol: AddAdminRightsToMemberMessageEvent
     line: 20

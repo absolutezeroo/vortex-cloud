@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7ef5939deb939a973f90cf767c5580700385f003c911c34529eafb78ffe65fcf"
+generated_digest: "sha256:0e61170bf7c3cb2855d28d6ac8fb31789638ce3ae3af1b7ef7f670fe58f386e1"
 generated:
   id: talent.get_talent_track_level
   domain: talent
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

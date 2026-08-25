@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:90ead695bc20630b345af0a53c0d402b83c85592025e4a6773270f59cc2502ee"
+generated_digest: "sha256:47e6a915c69376b68a05f4e8b345ac93ff6a36b6b9e137fc381171b1d10d265b"
 generated:
   name: GetSelectedBadges
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_cf83aa1a5087
+    - ev_40595359bd6b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_06326e191cc8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_cf83aa1a5087
+    evidence: ev_40595359bd6b
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetSelectedBadgesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cf83aa1a5087
+  - id: ev_40595359bd6b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSelectedBadgesMessageEvent.java
     symbol: GetSelectedBadgesMessageEvent
     line: 11

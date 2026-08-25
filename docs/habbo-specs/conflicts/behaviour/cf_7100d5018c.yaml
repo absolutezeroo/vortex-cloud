@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ba96e1837449f6719e024bfd6fe750873aeec426090f52ce9174bb29d041caeb"
+generated_digest: "sha256:e7db1f4da58a3e16fe1dd6bfe03397a75be2de2fb216a78f3f6e3c6d1f8f3ce0"
 generated:
   id: cf_7100d5018c
   kind: behaviour
   subject: "ApproveName: packets emitted in response"
   packet: ApproveName
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ApproveName then ApproveName then ApproveName then ApproveName
-    evidence: ev_4fe4c4370f48
+    evidence: ev_a5d940f956ad
   - origin: vortex
     authority: vortex_emulator
     claim: ApproveName
     evidence: ev_ad96e12c91cd
   evidence:
-  - id: ev_4fe4c4370f48
+  - id: ev_a5d940f956ad
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/ApproveNameMessageEvent.java
     symbol: ApproveNameMessageEvent
     line: 13

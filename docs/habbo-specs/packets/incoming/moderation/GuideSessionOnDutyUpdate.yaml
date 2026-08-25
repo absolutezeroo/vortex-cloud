@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3272f1f340a0b6e376f187f2f00b390ded35575bf97c0ae549646279f5623d0f"
+generated_digest: "sha256:e961fb56e5d0f772995397cc5e72611a9d863c4b0db418c38cf1e73dca317ff9"
 generated:
   name: GuideSessionOnDutyUpdate
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_decfd6d77916
+    - ev_b225e60c09ee
   - index: 1
     name: handles_guide_requests
     type: boolean
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_decfd6d77916
+    - ev_b225e60c09ee
     - ev_c76154074afa
   - index: 2
     name: helper_requests
@@ -40,14 +40,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_decfd6d77916
+    - ev_b225e60c09ee
   - index: 3
     name: bully_reports
     type: boolean
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_decfd6d77916
+    - ev_b225e60c09ee
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -61,7 +61,7 @@ generated:
     partial: true
     types: []
     evidence: ev_95348ce34eb1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -70,7 +70,7 @@ generated:
     - boolean
     - boolean
     - boolean
-    evidence: ev_decfd6d77916
+    evidence: ev_b225e60c09ee
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -98,10 +98,10 @@ generated:
     symbol: GuideSessionOnDutyUpdateComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_decfd6d77916
+  - id: ev_b225e60c09ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionOnDutyUpdateMessageEvent.java
     symbol: GuideSessionOnDutyUpdateMessageEvent
     line: 10

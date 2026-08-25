@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bb3504034cd349e7dffc2642399645982dc327fb8182f43d154aeefc0dd9995f"
+generated_digest: "sha256:9f8871dbf328e4ce4bbe32e03162f871c22328fa7cee95b2e33481f94879e28d"
 generated:
   feature: users.approve_name
   scenarios:
@@ -32,7 +32,7 @@ generated:
       emits:
       - ApproveName
       evidence: ev_8296a694354f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,12 +40,12 @@ generated:
       - ApproveName
       - ApproveName
       - ApproveName
-      evidence: ev_4fe4c4370f48
+      evidence: ev_a5d940f956ad
   evidence:
-  - id: ev_4fe4c4370f48
+  - id: ev_a5d940f956ad
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/ApproveNameMessageEvent.java
     symbol: ApproveNameMessageEvent
     line: 13

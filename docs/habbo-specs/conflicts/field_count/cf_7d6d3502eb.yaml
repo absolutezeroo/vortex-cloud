@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7b9f4a9436dcd90d74175e6dbf3afa9018dd53b1c835ed699b547bca42cac3c4"
+generated_digest: "sha256:221853e73f1905e2f7002d45e2460ba7a815f660295054aa0f5bceb2cc0dd0df"
 generated:
   id: cf_7d6d3502eb
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, string"
     evidence: ev_aac7e30f228a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, string"
-    evidence: ev_97469e0ba058
+    evidence: ev_8f173ebfb589
   evidence:
   - id: ev_9db12d79c767
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: UserNameChangedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_97469e0ba058
+  - id: ev_8f173ebfb589
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserNameChangedMessageComposer.java
     symbol: UserNameChangedMessageComposer
     line: 32

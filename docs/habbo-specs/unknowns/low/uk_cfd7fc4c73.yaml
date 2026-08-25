@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bea0c19c18041e863062e5d64fd69476130078f459835fe0af593a6eb60dfd96"
+generated_digest: "sha256:41209e0f1c1ea4cac61c09aeb5941dec35b5a1c3e95a9206ccecfce2b33d8086"
 generated:
   id: uk_cfd7fc4c73
   subject: "outgoing/TraxSongInfo: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: TraxSongInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e953a06269f1
+  - id: ev_d2f75bf5132b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/TraxSongInfoMessageComposer.java
     symbol: TraxSongInfoMessageComposer
     line: 18

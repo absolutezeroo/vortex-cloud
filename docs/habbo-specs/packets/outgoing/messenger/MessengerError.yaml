@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2584dd034b74ecfeab121c193668f7d3012f6bbb7d54a7ccb3ab2f1cec569d71"
+generated_digest: "sha256:dda7c9cdeeba45ad1ba7cbf52c115bd4262ae4b4086015d83b4b41620cceab40"
 generated:
   name: MessengerError
   direction: outgoing
@@ -50,15 +50,15 @@ generated:
     types:
     - int32
     evidence: ev_36e450e4d016
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_d3d96e125636
-  - origin: arcturus
+    evidence: ev_f936efd56310
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_dc93d906d176
+    evidence: ev_b4e7d40451c4
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -92,21 +92,21 @@ generated:
     symbol: MessengerErrorMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d3d96e125636
+  - id: ev_b4e7d40451c4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/MessengerErrorMessageComposer.java
-    symbol: MessengerErrorMessageComposer
-    line: 20
-    note: third-party server implementation; evidence, not authority
-  - id: ev_dc93d906d176
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/MessengerErrorComposer.java
     symbol: MessengerErrorComposer
     line: 17
+    note: third-party server implementation; evidence, not authority
+  - id: ev_f936efd56310
+    kind: reference_composer
+    authority: reference_emulator
+    origin: habbo-arcturus-daybreak
+    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/MessengerErrorMessageComposer.java
+    symbol: MessengerErrorMessageComposer
+    line: 20
     note: third-party server implementation; evidence, not authority
   - id: ev_236b10d6ec53
     kind: emulator_serializer

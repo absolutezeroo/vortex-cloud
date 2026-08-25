@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:78c19d8a2e4504678e533132c775feddac94cca9bca47e508b0c1a34f4247f87"
+generated_digest: "sha256:59bec46946dca0689d28c268b842b046ba544a0dd1f8deaba9e006531970df7c"
 generated:
   id: cf_c1edb85792
   kind: behaviour
   subject: "GetSoundSettings: packets emitted in response"
   packet: GetSoundSettings
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: AccountPreferences
-    evidence: ev_35e0c7c1c5ac
+    evidence: ev_0c90e4e3c098
   - origin: vortex
     authority: vortex_emulator
     claim: unresolved then AccountPreferencesEvent
     evidence: ev_c64a8b56d108
   evidence:
-  - id: ev_35e0c7c1c5ac
+  - id: ev_0c90e4e3c098
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSoundSettingsEvent.java
     symbol: GetSoundSettingsEvent
     line: 8

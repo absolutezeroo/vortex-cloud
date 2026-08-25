@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6217669571284cde9f4982734c8684ec8526db8958a5b32e37f4212d8a79fc67"
+generated_digest: "sha256:f589a4a6911c779cb5d202b3dfe0033a683eb29fae07ce004327154f783812a0"
 generated:
   name: GetGuideReportingStatus
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_0cb33f9c37f4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_68f9a7c26702
+    evidence: ev_2bd4d6d60836
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetGuideReportingStatusComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_68f9a7c26702
+  - id: ev_2bd4d6d60836
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetGuideReportingStatusMessageEvent.java
     symbol: GetGuideReportingStatusMessageEvent
     line: 12

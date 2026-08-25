@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e156ba32a14ec5a98870a2fc2c13621bb18a47dfb16c7285ae82a59eb7a896a3"
+generated_digest: "sha256:dbb76814d3393a03003773bd2b9c9dbfcad159a159d5b491e7ba3124216bd480"
 generated:
   id: uk_f419cf833d
   subject: "outgoing/SnowWarsRemoveUser: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsRemoveUser
   known_evidence:
-  - id: ev_439e02bb257b
+  - id: ev_2d4eb2c5ac68
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsRemoveUserComposer.java
     symbol: SnowWarsRemoveUserComposer
     line: 9

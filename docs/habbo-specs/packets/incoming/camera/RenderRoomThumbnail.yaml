@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cd5693b15e2558bbca7f43d99737639b82713122430d6bd4651ceed20d07b33c"
+generated_digest: "sha256:e60c5c9a9cd4c25156fe0e9253a3208ececee11ad803c6ac7a7363acfe4473e8"
 generated:
   name: RenderRoomThumbnail
   direction: incoming
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_a63a2d34d7a7
+    evidence: ev_426b6b1b1134
   evidence:
-  - id: ev_a63a2d34d7a7
+  - id: ev_426b6b1b1134
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/RenderRoomThumbnailMessageEvent.java
     symbol: RenderRoomThumbnailMessageEvent
     line: 25

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7fac7ee453abb28a0105e0f36e32d49af52dc6f61676a32718efa9fb5d718770"
+generated_digest: "sha256:2af8247409bf889a2551bfc781c8922f316a48b4d9057ebfc177af65e40d5001"
 generated:
   name: UpdateAction
   direction: incoming
@@ -24,7 +24,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_84e1e3c647cd
+    - ev_08264fcca0c1
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -38,13 +38,13 @@ generated:
     partial: true
     types: []
     evidence: ev_902c640ae190
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_84e1e3c647cd
+    evidence: ev_08264fcca0c1
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -68,10 +68,10 @@ generated:
     symbol: UpdateActionMessageComposer
     line: 32
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/roomevents/userdefinedroomevents/UserDefinedRoomEventsCtrl.as:333 with 6 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_84e1e3c647cd
+  - id: ev_08264fcca0c1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/UpdateActionMessageEvent.java
     symbol: UpdateActionMessageEvent
     line: 20

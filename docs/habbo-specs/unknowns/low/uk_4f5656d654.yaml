@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:42948dcdfc6a8f5bf3745c91668e9b747d9b008215346186d3ca213362e8d575"
+generated_digest: "sha256:3234decf615847c685b66bfd90b6cd7527b4f426a22e26d854cd1ee81c974e97"
 generated:
   id: uk_4f5656d654
   subject: "incoming/Game2GetAccountGameStatus: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: Game2GetAccountGameStatusComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_22081b76bf9c
+  - id: ev_a38a27cdd49b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/Game2GetAccountGameStatusMessageEvent.java
     symbol: Game2GetAccountGameStatusMessageEvent
     line: 8

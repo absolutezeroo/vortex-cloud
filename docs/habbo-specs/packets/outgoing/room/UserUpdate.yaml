@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e8efb1f9ad52e0229621f352d855bece0af4db8514c2f62d555712cfa9bff7d"
+generated_digest: "sha256:eea6ea80857fc90ad279c0c8c5511d0064e06b520f0f6b378f163137dfffe32f"
 generated:
   name: UserUpdate
   direction: outgoing
@@ -127,7 +127,7 @@ generated:
     - int32
     - block
     evidence: ev_126e24886c2d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 16
     partial: false
@@ -148,7 +148,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_4e9b229af0e8
+    evidence: ev_ff156edc6bb1
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -182,10 +182,10 @@ generated:
     symbol: UserUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4e9b229af0e8
+  - id: ev_ff156edc6bb1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserUpdateMessageComposer.java
     symbol: UserUpdateMessageComposer
     line: 38

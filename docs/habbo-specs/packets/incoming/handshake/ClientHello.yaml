@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:da14d723dd7017db37ff679221177e92d33de2e6000c3b5ad286221017332598"
+generated_digest: "sha256:d1f3baf74987c6ea52f30bd7f69d5e47beb4288522482b60c91b386d20cbf09f"
 generated:
   name: ClientHello
   direction: incoming
@@ -64,13 +64,13 @@ generated:
     - int32
     - int32
     evidence: ev_71b32eac357d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_101638482dcc
+    evidence: ev_89d37d1d3fc3
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -98,10 +98,10 @@ generated:
     symbol: ClientHelloComposer
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_101638482dcc
+  - id: ev_89d37d1d3fc3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/ClientHelloMessageEvent.java
     symbol: ClientHelloMessageEvent
     line: 10

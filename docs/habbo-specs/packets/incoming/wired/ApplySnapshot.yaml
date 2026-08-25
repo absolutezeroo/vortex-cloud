@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a0d1a6f7995ca064a58ebd712b750468e8f0181056a65c5d681ffa01b23bb209"
+generated_digest: "sha256:126708f8e7662e44680ba1fa8708c1eab37398769889013d12fcf65d92d75773"
 generated:
   name: ApplySnapshot
   direction: incoming
@@ -46,13 +46,13 @@ generated:
     types:
     - int32
     evidence: ev_4fa8c0130afc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_aeda2b9a7995
+    evidence: ev_939ae271f2b0
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -85,10 +85,10 @@ generated:
     symbol: ApplySnapshotComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_aeda2b9a7995
+  - id: ev_939ae271f2b0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/ApplySnapshotMessageEvent.java
     symbol: ApplySnapshotMessageEvent
     line: 26

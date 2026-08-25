@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d7dc64c88b6fb4dd4fb26f0e6bd78832903741d28c9bd4dae90e7904d5d7952e"
+generated_digest: "sha256:5f41ca090bb26fe94bc9b01a4e640681749001ba81a157fd0df89bc33ff9a7a1"
 generated:
   name: SetChatStylePreference
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_94cb5c86e425
+    - ev_36d5510b8443
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d90958bf61ac
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_94cb5c86e425
+    evidence: ev_36d5510b8443
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -71,10 +71,10 @@ generated:
     symbol: SetChatStylePreferenceComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_94cb5c86e425
+  - id: ev_36d5510b8443
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetChatStylePreferenceEvent.java
     symbol: SetChatStylePreferenceEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:01950eda23ea62ba488277fbf0666515ad325ff0cf2b1365432819a64830a7be"
+generated_digest: "sha256:83007b56fff936c9a8a115dccc63d4262d6173d93aca4146efc6afc339087ff4"
 generated:
   name: CallForHelpFromPhoto
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   - index: 1
     name: unknown_1
     type: string
@@ -33,14 +33,14 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   - index: 2
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   - index: 3
     name: unknown_3
     type: int32
@@ -48,21 +48,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   - index: 4
     name: topic_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   - index: 5
     name: item_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aca004c561e8
+    - ev_a65c8c5d36de
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -76,7 +76,7 @@ generated:
     partial: true
     types: []
     evidence: ev_246d362c56b0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -87,7 +87,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_aca004c561e8
+    evidence: ev_a65c8c5d36de
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -116,10 +116,10 @@ generated:
     symbol: CallForHelpFromPhotoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_aca004c561e8
+  - id: ev_a65c8c5d36de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromPhotoMessageEvent.java
     symbol: CallForHelpFromPhotoMessageEvent
     line: 17

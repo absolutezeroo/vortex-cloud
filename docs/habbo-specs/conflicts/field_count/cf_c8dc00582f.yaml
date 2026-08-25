@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f2a328fffe7f34d1cff8016092ed8ea7c7352f00f6fb268daba715a2264a8873"
+generated_digest: "sha256:92d2726108c878ee34c90be0a3d86b79bf743e5a0499e6f32e7a9e9ab81cefcb"
 generated:
   id: cf_c8dc00582f
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, string, string, string, int32, string"
     evidence: ev_b909cb6a6ced
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: int32, int32, string, string, string, int32, string"
-    evidence: ev_e953a06269f1
+    evidence: ev_d2f75bf5132b
   evidence:
   - id: ev_b909cb6a6ced
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_2898
     line: 29
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e953a06269f1
+  - id: ev_d2f75bf5132b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/TraxSongInfoMessageComposer.java
     symbol: TraxSongInfoMessageComposer
     line: 18

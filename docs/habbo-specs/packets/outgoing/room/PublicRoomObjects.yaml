@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7d126837ef99b002252ddd30acbfaeb1ab3c7708d6e0af071b576056bbbc95cc"
+generated_digest: "sha256:4d3421fb286e7f79a4e064df3b70d6a5ea4cc6256b1ff3094382399f51125596"
 generated:
   name: PublicRoomObjects
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 3
     name: unknown_3
     type: boolean
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 5
     name: unknown_5
     type: string
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   - index: 11
     name: unknown_11
     type: int32
@@ -113,9 +113,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a66f64d15995
+    - ev_64fd3346919c
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 12
     partial: false
@@ -132,12 +132,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_a66f64d15995
+    evidence: ev_64fd3346919c
   evidence:
-  - id: ev_a66f64d15995
+  - id: ev_64fd3346919c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/PublicRoomObjectsMessageComposer.java
     symbol: PublicRoomObjectsMessageComposer
     line: 21

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:60ce593ef478fe28317da6368b55cfe5ab5647c25ed498037ea47b82931cbd8b"
+generated_digest: "sha256:90dd26b2cf17baac8f3b987f762d626199414f91c84dbf1ee09c5d881d877842"
 generated:
   name: YouArePlayingGame
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - boolean
     evidence: ev_9533a1931138
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_bcd62ebc1f5d
+    evidence: ev_3c02d9f04645
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: YouArePlayingGameMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bcd62ebc1f5d
+  - id: ev_3c02d9f04645
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/YouArePlayingGameMessageComposer.java
     symbol: YouArePlayingGameMessageComposer
     line: 15

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2a99e1935be5ee6516e3a598a73aa8ab6eef553aa57607eaeaa4e1e2484cf8dd"
+generated_digest: "sha256:8c5ce9fcfb2c451cd8632ee57a6d787303f9136035359c506375936d91b8c905"
 generated:
   feature: messenger.send_room_invite
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4d6548f76fef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b1f539e1c8f8
+      evidence: ev_95b30572c87c
   - scenario: messenger.send_room_invite.guard_1
     title: "send room invite: the guard '_ignoredIds.Contains(senderId.Value)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8db29db3d5af
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b1f539e1c8f8
+      evidence: ev_95b30572c87c
   - scenario: messenger.send_room_invite.success
     title: "send room invite: the request is accepted"
     given:
@@ -78,16 +78,16 @@ generated:
       emits:
       - RoomInvite
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b1f539e1c8f8
+      evidence: ev_95b30572c87c
   evidence:
-  - id: ev_b1f539e1c8f8
+  - id: ev_95b30572c87c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SendRoomInviteMessageEvent.java
     symbol: SendRoomInviteMessageEvent
     line: 11

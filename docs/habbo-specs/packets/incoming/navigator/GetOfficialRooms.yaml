@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:783ee8a2ac69c12cd38f410bc058e0a13e338be413c4730757e065663dd741c1"
+generated_digest: "sha256:b504e093980396ea61999515706a0ab94898eb0e32907f9de3f1f4201e88c68f"
 generated:
   name: GetOfficialRooms
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_457281c4d7e6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5a54dabe0ef0
+    evidence: ev_98d4b8262b80
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: GetOfficialRoomsComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5a54dabe0ef0
+  - id: ev_98d4b8262b80
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetOfficialRoomsMessageEvent.java
     symbol: GetOfficialRoomsMessageEvent
     line: 15

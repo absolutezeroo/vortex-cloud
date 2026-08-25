@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5e7b52b5bed3d9a92ae4fc0531a7b6f855afb4ace447b800c928705e4c9eeae1"
+generated_digest: "sha256:1933d09c30d682ebffb5e49e31939cefa090507a8c17e0d2a9e90ce0017fdc16"
 generated:
   name: GuildForumMarkAsRead
   direction: incoming
@@ -24,14 +24,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aa442dbf47b6
+    - ev_973a0616038a
   - index: 1
     name: guild_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_aa442dbf47b6
+    - ev_973a0616038a
   - index: 2
     name: unknown_2
     type: int32
@@ -39,7 +39,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_aa442dbf47b6
+    - ev_973a0616038a
   - index: 3
     name: unknown_3
     type: boolean
@@ -47,9 +47,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_aa442dbf47b6
+    - ev_973a0616038a
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -58,12 +58,12 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_aa442dbf47b6
+    evidence: ev_973a0616038a
   evidence:
-  - id: ev_aa442dbf47b6
+  - id: ev_973a0616038a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GuildForumMarkAsReadEvent.java
     symbol: GuildForumMarkAsReadEvent
     line: 8

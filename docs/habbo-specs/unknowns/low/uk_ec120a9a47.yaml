@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:29db4272cd285c2998cf1e31f5675cd7b6e5a9c023d1255282346e1e9f52db85"
+generated_digest: "sha256:aefeaf53e574df2365562d706dedc5253f3ae2a5404f25a148a9e8501fa3d791"
 generated:
   id: uk_ec120a9a47
   subject: "outgoing/NewsList: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: NewsList
   known_evidence:
-  - id: ev_0705d78c5b55
+  - id: ev_b993d22fd512
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/NewsListComposer.java
     symbol: NewsListComposer
     line: 12

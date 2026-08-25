@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1defbf2fdfc0c3e329f0ed2721ce40707591cdebde7266ae073787b0190bc0f6"
+generated_digest: "sha256:8462d8d30437c4c20049a059069f55f1945c628b422abee9b1b9e355530341b2"
 generated:
   feature: avatar.get_wardrobe
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_483fb078e117
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Wardrobe
-      evidence: ev_2c747d4b3722
+      evidence: ev_b1d936fc63dc
   - scenario: avatar.get_wardrobe.success
     title: "get wardrobe: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - Wardrobe
       evidence: ev_483fb078e117
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Wardrobe
-      evidence: ev_2c747d4b3722
+      evidence: ev_b1d936fc63dc
   evidence:
-  - id: ev_2c747d4b3722
+  - id: ev_b1d936fc63dc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetWardrobeMessageEvent.java
     symbol: GetWardrobeMessageEvent
     line: 8

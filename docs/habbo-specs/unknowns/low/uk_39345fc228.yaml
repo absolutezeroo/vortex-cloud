@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:090622f5264f440a67e6cc664cb1f82b93bc326c8dc7c35dfd445d6dfe87b330"
+generated_digest: "sha256:0122d1d94d5c410714d9d230246bba0cf3535bfe060a52e80dd5dd804f6882b7"
 generated:
   id: uk_39345fc228
   subject: "outgoing/FriendFurniCancelLock: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: FriendFurniCancelLockMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0e86abc19531
+  - id: ev_691e18ee4c28
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/lovelock/FriendFurniCancelLockMessageComposer.java
     symbol: FriendFurniCancelLockMessageComposer
     line: 16

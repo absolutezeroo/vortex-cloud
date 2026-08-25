@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3f5dcbfe35ce48792a917e716c54e48207eed51237a1c542f9ca87470bf2e24b"
+generated_digest: "sha256:16e272c403ee8b61a983e554046564ce01bf5d7c1d5bf0e065a300c9bee6b216"
 generated:
   name: InitCamera
   direction: outgoing
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_13a944b149c8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_e3597b68fdba
+    evidence: ev_0668ba90d3c1
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -91,10 +91,10 @@ generated:
     symbol: InitCameraMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e3597b68fdba
+  - id: ev_0668ba90d3c1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/InitCameraMessageComposer.java
     symbol: InitCameraMessageComposer
     line: 19

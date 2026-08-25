@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bb64ae395321f753bf945592310e7a130672b44dae1580741f9c6d02b3decd0f"
+generated_digest: "sha256:af7ee275e161e17850945e2007af15e9d7457838790af7ab4a097c79ca2ece7e"
 generated:
   name: ObjectAdd
   direction: outgoing
@@ -42,7 +42,7 @@ generated:
     - block
     - string
     evidence: ev_a22d432dcd46
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: true
@@ -52,7 +52,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_c6038aa3d0d2
+    evidence: ev_064508b147a5
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -78,10 +78,10 @@ generated:
     symbol: ObjectAddMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c6038aa3d0d2
+  - id: ev_064508b147a5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ObjectAddMessageComposer.java
     symbol: ObjectAddMessageComposer
     line: 19

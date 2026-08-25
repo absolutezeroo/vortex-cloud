@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:95b6c1ab7909fb47b3fd46e21c978a69280d4c98fe2bde3f99e98f428e762610"
+generated_digest: "sha256:e281f33021285d04a1754b2043dd101cc58e802b21a6c8bd93098c83959ff470"
 generated:
   feature: room.customize_pet_with_furni
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f36333f7134
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
-      evidence: ev_b266495afe0b
+      evidence: ev_d74d8d7e1d4a
   - scenario: room.customize_pet_with_furni.guard_1
     title: "customize pet with furni: the guard 'category is FurnitureCategory.MonsterplantRevival or Furn...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a24ca6ca32d9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
-      evidence: ev_b266495afe0b
+      evidence: ev_d74d8d7e1d4a
   - scenario: room.customize_pet_with_furni.success
     title: "customize pet with furni: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f36333f7134
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
-      evidence: ev_b266495afe0b
+      evidence: ev_d74d8d7e1d4a
   evidence:
-  - id: ev_b266495afe0b
+  - id: ev_d74d8d7e1d4a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/CustomizePetWithFurniEvent.java
     symbol: CustomizePetWithFurniEvent
     line: 20

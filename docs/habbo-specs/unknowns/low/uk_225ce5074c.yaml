@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bd5149aec78babd6898de9db98dc242cc7e03ee7a25b08ca75b5875b2a41b4bc"
+generated_digest: "sha256:429c828821eff9f467892f4ac246535a9ed58cd2cc663da56f5d689d80aa9d88"
 generated:
   id: uk_225ce5074c
   subject: "outgoing/RoomPromotion: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomPromotion
   known_evidence:
-  - id: ev_c8cbf58a4a8c
+  - id: ev_70b3383a66a7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/promotions/RoomPromotionMessageComposer.java
     symbol: RoomPromotionMessageComposer
     line: 20

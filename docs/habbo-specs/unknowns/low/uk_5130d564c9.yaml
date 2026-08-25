@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4411c6ae4c730ca8dd4da9b81ef9ca7b1ce2e3eef0c50ef0ca3aac39c781628f"
+generated_digest: "sha256:81591d30c50d6c4ed55dc660d3674688e1d487fee73650b1abe6253f0ca2bc8e"
 generated:
   id: uk_5130d564c9
   subject: "outgoing/FurniDataReload: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FurniDataReload
   known_evidence:
-  - id: ev_2f7b971c285c
+  - id: ev_55fcd6b9355f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/session/FurniDataReloadMessageComposer.java
     symbol: FurniDataReloadMessageComposer
     line: 15

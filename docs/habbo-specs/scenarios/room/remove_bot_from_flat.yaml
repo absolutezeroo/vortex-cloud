@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d37cfae08d12e8148114c7d4f256a1203576fb258db5608f0e29479273fcc34d"
+generated_digest: "sha256:1ec0c5645e597937d1ffc53124fb4c37aed597bc054645665fd39b1c434c12f1"
 generated:
   feature: room.remove_bot_from_flat
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f9623e6f3e36
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8ff0654add70
+      evidence: ev_19ee9cbb0c4e
   - scenario: room.remove_bot_from_flat.success
     title: "remove bot from flat: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b7b3c4feb9a3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8ff0654add70
+      evidence: ev_19ee9cbb0c4e
   evidence:
-  - id: ev_8ff0654add70
+  - id: ev_19ee9cbb0c4e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/RemoveBotFromFlatMessageEvent.java
     symbol: RemoveBotFromFlatMessageEvent
     line: 11

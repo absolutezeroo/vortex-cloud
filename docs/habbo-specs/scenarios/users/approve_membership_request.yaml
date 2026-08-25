@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:17b664dce730d522b06f55c195dd9fd84bd58999c8204575834b5661b431942e"
+generated_digest: "sha256:3074b490d1363c9f97db7a5091c086fe25770ff01905cd1c8858371f11eb02cd"
 generated:
   feature: users.approve_membership_request
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_98c0c69e5c73
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberMgmtFailed
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_8fcbb143013b
+      evidence: ev_4140aaf1b434
   - scenario: users.approve_membership_request.guard_1
     title: "approve membership request: the guard 'group is null' holds"
     given:
@@ -58,14 +58,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberMgmtFailed
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_8fcbb143013b
+      evidence: ev_4140aaf1b434
   - scenario: users.approve_membership_request.guard_2
     title: "approve membership request: the guard 'request is null' holds"
     given:
@@ -84,14 +84,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberMgmtFailed
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_8fcbb143013b
+      evidence: ev_4140aaf1b434
   - scenario: users.approve_membership_request.guard_3
     title: "approve membership request: the guard '_registry is null' holds"
     given:
@@ -110,14 +110,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberMgmtFailed
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_8fcbb143013b
+      evidence: ev_4140aaf1b434
   - scenario: users.approve_membership_request.success
     title: "approve membership request: the request is accepted"
     given:
@@ -137,19 +137,19 @@ generated:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberMgmtFailed
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_8fcbb143013b
+      evidence: ev_4140aaf1b434
   evidence:
-  - id: ev_8fcbb143013b
+  - id: ev_4140aaf1b434
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/ApproveMembershipRequestMessageEvent.java
     symbol: ApproveMembershipRequestMessageEvent
     line: 23

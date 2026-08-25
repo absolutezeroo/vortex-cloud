@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7c1f0b0b9fc1bd6553865d7acaa85f51fd3c5cde06c06c331aa2538c3051b3db"
+generated_digest: "sha256:baf199394927519a0c905410d01c3de4504396485aecc0ae36239da5e44f0786"
 generated:
   name: GetExtendedProfile
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_4856865581d8
+    - ev_a7ab39560ea1
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_bb62ba7dedc7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_4856865581d8
+    evidence: ev_a7ab39560ea1
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetExtendedProfileComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4856865581d8
+  - id: ev_a7ab39560ea1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetExtendedProfileMessageEvent.java
     symbol: GetExtendedProfileMessageEvent
     line: 11

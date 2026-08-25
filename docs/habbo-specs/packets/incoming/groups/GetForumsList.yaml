@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b0cbd23597e0c487c3d1bef376210f8eabfa6a973519afd68a03f7375ee70eee"
+generated_digest: "sha256:ae26d7d328857b0bed507843f6e451acae4969d073ab8800b6b9d70d76818e3a"
 generated:
   name: GetForumsList
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8408121caa5a
+    - ev_b655b119054b
   - index: 1
     name: offset
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8408121caa5a
+    - ev_b655b119054b
   - index: 2
     name: amount
     type: int32
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8408121caa5a
+    - ev_b655b119054b
     - ev_987f4815b53c
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_132ffb9b3317
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_8408121caa5a
+    evidence: ev_b655b119054b
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -103,10 +103,10 @@ generated:
     symbol: GetForumsListComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8408121caa5a
+  - id: ev_b655b119054b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetForumsListMessageEvent.java
     symbol: GetForumsListMessageEvent
     line: 22

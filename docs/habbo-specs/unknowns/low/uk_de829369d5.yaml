@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:aa1bc8ecb7851e46f0aef932e30581ae518df13bd25ae5f5728abe0ed52126db"
+generated_digest: "sha256:c933bbf3e198654e7ef956d04c38fd8c4b5a61572a430ff2aa21792bb39a6b44"
 generated:
   id: uk_de829369d5
   subject: "outgoing/UnseenItems: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2693
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_38bc7127caf2
+  - id: ev_9b13f1e65de2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/UnseenItemsMessageComposer.java
     symbol: UnseenItemsMessageComposer
     line: 44

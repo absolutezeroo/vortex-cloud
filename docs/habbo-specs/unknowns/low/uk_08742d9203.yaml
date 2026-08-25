@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5e6b277d9eb3452332c2a97eb243abfc85e9e137f644ba184b6a7019c2fc66b4"
+generated_digest: "sha256:b4294df524c8e696f2adebac81dcf45967eab20ce78707f19432c9ab7c15b654"
 generated:
   id: uk_08742d9203
   subject: "outgoing/UserBadges: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: UserBadgesMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_b23c4c90e537
+  - id: ev_9c469e463144
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/UserBadgesMessageComposer.java
     symbol: UserBadgesMessageComposer
     line: 20

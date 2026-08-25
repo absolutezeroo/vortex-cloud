@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9d5043f83de1ee366dbb47de8939029c9c714b585840111aa6e3ee448e84acd7"
+generated_digest: "sha256:08d4079d1b30e8acb4356fc5dacbffdc05e241edeeb152cf5131ea8a89c87bc5"
 generated:
   name: InstantMessageError
   direction: outgoing
@@ -60,7 +60,7 @@ generated:
     - int32
     - string
     evidence: ev_ed7932978d58
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_037ef201417a
+    evidence: ev_1718bc327fda
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -95,10 +95,10 @@ generated:
     symbol: InstantMessageErrorMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_037ef201417a
+  - id: ev_1718bc327fda
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/InstantMessageErrorMessageComposer.java
     symbol: InstantMessageErrorMessageComposer
     line: 19

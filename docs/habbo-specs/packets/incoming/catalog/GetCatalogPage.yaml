@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:66334552ee55eba0ad4c19f4da4837d583ca8eec52184854b8c44c1a55c45f60"
+generated_digest: "sha256:816799790942d5272c02ee7057317c0f23757269dfcda2ce4800eca5ed89b6ca"
 generated:
   name: GetCatalogPage
   direction: incoming
@@ -41,7 +41,7 @@ generated:
     semantic_type: CatalogType
     evidence:
     - ev_45f2dc8a34be
-    - ev_6818f5b2f734
+    - ev_0f36e80fec06
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -58,7 +58,7 @@ generated:
     - int32
     - unknown
     evidence: ev_45f2dc8a34be
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_6818f5b2f734
+    evidence: ev_0f36e80fec06
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -93,10 +93,10 @@ generated:
     symbol: GetCatalogPageComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6818f5b2f734
+  - id: ev_0f36e80fec06
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetCatalogPageEvent.java
     symbol: GetCatalogPageEvent
     line: 13

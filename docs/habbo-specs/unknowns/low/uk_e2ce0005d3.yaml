@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0ae6f2013ec530a175f412b3f6458ca1b626d58c40ac49d16b6124c64734cc5e"
+generated_digest: "sha256:c3f8f2193cb30ea7c3deadb61c6f2f9b083e18038a1c89abb2187c990a5d17b3"
 generated:
   id: uk_e2ce0005d3
   subject: "outgoing/GuideTicketCreationResult: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: GuideTicketCreationResultMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ce30a42add44
+  - id: ev_cca1553891e3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/GuideTicketCreationResultMessageComposer.java
     symbol: GuideTicketCreationResultMessageComposer
     line: 21

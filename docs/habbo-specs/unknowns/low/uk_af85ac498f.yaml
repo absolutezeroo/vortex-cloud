@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c44de96be6b1594585f1b5f78cc7d473801caa32b528f69e6247e48bed0833ee"
+generated_digest: "sha256:e940ee895e49b3f6490d8b3e852fd4ca1dd3693ffcacf437a3a96d20f2a2d863"
 generated:
   id: uk_af85ac498f
   subject: "outgoing/GameStatus: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: GameStatusMessageParser
     line: 35
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6a2f9ddfaaf0
+  - id: ev_c0947c10ddaa
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/GameStatusMessageComposer.java
     symbol: GameStatusMessageComposer
     line: 20

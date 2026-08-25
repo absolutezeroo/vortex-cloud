@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3d4ab10b2c91599b571df270cca1f7f0374571012c466b1fc370716ab2be435d"
+generated_digest: "sha256:c16b5e6fa68ddd6926ee3efd1c822d92ad135ccd163a0306d55c1f51f4ff2451"
 generated:
   name: HabboSearch
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_57ffb56b0ec9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_2e1b28f7a457
+    evidence: ev_28f454490450
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: HabboSearchComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2e1b28f7a457
+  - id: ev_28f454490450
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/HabboSearchMessageEvent.java
     symbol: HabboSearchMessageEvent
     line: 15

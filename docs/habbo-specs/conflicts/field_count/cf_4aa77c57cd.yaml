@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d518c2e06a41df1e0913efabf4aed4d6c2897aafb8cf1eb460dc6a9388eabf88"
+generated_digest: "sha256:69ec3213a1097ce6acc0eccd6278e43053484cf29ed198873559aea0d97330f8"
 generated:
   id: cf_4aa77c57cd
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, string, int32, string, int32, int32, string, string"
     evidence: ev_7a0440d85a72
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, string, int32, string"
-    evidence: ev_860f3b76f439
+    evidence: ev_a217987f380a
   - origin: vortex
     authority: vortex_emulator
     claim: "9 fields: int32, int32, string, int32, string, int32, int32, string, string"
@@ -38,10 +38,10 @@ generated:
     symbol: NewConsoleMessageMessage
     line: 16
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_860f3b76f439
+  - id: ev_a217987f380a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/NewConsoleMessageMessageComposer.java
     symbol: NewConsoleMessageMessageComposer
     line: 28

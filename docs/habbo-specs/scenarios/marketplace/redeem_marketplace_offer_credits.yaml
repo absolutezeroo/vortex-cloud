@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d61366ef68683e4fdf756558f81a32601d6c4577b9584ef79997540828e6cd85"
+generated_digest: "sha256:129b71c9286415f43e357c33867d8fbfb26b511d187139173c19d3cfa500a30f"
 generated:
   feature: marketplace.redeem_marketplace_offer_credits
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_55e13f1d6122
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f50eed87b6f6
+      evidence: ev_ac79a311e019
   - scenario: marketplace.redeem_marketplace_offer_credits.guard_1
     title: "redeem marketplace offer credits: the guard 'totalCredits <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db53958cdf3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f50eed87b6f6
+      evidence: ev_ac79a311e019
   - scenario: marketplace.redeem_marketplace_offer_credits.guard_2
     title: "redeem marketplace offer credits: the guard '_registry is null' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f50eed87b6f6
+      evidence: ev_ac79a311e019
   - scenario: marketplace.redeem_marketplace_offer_credits.success
     title: "redeem marketplace offer credits: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_314d775446c1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f50eed87b6f6
+      evidence: ev_ac79a311e019
   evidence:
-  - id: ev_f50eed87b6f6
+  - id: ev_ac79a311e019
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/RedeemMarketplaceOfferCreditsMessageEvent.java
     symbol: RedeemMarketplaceOfferCreditsMessageEvent
     line: 8

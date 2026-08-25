@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fcbf7955481519613ae66a4d78c50ad189fdd71f9b7c0ff3e1535762c9875f76"
+generated_digest: "sha256:f95094e7455159e234da3774a3788434b786392b48e70a2ec6fd75438f8f79f8"
 generated:
   name: MyRecommendedRooms
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_ca71772b7d5e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_d2079349a3dd
+    evidence: ev_c9c015853a62
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: MyRecommendedRoomsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d2079349a3dd
+  - id: ev_c9c015853a62
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyRecommendedRoomsMessageEvent.java
     symbol: MyRecommendedRoomsMessageEvent
     line: 18

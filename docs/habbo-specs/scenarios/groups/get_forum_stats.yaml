@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ada8eb422c0b3bfadbc4e8e4eb3c0c1965facaaa98af96d742e4a2c47437622e"
+generated_digest: "sha256:bc3ed6751c5511fd7ce959713f69043572898381bc36a366a166bf6c8848fa61"
 generated:
   feature: groups.get_forum_stats
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e94df27f06cd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumData
-      evidence: ev_ce510a56ea8f
+      evidence: ev_2748be1f904e
   - scenario: groups.get_forum_stats.guard_1
     title: "get forum stats: the guard 'forum is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e94df27f06cd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumData
-      evidence: ev_ce510a56ea8f
+      evidence: ev_2748be1f904e
   - scenario: groups.get_forum_stats.guard_2
     title: "get forum stats: the guard 'group is null || group.ForumSettings is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumData
-      evidence: ev_ce510a56ea8f
+      evidence: ev_2748be1f904e
   - scenario: groups.get_forum_stats.success
     title: "get forum stats: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - ForumData
       evidence: ev_3067997ddf04
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ForumData
-      evidence: ev_ce510a56ea8f
+      evidence: ev_2748be1f904e
   evidence:
-  - id: ev_ce510a56ea8f
+  - id: ev_2748be1f904e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetForumStatsMessageEvent.java
     symbol: GetForumStatsMessageEvent
     line: 10

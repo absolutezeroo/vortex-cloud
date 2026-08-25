@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cf50b3b9472cbdd9984dd0bd86f76c7d151ba3c73222b9b9fa512447b678458b"
+generated_digest: "sha256:60a263c5ef18adb6595a5b72b481efa707361e91d96b15da0f6a30a7a66a1a44"
 generated:
   feature: marketplace.cancel_marketplace_offer
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d5cd2720508e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bcc5a9e136d4
+      evidence: ev_ba2c087f087d
   - scenario: marketplace.cancel_marketplace_offer.guard_1
     title: "cancel marketplace offer: the guard 'offer is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db53958cdf3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bcc5a9e136d4
+      evidence: ev_ba2c087f087d
   - scenario: marketplace.cancel_marketplace_offer.guard_2
     title: "cancel marketplace offer: the guard 'offer.State == MarketplaceOfferState.Sold' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db53958cdf3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bcc5a9e136d4
+      evidence: ev_ba2c087f087d
   - scenario: marketplace.cancel_marketplace_offer.guard_3
     title: "cancel marketplace offer: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bcc5a9e136d4
+      evidence: ev_ba2c087f087d
   - scenario: marketplace.cancel_marketplace_offer.success
     title: "cancel marketplace offer: the request is accepted"
     given:
@@ -124,16 +124,16 @@ generated:
       emits:
       - MarketplaceCancelOfferResultEvent
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bcc5a9e136d4
+      evidence: ev_ba2c087f087d
   evidence:
-  - id: ev_bcc5a9e136d4
+  - id: ev_ba2c087f087d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/CancelMarketplaceOfferMessageEvent.java
     symbol: CancelMarketplaceOfferMessageEvent
     line: 8

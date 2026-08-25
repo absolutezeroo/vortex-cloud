@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a7368e31c0f6aa49e4e19e250a5ab06398c1b2563ad235536a30e81a35b35623"
+generated_digest: "sha256:cc969ff0b2b1d576c7be969ad1f33ccfb741e5360eb5fdc796eaa8f809074b35"
 generated:
   name: GetIgnoredUsers
   direction: incoming
@@ -32,13 +32,13 @@ generated:
     partial: true
     types: []
     evidence: ev_6c62d13a068c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_bb79c2bde95f
+    evidence: ev_3386de46d70a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -62,10 +62,10 @@ generated:
     symbol: GetIgnoredUsersComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bb79c2bde95f
+  - id: ev_3386de46d70a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/GetIgnoredUsersMessageEvent.java
     symbol: GetIgnoredUsersMessageEvent
     line: 8

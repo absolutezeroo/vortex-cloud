@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dffb1ef8f7d926ce25dd893ed6afbb2d95a9cee947b216e2c4ac36317e51b580"
+generated_digest: "sha256:2cf3c7b023f9ccc3d403ad5d19629dc638e95c65bad9b3013a7aede209db1c2d"
 generated:
   feature: room.remove_item
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a311be697b0f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ItemRemove
-      evidence: ev_e95fc3333e6f
+      evidence: ev_005598a2f1e5
   - scenario: room.remove_item.guard_1
     title: "remove item: the guard 'item is not IRoomWallItem' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ItemRemove
-      evidence: ev_e95fc3333e6f
+      evidence: ev_005598a2f1e5
   - scenario: room.remove_item.guard_2
     title: "remove item: the guard 'Array.IndexOf(DisposableWallLogics, item.Definition.Logic...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ItemRemove
-      evidence: ev_e95fc3333e6f
+      evidence: ev_005598a2f1e5
   - scenario: room.remove_item.success
     title: "remove item: the request is accepted"
     given:
@@ -103,17 +103,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ItemRemove
-      evidence: ev_e95fc3333e6f
+      evidence: ev_005598a2f1e5
   evidence:
-  - id: ev_e95fc3333e6f
+  - id: ev_005598a2f1e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RemoveItemMessageEvent.java
     symbol: RemoveItemMessageEvent
     line: 15

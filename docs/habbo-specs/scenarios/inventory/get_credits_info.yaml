@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:120f9bc050adae4789ac0d3ec0ca39b71525dd3cbb19ea685ca5dea408c0ee68"
+generated_digest: "sha256:15446a3aede560ca3e387c731f287ef01f49c15442bd80ce3daee74f59340299"
 generated:
   feature: inventory.get_credits_info
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_45104da5e6fe
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CreditBalance
       - ActivityPoints
-      evidence: ev_720a5bfe8c9f
+      evidence: ev_02ccc7dac0b8
   - scenario: inventory.get_credits_info.success
     title: "get credits info: the request is accepted"
     given:
@@ -58,18 +58,18 @@ generated:
       - ActivityPoints
       - CreditBalanceEvent
       evidence: ev_0a5d3f47e95a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CreditBalance
       - ActivityPoints
-      evidence: ev_720a5bfe8c9f
+      evidence: ev_02ccc7dac0b8
   evidence:
-  - id: ev_720a5bfe8c9f
+  - id: ev_02ccc7dac0b8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetCreditsInfoEvent.java
     symbol: GetCreditsInfoEvent
     line: 9

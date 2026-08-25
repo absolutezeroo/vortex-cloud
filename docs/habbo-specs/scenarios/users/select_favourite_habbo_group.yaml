@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f8568807f2eb3755dc372bfeda87dcc5b1b46ded0b9a0149d3546e02f6e73c58"
+generated_digest: "sha256:0f040e8048cebf6a26b514bcbfc3ee3b2849e02f9ebae3cd2303866f2cec657d"
 generated:
   feature: users.select_favourite_habbo_group
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b04cd9721deb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_1
     title: "select favourite habbo group: the guard '!isMember' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_2
     title: "select favourite habbo group: the guard '_state.FavouriteGroupId == groupId' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_3
     title: "select favourite habbo group: the guard 'activeRoom.RoomId.Value <= 0' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_4
     title: "select favourite habbo group: the guard '!_state.AvatarsByPlayerId.TryGetValue(playerId, out RoomO...' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_5
     title: "select favourite habbo group: the guard '!_state.AvatarsByObjectId.TryGetValue(objectId, out IRoom...' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_6
     title: "select favourite habbo group: the guard '!player.SetFavouriteGroup(groupId, groupName)' holds"
     given:
@@ -176,12 +176,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_7
     title: "select favourite habbo group: the guard 'GroupId == resolvedId && GroupStatus == resolvedStatus &&...' holds"
     given:
@@ -200,12 +200,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7fd0730f7cca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.guard_8
     title: "select favourite habbo group: the guard '_registry is null' holds"
     given:
@@ -224,12 +224,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   - scenario: users.select_favourite_habbo_group.success
     title: "select favourite habbo group: the request is accepted"
     given:
@@ -249,17 +249,17 @@ generated:
       - FavoriteMembershipUpdate
       - GroupDetailsChanged
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_79adb2b4a4c1
+      evidence: ev_d0368c2795a3
   evidence:
-  - id: ev_79adb2b4a4c1
+  - id: ev_d0368c2795a3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/SelectFavouriteHabboGroupMessageEvent.java
     symbol: SelectFavouriteHabboGroupMessageEvent
     line: 13

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:baee1aab9575c4b420dc77388406420c997a31f47d05cd0273f10e81afe1d4d2"
+generated_digest: "sha256:b8c05d9fdfd2a2f05d1edc74509807f9cbd4d21034f6d0a30133de80d6d89dd7"
 generated:
   feature: catalog.get_palettes_for_type
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_09434fe70e5d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SellablePetPalettes
-      evidence: ev_2d77f3b37bc3
+      evidence: ev_1e71d2e544b5
   - scenario: catalog.get_palettes_for_type.success
     title: "get palettes for type: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - SellablePetPalettes
       evidence: ev_09434fe70e5d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SellablePetPalettes
-      evidence: ev_2d77f3b37bc3
+      evidence: ev_1e71d2e544b5
   evidence:
-  - id: ev_2d77f3b37bc3
+  - id: ev_1e71d2e544b5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetSellablePetPalettesEvent.java
     symbol: GetSellablePetPalettesEvent
     line: 14

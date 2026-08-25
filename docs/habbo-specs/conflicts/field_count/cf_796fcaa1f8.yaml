@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:920b8579cf9738d547afd1515378fda8fcfe943d467a991ae82c17e5216bdd78"
+generated_digest: "sha256:d795e363daf58013b9c57b6608a217375bc66941f0c867364337bb2f37eae59a"
 generated:
   id: cf_796fcaa1f8
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "24 fields: unknown, string, string, int32, string, int32, int32, unknown, unknown, boolean, boolean, boolean, boolean, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, int32, unknown, boolean"
     evidence: ev_e864204330bb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "24 fields: int32, string, string, int32, string, int32, int32, int32, string, int32, boolean, boolean, boolean, boolean, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32"
-    evidence: ev_2e941e540e15
+    evidence: ev_ae302781bc1e
   - origin: vortex
     authority: vortex_emulator
     claim: "25 fields: int32, string, string, int32, string, int32, int32, block, int32, boolean, boolean, boolean, boolean, int32, int32, int32, int32, int32, int32, boolean, boolean, int32, boolean, int32, boolean"
@@ -38,10 +38,10 @@ generated:
     symbol: SaveRoomSettingsComposer
     line: 33
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2e941e540e15
+  - id: ev_ae302781bc1e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/SaveRoomSettingsMessageEvent.java
     symbol: SaveRoomSettingsMessageEvent
     line: 20

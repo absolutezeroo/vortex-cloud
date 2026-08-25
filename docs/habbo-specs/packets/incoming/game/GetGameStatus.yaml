@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3d2803518a56ec2d6d6cdf188e3fe2d3158b1aee2bd28151d81282526f7be523"
+generated_digest: "sha256:b61eae9072763e72658145668c1b5fddd5743db4779645c46f9c21c261ff9235"
 generated:
   name: GetGameStatus
   direction: incoming
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_8767d80dd051
+    - ev_28dc960a7607
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8767d80dd051
+    evidence: ev_28dc960a7607
   evidence:
-  - id: ev_8767d80dd051
+  - id: ev_28dc960a7607
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GetGameStatusMessageEvent.java
     symbol: GetGameStatusMessageEvent
     line: 8

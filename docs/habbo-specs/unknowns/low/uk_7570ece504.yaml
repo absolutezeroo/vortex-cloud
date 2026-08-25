@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:732455cb8509eedceb04bfea2eb9fd712a5ba4af851420e7dda0dab91a3a22f4"
+generated_digest: "sha256:6d40258837051e96f3c58e0d22168c6b9675eb8fdd4fd7199478ffac590abdce"
 generated:
   id: uk_7570ece504
   subject: "outgoing/PetTrainingPanel: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: PetTrainingPanelMessageParser
     line: 36
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_620ba75f43ef
+  - id: ev_e13fc2cdb549
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetTrainingPanelMessageComposer.java
     symbol: PetTrainingPanelMessageComposer
     line: 21

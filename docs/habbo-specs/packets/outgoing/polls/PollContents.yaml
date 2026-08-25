@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a10b089735ba8f91c6e172fd0b5ef2ae11e131a3506814f2b2f7de1a636e1c38"
+generated_digest: "sha256:44adbfebe90d0420e5ac85c9fb92dbc446e23fdb5013f143770629600bc9cf90"
 generated:
   name: PollContents
   direction: outgoing
@@ -75,7 +75,7 @@ generated:
     - int32
     - boolean
     evidence: ev_848081aabedf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: true
@@ -85,7 +85,7 @@ generated:
     - string
     - int32
     - boolean
-    evidence: ev_121e96246ba6
+    evidence: ev_bfc409983970
   evidence:
   - id: ev_848081aabedf
     kind: client_parser
@@ -95,10 +95,10 @@ generated:
     symbol: _SafeCls_3396
     line: 67
     note: official client build WIN63-202607011411-782849652
-  - id: ev_121e96246ba6
+  - id: ev_bfc409983970
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/PollContentsMessageComposer.java
     symbol: PollContentsMessageComposer
     line: 17

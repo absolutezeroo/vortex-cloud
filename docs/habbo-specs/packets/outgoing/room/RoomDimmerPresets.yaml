@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4a1714fb15022296c09986c1c139235d7a8102b7b50a7121abcd862ecd17a052"
+generated_digest: "sha256:790548169706b316b8c047f81989f7b88ab6448cb0822a9e4118a73885b90c55"
 generated:
   name: RoomDimmerPresets
   direction: outgoing
@@ -103,7 +103,7 @@ generated:
     partial: true
     types: []
     evidence: ev_d2e13198974e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 11
     partial: false
@@ -119,7 +119,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_e3221db6ee4d
+    evidence: ev_7148a208dd0f
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -156,10 +156,10 @@ generated:
     symbol: RoomDimmerPresetsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e3221db6ee4d
+  - id: ev_7148a208dd0f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/RoomDimmerPresetsMessageComposer.java
     symbol: RoomDimmerPresetsMessageComposer
     line: 17

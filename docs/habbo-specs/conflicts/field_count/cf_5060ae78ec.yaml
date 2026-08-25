@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ea43400e361c2a4939697c200276e9c44fa2293d9fc8cf05f00b91c087cbf0c2"
+generated_digest: "sha256:5b11239d5402b6790341a1b5d7f77a1903ea56314623af6d9700ff36dbaf9ae5"
 generated:
   id: cf_5060ae78ec
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, string, string, string"
     evidence: ev_55bba8bff11d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, string, string, string"
-    evidence: ev_6f3be2545e2e
+    evidence: ev_1ede1f096414
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: CallForHelpPendingCallsMessageParser
     line: 32
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6f3be2545e2e
+  - id: ev_1ede1f096414
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/CallForHelpPendingCallsMessageComposer.java
     symbol: CallForHelpPendingCallsMessageComposer
     line: 18

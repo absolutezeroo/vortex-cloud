@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5fdc9772eaf2e0730666fb04d98618458603f8f28d2154fefad25841f026a26"
+generated_digest: "sha256:f267fb5b2f574aae3c41d92eb31b8f28b06745617f8235fecf93b7348a1bc7cf"
 generated:
   name: NoobnessLevel
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_9c9af3d654a2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_470ef00d032e
+    evidence: ev_56df3ae452cd
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: NoobnessLevelMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_470ef00d032e
+  - id: ev_56df3ae452cd
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/nux/NoobnessLevelMessageComposer.java
     symbol: NoobnessLevelMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:88747df0be8352cca314900939375f6a684eda2aa9337c3a5d3095314efcc2fe"
+generated_digest: "sha256:403d73d40443e39aa51471e60d5cbbd4392af6923320f49cf703cf873be3a2e5"
 generated:
   feature: inventory.open_trade
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.guard_1
     title: "open trade: the guard '!_roomGrain._state.AvatarsByPlayerId.ContainsKey(requeste...' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.guard_2
     title: "open trade: the guard '!TryResolvePlayerByObjectId(otherRoomObjectId, out Player...' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.guard_3
     title: "open trade: the guard '_roomGrain._state.TradeSessionsByPlayerId.ContainsKey(req...' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.guard_4
     title: "open trade: the guard '!requesterCanTrade || !otherCanTrade' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.guard_5
     title: "open trade: the guard '_registry is null' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   - scenario: inventory.open_trade.success
     title: "open trade: the request is accepted"
     given:
@@ -206,7 +206,7 @@ generated:
       emits:
       - TradingOpenEvent
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,12 +216,12 @@ generated:
       - TradingOpenFailed
       - TradingOpenFailed
       - TradingOpenFailed
-      evidence: ev_8866aa7762c4
+      evidence: ev_bc9212ef4356
   evidence:
-  - id: ev_8866aa7762c4
+  - id: ev_bc9212ef4356
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/OpenTradingEvent.java
     symbol: OpenTradingEvent
     line: 14

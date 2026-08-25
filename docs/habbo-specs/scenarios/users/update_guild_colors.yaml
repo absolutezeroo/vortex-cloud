@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:aaedfe47017a796a419e6a4d2e1e382544da4ed39df49b61c5b3e16e76f9423c"
+generated_digest: "sha256:d9ac75af7c73748ee52b2daa930c21004b4a79be5c740ff446c637429aa2db14"
 generated:
   feature: users.update_guild_colors
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_47d25c22100f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a009e95ec83e
+      evidence: ev_c657f34c8ca5
   - scenario: users.update_guild_colors.success
     title: "update guild colors: the request is accepted"
     given:
@@ -56,16 +56,16 @@ generated:
       - GroupDetailsChanged
       - GuildEditFailed
       evidence: ev_305cc1467cc9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_a009e95ec83e
+      evidence: ev_c657f34c8ca5
   evidence:
-  - id: ev_a009e95ec83e
+  - id: ev_c657f34c8ca5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildColorsMessageEvent.java
     symbol: UpdateGuildColorsMessageEvent
     line: 12

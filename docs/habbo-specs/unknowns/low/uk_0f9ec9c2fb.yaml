@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:38e8b0ae73c7c98662dd891b3fe218b5d0e51a23fecc5be9634962f4017c1c0f"
+generated_digest: "sha256:635b9647fbbd030fe1de041b1d842c48e4bf7c50c00edfb4f4f3fc32a2fabb81"
 generated:
   id: uk_0f9ec9c2fb
   subject: "outgoing/CfhChatlog: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2697
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_d00db6c1a054
+  - id: ev_5045e29ac1b0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/CfhChatlogMessageComposer.java
     symbol: CfhChatlogMessageComposer
     line: 35

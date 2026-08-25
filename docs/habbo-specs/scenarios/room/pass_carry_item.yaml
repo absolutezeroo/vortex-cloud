@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ac51b742c983b43f3e7869a3e2aeadb2be870f2b1bec4c0fe5e8ec38717ab1a5"
+generated_digest: "sha256:a48da911ec829fe953a94da0425eea404ae1243eabce2b5e27b3f713c038f1b3"
 generated:
   feature: room.pass_carry_item
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3ba41275e632
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b0a490f6a3fe
+      evidence: ev_7cc758960dce
   - scenario: room.pass_carry_item.guard_1
     title: "pass carry item: the guard 'fromPlayerId == toPlayerId || !TryFindAvatar(fromPlayerId...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_315e04717bdc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b0a490f6a3fe
+      evidence: ev_7cc758960dce
   - scenario: room.pass_carry_item.guard_2
     title: "pass carry item: the guard 'CarryItemId == itemId' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b0a490f6a3fe
+      evidence: ev_7cc758960dce
   - scenario: room.pass_carry_item.success
     title: "pass carry item: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_315e04717bdc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b0a490f6a3fe
+      evidence: ev_7cc758960dce
   evidence:
-  - id: ev_b0a490f6a3fe
+  - id: ev_7cc758960dce
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/PassCarryItemMessageEvent.java
     symbol: PassCarryItemMessageEvent
     line: 15

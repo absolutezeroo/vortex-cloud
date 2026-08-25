@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b2dbd8cc580435a7a870d783d8afef2103811e43dd19f2dea4139ae565c9f1c6"
+generated_digest: "sha256:5efab40509151cf2c586c0d08a3997b1ca398fda68fd1d33bb2b727f3898d7f7"
 generated:
   name: GetForumStats
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_ce510a56ea8f
+    - ev_2748be1f904e
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_88f50ed4c579
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_ce510a56ea8f
+    evidence: ev_2748be1f904e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetForumStatsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ce510a56ea8f
+  - id: ev_2748be1f904e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetForumStatsMessageEvent.java
     symbol: GetForumStatsMessageEvent
     line: 10

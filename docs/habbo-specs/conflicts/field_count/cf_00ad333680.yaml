@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e8721cca0b7cc3eb6133cdc8077a15094d656af32f587da4e3de320cef5661b6"
+generated_digest: "sha256:1c968c66d33c3548633228fdd7c775c8785ec26a18b4f75bb0dabb4790e79020"
 generated:
   id: cf_00ad333680
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, string, string, string, int32, string"
     evidence: ev_12c5838637c3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, string, string, int32, string"
-    evidence: ev_a412dd6accf1
+    evidence: ev_02eefcab9f81
   evidence:
   - id: ev_0aa9f5c4bebc
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: _SafeCls_4350
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_a412dd6accf1
+  - id: ev_02eefcab9f81
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/crafting/CraftableProductsMessageComposer.java
     symbol: CraftableProductsMessageComposer
     line: 22

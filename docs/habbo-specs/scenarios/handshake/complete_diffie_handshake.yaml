@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:601a2c409ec0781e258f200632910a42cae60755b4a1133c9e156eb7be272601"
+generated_digest: "sha256:7a289db850c4cfd0fe554e1c49d6b30bae120136e126fe32687eee7b9164d4d2"
 generated:
   feature: handshake.complete_diffie_handshake
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - CompleteDiffieHandshake
       evidence: ev_4ee288142db5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CompleteDiffieHandshake
-      evidence: ev_b65f089b022b
+      evidence: ev_e887cfd51cb0
   evidence:
-  - id: ev_b65f089b022b
+  - id: ev_e887cfd51cb0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/CompleteDiffieHandshakeEvent.java
     symbol: CompleteDiffieHandshakeEvent
     line: 16

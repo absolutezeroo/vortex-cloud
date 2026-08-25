@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5af9a934b35118e32b3e09ab3cae8a08ef87438e9689b3fceb3200c672e153d5"
+generated_digest: "sha256:62141d5c33d0bb0d624781072a77f1241a78585e3eb1949a702ab337d1834c96"
 generated:
   name: ScrGetUserInfo
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_fe7d7eb7772b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_452ccb1e0f92
+    evidence: ev_ff6679876b95
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: ScrGetUserInfoComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_452ccb1e0f92
+  - id: ev_ff6679876b95
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ScrGetUserInfoMessageEvent.java
     symbol: ScrGetUserInfoMessageEvent
     line: 8

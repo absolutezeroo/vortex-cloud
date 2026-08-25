@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3abb8b6dc1126b3ba7d4957f9f72c15ee92b2f8f2328b0f0849605c6a72329bb"
+generated_digest: "sha256:e2aa44c71bdf308dcd46bfa21c77d6dceb5649b5e14dc40f58ae7072dfcf8d43"
 generated:
   id: room.present_open
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:
@@ -121,6 +121,14 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_0f9ffda870b1
+  - expression: "!_root.TryGetProperty(name, out element)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_0f9ffda870b1
+  - expression: element.ValueKind == JsonValueKind.Null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_0f9ffda870b1
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -184,7 +192,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/ExtraDataReader.cs
     symbol: ExtraDataReader
-    line: 21
+    line: 33
   - id: ev_2ec03446aa2a
     kind: emulator_flow
     authority: vortex_emulator

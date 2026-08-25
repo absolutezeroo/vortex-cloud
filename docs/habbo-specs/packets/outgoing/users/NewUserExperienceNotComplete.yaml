@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0191e7f6e26da57cfd184ee374deb35cd45efe6c46c849ccc075e17e380faec9"
+generated_digest: "sha256:bc33d72c7ad7b5da9bec5554706e956f0b5849eea005186edc7d17e0594ce21f"
 generated:
   name: NewUserExperienceNotComplete
   direction: outgoing
@@ -25,12 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_31063beb32e2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_eefbddfad526
+    evidence: ev_fa33b16ec8c1
   evidence:
   - id: ev_31063beb32e2
     kind: client_parser
@@ -40,10 +40,10 @@ generated:
     symbol: _SafeCls_4042
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_eefbddfad526
+  - id: ev_fa33b16ec8c1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/verification/NewUserExperienceNotCompleteMessageComposer.java
     symbol: NewUserExperienceNotCompleteMessageComposer
     line: 9

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:74d3fcf63ba7f408da43ca1591d0edd744c1e8f9bb3e526df69e3b72b207f38a"
+generated_digest: "sha256:bfbc44d19112dd0bb07996f5faef8266d2618e4a751bb0f53a1ed3aec24b2a2a"
 generated:
   name: UnknownTrade
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_c192d244416f
+    evidence: ev_159726cf9161
   evidence:
-  - id: ev_c192d244416f
+  - id: ev_159726cf9161
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/UnknownTradeComposer.java
     symbol: UnknownTradeComposer
     line: 9

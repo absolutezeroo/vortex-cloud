@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:abe39a8fd9f8d03b96fbb35c243a10280490b26a48568552cb4076153aae41f1"
+generated_digest: "sha256:50d25dabbc07d1f414ad948226517bb692e919032a9c9d68bcba878b2d52adbc"
 generated:
   id: landing_view.get_promo_articles
   domain: landing_view
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:06277841bedb0bb92675fa45c4ba59de40638838cde00d282945bba1c5313cd0"
+generated_digest: "sha256:e4a03ab27e7bedee80f8cfeed5db1cf16521aead6266ba8071f18ccd8f199014"
 generated:
   name: RecyclerStatus
   direction: outgoing
@@ -51,14 +51,14 @@ generated:
     - int32
     - int32
     evidence: ev_5717ee66dc02
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_46efc6dfdef0
+    evidence: ev_42b366066160
   evidence:
   - id: ev_5717ee66dc02
     kind: client_parser
@@ -76,10 +76,10 @@ generated:
     symbol: RecyclerStatusMessageParser
     line: 29
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_46efc6dfdef0
+  - id: ev_42b366066160
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/RecyclerStatusMessageComposer.java
     symbol: RecyclerStatusMessageComposer
     line: 9

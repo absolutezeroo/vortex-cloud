@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:98d6ad57e689db2086f015000ef1e6ccb29043d250e76319298a68f7c93f4f37"
+generated_digest: "sha256:f8f9060e4560931ff14959247afc30b8eeef928f58dedc22a0bfdd4232c10473"
 generated:
   feature: catalog.set_targeted_offer_state
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_164aaa724c27
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6100c3828c70
+      evidence: ev_6e8db213d853
   - scenario: catalog.set_targeted_offer_state.success
     title: "set targeted offer state: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6100c3828c70
+      evidence: ev_6e8db213d853
   evidence:
-  - id: ev_6100c3828c70
+  - id: ev_6e8db213d853
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/SetTargetedOfferStateEvent.java
     symbol: SetTargetedOfferStateEvent
     line: 8

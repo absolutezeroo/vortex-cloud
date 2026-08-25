@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8d665ddd531d5160400cdc0eb54d61f09e3777653b814e16182cbec34b240de0"
+generated_digest: "sha256:4ea992a11f3b14b683ddc27943d4350879093b650aa5b3e7a6b4f7ebfd14545c"
 generated:
   name: RequestClubData
   direction: incoming
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_1a39429ae9ce
+    - ev_243fcf4640bf
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_1a39429ae9ce
+    evidence: ev_243fcf4640bf
   evidence:
-  - id: ev_1a39429ae9ce
+  - id: ev_243fcf4640bf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/RequestClubDataEvent.java
     symbol: RequestClubDataEvent
     line: 8

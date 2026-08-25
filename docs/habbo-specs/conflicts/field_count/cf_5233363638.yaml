@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:75bfd8abe03158e8ef036b8f45a665747a30cec65fdf54b555d490f354a8e6f6"
+generated_digest: "sha256:c83da06b67d196b7ff431021952f0f847645ad63d26d555be1ef08d8c93e3210"
 generated:
   id: cf_5233363638
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, int32, int32, int32"
     evidence: ev_c3ac47e6f63d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: string, int32, int32, int32"
-    evidence: ev_fb815243379c
+    evidence: ev_aba11ffc23cf
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: string, int32, int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: BonusRareInfoMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fb815243379c
+  - id: ev_aba11ffc23cf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/BonusRareInfoMessageComposer.java
     symbol: BonusRareInfoMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a9eae15fb2105e2202b8818b9fd18e9058def0540a4d827af9e4e242a5c3eb4b"
+generated_digest: "sha256:4c37c19f98009c0e8e1af9a0f7990d63f17e20328c667700db4adbb65de0833e"
 generated:
   name: GuildMembers
   direction: outgoing
@@ -24,7 +24,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 1
     name: group_name
@@ -32,7 +32,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 2
     name: base_room_id
@@ -40,7 +40,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 3
     name: badge_code
@@ -48,7 +48,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 4
     name: total_entries
@@ -56,7 +56,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 5
     name: count
@@ -64,7 +64,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 6
     name: role_type
@@ -72,7 +72,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 7
     name: user_id
@@ -80,7 +80,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 8
     name: user_name
@@ -88,7 +88,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 9
     name: figure
@@ -96,7 +96,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 10
     name: member_since
@@ -104,7 +104,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 11
     name: allowed_to_manage
@@ -112,7 +112,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 12
     name: page_size
@@ -120,7 +120,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 13
     name: page_index
@@ -128,7 +128,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 14
     name: search_type
@@ -136,7 +136,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   - index: 15
     name: user_name_filter
@@ -144,7 +144,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_5250696765cb
+    - ev_7c102bdd8a32
     - ev_afdea65cfa0b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -170,7 +170,7 @@ generated:
     partial: true
     types: []
     evidence: ev_ee45cb7daf1a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 16
     partial: false
@@ -191,7 +191,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_5250696765cb
+    evidence: ev_7c102bdd8a32
   - origin: vortex
     authority: vortex_emulator
     field_count: 12
@@ -227,10 +227,10 @@ generated:
     symbol: GuildMembersMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5250696765cb
+  - id: ev_7c102bdd8a32
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildMembersMessageComposer.java
     symbol: GuildMembersMessageComposer
     line: 36

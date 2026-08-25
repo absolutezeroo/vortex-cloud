@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d53e0a6cf89b82fadacdba21c0af630c4da858864e1b383f2b28b1aa405afdf1"
+generated_digest: "sha256:27a528f2450c4eddbf60a938649df1dc770e82ef37839de8d1a9efac7e2c00e9"
 generated:
   id: cf_2f7d8f319b
   kind: behaviour
   subject: "GetGuildEditInfo: packets emitted in response"
   packet: GetGuildEditInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuildEditInfo
-    evidence: ev_4bf2932dffe2
+    evidence: ev_9b0fdec904c6
   - origin: vortex
     authority: vortex_emulator
     claim: GuildEditorData then GuildEditInfo
     evidence: ev_22a6e9d7df9e
   evidence:
-  - id: ev_4bf2932dffe2
+  - id: ev_9b0fdec904c6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildEditInfoMessageEvent.java
     symbol: GetGuildEditInfoMessageEvent
     line: 23

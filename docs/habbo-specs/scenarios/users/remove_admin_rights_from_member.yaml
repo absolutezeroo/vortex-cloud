@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:40465db6cea53365839a429d38a348fe4275dbf3f8c8ffb1d1f48486951bf5f7"
+generated_digest: "sha256:cd38a6857a45fbc17e191c8739bb128c61dd0df252c449155f627ccd0aed6077"
 generated:
   feature: users.remove_admin_rights_from_member
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e5873eac4210
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_1351373b019e
+      evidence: ev_90a9b66a8e58
   - scenario: users.remove_admin_rights_from_member.guard_1
     title: "remove admin rights from member: the guard 'group is null || group.OwnerPlayerEntityId != actor.Value...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_1351373b019e
+      evidence: ev_90a9b66a8e58
   - scenario: users.remove_admin_rights_from_member.guard_2
     title: "remove admin rights from member: the guard 'member is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_1351373b019e
+      evidence: ev_90a9b66a8e58
   - scenario: users.remove_admin_rights_from_member.guard_3
     title: "remove admin rights from member: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_1351373b019e
+      evidence: ev_90a9b66a8e58
   - scenario: users.remove_admin_rights_from_member.success
     title: "remove admin rights from member: the request is accepted"
     given:
@@ -129,17 +129,17 @@ generated:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_1351373b019e
+      evidence: ev_90a9b66a8e58
   evidence:
-  - id: ev_1351373b019e
+  - id: ev_90a9b66a8e58
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/RemoveAdminRightsFromMemberMessageEvent.java
     symbol: RemoveAdminRightsFromMemberMessageEvent
     line: 16

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:979bf0ff6687971aae12cf48e2dbf792ba6e5227c9ecf2d7e9069dcc77c070a0"
+generated_digest: "sha256:3caf0f06c6da0a03f216e7ce6b0942df2a7563c6726c4048c3afc48c5491cb8c"
 generated:
   id: uk_e90c108ca1
   subject: "outgoing/RoomUsersAddGuildBadge: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomUsersAddGuildBadge
   known_evidence:
-  - id: ev_e85261bcf2b2
+  - id: ev_55f0d5a11a6b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/RoomUsersAddGuildBadgeComposer.java
     symbol: RoomUsersAddGuildBadgeComposer
     line: 16

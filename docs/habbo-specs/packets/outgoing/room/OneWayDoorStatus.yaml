@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a64eb15063406326b438be6acb2d9de279fd11a1ee43d25e0882f1e9984b25d4"
+generated_digest: "sha256:e49c33b90485fdb53ffa40842434394472973356168aadbe51430f22a32cee5c"
 generated:
   name: OneWayDoorStatus
   direction: outgoing
@@ -49,7 +49,7 @@ generated:
     - int32
     - int32
     evidence: ev_2783ce708fab
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_34d23948e497
+    evidence: ev_b4b649168100
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: OneWayDoorStatusMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_34d23948e497
+  - id: ev_b4b649168100
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/OneWayDoorStatusMessageComposer.java
     symbol: OneWayDoorStatusMessageComposer
     line: 16

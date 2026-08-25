@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:24f76092b972e752b410ee6f359f4c230813fe337e33345e2f48eb6ed4e492de"
+generated_digest: "sha256:0d0ee3af5fe68f3028f857f96ae88495b9bd33e53093250ffec282029d799f7f"
 generated:
   feature: inventory.set_activated_badges
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9b29c2b55162
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserBadges
-      evidence: ev_d7b73b96fec7
+      evidence: ev_8bd531ed9453
   - scenario: inventory.set_activated_badges.guard_1
     title: "set activated badges: the guard '_registry is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserBadges
-      evidence: ev_d7b73b96fec7
+      evidence: ev_8bd531ed9453
   - scenario: inventory.set_activated_badges.success
     title: "set activated badges: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserBadges
-      evidence: ev_d7b73b96fec7
+      evidence: ev_8bd531ed9453
   evidence:
-  - id: ev_d7b73b96fec7
+  - id: ev_8bd531ed9453
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetActivatedBadgesEvent.java
     symbol: SetActivatedBadgesEvent
     line: 14

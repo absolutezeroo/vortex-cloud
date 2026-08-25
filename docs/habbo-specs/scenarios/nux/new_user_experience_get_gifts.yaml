@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dbbb78bcaf567f70f19c5f1a15112f37203b00d0d9b82aa48f37031c4c455c54"
+generated_digest: "sha256:25a68b8e02b121cc157081d7f849f2ec6bee16136772679e88b12e1defad7907"
 generated:
   feature: nux.new_user_experience_get_gifts
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_097f6d917032
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ed19427831e5
+      evidence: ev_5e76f097822d
   evidence:
-  - id: ev_ed19427831e5
+  - id: ev_5e76f097822d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/NewUserExperienceGetGiftsMessageEvent.java
     symbol: NewUserExperienceGetGiftsMessageEvent
     line: 10

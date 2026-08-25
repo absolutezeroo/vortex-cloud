@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:299cf2c807293a178b7f07cbfb69266ac8b1b68b32ed1f282ffc3e49cc910122"
+generated_digest: "sha256:1a6f623bae22fa35804f3f008573c511efe1e883c7c58c588482455c1f578516"
 generated:
   name: BotAddedToInventory
   direction: outgoing
@@ -84,7 +84,7 @@ generated:
     - string
     - boolean
     evidence: ev_5c457b2cad08
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -95,7 +95,7 @@ generated:
     - string
     - string
     - boolean
-    evidence: ev_f58eb6f8d7b4
+    evidence: ev_dc14fb3629c9
   evidence:
   - id: ev_5c457b2cad08
     kind: client_parser
@@ -105,10 +105,10 @@ generated:
     symbol: _SafeCls_3675
     line: 25
     note: official client build WIN63-202607011411-782849652
-  - id: ev_f58eb6f8d7b4
+  - id: ev_dc14fb3629c9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/BotAddedToInventoryMessageComposer.java
     symbol: BotAddedToInventoryMessageComposer
     line: 16

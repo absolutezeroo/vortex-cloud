@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b51808a07b7ae605256d7d1e0c2ffad7d538f9a668fe9d1289b18c8ec7a86b66"
+generated_digest: "sha256:f510be8a5a2739690b0841607cd752a5a7d53acec58d3c55a577893c684060c9"
 generated:
   name: GetProductOffer
   direction: incoming
@@ -41,13 +41,13 @@ generated:
     types:
     - int32
     evidence: ev_d1d55b2e156b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_d4b6852769b5
+    evidence: ev_617fb133799f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: GetProductOfferComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d4b6852769b5
+  - id: ev_617fb133799f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetProductOfferEvent.java
     symbol: GetProductOfferEvent
     line: 12

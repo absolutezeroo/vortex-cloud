@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a0d5cd04defcd95a62c24225b042fce166fe68146ef732b73503e9ce72626fb2"
+generated_digest: "sha256:45443d6079bab1315dca660ef10b23f4e30c654f84e11eff787246da18754295"
 generated:
   name: GuildEditInfo
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 3
     name: unknown_3
     type: boolean
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 4
     name: unknown_4
     type: boolean
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 6
     name: unknown_6
     type: string
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 7
     name: unknown_7
     type: string
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 12
     name: unknown_12
     type: int32
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 13
     name: unknown_13
     type: boolean
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 14
     name: unknown_14
     type: string
@@ -137,7 +137,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 15
     name: unknown_15
     type: int32
@@ -145,7 +145,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 16
     name: unknown_16
     type: int32
@@ -153,7 +153,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 17
     name: unknown_17
     type: int32
@@ -161,7 +161,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 18
     name: unknown_18
     type: int32
@@ -169,7 +169,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 19
     name: unknown_19
     type: int32
@@ -177,7 +177,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 20
     name: unknown_20
     type: int32
@@ -185,7 +185,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 21
     name: unknown_21
     type: int32
@@ -193,7 +193,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 22
     name: unknown_22
     type: int32
@@ -201,7 +201,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 23
     name: unknown_23
     type: int32
@@ -209,7 +209,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 24
     name: unknown_24
     type: string
@@ -217,7 +217,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   - index: 25
     name: unknown_25
     type: int32
@@ -225,7 +225,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_81c74ef1e9e9
+    - ev_37aef692ca1e
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -257,7 +257,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6752fde225fa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 26
     partial: false
@@ -288,7 +288,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_81c74ef1e9e9
+    evidence: ev_37aef692ca1e
   - origin: vortex
     authority: vortex_emulator
     field_count: 17
@@ -329,10 +329,10 @@ generated:
     symbol: GuildEditInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_81c74ef1e9e9
+  - id: ev_37aef692ca1e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildEditInfoMessageComposer.java
     symbol: GuildEditInfoMessageComposer
     line: 16

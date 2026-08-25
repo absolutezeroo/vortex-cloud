@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dbb2c5243f170889423aced3e6d1a0f93bbe1e0193a497842d0daea6f0bc4cc9"
+generated_digest: "sha256:8a5421d3d0260290ca9c6f966fc47e121c5a859371ac2b11ec5411021022dad6"
 generated:
   id: cf_691c47ecb5
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "3 fields: boolean, block, boolean, boolean, boolean, boolean, boolean"
     evidence: ev_85a4aa0bb395
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "43 fields: boolean, int32, string, int32, string, int32, string, int32, int32, int32, string, int32, int32, int32, int32, int32, string, int32, int32, int32, string, string, int32, string, string, string, string, int32, boolean, boolean, boolean, boolean, boolean, boolean, int32, int32, int32, boolean, int32, int32, int32, int32, int32"
-    evidence: ev_274d6a188d60
+    evidence: ev_c03ef48e11a5
   - origin: vortex
     authority: vortex_emulator
     claim: "10 fields: boolean, block, boolean, boolean, boolean, boolean, block, boolean, block, boolean"
@@ -38,10 +38,10 @@ generated:
     symbol: GetGuestRoomResultMessage
     line: 17
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_274d6a188d60
+  - id: ev_c03ef48e11a5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/GetGuestRoomResultMessageComposer.java
     symbol: GetGuestRoomResultMessageComposer
     line: 26

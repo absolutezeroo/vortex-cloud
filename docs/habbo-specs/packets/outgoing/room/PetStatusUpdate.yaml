@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e0be05c8fea6f2283fdc4d2d500439e261cf491f36a8ab5f85805466117d926d"
+generated_digest: "sha256:43e1fa3788bade015fcb288d4bcdd3f5163f57cb932d5f7d4b1072017e7669ae"
 generated:
   name: PetStatusUpdate
   direction: outgoing
@@ -97,7 +97,7 @@ generated:
     partial: true
     types: []
     evidence: ev_f03e92ddea7b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -108,7 +108,7 @@ generated:
     - boolean
     - boolean
     - boolean
-    evidence: ev_6ba00fb0caaa
+    evidence: ev_c312676db412
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -146,10 +146,10 @@ generated:
     symbol: PetStatusUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6ba00fb0caaa
+  - id: ev_c312676db412
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetStatusUpdateMessageComposer.java
     symbol: PetStatusUpdateMessageComposer
     line: 18

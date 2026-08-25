@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:32a20a456752b279a5c91bb6c93e91417edc4ac82c02c456dd1b078981923903"
+generated_digest: "sha256:ed5e596f36982b1319d4f091c84f4eb0b253cf99422b60aff8332566a7683ea8"
 generated:
   name: RedeemVoucher
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_85d38984f4fc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_039823ee340b
+    evidence: ev_be12cc28100c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RedeemVoucherComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_039823ee340b
+  - id: ev_be12cc28100c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/RedeemVoucherMessageEvent.java
     symbol: RedeemVoucherMessageEvent
     line: 11

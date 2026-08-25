@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f31b181e2c0fcc062a4ecee019ad494c39edf651706a59d6963db2f861583c91"
+generated_digest: "sha256:69816fb66fca799d60fa921f53fc435cfcb7de545c469ee1847774379f66f88c"
 generated:
   name: AddItemToTrade
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_e150474b4a22
-    - ev_60dc82d4d60f
+    - ev_27898759c449
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_94d27f332d40
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_60dc82d4d60f
+    evidence: ev_27898759c449
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: AddItemToTradeComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_60dc82d4d60f
+  - id: ev_27898759c449
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/AddItemToTradeEvent.java
     symbol: AddItemToTradeEvent
     line: 9

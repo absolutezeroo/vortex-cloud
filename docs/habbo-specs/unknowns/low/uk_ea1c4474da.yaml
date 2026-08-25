@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:be9c54d3f59d05c18ff649eb88975efbebb0978ea4649f2129d4791b0d57b541"
+generated_digest: "sha256:1ac03b920f7ea6bdeaba3b676d369b79c01dd3523137d3e3d20f5c43207d13bc"
 generated:
   id: uk_ea1c4474da
   subject: "incoming/GetGameStatus: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GetGameStatus
   known_evidence:
-  - id: ev_8767d80dd051
+  - id: ev_28dc960a7607
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GetGameStatusMessageEvent.java
     symbol: GetGameStatusMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:43926659b3d4f039af462d0f4b955bfded473729705d7901b89848dc09d1c163"
+generated_digest: "sha256:3b14007c6d429dbe96bab64f830b5c1ccb22b257f2025a1d8160a08e121def95"
 generated:
   name: ThreadUpdated
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_f42fd9aad90f
+    - ev_9269fb55511f
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: true
     types:
     - int32
-    evidence: ev_f42fd9aad90f
+    evidence: ev_9269fb55511f
   evidence:
-  - id: ev_f42fd9aad90f
+  - id: ev_9269fb55511f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/ThreadUpdatedMessageComposer.java
     symbol: ThreadUpdatedMessageComposer
     line: 31

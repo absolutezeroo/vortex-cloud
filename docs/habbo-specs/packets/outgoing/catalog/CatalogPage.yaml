@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5ca7b71d507b19007dd94964280041c14910e6d5b7a6618650f945b09efdcb0a"
+generated_digest: "sha256:52b934a9b8148cd0b5be565c6ad3ade5818af3ee228014fff9cff8e4f0426a8f"
 generated:
   name: CatalogPage
   direction: outgoing
@@ -474,7 +474,7 @@ generated:
     partial: true
     types: []
     evidence: ev_ca7d7dba3634
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: true
@@ -485,7 +485,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_df2634aeca57
+    evidence: ev_2e8b43522b7b
   - origin: vortex
     authority: vortex_emulator
     field_count: 10
@@ -527,10 +527,10 @@ generated:
     symbol: CatalogPageMessage
     line: 6
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_df2634aeca57
+  - id: ev_2e8b43522b7b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/CatalogPageMessageComposer.java
     symbol: CatalogPageMessageComposer
     line: 39

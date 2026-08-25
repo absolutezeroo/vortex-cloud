@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ae9528c174d14effb48c8eb2cd13a4a362d7119ff2538eaba21dc3d5d513ad19"
+generated_digest: "sha256:5d58aa4bec4fde9adb2d521be622cd9518e1ef46562b0ff3436d18d795f98f13"
 generated:
   id: uk_613df422b3
   subject: "room.present_open: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/ExtraDataReader.cs
     symbol: ExtraDataReader
-    line: 21
+    line: 33
   - id: ev_2ec03446aa2a
     kind: emulator_flow
     authority: vortex_emulator

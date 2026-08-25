@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:930a2ba131063c113e5fa326f23be404d6d08c4e20d6bc902d374fa7ce53d004"
+generated_digest: "sha256:69d892037effe748ee72174ef79aa8b0f11957f37f85493a369c6f11e0d65164"
 generated:
   id: cf_aa0921e468
   kind: behaviour
   subject: "UpdateForumSettings: packets emitted in response"
   packet: UpdateForumSettings
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ErrorReport then ErrorReport then NotificationDialog then ForumData
-    evidence: ev_f524822a6929
+    evidence: ev_c31a44db4fd7
   - origin: vortex
     authority: vortex_emulator
     claim: ForumData
     evidence: ev_e8a93c22d13b
   evidence:
-  - id: ev_f524822a6929
+  - id: ev_c31a44db4fd7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateForumSettingsMessageEvent.java
     symbol: UpdateForumSettingsMessageEvent
     line: 14

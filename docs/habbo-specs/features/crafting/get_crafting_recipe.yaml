@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4b56992bdde1c44ab218068ae67e79ec3e0836dd116f6e691193f3b4810a9ddb"
+generated_digest: "sha256:f638b1174d246abe1d204637469e73c76a0748bec38bae0b3d7fef597c729bc3"
 generated:
   id: crafting.get_crafting_recipe
   domain: crafting
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

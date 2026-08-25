@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5a4afacb0cc503f323a68650f786c086b5341bac33514c0910a14f371926b370"
+generated_digest: "sha256:4386d1ff3d42ac02856b6cb9cd3b71562da9b5bc892181649c5eb7225af054b8"
 generated:
   name: PetRemovedFromInventory
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_d82634610729
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_73c3bdf66ec0
+    evidence: ev_3deefc558424
   evidence:
   - id: ev_d82634610729
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_3370
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_73c3bdf66ec0
+  - id: ev_3deefc558424
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/PetRemovedFromInventoryMessageComposer.java
     symbol: PetRemovedFromInventoryMessageComposer
     line: 16

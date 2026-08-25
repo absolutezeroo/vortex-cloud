@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c4fba311a8d45203cf980c38866d4e4634706a19391d4bdb71e043bf7281d2e2"
+generated_digest: "sha256:bec4c7c27ba54de8efade6474fbdb2605ac7f6b3100292870cb704f6b71a62ed"
 generated:
   id: cf_4e1095a2b1
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32"
     evidence: ev_183d1034e9bc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_71b5035fb537
+    evidence: ev_d1287ef9e1b9
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: RoomInviteErrorMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_71b5035fb537
+  - id: ev_d1287ef9e1b9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/RoomInviteErrorMessageComposer.java
     symbol: RoomInviteErrorMessageComposer
     line: 20

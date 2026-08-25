@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3bf5d195a7a373c2344b91d5c8ed42e57ffeb91179a222791b3c0989b8665a25"
+generated_digest: "sha256:c9511b7c41be134f0096e8f193100b1e8dd1e5d6bc795eb06401052afd1eaefb"
 generated:
   name: HabboGroupBadges
   direction: outgoing
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_60abd2f765ca
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_acdb61f127ca
+    evidence: ev_d02e6f25f92d
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -94,10 +94,10 @@ generated:
     symbol: HabboGroupBadgesMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_acdb61f127ca
+  - id: ev_d02e6f25f92d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/HabboGroupBadgesMessageComposer.java
     symbol: HabboGroupBadgesMessageComposer
     line: 17

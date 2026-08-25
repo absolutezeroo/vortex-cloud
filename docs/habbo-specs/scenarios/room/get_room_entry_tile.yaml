@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cc69c9847e9dd8fe5747f3a0841904c013fcaf2e711a20925cfdf0fac1ac9259"
+generated_digest: "sha256:b4ebbeb6b1c383391e8de0de362b2d29d9f2812a698df20a7d15c43cb8295747"
 generated:
   feature: room.get_room_entry_tile
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a41a5b6a9d25
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomEntryTile
       - RoomFloorThicknessUpdated
-      evidence: ev_800bb7ca9a46
+      evidence: ev_5def21d0052f
   - scenario: room.get_room_entry_tile.success
     title: "get room entry tile: the request is accepted"
     given:
@@ -57,18 +57,18 @@ generated:
       emits:
       - RoomEntryTile
       evidence: ev_5c4457759c24
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomEntryTile
       - RoomFloorThicknessUpdated
-      evidence: ev_800bb7ca9a46
+      evidence: ev_5def21d0052f
   evidence:
-  - id: ev_800bb7ca9a46
+  - id: ev_5def21d0052f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/floorplaneditor/GetRoomEntryTileMessageEvent.java
     symbol: GetRoomEntryTileMessageEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f7fb404810ae67237def16a4544e84fbba70b56dde625babbcaba62dffd4300d"
+generated_digest: "sha256:085a6af1b7b3bfb772e323045c35b6f2d95b014ab4b299520cbe274add5184cf"
 generated:
   feature: preferences.set_chat_preferences
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_44570889b75c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e4edcf675276
+      evidence: ev_bb907ba5ed44
   - scenario: preferences.set_chat_preferences.success
     title: "set chat preferences: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_44570889b75c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e4edcf675276
+      evidence: ev_bb907ba5ed44
   evidence:
-  - id: ev_e4edcf675276
+  - id: ev_bb907ba5ed44
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetChatPreferencesMessageEvent.java
     symbol: SetChatPreferencesMessageEvent
     line: 9

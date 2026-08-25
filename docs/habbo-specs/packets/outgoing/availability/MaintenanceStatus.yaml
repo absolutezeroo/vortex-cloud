@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:20eff2715668c7db45dcc079ca4c95da7d2a36521c0b922342d5a25b732b4817"
+generated_digest: "sha256:01de029d6b3831fec5c5dedae56e456be352dd957e8f5281410184fc25aa28d3"
 generated:
   name: MaintenanceStatus
   direction: outgoing
@@ -56,7 +56,7 @@ generated:
     partial: true
     types: []
     evidence: ev_e573d5bdf58b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -64,7 +64,7 @@ generated:
     - boolean
     - int32
     - int32
-    evidence: ev_a4f3e63a2a36
+    evidence: ev_ac22d81c22b6
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -91,10 +91,10 @@ generated:
     symbol: MaintenanceStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a4f3e63a2a36
+  - id: ev_ac22d81c22b6
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/MaintenanceStatusMessageComposer.java
     symbol: MaintenanceStatusMessageComposer
     line: 17

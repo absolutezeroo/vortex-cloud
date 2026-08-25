@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f842df140e83c0f154096ba500bee11902af90caad3ce7bcc734b440198081fe"
+generated_digest: "sha256:616545b1f025ed84583a3f8bc9cfdb1001a89aa30bdc2d2c47d9f92f90ccc804"
 generated:
   feature: landing_view.get_promo_articles
   scenarios:
@@ -31,19 +31,19 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c8c9d4a868b0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CurrentTimingCode
       - CommunityGoalHallOfFame
       - NewsList
-      evidence: ev_c77135ac2a11
+      evidence: ev_cb4e150054f7
   evidence:
-  - id: ev_c77135ac2a11
+  - id: ev_cb4e150054f7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetPromoArticlesEvent.java
     symbol: GetPromoArticlesEvent
     line: 11

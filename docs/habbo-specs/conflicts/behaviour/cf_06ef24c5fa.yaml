@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1a859b9318264b570be1769167a6d9dbd089263c8a2e490715a5fe75cbf5785d"
+generated_digest: "sha256:107ccc59c6033ea960f4b641b0301fa99f29112ae08eabcd24c9c7bf5ffc5b95"
 generated:
   id: cf_06ef24c5fa
   kind: behaviour
   subject: "GetBotInventory: packets emitted in response"
   packet: GetBotInventory
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: BotInventory
-    evidence: ev_23dedda6c50d
+    evidence: ev_bbff9e09af23
   - origin: vortex
     authority: vortex_emulator
     claim: BotInventoryEvent
     evidence: ev_90ba9eeb98e7
   evidence:
-  - id: ev_23dedda6c50d
+  - id: ev_bbff9e09af23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetBotInventoryEvent.java
     symbol: GetBotInventoryEvent
     line: 8

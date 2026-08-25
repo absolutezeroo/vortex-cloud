@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:504602d5d67f133e4d24d35c1c11f30f61445177596b575b139c0a2549020da2"
+generated_digest: "sha256:ec300def7ab8430ffd6b353da1c88a3e1f95b83d8452e7a84bdda6cbe487b3cc"
 generated:
   name: CameraPublishStatus
   direction: outgoing
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_e2e633f5a475
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - boolean
     - int32
     - string
-    evidence: ev_5b6cb02e3770
+    evidence: ev_4b18aae22b1a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -91,10 +91,10 @@ generated:
     symbol: CameraPublishStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5b6cb02e3770
+  - id: ev_4b18aae22b1a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/CameraPublishStatusMessageComposer.java
     symbol: CameraPublishStatusMessageComposer
     line: 19

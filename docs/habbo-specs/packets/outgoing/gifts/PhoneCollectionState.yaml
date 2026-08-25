@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc4bd20152c94ca62db8dc4ed66d243fcce07a916110a223f7505968d4f442d8"
+generated_digest: "sha256:1417efc37f15f2316af135adaf0172f6e1e8df67e0beed3d10580171d3179475"
 generated:
   name: PhoneCollectionState
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_15ecbafd44dc
+    - ev_a63e91660ae3
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_15ecbafd44dc
+    - ev_a63e91660ae3
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_15ecbafd44dc
+    - ev_a63e91660ae3
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -49,7 +49,7 @@ generated:
     partial: true
     types: []
     evidence: ev_b51926211230
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_15ecbafd44dc
+    evidence: ev_a63e91660ae3
   evidence:
   - id: ev_b51926211230
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: PhoneCollectionStateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_15ecbafd44dc
+  - id: ev_a63e91660ae3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/verification/PhoneCollectionStateMessageComposer.java
     symbol: PhoneCollectionStateMessageComposer
     line: 19

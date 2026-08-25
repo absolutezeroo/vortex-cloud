@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:85e72dc48ee862d8ed0f32636c539e5103b7b9d200616e28f89815f01f0d5b7d"
+generated_digest: "sha256:d6adcfc3561bfda6f1dcaa5a991232b2946ef9d98989d0aeef2039465bf00f61"
 generated:
   id: cf_6ea0a27f03
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, string"
     evidence: ev_08a109209e36
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: string, string"
-    evidence: ev_c4c633b7a9e4
+    evidence: ev_1f881fc68c71
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: string, string"
@@ -50,10 +50,10 @@ generated:
     symbol: ItemDataUpdateMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c4c633b7a9e4
+  - id: ev_1f881fc68c71
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemDataUpdateMessageComposer.java
     symbol: ItemDataUpdateMessageComposer
     line: 16

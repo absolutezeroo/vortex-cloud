@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:b6b12d38fdbff354f697c1dbbe5706ab9e629d51194102819a1159599de95db8"
+generated_digest: "sha256:4955d18007b7d25f5d38bc897a9e6121b38681019e0cf91ac45daba07268d5e9"
 generated:
   id: cf_60f7fc1fbc
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, int32, int32"
     evidence: ev_1c9386bf2920
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "8 fields: int32, int32, int32, int32, int32, int32, int32, int32"
-    evidence: ev_58e6731a917a
+    evidence: ev_dd8536987835
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: int32, int32, int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: BuildersClubSubscriptionStatusMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_58e6731a917a
+  - id: ev_dd8536987835
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/BuildersClubSubscriptionStatusMessageComposer.java
     symbol: BuildersClubSubscriptionStatusMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ba5da63f024900259eef52a551d265f9d9e8b89aecd84193772dd4cca52d8772"
+generated_digest: "sha256:fd788b7450bc84526560bf846a1ed6ac612cee654d6f16d59773ca890a5659e6"
 generated:
   name: AchievementResolutionCompleted
   direction: outgoing
@@ -57,14 +57,14 @@ generated:
     partial: true
     types: []
     evidence: ev_152c261e1a81
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_77aa3598c9c7
+    evidence: ev_d22be5b7a023
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -98,10 +98,10 @@ generated:
     symbol: AchievementResolutionCompletedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_77aa3598c9c7
+  - id: ev_d22be5b7a023
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/events/resolution/AchievementResolutionCompletedMessageComposer.java
     symbol: AchievementResolutionCompletedMessageComposer
     line: 15

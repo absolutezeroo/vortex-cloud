@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ac88fd983404ababee37415f566cbce5f3e08cff2f04f24d14ff946e52fad6cb"
+generated_digest: "sha256:a075d5679019a0936a33c520c62a10436d4e25b18b3f70cbcede89f3a58af213"
 generated:
   id: cf_aaf08202aa
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "6 fields: int32, int32, string, int32, int32, int32"
     evidence: ev_7f744d978465
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: int32, int32, string, int32, int32, int32, boolean"
-    evidence: ev_3da8755a1513
+    evidence: ev_62338d616f96
   - origin: vortex
     authority: vortex_emulator
     claim: "7 fields: int32, int32, string, int32, int32, int32, boolean"
@@ -38,10 +38,10 @@ generated:
     symbol: BuildersClubPlaceRoomItemComposer
     line: 15
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3da8755a1513
+  - id: ev_62338d616f96
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubPlaceRoomItemMessageEvent.java
     symbol: BuildersClubPlaceRoomItemMessageEvent
     line: 15

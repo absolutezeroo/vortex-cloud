@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8a072d9a4784bc6d4f445c3a14221263bb2cde73e16bc8a1d41f871964375c8d"
+generated_digest: "sha256:36522cc7ed4aa0af61146bae6312c6520929fb3f69462d90ed5902b75e942995"
 generated:
   feature: groups.post_message
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8e9c8b217c58
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -45,7 +45,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_1
     title: "post message: the guard 'result is null' holds"
     given:
@@ -64,7 +64,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8e9c8b217c58
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -77,7 +77,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_10
     title: "post message: the guard '_registry is null' holds"
     given:
@@ -96,7 +96,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -109,7 +109,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_2
     title: "post message: the guard 'string.IsNullOrWhiteSpace(message)' holds"
     given:
@@ -128,7 +128,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -141,7 +141,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_3
     title: "post message: the guard 'group is null || group.ForumSettings is null || !group.Fo...' holds"
     given:
@@ -160,7 +160,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -173,7 +173,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_4
     title: "post message: the guard 'actorEntity is null' holds"
     given:
@@ -192,7 +192,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -205,7 +205,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_5
     title: "post message: the guard 'threadId == 0' holds"
     given:
@@ -224,7 +224,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -237,7 +237,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_6
     title: "post message: the guard '!Allows(group.ForumSettings.ThreadPermission, role)' holds"
     given:
@@ -256,7 +256,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -269,7 +269,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_7
     title: "post message: the guard '!Allows(group.ForumSettings.PostPermission, role)' holds"
     given:
@@ -288,7 +288,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -301,7 +301,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_8
     title: "post message: the guard 'thread is null || thread.State == GroupForumThreadState.H...' holds"
     given:
@@ -320,7 +320,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -333,7 +333,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.guard_9
     title: "post message: the guard 'thread.State == GroupForumThreadState.Locked && !Allows(g...' holds"
     given:
@@ -352,7 +352,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -365,7 +365,7 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   - scenario: groups.post_message.success
     title: "post message: the request is accepted"
     given:
@@ -385,7 +385,7 @@ generated:
       - PostMessage
       - PostThread
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -398,12 +398,12 @@ generated:
       - ErrorReport
       - PostMessage
       - ErrorReport
-      evidence: ev_cf42a53ef30e
+      evidence: ev_c6b29b4d7a5b
   evidence:
-  - id: ev_cf42a53ef30e
+  - id: ev_c6b29b4d7a5b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/PostMessageMessageEvent.java
     symbol: PostMessageMessageEvent
     line: 24

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a87352cb1549908cb0804b0d648427abd2c3a8f8cff162dd4276fa3cda2763c7"
+generated_digest: "sha256:36e352b3cd8ff67832926d2752d2515b404df2a765a210fc7c7ca7a93ea4a391"
 generated:
   name: NotificationDialog
   direction: outgoing
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_822ccd552292
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -77,7 +77,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_120a1596135f
+    evidence: ev_2c3429a12182
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -104,10 +104,10 @@ generated:
     symbol: NotificationDialogMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_120a1596135f
+  - id: ev_2c3429a12182
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/NotificationDialogMessageComposer.java
     symbol: NotificationDialogMessageComposer
     line: 31

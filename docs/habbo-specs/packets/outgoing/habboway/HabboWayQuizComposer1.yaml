@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7980168d1044a6854f18484d4d76d3357f9853e454abdfc3fcfc7a65ac976917"
+generated_digest: "sha256:bfa3da89d8c2449589f0eb5b4ac29f32e85bfac83882e8fa19142b48e45f9bc2"
 generated:
   name: HabboWayQuizComposer1
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3b8364f09912
+    - ev_b37e1efd4eae
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3b8364f09912
+    - ev_b37e1efd4eae
   - index: 2
     name: unknown_2
     type: int32
@@ -41,9 +41,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3b8364f09912
+    - ev_b37e1efd4eae
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -51,12 +51,12 @@ generated:
     - string
     - int32
     - int32
-    evidence: ev_3b8364f09912
+    evidence: ev_b37e1efd4eae
   evidence:
-  - id: ev_3b8364f09912
+  - id: ev_b37e1efd4eae
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/HabboWayQuizComposer1.java
     symbol: HabboWayQuizComposer1
     line: 17

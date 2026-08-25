@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0fba551f6f96f0a4651a4d1eddf6a7a690d80ca47a6e98245855032ddd66081d"
+generated_digest: "sha256:898a9e9fb25b9a9aa2615c75f2dbb200c8e304763313f459630af95b10d7608d"
 generated:
   feature: navigator.forward_to_some_room
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9ad422e8891e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomForward
       - RoomForward
       - NavigatorSettings
-      evidence: ev_4a56eac7e5ea
+      evidence: ev_bdf4a449395f
   - scenario: navigator.forward_to_some_room.guard_1
     title: "forward to some room: the guard 'activeRooms.IsEmpty' holds"
     given:
@@ -58,14 +58,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9ad422e8891e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomForward
       - RoomForward
       - NavigatorSettings
-      evidence: ev_4a56eac7e5ea
+      evidence: ev_bdf4a449395f
   - scenario: navigator.forward_to_some_room.guard_2
     title: "forward to some room: the guard 'effectIds.Count == 0' holds"
     given:
@@ -84,14 +84,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_fe1afccfe33a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomForward
       - RoomForward
       - NavigatorSettings
-      evidence: ev_4a56eac7e5ea
+      evidence: ev_bdf4a449395f
   - scenario: navigator.forward_to_some_room.success
     title: "forward to some room: the request is accepted"
     given:
@@ -111,19 +111,19 @@ generated:
       - GetGuestRoomResult
       - unresolved
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomForward
       - RoomForward
       - NavigatorSettings
-      evidence: ev_4a56eac7e5ea
+      evidence: ev_bdf4a449395f
   evidence:
-  - id: ev_4a56eac7e5ea
+  - id: ev_bdf4a449395f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/ForwardToSomeRoomMessageEvent.java
     symbol: ForwardToSomeRoomMessageEvent
     line: 14

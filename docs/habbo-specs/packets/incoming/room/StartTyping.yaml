@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:51c12fd03ab2cf17ea35325a1c0980e0e1455cdc52da2509ff223fa72aca3ebd"
+generated_digest: "sha256:3431a6df5e3af2c738237ba47b9553edf1d722febea8a312637854a7a67e2de9"
 generated:
   name: StartTyping
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_f47a1b631895
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_c76578200479
+    evidence: ev_10e3725a94ad
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: StartTypingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c76578200479
+  - id: ev_10e3725a94ad
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/StartTypingMessageEvent.java
     symbol: StartTypingMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:80d07d1af55435c9c65fbb5ae93a5894b34baa18f849127e5218ffc4216b2b69"
+generated_digest: "sha256:5a471083c41496be6e83868d2970321457b7eed8e1b8c6675b463333e5bbb3c2"
 generated:
   id: cf_7e12fa4fd5
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "4 fields: string, string, int32, int32"
     evidence: ev_71b32eac357d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: string"
-    evidence: ev_101638482dcc
+    evidence: ev_89d37d1d3fc3
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: string, string, int32, int32"
@@ -38,10 +38,10 @@ generated:
     symbol: ClientHelloComposer
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_101638482dcc
+  - id: ev_89d37d1d3fc3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/ClientHelloMessageEvent.java
     symbol: ClientHelloMessageEvent
     line: 10

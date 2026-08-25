@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:69189167d8f459b75d3734ff210cc24d2c010ab11a57b96455c956d72ce36dff"
+generated_digest: "sha256:29b57a6e31ec3de465e957d031d05dc5f5d55c5337185a224160c474f9f500d5"
 generated:
   name: ConfirmBreedingResult
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - int32
     - int32
     evidence: ev_110debfe0d0d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_c1f8d8322d32
+    evidence: ev_e1aa236ce279
   evidence:
   - id: ev_110debfe0d0d
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_2553
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_c1f8d8322d32
+  - id: ev_e1aa236ce279
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/breeding/ConfirmBreedingResultMessageComposer.java
     symbol: ConfirmBreedingResultMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5effd9afe83175cba000e2d23a69a9cdbf8de592da78be3c91bfb3445c2e7fb"
+generated_digest: "sha256:0672ab9331e83280713d22ed3e673312e1e9aff9b47f5c9254c1be1290e2bff8"
 generated:
   name: TogglePublicRoom
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b5e543b4ecd
+    - ev_18f0937e509c
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_2b5e543b4ecd
+    evidence: ev_18f0937e509c
   evidence:
-  - id: ev_2b5e543b4ecd
+  - id: ev_18f0937e509c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/TogglePublicRoomMessageEvent.java
     symbol: TogglePublicRoomMessageEvent
     line: 17

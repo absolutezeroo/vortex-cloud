@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4b1e3978e645d4923127bc50519ffc4ac28ea9d33718cd72d3b70f362a485397"
+generated_digest: "sha256:a8c2c83fc62596f781b90a41e451e89b97ed80b128a9a50c0525c80db6c97f3c"
 generated:
   name: GetBotInventory
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_b5dac0cfa0f9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_23dedda6c50d
+    evidence: ev_bbff9e09af23
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetBotInventoryComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_23dedda6c50d
+  - id: ev_bbff9e09af23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetBotInventoryEvent.java
     symbol: GetBotInventoryEvent
     line: 8

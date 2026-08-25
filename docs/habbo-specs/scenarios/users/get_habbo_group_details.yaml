@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dd0fd33948087ea764f007b852834d1dd2bfc9c4bcee450547347596b333977d"
+generated_digest: "sha256:8be801a627c70cc8a0612dc07d457a22035ed411ed5cd8c508e87ead55ff8800"
 generated:
   feature: users.get_habbo_group_details
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9c4104a52262
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupDetails
-      evidence: ev_1851fd4b283c
+      evidence: ev_1ff9859a49ee
   - scenario: users.get_habbo_group_details.guard_1
     title: "get habbo group details: the guard 'details is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9c4104a52262
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupDetails
-      evidence: ev_1851fd4b283c
+      evidence: ev_1ff9859a49ee
   - scenario: users.get_habbo_group_details.guard_2
     title: "get habbo group details: the guard 'group is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupDetails
-      evidence: ev_1851fd4b283c
+      evidence: ev_1ff9859a49ee
   - scenario: users.get_habbo_group_details.success
     title: "get habbo group details: the request is accepted"
     given:
@@ -105,17 +105,17 @@ generated:
       - GuildEditorData
       - HabboGroupDetails
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupDetails
-      evidence: ev_1851fd4b283c
+      evidence: ev_1ff9859a49ee
   evidence:
-  - id: ev_1851fd4b283c
+  - id: ev_1ff9859a49ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetHabboGroupDetailsMessageEvent.java
     symbol: GetHabboGroupDetailsMessageEvent
     line: 15

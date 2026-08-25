@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:55d1ba08869094e2c3dcdbf1140d4e39fc6f79259c04950c25e0ce760efad38c"
+generated_digest: "sha256:aa401afce1428e117bf4dae1353d653f2d6160831f76461906faf57c831e28a4"
 generated:
   feature: catalog.get_bundle_discount_ruleset
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - BundleDiscountRuleset
       evidence: ev_0128461dab48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BundleDiscountRuleset
-      evidence: ev_11dcf3354114
+      evidence: ev_39ad5c5b63ed
   evidence:
-  - id: ev_11dcf3354114
+  - id: ev_39ad5c5b63ed
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetBundleDiscountRulesetEvent.java
     symbol: GetBundleDiscountRulesetEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0fcba99344ac7888258497e2ea00774532a45bbd2e4d1dc5dfc31a2204502275"
+generated_digest: "sha256:3893746ebeee55f3d80ceba7bbaab9485ff11b76e3dff1a574f740e2b7dbaf6c"
 generated:
   feature: catalog.get_bonus_rare_info
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - BonusRareInfo
       evidence: ev_9d16c1bdc535
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BonusRareInfo
-      evidence: ev_ee8e64e34639
+      evidence: ev_f05a8473dc69
   evidence:
-  - id: ev_ee8e64e34639
+  - id: ev_f05a8473dc69
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetBonusRareInfoMessageEvent.java
     symbol: GetBonusRareInfoMessageEvent
     line: 8

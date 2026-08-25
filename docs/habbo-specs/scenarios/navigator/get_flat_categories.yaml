@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f537fdf87eb6d994e8e4773bc1ef760c90d08a95ee1009dad311ac79827b9530"
+generated_digest: "sha256:a6f2caa5465e53d40223dcedc973ad4cf7641a821867f851b0824732cae1ea40"
 generated:
   feature: navigator.get_flat_categories
   scenarios:
@@ -32,17 +32,17 @@ generated:
       emits:
       - UserFlatCats
       evidence: ev_0fcea1d32705
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserFlatCats
-      evidence: ev_eaaa99b72197
+      evidence: ev_f4c6305ed8e5
   evidence:
-  - id: ev_eaaa99b72197
+  - id: ev_f4c6305ed8e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetUserFlatCatsMessageEvent.java
     symbol: GetUserFlatCatsMessageEvent
     line: 12

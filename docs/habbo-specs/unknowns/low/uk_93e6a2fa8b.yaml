@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5d4edf795f58ea0449cc5dc26f2879f888fe3ab6218cd705f8a1ec7ef10f1377"
+generated_digest: "sha256:73a9e0d804e7f11e5d1b8c15217c78b48ec8300ba3b7c653318dfa92aca5018c"
 generated:
   id: uk_93e6a2fa8b
   subject: "outgoing/CategoriesWithVisitorCount: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CategoriesWithVisitorCountMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_249ca7ff34ad
+  - id: ev_38d22f5bfe08
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CategoriesWithVisitorCountMessageComposer.java
     symbol: CategoriesWithVisitorCountMessageComposer
     line: 18

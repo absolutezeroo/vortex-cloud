@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:94eb021c1544748a48d3336cd281cec132966fddf8468673dd83917057c92ba0"
+generated_digest: "sha256:1432bc1e7345907e7a5531fd7e3a7c952783b66ba6930d43ad79076083cb1103"
 generated:
   feature: room.delete_room
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7601ba13c0f4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_1
     title: "delete room: the guard '_state.RoomSnapshot.OwnerId != actor' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_10
     title: "delete room: the guard 'types.Length == 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_11
     title: "delete room: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_2
     title: "delete room: the guard 'entity is null' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_3
     title: "delete room: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue( playerI...' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_4
     title: "delete room: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_761b76967e2f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_5
     title: "delete room: the guard 'attached is null' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b2d21836a70a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_6
     title: "delete room: the guard 'item.Logic is null' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4c36667ce9b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_7
     title: "delete room: the guard '!avatar.IsWalking' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_8
     title: "delete room: the guard 'tileId == -1' holds"
     given:
@@ -262,11 +262,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.guard_9
     title: "delete room: the guard '_goalTries == 3' holds"
     given:
@@ -285,11 +285,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   - scenario: room.delete_room.success
     title: "delete room: the request is accepted"
     given:
@@ -310,16 +310,16 @@ generated:
       - ObjectRemove
       - UserRemove
       evidence: ev_0e5bd3223d28
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a878a6b2890
+      evidence: ev_b38347dada23
   evidence:
-  - id: ev_7a878a6b2890
+  - id: ev_b38347dada23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/DeleteRoomMessageEvent.java
     symbol: DeleteRoomMessageEvent
     line: 27

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0d6347e5a0dd0987fc1e3d6bf03890e9ed3373c746a4429eaf3c1883775bbcd9"
+generated_digest: "sha256:a4f591ede2245ad02f8bdc57aa74645a537cd3f82896d3021d184fd72000fd49"
 generated:
   name: NewUserExperienceScriptProceed
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_4e798d10d6aa
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7b1f43c50829
+    evidence: ev_ccb16fae170d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: NewUserExperienceScriptProceedComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7b1f43c50829
+  - id: ev_ccb16fae170d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/NewUserExperienceScriptProceedEvent.java
     symbol: NewUserExperienceScriptProceedEvent
     line: 43

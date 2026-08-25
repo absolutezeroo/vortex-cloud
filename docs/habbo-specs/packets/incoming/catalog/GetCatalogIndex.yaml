@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:77c6ba2def8ba20f724691322817b48b254234c40229378a3b7a7f8258a4ea1b"
+generated_digest: "sha256:e4654b9b72d95c5db0d65273729bb11fdde9d936991da8d32f9496d76b69e5cb"
 generated:
   name: GetCatalogIndex
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: CatalogType
     evidence:
     - ev_a63eeeb1b361
-    - ev_bd0d900fba76
+    - ev_1b7b32632f24
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_a63eeeb1b361
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_bd0d900fba76
+    evidence: ev_1b7b32632f24
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: GetCatalogIndexComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bd0d900fba76
+  - id: ev_1b7b32632f24
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetCatalogIndexEvent.java
     symbol: GetCatalogIndexEvent
     line: 10

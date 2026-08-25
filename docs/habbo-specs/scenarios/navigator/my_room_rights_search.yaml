@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:edcf33f29413eb7afc8c547e7b9617ee980d35db1c6c9c1df67a357324760214"
+generated_digest: "sha256:a65b71d50718a740996a641794a10b11a941b7a09c6f7b6d474a07f56fd4d7e0"
 generated:
   feature: navigator.my_room_rights_search
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca6db2d966f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ae54a368d013
+      evidence: ev_a8dbf44d2a58
   - scenario: navigator.my_room_rights_search.success
     title: "my room rights search: the request is accepted"
     given:
@@ -56,16 +56,16 @@ generated:
       - NavigatorSearchResultBlocks
       - unresolved
       evidence: ev_0cdd228c4850
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ae54a368d013
+      evidence: ev_a8dbf44d2a58
   evidence:
-  - id: ev_ae54a368d013
+  - id: ev_a8dbf44d2a58
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyRoomRightsSearchMessageEvent.java
     symbol: MyRoomRightsSearchMessageEvent
     line: 8

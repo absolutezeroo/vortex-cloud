@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6590f45dad2b0d5cc4a2984dcb40dbac2af6d3a4e0938c0bf0fb1968a7ec7e46"
+generated_digest: "sha256:711cb4cd9fd18bf5242f2f246dc609278ac0475800ce2abec835a176d2b828c5"
 generated:
   id: uk_cfdcc5084e
   subject: "outgoing/RoomFloorThicknessUpdated: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomFloorThicknessUpdated
   known_evidence:
-  - id: ev_c4d6fc8b82ec
+  - id: ev_b07db54a5b83
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomFloorThicknessUpdatedComposer.java
     symbol: RoomFloorThicknessUpdatedComposer
     line: 16

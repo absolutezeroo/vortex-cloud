@@ -27,7 +27,12 @@ public class ExternalTreeAnalyzerTests(RepositoryFixture fixture)
 
     private SourceTree? NitroTree => Tree(t => t.Id == "nitro");
 
-    private SourceTree? ArcturusTree => Tree(t => t.Id == "arcturus");
+    /// <summary>
+    /// Selected by kind, not by name. Reference trees are named after their directory now — the one
+    /// present is <c>habbo-arcturus-daybreak</c> — and a hardcoded "arcturus" quietly turned every
+    /// assertion below into an early return the day that changed.
+    /// </summary>
+    private SourceTree? ArcturusTree => Tree(t => t.Kind == SourceTreeKind.ReferenceEmulator);
 
     private SourceTree? TargetClientTree =>
         Tree(t =>

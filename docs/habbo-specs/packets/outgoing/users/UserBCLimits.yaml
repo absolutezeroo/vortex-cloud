@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8b4eaa39ff6f6ec0f337247cc5047bc2516b5d590adbabd68fda9245301c1a2a"
+generated_digest: "sha256:4c664ebd82ee4c627e1141a8e16bfe567d5de7cad9da90628917aae4f8c73eb1"
 generated:
   name: UserBCLimits
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c19374f1cf5d
+    - ev_83a38634d4ee
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c19374f1cf5d
+    - ev_83a38634d4ee
   - index: 2
     name: unknown_2
     type: int32
@@ -41,9 +41,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c19374f1cf5d
+    - ev_83a38634d4ee
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -51,12 +51,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_c19374f1cf5d
+    evidence: ev_83a38634d4ee
   evidence:
-  - id: ev_c19374f1cf5d
+  - id: ev_83a38634d4ee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/UserBCLimitsComposer.java
     symbol: UserBCLimitsComposer
     line: 9

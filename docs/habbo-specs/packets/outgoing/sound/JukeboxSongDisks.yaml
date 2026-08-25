@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:650cc6d4da9c015cc90ef54588ec3363389f06a6256d64290db081ded8ae70ec"
+generated_digest: "sha256:8d8463a8f7924e47d74b4a51b3542bb7ef7661e01a7d7d917362157025355158"
 generated:
   name: JukeboxSongDisks
   direction: outgoing
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_fc9e668a4378
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -77,7 +77,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_1364d2648e26
+    evidence: ev_48567cc9fa3e
   evidence:
   - id: ev_f085e8bc7add
     kind: client_parser
@@ -95,10 +95,10 @@ generated:
     symbol: JukeboxSongDisksMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1364d2648e26
+  - id: ev_48567cc9fa3e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/JukeboxSongDisksMessageComposer.java
     symbol: JukeboxSongDisksMessageComposer
     line: 20

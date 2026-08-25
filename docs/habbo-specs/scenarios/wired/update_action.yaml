@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:57441fc52f5d8d4d6c4920be9dc6eca7d9dfb531298480db061d6e332250af89"
+generated_digest: "sha256:a3038fc18d053f9e875bf4aa2a9162747ceb16cd1e123908b7c06d6f90d8ec47"
 generated:
   feature: wired.update_action
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cf228b6f602c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.guard_1
     title: "update action: the guard '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWire...' holds"
     given:
@@ -59,7 +59,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cf228b6f602c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -67,7 +67,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.guard_2
     title: "update action: the guard '!await ActionModule.ApplyWiredUpdateAsync(ctx, itemId, up...' holds"
     given:
@@ -86,7 +86,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0080929ab318
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -94,7 +94,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.guard_3
     title: "update action: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
     given:
@@ -113,7 +113,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -121,7 +121,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.guard_4
     title: "update action: the guard 'item.Logic is not FurnitureWiredLogic wiredLogic' holds"
     given:
@@ -140,7 +140,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -148,7 +148,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.guard_5
     title: "update action: the guard '!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)' holds"
     given:
@@ -167,7 +167,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e1599f76ae95
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -175,7 +175,7 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   - scenario: wired.update_action.success
     title: "update action: the request is accepted"
     given:
@@ -194,7 +194,7 @@ generated:
       emits:
       - WiredSaveSuccessEvent
       evidence: ev_0080929ab318
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -202,12 +202,12 @@ generated:
       - WiredSaved
       - WiredValidationError
       - WiredValidationError
-      evidence: ev_84e1e3c647cd
+      evidence: ev_08264fcca0c1
   evidence:
-  - id: ev_84e1e3c647cd
+  - id: ev_08264fcca0c1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/UpdateActionMessageEvent.java
     symbol: UpdateActionMessageEvent
     line: 20

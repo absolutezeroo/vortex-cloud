@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c036f57f03b6a24044bed6d968f61dc564b359959e96047241a319c96c194500"
+generated_digest: "sha256:bc29d1d2a4dd45e45c69d81ce1075fbe18c72b490b4d0711d4add325de721dd1"
 generated:
   name: MoveAvatar
   direction: incoming
@@ -52,14 +52,14 @@ generated:
     - int32
     - int32
     evidence: ev_f39e5eab9d3f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_8e5182848732
+    evidence: ev_f034e257c0f5
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -85,10 +85,10 @@ generated:
     symbol: MoveAvatarComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8e5182848732
+  - id: ev_f034e257c0f5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/MoveAvatarMessageEvent.java
     symbol: MoveAvatarMessageEvent
     line: 30

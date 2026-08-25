@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7710b7ffaf21f47a0780ed3cde3e0ab6044743f58e8ccc02d00ec46987efd1b5"
+generated_digest: "sha256:dcf98f983ed56116af7a94de6c3a2b66aa52f30c165c1b044926ceb3263d427b"
 generated:
   feature: moderation.chat_review_session_create
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_57b3a1a97d63
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - GuideTicketCreationResult
       - GuideTicketCreationResult
       - GuideTicketCreationResult
-      evidence: ev_f5d39d81d77e
+      evidence: ev_415f728bcc01
   - scenario: moderation.chat_review_session_create.guard_1
     title: "chat review session create: the guard 'reporterId <= 0 || _reviewsByReporter.ContainsKey(reporte...' holds"
     given:
@@ -59,7 +59,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -67,7 +67,7 @@ generated:
       - GuideTicketCreationResult
       - GuideTicketCreationResult
       - GuideTicketCreationResult
-      evidence: ev_f5d39d81d77e
+      evidence: ev_415f728bcc01
   - scenario: moderation.chat_review_session_create.guard_2
     title: "chat review session create: the guard 'review.Offered.Count == 0' holds"
     given:
@@ -86,7 +86,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -94,7 +94,7 @@ generated:
       - GuideTicketCreationResult
       - GuideTicketCreationResult
       - GuideTicketCreationResult
-      evidence: ev_f5d39d81d77e
+      evidence: ev_415f728bcc01
   - scenario: moderation.chat_review_session_create.success
     title: "chat review session create: the request is accepted"
     given:
@@ -112,7 +112,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d7f8e91c2b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -120,12 +120,12 @@ generated:
       - GuideTicketCreationResult
       - GuideTicketCreationResult
       - GuideTicketCreationResult
-      evidence: ev_f5d39d81d77e
+      evidence: ev_415f728bcc01
   evidence:
-  - id: ev_f5d39d81d77e
+  - id: ev_415f728bcc01
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ChatReviewSessionCreateMessageEvent.java
     symbol: ChatReviewSessionCreateMessageEvent
     line: 16

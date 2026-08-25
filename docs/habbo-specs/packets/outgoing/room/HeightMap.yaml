@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3108020723fa4bc005c395d9b56dd1d083385b0f92e7dd18881b5b91392eb874"
+generated_digest: "sha256:13ddff8a70105b29029976437c66ab37893f9dd26b1fbade723bfd200fee41e9"
 generated:
   name: HeightMap
   direction: outgoing
@@ -71,7 +71,7 @@ generated:
     - int32
     - short
     evidence: ev_b676dc5d48b6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -81,7 +81,7 @@ generated:
     - short
     - short
     - short
-    evidence: ev_a2d804f43f85
+    evidence: ev_24a7b46d4dce
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -116,10 +116,10 @@ generated:
     symbol: HeightMapMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a2d804f43f85
+  - id: ev_24a7b46d4dce
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/HeightMapMessageComposer.java
     symbol: HeightMapMessageComposer
     line: 18

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:116d1570ebbe127ab6ec7e81a61979e7fe03c80a3419275b389b713f52f12e6c"
+generated_digest: "sha256:23a039fb618c8f443c2d2df817614bbd1db528f4bb3e7fa8bd961b51926b49ec"
 generated:
   name: SendRoomInvite
   direction: incoming
@@ -50,7 +50,7 @@ generated:
     - string
     - unknown
     evidence: ev_93031f672c57
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -58,7 +58,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_b1f539e1c8f8
+    evidence: ev_95b30572c87c
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -93,10 +93,10 @@ generated:
     symbol: SendRoomInviteComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b1f539e1c8f8
+  - id: ev_95b30572c87c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SendRoomInviteMessageEvent.java
     symbol: SendRoomInviteMessageEvent
     line: 11

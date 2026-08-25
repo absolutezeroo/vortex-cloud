@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:92247b94ecd2023d210a6796a2e47d0d2424af3dfbedf116c3bb8737ee6d6076"
+generated_digest: "sha256:11adae93ace5fb614083b831e53d6b4f24773f35b91cb983b168bd68dc176ae2"
 generated:
   id: cf_060cbc0c2d
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, int32, int32, string, string"
     evidence: ev_7fa044e79e34
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, int32, int32, string, string"
-    evidence: ev_d3bbcf4d1f9c
+    evidence: ev_578be0d82cab
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_4255
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_d3bbcf4d1f9c
+  - id: ev_578be0d82cab
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/WardrobeMessageComposer.java
     symbol: WardrobeMessageComposer
     line: 16

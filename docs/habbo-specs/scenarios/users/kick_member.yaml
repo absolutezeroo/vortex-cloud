@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:50255b1b79b660b45b7707d36cd1927b94fad1222775bb4a7fa7f389287ea1bb"
+generated_digest: "sha256:15daf12e253923b6cbd4661912ec89954b49628e0b2016d92587448c30d6a769"
 generated:
   feature: users.kick_member
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1b6983ac9d0d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipRejected
-      evidence: ev_052b54c0e5c1
+      evidence: ev_5a67319ee97f
   - scenario: users.kick_member.guard_1
     title: "kick member: the guard 'group is null || group.OwnerPlayerEntityId == targetPlayerId' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipRejected
-      evidence: ev_052b54c0e5c1
+      evidence: ev_5a67319ee97f
   - scenario: users.kick_member.guard_2
     title: "kick member: the guard 'removed == 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipRejected
-      evidence: ev_052b54c0e5c1
+      evidence: ev_5a67319ee97f
   - scenario: users.kick_member.guard_3
     title: "kick member: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipRejected
-      evidence: ev_052b54c0e5c1
+      evidence: ev_5a67319ee97f
   - scenario: users.kick_member.success
     title: "kick member: the request is accepted"
     given:
@@ -128,17 +128,17 @@ generated:
       emits:
       - GuildMemberMgmtFailed
       evidence: ev_1b6983ac9d0d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembershipRejected
-      evidence: ev_052b54c0e5c1
+      evidence: ev_5a67319ee97f
   evidence:
-  - id: ev_052b54c0e5c1
+  - id: ev_5a67319ee97f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/KickMemberMessageEvent.java
     symbol: KickMemberMessageEvent
     line: 18

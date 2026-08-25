@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a9851a90e7a8d19d5aff3e991eea766dc55e32e4e4a3a0c40a8e540c6da5aa87"
+generated_digest: "sha256:5333fadc0acdcf458fe225368a1b669555019f45e67e00bc8e3676cfc23eaa9e"
 generated:
   name: CraftableProducts
   direction: outgoing
@@ -91,7 +91,7 @@ generated:
     partial: true
     types: []
     evidence: ev_f1a670f4809f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -101,7 +101,7 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_a412dd6accf1
+    evidence: ev_02eefcab9f81
   evidence:
   - id: ev_0aa9f5c4bebc
     kind: client_parser
@@ -127,10 +127,10 @@ generated:
     symbol: CraftableProductsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a412dd6accf1
+  - id: ev_02eefcab9f81
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/crafting/CraftableProductsMessageComposer.java
     symbol: CraftableProductsMessageComposer
     line: 22

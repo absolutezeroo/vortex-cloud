@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4a96d867f5296874ca6ce45abd846f8fb98372beaa61aa11b804ed5474bb2138"
+generated_digest: "sha256:16a35fcae53ff4d9c25d5ade588845f43801a0add3c80538f723c7b813ea74c2"
 generated:
   name: UserRemove
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - string
     evidence: ev_5a12066d5d1d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_881d1f5ae580
+    evidence: ev_2ade575925a2
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: UserRemoveMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_881d1f5ae580
+  - id: ev_2ade575925a2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserRemoveMessageComposer.java
     symbol: UserRemoveMessageComposer
     line: 16

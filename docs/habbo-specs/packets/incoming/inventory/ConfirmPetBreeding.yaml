@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5e239d25e9a0e37649a8ef53b6da8c5093c991df07c72ec352e423608eba0ad5"
+generated_digest: "sha256:d496794788c969751b2470e1b81ce911a60ffbe170309307a63ede7cb8c906d0"
 generated:
   name: ConfirmPetBreeding
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_c647ade53c05
+    - ev_834a5a718393
   - index: 1
     name: name
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_c647ade53c05
+    - ev_834a5a718393
   - index: 2
     name: pet_one_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_c647ade53c05
+    - ev_834a5a718393
   - index: 3
     name: pet_two_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_c647ade53c05
+    - ev_834a5a718393
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_23a3c9403a36
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -69,7 +69,7 @@ generated:
     - string
     - int32
     - int32
-    evidence: ev_c647ade53c05
+    evidence: ev_834a5a718393
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -94,10 +94,10 @@ generated:
     symbol: ConfirmPetBreedingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c647ade53c05
+  - id: ev_834a5a718393
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/ConfirmPetBreedingEvent.java
     symbol: ConfirmPetBreedingEvent
     line: 10

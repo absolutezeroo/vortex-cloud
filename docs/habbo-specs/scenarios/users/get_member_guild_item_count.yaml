@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8ab3d71c530e6fb395425fc0522aea2711e432c71b4cb542e51145cbd6ab9ee8"
+generated_digest: "sha256:b37cb5556dd85bb5a68980928492b8df8882cae1ed5ce09ad4d454038aaa598e"
 generated:
   feature: users.get_member_guild_item_count
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_baf4718732af
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberFurniCountInHQ
-      evidence: ev_f7e181a447d3
+      evidence: ev_a4333b0cf9de
   - scenario: users.get_member_guild_item_count.guard_1
     title: "get member guild item count: the guard 'baseRoomId is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberFurniCountInHQ
-      evidence: ev_f7e181a447d3
+      evidence: ev_a4333b0cf9de
   - scenario: users.get_member_guild_item_count.success
     title: "get member guild item count: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - GuildMemberFurniCountInHQ
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMemberFurniCountInHQ
-      evidence: ev_f7e181a447d3
+      evidence: ev_a4333b0cf9de
   evidence:
-  - id: ev_f7e181a447d3
+  - id: ev_a4333b0cf9de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetMemberGuildItemCountMessageEvent.java
     symbol: GetMemberGuildItemCountMessageEvent
     line: 14

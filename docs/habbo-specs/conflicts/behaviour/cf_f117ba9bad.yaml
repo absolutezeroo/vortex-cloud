@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4d0e9081a09d7022e2edd434065bdbb3075a8b3e050527dde2fc1f7ba2fd600b"
+generated_digest: "sha256:34d0f21da9e7f72415c678f392679c01615a0b531f5a6fc15c78541e9ef4e072"
 generated:
   id: cf_f117ba9bad
   kind: behaviour
   subject: "PurchaseVipMembershipExtension: packets emitted in response"
   packet: PurchaseVipMembershipExtension
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: PurchaseError then PurchaseOK then FurniListInvalidate
-    evidence: ev_60507bc9ce44
+    evidence: ev_b7b37eb21cd8
   - origin: vortex
     authority: vortex_emulator
     claim: PurchaseError then ScrSendUserInfo
     evidence: ev_589bc379b9e6
   evidence:
-  - id: ev_60507bc9ce44
+  - id: ev_b7b37eb21cd8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseVipMembershipExtensionEvent.java
     symbol: PurchaseVipMembershipExtensionEvent
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3cc7062be6628cdd8e3a5de9ec1d63924c5ef88389077e1434c19a0edb2bed6d"
+generated_digest: "sha256:8ae124263e9c9d52d1ae44293125625bf0e284580084c9037303981c37cae694"
 generated:
   name: SetActivatedBadges
   direction: incoming
@@ -49,14 +49,14 @@ generated:
     partial: true
     types: []
     evidence: ev_78132b3ec9ab
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_d7b73b96fec7
+    evidence: ev_8bd531ed9453
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -89,10 +89,10 @@ generated:
     symbol: SetActivatedBadgesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d7b73b96fec7
+  - id: ev_8bd531ed9453
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetActivatedBadgesEvent.java
     symbol: SetActivatedBadgesEvent
     line: 14

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:440d62b76bd6f971b3cecfc87289fee79de864b1e598d42e2a35247a735a73c0"
+generated_digest: "sha256:3771a45a937ede3ef388ca297a43586854dbb7de19f1ffc8dadd8dda5fd8af91"
 generated:
   feature: inventory.avatar_effect_activated
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ddf2a13e2ebd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4447d2f88f24
+      evidence: ev_491c8b29d18f
   - scenario: inventory.avatar_effect_activated.guard_1
     title: "avatar effect activated: the guard 'effectId <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7ef4c91324dc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4447d2f88f24
+      evidence: ev_491c8b29d18f
   - scenario: inventory.avatar_effect_activated.guard_2
     title: "avatar effect activated: the guard 'inactive is null' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7ef4c91324dc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4447d2f88f24
+      evidence: ev_491c8b29d18f
   - scenario: inventory.avatar_effect_activated.guard_3
     title: "avatar effect activated: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4447d2f88f24
+      evidence: ev_491c8b29d18f
   - scenario: inventory.avatar_effect_activated.success
     title: "avatar effect activated: the request is accepted"
     given:
@@ -125,16 +125,16 @@ generated:
       - AvatarEffectActivated
       - AvatarEffectExpired
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4447d2f88f24
+      evidence: ev_491c8b29d18f
   evidence:
-  - id: ev_4447d2f88f24
+  - id: ev_491c8b29d18f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/AvatarEffectActivatedEvent.java
     symbol: AvatarEffectActivatedEvent
     line: 7

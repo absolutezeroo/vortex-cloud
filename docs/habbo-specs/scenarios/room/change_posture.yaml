@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:abdbab8ec2d0c5a246af012f668e716e87a68cca14dd3f7759efad479433c21d"
+generated_digest: "sha256:ef6758bb5cccb95ee94b0ea767c1fb14f91cc90886d14ba517a4144fa1b76fe5"
 generated:
   feature: room.change_posture
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_693d13057309
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d8eb052cf261
+      evidence: ev_3eb949dc7c4f
   - scenario: room.change_posture.guard_1
     title: "change posture: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d8eb052cf261
+      evidence: ev_3eb949dc7c4f
   - scenario: room.change_posture.guard_2
     title: "change posture: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d8eb052cf261
+      evidence: ev_3eb949dc7c4f
   - scenario: room.change_posture.success
     title: "change posture: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - UserUpdate
       evidence: ev_65a6d6a94088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d8eb052cf261
+      evidence: ev_3eb949dc7c4f
   evidence:
-  - id: ev_d8eb052cf261
+  - id: ev_3eb949dc7c4f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/ChangePostureMessageEvent.java
     symbol: ChangePostureMessageEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:725d1c3f92d27c2eabfed19b88ad6134d0634012ae746d22bb62cba4e056f588"
+generated_digest: "sha256:97506df9bb17196fe1901fc6c48a41e86af0276d58b5b0fb1bf7a58573b0c3d1"
 generated:
   feature: messenger.find_new_friends
   scenarios:
@@ -32,18 +32,18 @@ generated:
       emits:
       - FindFriendsProcessResult
       evidence: ev_8944a6c9b979
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomForward
       - FindFriendsProcessResult
-      evidence: ev_6e1bdfa08e70
+      evidence: ev_a8f8a7ef35ee
   evidence:
-  - id: ev_6e1bdfa08e70
+  - id: ev_a8f8a7ef35ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/FindNewFriendsMessageEvent.java
     symbol: FindNewFriendsMessageEvent
     line: 15

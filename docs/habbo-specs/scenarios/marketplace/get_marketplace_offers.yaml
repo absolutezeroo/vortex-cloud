@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d0d76c2f6d55a1264bd27402f3d0dea5ecdb6fa7833f02cd8c5bd31021b0b14e"
+generated_digest: "sha256:9dd3da2e8537e716cef08c116734a84ff220a0774ebc6c38c7ad015d275ebda6"
 generated:
   feature: marketplace.get_marketplace_offers
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_98dee09f7440
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d506d4e7d61d
+      evidence: ev_55e71fae8afe
   - scenario: marketplace.get_marketplace_offers.success
     title: "get marketplace offers: the request is accepted"
     given:
@@ -55,16 +55,16 @@ generated:
       emits:
       - MarketPlaceOffersEvent
       evidence: ev_751f57157329
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d506d4e7d61d
+      evidence: ev_55e71fae8afe
   evidence:
-  - id: ev_d506d4e7d61d
+  - id: ev_55e71fae8afe
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceOffersMessageEvent.java
     symbol: GetMarketplaceOffersMessageEvent
     line: 17

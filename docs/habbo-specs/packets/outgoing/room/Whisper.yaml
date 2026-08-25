@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8e6fc63c2eb51a23411e453c39eb183ff29dd86e23c0101cc0ea458ea1a56408"
+generated_digest: "sha256:3eec83c3329f2bc28ff9bd9905efb56273de65132d6191d9feccb6ecadd195e7"
 generated:
   name: Whisper
   direction: outgoing
@@ -88,12 +88,12 @@ generated:
     partial: true
     types: []
     evidence: ev_126ee1cb17e4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_70f52d091660
+    evidence: ev_b3c25febc225
   - origin: vortex
     authority: vortex_emulator
     field_count: 9
@@ -118,10 +118,10 @@ generated:
     symbol: WhisperMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_70f52d091660
+  - id: ev_b3c25febc225
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/WhisperMessageComposer.java
     symbol: WhisperMessageComposer
     line: 16

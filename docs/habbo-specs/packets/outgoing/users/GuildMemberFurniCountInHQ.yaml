@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e25da4d2077ec5210331934c12b5e13457459d0c33f663444e8dd768962090e3"
+generated_digest: "sha256:1170f3d90fd153eee337e91605be3f334c29c74bbb8568a8b1b83eabf519b2de"
 generated:
   name: GuildMemberFurniCountInHQ
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_89d4aa35d307
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_43b004de8d32
+    evidence: ev_3a57c9b8a0ee
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GuildMemberFurniCountInHQMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_43b004de8d32
+  - id: ev_3a57c9b8a0ee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildMemberFurniCountInHQMessageComposer.java
     symbol: GuildMemberFurniCountInHQMessageComposer
     line: 17

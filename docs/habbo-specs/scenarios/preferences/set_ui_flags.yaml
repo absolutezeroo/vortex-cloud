@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c824a56bee7fbd1d225d4434270531b64f928001e8e9b7b3aa7b8a2a2003239"
+generated_digest: "sha256:5da3ea3e711795f1def5a50aef39538355f3ab113e1f563f21d078f75148e64e"
 generated:
   feature: preferences.set_ui_flags
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d8e926fbfb76
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PerkAllowances
-      evidence: ev_adf6c8637823
+      evidence: ev_a3f261b0f13c
   - scenario: preferences.set_ui_flags.success
     title: "set ui flags: the request is accepted"
     given:
@@ -55,17 +55,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1b14f4bad519
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PerkAllowances
-      evidence: ev_adf6c8637823
+      evidence: ev_a3f261b0f13c
   evidence:
-  - id: ev_adf6c8637823
+  - id: ev_a3f261b0f13c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetUIFlagsMessageEvent.java
     symbol: SetUIFlagsMessageEvent
     line: 9

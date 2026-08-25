@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cb94312773df9af2ae5d55fc79a58a64737bdc81d1c257eb6e1ae56dea690e7d"
+generated_digest: "sha256:9640b08ee58cf1d5a47b14620dd1993df26e2e577b2dc74c14340bc02403f4cc"
 generated:
   name: CreditBalance
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - string
     evidence: ev_1f16746b5080
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_080e09ca69d0
+    evidence: ev_a2999e87f259
   evidence:
   - id: ev_1f16746b5080
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_2328
     line: 17
     note: official client build WIN63-202607011411-782849652
-  - id: ev_080e09ca69d0
+  - id: ev_a2999e87f259
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/CreditBalanceMessageComposer.java
     symbol: CreditBalanceMessageComposer
     line: 16

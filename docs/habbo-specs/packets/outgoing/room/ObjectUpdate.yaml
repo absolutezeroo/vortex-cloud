@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a46bd0e79ce47fc83260858f9b316839d8beae760b2b8324db1048654a769be9"
+generated_digest: "sha256:80aa7b381dce352cc5af13912d46ee895be576db33ad21616b55af226a695a07"
 generated:
   name: ObjectUpdate
   direction: outgoing
@@ -326,7 +326,7 @@ generated:
     types:
     - block
     evidence: ev_15fa662db042
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: true
@@ -335,7 +335,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_55e61957f90b
+    evidence: ev_ce9111370a32
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -360,10 +360,10 @@ generated:
     symbol: ObjectUpdateMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_55e61957f90b
+  - id: ev_ce9111370a32
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ObjectUpdateMessageComposer.java
     symbol: ObjectUpdateMessageComposer
     line: 18

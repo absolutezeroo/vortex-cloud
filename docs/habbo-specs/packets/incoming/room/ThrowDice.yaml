@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:790407d2d71a985dada95320aaaa071c76b6ef02aab6aebdb6fcfe0589ae60ff"
+generated_digest: "sha256:981b2ac5c1195709069e875eda2702a7e1f260d1747c460070fad53801dcec95"
 generated:
   name: ThrowDice
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_cecedf4b9e4b
-    - ev_5695bd567348
+    - ev_f810d34b3869
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_07463d27e38e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5695bd567348
+    evidence: ev_f810d34b3869
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: ThrowDiceComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5695bd567348
+  - id: ev_f810d34b3869
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/ThrowDiceMessageEvent.java
     symbol: ThrowDiceMessageEvent
     line: 11

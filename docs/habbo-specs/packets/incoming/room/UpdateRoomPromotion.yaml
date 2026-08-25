@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8d68523fa5bf774adbded3245ee87c745f97b9a91b61b1c58dacbb8aa00fe238"
+generated_digest: "sha256:e462ac3344d0bb3ccbdac4d5170a77af0575b5393aede99e5f69fee2143b43fb"
 generated:
   name: UpdateRoomPromotion
   direction: incoming
@@ -24,23 +24,23 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2ed21f88a9b0
+    - ev_3cd84bfabb0f
   - index: 1
     name: promotion_name
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2ed21f88a9b0
+    - ev_3cd84bfabb0f
   - index: 2
     name: promotion_description
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2ed21f88a9b0
+    - ev_3cd84bfabb0f
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -48,12 +48,12 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_2ed21f88a9b0
+    evidence: ev_3cd84bfabb0f
   evidence:
-  - id: ev_2ed21f88a9b0
+  - id: ev_3cd84bfabb0f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/promotions/UpdateRoomPromotionEvent.java
     symbol: UpdateRoomPromotionEvent
     line: 14

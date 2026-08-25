@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6815c3bce9760df01c29f0d15111d36086853881ed1c12343c2018bc7c708b88"
+generated_digest: "sha256:31cadd00c15e5316f84259c7754b113fd44519e69f3933f1fc574ed60bcb256b"
 generated:
   name: ConvertedRoomId
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - string
     - int32
     evidence: ev_3892adbba512
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_80f9e2b60da9
+    evidence: ev_8a2c9d648ebe
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: ConvertedRoomIdMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_80f9e2b60da9
+  - id: ev_8a2c9d648ebe
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/ConvertedRoomIdMessageComposer.java
     symbol: ConvertedRoomIdMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e532a949483b6d331178821e28fb8c6a2f28e5e8ed79d642a270cd2af115e142"
+generated_digest: "sha256:32ad5e2e6b2b48e1d5f610345c6c6484d2493ccd644c447d29e3a7789d97472d"
 generated:
   id: uk_2a3e291a1d
   subject: "incoming/ModeratorAction: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: ModeratorActionComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e56c0ffdaef2
+  - id: ev_426d3d61fecd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModeratorActionMessageEvent.java
     symbol: ModeratorActionMessageEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f60b52f50eaab8d760acc9c877f710cd80b7a6f0cf05354541f80578dadfee01"
+generated_digest: "sha256:9dc7e07ed0bd1e4c3fda596cf4b2e62b2f19b1eb1c421c67819fa403537d74d5"
 generated:
   name: WiredValidationError
   direction: outgoing
@@ -62,13 +62,13 @@ generated:
     - string
     - string
     evidence: ev_031395435afe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_fce989b22df1
+    evidence: ev_ff1fdec9acae
   evidence:
   - id: ev_031395435afe
     kind: client_parser
@@ -78,10 +78,10 @@ generated:
     symbol: _SafeCls_3324
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_fce989b22df1
+  - id: ev_ff1fdec9acae
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/WiredValidationErrorMessageComposer.java
     symbol: WiredValidationErrorMessageComposer
     line: 15

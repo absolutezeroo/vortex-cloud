@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8bfd387aa5dfcb5039cfd0bbcf08fce3c7acf9dd2cf7c842113cf68fc93b71e9"
+generated_digest: "sha256:d1871cd4aa732bd9e7c564c0b06405f44edc9f0bba30285b71785361e7f39395"
 generated:
   id: uk_4b0ac0ef82
   subject: "outgoing/ThumbnailStatus: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: ThumbnailStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7bb6ed744f76
+  - id: ev_902d554a643d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/ThumbnailStatusMessageComposer.java
     symbol: ThumbnailStatusMessageComposer
     line: 9

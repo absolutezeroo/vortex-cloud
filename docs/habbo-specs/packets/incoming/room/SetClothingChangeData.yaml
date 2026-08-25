@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a9b5f08f65d974b1fc8e288e3d4f257992fd2f8671ba54c71e194789e3854bcd"
+generated_digest: "sha256:72f523d5f6e6378cd028fc306d29c0a93218986743d7c26b3c22643450187c46"
 generated:
   name: SetClothingChangeData
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_62b62f643cca
-    - ev_e40d70583310
+    - ev_514c5f13d28b
   - index: 1
     name: gender
     type: string
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_62b62f643cca
-    - ev_e40d70583310
+    - ev_514c5f13d28b
   - index: 2
     name: look
     type: string
@@ -42,7 +42,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_62b62f643cca
-    - ev_e40d70583310
+    - ev_514c5f13d28b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3aba29dea228
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_e40d70583310
+    evidence: ev_514c5f13d28b
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -91,10 +91,10 @@ generated:
     symbol: SetClothingChangeDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e40d70583310
+  - id: ev_514c5f13d28b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetClothingChangeDataMessageEvent.java
     symbol: SetClothingChangeDataMessageEvent
     line: 10

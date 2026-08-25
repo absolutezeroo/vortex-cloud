@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:795474d640f85f29102803d83f644ac72d459007a72ab30d1f102969c9817ee6"
+generated_digest: "sha256:173b520c86ee88828184a7c679123593f600b24eaa5150b51a3e78d9a94ab673"
 generated:
   name: HandItemReceived
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_7b14b8e2472c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_db3450524795
+    evidence: ev_0175aaa61b80
   evidence:
   - id: ev_07bb69132ae9
     kind: client_parser
@@ -72,10 +72,10 @@ generated:
     symbol: HandItemReceivedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_db3450524795
+  - id: ev_0175aaa61b80
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/HandItemReceivedMessageComposer.java
     symbol: HandItemReceivedMessageComposer
     line: 18

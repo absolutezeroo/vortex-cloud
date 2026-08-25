@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4f8f8a0c91bd6ab6302a4be99c8d73b3148a1dd7864edc49562a41ae7f041d04"
+generated_digest: "sha256:ec45df98fed256c2476a02bb49d253919d8937a70b0e3011a345ff943cd7d6c2"
 generated:
   feature: inventory.confirm_trade
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8817fa47059b
+      evidence: ev_b663268805e9
   - scenario: inventory.confirm_trade.guard_1
     title: "confirm trade: the guard '!TryGetSession(requesterId, out RoomTradeSession? session)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8817fa47059b
+      evidence: ev_b663268805e9
   - scenario: inventory.confirm_trade.guard_2
     title: "confirm trade: the guard 'session.Phase != TradePhase.Confirming' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8817fa47059b
+      evidence: ev_b663268805e9
   - scenario: inventory.confirm_trade.guard_3
     title: "confirm trade: the guard '!confirm' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8817fa47059b
+      evidence: ev_b663268805e9
   - scenario: inventory.confirm_trade.success
     title: "confirm trade: the request is accepted"
     given:
@@ -123,16 +123,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8817fa47059b
+      evidence: ev_b663268805e9
   evidence:
-  - id: ev_8817fa47059b
+  - id: ev_b663268805e9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/ConfirmAcceptTradingEvent.java
     symbol: ConfirmAcceptTradingEvent
     line: 9

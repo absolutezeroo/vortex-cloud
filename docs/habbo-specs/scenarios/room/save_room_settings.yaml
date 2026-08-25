@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8478b38a1d6123390b0253b5e3bc206d23db6eac35b8cd84841fcb8740cf4fc3"
+generated_digest: "sha256:d4fef5c3d97246639d8407aa5105728b23e383940b6e1f04ff7ffe77a1973ed2"
 generated:
   feature: room.save_room_settings
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_18cbc2dedbc1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -47,7 +47,7 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   - scenario: room.save_room_settings.guard_1
     title: "save room settings: the guard 'string.IsNullOrWhiteSpace(message.RoomName)' holds"
     given:
@@ -66,7 +66,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_18cbc2dedbc1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -81,7 +81,7 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   - scenario: room.save_room_settings.guard_2
     title: "save room settings: the guard '!await IsRoomOwnerAsync(actor).ConfigureAwait(true)' holds"
     given:
@@ -100,7 +100,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -115,7 +115,7 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   - scenario: room.save_room_settings.guard_3
     title: "save room settings: the guard 'entity is null' holds"
     given:
@@ -134,7 +134,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -149,7 +149,7 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   - scenario: room.save_room_settings.guard_4
     title: "save room settings: the guard '_registry is null' holds"
     given:
@@ -168,7 +168,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -183,7 +183,7 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   - scenario: room.save_room_settings.success
     title: "save room settings: the request is accepted"
     given:
@@ -203,7 +203,7 @@ generated:
       - RoomChatSettings
       - RoomSettingsSavedEvent
       evidence: ev_18cbc2dedbc1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -218,12 +218,12 @@ generated:
       - RoomChatSettings
       - RoomInfoUpdated
       - RoomSettingsSaved
-      evidence: ev_2e941e540e15
+      evidence: ev_ae302781bc1e
   evidence:
-  - id: ev_2e941e540e15
+  - id: ev_ae302781bc1e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/SaveRoomSettingsMessageEvent.java
     symbol: SaveRoomSettingsMessageEvent
     line: 20

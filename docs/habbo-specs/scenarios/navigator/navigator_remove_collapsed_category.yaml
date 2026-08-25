@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:698901cfd382acf8e1b133b0e929e6d18bdaab5766be9634098ad3f339b9946a"
+generated_digest: "sha256:cf4309c885f09897b47192fffad57be6d482b91b2b815fe1f7812d7aba82d913"
 generated:
   feature: navigator.navigator_remove_collapsed_category
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_80d12cc85714
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_719c69ee65d4
+      evidence: ev_e55ed25ac34b
   - scenario: navigator.navigator_remove_collapsed_category.guard_1
     title: "navigator remove collapsed category: the guard '!_collapsedCategories.Contains(categoryName)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d429657b2673
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_719c69ee65d4
+      evidence: ev_e55ed25ac34b
   - scenario: navigator.navigator_remove_collapsed_category.success
     title: "navigator remove collapsed category: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_80d12cc85714
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_719c69ee65d4
+      evidence: ev_e55ed25ac34b
   evidence:
-  - id: ev_719c69ee65d4
+  - id: ev_e55ed25ac34b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorRemoveCollapsedCategoryMessageEvent.java
     symbol: NavigatorRemoveCollapsedCategoryMessageEvent
     line: 13

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f04996b58b1163c69aa1f945ce404569a801cce580b88484a65a501fdd033777"
+generated_digest: "sha256:ec8c71d967c3ae16c9686f2cfdd7da91e651b0d2c36ebf1577b5bbaeaec8a777"
 generated:
   feature: navigator.navigator_delete_saved_search
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9ae3393ee955
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSavedSearches
-      evidence: ev_3edced78b693
+      evidence: ev_65b2b937e15e
   evidence:
-  - id: ev_3edced78b693
+  - id: ev_65b2b937e15e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorDeleteSavedSearchEvent.java
     symbol: NavigatorDeleteSavedSearchEvent
     line: 9

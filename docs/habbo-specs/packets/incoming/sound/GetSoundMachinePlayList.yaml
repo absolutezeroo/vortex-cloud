@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b27614adb477f655de05f7d7c084f18f7e2d25a5a21b971cc67a9f7ef5411f0"
+generated_digest: "sha256:d8c894737cb0789d11e56afeb140158c1a4ff7f6502467cc3f7a377ea055c0c2"
 generated:
   name: GetSoundMachinePlayList
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_8b04ecffea01
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_5a15d26400f0
+    evidence: ev_221d79dfb9ae
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetSoundMachinePlayListComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5a15d26400f0
+  - id: ev_221d79dfb9ae
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetSoundMachinePlayListMessageEvent.java
     symbol: GetSoundMachinePlayListMessageEvent
     line: 10

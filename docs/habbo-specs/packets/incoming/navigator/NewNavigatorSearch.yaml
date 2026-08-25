@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ff4b543aaec8308ec5f5da6515b4733763b3e01188a739ffbd6f9b31ccdf886c"
+generated_digest: "sha256:da9941c8b008cd188c72f9dc12c97539eb68dc4758a4aeb1d0271e84c8486b81"
 generated:
   name: NewNavigatorSearch
   direction: incoming
@@ -48,14 +48,14 @@ generated:
     - string
     - string
     evidence: ev_1fd792ccb64f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_439da5dcbab2
+    evidence: ev_eb5bc2d40d0e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -81,10 +81,10 @@ generated:
     symbol: NewNavigatorSearchComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_439da5dcbab2
+  - id: ev_eb5bc2d40d0e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NewNavigatorSearchEvent.java
     symbol: NewNavigatorSearchEvent
     line: 20

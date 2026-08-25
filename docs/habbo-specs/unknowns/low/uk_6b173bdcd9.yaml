@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6b8093c9fb5252b96f550eb172b32533ca1a4f4210533e6176a75b9489ebe632"
+generated_digest: "sha256:cbbaeacf6daf68e3ece4f69714cb9c1b506425cd3cd5af5e639bb571853ce5c8"
 generated:
   id: uk_6b173bdcd9
   subject: "incoming/BreedPets: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: BreedPetsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd94059ba81b
+  - id: ev_a78a45b7847f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/BreedPetsMessageEvent.java
     symbol: BreedPetsMessageEvent
     line: 10

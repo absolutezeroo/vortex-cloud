@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d7c8eeb935d2a0c0f86a08c6a0348163aefc6089635b7a7c19d6eeb9727e9e84"
+generated_digest: "sha256:73a5425454dda051954892030299b19e89dafe4c8845fdd492c4ec6135b4b607"
 generated:
   name: ForumsList
   direction: outgoing
@@ -156,7 +156,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6fbb2a8d157c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: true
@@ -165,7 +165,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_21f7d239f088
+    evidence: ev_0314fd6eaacd
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -194,10 +194,10 @@ generated:
     symbol: ForumsListMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_21f7d239f088
+  - id: ev_0314fd6eaacd
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/ForumsListMessageComposer.java
     symbol: ForumsListMessageComposer
     line: 26

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:75558c98fd80fea1e8327a1800e5da5cc54eeed1eaaf14f94f2b15f1e2ca974c"
+generated_digest: "sha256:c34a8d3f674d3d5ab550baab65b3b32ddda579bc4a7a69f04f04e2ac184ff072"
 generated:
   id: cf_4826788e32
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, int32, string"
     evidence: ev_590ab591d7ea
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "5 fields: int32, int32, string, string, string"
-    evidence: ev_aba982f1be68
+    evidence: ev_39a4f1030999
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, string"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2928
     line: 27
     note: "the client constructs this composer at 9 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/ui/widget/avatarinfo/RentableBotMenuView.as:218 with 3 argument(s)"
-  - id: ev_aba982f1be68
+  - id: ev_39a4f1030999
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/CommandBotEvent.java
     symbol: CommandBotEvent
     line: 23

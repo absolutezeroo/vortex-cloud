@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1277e0f2bb1b8c641416ae5508490b26d71ca0a7ae9c8b4d2ee01927dc15ff80"
+generated_digest: "sha256:2068635721d6078e6c6398347193dd798d9df14d279ce7369a9a3e487a8920d8"
 generated:
   id: uk_a76115598b
   subject: "outgoing/SnowWarsOnStageRunning: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsOnStageRunning
   known_evidence:
-  - id: ev_bd1b9084534c
+  - id: ev_302fa24af515
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsOnStageRunningComposer.java
     symbol: SnowWarsOnStageRunningComposer
     line: 8

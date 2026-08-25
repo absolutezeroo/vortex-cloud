@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:172ea28b5bf92fa0903bcfb23888b57d21ac3df2938fc61b9c550a575944f596"
+generated_digest: "sha256:9ce2b8796d81090651167b1d31af51e70a1b01535b3ae25082cd9a1ac02c7d9a"
 generated:
   id: uk_34d366a579
   subject: "outgoing/InitCamera: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: InitCameraMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e3597b68fdba
+  - id: ev_0668ba90d3c1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/InitCameraMessageComposer.java
     symbol: InitCameraMessageComposer
     line: 19

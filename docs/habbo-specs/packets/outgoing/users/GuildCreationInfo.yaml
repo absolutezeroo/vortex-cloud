@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:94d5ef65d3b2716b1374df7e137655330986c0ee5372e0890fae2ca66e680e57"
+generated_digest: "sha256:419c8afb49b2e0896bc35b800f8f1c85641acaf5c844412d6c8d5138e3d0e187"
 generated:
   name: GuildCreationInfo
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 4
     name: unknown_4
     type: boolean
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 12
     name: unknown_12
     type: int32
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 13
     name: unknown_13
     type: int32
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 14
     name: unknown_14
     type: int32
@@ -137,7 +137,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 15
     name: unknown_15
     type: int32
@@ -145,7 +145,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 16
     name: unknown_16
     type: int32
@@ -153,7 +153,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 17
     name: unknown_17
     type: int32
@@ -161,7 +161,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 18
     name: unknown_18
     type: int32
@@ -169,7 +169,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 19
     name: unknown_19
     type: int32
@@ -177,7 +177,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   - index: 20
     name: unknown_20
     type: int32
@@ -185,7 +185,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_346430f647e9
+    - ev_9062d575766a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -205,7 +205,7 @@ generated:
     partial: true
     types: []
     evidence: ev_e6bfa453289f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 21
     partial: false
@@ -231,7 +231,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_346430f647e9
+    evidence: ev_9062d575766a
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -260,10 +260,10 @@ generated:
     symbol: GuildCreationInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_346430f647e9
+  - id: ev_9062d575766a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildCreationInfoMessageComposer.java
     symbol: GuildCreationInfoMessageComposer
     line: 18

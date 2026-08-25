@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1c1b2030b1da8352bd499550c649791b87319001e1587bc7a64191c757054594"
+generated_digest: "sha256:448ef35a9907de5035a0f23261ffca3cfd459f1833f5b06415374325d81bad2b"
 generated:
   feature: room.set_item_data
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2c6f62ada260
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5d6a57de2d9a
+      evidence: ev_f64ee2c8a2d4
   evidence:
-  - id: ev_5d6a57de2d9a
+  - id: ev_f64ee2c8a2d4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetItemDataMessageEvent.java
     symbol: SetItemDataMessageEvent
     line: 18

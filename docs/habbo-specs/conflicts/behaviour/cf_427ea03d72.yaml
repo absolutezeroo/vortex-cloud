@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c24a0f0c84a10c70469d1e41dd60bed484c89e010262ec57437f25009a278fbd"
+generated_digest: "sha256:3452a6d68873b6d514fc4141a99ffc6a7eb6a9712c5ed146c7067807d4933a2b"
 generated:
   id: cf_427ea03d72
   kind: behaviour
   subject: "UpdateTrigger: packets emitted in response"
   packet: UpdateTrigger
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: WiredSaved then WiredValidationError then WiredSaved then WiredValidationError then WiredValidationError
-    evidence: ev_9a9156c07ff2
+    evidence: ev_d521e68ab4b1
   - origin: vortex
     authority: vortex_emulator
     claim: WiredValidationErrorEvent then WiredSaveSuccessEvent
     evidence: ev_ba6b00f67db8
   evidence:
-  - id: ev_9a9156c07ff2
+  - id: ev_d521e68ab4b1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/UpdateTriggerMessageEvent.java
     symbol: UpdateTriggerMessageEvent
     line: 20

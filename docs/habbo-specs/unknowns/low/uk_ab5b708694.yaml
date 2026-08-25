@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:22923ea598cb8ab0c0941a5127357c215078c133f24f8bfbd4d877e2df0604b4"
+generated_digest: "sha256:559fb3faadc8803b2a4daf44e8e637c3ce658241d0109b06e8ed1d8cb012c0dd"
 generated:
   id: uk_ab5b708694
   subject: "outgoing/ClubGiftSelected: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3028
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_235c6831eae7
+  - id: ev_205eb338007d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/ClubGiftSelectedMessageComposer.java
     symbol: ClubGiftSelectedMessageComposer
     line: 20

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:484e7beb1ec763a9a3ec1a19e9e652397d8b55d8c42201793bdf21b4309117e0"
+generated_digest: "sha256:71d276f64bfa2b5c121bc4e6638f8614a2cf05d7bb7e6b1d3231e13b4eae2e98"
 generated:
   feature: moderation.guide_session_resolved
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_350340b336e4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0e034f22bfca
+      evidence: ev_a1a5e3a31fc4
   evidence:
-  - id: ev_0e034f22bfca
+  - id: ev_a1a5e3a31fc4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionResolvedMessageEvent.java
     symbol: GuideSessionResolvedMessageEvent
     line: 9

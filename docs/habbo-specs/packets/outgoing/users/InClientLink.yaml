@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:79f4539cc84b7d34d308cce6b9fde3afa3154d328886be245476c7a1aad08438"
+generated_digest: "sha256:74f8901aca9684247d0de0d74f9d84c771ae2e0f18856872a7d0d83e351eb796"
 generated:
   name: InClientLink
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_786ed6a08d92
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_f0961d2fd27e
+    evidence: ev_e7591b404c4f
   evidence:
   - id: ev_4f4afe3fdf21
     kind: client_parser
@@ -63,10 +63,10 @@ generated:
     symbol: InClientLinkMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f0961d2fd27e
+  - id: ev_e7591b404c4f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/nux/InClientLinkMessageComposer.java
     symbol: InClientLinkMessageComposer
     line: 15

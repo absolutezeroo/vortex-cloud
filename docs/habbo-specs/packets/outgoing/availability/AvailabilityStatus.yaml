@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0ba26cfc796348f5453c353bc41e5c9b4cb8891dae1e155f533dcea53366554c"
+generated_digest: "sha256:157c4e91da569b902125ecd48a7f93293f4ace5401919cdb6de72f384cc736a2"
 generated:
   name: AvailabilityStatus
   direction: outgoing
@@ -59,7 +59,7 @@ generated:
     - boolean
     - boolean
     evidence: ev_44f289dc426c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - boolean
     - boolean
     - boolean
-    evidence: ev_92afc99490f5
+    evidence: ev_d107eca953f7
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -94,10 +94,10 @@ generated:
     symbol: AvailabilityStatusMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_92afc99490f5
+  - id: ev_d107eca953f7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/AvailabilityStatusMessageComposer.java
     symbol: AvailabilityStatusMessageComposer
     line: 19

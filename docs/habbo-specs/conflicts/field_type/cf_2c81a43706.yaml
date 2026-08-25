@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:b0804aeed29aab6fc29721330f9e12e8d475e75bd07117d3d8e956d4ed756eb4"
+generated_digest: "sha256:48cc3309e11c92ac29c3a3c0372c35fa49dd4d0790cb86e9cac35cbe7eb32955"
 generated:
   id: cf_2c81a43706
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "bad_words: string"
     evidence: ev_53eb46d32fb1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_1: string"
-    evidence: ev_9d60f7d0bfb1
+    evidence: ev_0144dcf2e114
   - origin: vortex
     authority: vortex_emulator
     claim: "bad_words: array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_3620
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_9d60f7d0bfb1
+  - id: ev_0144dcf2e114
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomFilterSettingsMessageComposer.java
     symbol: RoomFilterSettingsMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b1b600f989899d5251a64170f5abf6fce532005dd7cb75ae724723bd01573dbb"
+generated_digest: "sha256:38671537f59c4c2719017d65ad733bad72c0131ac8e7af2fd1711bdb7d8b481b"
 generated:
   id: uk_7f085dd163
   subject: "outgoing/TradingOpen: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradingOpen
   known_evidence:
-  - id: ev_53b5fcfacacb
+  - id: ev_3db6c4da868f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingOpenMessageComposer.java
     symbol: TradingOpenMessageComposer
     line: 24

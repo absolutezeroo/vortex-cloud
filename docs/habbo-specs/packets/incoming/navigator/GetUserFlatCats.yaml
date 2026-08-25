@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4b4eb6ad41f005797a40a36428954c32f95587035bd2083f8d6be3c06b9bb6a5"
+generated_digest: "sha256:1b609e741930cea4b27ae34dbc52c782481dfc6191b2b3070e9602a7380992ed"
 generated:
   name: GetUserFlatCats
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_a88507eca431
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_eaaa99b72197
+    evidence: ev_f4c6305ed8e5
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetUserFlatCatsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eaaa99b72197
+  - id: ev_f4c6305ed8e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetUserFlatCatsMessageEvent.java
     symbol: GetUserFlatCatsMessageEvent
     line: 12

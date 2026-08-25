@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b28982491cb8c928ada1ab8abe06c97453bffb4e95c71e46f6484ec1bc2e471a"
+generated_digest: "sha256:d707ca7bcf9eea8171f5ff9937d90283b1d14beba4f254d14c129e70418a05ff"
 generated:
   name: SetObjectData
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6553fc6a8ab9
+    - ev_92eca25ad89b
   - index: 1
     name: count
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6553fc6a8ab9
+    - ev_92eca25ad89b
   - index: 2
     name: key
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6553fc6a8ab9
+    - ev_92eca25ad89b
   - index: 3
     name: value
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6553fc6a8ab9
+    - ev_92eca25ad89b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_c0b7fad4e6a0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -69,7 +69,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_6553fc6a8ab9
+    evidence: ev_92eca25ad89b
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -93,10 +93,10 @@ generated:
     symbol: SetObjectDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6553fc6a8ab9
+  - id: ev_92eca25ad89b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetObjectDataMessageEvent.java
     symbol: SetObjectDataMessageEvent
     line: 13

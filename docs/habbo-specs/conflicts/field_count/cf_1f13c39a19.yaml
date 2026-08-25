@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e5b1959fd51e32f63d5d76fce9ea3b741a2517606d9cfaeda46e3b555a8c4d1c"
+generated_digest: "sha256:e969bf4bb55067692f893b761b4d91041db80e050750dcb7d7d9eae71b37d2f8"
 generated:
   id: cf_1f13c39a19
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, int32, int32, boolean, int32"
     evidence: ev_1680d57e16a6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: int32, int32, int32, int32, boolean, int32"
-    evidence: ev_b3efd696facc
+    evidence: ev_0f7bc63a5017
   - origin: vortex
     authority: vortex_emulator
     claim: "6 fields: int32, int32, int32, int32, boolean, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: NewNavigatorPreferencesMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b3efd696facc
+  - id: ev_0f7bc63a5017
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NewNavigatorPreferencesMessageComposer.java
     symbol: NewNavigatorPreferencesMessageComposer
     line: 16

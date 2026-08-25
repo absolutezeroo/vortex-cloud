@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5a2692baedff3d532fb3aeb6814ee80ff8017d58aa5b2dfe74dd0a27fd212719"
+generated_digest: "sha256:5058997bec1983d3dbcd8c662865623fe086932f2c8772b272a9b811e907b7ae"
 generated:
   id: cf_d6b72425b8
   kind: behaviour
   subject: "GuideSessionOnDutyUpdate: packets emitted in response"
   packet: GuideSessionOnDutyUpdate
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuideOnDutyStatus then GuideOnDutyStatus
-    evidence: ev_decfd6d77916
+    evidence: ev_b225e60c09ee
   - origin: vortex
     authority: vortex_emulator
     claim: GuideOnDutyStatus
     evidence: ev_e4ac412a621f
   evidence:
-  - id: ev_decfd6d77916
+  - id: ev_b225e60c09ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionOnDutyUpdateMessageEvent.java
     symbol: GuideSessionOnDutyUpdateMessageEvent
     line: 10

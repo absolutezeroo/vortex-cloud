@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:be252ee19c4f8b1accfd01e99884f7ed04ab8eee4d47e1e87f34d31f21da91cb"
+generated_digest: "sha256:0fc2a1c0f2b67e74531835961af3ac2bb6113ae016be9aa34f7338cedfae81bb"
 generated:
   name: RoomInfoUpdated
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_c36df26a09af
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_f7baebb2d3ea
+    evidence: ev_0a8956c4388c
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RoomInfoUpdatedMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f7baebb2d3ea
+  - id: ev_0a8956c4388c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomInfoUpdatedMessageComposer.java
     symbol: RoomInfoUpdatedMessageComposer
     line: 16

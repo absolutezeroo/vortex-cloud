@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:18fab681eaacd3e56314112a0e518a53011f7e658fa11ddfd3cf466a084fe64d"
+generated_digest: "sha256:697686c95fa48df50e631ec9358dc0cf11b92dda1ebd3ad259832bc0759eac70"
 generated:
   feature: room.update_floor_properties
   scenarios:
@@ -31,19 +31,19 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6d059742f0bd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboBroadcast
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_cdf74a55aa51
+      evidence: ev_51043efee81b
   evidence:
-  - id: ev_cdf74a55aa51
+  - id: ev_51043efee81b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/floorplaneditor/UpdateFloorPropertiesMessageEvent.java
     symbol: UpdateFloorPropertiesMessageEvent
     line: 26

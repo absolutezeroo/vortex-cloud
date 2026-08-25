@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e97ccf997607b2cdae2bd833cbe81840c51289cd1c8128eb0f7b969fb8521472"
+generated_digest: "sha256:7e96e925022f3eb72596c90c65f4aec5edb7a561bdcbf2704044a64cc9fc59b4"
 generated:
   name: GuildMemberMgmtFailed
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_f42c537e7650
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_75e02af66b14
+    evidence: ev_a29235dd71e4
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GuildMemberMgmtFailedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_75e02af66b14
+  - id: ev_a29235dd71e4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildMemberMgmtFailedMessageComposer.java
     symbol: GuildMemberMgmtFailedMessageComposer
     line: 21

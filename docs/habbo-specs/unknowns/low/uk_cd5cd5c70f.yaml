@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:40d21d2f17b673ffa6dbe28c902b8ab512247dfedafebeb8f0a4f32416d0fab5"
+generated_digest: "sha256:8f3de8782d02bf4797abc7ff9b2ca44e770443c9064ca73a4197ec917a0eab37"
 generated:
   id: uk_cd5cd5c70f
   subject: "outgoing/CameraPublishStatus: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CameraPublishStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5b6cb02e3770
+  - id: ev_4b18aae22b1a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/CameraPublishStatusMessageComposer.java
     symbol: CameraPublishStatusMessageComposer
     line: 19

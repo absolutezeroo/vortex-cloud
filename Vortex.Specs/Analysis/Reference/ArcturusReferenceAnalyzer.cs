@@ -23,7 +23,7 @@ namespace Vortex.Specs.Analysis.Reference;
 public sealed partial class ArcturusReferenceAnalyzer(SpecWorkspace workspace, SourceTree tree)
     : IReferenceAnalyzer
 {
-    public string Origin => "arcturus";
+    public string Origin => tree.Id;
 
     private static readonly Dictionary<string, WireType> ReadOps = new(StringComparer.Ordinal)
     {

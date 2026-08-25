@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:bcc08993cba957be227fe344fa5dff8ba1d64e0c18223eb7686b64924953acfc"
+generated_digest: "sha256:6657964622850f551b852b9951a4ae0c9e0fe241a7e3663b2cfc1ce9625678f6"
 generated:
   id: cf_8624b71865
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string"
     evidence: ev_454a3bc3d323
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_ccbd5a3a421f
+    evidence: ev_5dc536bfc9d0
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, string"
@@ -50,10 +50,10 @@ generated:
     symbol: RequestSpamWallPostItMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ccbd5a3a421f
+  - id: ev_5dc536bfc9d0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/RequestSpamWallPostItMessageComposer.java
     symbol: RequestSpamWallPostItMessageComposer
     line: 16

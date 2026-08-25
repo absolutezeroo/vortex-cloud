@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ed7c134c4a821b694ada69ac318ad06dabceca0050df2a87fbc2aded68d9848c"
+generated_digest: "sha256:8bf21131190c03cc37866e3592216519ad0488630df4ff1263cdfa4e74c4d8f2"
 generated:
   name: SnowWarsStartLobbyCounter
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_8aeb3dabffee
+    - ev_95e8de57ab19
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8aeb3dabffee
+    evidence: ev_95e8de57ab19
   evidence:
-  - id: ev_8aeb3dabffee
+  - id: ev_95e8de57ab19
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsStartLobbyCounter.java
     symbol: SnowWarsStartLobbyCounter
     line: 9

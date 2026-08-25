@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f76abdb259ebc32122fbfae25d796dd3385041c023a0f51704c2918723e0022f"
+generated_digest: "sha256:092a449ab4e93146cbc4136f55ccd97a16e8073583cc174cef4a0962d2207af1"
 generated:
   feature: room.use_item_in_room
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_1
     title: "use item in room: the guard '!await ActionModule.UseItemByIdAsync(ctx, itemId, ct, param)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2298dc2dabc2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_2
     title: "use item in room: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_8a097ef973ee
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_3
     title: "use item in room: the guard '!canUse || !await _roomGrain.FurniModule.UseItemByIdAsync...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8a097ef973ee
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_4
     title: "use item in room: the guard 'usageType == FurnitureUsageType.Nobody' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_5
     title: "use item in room: the guard 'controllerLevel < RoomControllerType.Rights' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_6
     title: "use item in room: the guard 'item.OwnerId.Value != ctx.PlayerId.Value' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_7
     title: "use item in room: the guard 'spaceItem is null' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_8
     title: "use item in room: the guard '!_roomGrain.FurniModule.GetTileIdForFloorItem(spaceItem, ...' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.guard_9
     title: "use item in room: the guard '!InBounds(minX, minY)' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_c26714967e6b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   - scenario: room.use_item_in_room.success
     title: "use item in room: the request is accepted"
     given:
@@ -261,16 +261,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_21eae0783103
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_75095cb784fe
+      evidence: ev_effda7d6ca15
   evidence:
-  - id: ev_75095cb784fe
+  - id: ev_effda7d6ca15
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/DiceOffMessageEvent.java
     symbol: DiceOffMessageEvent
     line: 13

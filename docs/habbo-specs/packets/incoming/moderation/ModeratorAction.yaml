@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7f295c0ce067d302db6a9a7869cc506ded095fd405dbfde9a60a9603779e766a"
+generated_digest: "sha256:3fd823475e4001c4cd27365dfe8974abaa6c1dcce91d6877f50e06cb614f7629"
 generated:
   name: ModeratorAction
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_e56c0ffdaef2
+    - ev_426d3d61fecd
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_e56c0ffdaef2
+    - ev_426d3d61fecd
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -41,14 +41,14 @@ generated:
     partial: true
     types: []
     evidence: ev_feebc60ed7f8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_e56c0ffdaef2
+    evidence: ev_426d3d61fecd
   evidence:
   - id: ev_feebc60ed7f8
     kind: client_composer
@@ -58,10 +58,10 @@ generated:
     symbol: ModeratorActionComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e56c0ffdaef2
+  - id: ev_426d3d61fecd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModeratorActionMessageEvent.java
     symbol: ModeratorActionMessageEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0116b18dae8ef2c5d46601a8211e9bff7fb06184bdb86a006e950afd46578da8"
+generated_digest: "sha256:8fad5d1a43463324e92d541a965ef29cc8cd029fd3f7120b0cd1c097cd572a10"
 generated:
   name: ModerateMessage
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_565c9e33cede
+    - ev_52d937997853
   - index: 1
     name: thread_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_565c9e33cede
+    - ev_52d937997853
   - index: 2
     name: message_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_565c9e33cede
+    - ev_52d937997853
   - index: 3
     name: state
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_565c9e33cede
+    - ev_52d937997853
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_ae0700aca561
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -69,7 +69,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_565c9e33cede
+    evidence: ev_52d937997853
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -97,10 +97,10 @@ generated:
     symbol: _SafeCls_2984
     line: 18
     note: "the client constructs this composer at 3 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/friendbar/groupforums/GroupForumController.as:606 with 4 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_565c9e33cede
+  - id: ev_52d937997853
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/ModerateMessageMessageEvent.java
     symbol: ModerateMessageMessageEvent
     line: 20

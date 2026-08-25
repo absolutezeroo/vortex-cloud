@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:67c45747ddd9fb3a259d56e4388d334432d447d55ed4dc86d9be308a09766d69"
+generated_digest: "sha256:66effc00bf0811be0c8c9d65c691cf54a81e147ada7483f709cdd7437855aee7"
 generated:
   id: cf_f551be9676
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_fe062199d0a9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_8131d199bf6d
+    evidence: ev_aa034336a345
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: DanceMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8131d199bf6d
+  - id: ev_aa034336a345
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/DanceMessageComposer.java
     symbol: DanceMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8500dc8915583edd0a63f483d231f3ff691a88adedd10c39e312148fc593d4e2"
+generated_digest: "sha256:ae079654b34044b867af0ebe77f7eda3f06fd7b02261c2a9ab6991c82ef711dc"
 generated:
   name: YoutubeStateChange
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_5a3871f58edf
+    - ev_54dbd710c870
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_5a3871f58edf
+    - ev_54dbd710c870
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_5a3871f58edf
+    evidence: ev_54dbd710c870
   evidence:
-  - id: ev_5a3871f58edf
+  - id: ev_54dbd710c870
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/youtube/YoutubeStateChangeComposer.java
     symbol: YoutubeStateChangeComposer
     line: 17

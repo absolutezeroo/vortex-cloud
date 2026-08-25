@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5de7efdcc58a0030dc387bc172a063fcbb4390f1934280facaa9c3e8678c7f9a"
+generated_digest: "sha256:5cd1c30b6c8279886a4c2830081d2fcb85de48e72b490dd60e3a2ab01aec0aa1"
 generated:
   name: HabboAchievementNotification
   direction: outgoing
@@ -171,7 +171,7 @@ generated:
     partial: true
     types: []
     evidence: ev_edc073f17cd2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 12
     partial: false
@@ -188,7 +188,7 @@ generated:
     - string
     - string
     - boolean
-    evidence: ev_8aa0e48eac97
+    evidence: ev_d1cf3da36819
   - origin: vortex
     authority: vortex_emulator
     field_count: 14
@@ -226,10 +226,10 @@ generated:
     symbol: HabboAchievementNotificationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8aa0e48eac97
+  - id: ev_d1cf3da36819
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/achievements/HabboAchievementNotificationMessageComposer.java
     symbol: HabboAchievementNotificationMessageComposer
     line: 20

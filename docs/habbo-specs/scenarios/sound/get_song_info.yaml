@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:202e3e12ad0270ecbc1253f950d67b825c694119fd39f08c2c0674a1a674a916"
+generated_digest: "sha256:01e756fed601f93d8a4f5a4b18ef896b5d54c103b5528d84f4d7ab0d3a8a2e1d"
 generated:
   feature: sound.get_song_info
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b3c548c2a9ea
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - TraxSongInfo
-      evidence: ev_39a4301b86e3
+      evidence: ev_9469cbc113c0
   evidence:
-  - id: ev_39a4301b86e3
+  - id: ev_9469cbc113c0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetSongInfoMessageEvent.java
     symbol: GetSongInfoMessageEvent
     line: 13

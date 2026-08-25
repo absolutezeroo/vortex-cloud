@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f18ff42ee03dc0a86672897520d562c2490beab6b66e0ac5d65471dce08da34c"
+generated_digest: "sha256:4aba143e0d49be564852a60e827a409fad1972071595d1e90c700a1d3327542c"
 generated:
   feature: room.update_room_filter
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b0bc6af39047
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0b5b1ff6fd4e
+      evidence: ev_384624cdf5c4
   evidence:
-  - id: ev_0b5b1ff6fd4e
+  - id: ev_384624cdf5c4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/UpdateRoomFilterMessageEvent.java
     symbol: UpdateRoomFilterMessageEvent
     line: 9

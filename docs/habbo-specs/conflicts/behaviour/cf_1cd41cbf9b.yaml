@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fef4f6a6f8c1f0e44c765b8029581d08b540b62c31598996b292fa7b0736b330"
+generated_digest: "sha256:b534de62f649d0f3ab5860df0859ad2fb194d55a0d1ce518966fda63b5b23394"
 generated:
   id: cf_1cd41cbf9b
   kind: behaviour
   subject: "Quit: packets emitted in response"
   packet: Quit
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: CloseConnection
-    evidence: ev_8c0c6b8df13a
+    evidence: ev_b3ef77c49ed9
   - origin: vortex
     authority: vortex_emulator
     claim: CloseConnection then UserRemove then ItemRemove then ObjectRemove
     evidence: ev_9ffbcbec9c23
   evidence:
-  - id: ev_8c0c6b8df13a
+  - id: ev_b3ef77c49ed9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/QuitMessageEvent.java
     symbol: QuitMessageEvent
     line: 10

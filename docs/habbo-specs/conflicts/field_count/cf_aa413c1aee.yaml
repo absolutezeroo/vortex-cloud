@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4a9e37c9cc05ab09f383f971ec40130b7a0d2b42f4dc3df207e5f928731742e2"
+generated_digest: "sha256:8c440c8c0631aa1cd992b8c78fe8580fe08359ad2131c08f8a346dc036cf89b5"
 generated:
   id: cf_aa413c1aee
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32"
     evidence: ev_208b65d57932
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, int32, int32, string"
-    evidence: ev_70b65a1c2456
+    evidence: ev_e4587b4e03fa
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: BotSkillListUpdateParser
     line: 29
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_70b65a1c2456
+  - id: ev_e4587b4e03fa
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/BotSkillListUpdateMessageComposer.java
     symbol: BotSkillListUpdateMessageComposer
     line: 19

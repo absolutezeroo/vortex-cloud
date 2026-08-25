@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e10dcd5bbbc8e2ad2ba06c2edfb0533ddc8732665357f4dbbde7964bb12d857c"
+generated_digest: "sha256:6d65711db49734bd068e2d7aa2e56c184e7c934a09371c6fc3ccec7d004dd2f8"
 generated:
   name: InfoRetrieve
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_d8a468c5d8d6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_ecd7117718e9
+    evidence: ev_9a1d07232a27
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: InfoRetrieveComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ecd7117718e9
+  - id: ev_9a1d07232a27
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/InfoRetrieveMessageEvent.java
     symbol: InfoRetrieveMessageEvent
     line: 31

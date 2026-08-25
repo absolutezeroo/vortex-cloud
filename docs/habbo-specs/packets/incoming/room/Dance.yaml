@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:89c36231fcae37ebecc05675c2572339e4b7e441f1329e4d1e818fd6cea0480f"
+generated_digest: "sha256:2a907badc09c94090fd8935a301c59816e42202b8e207084685e3e95c07d4161"
 generated:
   name: Dance
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     partial: true
     types: []
     evidence: ev_e424e8cf99d8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_3678faf198ee
+    evidence: ev_d980d0ba0a93
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: DanceComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3678faf198ee
+  - id: ev_d980d0ba0a93
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/DanceMessageEvent.java
     symbol: DanceMessageEvent
     line: 13

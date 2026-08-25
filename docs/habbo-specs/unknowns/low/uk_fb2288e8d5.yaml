@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f1cda38837f63d8f933ddac23a85f034448a3c53d4936e449be1abce76d14f79"
+generated_digest: "sha256:06b2f06147e34523acd12693bfb646781457136c5f5c1c17456efb4c86cd6735"
 generated:
   id: uk_fb2288e8d5
   subject: "outgoing/GuestRoomSearchResult: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: GuestRoomSearchResultMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cb668d6d7738
+  - id: ev_271ddd04117b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/GuestRoomSearchResultMessageComposer.java
     symbol: GuestRoomSearchResultMessageComposer
     line: 34

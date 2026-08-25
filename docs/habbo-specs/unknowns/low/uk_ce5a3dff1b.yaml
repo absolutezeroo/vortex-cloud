@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5ee7854b1455934ffb4dc4ad028d85bb5bf48f9fff57e13c314cd10dcdfe0103"
+generated_digest: "sha256:5a598eea50d77ea612483fed739e11ea6259b33b626d0e8c2a550054bf4a125f"
 generated:
   id: uk_ce5a3dff1b
   subject: "outgoing/SnowWarsQuePosition: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsQuePosition
   known_evidence:
-  - id: ev_3b2923be5a5e
+  - id: ev_805a34f92565
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsQuePositionComposer.java
     symbol: SnowWarsQuePositionComposer
     line: 8

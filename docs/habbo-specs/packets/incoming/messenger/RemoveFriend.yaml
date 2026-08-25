@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:48ee5b01acd72c11ad3575e69af4eb9179b514dbf6c7dcc7d634a775610ded5b"
+generated_digest: "sha256:93aa7dd219aa2373c11f383b3b3197a97cf09b3662f1f1a2ed612106bb6f8ed6"
 generated:
   name: RemoveFriend
   direction: incoming
@@ -49,14 +49,14 @@ generated:
     types:
     - unknown
     evidence: ev_06634c555679
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_29e16adb5a9e
+    evidence: ev_cb77940cf77c
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -90,10 +90,10 @@ generated:
     symbol: RemoveFriendComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_29e16adb5a9e
+  - id: ev_cb77940cf77c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RemoveFriendMessageEvent.java
     symbol: RemoveFriendMessageEvent
     line: 19

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:acdc92ab5ff10bdb575455cdf9f84f5bcac01f6c7e352ad5deef4101afdbf56a"
+generated_digest: "sha256:b53c64e953113b82cb63fbf2cb0dedc03e06629679753c9df9b31d6e885a232f"
 generated:
   feature: competition.get_current_timing_code
   scenarios:
@@ -32,19 +32,19 @@ generated:
       emits:
       - CurrentTimingCode
       evidence: ev_7008cf77cd1b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CurrentTimingCode
       - CurrentTimingCode
       - CurrentTimingCode
-      evidence: ev_38ae0c7e27eb
+      evidence: ev_a20ef386df4a
   evidence:
-  - id: ev_38ae0c7e27eb
+  - id: ev_a20ef386df4a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetCurrentTimingCodeMessageEvent.java
     symbol: GetCurrentTimingCodeMessageEvent
     line: 13

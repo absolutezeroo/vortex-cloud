@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:08ec3b1fa54465f6143473a163b4b3c227465b856bc62f1e679a5ff1cbed3ef8"
+generated_digest: "sha256:d946c3a43328deed392ec02618ea78bfb27aacacc760159062935aa240b3eed4"
 generated:
   feature: inventory.remove_trade_item
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_395a0abadc24
+      evidence: ev_363594c8de23
   - scenario: inventory.remove_trade_item.guard_1
     title: "remove trade item: the guard '!TryGetSession(requesterId, out RoomTradeSession? session)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_395a0abadc24
+      evidence: ev_363594c8de23
   - scenario: inventory.remove_trade_item.guard_2
     title: "remove trade item: the guard 'session.Phase != TradePhase.Building' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_395a0abadc24
+      evidence: ev_363594c8de23
   - scenario: inventory.remove_trade_item.guard_3
     title: "remove trade item: the guard '!session.ItemsOf(requesterId).Remove(itemId)' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_395a0abadc24
+      evidence: ev_363594c8de23
   - scenario: inventory.remove_trade_item.success
     title: "remove trade item: the request is accepted"
     given:
@@ -123,16 +123,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_395a0abadc24
+      evidence: ev_363594c8de23
   evidence:
-  - id: ev_395a0abadc24
+  - id: ev_363594c8de23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/RemoveItemFromTradeEvent.java
     symbol: RemoveItemFromTradeEvent
     line: 9

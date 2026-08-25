@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1e2be7e1468096dd216c459f44df7e3efc68c6ab29ac494754168bd36d7a320a"
+generated_digest: "sha256:ceaa66240cde7d32ec42b6e19b701c6b5dece389cc211e788e2b6ca7c98adb03"
 generated:
   name: RoomForward
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_d2bc6f4a69f4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_d2bc93b0ae78
+    evidence: ev_644be223396e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RoomForwardMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d2bc93b0ae78
+  - id: ev_644be223396e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomForwardMessageComposer.java
     symbol: RoomForwardMessageComposer
     line: 15

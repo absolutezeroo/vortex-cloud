@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:85f84a6928f3b8953360ca2f4f4ebc7bc52c4a936d7afb53e6e9f27b7e94b3d8"
+generated_digest: "sha256:037637597740981023e245002c4aece85513332c49a731e27f3a525f8cc6bce9"
 generated:
   name: MysteryBoxKeys
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - string
     - string
     evidence: ev_6382316a48af
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_712ca28206fe
+    evidence: ev_784f57af117a
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: MysteryBoxKeysMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_712ca28206fe
+  - id: ev_784f57af117a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/mysterybox/MysteryBoxKeysMessageComposer.java
     symbol: MysteryBoxKeysMessageComposer
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1f333777b309f657ba9a9f55d34bc033018833beef17828a319129d8412189d0"
+generated_digest: "sha256:0a7cccfd2d74d3570cb4047b8c9ae23e84a9b0e47294d2fce4d9ef8661823bdb"
 generated:
   feature: moderation.mod_mute
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d1d2284fcc9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_1
     title: "mod mute: the guard 'ModerationPolicy.IsAllowed(actorPermissions, targetPermis...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_2
     title: "mod mute: the guard 'playerId <= 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_3
     title: "mod mute: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_4
     title: "mod mute: the guard 'player is null' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_5
     title: "mod mute: the guard '!_roomGrain._state.AvatarsByPlayerId.ContainsKey(targetPl...' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb84a2a2088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.guard_6
     title: "mod mute: the guard 'string.IsNullOrWhiteSpace(message)' holds"
     given:
@@ -176,12 +176,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   - scenario: moderation.mod_mute.success
     title: "mod mute: the request is accepted"
     given:
@@ -201,17 +201,17 @@ generated:
       - ModeratorActionResult
       - ModeratorCautionEvent
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_6b03febdccf3
+      evidence: ev_2958783a8bbc
   evidence:
-  - id: ev_6b03febdccf3
+  - id: ev_2958783a8bbc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModMuteMessageEvent.java
     symbol: ModMuteMessageEvent
     line: 18

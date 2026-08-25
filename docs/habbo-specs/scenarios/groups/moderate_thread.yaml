@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ba63b6a15d365b259f2367a0b42710ae09ed9ecbcc423a7644b1693138a91d80"
+generated_digest: "sha256:41d096d62317744d18dcf654456aa1dbf2d976afdaadc2b7ae753c13d41255d6"
 generated:
   feature: groups.moderate_thread
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f9fea23f57c8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -43,7 +43,7 @@ generated:
       - NotificationDialog
       - PostThreadMessage
       - GuildForumThreads
-      evidence: ev_d8b3336337c7
+      evidence: ev_3dc5d38843f6
   - scenario: groups.moderate_thread.guard_1
     title: "moderate thread: the guard 'thread is null' holds"
     given:
@@ -62,7 +62,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f9fea23f57c8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -73,7 +73,7 @@ generated:
       - NotificationDialog
       - PostThreadMessage
       - GuildForumThreads
-      evidence: ev_d8b3336337c7
+      evidence: ev_3dc5d38843f6
   - scenario: groups.moderate_thread.guard_2
     title: "moderate thread: the guard 'group is null' holds"
     given:
@@ -92,7 +92,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -103,7 +103,7 @@ generated:
       - NotificationDialog
       - PostThreadMessage
       - GuildForumThreads
-      evidence: ev_d8b3336337c7
+      evidence: ev_3dc5d38843f6
   - scenario: groups.moderate_thread.guard_3
     title: "moderate thread: the guard '_registry is null' holds"
     given:
@@ -122,7 +122,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -133,7 +133,7 @@ generated:
       - NotificationDialog
       - PostThreadMessage
       - GuildForumThreads
-      evidence: ev_d8b3336337c7
+      evidence: ev_3dc5d38843f6
   - scenario: groups.moderate_thread.success
     title: "moderate thread: the request is accepted"
     given:
@@ -152,7 +152,7 @@ generated:
       emits:
       - UpdateThread
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -163,12 +163,12 @@ generated:
       - NotificationDialog
       - PostThreadMessage
       - GuildForumThreads
-      evidence: ev_d8b3336337c7
+      evidence: ev_3dc5d38843f6
   evidence:
-  - id: ev_d8b3336337c7
+  - id: ev_3dc5d38843f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/ModerateThreadMessageEvent.java
     symbol: ModerateThreadMessageEvent
     line: 20

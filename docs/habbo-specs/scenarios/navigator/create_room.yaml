@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d9a201416a1145da3f53799f59b9f999deded0e7d45248c7c612c372c0051b45"
+generated_digest: "sha256:87606bbdb7c346044b54046845da48f9259ff3196f81a9baeef8d5de74a81cc2"
 generated:
   feature: navigator.create_room
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CanCreateRoom
       - FlatCreated
-      evidence: ev_ad5fd845af29
+      evidence: ev_7df5fc1c65de
   - scenario: navigator.create_room.success
     title: "create room: the request is accepted"
     given:
@@ -58,18 +58,18 @@ generated:
       - FlatCreated
       - RoomForward
       evidence: ev_2fda1ce6d091
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CanCreateRoom
       - FlatCreated
-      evidence: ev_ad5fd845af29
+      evidence: ev_7df5fc1c65de
   evidence:
-  - id: ev_ad5fd845af29
+  - id: ev_7df5fc1c65de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/CreateFlatMessageEvent.java
     symbol: CreateFlatMessageEvent
     line: 18

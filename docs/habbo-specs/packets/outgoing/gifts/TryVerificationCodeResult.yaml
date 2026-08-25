@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc88a9ee462aa0a26742cc8b988d613241d8347890b2aea514552e0de0ab7a6b"
+generated_digest: "sha256:e8b4e619142e57d35b0bd14143be8cb36017595ce5b0ec10e3f600246cb2e703"
 generated:
   name: TryVerificationCodeResult
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_e275109142e1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_a90964fc0725
+    evidence: ev_34b2ddb12f84
   evidence:
   - id: ev_19a47aae6265
     kind: client_parser
@@ -72,10 +72,10 @@ generated:
     symbol: TryVerificationCodeResultMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a90964fc0725
+  - id: ev_34b2ddb12f84
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/verification/TryVerificationCodeResultMessageComposer.java
     symbol: TryVerificationCodeResultMessageComposer
     line: 17

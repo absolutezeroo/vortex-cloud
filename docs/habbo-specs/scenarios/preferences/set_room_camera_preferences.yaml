@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e2617182396303eb4a0f6c63b36cc167dff7e724cfd0846c1a59efbc2a7e9456"
+generated_digest: "sha256:d7e58a51034fd841dd7aa3ee9837d56eccda30262569e4ece057ef974f3fe26a"
 generated:
   feature: preferences.set_room_camera_preferences
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c555ffa7a2c5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_201ccc039939
+      evidence: ev_2fb0c8df3395
   - scenario: preferences.set_room_camera_preferences.success
     title: "set room camera preferences: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_630a59578b9c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_201ccc039939
+      evidence: ev_2fb0c8df3395
   evidence:
-  - id: ev_201ccc039939
+  - id: ev_2fb0c8df3395
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetRoomCameraPreferencesMessageEvent.java
     symbol: SetRoomCameraPreferencesMessageEvent
     line: 9

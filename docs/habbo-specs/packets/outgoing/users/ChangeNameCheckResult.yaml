@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:22e43d228a38b2c9f6def42acd93622b012dd685b5e6e1c5d4e972270a547f03"
+generated_digest: "sha256:d5f0313ea72c95a999eac7f08f19e752ff92a1361e5cacc7595333ff8a765d00"
 generated:
   name: ChangeNameCheckResult
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_63e6f179f0fa
+    - ev_3aec3f7ac8d3
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_63e6f179f0fa
+    - ev_3aec3f7ac8d3
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_63e6f179f0fa
+    - ev_3aec3f7ac8d3
   - index: 3
     name: unknown_3
     type: string
@@ -49,9 +49,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_63e6f179f0fa
+    - ev_3aec3f7ac8d3
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -60,12 +60,12 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_63e6f179f0fa
+    evidence: ev_3aec3f7ac8d3
   evidence:
-  - id: ev_63e6f179f0fa
+  - id: ev_3aec3f7ac8d3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/ChangeNameCheckResultComposer.java
     symbol: ChangeNameCheckResultComposer
     line: 28

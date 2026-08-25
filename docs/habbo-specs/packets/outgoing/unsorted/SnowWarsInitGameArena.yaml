@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4b8faa6dba99d720dc295766fa9fd21daa95bba50064f006cd7f3e0055afa832"
+generated_digest: "sha256:1ff92bf42961531b71f71647b93f9d874ddffa2c87c7d2bdf2d5873edc0eb078"
 generated:
   name: SnowWarsInitGameArena
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a78f5a0737f2
+    - ev_923e464c6de2
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_a78f5a0737f2
+    evidence: ev_923e464c6de2
   evidence:
-  - id: ev_a78f5a0737f2
+  - id: ev_923e464c6de2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsInitGameArena.java
     symbol: SnowWarsInitGameArena
     line: 8

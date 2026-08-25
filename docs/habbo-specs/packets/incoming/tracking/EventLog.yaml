@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:246d8ba816c90b840435f34ae44eb190c969b539f7a8121dbf749c3a3f8bdc40"
+generated_digest: "sha256:e2b56b7a2649d86c00afe91b7adec1267b9d573cb3ba027811d86705dff29fa7"
 generated:
   name: EventLog
   direction: incoming
@@ -88,7 +88,7 @@ generated:
     - string
     - int32
     evidence: ev_36fd50c16e78
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -96,7 +96,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_7518ebdf58b7
+    evidence: ev_ac1f4508f6c7
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -133,10 +133,10 @@ generated:
     symbol: EventLogComposer
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7518ebdf58b7
+  - id: ev_ac1f4508f6c7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/EventLogMessageEvent.java
     symbol: EventLogMessageEvent
     line: 9

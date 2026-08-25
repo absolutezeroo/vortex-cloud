@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5a396d759b6bfaf02ed37061f4eef239c47443a212e08c45c49d3c6a363b8c21"
+generated_digest: "sha256:b2cb0e40f0e3a5a7595b9469033e95b3b9b01358a2e94aa96632f53d1ec6c884"
 generated:
   name: QuestCancelled
   direction: outgoing
@@ -65,13 +65,13 @@ generated:
     partial: true
     types: []
     evidence: ev_10884f76f253
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_c2ecf64edaae
+    evidence: ev_00f5615d00a1
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -105,10 +105,10 @@ generated:
     symbol: QuestCancelledMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c2ecf64edaae
+  - id: ev_00f5615d00a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/quests/QuestCancelledMessageComposer.java
     symbol: QuestCancelledMessageComposer
     line: 15

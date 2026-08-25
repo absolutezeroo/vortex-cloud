@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f8ec02c42518ce2e107bffb4543861063920a6cb48345356f36b7fb3758d2018"
+generated_digest: "sha256:560873dc72d0b49bbe668955728ed36ec8652f39573a6de8a5a6913cc72477b8"
 generated:
   name: CameraStorageUrl
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_a98ee70de39f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_98405a6a7bcd
+    evidence: ev_05f9aa6db06a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: CameraStorageUrlMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_98405a6a7bcd
+  - id: ev_05f9aa6db06a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/CameraStorageUrlMessageComposer.java
     symbol: CameraStorageUrlMessageComposer
     line: 15

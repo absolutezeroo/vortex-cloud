@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:84b80fd4ff5afb14673a81364a27a675310a2a0e1b62b1676b0270d81a7f1cfd"
+generated_digest: "sha256:cdec53ca9eb1de70167ad669165f29e98e0e2fdc4da904fa3b801da66f7e3abd"
 generated:
   id: uk_980cfd1fec
   subject: "outgoing/PublicRoomObjects: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PublicRoomObjects
   known_evidence:
-  - id: ev_a66f64d15995
+  - id: ev_64fd3346919c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/PublicRoomObjectsMessageComposer.java
     symbol: PublicRoomObjectsMessageComposer
     line: 21

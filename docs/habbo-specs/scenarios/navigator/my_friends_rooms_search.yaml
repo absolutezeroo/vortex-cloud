@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3754964af7f07e695e3bcc52eda3bf114fe02b64451907a7e3eddc2aae83ee8f"
+generated_digest: "sha256:e5ad7a4fb884f07713516343561296fddb76f236f8a0f9f41834a96bc6650a8b"
 generated:
   feature: navigator.my_friends_rooms_search
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca6db2d966f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_90184a25ac8c
+      evidence: ev_db7d024c0b2e
   - scenario: navigator.my_friends_rooms_search.success
     title: "my friends rooms search: the request is accepted"
     given:
@@ -56,16 +56,16 @@ generated:
       - NavigatorSearchResultBlocks
       - unresolved
       evidence: ev_04d7e4f877ed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_90184a25ac8c
+      evidence: ev_db7d024c0b2e
   evidence:
-  - id: ev_90184a25ac8c
+  - id: ev_db7d024c0b2e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyFriendsRoomsSearchMessageEvent.java
     symbol: MyFriendsRoomsSearchMessageEvent
     line: 8

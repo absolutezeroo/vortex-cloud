@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3492ccb426a7e409e7d5cce6e8eb6c48e604bedb44b8680a926d54013a84625a"
+generated_digest: "sha256:25d06aa2b5bbaa70e468205fc468cd4a34d301a079376b375241205fd31f7113"
 generated:
   id: game.game2get_account_game_status
   domain: game
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

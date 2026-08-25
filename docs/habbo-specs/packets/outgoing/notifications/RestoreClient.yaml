@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7dce04fdb5398acb6fd56dbbc70fb1734af42103be2a1c87b0442ff4e172dcf7"
+generated_digest: "sha256:edcfa8f06567749e7c71fa6acbc6f84125d4abba5acbc91b511182171f6c3994"
 generated:
   name: RestoreClient
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_eea7dd18d71b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_705dd94138ff
+    evidence: ev_d8ac25aa591a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -60,10 +60,10 @@ generated:
     symbol: RestoreClientMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_705dd94138ff
+  - id: ev_d8ac25aa591a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/RestoreClientMessageComposer.java
     symbol: RestoreClientMessageComposer
     line: 9

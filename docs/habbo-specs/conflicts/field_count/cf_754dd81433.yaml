@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8b6e142c173f6f88a276ee727cac22a06654147fd08af9d5a4e3b8cce3838543"
+generated_digest: "sha256:ee85cecce7e3d566c7912c789d5a866c8b4c4b5c6f56947cd55d2c6195cf4179"
 generated:
   id: cf_754dd81433
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: boolean, int32, string"
     evidence: ev_a7a54d303ad2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: boolean, int32, string"
-    evidence: ev_71d3bc182656
+    evidence: ev_b5ae8634f018
   - origin: vortex
     authority: vortex_emulator
     claim: "8 fields: boolean, int32, string, int32, array, int32, int32, float"
@@ -38,10 +38,10 @@ generated:
     symbol: FloorHeightMapMessageParser
     line: 62
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_71d3bc182656
+  - id: ev_b5ae8634f018
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FloorHeightMapMessageComposer.java
     symbol: FloorHeightMapMessageComposer
     line: 16

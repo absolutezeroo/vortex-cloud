@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:54a04b5252408624bbd29bd0371ad8b0413315cfb894deae1428651567ddd8d2"
+generated_digest: "sha256:972b203225b622c3aba14a39e6e5112f311b3a1193822f9e1c9a5298ada9bd3a"
 generated:
   feature: users.reject_membership_request
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9471d6183101
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembers
       - GuildMembershipRejected
-      evidence: ev_8d021e9852d7
+      evidence: ev_937fb99e78db
   - scenario: users.reject_membership_request.guard_1
     title: "reject membership request: the guard 'await LoadIfAdminAsync(dbCtx, actor, ct) is null' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembers
       - GuildMembershipRejected
-      evidence: ev_8d021e9852d7
+      evidence: ev_937fb99e78db
   - scenario: users.reject_membership_request.guard_2
     title: "reject membership request: the guard 'deleted == 0' holds"
     given:
@@ -82,13 +82,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembers
       - GuildMembershipRejected
-      evidence: ev_8d021e9852d7
+      evidence: ev_937fb99e78db
   - scenario: users.reject_membership_request.guard_3
     title: "reject membership request: the guard '_registry is null' holds"
     given:
@@ -107,13 +107,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembers
       - GuildMembershipRejected
-      evidence: ev_8d021e9852d7
+      evidence: ev_937fb99e78db
   - scenario: users.reject_membership_request.success
     title: "reject membership request: the request is accepted"
     given:
@@ -133,18 +133,18 @@ generated:
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildMembers
       - GuildMembershipRejected
-      evidence: ev_8d021e9852d7
+      evidence: ev_937fb99e78db
   evidence:
-  - id: ev_8d021e9852d7
+  - id: ev_937fb99e78db
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/RejectMembershipRequestMessageEvent.java
     symbol: RejectMembershipRequestMessageEvent
     line: 18

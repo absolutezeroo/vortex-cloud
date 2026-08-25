@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a6c97eabf1174963d56f7c99b777311ae5803370bd7818443327844d2c53482f"
+generated_digest: "sha256:8b1ade833291ed72325452a207a994e806ad1c13dbca5e004504c1bf14a33eb6"
 generated:
   name: GenericErrorMessages
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3bf6ec1e4010
+    - ev_4b4239153b7d
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_3bf6ec1e4010
+    evidence: ev_4b4239153b7d
   evidence:
-  - id: ev_3bf6ec1e4010
+  - id: ev_4b4239153b7d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/GenericErrorMessagesComposer.java
     symbol: GenericErrorMessagesComposer
     line: 23

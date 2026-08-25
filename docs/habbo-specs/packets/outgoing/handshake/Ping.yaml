@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:68718263e74c83be12638cba13337af65fe6bf70363d49977aec92f1327935b3"
+generated_digest: "sha256:a2ece709edc2c96c589b415a0a6397186ccbc3c9476f9a04f9a3365eedb0e4ee"
 generated:
   name: Ping
   direction: outgoing
@@ -31,12 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6b698e991af7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_4505e1f0d91b
+    evidence: ev_69abcccdf1a1
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -60,10 +60,10 @@ generated:
     symbol: PingMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4505e1f0d91b
+  - id: ev_69abcccdf1a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/PingMessageComposer.java
     symbol: PingMessageComposer
     line: 9

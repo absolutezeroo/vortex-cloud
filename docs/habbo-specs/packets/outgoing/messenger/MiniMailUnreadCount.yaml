@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e5672d7a222136330c54ea8bcbc56818ac30958dce1281ae0360dce754a18818"
+generated_digest: "sha256:f009b67600372f13bd03fbf3d1104a7bb681fcf5c013279c36daf816acafd9cb"
 generated:
   name: MiniMailUnreadCount
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_ee1a49ef76a6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_454f4384c15a
+    evidence: ev_67170c38c577
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: MiniMailUnreadCountMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_454f4384c15a
+  - id: ev_67170c38c577
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/MiniMailUnreadCountMessageComposer.java
     symbol: MiniMailUnreadCountMessageComposer
     line: 9

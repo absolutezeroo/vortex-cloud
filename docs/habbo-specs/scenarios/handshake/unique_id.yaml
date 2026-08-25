@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e2edec30e988f1d389343fbc673e24106d8889489fcfc81ced4d2f734925b452"
+generated_digest: "sha256:8cd25d15c9183627eccf58fde1b215d6b410b01df1037457d243597fbe95c8e6"
 generated:
   feature: handshake.unique_id
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3eb3d05af23f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UniqueMachineID
-      evidence: ev_7a5df1a40930
+      evidence: ev_6afee80ccca8
   evidence:
-  - id: ev_7a5df1a40930
+  - id: ev_6afee80ccca8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/UniqueIDMessageEvent.java
     symbol: UniqueIDMessageEvent
     line: 14

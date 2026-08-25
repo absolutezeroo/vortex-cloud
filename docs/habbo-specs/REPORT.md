@@ -6,7 +6,7 @@ actually produced against the trees listed under Sources.
 ## Sources scanned
 
 - vortex (emulator)
-- arcturus (reference_emulator)
+- habbo-arcturus-daybreak (reference_emulator)
 - nitro (community_client)
 - as3:PRODUCTION-201601012205-226667486 (official_client)
 - as3:WIN63-202607011411-782849652 (official_client)
@@ -54,8 +54,8 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 78
-- unchanged: 3443
+- written: 1905
+- unchanged: 1616
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
@@ -79,7 +79,7 @@ actually produced against the trees listed under Sources.
 - room.open_room_for_player_id: 34 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.pickup_item_in_room: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.place_wall_item_in_room: 45 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.present_open: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.present_open: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.try_get_definition: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.deposit_to_wired_chest: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.get_wired_transaction_details: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
@@ -98,9 +98,9 @@ actually produced against the trees listed under Sources.
 Listed so the gaps are visible; each one is a piece of the sources this scan
 did not manage to read.
 
-- arcturus: MessengerError: MessengerErrorComposer=896 and MessengerErrorMessageComposer=892 both reduce to the same symbolic name; kept 896
-- arcturus: RoomEntryInfo: RoomEntryInfoComposer=-1 and RoomEntryInfoMessageComposer=749 both reduce to the same symbolic name; kept -1
 - as3:PRODUCTION-201601012205-226667486: registry ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/communication/HabboMessages.as yielded 0 composer and 994 event bindings; one side is missing
+- habbo-arcturus-daybreak: MessengerError: MessengerErrorComposer=896 and MessengerErrorMessageComposer=892 both reduce to the same symbolic name; kept 896
+- habbo-arcturus-daybreak: RoomEntryInfo: RoomEntryInfoComposer=-1 and RoomEntryInfoMessageComposer=749 both reduce to the same symbolic name; kept -1
 - nitro: unresolved field-block reader GetObjectDataFromWrapper
 - nitro: unresolved field-block reader parseFloorMove
 - nitro: unresolved field-block reader parseItem

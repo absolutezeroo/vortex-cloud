@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:00e052e903444b732cae339a9d03c6ca19fe12b88cbb45bac723a15015a37307"
+generated_digest: "sha256:b017c47eba42f8efae3e534ee40c0e07ed7af688e216faa397c4fce34120400d"
 generated:
   name: SnowWarsJoinError
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_896a8445ea2a
+    - ev_8a4ca90b6ccc
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_896a8445ea2a
+    evidence: ev_8a4ca90b6ccc
   evidence:
-  - id: ev_896a8445ea2a
+  - id: ev_8a4ca90b6ccc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsJoinErrorComposer.java
     symbol: SnowWarsJoinErrorComposer
     line: 12

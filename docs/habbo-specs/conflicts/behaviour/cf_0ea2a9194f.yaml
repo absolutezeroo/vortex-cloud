@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:9d6a77a6b96f5e2532e9eea86996a6cb1433af7fcd47e151e794d4d95f2bcb1e"
+generated_digest: "sha256:38a90429bc714da9be66f1e152b91efc3f4367e43284b86841cd491f9469941d"
 generated:
   id: cf_0ea2a9194f
   kind: behaviour
   subject: "ChangeMotto: packets emitted in response"
   packet: ChangeMotto
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: UserChange
-    evidence: ev_89bfb8547eaa
+    evidence: ev_2407931e65ff
   - origin: vortex
     authority: vortex_emulator
     claim: UserChange then UserChange
     evidence: ev_bb34de375f7e
   evidence:
-  - id: ev_89bfb8547eaa
+  - id: ev_2407931e65ff
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ChangeMottoMessageEvent.java
     symbol: ChangeMottoMessageEvent
     line: 11

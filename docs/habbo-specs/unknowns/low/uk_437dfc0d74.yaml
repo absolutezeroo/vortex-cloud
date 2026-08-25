@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:381980e647d446c1a6e91a78ed39b9a8263a27f6836a2f0d7aadb7a6ce552aec"
+generated_digest: "sha256:f34907f993d552c5c41f98e1e020adf2b8f2a0afc0a6a91e854d4384d78e07ae"
 generated:
   id: uk_437dfc0d74
   subject: "outgoing/AccountPreferences: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_1926
     line: 152
     note: official client build WIN63-202607011411-782849652
-  - id: ev_4c3fdc18e3f9
+  - id: ev_4794dbe4ed0d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/AccountPreferencesMessageComposer.java
     symbol: AccountPreferencesMessageComposer
     line: 17

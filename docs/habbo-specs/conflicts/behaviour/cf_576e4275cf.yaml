@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4d4d4601408507ed2eb629bffaa39c2dc623a7cd7ca4bcfb3ed8aefb1178eb0f"
+generated_digest: "sha256:b2af49884bda5985d7fd8177a016f690cd269687e14451f268aeb64f5e3f97d5"
 generated:
   id: cf_576e4275cf
   kind: behaviour
   subject: "ModTradingLock: packets emitted in response"
   packet: ModTradingLock
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: IssueCloseNotification
-    evidence: ev_d8d2dc709b5c
+    evidence: ev_c7c5822dc490
   - origin: vortex
     authority: vortex_emulator
     claim: ModeratorCautionEvent then ModeratorActionResult
     evidence: ev_358916898c5e
   evidence:
-  - id: ev_d8d2dc709b5c
+  - id: ev_c7c5822dc490
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModTradingLockMessageEvent.java
     symbol: ModTradingLockMessageEvent
     line: 16

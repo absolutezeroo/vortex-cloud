@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3e5fa88a02ded12901e578f06208b08ca6d8f95f70ed00560b6eae0a22d94e77"
+generated_digest: "sha256:5a4ed13910c24a16f241f03cd0a41e856c419aca5320dbc64268684e70bae595"
 generated:
   name: UpdateFigureData
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_de56f817adf8
+    - ev_ff862bc62256
   - index: 1
     name: look
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_de56f817adf8
+    - ev_ff862bc62256
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_cc54328c2d22
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_de56f817adf8
+    evidence: ev_ff862bc62256
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -79,10 +79,10 @@ generated:
     symbol: UpdateFigureDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_de56f817adf8
+  - id: ev_ff862bc62256
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/UpdateFigureDataMessageEvent.java
     symbol: UpdateFigureDataMessageEvent
     line: 19

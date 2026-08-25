@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:491ee9a99d68f3f4bba0c7c8fbff68f44fe416c6780793e4d55feeffe6f8a743"
+generated_digest: "sha256:a9c09f787a4ad9f451e03372777ebe6bd44281d2f770173c65d9c3bdbd896ab6"
 generated:
   id: uk_4b55eefb53
   subject: "outgoing/RoomPetHorseFigure: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomPetHorseFigure
   known_evidence:
-  - id: ev_f39c0b74c09f
+  - id: ev_ca354c7f4f36
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/RoomPetHorseFigureComposer.java
     symbol: RoomPetHorseFigureComposer
     line: 16

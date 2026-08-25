@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5fba9ac8510a8980e3ba60d2aecd008b860c5801d8253f749106c955e7ed9eff"
+generated_digest: "sha256:8c482de2c3b50716bb8b30df1b884f05bfc4d77b4f3d965b6f7d2ecd9fbf76b3"
 generated:
   name: UnknownComposer4
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_5581aff9d931
+    - ev_760c41bf06bc
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_5581aff9d931
+    evidence: ev_760c41bf06bc
   evidence:
-  - id: ev_5581aff9d931
+  - id: ev_760c41bf06bc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/UnknownComposer4.java
     symbol: UnknownComposer4
     line: 9

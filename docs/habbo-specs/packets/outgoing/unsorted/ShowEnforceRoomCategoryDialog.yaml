@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:728e7ea7ecdf7a4c17b249272b9411f536b5d9e1c311123f4e73bba7ac238984"
+generated_digest: "sha256:8d51c59233940e3db517edd57715102a280ec09946837c2fddc2964c191e7ec5"
 generated:
   name: ShowEnforceRoomCategoryDialog
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_893a5d5e514e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_6f531e08fed9
+    evidence: ev_a2af6d7be191
   evidence:
   - id: ev_893a5d5e514e
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_3190
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_6f531e08fed9
+  - id: ev_a2af6d7be191
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/ShowEnforceRoomCategoryDialogMessageComposer.java
     symbol: ShowEnforceRoomCategoryDialogMessageComposer
     line: 15

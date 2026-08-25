@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a433dc14fd4143888eef9b62d0ae1d236728d15a39759deaba06234a1bcd925e"
+generated_digest: "sha256:ed1eb0111e851fd389291478c3a8704d6c3343b2f0eb318df22fc93b0f92ed92"
 generated:
   feature: catalog.redeem_voucher
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_539488477073
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HotelWillCloseInMinutes
       - VoucherRedeemError
-      evidence: ev_039823ee340b
+      evidence: ev_be12cc28100c
   - scenario: catalog.redeem_voucher.success
     title: "redeem voucher: the request is accepted"
     given:
@@ -58,18 +58,18 @@ generated:
       - VoucherRedeemError
       - VoucherRedeemOk
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HotelWillCloseInMinutes
       - VoucherRedeemError
-      evidence: ev_039823ee340b
+      evidence: ev_be12cc28100c
   evidence:
-  - id: ev_039823ee340b
+  - id: ev_be12cc28100c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/RedeemVoucherMessageEvent.java
     symbol: RedeemVoucherMessageEvent
     line: 11

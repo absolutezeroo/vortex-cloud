@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee9657fb33a9866b12dd8c3c8a11175c3280af65e7c90799f53575782ca4ef08"
+generated_digest: "sha256:70a51135520e8d9b1ab52dc94a7968efdb90774e838067f566f10858646af22b"
 generated:
   feature: moderation.chat_review_guide_detached
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0efa7dcf5f29
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5f86a6e707e1
+      evidence: ev_ea8b1310672c
   - scenario: moderation.chat_review_guide_detached.guard_1
     title: "chat review guide detached: the guard '!TryFindReview(guardianId, out ChatReview? review)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5f86a6e707e1
+      evidence: ev_ea8b1310672c
   - scenario: moderation.chat_review_guide_detached.success
     title: "chat review guide detached: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0efa7dcf5f29
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5f86a6e707e1
+      evidence: ev_ea8b1310672c
   evidence:
-  - id: ev_5f86a6e707e1
+  - id: ev_ea8b1310672c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guardians/ChatReviewGuideDetachedMessageEvent.java
     symbol: ChatReviewGuideDetachedMessageEvent
     line: 7

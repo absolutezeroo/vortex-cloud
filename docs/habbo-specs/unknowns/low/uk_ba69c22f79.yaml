@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:640162a0182573a402e03c0504cad10110441d5bb5d6927a38cfe1ebdb60fa86"
+generated_digest: "sha256:c79dc356202441859ace76bf49880010ce5e45c1dfccc76fa7acc65c55fd0315"
 generated:
   id: uk_ba69c22f79
   subject: "outgoing/UserChange: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: UserChangeMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dff7d6c75770
+  - id: ev_8776634c0455
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UserChangeMessageComposer.java
     symbol: UserChangeMessageComposer
     line: 16

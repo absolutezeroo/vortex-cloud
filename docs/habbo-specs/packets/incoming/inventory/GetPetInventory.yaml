@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a224d9753ff97142615d78e08b24148fbf155850de4c4c879d9325b4e3824bbf"
+generated_digest: "sha256:250728a8afd16bdc4e5890f28fa7aa2d7c25546f89625042df906035ff874101"
 generated:
   name: GetPetInventory
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_c22193356413
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_ccaab92cba21
+    evidence: ev_a264b10e15f6
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetPetInventoryComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ccaab92cba21
+  - id: ev_a264b10e15f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetPetInventoryEvent.java
     symbol: GetPetInventoryEvent
     line: 8

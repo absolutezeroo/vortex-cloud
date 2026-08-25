@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:faf3f27be819659c16b4d6f2e6c40ebf4d36fe56d65bd620b54ceb934a95fc31"
+generated_digest: "sha256:ee3466f2859169f5fcc162fd142a19f6f2a29a7b3805ac9ebbf876d9c85173e3"
 generated:
   name: CallForHelpFromForumMessage
   direction: incoming
@@ -25,35 +25,35 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_883fb94c49fb
+    - ev_9bf86c149daf
   - index: 1
     name: thread_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_883fb94c49fb
+    - ev_9bf86c149daf
   - index: 2
     name: comment_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_883fb94c49fb
+    - ev_9bf86c149daf
   - index: 3
     name: topic_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_883fb94c49fb
+    - ev_9bf86c149daf
   - index: 4
     name: message
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_883fb94c49fb
+    - ev_9bf86c149daf
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -61,7 +61,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3a7a0000b56d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -71,7 +71,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_883fb94c49fb
+    evidence: ev_9bf86c149daf
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -92,10 +92,10 @@ generated:
     symbol: _SafeCls_3451
     line: 18
     note: "the client constructs this composer at 2 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/help/CallForHelpManager.as:627 with 7 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_883fb94c49fb
+  - id: ev_9bf86c149daf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromForumMessageMessageEvent.java
     symbol: CallForHelpFromForumMessageMessageEvent
     line: 15

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b846126c582389c477f760a8f61abafa553985a0ec28a7aee8ce81326fce0348"
+generated_digest: "sha256:c82422f911c6695876d7e636504e41c516d5ead0d688fe05f8040856ed8134c8"
 generated:
   name: ChangePosture
   direction: incoming
@@ -41,12 +41,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6bb7cf4db216
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_d8eb052cf261
+    evidence: ev_3eb949dc7c4f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: ChangePostureComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d8eb052cf261
+  - id: ev_3eb949dc7c4f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/ChangePostureMessageEvent.java
     symbol: ChangePostureMessageEvent
     line: 9

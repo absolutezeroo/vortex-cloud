@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:70723b3e3d32a7bbb0de95917b9ec76fb44668a23edf820af20ccef4ea31ee2f"
+generated_digest: "sha256:2f9acaa3a10b998bf71b0d23940a05414604f3abfd484952e8c49310bbce7e48"
 generated:
   name: GetUserTags
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_e43c42448614
+    - ev_15a5e79c299b
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_e43c42448614
+    evidence: ev_15a5e79c299b
   evidence:
-  - id: ev_e43c42448614
+  - id: ev_15a5e79c299b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/GetUserTagsMessageEvent.java
     symbol: GetUserTagsMessageEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:99222c68b14b7bbd753480c6b3693b03c3ecb2ef4ac896f197b5e27756363526"
+generated_digest: "sha256:adcf82f8ab4bc9a5f76e22c1329908cb2ccd3d679af21cbc8abe4dca8c905115"
 generated:
   feature: room.set_custom_stacking_height
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2bcdafed0fef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.guard_1
     title: "set custom stacking height: the guard 'item is not IRoomFloorItem floor || floor.Logic is not Fu...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.guard_2
     title: "set custom stacking height: the guard '!reset && (heightHundredths < 0 || heightHundredths > _ro...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.guard_3
     title: "set custom stacking height: the guard '!MapModule.InBounds(tileIdx)' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.guard_4
     title: "set custom stacking height: the guard '!InBounds(tileIdx)' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_407ccfd7d8f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.guard_5
     title: "set custom stacking height: the guard '!InBounds(nTileIdx)' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_407ccfd7d8f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.success
     title: "set custom stacking height: the request is accepted"
     given:
@@ -169,16 +169,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2bcdafed0fef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_41c487039f37
+      evidence: ev_1aef48f5f62d
   evidence:
-  - id: ev_41c487039f37
+  - id: ev_1aef48f5f62d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetCustomStackingHeightEvent.java
     symbol: SetCustomStackingHeightEvent
     line: 15

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4811d089463f9abb71aa2e1bbab45ad822219b98defb474f96705bf184263a93"
+generated_digest: "sha256:387fcb0fd13ac1dd77faf63135743f800159ec154537097639b60a2615988059"
 generated:
   name: GetCustomRoomFilter
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_592e1ec11798
-    - ev_b8d9761f74f3
+    - ev_e222f50acdfc
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_592e1ec11798
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_b8d9761f74f3
+    evidence: ev_e222f50acdfc
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: GetCustomRoomFilterComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b8d9761f74f3
+  - id: ev_e222f50acdfc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetCustomRoomFilterMessageEvent.java
     symbol: GetCustomRoomFilterMessageEvent
     line: 11

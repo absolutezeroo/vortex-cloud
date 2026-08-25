@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b643d2801471118d323acab51fd2cd5db5bf70a1b4c181d0fdd9a701599d2a3e"
+generated_digest: "sha256:65d34919ebe5678438655efe640c6dce8ede2f2a418f354074a3dc7cb42379f6"
 generated:
   feature: messenger.remove_friend
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d9f7e9315fc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RemoveFriend
-      evidence: ev_29e16adb5a9e
+      evidence: ev_cb77940cf77c
   - scenario: messenger.remove_friend.guard_1
     title: "remove friend: the guard 'removed.Count == 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d9f7e9315fc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RemoveFriend
-      evidence: ev_29e16adb5a9e
+      evidence: ev_cb77940cf77c
   - scenario: messenger.remove_friend.guard_2
     title: "remove friend: the guard '_registry is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RemoveFriend
-      evidence: ev_29e16adb5a9e
+      evidence: ev_cb77940cf77c
   - scenario: messenger.remove_friend.success
     title: "remove friend: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - FriendListUpdate
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RemoveFriend
-      evidence: ev_29e16adb5a9e
+      evidence: ev_cb77940cf77c
   evidence:
-  - id: ev_29e16adb5a9e
+  - id: ev_cb77940cf77c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RemoveFriendMessageEvent.java
     symbol: RemoveFriendMessageEvent
     line: 19

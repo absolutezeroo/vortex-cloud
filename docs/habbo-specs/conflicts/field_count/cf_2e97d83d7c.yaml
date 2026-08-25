@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e6449426868a605f25b2ab5e6163536671247434dfbdfca1238cec4a1443d778"
+generated_digest: "sha256:45545d55a622bd9216553a8769681ae2a38f51781d195dabfed8d3ed9127aa65"
 generated:
   id: cf_2e97d83d7c
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "2 fields: int32, string, string"
     evidence: ev_3f849cd703fe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: int32"
-    evidence: ev_ad35a71d8994
+    evidence: ev_9ed1f8477d5b
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, string, string"
@@ -50,10 +50,10 @@ generated:
     symbol: FurnitureAliasesMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ad35a71d8994
+  - id: ev_9ed1f8477d5b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/FurnitureAliasesMessageComposer.java
     symbol: FurnitureAliasesMessageComposer
     line: 16

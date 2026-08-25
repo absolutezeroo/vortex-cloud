@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2cf5efd467a41aad1cdf6497d99cf2b00a50a68d9a21ea943b3be9858ef58c3f"
+generated_digest: "sha256:c700d9818230b7e798afd90b98b7b7a98d91e15ccdafcc1aa3ea96fed840f51d"
 generated:
   feature: crafting.craft
   scenarios:
@@ -31,7 +31,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ee1d25178f2d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -41,12 +41,12 @@ generated:
       - FurniListRemove
       - FurniListInvalidate
       - CraftingResult
-      evidence: ev_f2aa4d96b441
+      evidence: ev_ff9760f2c47d
   evidence:
-  - id: ev_f2aa4d96b441
+  - id: ev_ff9760f2c47d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/crafting/CraftEvent.java
     symbol: CraftEvent
     line: 23

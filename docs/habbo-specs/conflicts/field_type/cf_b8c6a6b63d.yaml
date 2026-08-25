@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:70bb6cf0356b7a895d135ee18de8ae25bfa63b647629e2f6c12aa3fc7fd1bf4d"
+generated_digest: "sha256:7469b4ecf4137c50bddcad29b7520f5dc1ddf96c1234f2089dba2d2af5865908"
 generated:
   id: cf_b8c6a6b63d
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "user_id: int32"
     evidence: ev_e849bb187ad2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "username: string"
-    evidence: ev_636e568dfb4a
+    evidence: ev_9877c69635f8
   - origin: vortex
     authority: vortex_emulator
     claim: "user_id: int32"
@@ -38,10 +38,10 @@ generated:
     symbol: IgnoreUserComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_636e568dfb4a
+  - id: ev_9877c69635f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/IgnoreUserMessageEvent.java
     symbol: IgnoreUserMessageEvent
     line: 12

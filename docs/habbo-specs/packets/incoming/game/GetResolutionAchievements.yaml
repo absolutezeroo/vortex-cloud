@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e29b14f2b3b938022a6d6d41e557a5f123d39e8145b25a09b3c5ca7cdb00cbc4"
+generated_digest: "sha256:b8429659426edb7ad76e04438d73c798b160872d2ced5b581ff539c6c4d597b4"
 generated:
   name: GetResolutionAchievements
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_b35255e6bbbd
+    - ev_7b3a819bcebb
     - ev_d1fee7441f4a
   - index: 1
     name: view_all
@@ -33,7 +33,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_b35255e6bbbd
+    - ev_7b3a819bcebb
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_a877b09213ab
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_b35255e6bbbd
+    evidence: ev_7b3a819bcebb
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GetResolutionAchievementsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b35255e6bbbd
+  - id: ev_7b3a819bcebb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/unknown/GetResolutionAchievementsMessageEvent.java
     symbol: GetResolutionAchievementsMessageEvent
     line: 8

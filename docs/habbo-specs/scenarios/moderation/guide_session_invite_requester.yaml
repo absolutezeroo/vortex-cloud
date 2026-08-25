@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2d7b125a6d79f09cb0784a50e6e7fbce1e35961bd832d096c2b04de2460bdc2d"
+generated_digest: "sha256:3706306cfd56e42c0605aae2a928a3fd226e7ac6cc3fadbd3fad871e5c926dbd"
 generated:
   feature: moderation.guide_session_invite_requester
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f3d085b91d9e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_73f72abfe4bf
+      evidence: ev_4e5a872b5cf1
   - scenario: moderation.guide_session_invite_requester.guard_1
     title: "guide session invite requester: the guard 'requesterId <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f3d085b91d9e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_73f72abfe4bf
+      evidence: ev_4e5a872b5cf1
   - scenario: moderation.guide_session_invite_requester.guard_2
     title: "guide session invite requester: the guard 'room.RoomId <= 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f3d085b91d9e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_73f72abfe4bf
+      evidence: ev_4e5a872b5cf1
   - scenario: moderation.guide_session_invite_requester.success
     title: "guide session invite requester: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - GuideSessionInvitedToGuideRoom
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_73f72abfe4bf
+      evidence: ev_4e5a872b5cf1
   evidence:
-  - id: ev_73f72abfe4bf
+  - id: ev_4e5a872b5cf1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionInviteRequesterMessageEvent.java
     symbol: GuideSessionInviteRequesterMessageEvent
     line: 11

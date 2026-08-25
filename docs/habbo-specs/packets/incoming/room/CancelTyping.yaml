@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:356431d70cd8e6ea56634eec91bd7fb6fc5e3fc04ee3dce616402313f099b7b2"
+generated_digest: "sha256:a5702720818c09f7436d7bf6ab0fa121d4779a3c0f80110c7eac9e9360ab001c"
 generated:
   name: CancelTyping
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_5ae614a9aace
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_0a3307c5e8c2
+    evidence: ev_bb974628ce4f
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: CancelTypingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0a3307c5e8c2
+  - id: ev_bb974628ce4f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/CancelTypingMessageEvent.java
     symbol: CancelTypingMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c1ffceafe44095be13ec613675109defd0ec48acce1302632bc9421f3583bf39"
+generated_digest: "sha256:f585cda311fe48ef3a3ac087fa76b24ab67d782ac8494ce29890a44f64b4e155"
 generated:
   id: uk_354b7d509a
   subject: "incoming/ModKick: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: ModKickComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_29132b00b365
+  - id: ev_907a939ef104
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModKickMessageEvent.java
     symbol: ModKickMessageEvent
     line: 8

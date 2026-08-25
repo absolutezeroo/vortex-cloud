@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a01e2194d29505e6b47b88b75a4e67c0fc73312c8a5d3c3a0dee47bec3ea3653"
+generated_digest: "sha256:d3db76f2e45d6e41514e5b9ad3d7fd7d8ebbd22b780c74eb1817410fecc54816"
 generated:
   id: uk_05aefc7db9
   subject: "outgoing/ChangeNameUpdated: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ChangeNameUpdated
   known_evidence:
-  - id: ev_a9738902513e
+  - id: ev_2c66fc575866
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/ChangeNameUpdatedComposer.java
     symbol: ChangeNameUpdatedComposer
     line: 16

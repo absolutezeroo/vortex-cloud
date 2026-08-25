@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1fd303d37d71a62caf48dabbc5a8f82968abdf2d275fdcff9df568949e5e9521"
+generated_digest: "sha256:c14ac121a636c54047cf81bcb7ea3f26048926f805931ce55f1d9268154cd39e"
 generated:
   id: cf_ac2e245ea2
   kind: behaviour
   subject: "FindNewFriends: packets emitted in response"
   packet: FindNewFriends
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: RoomForward then FindFriendsProcessResult
-    evidence: ev_6e1bdfa08e70
+    evidence: ev_a8f8a7ef35ee
   - origin: vortex
     authority: vortex_emulator
     claim: FindFriendsProcessResult
     evidence: ev_eff3acb6b302
   evidence:
-  - id: ev_6e1bdfa08e70
+  - id: ev_a8f8a7ef35ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/FindNewFriendsMessageEvent.java
     symbol: FindNewFriendsMessageEvent
     line: 15

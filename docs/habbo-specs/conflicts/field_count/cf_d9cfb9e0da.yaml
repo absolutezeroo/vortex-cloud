@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:be5dd315822ea209151386b503634e6a70855ba05428df73e2b17039f3d8b00f"
+generated_digest: "sha256:9eb21c3b736832f668c72ad1da43b4c9940033be7dd845d41d50d242c1bebb6e"
 generated:
   id: cf_d9cfb9e0da
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32"
     evidence: ev_80ce8ac99d66
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_96c3a2db66d4
+    evidence: ev_d75a89a12930
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: FavouritesMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_96c3a2db66d4
+  - id: ev_d75a89a12930
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/FavouritesMessageComposer.java
     symbol: FavouritesMessageComposer
     line: 18

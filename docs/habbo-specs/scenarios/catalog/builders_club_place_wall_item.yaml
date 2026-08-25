@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:23f11437e8994c9ba0daba3aede99a84929f350bc063d118c45743b58552f88b"
+generated_digest: "sha256:82826f2d6aa80145ca2ee3bb9d4604ae79cafec1e894bfc8d60de1cf3b677c78"
 generated:
   feature: catalog.builders_club_place_wall_item
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_559ed613f8ee
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_1
     title: "builders club place wall item: the guard 'item is null' holds"
     given:
@@ -59,7 +59,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_559ed613f8ee
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -67,7 +67,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_10
     title: "builders club place wall item: the guard 'item is not IRoomWallItem wallItem' holds"
     given:
@@ -86,7 +86,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -94,7 +94,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_11
     title: "builders club place wall item: the guard '!await _roomGrain.FurniModule.ValidateNewWallItemPlacemen...' holds"
     given:
@@ -113,7 +113,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -121,7 +121,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_2
     title: "builders club place wall item: the guard 'playerId <= 0 || offerId <= 0' holds"
     given:
@@ -140,7 +140,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -148,7 +148,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_3
     title: "builders club place wall item: the guard '!subscription.IsActive' holds"
     given:
@@ -167,7 +167,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -175,7 +175,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_4
     title: "builders club place wall item: the guard 'offer is null' holds"
     given:
@@ -194,7 +194,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -202,7 +202,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_5
     title: "builders club place wall item: the guard 'product is null || product.FurniDefinitionId <= 0' holds"
     given:
@@ -221,7 +221,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5dab06b54b3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -229,7 +229,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_6
     title: "builders club place wall item: the guard '!isActive' holds"
     given:
@@ -248,7 +248,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e81f0934fd67
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -256,7 +256,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_7
     title: "builders club place wall item: the guard 'owned.Length >= furniLimit' holds"
     given:
@@ -275,7 +275,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c6396662000a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -283,7 +283,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_8
     title: "builders club place wall item: the guard '!await ActionModule.PlaceWallItemAsync(ctx, item, x, y, z...' holds"
     given:
@@ -302,7 +302,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_07b1995558b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -310,7 +310,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.guard_9
     title: "builders club place wall item: the guard '!await _roomGrain.SecurityModule.CanPlaceFurniAsync(ctx)' holds"
     given:
@@ -329,7 +329,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -337,7 +337,7 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   - scenario: catalog.builders_club_place_wall_item.success
     title: "builders club place wall item: the request is accepted"
     given:
@@ -358,7 +358,7 @@ generated:
       - ItemAdd
       - Users
       evidence: ev_07b1995558b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -366,12 +366,12 @@ generated:
       - NotificationDialog
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_c178850e5f27
+      evidence: ev_c51526398ed3
   evidence:
-  - id: ev_c178850e5f27
+  - id: ev_c51526398ed3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubPlaceWallItemMessageEvent.java
     symbol: BuildersClubPlaceWallItemMessageEvent
     line: 14

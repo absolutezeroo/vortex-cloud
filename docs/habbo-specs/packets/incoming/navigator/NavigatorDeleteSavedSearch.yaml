@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf94a330bcf58f3708f993158b5305d38a6be3026f5a1a864d34880ac192817b"
+generated_digest: "sha256:cc4fc84aef1089fd09f7396dc12a95d2f5e56ecd9e48a889e904263cb9313e2b"
 generated:
   name: NavigatorDeleteSavedSearch
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_12fbfed0575d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_3edced78b693
+    evidence: ev_65b2b937e15e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: NavigatorDeleteSavedSearchComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3edced78b693
+  - id: ev_65b2b937e15e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NavigatorDeleteSavedSearchEvent.java
     symbol: NavigatorDeleteSavedSearchEvent
     line: 9

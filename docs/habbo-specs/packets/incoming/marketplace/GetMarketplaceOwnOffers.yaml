@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8fc85a769de33983a5537f2afa9139bc5e5745ca4fadc2a614604c5c50945672"
+generated_digest: "sha256:5f4b462c05f621b2dd1a3362b57a7cbaeed54e526a27cd3fdc61276d8de053b1"
 generated:
   name: GetMarketplaceOwnOffers
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_459aa7268b9d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_fd1c076ac938
+    evidence: ev_acbc3c0bca7a
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetMarketplaceOwnOffersComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fd1c076ac938
+  - id: ev_acbc3c0bca7a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceOwnOffersMessageEvent.java
     symbol: GetMarketplaceOwnOffersMessageEvent
     line: 8

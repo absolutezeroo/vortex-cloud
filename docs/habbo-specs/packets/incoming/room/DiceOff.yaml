@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6a0ee8fbcb48f522d38b6c1d697296c843b170b88c95bfadcd48f55eb76c1e0d"
+generated_digest: "sha256:354fd313eb638e7721d47fc530ece7eb12dbc90cc1975f121b26af3c0f2b3c2b"
 generated:
   name: DiceOff
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_5106447a9ab6
-    - ev_75095cb784fe
+    - ev_effda7d6ca15
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_5342d17558e3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_75095cb784fe
+    evidence: ev_effda7d6ca15
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: DiceOffComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_75095cb784fe
+  - id: ev_effda7d6ca15
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/DiceOffMessageEvent.java
     symbol: DiceOffMessageEvent
     line: 13

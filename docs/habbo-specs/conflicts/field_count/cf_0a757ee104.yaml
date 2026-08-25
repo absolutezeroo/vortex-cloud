@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dbf4f381555e5d9bccecbfb5084901e8d518f1959229b06b7e52d6de9ba1be56"
+generated_digest: "sha256:4004b767778b6e876a1f18dd4ffaeaf15a9ee951951e622bb4a0f9a5ba463a43"
 generated:
   id: cf_0a757ee104
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, int32, string"
     evidence: ev_f4a85acab05e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "9 fields: int32, int32, string, string, string, string, string, string, string"
-    evidence: ev_aa51f7c33325
+    evidence: ev_a23af9b6c311
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, string"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_4437
     line: 44
     note: official client build WIN63-202607011411-782849652
-  - id: ev_aa51f7c33325
+  - id: ev_a23af9b6c311
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/BotCommandConfigurationMessageComposer.java
     symbol: BotCommandConfigurationMessageComposer
     line: 18

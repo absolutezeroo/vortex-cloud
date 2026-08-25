@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:680a33bb697ec9b81310d5654fdf5ce7c123591fa71ef22cb3ba5c7a7ffc2110"
+generated_digest: "sha256:c8b8074168641b8392bce867c1b4c14fd88c380f4ac36c8d41f20ae28abebbeb"
 generated:
   name: UpdateThread
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0dfb961ca8df
+    - ev_f463089e15e8
   - index: 1
     name: thread_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0dfb961ca8df
+    - ev_f463089e15e8
   - index: 2
     name: is_pinned
     type: boolean
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0dfb961ca8df
+    - ev_f463089e15e8
   - index: 3
     name: is_locked
     type: boolean
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0dfb961ca8df
+    - ev_f463089e15e8
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -66,7 +66,7 @@ generated:
     partial: true
     types: []
     evidence: ev_cdaad0f74853
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -75,7 +75,7 @@ generated:
     - int32
     - boolean
     - boolean
-    evidence: ev_0dfb961ca8df
+    evidence: ev_f463089e15e8
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -111,10 +111,10 @@ generated:
     symbol: UpdateThreadComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0dfb961ca8df
+  - id: ev_f463089e15e8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateThreadMessageEvent.java
     symbol: UpdateThreadMessageEvent
     line: 19

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:641230548a1de8a432020a7f55da42539bf341d2d308bb79f970baa47b3d3f2b"
+generated_digest: "sha256:04445ee25a9a89f82ecd6848ffcee1b32016971828f40e1ca6475fbb42fc50aa"
 generated:
   feature: moderation.call_for_help_from_photo
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bd80a5aa1f83
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_aca004c561e8
+      evidence: ev_a65c8c5d36de
   evidence:
-  - id: ev_aca004c561e8
+  - id: ev_a65c8c5d36de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromPhotoMessageEvent.java
     symbol: CallForHelpFromPhotoMessageEvent
     line: 17

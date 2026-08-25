@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cb23ae39effcf2be06dc477ccc835d0e6f2b539b260f7b76b9b1240ad2ca2ddd"
+generated_digest: "sha256:bb681ea0021f192085304f584a32ee85ffc647bdec5e543bb005cfedb7ef9e08"
 generated:
   feature: marketplace.buy_marketplace_offer
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2826b3f58134
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_494594a64c59
+      evidence: ev_f0c1fa94e7f5
   - scenario: marketplace.buy_marketplace_offer.guard_1
     title: "buy marketplace offer: the guard 'offer is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db53958cdf3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_494594a64c59
+      evidence: ev_f0c1fa94e7f5
   - scenario: marketplace.buy_marketplace_offer.guard_2
     title: "buy marketplace offer: the guard 'claimed == 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_db53958cdf3b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_494594a64c59
+      evidence: ev_f0c1fa94e7f5
   - scenario: marketplace.buy_marketplace_offer.guard_3
     title: "buy marketplace offer: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_494594a64c59
+      evidence: ev_f0c1fa94e7f5
   - scenario: marketplace.buy_marketplace_offer.success
     title: "buy marketplace offer: the request is accepted"
     given:
@@ -124,16 +124,16 @@ generated:
       emits:
       - MarketplaceBuyOfferResultEvent
       evidence: ev_2826b3f58134
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_494594a64c59
+      evidence: ev_f0c1fa94e7f5
   evidence:
-  - id: ev_494594a64c59
+  - id: ev_f0c1fa94e7f5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/BuyMarketplaceOfferMessageEvent.java
     symbol: BuyMarketplaceOfferMessageEvent
     line: 8

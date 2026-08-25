@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ddba6efb7e48429a5f324501ea12a65602046a95e5630e511e3e31f960ad3750"
+generated_digest: "sha256:cf7239ceffe03eb686eb13231bddc2d301506d13a905806c75e79f0a1c3f1c79"
 generated:
   name: HotelViewClaimBadgeReward
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_13bec3c21d68
+    - ev_bbf528142912
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_13bec3c21d68
+    evidence: ev_bbf528142912
   evidence:
-  - id: ev_13bec3c21d68
+  - id: ev_bbf528142912
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/HotelViewClaimBadgeRewardEvent.java
     symbol: HotelViewClaimBadgeRewardEvent
     line: 11

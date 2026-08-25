@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c4e8b3c75e609d299466b7ceb22cb1d413a0986c2968e5ec4b1d446cd2a2b52c"
+generated_digest: "sha256:8536b4d547d97a5c6373f328d2ca3bbb45cc630bdea33401d5cc20c6d9a68819"
 generated:
   name: WiredRewardResult
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d567b212dfb3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_717b8e59bfba
+    evidence: ev_e804e3bcb94e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: WiredRewardResultMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_717b8e59bfba
+  - id: ev_e804e3bcb94e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/WiredRewardResultMessageComposer.java
     symbol: WiredRewardResultMessageComposer
     line: 25

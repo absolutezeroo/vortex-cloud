@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9711150872be9e230b5bb032139a4e1fdebe59fa328e77cb2ea50854174d6289"
+generated_digest: "sha256:f9f5f6d1a6da547dad8a475d13341bc4098f1195cd1ad52c841ca162148fc0a2"
 generated:
   name: NavigatorSettings
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - int32
     - int32
     evidence: ev_8e706fb22119
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_06a724fc5921
+    evidence: ev_baeb74d7b730
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: NavigatorSettingsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_06a724fc5921
+  - id: ev_baeb74d7b730
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/NavigatorSettingsMessageComposer.java
     symbol: NavigatorSettingsMessageComposer
     line: 17

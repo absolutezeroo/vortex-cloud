@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4feb33ba90acb0374247c8fb0f4fad358ebb939985bba1d3c8a4339b98c4a0a3"
+generated_digest: "sha256:1d3f7f4673082cefc4ffba25c6e25e9c85c8efd2c10fb198255a9f246c40523d"
 generated:
   name: PostMessage
   direction: outgoing
@@ -131,14 +131,14 @@ generated:
     partial: true
     types: []
     evidence: ev_7e7a8df20974
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: true
     types:
     - int32
     - int32
-    evidence: ev_d2d8fe627866
+    evidence: ev_5f3b8558d925
   - origin: vortex
     authority: vortex_emulator
     field_count: 14
@@ -176,10 +176,10 @@ generated:
     symbol: PostMessageMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d2d8fe627866
+  - id: ev_5f3b8558d925
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/PostMessageMessageComposer.java
     symbol: PostMessageMessageComposer
     line: 16

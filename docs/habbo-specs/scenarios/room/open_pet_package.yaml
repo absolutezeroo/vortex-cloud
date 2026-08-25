@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:29ff021b61a7252ba995e9da0abf4d87bdf0b9e572498edc461799552e02c6ee"
+generated_digest: "sha256:7807b30e7c15a95d431226bddd3a48adee7b0fc2815f9729a620412105bb2042"
 generated:
   feature: room.open_pet_package
   scenarios:
@@ -31,7 +31,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_377880a261f3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,12 +40,12 @@ generated:
       - PurchaseError
       - OpenPetPackageResult
       - OpenPetPackageResult
-      evidence: ev_f20a064ffc4d
+      evidence: ev_ec5b3c9e2918
   evidence:
-  - id: ev_f20a064ffc4d
+  - id: ev_ec5b3c9e2918
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/OpenPetPackageMessageEvent.java
     symbol: OpenPetPackageMessageEvent
     line: 17

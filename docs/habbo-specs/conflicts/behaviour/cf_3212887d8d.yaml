@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:00f66f36842a03820a1e0da7e1dd98568e0e39bb706c2a7f7624d062ea850734"
+generated_digest: "sha256:8dc2182801dc5fa8bc74116c75d2a3496e08cd8972c701073497927001d173b5"
 generated:
   id: cf_3212887d8d
   kind: behaviour
   subject: "DeactivateGuild: packets emitted in response"
   packet: DeactivateGuild
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GetGuestRoomResult
-    evidence: ev_5cc8355562a2
+    evidence: ev_54f7add20a7a
   - origin: vortex
     authority: vortex_emulator
     claim: HabboGroupDeactivated
     evidence: ev_ecc013c030f9
   evidence:
-  - id: ev_5cc8355562a2
+  - id: ev_54f7add20a7a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/DeactivateGuildMessageEvent.java
     symbol: DeactivateGuildMessageEvent
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bae5544d882ff41210f501bf9e6ac9e6b4126d651cc3b6af00a27cd1b1ac3ede"
+generated_digest: "sha256:6e0b390c6bf2f79a3a356bf9a7e07af65c20abab035fb35b997d7b1095b791e6"
 generated:
   name: ObjectRemove
   direction: outgoing
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     evidence: ev_96780f904521
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -76,7 +76,7 @@ generated:
     - boolean
     - int32
     - int32
-    evidence: ev_4286739667ad
+    evidence: ev_70023abec40c
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -104,10 +104,10 @@ generated:
     symbol: ObjectRemoveMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4286739667ad
+  - id: ev_70023abec40c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ObjectRemoveMessageComposer.java
     symbol: ObjectRemoveMessageComposer
     line: 23

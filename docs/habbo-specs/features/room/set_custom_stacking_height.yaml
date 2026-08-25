@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6828f14874814574413d1b6e4e644cf23047f6ec7f27423cb9d65ca855caafb4"
+generated_digest: "sha256:60999027826efeae411d7414ea862f36d91ef539bbf4da664ef5be98eaa2bd97"
 generated:
   id: room.set_custom_stacking_height
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

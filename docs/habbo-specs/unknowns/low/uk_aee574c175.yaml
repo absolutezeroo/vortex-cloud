@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6c1f0d357292b66bb2a211c44aff002e8b090edc1b17cff8080ae792d8128451"
+generated_digest: "sha256:21782818d71c99e9b32832932a665f1232723c6b5c2464370bec13b562f02999"
 generated:
   id: uk_aee574c175
   subject: "outgoing/UserSearchResult: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UserSearchResult
   known_evidence:
-  - id: ev_febb3d4ab418
+  - id: ev_daabe7db53bc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/UserSearchResultComposer.java
     symbol: UserSearchResultComposer
     line: 28

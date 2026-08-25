@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c1bb90435b7250f2df7ebcf083aecdafbf200d88dabaab49c935c7c107e5c6bb"
+generated_digest: "sha256:84ff1a2024daa582db4686dd4585cf078f44840e9b1b705254a662cd15e4b879"
 generated:
   id: uk_f23767810a
   subject: "outgoing/CantConnect: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CantConnectMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_167d45a6aa34
+  - id: ev_4ca905388891
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/CantConnectMessageComposer.java
     symbol: CantConnectMessageComposer
     line: 32

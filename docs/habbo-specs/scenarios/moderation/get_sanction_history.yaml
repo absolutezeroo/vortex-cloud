@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8b1d358a08820ff303454ca94bee5c541b6c6ebacb0c0982955c0fadd759f515"
+generated_digest: "sha256:dda8a613a0a72d0f536731dc992622b3d3ada39d6e4d169ed21e882645f3cf7e"
 generated:
   feature: moderation.get_sanction_history
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db89bf8dd730
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SanctionStatus
-      evidence: ev_476e0479e573
+      evidence: ev_038cb4a178c0
   - scenario: moderation.get_sanction_history.guard_1
     title: "get sanction history: the guard 'accountId is null or 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SanctionStatus
-      evidence: ev_476e0479e573
+      evidence: ev_038cb4a178c0
   - scenario: moderation.get_sanction_history.success
     title: "get sanction history: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - SanctionStatusEvent
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - SanctionStatus
-      evidence: ev_476e0479e573
+      evidence: ev_038cb4a178c0
   evidence:
-  - id: ev_476e0479e573
+  - id: ev_038cb4a178c0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/helper/GetCfhStatusMessageEvent.java
     symbol: GetCfhStatusMessageEvent
     line: 9

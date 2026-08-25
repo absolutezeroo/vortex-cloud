@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c3e862754d12c66beefa2a8d4d6ce90599ce547b02be9853f0495872c1c1a44b"
+generated_digest: "sha256:253ecc8479478308a02d3807e06174c10564868adf5bcf29351aad65e14366c7"
 generated:
   name: ChatReviewGuideVote
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_79358626fe65
+    - ev_2d8a5c58369f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_1ce560c02bde
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_79358626fe65
+    evidence: ev_2d8a5c58369f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: ChatReviewGuideVoteComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_79358626fe65
+  - id: ev_2d8a5c58369f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guardians/ChatReviewGuideVoteMessageEvent.java
     symbol: ChatReviewGuideVoteMessageEvent
     line: 14

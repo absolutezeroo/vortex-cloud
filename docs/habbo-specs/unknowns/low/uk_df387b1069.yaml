@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e1a9d89aa1a270d4ee7eaf591e8972198c0e3f9073a07b616a374846f16867d0"
+generated_digest: "sha256:9e194335840ffc62570a083d6ecf5a8e1a5121a6d30e1f045e8eaa6a604cf58f"
 generated:
   id: uk_df387b1069
   subject: "outgoing/MarketplaceConfiguration: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: MarketplaceConfigurationMessageParser
     line: 63
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_0590c7c6af94
+  - id: ev_912089d66928
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/marketplace/MarketplaceConfigurationMessageComposer.java
     symbol: MarketplaceConfigurationMessageComposer
     line: 9

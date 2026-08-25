@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5ad904270fd24a12c35767544af78f39cc2c3068b8a5de1e2c42f3e17fce2b6e"
+generated_digest: "sha256:c5f6d262c282f6ee57cba0abefcefa461762bbb8ae3b2edc75cf03cc2d06ca23"
 generated:
   feature: users.get_selected_badges
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0213676ee15c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserBadges
       - UserBadges
-      evidence: ev_cf83aa1a5087
+      evidence: ev_40595359bd6b
   - scenario: users.get_selected_badges.success
     title: "get selected badges: the request is accepted"
     given:
@@ -57,18 +57,18 @@ generated:
       emits:
       - HabboUserBadges
       evidence: ev_0213676ee15c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserBadges
       - UserBadges
-      evidence: ev_cf83aa1a5087
+      evidence: ev_40595359bd6b
   evidence:
-  - id: ev_cf83aa1a5087
+  - id: ev_40595359bd6b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSelectedBadgesMessageEvent.java
     symbol: GetSelectedBadgesMessageEvent
     line: 11

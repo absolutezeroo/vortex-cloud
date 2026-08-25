@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9bf6ac64f758fd814ddaf7411a83d9a4adb53243594dd4607954a7a653efb571"
+generated_digest: "sha256:fd910062c343b3433764e714f3857f8fd9d99dbe93a4dbf88311dc7ec9c283c4"
 generated:
   name: FreezeLives
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4c855f4b22af
+    - ev_c14a700604db
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_4c855f4b22af
+    - ev_c14a700604db
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_4c855f4b22af
+    evidence: ev_c14a700604db
   evidence:
-  - id: ev_4c855f4b22af
+  - id: ev_c14a700604db
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FreezeLivesComposer.java
     symbol: FreezeLivesComposer
     line: 16

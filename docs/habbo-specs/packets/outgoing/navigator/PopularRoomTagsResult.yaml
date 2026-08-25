@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4fcdf05729d44435f3a379f8edcf968ed3768ce8904ab8bf6270b515f40f0222"
+generated_digest: "sha256:8bf61e70bbb99de3ef4b56bdd156a02c6d66f90b92ebe37f6f1a73c9e0e01837"
 generated:
   name: PopularRoomTagsResult
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dd990557914f
+    - ev_386560798047
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dd990557914f
+    - ev_386560798047
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_dd990557914f
+    - ev_386560798047
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -56,7 +56,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3aa656a8492e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -64,7 +64,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_dd990557914f
+    evidence: ev_386560798047
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -90,10 +90,10 @@ generated:
     symbol: PopularRoomTagsResultMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd990557914f
+  - id: ev_386560798047
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/PopularRoomTagsResultMessageComposer.java
     symbol: PopularRoomTagsResultMessageComposer
     line: 17

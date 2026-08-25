@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dfc8a238c2ae8a12c76d38e153ca323d5eaa3bd2e72ffa4ca5d4816bd841da5e"
+generated_digest: "sha256:565a1403d6faf4cfba199981ed76979624e6fea198cc77294f84986db925e38f"
 generated:
   name: GetRoomSettings
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_6edc203943e4
-    - ev_f07514c3244b
+    - ev_92eea08f9ac2
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_6edc203943e4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_f07514c3244b
+    evidence: ev_92eea08f9ac2
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: GetRoomSettingsComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f07514c3244b
+  - id: ev_92eea08f9ac2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetRoomSettingsMessageEvent.java
     symbol: GetRoomSettingsMessageEvent
     line: 10

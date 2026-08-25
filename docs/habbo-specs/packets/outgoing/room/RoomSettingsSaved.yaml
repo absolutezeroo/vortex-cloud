@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4a51d0d09b61a05a2e4f5e3c4e588a992bc2542c3546b807583d9acfb7b1287d"
+generated_digest: "sha256:41b76095db62b45d495f7416c542bdab66e2ea9f10e89785e251bf5fce8d70aa"
 generated:
   name: RoomSettingsSaved
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_b683f7c3aa84
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_d9549d649473
+    evidence: ev_77ad8f27bd14
   evidence:
   - id: ev_b683f7c3aa84
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_2451
     line: 17
     note: official client build WIN63-202607011411-782849652
-  - id: ev_d9549d649473
+  - id: ev_77ad8f27bd14
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomSettingsSavedMessageComposer.java
     symbol: RoomSettingsSavedMessageComposer
     line: 16

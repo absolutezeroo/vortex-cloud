@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:33d0d84b83dff22be58af95ed17b83c98b9a285fc3139b263dd11cd8479abffb"
+generated_digest: "sha256:f52149fae3f2498a7cf5cae2164bac488803f0b2599fc550f9a71c41f0452e67"
 generated:
   feature: users.get_guild_creation_info
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_454f7ebfb8b1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildCreationInfo
-      evidence: ev_cfab50454704
+      evidence: ev_ef973742a4c1
   - scenario: users.get_guild_creation_info.success
     title: "get guild creation info: the request is accepted"
     given:
@@ -57,17 +57,17 @@ generated:
       - GuildCreationInfo
       - GuildEditorData
       evidence: ev_0ac5dd3713c3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildCreationInfo
-      evidence: ev_cfab50454704
+      evidence: ev_ef973742a4c1
   evidence:
-  - id: ev_cfab50454704
+  - id: ev_ef973742a4c1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildCreationInfoMessageEvent.java
     symbol: GetGuildCreationInfoMessageEvent
     line: 13

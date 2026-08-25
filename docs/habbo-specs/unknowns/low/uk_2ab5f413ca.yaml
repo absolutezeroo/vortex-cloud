@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:50332169026cc7b60dadebad2404c2791312e5cfcd1b9f8fa5699cf8b1e0d45f"
+generated_digest: "sha256:45d85cd306906b845d167f2ef1d4ae0f5a156c506b3b5784ec87b0df22b618e0"
 generated:
   id: uk_2ab5f413ca
   subject: "outgoing/WelcomeGiftChangeEmailResult: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WelcomeGiftChangeEmailResult
   known_evidence:
-  - id: ev_b61f05d78666
+  - id: ev_197822606088
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/WelcomeGiftChangeEmailResultMessageComposer.java
     symbol: WelcomeGiftChangeEmailResultMessageComposer
     line: 20

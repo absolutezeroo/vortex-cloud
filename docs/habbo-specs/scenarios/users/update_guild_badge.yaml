@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:65515576ea4dab185d523304e13e2f1f3069b94bf1cc6fde751145f6be234d34"
+generated_digest: "sha256:6a894d699df2e37c067d897c0079b215c2c64bd978748a332ddc83c48ad60a76"
 generated:
   feature: users.update_guild_badge
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d5f673c3c822
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2589cd177de4
+      evidence: ev_02f8ee361ef9
   - scenario: users.update_guild_badge.guard_1
     title: "update guild badge: the guard 'parts.Count == 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2589cd177de4
+      evidence: ev_02f8ee361ef9
   - scenario: users.update_guild_badge.success
     title: "update guild badge: the request is accepted"
     given:
@@ -79,16 +79,16 @@ generated:
       - GroupDetailsChanged
       - GuildEditFailed
       evidence: ev_2adb91a04bcb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2589cd177de4
+      evidence: ev_02f8ee361ef9
   evidence:
-  - id: ev_2589cd177de4
+  - id: ev_02f8ee361ef9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildBadgeMessageEvent.java
     symbol: UpdateGuildBadgeMessageEvent
     line: 12

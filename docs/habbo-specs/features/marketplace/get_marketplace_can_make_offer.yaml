@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6d964c3f4881d507a79ff3240545c6031b9e63ef7fbfec4af28986ec5404d184"
+generated_digest: "sha256:5cb5fc0375976c73cddc6f174e338ce1286763d6c4474fc2506ce1fd2212c76d"
 generated:
   id: marketplace.get_marketplace_can_make_offer
   domain: marketplace
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

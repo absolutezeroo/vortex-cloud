@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:6218e8e1063aaf3317d0bf17027076eaddd89ab4ad50dd75df66e3bf507ae31b"
+generated_digest: "sha256:c636f8a46dd1d996f1dc1be7973732a9528e64739b738000de5903ab12f93fb1"
 generated:
   id: cf_e6190942c0
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32"
     evidence: ev_cf46ca7dbf18
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_bb99fe39aeaa
+    evidence: ev_29da54151f60
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: CarryObjectMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bb99fe39aeaa
+  - id: ev_29da54151f60
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/CarryObjectMessageComposer.java
     symbol: CarryObjectMessageComposer
     line: 16

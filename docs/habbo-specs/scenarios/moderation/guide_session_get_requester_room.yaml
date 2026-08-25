@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1dfc15d183b3569bba97d48b38e4b0c80a8e3046e405f4bbeab9265bfc7ff51c"
+generated_digest: "sha256:56d27c0b955ed7e7db7843664ddb05b9e527d875fa57eb3d8344ec2096d7fdbf"
 generated:
   feature: moderation.guide_session_get_requester_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6f196cb8b4c7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionRequesterRoom
-      evidence: ev_16f3846c4237
+      evidence: ev_1783b8d1ad98
   - scenario: moderation.guide_session_get_requester_room.guard_1
     title: "guide session get requester room: the guard 'requesterId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6f196cb8b4c7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionRequesterRoom
-      evidence: ev_16f3846c4237
+      evidence: ev_1783b8d1ad98
   - scenario: moderation.guide_session_get_requester_room.success
     title: "guide session get requester room: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - GuideSessionRequesterRoom
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionRequesterRoom
-      evidence: ev_16f3846c4237
+      evidence: ev_1783b8d1ad98
   evidence:
-  - id: ev_16f3846c4237
+  - id: ev_1783b8d1ad98
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionGetRequesterRoomMessageEvent.java
     symbol: GuideSessionGetRequesterRoomMessageEvent
     line: 10

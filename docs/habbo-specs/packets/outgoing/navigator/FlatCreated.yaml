@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d146f610cd1baa564136ec72e00d2e6c000caa6a5f74bb1dd4a4858d0462a209"
+generated_digest: "sha256:1e00e63c538e6b53f52adedf70592360f11068bde241c6b3fcd2e903896363cb"
 generated:
   name: FlatCreated
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - int32
     - string
     evidence: ev_ab7401957138
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_93ad03a7f341
+    evidence: ev_a3d3a22fc526
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: FlatCreatedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_93ad03a7f341
+  - id: ev_a3d3a22fc526
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/FlatCreatedMessageComposer.java
     symbol: FlatCreatedMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:cdc4576ea51311d57cce922a9cba5a28a773a22bfe9fcf7afd72e73ca50baf77"
+generated_digest: "sha256:f2a8a67a2139912f7dec7930acdfab1b9de473adf2352e742d4b48d3e727cb7b"
 generated:
   id: uk_2f77e5e15b
   subject: "outgoing/SlideObjectBundle: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: SlideObjectBundleMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8843b698e5a9
+  - id: ev_0718ce23804f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/SlideObjectBundleMessageComposer.java
     symbol: SlideObjectBundleMessageComposer
     line: 56

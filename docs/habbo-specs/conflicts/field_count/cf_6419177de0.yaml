@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:277be664c0937f6f59a33ffa2be42c14a08b854b70185d610fbcbde3d0c3c3c3"
+generated_digest: "sha256:006c70ce827dc198ff11bb17b440392978231e94f517cdb79968787f27d77783"
 generated:
   id: cf_6419177de0
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, int32, int32, string"
     evidence: ev_ccbbdedfce88
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_c86b43398a79
+    evidence: ev_59130293c110
   evidence:
   - id: ev_b4e8a8aa28b3
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: _SafeCls_4269
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_c86b43398a79
+  - id: ev_59130293c110
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/FigureSetIdsMessageComposer.java
     symbol: FigureSetIdsMessageComposer
     line: 48

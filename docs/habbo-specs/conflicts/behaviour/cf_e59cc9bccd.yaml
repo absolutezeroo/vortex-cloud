@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:136865d543b34d596369bc53cd0513083018a5147ea9082c361ae680d4d4e2d7"
+generated_digest: "sha256:434d073cec4a48d0a0095f8148b05644db68ccddee6417e26abae13397e165aa"
 generated:
   id: cf_e59cc9bccd
   kind: behaviour
   subject: "SSOTicket: packets emitted in response"
   packet: SSOTicket
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: BadgePointLimits then SanctionStatus then MOTDNotification then HabboBroadcast then NavigatorSavedSearches
-    evidence: ev_fa782cdd6ebf
+    evidence: ev_1111fd915cdf
   - origin: vortex
     authority: vortex_emulator
     claim: UserBanned then AvatarEffects then NavigatorSettings then Favourites then FigureSetIdsEvent then VortexFurniEditorRights then ClubGiftNotificationEvent then CreditBalanceEvent then ActivityPoints then SilverBalance then EmeraldBalance then AvailabilityStatus then InfoFeedEnable then AchievementsScoreEvent then MysteryBoxKeys then BuildersClubSubscriptionStatus then PerkAllowances
     evidence: ev_a189cc3925be
   evidence:
-  - id: ev_fa782cdd6ebf
+  - id: ev_1111fd915cdf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/SSOTicketMessageEvent.java
     symbol: SSOTicketMessageEvent
     line: 50

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e2532a951857c0c4bcfbca80e55549366a47cb2cb47fae274db7c9f74bb7c469"
+generated_digest: "sha256:911f6d048d9b756b4e1af996997d884e60d529c9a3a1fced08e66a2b24d4cd13"
 generated:
   name: UnknownPollQuestion
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_24f4dc23ce8b
+    - ev_f96234256359
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_24f4dc23ce8b
+    - ev_f96234256359
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_24f4dc23ce8b
+    - ev_f96234256359
   - index: 3
     name: unknown_3
     type: int32
@@ -49,9 +49,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_24f4dc23ce8b
+    - ev_f96234256359
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -60,12 +60,12 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_24f4dc23ce8b
+    evidence: ev_f96234256359
   evidence:
-  - id: ev_24f4dc23ce8b
+  - id: ev_f96234256359
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/UnknownPollQuestionComposer.java
     symbol: UnknownPollQuestionComposer
     line: 19

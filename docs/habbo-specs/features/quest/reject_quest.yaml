@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:82b19ea81c6db2c5a27b9911f7deba191e4d2bd8080da5509eb379f1a84e4a72"
+generated_digest: "sha256:ba35ce5c37841040210873463b512884ea45f174fa410d51073793069801d392"
 generated:
   id: quest.reject_quest
   domain: quest
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

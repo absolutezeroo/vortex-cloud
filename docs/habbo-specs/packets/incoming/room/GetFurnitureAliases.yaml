@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cb5fccc2453c12f798d2cb80583fae329c3a57fbfcb2d9c7c8ddfb47a502995e"
+generated_digest: "sha256:db06041648dfef01ea75dd08a5ab5724682dcb6630e1daac335f8b47219e1d54"
 generated:
   name: GetFurnitureAliases
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_d72a8db3e990
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_c7bfd6b37eb1
+    evidence: ev_4047cc3f1a79
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetFurnitureAliasesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c7bfd6b37eb1
+  - id: ev_4047cc3f1a79
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetFurnitureAliasesMessageEvent.java
     symbol: GetFurnitureAliasesMessageEvent
     line: 9

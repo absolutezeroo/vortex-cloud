@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:558447591240ce3187570b3d57416820448195183909cba97f526be0d1012cae"
+generated_digest: "sha256:6d38dc50c6c4d2093a8c8d83e7b5fc137ca8c6b4610c17ef57a472c6c150111d"
 generated:
   feature: moderation.get_ticket_evidence
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6a49ee9ae8d7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.guard_1
     title: "get ticket evidence: the guard '!permissions.HasAny(Capabilities.Moderation.Chatlogs, Cap...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6a49ee9ae8d7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.guard_2
     title: "get ticket evidence: the guard 'ticket is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6a49ee9ae8d7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.guard_3
     title: "get ticket evidence: the guard 'evidence is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6a49ee9ae8d7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.guard_4
     title: "get ticket evidence: the guard 'playerId <= 0' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.guard_5
     title: "get ticket evidence: the guard 'row is null' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   - scenario: moderation.get_ticket_evidence.success
     title: "get ticket evidence: the request is accepted"
     given:
@@ -176,17 +176,17 @@ generated:
       emits:
       - CfhChatlogEvent
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CfhChatlog
-      evidence: ev_25ea1d7d0c1a
+      evidence: ev_65046d0a63cd
   evidence:
-  - id: ev_25ea1d7d0c1a
+  - id: ev_65046d0a63cd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetCfhChatlogMessageEvent.java
     symbol: GetCfhChatlogMessageEvent
     line: 17

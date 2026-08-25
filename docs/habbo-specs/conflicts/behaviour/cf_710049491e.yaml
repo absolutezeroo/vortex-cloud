@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c3845361737c086f6dac14051116ab4ec0c2d48a6a1e035ea9ae55c7f6fb1d6b"
+generated_digest: "sha256:2239f9624d2e148045734748389951b7193d7993363d1b61609aed9d1bcca917"
 generated:
   id: cf_710049491e
   kind: behaviour
   subject: "ModerateThread: packets emitted in response"
   packet: ModerateThread
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ErrorReport then ErrorReport then ErrorReport then NotificationDialog then NotificationDialog then PostThreadMessage then GuildForumThreads
-    evidence: ev_d8b3336337c7
+    evidence: ev_3dc5d38843f6
   - origin: vortex
     authority: vortex_emulator
     claim: UpdateThread
     evidence: ev_feb621fd8399
   evidence:
-  - id: ev_d8b3336337c7
+  - id: ev_3dc5d38843f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/ModerateThreadMessageEvent.java
     symbol: ModerateThreadMessageEvent
     line: 20

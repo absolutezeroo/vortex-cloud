@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b31079d57a831e0a959bd6fbca524310c218cb4fd274064df710242dc71ffdac"
+generated_digest: "sha256:d639de0d2e02c560a6f28f9fa321cda75140fca73d8fb27b5f3c853e6aa259c9"
 generated:
   name: UpdateForumSettings
   direction: incoming
@@ -25,35 +25,35 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f524822a6929
+    - ev_c31a44db4fd7
   - index: 1
     name: can_read
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f524822a6929
+    - ev_c31a44db4fd7
   - index: 2
     name: post_messages
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f524822a6929
+    - ev_c31a44db4fd7
   - index: 3
     name: post_threads
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f524822a6929
+    - ev_c31a44db4fd7
   - index: 4
     name: mod_forum
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f524822a6929
+    - ev_c31a44db4fd7
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -73,7 +73,7 @@ generated:
     partial: true
     types: []
     evidence: ev_83bbfb023dbd
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -83,7 +83,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_f524822a6929
+    evidence: ev_c31a44db4fd7
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -120,10 +120,10 @@ generated:
     symbol: UpdateForumSettingsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f524822a6929
+  - id: ev_c31a44db4fd7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateForumSettingsMessageEvent.java
     symbol: UpdateForumSettingsMessageEvent
     line: 14

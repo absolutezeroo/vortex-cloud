@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:bb1c9e2c9ad71a94a2c7560d0d5dd3130c29235384bae6f1380d0ee88ae12e6b"
+generated_digest: "sha256:58d69fb50f3103f828e3a1fb606cd0dbe4a48fe6644b87f9da5c1b0df48fee6d"
 generated:
   id: cf_b11ccdaf07
   kind: behaviour
   subject: "RemoveFriend: packets emitted in response"
   packet: RemoveFriend
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: RemoveFriend
-    evidence: ev_29e16adb5a9e
+    evidence: ev_cb77940cf77c
   - origin: vortex
     authority: vortex_emulator
     claim: FriendListUpdate then FriendListUpdate
     evidence: ev_9749475b7d53
   evidence:
-  - id: ev_29e16adb5a9e
+  - id: ev_cb77940cf77c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RemoveFriendMessageEvent.java
     symbol: RemoveFriendMessageEvent
     line: 19

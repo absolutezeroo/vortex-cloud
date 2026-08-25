@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c35f52135f71232b043a3a77f784d0efa8e1cf1afc742680e3256db2704b6548"
+generated_digest: "sha256:bf811820f5556f78d394da1559f80701b4fa893ee2ed7227042dec9234c97413"
 generated:
   feature: room.ban_user_with_duration
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f8f7e0b1d50b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_1
     title: "ban user with duration: the guard 'actorRoomId <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f8f7e0b1d50b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_10
     title: "ban user with duration: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_761b76967e2f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_11
     title: "ban user with duration: the guard 'attached is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b2d21836a70a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_2
     title: "ban user with duration: the guard '!await RoomModerationGuard .CanActOnTargetAsync( permissi...' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f8f7e0b1d50b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_3
     title: "ban user with duration: the guard 'durationSeconds <= 0' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f8f7e0b1d50b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_4
     title: "ban user with duration: the guard 'ModerationPolicy.CanActOnTarget(actorPermissions, targetP...' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ede1461ee378
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_5
     title: "ban user with duration: the guard 'playerId <= 0' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_6
     title: "ban user with duration: the guard 'actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx...' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb84a2a2088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_7
     title: "ban user with duration: the guard 'durationSeconds <= 0 || actorCtx.PlayerId == targetPlayerId' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb84a2a2088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_8
     title: "ban user with duration: the guard '!await CanModerateAsync( actorCtx, _roomGrain._state.Room...' holds"
     given:
@@ -262,11 +262,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb84a2a2088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.guard_9
     title: "ban user with duration: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue( playerI...' holds"
     given:
@@ -285,11 +285,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   - scenario: room.ban_user_with_duration.success
     title: "ban user with duration: the request is accepted"
     given:
@@ -310,16 +310,16 @@ generated:
       - ObjectRemove
       - UserRemove
       evidence: ev_0e5bd3223d28
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2154b6122301
+      evidence: ev_400928f15e27
   evidence:
-  - id: ev_2154b6122301
+  - id: ev_400928f15e27
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/BanUserWithDurationMessageEvent.java
     symbol: BanUserWithDurationMessageEvent
     line: 9

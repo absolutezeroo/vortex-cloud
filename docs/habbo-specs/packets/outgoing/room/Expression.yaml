@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:db988506544c06f02f983a9bf9b4b06faeec245f86c480987de4261f31c15944"
+generated_digest: "sha256:e9020963366f07a5acbb91cd191066e25af23897f907fd1744dd76db2b0978c9"
 generated:
   name: Expression
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - int32
     - int32
     evidence: ev_b1262bf927cc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_a39c8be198c6
+    evidence: ev_4a385e3f06f1
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: ExpressionMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a39c8be198c6
+  - id: ev_4a385e3f06f1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/ExpressionMessageComposer.java
     symbol: ExpressionMessageComposer
     line: 19

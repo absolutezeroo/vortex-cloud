@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e38d1f7c6ad5b1d5ab2214cd6a8847417c456a51c3a4fc764770596a40abfbdd"
+generated_digest: "sha256:1f5031b40949c7c2de63d9c1205c289b8f69c73394a1ff2aa0b274fa0626e3df"
 generated:
   id: uk_3c7ba1acb7
   subject: "outgoing/JoinedQueue: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: JoinedQueueMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_c8b29240236b
+  - id: ev_2a4ce0862a9d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/JoinedQueueMessageComposer.java
     symbol: JoinedQueueMessageComposer
     line: 15

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1baed21738c5ef0f5c448d3bd4bd3ba66f157a9f70f63e714ee55236aedfe6fc"
+generated_digest: "sha256:c5ae695e447201e7f034fdd53df9cda4b0f4d06875c57e910094daff9a319f0c"
 generated:
   name: SnowWarsQuePosition
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3b2923be5a5e
+    - ev_805a34f92565
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_3b2923be5a5e
+    evidence: ev_805a34f92565
   evidence:
-  - id: ev_3b2923be5a5e
+  - id: ev_805a34f92565
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsQuePositionComposer.java
     symbol: SnowWarsQuePositionComposer
     line: 8

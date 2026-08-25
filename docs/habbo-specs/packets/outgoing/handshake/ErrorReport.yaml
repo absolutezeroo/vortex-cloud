@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:70fa704c27d5b50b467fe34411c8cb8f7c4cdea52584a771966138337116a5aa"
+generated_digest: "sha256:9423a05e413a99a52e0bad229ffe903e297d717d53c0dcd11f6016c6730382ca"
 generated:
   name: ErrorReport
   direction: outgoing
@@ -49,7 +49,7 @@ generated:
     - int32
     - string
     evidence: ev_77e51b094766
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_35876f8ef75a
+    evidence: ev_85784f7abad3
   evidence:
   - id: ev_77e51b094766
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: _SafeCls_3940
     line: 21
     note: official client build WIN63-202607011411-782849652
-  - id: ev_35876f8ef75a
+  - id: ev_85784f7abad3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/ErrorReportMessageComposer.java
     symbol: ErrorReportMessageComposer
     line: 25

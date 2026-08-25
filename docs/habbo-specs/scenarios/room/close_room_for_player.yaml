@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9fa3458c86482af3e416ad598565bc62ff747755aaa48ef0080af75d7c406dc4"
+generated_digest: "sha256:ee668b86721d4a3f0d71d4cd12008247b903a698f1d8a0c16ebcd3be10543107"
 generated:
   feature: room.close_room_for_player
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_1
     title: "close room for player: the guard '_state.ActiveRoomId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_2
     title: "close room for player: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue( playerI...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_3
     title: "close room for player: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_761b76967e2f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_4
     title: "close room for player: the guard 'item.Logic is null' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4c36667ce9b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_5
     title: "close room for player: the guard '!avatar.IsWalking' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_6
     title: "close room for player: the guard '_registry is null' holds"
     given:
@@ -176,12 +176,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_7
     title: "close room for player: the guard '!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? ...' holds"
     given:
@@ -200,12 +200,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_74aa24a9a756
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_8
     title: "close room for player: the guard '!players.Remove(playerId)' holds"
     given:
@@ -224,12 +224,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_74aa24a9a756
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.success
     title: "close room for player: the request is accepted"
     given:
@@ -251,17 +251,17 @@ generated:
       - ObjectRemove
       - UserRemove
       evidence: ev_0e5bd3223d28
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CloseConnection
-      evidence: ev_8c0c6b8df13a
+      evidence: ev_b3ef77c49ed9
   evidence:
-  - id: ev_8c0c6b8df13a
+  - id: ev_b3ef77c49ed9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/QuitMessageEvent.java
     symbol: QuitMessageEvent
     line: 10

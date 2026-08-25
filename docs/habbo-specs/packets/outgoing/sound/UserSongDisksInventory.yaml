@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1c15174a29e4bdddd8283e5dd036cc398142f1f7e9ab55981c94f766f82ec4b5"
+generated_digest: "sha256:d00aa68ca6564b981fa97c0df777ce00e16b677501d92a93ab4677c40f2812b6"
 generated:
   name: UserSongDisksInventory
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_240e64708942
+    - ev_38fb843cfcb8
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_240e64708942
+    - ev_38fb843cfcb8
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_240e64708942
+    - ev_38fb843cfcb8
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -49,7 +49,7 @@ generated:
     partial: true
     types: []
     evidence: ev_326ae30d24b7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_240e64708942
+    evidence: ev_38fb843cfcb8
   evidence:
   - id: ev_326ae30d24b7
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: UserSongDisksInventoryMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_240e64708942
+  - id: ev_38fb843cfcb8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/UserSongDisksInventoryMessageComposer.java
     symbol: UserSongDisksInventoryMessageComposer
     line: 19

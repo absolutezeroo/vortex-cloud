@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:55e0ccaa2e600623dc43a8b9f5838997222fb9703f5383249bf9f72280e8b0c9"
+generated_digest: "sha256:467909f66adc124b869a41f54826bf416711eed72bbfe9b0f30d85ca98fb7068"
 generated:
   feature: users.get_guild_edit_info
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9da2e97c6ed0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditInfo
-      evidence: ev_4bf2932dffe2
+      evidence: ev_9b0fdec904c6
   - scenario: users.get_guild_edit_info.guard_1
     title: "get guild edit info: the guard 'info is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9da2e97c6ed0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditInfo
-      evidence: ev_4bf2932dffe2
+      evidence: ev_9b0fdec904c6
   - scenario: users.get_guild_edit_info.guard_2
     title: "get guild edit info: the guard 'group is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditInfo
-      evidence: ev_4bf2932dffe2
+      evidence: ev_9b0fdec904c6
   - scenario: users.get_guild_edit_info.guard_3
     title: "get guild edit info: the guard '!await IsAdminAsync(dbCtx, group, actorId, ct).ConfigureA...' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditInfo
-      evidence: ev_4bf2932dffe2
+      evidence: ev_9b0fdec904c6
   - scenario: users.get_guild_edit_info.success
     title: "get guild edit info: the request is accepted"
     given:
@@ -129,17 +129,17 @@ generated:
       - GuildEditInfo
       - GuildEditorData
       evidence: ev_22a6e9d7df9e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuildEditInfo
-      evidence: ev_4bf2932dffe2
+      evidence: ev_9b0fdec904c6
   evidence:
-  - id: ev_4bf2932dffe2
+  - id: ev_9b0fdec904c6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildEditInfoMessageEvent.java
     symbol: GetGuildEditInfoMessageEvent
     line: 23

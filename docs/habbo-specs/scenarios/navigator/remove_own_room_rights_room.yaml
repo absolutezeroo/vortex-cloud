@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7d83e92ef346bfbd64b62ad9d8c242ef77a747d99e3dabc3886dfa7958d2e3fa"
+generated_digest: "sha256:e10331db25a8d7456e46cf0e2d5460f5aa7c3c7fd59b06a4a91318992582ade7"
 generated:
   feature: navigator.remove_own_room_rights_room
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ba57947db30c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_1
     title: "remove own room rights room: the guard 'actor <= 0 || _state.RoomSnapshot.OwnerId == actor' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_2
     title: "remove own room rights room: the guard 'row is null' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_3
     title: "remove own room rights room: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_4
     title: "remove own room rights room: the guard '_state.ActiveRoomId != roomId' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_5
     title: "remove own room rights room: the guard 'controllerType >= RoomControllerType.Rights' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.guard_6
     title: "remove own room rights room: the guard '_registry is null' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   - scenario: navigator.remove_own_room_rights_room.success
     title: "remove own room rights room: the request is accepted"
     given:
@@ -197,16 +197,16 @@ generated:
       - YouAreNotController
       - YouAreOwner
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_97a16c6097f8
+      evidence: ev_bd1ffa3a678b
   evidence:
-  - id: ev_97a16c6097f8
+  - id: ev_bd1ffa3a678b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RemoveOwnRoomRightsRoomMessageEvent.java
     symbol: RemoveOwnRoomRightsRoomMessageEvent
     line: 8

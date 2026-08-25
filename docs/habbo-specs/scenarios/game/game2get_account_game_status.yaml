@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bf6bd4e7486c4be4eccae4725355bb5e6133c21a15b012d001986148f56ff293"
+generated_digest: "sha256:1dcf8990f40fe6fb2c384ae59079725d53b44e176e69bd5e4c1a320c0b26a273"
 generated:
   feature: game.game2get_account_game_status
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_977ce980e591
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GameStatus
-      evidence: ev_22081b76bf9c
+      evidence: ev_a38a27cdd49b
   evidence:
-  - id: ev_22081b76bf9c
+  - id: ev_a38a27cdd49b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/Game2GetAccountGameStatusMessageEvent.java
     symbol: Game2GetAccountGameStatusMessageEvent
     line: 8

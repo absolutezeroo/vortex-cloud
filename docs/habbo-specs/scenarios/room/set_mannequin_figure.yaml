@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c103fd25b130c0597dfda40501a6a3859cd675f7cba4be42ba397b981ca499c4"
+generated_digest: "sha256:d116dd1a1e6043bb1b02cefc32bd007cf453d44f2dcae5e2662c353f17828028"
 generated:
   feature: room.set_mannequin_figure
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_58aef42e59c4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_867fb84ab729
+      evidence: ev_088f82d373d2
   - scenario: room.set_mannequin_figure.guard_1
     title: "set mannequin figure: the guard 'item?.Logic.StuffData is not IMapStuffData map || string....' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_867fb84ab729
+      evidence: ev_088f82d373d2
   - scenario: room.set_mannequin_figure.success
     title: "set mannequin figure: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_867fb84ab729
+      evidence: ev_088f82d373d2
   evidence:
-  - id: ev_867fb84ab729
+  - id: ev_088f82d373d2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetMannequinFigureEvent.java
     symbol: SetMannequinFigureEvent
     line: 11

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8eaf2191596679073a921b28453963a987de11df10dede0eef6c95ffbc4b392d"
+generated_digest: "sha256:4e7bef87ad49e0e46d350505bc7125f40120189a24867608096b61b80f73d8df"
 generated:
   name: CampaignCalendarDoorOpened
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6e668d0fced2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_1f5f98ef4d40
+    evidence: ev_1ef2a5cfeb79
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: CampaignCalendarDoorOpenedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1f5f98ef4d40
+  - id: ev_1ef2a5cfeb79
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/events/calendar/CampaignCalendarDoorOpenedMessageComposer.java
     symbol: CampaignCalendarDoorOpenedMessageComposer
     line: 22

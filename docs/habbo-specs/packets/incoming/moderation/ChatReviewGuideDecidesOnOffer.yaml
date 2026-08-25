@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3c0a3191aa061263e7e4d7de6d9db110e8862e9e42ccc3c0373c0a3d909e0c60"
+generated_digest: "sha256:f8014357419fb1f62f3231e0aeb0a55a7bcd516004e0311417db53ba4ebae4c0"
 generated:
   name: ChatReviewGuideDecidesOnOffer
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_ffb7832778ad
+    - ev_b7c98067a7e5
     - ev_2c398beea5e3
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -40,13 +40,13 @@ generated:
     partial: true
     types: []
     evidence: ev_af6e4a864464
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_ffb7832778ad
+    evidence: ev_b7c98067a7e5
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: ChatReviewGuideDecidesOnOfferComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ffb7832778ad
+  - id: ev_b7c98067a7e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guardians/ChatReviewGuideDecidesOnOfferMessageEvent.java
     symbol: ChatReviewGuideDecidesOnOfferMessageEvent
     line: 8

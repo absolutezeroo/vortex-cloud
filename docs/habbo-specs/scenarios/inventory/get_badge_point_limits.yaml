@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:df0c67b617f52b428fb65e128e1162fdbe75f7cea571b5a259bef33a7a09c786"
+generated_digest: "sha256:bb0c99d57e9a9f479ae6a72c23e5a8fab9fa65d9c47bee23f9bcab53c3799a75"
 generated:
   feature: inventory.get_badge_point_limits
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_18c3506bd65f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BadgePointLimits
-      evidence: ev_f5ffe63178bd
+      evidence: ev_9acec307ae42
   - scenario: inventory.get_badge_point_limits.success
     title: "get badge point limits: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - BadgePointLimitsEvent
       evidence: ev_18c3506bd65f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BadgePointLimits
-      evidence: ev_f5ffe63178bd
+      evidence: ev_9acec307ae42
   evidence:
-  - id: ev_f5ffe63178bd
+  - id: ev_9acec307ae42
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/unknown/GetBadgePointLimitsEvent.java
     symbol: GetBadgePointLimitsEvent
     line: 8

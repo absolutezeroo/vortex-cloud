@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:92f2b324433f3f9c350be8a88f1d0c4499701b4e6a1c0fdb8334ffd9fad1690c"
+generated_digest: "sha256:4fcef7f4ad41d56d24d1eb125f4bd937c9c3c9a7efe16e9218104fbf05abe67d"
 generated:
   id: cf_ac8af1cc7f
   kind: behaviour
   subject: "GetSelectedBadges: packets emitted in response"
   packet: GetSelectedBadges
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: UserBadges then UserBadges
-    evidence: ev_cf83aa1a5087
+    evidence: ev_40595359bd6b
   - origin: vortex
     authority: vortex_emulator
     claim: HabboUserBadges
     evidence: ev_852e8dd4282c
   evidence:
-  - id: ev_cf83aa1a5087
+  - id: ev_40595359bd6b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSelectedBadgesMessageEvent.java
     symbol: GetSelectedBadgesMessageEvent
     line: 11

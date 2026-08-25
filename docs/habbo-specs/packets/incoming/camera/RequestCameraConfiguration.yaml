@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:25b6a4c82b03fc4d3953032232e8eacc10a302af82efcd5b12edc2bb6966bd5c"
+generated_digest: "sha256:a6bf0918115f32f6628648efcd344d97b957e4dccdb36cd4aeccf52b62a3db02"
 generated:
   name: RequestCameraConfiguration
   direction: incoming
@@ -38,12 +38,12 @@ generated:
     partial: true
     types: []
     evidence: ev_3539dfc8aa5f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e4c51b1fcebc
+    evidence: ev_84bbfce0b4f8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -75,10 +75,10 @@ generated:
     symbol: RequestCameraConfigurationComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e4c51b1fcebc
+  - id: ev_84bbfce0b4f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/RequestCameraConfigurationEvent.java
     symbol: RequestCameraConfigurationEvent
     line: 9

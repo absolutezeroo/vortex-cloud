@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f244869b880d556a4b3c15922dac97d1091301d50b9b2cfea0601e947e8a00d7"
+generated_digest: "sha256:24d2ff470355d86f72e0fdec14979048e7eb1739e35124433b0295fed2a86a51"
 generated:
   name: StartSafetyQuiz
   direction: incoming
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_e10c8fca3217
+    - ev_6031d10ca9f1
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_e10c8fca3217
+    evidence: ev_6031d10ca9f1
   evidence:
-  - id: ev_e10c8fca3217
+  - id: ev_6031d10ca9f1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/StartSafetyQuizEvent.java
     symbol: StartSafetyQuizEvent
     line: 9

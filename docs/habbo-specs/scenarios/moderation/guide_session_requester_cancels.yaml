@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e2fb95295295e27033831387c95ea8f548f9491532799717f53f8b1f40401366"
+generated_digest: "sha256:e6ad2fa3bab1c5bf05f4e5c82f45a0acf2024189dcd36029dc37de253d28d78e"
 generated:
   feature: moderation.guide_session_requester_cancels
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4eefeb4c8caf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8f7af8c499c5
+      evidence: ev_94876c8d77cc
   evidence:
-  - id: ev_8f7af8c499c5
+  - id: ev_94876c8d77cc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionRequesterCancelsMessageEvent.java
     symbol: GuideSessionRequesterCancelsMessageEvent
     line: 9

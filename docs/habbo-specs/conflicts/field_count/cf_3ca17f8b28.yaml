@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d991da34bae62c31f0c2bd20f7bad4fb0807c68d7f4bfc2ba2759dae1f928582"
+generated_digest: "sha256:12b9910a6ae81fcdb6c50998b49b3590d00d2ee9a49169d9b900d29656b9769f"
 generated:
   id: cf_3ca17f8b28
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, int32, int32, int32"
     evidence: ev_022e014608e8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: int32, int32, int32, int32"
-    evidence: ev_249ca7ff34ad
+    evidence: ev_38d22f5bfe08
   - origin: vortex
     authority: vortex_emulator
     claim: "1 fields: block"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2927
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_249ca7ff34ad
+  - id: ev_38d22f5bfe08
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CategoriesWithVisitorCountMessageComposer.java
     symbol: CategoriesWithVisitorCountMessageComposer
     line: 18

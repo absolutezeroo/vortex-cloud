@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b98efcb617306a5cbb51519bd653d2d9204e612ca44650a383a389177aac6de4"
+generated_digest: "sha256:c4c2c179e4bdc66400aa7d922ebd4ea1711a9a225798d19fb3a707d5a6c80233"
 generated:
   name: GuideSessionAttached
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_bec54b182cf8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_5c1731e8abd0
+    evidence: ev_567156122fbe
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: GuideSessionAttachedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5c1731e8abd0
+  - id: ev_567156122fbe
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideSessionAttachedMessageComposer.java
     symbol: GuideSessionAttachedMessageComposer
     line: 19

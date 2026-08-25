@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:72748a3b309054dabcc65b4bbcae0fd66739e7540a7fb44a0fb9a9a00cb7ef9c"
+generated_digest: "sha256:2cf57025b488d08a469628538c0bb34130810f2a50d9782f87e7f1e9f065762a"
 generated:
   id: cf_51825ead92
   kind: field_count
   subject: "outgoing/CommunityGoalHallOfFame: field count"
   packet: CommunityGoalHallOfFame
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: string, int32, int32, string, string, int32, int32"
-    evidence: ev_9a2761506be3
+    evidence: ev_80f0d5f19114
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: string, int32, array"
     evidence: ev_5114e4d1c156
   evidence:
-  - id: ev_9a2761506be3
+  - id: ev_80f0d5f19114
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/CommunityGoalHallOfFameMessageComposer.java
     symbol: CommunityGoalHallOfFameMessageComposer
     line: 21

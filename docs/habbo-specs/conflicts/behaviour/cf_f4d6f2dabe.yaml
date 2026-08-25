@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:de0ca75f04f78d46f68982140d2a25a19738e23f6c3043bbaab572e0d2287033"
+generated_digest: "sha256:9b6ae7cf660326308f07370c53856df6008b552523d31f09f5065384ae256a37"
 generated:
   id: cf_f4d6f2dabe
   kind: behaviour
   subject: "GetModeratorRoomInfo: packets emitted in response"
   packet: GetModeratorRoomInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ModeratorRoomInfo
-    evidence: ev_6f175b18047f
+    evidence: ev_f51682767c04
   - origin: vortex
     authority: vortex_emulator
     claim: ModeratorRoomInfoEvent
     evidence: ev_7cbb85da831a
   evidence:
-  - id: ev_6f175b18047f
+  - id: ev_f51682767c04
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetModeratorRoomInfoMessageEvent.java
     symbol: GetModeratorRoomInfoMessageEvent
     line: 12

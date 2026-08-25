@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:521b216216fc591b10a32fdb0aacb0b8c9a7b679b63f5cc8b6897592c51beeef"
+generated_digest: "sha256:24e685aad39cda5969f350e663c9b0f42b559d3f27bc4304cc78449c0e257f3c"
 generated:
   id: uk_91e33038e3
   subject: "outgoing/SnowWarsUserChat: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsUserChat
   known_evidence:
-  - id: ev_661aadc8638f
+  - id: ev_4ba32ec4fef9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsUserChatComposer.java
     symbol: SnowWarsUserChatComposer
     line: 8

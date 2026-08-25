@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4ccd4754d1b390731d7cf80643874ae0ca725c46ecade46f83f1837e91039a69"
+generated_digest: "sha256:d9fe1298ce4ab6751f30212d8d295cf954799166c9dca89ac4da0c38fc169069"
 generated:
   name: DeleteRoom
   direction: incoming
@@ -27,7 +27,7 @@ generated:
     semantic_type: RoomId
     evidence:
     - ev_d41cfb2b53f2
-    - ev_7a878a6b2890
+    - ev_b38347dada23
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -42,13 +42,13 @@ generated:
     types:
     - unknown
     evidence: ev_d41cfb2b53f2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_7a878a6b2890
+    evidence: ev_b38347dada23
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: DeleteRoomComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7a878a6b2890
+  - id: ev_b38347dada23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/DeleteRoomMessageEvent.java
     symbol: DeleteRoomMessageEvent
     line: 27

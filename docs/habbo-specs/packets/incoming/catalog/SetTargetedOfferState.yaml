@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a2da57f75a0482485c494c61662405ce50fa2af2faff2e7590315c6bbd778a3c"
+generated_digest: "sha256:53c376d6eaca9b49d4ca2e4588f08301e6bae3fcad20bbac0f01f7ead500b9d7"
 generated:
   name: SetTargetedOfferState
   direction: incoming
@@ -48,14 +48,14 @@ generated:
     - int32
     - int32
     evidence: ev_39b9049b8fb7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_6100c3828c70
+    evidence: ev_6e8db213d853
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -81,10 +81,10 @@ generated:
     symbol: SetTargetedOfferStateComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6100c3828c70
+  - id: ev_6e8db213d853
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/SetTargetedOfferStateEvent.java
     symbol: SetTargetedOfferStateEvent
     line: 8

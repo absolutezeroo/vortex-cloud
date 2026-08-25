@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ff8ec651ec0a67dce5938c7df5471e43b7ab933ccd29befa5e4f31bd51ed17e8"
+generated_digest: "sha256:3ee7c9e11618e99844a8b60c3117837e5b6b391a36a9bc86df438f1560530f6d"
 generated:
   name: RedeemMarketplaceOfferCredits
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_7e91189e4548
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_f50eed87b6f6
+    evidence: ev_ac79a311e019
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: RedeemMarketplaceOfferCreditsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f50eed87b6f6
+  - id: ev_ac79a311e019
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/RedeemMarketplaceOfferCreditsMessageEvent.java
     symbol: RedeemMarketplaceOfferCreditsMessageEvent
     line: 8

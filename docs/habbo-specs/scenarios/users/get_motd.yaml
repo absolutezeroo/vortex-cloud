@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fc3ac8a68d3a164e72392ce8895888a8c8dc368651bc56305efcf54936e56f37"
+generated_digest: "sha256:b026db4e284116ec68af4e4606d212fa96c764f84ee8c6586add557475d099d5"
 generated:
   feature: users.get_motd
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c140f572d164
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94d812fe315b
+      evidence: ev_9cb025d331d5
   - scenario: users.get_motd.guard_1
     title: "get motd: the guard '!_cache.TryGetValue(MotdKey, out string? json) || string....' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_86f81f4f919c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94d812fe315b
+      evidence: ev_9cb025d331d5
   - scenario: users.get_motd.success
     title: "get motd: the request is accepted"
     given:
@@ -78,16 +78,16 @@ generated:
       emits:
       - MOTDNotificationEvent
       evidence: ev_86f81f4f919c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94d812fe315b
+      evidence: ev_9cb025d331d5
   evidence:
-  - id: ev_94d812fe315b
+  - id: ev_9cb025d331d5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/GetMOTDMessageEvent.java
     symbol: GetMOTDMessageEvent
     line: 7

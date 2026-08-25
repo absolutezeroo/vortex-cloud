@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3eb08a2f1b332dd8c12638ccc7b92a610eaaa67ce2ae7841e042cdea906cb982"
+generated_digest: "sha256:84768825c1d25fcd97ddc72a2900bf65c21d8ee5be7bad3cd865591036699554"
 generated:
   name: GuildMembershipUpdated
   direction: outgoing
@@ -89,7 +89,7 @@ generated:
     partial: true
     types: []
     evidence: ev_b0bfbb9d71c8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -100,7 +100,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_9805bbf5c107
+    evidence: ev_e455ba00917d
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -130,10 +130,10 @@ generated:
     symbol: GuildMembershipUpdatedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9805bbf5c107
+  - id: ev_e455ba00917d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/GuildMembershipUpdatedMessageComposer.java
     symbol: GuildMembershipUpdatedMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2ed8b2694bd7c21292478cb3c4f7389fc874568da863d920bd709cf2066a7118"
+generated_digest: "sha256:2e10f1759597dc9bd210a61c8a51fb43bc6b60cab9f2492f6a8bbbce9102a881"
 generated:
   feature: room.mute_all_in_room
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8f6837f2e638
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MuteAllInRoom
-      evidence: ev_ff76a922f148
+      evidence: ev_f6e47e0b32cd
   evidence:
-  - id: ev_ff76a922f148
+  - id: ev_f6e47e0b32cd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/MuteAllInRoomEvent.java
     symbol: MuteAllInRoomEvent
     line: 9

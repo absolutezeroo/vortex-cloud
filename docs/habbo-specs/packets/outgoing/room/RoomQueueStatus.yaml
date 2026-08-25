@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:394b2fb5ad59ee531ddc3cf214072e3aa10e94a5f07095d1430c0a11eb306a7c"
+generated_digest: "sha256:09cf1106c99a332a168d60d77a3bc35b4b23ef070b1eb2081f2ca8bddc62f469"
 generated:
   name: RoomQueueStatus
   direction: outgoing
@@ -98,7 +98,7 @@ generated:
     partial: true
     types: []
     evidence: ev_92b03764c0a6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -109,7 +109,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_2d95390343f2
+    evidence: ev_5c1df5e98be8
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -136,10 +136,10 @@ generated:
     symbol: RoomQueueStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2d95390343f2
+  - id: ev_5c1df5e98be8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomQueueStatusMessageComposer.java
     symbol: RoomQueueStatusMessageComposer
     line: 9

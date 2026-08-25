@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3d8c9d53f84c67a6de60f8b9998651617b1fd92c56eeaef5d38824aa0ffc8d92"
+generated_digest: "sha256:de07623b5d7ab68530755a45bc2a220c1a562b973e784a5631073a2195b71df5"
 generated:
   id: uk_f3692bc060
   subject: "outgoing/MarketplaceItemStats: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_1931
     line: 90
     note: official client build WIN63-202607011411-782849652
-  - id: ev_f9cb4b1f957b
+  - id: ev_656c8761695c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/marketplace/MarketplaceItemStatsMessageComposer.java
     symbol: MarketplaceItemStatsMessageComposer
     line: 16

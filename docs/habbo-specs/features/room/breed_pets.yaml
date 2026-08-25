@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e8da1c797c1fdd2ba8f2da39e5cde3a64a607e2ca4fe7f346e428d4083b23a1c"
+generated_digest: "sha256:121603647c08d8b166f2f2026fc6c86724ab435f6a945bdb7f22e0a6b4323c36"
 generated:
   id: room.breed_pets
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

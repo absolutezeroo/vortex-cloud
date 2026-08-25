@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5d47d68741b531e80cc2f750c6cd35410d3d2dddb17540b67c20610e56f11443"
+generated_digest: "sha256:7e115bab75ca5c70f4d0c3b6bb75b22e018517b45be00f74ca0bdaeed9accdaf"
 generated:
   name: GetHabboClubExtendOffer
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_56083d578a83
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_53b1eccfa891
+    evidence: ev_50447f656eda
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetHabboClubExtendOfferComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_53b1eccfa891
+  - id: ev_50447f656eda
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetHabboClubExtendOfferMessageEvent.java
     symbol: GetHabboClubExtendOfferMessageEvent
     line: 13

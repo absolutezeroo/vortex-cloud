@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:153682d739c35285d40f83eafd3ad3c47446f5caecbf70959327afd52e859fbb"
+generated_digest: "sha256:935671802b52be35a38bc72af7a2ae3850472cd6bd9f1c17038e69c8aacbc092"
 generated:
   name: PurchaseOK
   direction: outgoing
@@ -203,7 +203,7 @@ generated:
     partial: true
     types: []
     evidence: ev_edb02545518c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 15
     partial: true
@@ -223,7 +223,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_b24b54818669
+    evidence: ev_7d3212518c4b
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -248,10 +248,10 @@ generated:
     symbol: PurchaseOKMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b24b54818669
+  - id: ev_7d3212518c4b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/PurchaseOKMessageComposer.java
     symbol: PurchaseOKMessageComposer
     line: 20

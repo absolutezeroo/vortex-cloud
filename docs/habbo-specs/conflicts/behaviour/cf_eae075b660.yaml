@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:bf480fa5a07b2d89b70f566a3b351182852eec08bcbee3a9c84bcf3ec88948e3"
+generated_digest: "sha256:395223d757dc79f77e9eac199b13ed632c84d7a57cfe5868d56b8486e93e500a"
 generated:
   id: cf_eae075b660
   kind: behaviour
   subject: "GetCurrentTimingCode: packets emitted in response"
   packet: GetCurrentTimingCode
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: CurrentTimingCode then CurrentTimingCode then CurrentTimingCode
-    evidence: ev_38ae0c7e27eb
+    evidence: ev_a20ef386df4a
   - origin: vortex
     authority: vortex_emulator
     claim: CurrentTimingCode
     evidence: ev_987fdac04d12
   evidence:
-  - id: ev_38ae0c7e27eb
+  - id: ev_a20ef386df4a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetCurrentTimingCodeMessageEvent.java
     symbol: GetCurrentTimingCodeMessageEvent
     line: 13

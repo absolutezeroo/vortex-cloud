@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b746665c629e6297d3cf448b515bc1e81fe717665e17168ffdd4332eccece529"
+generated_digest: "sha256:d6aa6404f635b9b02e6fbb217f023af8fc67032552ea0809179d8afae22d218a"
 generated:
   feature: quest.accept_quest
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_15c350b48faf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quest
-      evidence: ev_e79d9200d003
+      evidence: ev_2eb053d11547
   - scenario: quest.accept_quest.success
     title: "accept quest: the request is accepted"
     given:
@@ -55,17 +55,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_15c350b48faf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quest
-      evidence: ev_e79d9200d003
+      evidence: ev_2eb053d11547
   evidence:
-  - id: ev_e79d9200d003
+  - id: ev_2eb053d11547
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/quests/AcceptQuestEvent.java
     symbol: AcceptQuestEvent
     line: 12

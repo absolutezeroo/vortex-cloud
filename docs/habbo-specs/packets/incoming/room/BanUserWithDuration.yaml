@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5fbcb212b63a1867dcd77eb7a69b839cd65016f53ab5181fa626d9dca0de38bd"
+generated_digest: "sha256:f4122b0147b7de437296fad704cdcb84abb788038161900c0737341b91cd63b4"
 generated:
   name: BanUserWithDuration
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_9ba8f2d1dbf0
-    - ev_2154b6122301
+    - ev_400928f15e27
   - index: 1
     name: room_id
     type: int32
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_9ba8f2d1dbf0
-    - ev_2154b6122301
+    - ev_400928f15e27
   - index: 2
     name: ban_name
     type: string
@@ -42,7 +42,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_9ba8f2d1dbf0
-    - ev_2154b6122301
+    - ev_400928f15e27
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -59,7 +59,7 @@ generated:
     partial: true
     types: []
     evidence: ev_580c3a133ac8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_2154b6122301
+    evidence: ev_400928f15e27
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -94,10 +94,10 @@ generated:
     symbol: BanUserWithDurationComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2154b6122301
+  - id: ev_400928f15e27
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/BanUserWithDurationMessageEvent.java
     symbol: BanUserWithDurationMessageEvent
     line: 9

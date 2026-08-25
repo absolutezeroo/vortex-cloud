@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4c0cf078733260d308f975a42ef0ede740a95285b3c640a427b1c3406b067b4a"
+generated_digest: "sha256:733c2f7183d9e8c4f5e369b113ac6bf15d19a90ecc44e34940666cd3823b7f8c"
 generated:
   id: uk_66d99a3e97
   subject: "outgoing/SnowWarsQuickJoin: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsQuickJoin
   known_evidence:
-  - id: ev_5de54ccc6128
+  - id: ev_d0194edb439e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsQuickJoinComposer.java
     symbol: SnowWarsQuickJoinComposer
     line: 8

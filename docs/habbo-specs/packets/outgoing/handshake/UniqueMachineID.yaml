@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:78302acdc02324c3ee0a9e55650c9211c424858a8d7d50cb98cb4cb985153e78"
+generated_digest: "sha256:caead090d6590a34361e6e2a4bb57fce9bf4a438333923df3efb2ee1603083d1"
 generated:
   name: UniqueMachineID
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - string
     evidence: ev_98eebc3867f6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_0aa80de394b2
+    evidence: ev_fa98d0ee3d65
   evidence:
   - id: ev_98eebc3867f6
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_4080
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_0aa80de394b2
+  - id: ev_fa98d0ee3d65
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/handshake/UniqueMachineIDMessageComposer.java
     symbol: UniqueMachineIDMessageComposer
     line: 16

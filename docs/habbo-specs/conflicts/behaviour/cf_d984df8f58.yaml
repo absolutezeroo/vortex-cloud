@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:114f01a203832438d3f8decb84c5cba7f3d971c477c10a1eb8f751b7a26bac36"
+generated_digest: "sha256:c12d996cc9d4a311ecc33729aa42b2f1dc023c37f17aa6931d0c0912d26e2e0f"
 generated:
   id: cf_d984df8f58
   kind: behaviour
   subject: "UpdateThread: packets emitted in response"
   packet: UpdateThread
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ErrorReport then ErrorReport then ErrorReport then NotificationDialog then NotificationDialog then ThreadUpdated then GuildForumThreads
-    evidence: ev_0dfb961ca8df
+    evidence: ev_f463089e15e8
   - origin: vortex
     authority: vortex_emulator
     claim: UpdateThread
     evidence: ev_820fe0cd4dbb
   evidence:
-  - id: ev_0dfb961ca8df
+  - id: ev_f463089e15e8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateThreadMessageEvent.java
     symbol: UpdateThreadMessageEvent
     line: 19

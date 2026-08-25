@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:fb91ca2a9f985900c80f74cb47799d31acdbc4d1a851d8b5b90b55a8dde98e37"
+generated_digest: "sha256:3183edde132fc9c4bdc6934c17b713355c7798fcbe7ca7f8f5a1e619a51a7ef6"
 generated:
   id: uk_3280b91311
   subject: "outgoing/testcomposer: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: testcomposer
   known_evidence:
-  - id: ev_72fbac7cf5a4
+  - id: ev_4361ff361fb0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/testcomposer.java
     symbol: testcomposer
     line: 8

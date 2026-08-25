@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f9dc9de72a36918392b9c976ce9cfb59e93687addcd02eb27acc6dc58be7f951"
+generated_digest: "sha256:46da9bfb560aef904a20b4578991f8a9605e3706aaba1b6f159a36ff852d7d72"
 generated:
   name: NavigatorLiftedRooms
   direction: outgoing
@@ -91,13 +91,13 @@ generated:
     partial: true
     types: []
     evidence: ev_eac92528efdc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_b52b7e621841
+    evidence: ev_32ea0ad1b1ca
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -131,10 +131,10 @@ generated:
     symbol: NavigatorLiftedRoomsMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b52b7e621841
+  - id: ev_32ea0ad1b1ca
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorLiftedRoomsMessageComposer.java
     symbol: NavigatorLiftedRoomsMessageComposer
     line: 9

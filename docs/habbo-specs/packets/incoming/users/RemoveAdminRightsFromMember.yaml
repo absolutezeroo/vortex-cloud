@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0a9d3abe0fda855e62e3c75fe7cab96a4320b378f7efe8c46d1ed8c421d57600"
+generated_digest: "sha256:f3e86b74117f235b05ae10df63d7dbafa019a97dff3eafd0150856ac52e8c710"
 generated:
   name: RemoveAdminRightsFromMember
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1351373b019e
+    - ev_90a9b66a8e58
   - index: 1
     name: user_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_1351373b019e
+    - ev_90a9b66a8e58
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_8a41653a9a83
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_1351373b019e
+    evidence: ev_90a9b66a8e58
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -79,10 +79,10 @@ generated:
     symbol: RemoveAdminRightsFromMemberComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1351373b019e
+  - id: ev_90a9b66a8e58
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/RemoveAdminRightsFromMemberMessageEvent.java
     symbol: RemoveAdminRightsFromMemberMessageEvent
     line: 16

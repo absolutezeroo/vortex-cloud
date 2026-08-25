@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b4ebf58faadbc2a0354409da7a3b5073df7bb1ef141355ca0de9d37e821f89bf"
+generated_digest: "sha256:301f157436e2e9203a45a8c1cd9a4e5eb9cb614b1af633a82b7d65e0d845d4f5"
 generated:
   name: UserEventCats
   direction: outgoing
@@ -70,13 +70,13 @@ generated:
     partial: true
     types: []
     evidence: ev_9385f7048806
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: true
     types:
     - int32
-    evidence: ev_0044104a3dc2
+    evidence: ev_b7f462dde7a1
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -102,10 +102,10 @@ generated:
     symbol: UserEventCatsMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0044104a3dc2
+  - id: ev_b7f462dde7a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/UserEventCatsMessageComposer.java
     symbol: UserEventCatsMessageComposer
     line: 15

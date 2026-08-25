@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1def89ac85ca6f9710dc29cc9bbc6e4a222198a8399fa9912de371516e0baf50"
+generated_digest: "sha256:3075e9955fdad86726d1376097f28dcf4ba7128365c4b2806827cfde23ebdb03"
 generated:
   name: MyFriendsRoomsSearch
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6f4bd839b8b3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_90184a25ac8c
+    evidence: ev_db7d024c0b2e
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: MyFriendsRoomsSearchComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_90184a25ac8c
+  - id: ev_db7d024c0b2e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyFriendsRoomsSearchMessageEvent.java
     symbol: MyFriendsRoomsSearchMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:40f6711e9111971cae023ffaf14a338e96e7d0308b2703d292853135b8d8c67d"
+generated_digest: "sha256:12ea9cbadb95df724231519ece60da84c433efb6522b11ae21802f2d94b95e3c"
 generated:
   feature: camera.request_camera_configuration
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb857a07346
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - InitCamera
-      evidence: ev_e4c51b1fcebc
+      evidence: ev_84bbfce0b4f8
   evidence:
-  - id: ev_e4c51b1fcebc
+  - id: ev_84bbfce0b4f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/RequestCameraConfigurationEvent.java
     symbol: RequestCameraConfigurationEvent
     line: 9

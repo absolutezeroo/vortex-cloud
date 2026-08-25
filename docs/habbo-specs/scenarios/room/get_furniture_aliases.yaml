@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:681548b92686ea0f3e0d1ffb4363d3e25502b40898a80c07af3043b91c05a7a2"
+generated_digest: "sha256:8720af0896f8465a2ccf45056d60467049a7b221854764fd785704ba01fc39bf"
 generated:
   feature: room.get_furniture_aliases
   scenarios:
@@ -32,16 +32,16 @@ generated:
       emits:
       - FurnitureAliases
       evidence: ev_366a7a0309d8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c7bfd6b37eb1
+      evidence: ev_4047cc3f1a79
   evidence:
-  - id: ev_c7bfd6b37eb1
+  - id: ev_4047cc3f1a79
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetFurnitureAliasesMessageEvent.java
     symbol: GetFurnitureAliasesMessageEvent
     line: 9

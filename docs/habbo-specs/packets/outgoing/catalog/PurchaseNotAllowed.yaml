@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ee5f15601ebfd88e59a4c936c54d0f517192e8652863269f3275ed09b22695fe"
+generated_digest: "sha256:4e7269436c437845da46a3aa0fdffe09ba4c763ed4422cc55151adc20601b780"
 generated:
   name: PurchaseNotAllowed
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_4b7662102603
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_95e7c4f1bd0f
+    evidence: ev_a06eef747ba4
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: PurchaseNotAllowedMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_95e7c4f1bd0f
+  - id: ev_a06eef747ba4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/PurchaseNotAllowedMessageComposer.java
     symbol: PurchaseNotAllowedMessageComposer
     line: 18

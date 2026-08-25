@@ -107,6 +107,7 @@ completed:
   - PR-Q2b # the client scanner reads parsers; outgoing evidence 17 -> 514; one live header bug
   - PR-Q2c # both sides follow their delegations; the queue 64 -> 46, 17 of them read
   - PR-Z1b # the wired and furni walkthroughs, and the acceptance matrix (5 requirements unmet)
+  - PR-Z1c # three of the five closed: StuffData round-trip, the facade wall, reference provenance
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -159,7 +160,7 @@ remaining:
       batch and abandoned the rest). What is left is the baselines themselves: 23 known wire
       conflicts and 3 unreachable headers, entry by entry, each needing a client re-read.
   - id: PR-Z1
-    what: the five requirements the acceptance matrix says are unmet
+    what: the two requirements the acceptance matrix still says are unmet
     note: >
       the baseline PR-G1 was supposed to leave behind never existed, so PR-Z1a created it rather than
       comparing against nothing: docs/architecture-v4/benchmarks/wired-engine.md, regenerated with

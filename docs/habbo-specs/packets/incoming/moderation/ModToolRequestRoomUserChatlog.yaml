@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0b8289399c37c5559a874f1914d824226a46964a22d9b3d72e642e3e841d422e"
+generated_digest: "sha256:a32195daeca06a4b1a0b589039f78bd7cc4762ebbaaaa9c27837660a9e569122"
 generated:
   name: ModToolRequestRoomUserChatlog
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_c12e36616c5e
+    - ev_197f18ba2947
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_c12e36616c5e
+    evidence: ev_197f18ba2947
   evidence:
-  - id: ev_c12e36616c5e
+  - id: ev_197f18ba2947
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModToolRequestRoomUserChatlogEvent.java
     symbol: ModToolRequestRoomUserChatlogEvent
     line: 13

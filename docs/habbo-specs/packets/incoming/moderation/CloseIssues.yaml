@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a9eeacff216151ad56100ee37a0c0ef73802e0f2c0bce56cfb9492299819f7c4"
+generated_digest: "sha256:bf09ccada4461e1ffd66211e630ef9f70db41e76ef72509496749b2c40374f1d"
 generated:
   name: CloseIssues
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bf4882dbd736
+    - ev_bc802ae183fc
   - index: 1
     name: count
     type: int32
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bf4882dbd736
+    - ev_bc802ae183fc
     - ev_778eb9eefac1
   - index: 2
     name: ticket_id
@@ -40,7 +40,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bf4882dbd736
+    - ev_bc802ae183fc
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_0ed3b5cf294e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -68,7 +68,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_bf4882dbd736
+    evidence: ev_bc802ae183fc
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -103,10 +103,10 @@ generated:
     symbol: CloseIssuesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bf4882dbd736
+  - id: ev_bc802ae183fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CloseIssuesMessageEvent.java
     symbol: CloseIssuesMessageEvent
     line: 12

@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:84545031cac7d30a05b7900a1e19830bd57859560daeaf81d24f8e9ae94ca09a"
+generated_digest: "sha256:af5157feed8d0fdc5393b4668580609efc24b6cb169086041daebd29154aa782"
 generated:
   id: cf_a1aed94e79
   kind: behaviour
   subject: "GetCreditsInfo: packets emitted in response"
   packet: GetCreditsInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: CreditBalance then ActivityPoints
-    evidence: ev_720a5bfe8c9f
+    evidence: ev_02ccc7dac0b8
   - origin: vortex
     authority: vortex_emulator
     claim: CreditBalanceEvent then ActivityPoints
     evidence: ev_0a5d3f47e95a
   evidence:
-  - id: ev_720a5bfe8c9f
+  - id: ev_02ccc7dac0b8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetCreditsInfoEvent.java
     symbol: GetCreditsInfoEvent
     line: 9

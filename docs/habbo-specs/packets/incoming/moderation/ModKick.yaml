@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:639eda24f6324a71255aa76d340bf0305d4ad42fd049ee6c5fcc31f046d682a9"
+generated_digest: "sha256:1551f2790e83afe5fa73d0001132674ac44524235f5494e3265f9086d4b5ff50"
 generated:
   name: ModKick
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_29132b00b365
+    - ev_907a939ef104
   - index: 1
     name: unknown_1
     type: string
@@ -34,7 +34,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_29132b00b365
+    - ev_907a939ef104
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -48,14 +48,14 @@ generated:
     partial: true
     types: []
     evidence: ev_aa41ac4a8e22
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_29132b00b365
+    evidence: ev_907a939ef104
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -83,10 +83,10 @@ generated:
     symbol: ModKickComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_29132b00b365
+  - id: ev_907a939ef104
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModKickMessageEvent.java
     symbol: ModKickMessageEvent
     line: 8

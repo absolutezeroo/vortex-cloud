@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c7b421b782c9ffd616b5dbef64169d92660ed06278ee9a15c8b01551b5c62949"
+generated_digest: "sha256:19b25ad8afde7dbfc0b0cb9b98bea3996b9212347f951c04121988a1450140d3"
 generated:
   id: cf_d613c4b114
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, int32"
     evidence: ev_077c63323136
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: string, int32, boolean"
-    evidence: ev_fe1731672b8d
+    evidence: ev_1b6741d48d8c
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: string, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: RoomReadyMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fe1731672b8d
+  - id: ev_1b6741d48d8c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomReadyMessageComposer.java
     symbol: RoomReadyMessageComposer
     line: 17

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:db2d365bac7cac8b83181ae23d09c49eb6d83897ab1634b58f502a72a5eb58cc"
+generated_digest: "sha256:af68e87e91ce314c41af353243229b59a894a97a66e3341232ccb39008e09b20"
 generated:
   name: GetTalentTrackLevel
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9213a40c14f4
+    - ev_0f2aba9426bf
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -40,13 +40,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d489deb1e3ff
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_9213a40c14f4
+    evidence: ev_0f2aba9426bf
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -70,10 +70,10 @@ generated:
     symbol: GetTalentTrackLevelComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9213a40c14f4
+  - id: ev_0f2aba9426bf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetTalentTrackLevelMessageEvent.java
     symbol: GetTalentTrackLevelMessageEvent
     line: 8

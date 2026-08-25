@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a4a01cb3cc82ee0e3191c1212a953c555ce53b64df6c29888be59f40ee4ca56c"
+generated_digest: "sha256:14e70e155c1a98ff0e90366f5820838ce342976d822f5e340df31b7a0d34696c"
 generated:
   name: FlatAccessible
   direction: outgoing
@@ -49,13 +49,13 @@ generated:
     - int32
     - string
     evidence: ev_52b34091d26a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_06eb1fff9782
+    evidence: ev_42079e31fda7
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -81,10 +81,10 @@ generated:
     symbol: FlatAccessibleMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_06eb1fff9782
+  - id: ev_42079e31fda7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FlatAccessibleMessageComposer.java
     symbol: FlatAccessibleMessageComposer
     line: 15

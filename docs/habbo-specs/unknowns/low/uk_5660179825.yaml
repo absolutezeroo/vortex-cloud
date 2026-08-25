@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f42920135c7f9ef064fde7f594887185b1ccbd45f6a3343562bb263612c4fdbf"
+generated_digest: "sha256:158a9e5052db89a41a48defc55c84805e21fe243b154dfe91265fd2c977cec7e"
 generated:
   id: uk_5660179825
   subject: "outgoing/FreezeLives: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FreezeLives
   known_evidence:
-  - id: ev_4c855f4b22af
+  - id: ev_c14a700604db
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FreezeLivesComposer.java
     symbol: FreezeLivesComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:af6b7a0988c3b1388042c39fbf5d54dff6c95552428693ff342cd34246989fc9"
+generated_digest: "sha256:07442c829fe28f30e16383b2e1d7d69292d6e479f7eede0b7418916ed68884bb"
 generated:
   name: CustomUserNotification
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_3ceb2bb68e8c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_f807dddf67a1
+    evidence: ev_24c7491d1afd
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: CustomUserNotificationMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f807dddf67a1
+  - id: ev_24c7491d1afd
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/CustomUserNotificationMessageComposer.java
     symbol: CustomUserNotificationMessageComposer
     line: 21

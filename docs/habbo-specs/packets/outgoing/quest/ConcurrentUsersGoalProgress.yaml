@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b98ed811fe8d18ac4b819227dbf0aab2286560e28356e3041fa8beaa68f818e0"
+generated_digest: "sha256:bbb6795686e9095140e783aa5234cb8e5ff815b3ebcac154e02aa09c1fd5f7de"
 generated:
   name: ConcurrentUsersGoalProgress
   direction: outgoing
@@ -67,7 +67,7 @@ generated:
     partial: true
     types: []
     evidence: ev_a01e399114e1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -75,7 +75,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_e482341a8f9a
+    evidence: ev_5ecf0823a233
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -110,10 +110,10 @@ generated:
     symbol: ConcurrentUsersGoalProgressMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e482341a8f9a
+  - id: ev_5ecf0823a233
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/ConcurrentUsersGoalProgressMessageComposer.java
     symbol: ConcurrentUsersGoalProgressMessageComposer
     line: 23

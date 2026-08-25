@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6baa7b05818c8c9b9d878bb0b7c293d68d0fc856dba6f0852c92c49bfcda682f"
+generated_digest: "sha256:13b83ebfc01b961126b45c530963f7ee55084ccbb2bbe4427c01251e033d3f7b"
 generated:
   id: uk_19be4d5aa9
   subject: "outgoing/RoomInviteError: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: RoomInviteErrorMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_71b5035fb537
+  - id: ev_d1287ef9e1b9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/RoomInviteErrorMessageComposer.java
     symbol: RoomInviteErrorMessageComposer
     line: 20

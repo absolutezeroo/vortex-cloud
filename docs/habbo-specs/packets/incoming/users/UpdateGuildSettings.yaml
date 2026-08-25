@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c833f489ea45cc79ac098d0060b8e000ce77005625aa0cee207ad440936b4d99"
+generated_digest: "sha256:a596adb2d6f236a168562fe6bbb99bf1b326c2fc2dcde5a49396d0e03553a3ac"
 generated:
   name: UpdateGuildSettings
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_b02339341b3a
+    - ev_de6319384b72
   - index: 1
     name: settings_event
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_b02339341b3a
+    - ev_de6319384b72
   - index: 2
     name: settings_event
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_b02339341b3a
+    - ev_de6319384b72
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -53,7 +53,7 @@ generated:
     partial: true
     types: []
     evidence: ev_6c024ba20c84
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -61,7 +61,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_b02339341b3a
+    evidence: ev_de6319384b72
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -88,10 +88,10 @@ generated:
     symbol: UpdateGuildSettingsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b02339341b3a
+  - id: ev_de6319384b72
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildSettingsMessageEvent.java
     symbol: UpdateGuildSettingsMessageEvent
     line: 13

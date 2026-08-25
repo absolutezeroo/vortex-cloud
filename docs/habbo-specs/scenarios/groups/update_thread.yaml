@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c7f9d405ac4dde3ec8e48d5c3671aaf0a171e419b5e415725bef5484e87569b2"
+generated_digest: "sha256:72ecea1c87dd364e14d694b441e04490ce7d18f39ece83e0678cfcb1a3f73a2b"
 generated:
   feature: groups.update_thread
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_66c9c1a8d7ea
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -43,7 +43,7 @@ generated:
       - NotificationDialog
       - ThreadUpdated
       - GuildForumThreads
-      evidence: ev_0dfb961ca8df
+      evidence: ev_f463089e15e8
   - scenario: groups.update_thread.guard_1
     title: "update thread: the guard 'thread is null' holds"
     given:
@@ -62,7 +62,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_66c9c1a8d7ea
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -73,7 +73,7 @@ generated:
       - NotificationDialog
       - ThreadUpdated
       - GuildForumThreads
-      evidence: ev_0dfb961ca8df
+      evidence: ev_f463089e15e8
   - scenario: groups.update_thread.guard_2
     title: "update thread: the guard 'group is null' holds"
     given:
@@ -92,7 +92,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -103,7 +103,7 @@ generated:
       - NotificationDialog
       - ThreadUpdated
       - GuildForumThreads
-      evidence: ev_0dfb961ca8df
+      evidence: ev_f463089e15e8
   - scenario: groups.update_thread.guard_3
     title: "update thread: the guard '_registry is null' holds"
     given:
@@ -122,7 +122,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -133,7 +133,7 @@ generated:
       - NotificationDialog
       - ThreadUpdated
       - GuildForumThreads
-      evidence: ev_0dfb961ca8df
+      evidence: ev_f463089e15e8
   - scenario: groups.update_thread.success
     title: "update thread: the request is accepted"
     given:
@@ -152,7 +152,7 @@ generated:
       emits:
       - UpdateThread
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -163,12 +163,12 @@ generated:
       - NotificationDialog
       - ThreadUpdated
       - GuildForumThreads
-      evidence: ev_0dfb961ca8df
+      evidence: ev_f463089e15e8
   evidence:
-  - id: ev_0dfb961ca8df
+  - id: ev_f463089e15e8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateThreadMessageEvent.java
     symbol: UpdateThreadMessageEvent
     line: 19

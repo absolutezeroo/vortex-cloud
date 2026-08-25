@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:824f9149e090b21b85c0d13db4c39e98c1cfaaaaccd7e6fab32d04cfce1a35db"
+generated_digest: "sha256:6a8ce9766f2b6bea60e67445508174dfe94b23092b9093a6aa512b696e78f11d"
 generated:
   feature: moderation.mod_trading_lock
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a26f3e9871c4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.guard_1
     title: "mod trading lock: the guard 'ModerationPolicy.IsAllowed(actorPermissions, targetPermis...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.guard_2
     title: "mod trading lock: the guard 'playerId <= 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.guard_3
     title: "mod trading lock: the guard '_registry is null' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.guard_4
     title: "mod trading lock: the guard 'player is null' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.guard_5
     title: "mod trading lock: the guard 'string.IsNullOrWhiteSpace(message)' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   - scenario: moderation.mod_trading_lock.success
     title: "mod trading lock: the request is accepted"
     given:
@@ -177,17 +177,17 @@ generated:
       - ModeratorActionResult
       - ModeratorCautionEvent
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - IssueCloseNotification
-      evidence: ev_d8d2dc709b5c
+      evidence: ev_c7c5822dc490
   evidence:
-  - id: ev_d8d2dc709b5c
+  - id: ev_c7c5822dc490
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModTradingLockMessageEvent.java
     symbol: ModTradingLockMessageEvent
     line: 16

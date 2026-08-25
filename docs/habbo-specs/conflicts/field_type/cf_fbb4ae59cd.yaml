@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fb9edbfd989656fb7aa130a9f87085e39ecfd03fe4483cfba866e24448a47fae"
+generated_digest: "sha256:97d36a050c0dd45cbc9973bf78276a46d9f33e6a9fb25a6466154655ceb8ffe6"
 generated:
   id: cf_fbb4ae59cd
   kind: field_type
   subject: "incoming/RemoveRights: type of field 1"
   packet: RemoveRights
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "user_id: int32"
-    evidence: ev_82bae9d71653
+    evidence: ev_56778ef3f9c1
   - origin: vortex
     authority: vortex_emulator
     claim: "count: array"
     evidence: ev_73278b9539bb
   evidence:
-  - id: ev_82bae9d71653
+  - id: ev_56778ef3f9c1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/RemoveRightsMessageEvent.java
     symbol: RemoveRightsMessageEvent
     line: 9

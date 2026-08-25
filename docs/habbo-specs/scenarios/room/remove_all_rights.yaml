@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1ebabedcba947944a3a1f11727f80cc02788183a0be3898c43027ee80c1a81f1"
+generated_digest: "sha256:2b6499baf1a65e8805bfa53e79365d230b484ce17d2e55d580b106f769ba2cef"
 generated:
   feature: room.remove_all_rights
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5db4694a10c2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.guard_1
     title: "remove all rights: the guard '!await IsRoomOwnerAsync(actor).ConfigureAwait(true)' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.guard_2
     title: "remove all rights: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.guard_3
     title: "remove all rights: the guard '_state.ActiveRoomId != roomId' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.guard_4
     title: "remove all rights: the guard 'controllerType >= RoomControllerType.Rights' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.guard_5
     title: "remove all rights: the guard '_registry is null' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   - scenario: room.remove_all_rights.success
     title: "remove all rights: the request is accepted"
     given:
@@ -180,17 +180,17 @@ generated:
       - YouAreNotController
       - YouAreOwner
       evidence: ev_235aa2ae57eb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NoSuchFlat
-      evidence: ev_c808b5968e2d
+      evidence: ev_d9bdd3e8c230
   evidence:
-  - id: ev_c808b5968e2d
+  - id: ev_d9bdd3e8c230
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RemoveAllRightsMessageEvent.java
     symbol: RemoveAllRightsMessageEvent
     line: 15

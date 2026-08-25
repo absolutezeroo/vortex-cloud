@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8554c4969b4c154123c0474cf7ea55304a83cd9b3e4f0d1d6f9be8bc832ae8cf"
+generated_digest: "sha256:f00411ae51f4bfc50c59c9478aa389ec9ac86d791a58908366d593f989496b94"
 generated:
   id: cf_0bcd51a55d
   kind: behaviour
   subject: "PurchaseFromCatalogAsGift: packets emitted in response"
   packet: PurchaseFromCatalogAsGift
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: HotelWillCloseInMinutes then PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then GiftReceiverNotFound then PurchaseError then PurchaseNotAllowed then PurchaseError then PurchaseNotAllowed then PurchaseNotAllowed then LimitedEditionSoldOut then PurchaseNotAllowed then LimitedEditionSoldOut then PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then HabboBroadcast then PurchaseError then PurchaseOK then PurchaseError then PurchaseError
-    evidence: ev_b2e01469d96f
+    evidence: ev_24d5bc76ecea
   - origin: vortex
     authority: vortex_emulator
     claim: GiftReceiverNotFoundEvent then PurchaseOK
     evidence: ev_75da769fdeac
   evidence:
-  - id: ev_b2e01469d96f
+  - id: ev_24d5bc76ecea
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseFromCatalogAsGiftEvent.java
     symbol: PurchaseFromCatalogAsGiftEvent
     line: 41

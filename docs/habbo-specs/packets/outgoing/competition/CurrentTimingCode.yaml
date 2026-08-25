@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:87f828e2e5d9502bb1ab8d1621a6d0b1d73e2b6c7af3a928c3affb8f0d6cfdc0"
+generated_digest: "sha256:211c04f5d541b42bad478452ad47aa8aa8245d1e17be89e68d31ddb8f55d94af"
 generated:
   name: CurrentTimingCode
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_fefc13da7af9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_d2b9b87bae80
+    evidence: ev_b8feba2af337
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: CurrentTimingCodeMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d2b9b87bae80
+  - id: ev_b8feba2af337
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/CurrentTimingCodeMessageComposer.java
     symbol: CurrentTimingCodeMessageComposer
     line: 17

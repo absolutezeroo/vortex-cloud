@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b42b191175e1aaca3ee2c1749d2f39a3d389fad6edda0752799692deae28f438"
+generated_digest: "sha256:8dd7d7dd5dcaf53e405a1ce9492b656b93722fe9de8b78681de19bb229514913"
 generated:
   id: uk_8ebe08ec04
   subject: "outgoing/LoadGameUrl: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: LoadGameUrlMessageParser
     line: 33
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_5b862f27df2c
+  - id: ev_c01a99eadd8d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LoadGameUrlMessageComposer.java
     symbol: LoadGameUrlMessageComposer
     line: 9

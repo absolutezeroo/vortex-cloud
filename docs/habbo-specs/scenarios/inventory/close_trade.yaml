@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b11b84e5bd893444791f3c32a04e6bd9bdb3f150ccdc35524b530aaa20fc0b6e"
+generated_digest: "sha256:0e0dbca88beb06005b84342ee85459127279b1f5fefc9f66cfdc9b93f8ec4cc2"
 generated:
   feature: inventory.close_trade
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_164b2efc3bf4
+      evidence: ev_447e8630f940
   - scenario: inventory.close_trade.guard_1
     title: "close trade: the guard '!TryGetSession(requesterId, out RoomTradeSession? session)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_164b2efc3bf4
+      evidence: ev_447e8630f940
   - scenario: inventory.close_trade.success
     title: "close trade: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_164b2efc3bf4
+      evidence: ev_447e8630f940
   evidence:
-  - id: ev_164b2efc3bf4
+  - id: ev_447e8630f940
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/CloseTradingEvent.java
     symbol: CloseTradingEvent
     line: 10

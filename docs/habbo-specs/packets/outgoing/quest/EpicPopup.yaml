@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f40c2d1bddb79aefde01458ed3a218f2127c8232e5dfb13ff03ca0466804ab2c"
+generated_digest: "sha256:045a167e37eaf1f4d18866c7e9910d2561e501be1110bc545a6793cf97de42a1"
 generated:
   name: EpicPopup
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_2952d805697b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_ac03ef89c5ca
+    evidence: ev_6dcd260d97e8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -85,10 +85,10 @@ generated:
     symbol: EpicPopupMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ac03ef89c5ca
+  - id: ev_6dcd260d97e8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/EpicPopupMessageComposer.java
     symbol: EpicPopupMessageComposer
     line: 16

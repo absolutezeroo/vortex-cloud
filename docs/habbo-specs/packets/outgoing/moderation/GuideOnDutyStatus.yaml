@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:369c60a94b9515e934e2573440effcc9ae9f9c86791d0e5d073d43edffe8062a"
+generated_digest: "sha256:ff5ff10989dd84bd39b068c82ab3db0ad7dded31db5498e930cae5e985d5c8cf"
 generated:
   name: GuideOnDutyStatus
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_2d18293f4bb2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_c804ff9e36d4
+    evidence: ev_d07d2f5f33dd
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: GuideOnDutyStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c804ff9e36d4
+  - id: ev_d07d2f5f33dd
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideOnDutyStatusMessageComposer.java
     symbol: GuideOnDutyStatusMessageComposer
     line: 16

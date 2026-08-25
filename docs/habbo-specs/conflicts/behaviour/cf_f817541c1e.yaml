@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f51fcf3d7cec9e8ce98a308585cf746647c15316d7c6202823069c1b1189d51d"
+generated_digest: "sha256:9ef9fea2e00c3b72ab1dca5c4cbdfa7e0808972bd394eb23b1dfa60925eb676b"
 generated:
   id: cf_f817541c1e
   kind: behaviour
   subject: "GetMarketplaceItemStats: packets emitted in response"
   packet: GetMarketplaceItemStats
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: MarketplaceItemStats
-    evidence: ev_48b19413cd53
+    evidence: ev_2e22f3413a80
   - origin: vortex
     authority: vortex_emulator
     claim: MarketplaceItemStatsEvent
     evidence: ev_94f5fde4e905
   evidence:
-  - id: ev_48b19413cd53
+  - id: ev_2e22f3413a80
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceItemStatsEvent.java
     symbol: GetMarketplaceItemStatsEvent
     line: 8

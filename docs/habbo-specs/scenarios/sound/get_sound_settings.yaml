@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:34d8ccc4246fda8b77ae8bcd991debd3bbb7c58365367469084dc1b226539f53"
+generated_digest: "sha256:aaf222fe4668f833b2e9316700524dc01566fe9289bcf282fa50a194bdb10c5a"
 generated:
   feature: sound.get_sound_settings
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e547d106cfb0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - AccountPreferences
-      evidence: ev_35e0c7c1c5ac
+      evidence: ev_0c90e4e3c098
   - scenario: sound.get_sound_settings.success
     title: "get sound settings: the request is accepted"
     given:
@@ -57,17 +57,17 @@ generated:
       - AccountPreferencesEvent
       - unresolved
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - AccountPreferences
-      evidence: ev_35e0c7c1c5ac
+      evidence: ev_0c90e4e3c098
   evidence:
-  - id: ev_35e0c7c1c5ac
+  - id: ev_0c90e4e3c098
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetSoundSettingsEvent.java
     symbol: GetSoundSettingsEvent
     line: 8

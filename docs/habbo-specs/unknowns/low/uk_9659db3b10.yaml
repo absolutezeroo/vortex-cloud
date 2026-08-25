@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a6471bbb2de8671f5da61b98a5c74cafee6accf7c1a45548e1139dfff4ab9f5c"
+generated_digest: "sha256:c330a62f916c7e688191c3ab4e5e64dd0b50607ff3dd5f70bc85796a339a5100"
 generated:
   id: uk_9659db3b10
   subject: "outgoing/CfhSanction: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: CfhSanctionMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a93499914473
+  - id: ev_846929880109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CfhSanctionMessageComposer.java
     symbol: CfhSanctionMessageComposer
     line: 20

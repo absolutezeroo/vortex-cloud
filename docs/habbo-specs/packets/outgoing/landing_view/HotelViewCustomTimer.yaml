@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7afb4e55b9fcfe9a5c05c778844f3ccfd4faad1048f7778c3ee1dda9b2da44a1"
+generated_digest: "sha256:8a25acfec22f3ae05268f43ac351b57d5cdb33ff64675e6ad670a617abe9dbca"
 generated:
   name: HotelViewCustomTimer
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9a43fe16e3c8
+    - ev_e7bd52a84177
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_9a43fe16e3c8
+    - ev_e7bd52a84177
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_9a43fe16e3c8
+    evidence: ev_e7bd52a84177
   evidence:
-  - id: ev_9a43fe16e3c8
+  - id: ev_e7bd52a84177
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/HotelViewCustomTimerComposer.java
     symbol: HotelViewCustomTimerComposer
     line: 17

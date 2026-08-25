@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:fb858826b16ebd60d701bc3ec4b38aa3cad11eea761bb9366f1c5d8d2079dccb"
+generated_digest: "sha256:fe1e2bbc6191413bba1d16974b7c86bb8e83c4df0240cfaf781e2845fbd600c9"
 generated:
   id: uk_3ea14b1ed2
   subject: "outgoing/NavigatorMetaData: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: _SafeCls_2232
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_a1c89cf55fb5
+  - id: ev_46466f49d0ea
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorMetaDataMessageComposer.java
     symbol: NavigatorMetaDataMessageComposer
     line: 9

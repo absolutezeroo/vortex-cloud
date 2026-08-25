@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:51597c11567966189f49a2118891b3d7f6cc5cc82f663bc09c88b3df4246f0cc"
+generated_digest: "sha256:97d598179718bfb9ecefb662bb1a98672dc4be7bfc06628d2cb9a9dd06f172b9"
 generated:
   id: cf_122506b0a5
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, string"
     evidence: ev_3688ae0b987a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "1 fields: string"
-    evidence: ev_3fe201fb90b5
+    evidence: ev_cc51b57e283b
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, string"
@@ -50,10 +50,10 @@ generated:
     symbol: FlatAccessDeniedMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3fe201fb90b5
+  - id: ev_cc51b57e283b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FlatAccessDeniedMessageComposer.java
     symbol: FlatAccessDeniedMessageComposer
     line: 15

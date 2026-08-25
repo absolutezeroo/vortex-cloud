@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:da3ff8487e8c2cc03a50cc37a2154a15eeffa3abba58cc5e28c7f90d7eed79f7"
+generated_digest: "sha256:56e1fd0e27d0644d07fdbe94e466d7b55f1a21d93ef5dc26d5581de7121a212f"
 generated:
   id: uk_25f88ced33
   subject: "incoming/GetTalentTrackLevel: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: GetTalentTrackLevelComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9213a40c14f4
+  - id: ev_0f2aba9426bf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetTalentTrackLevelMessageEvent.java
     symbol: GetTalentTrackLevelMessageEvent
     line: 8

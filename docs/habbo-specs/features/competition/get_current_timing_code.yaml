@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a43ac73b85cf5a223f12587a6f35c413100c819f3065bd224a24b869e1147b4d"
+generated_digest: "sha256:9123377091402f2c4b8fbdbf9231aab3f3505e5b879852d68f77010e89b11bc1"
 generated:
   id: competition.get_current_timing_code
   domain: competition
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

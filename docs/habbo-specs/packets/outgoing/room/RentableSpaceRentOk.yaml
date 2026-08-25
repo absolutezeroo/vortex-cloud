@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5ad68f353be5c8190680f5d9178c8b295f5ccfac35beb2ddaf5b5579cad34add"
+generated_digest: "sha256:0e5fe5d57cea9dda8f02cb767c4df8aa09d40c653bb0e78b0a4f5ba132dc70c0"
 generated:
   name: RentableSpaceRentOk
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_ff0abc8132e4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_89c622561ccf
+    evidence: ev_b4d3a1f21565
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: RentableSpaceRentOkMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_89c622561ccf
+  - id: ev_b4d3a1f21565
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/rentablespaces/RentableSpaceRentOkMessageComposer.java
     symbol: RentableSpaceRentOkMessageComposer
     line: 15

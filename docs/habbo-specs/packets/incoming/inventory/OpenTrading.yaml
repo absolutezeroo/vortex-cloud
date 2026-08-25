@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e819a2960cd2ef27edf3846df1e1f64d6932d609c3d94bf888ed43b6512b52e"
+generated_digest: "sha256:233fdf4cca270244abefce2ab6cbd8ffa9623a233a95792bbb91a727a994c55c"
 generated:
   name: OpenTrading
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_17d1203e4f7b
-    - ev_8866aa7762c4
+    - ev_bc9212ef4356
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_ee1ffbb256f6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8866aa7762c4
+    evidence: ev_bc9212ef4356
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: OpenTradingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8866aa7762c4
+  - id: ev_bc9212ef4356
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/OpenTradingEvent.java
     symbol: OpenTradingEvent
     line: 14

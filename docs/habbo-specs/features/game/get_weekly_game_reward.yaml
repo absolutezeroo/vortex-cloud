@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0c9a68fffce2b146939755ca37149cb38871dd95dd908ca77c9809ee8645c17a"
+generated_digest: "sha256:9c658523b85cc5ae8dc3aa2187857cad6156e02b03bb8656819fb95b086aa1cc"
 generated:
   id: game.get_weekly_game_reward
   domain: game
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

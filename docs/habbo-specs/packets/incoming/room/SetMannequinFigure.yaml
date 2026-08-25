@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e3e76ad308f18a39e548ce6fce3a923fc7733335044c7877606940b22ddf06bb"
+generated_digest: "sha256:3acf6fecfa3e1f1a798f4cce298d98d6d31747a56dd2ed90c9084fd128b9bea5"
 generated:
   name: SetMannequinFigure
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_20b7b59082f2
-    - ev_867fb84ab729
+    - ev_088f82d373d2
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b88d183957bf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_867fb84ab729
+    evidence: ev_088f82d373d2
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: SetMannequinFigureComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_867fb84ab729
+  - id: ev_088f82d373d2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetMannequinFigureEvent.java
     symbol: SetMannequinFigureEvent
     line: 11

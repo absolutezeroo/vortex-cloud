@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c557ba8f5c3c7a97c53b86c7db92c37fcf98d6315905735c52a5e83791a73976"
+generated_digest: "sha256:64a105b71e7260038b1c452c2f55c3642e62b3e0174a23777d34d10cbde823da"
 generated:
   name: WiredEffectData
   direction: outgoing
@@ -65,12 +65,12 @@ generated:
     - int32
     - int32
     evidence: ev_3ea058d093a3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e0250596522f
+    evidence: ev_183e8a7682a1
   evidence:
   - id: ev_3ea058d093a3
     kind: client_parser
@@ -80,10 +80,10 @@ generated:
     symbol: WiredEffectDataMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_e0250596522f
+  - id: ev_183e8a7682a1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/WiredEffectDataMessageComposer.java
     symbol: WiredEffectDataMessageComposer
     line: 19

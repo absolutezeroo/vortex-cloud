@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8d7f968eed680e5e76c17f6964c38ba15282cb6fe2b9fe8f121b5d57f6d32604"
+generated_digest: "sha256:17af6ef693091bcabef275bb1a018c02e1d0a656c5e0be7ef7bd380591c6bf8b"
 generated:
   id: cf_819510832d
   kind: behaviour
   subject: "UpdateFigureData: packets emitted in response"
   packet: UpdateFigureData
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: FigureUpdate
-    evidence: ev_de56f817adf8
+    evidence: ev_ff862bc62256
   - origin: vortex
     authority: vortex_emulator
     claim: FigureUpdateEvent
     evidence: ev_520ae9696694
   evidence:
-  - id: ev_de56f817adf8
+  - id: ev_ff862bc62256
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/UpdateFigureDataMessageEvent.java
     symbol: UpdateFigureDataMessageEvent
     line: 19

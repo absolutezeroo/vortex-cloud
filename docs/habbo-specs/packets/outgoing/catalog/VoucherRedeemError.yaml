@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cf2e04ef6dc0da9f7a096bb4e9a20cae7c95203f3801793e21d5f41b51f1b2fe"
+generated_digest: "sha256:35d9e5fdb7dc3d7587e44a3e8ff016ea5acbae71caf0ec4c3eb72eb57680284d"
 generated:
   name: VoucherRedeemError
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_439be59d70d7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_31731f65e145
+    evidence: ev_6b05d8b63df9
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: VoucherRedeemErrorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_31731f65e145
+  - id: ev_6b05d8b63df9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/VoucherRedeemErrorMessageComposer.java
     symbol: VoucherRedeemErrorMessageComposer
     line: 18

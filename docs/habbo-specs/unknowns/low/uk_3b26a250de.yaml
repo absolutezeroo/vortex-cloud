@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:df0dcd4726bbaa5aef2c8b11d07b3fc762d809d13559c4412d591294780757aa"
+generated_digest: "sha256:3236a20ead5ebb199d31b22bbaf9ffbe8834f1b090a0983cb575ff9c468da4db"
 generated:
   id: uk_3b26a250de
   subject: "outgoing/CatalogPagesList: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: CatalogPagesListMessageParser
     line: 35
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_9418c3d0f1de
+  - id: ev_25cfdde310b3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/CatalogPagesListMessageComposer.java
     symbol: CatalogPagesListMessageComposer
     line: 34

@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:31f9b99f27264abcced803c476f45b83c9621b064e438390827adabee64c44ff"
+generated_digest: "sha256:67e9063c2a56ce726175a18781a27fd67738aa1ec3fd563e465b90eff216272d"
 generated:
   id: cf_f16efb3dfd
   kind: behaviour
   subject: "ModAlert: packets emitted in response"
   packet: ModAlert
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: IssueCloseNotification
-    evidence: ev_1887e8c65f56
+    evidence: ev_591292e94055
   - origin: vortex
     authority: vortex_emulator
     claim: ModeratorCautionEvent then ModeratorActionResult
     evidence: ev_473b8db8767d
   evidence:
-  - id: ev_1887e8c65f56
+  - id: ev_591292e94055
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModAlertMessageEvent.java
     symbol: ModAlertMessageEvent
     line: 16

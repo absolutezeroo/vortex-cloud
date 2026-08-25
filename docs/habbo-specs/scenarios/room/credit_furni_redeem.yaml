@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:69700674169abe05293f06bc170600dbe6bda4072270647961e395fce9370f6d"
+generated_digest: "sha256:ac41fa92f141ee5aa0711677228ed6b5f0ca9b757ebdb42b4fadb20257717533"
 generated:
   feature: room.credit_furni_redeem
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_95434ff15887
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_ff46cb8f6318
+      evidence: ev_bb65f75f036c
   - scenario: room.credit_furni_redeem.guard_1
     title: "credit furni redeem: the guard 'credits <= 0' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_95434ff15887
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_ff46cb8f6318
+      evidence: ev_bb65f75f036c
   - scenario: room.credit_furni_redeem.guard_2
     title: "credit furni redeem: the guard '!_state.ItemsById.TryGetValue(itemId, out IRoomItem? item...' holds"
     given:
@@ -82,13 +82,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_ff46cb8f6318
+      evidence: ev_bb65f75f036c
   - scenario: room.credit_furni_redeem.guard_3
     title: "credit furni redeem: the guard '!CreditFurniValue.TryParse(item.Definition.Name, out int ...' holds"
     given:
@@ -107,13 +107,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_ff46cb8f6318
+      evidence: ev_bb65f75f036c
   - scenario: room.credit_furni_redeem.success
     title: "credit furni redeem: the request is accepted"
     given:
@@ -131,18 +131,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2460f07026b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ObjectRemove
       - HeightMapUpdate
-      evidence: ev_ff46cb8f6318
+      evidence: ev_bb65f75f036c
   evidence:
-  - id: ev_ff46cb8f6318
+  - id: ev_bb65f75f036c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/CreditFurniRedeemMessageEvent.java
     symbol: CreditFurniRedeemMessageEvent
     line: 19

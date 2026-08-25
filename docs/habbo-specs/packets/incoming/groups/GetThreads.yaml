@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:37efb6a1a20331e9bdd4079eccebe991426d460f61d68cca4109dded5eb7f265"
+generated_digest: "sha256:deccaae2b01d40dfccf65f643d43d386c4b2aea1cfc590f4ddc92cd6fadafb89"
 generated:
   name: GetThreads
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8667852b897b
+    - ev_b6b0d3281c8f
   - index: 1
     name: index
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8667852b897b
+    - ev_b6b0d3281c8f
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -52,14 +52,14 @@ generated:
     partial: true
     types: []
     evidence: ev_b5819f3dd121
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_8667852b897b
+    evidence: ev_b6b0d3281c8f
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -94,10 +94,10 @@ generated:
     symbol: GetThreadsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8667852b897b
+  - id: ev_b6b0d3281c8f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetThreadsMessageEvent.java
     symbol: GetThreadsMessageEvent
     line: 12

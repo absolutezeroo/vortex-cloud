@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:22202ea5a492958d83fbecdbef33c807b5cc45782e53a0398f3bd032f5d75f89"
+generated_digest: "sha256:655e187a2bae46ded1e1fed43a014221004669df1e14f129569a8d9c61e74cf9"
 generated:
   name: NavigatorSearchResultBlocks
   direction: outgoing
@@ -52,7 +52,7 @@ generated:
     - string
     - string
     evidence: ev_e8038d2ec66d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: true
@@ -60,7 +60,7 @@ generated:
     - string
     - string
     - int32
-    evidence: ev_28135ff59736
+    evidence: ev_118b547e35b7
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -88,10 +88,10 @@ generated:
     symbol: NavigatorSearchResultBlocksMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_28135ff59736
+  - id: ev_118b547e35b7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorSearchResultBlocksMessageComposer.java
     symbol: NavigatorSearchResultBlocksMessageComposer
     line: 22

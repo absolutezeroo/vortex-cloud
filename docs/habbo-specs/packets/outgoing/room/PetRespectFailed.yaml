@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa3688c3d976dbcb7234acc6c2adf7d5a83fac839e224f6b7730dfd0f0b16270"
+generated_digest: "sha256:abd2eafe81e34b2b9a7bfc25af642f4f532cca5c3d331b23a5c0d2dee50f0027"
 generated:
   name: PetRespectFailed
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_79b9cf1095e7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_d32f12a12814
+    evidence: ev_faafa8faf30d
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: PetRespectFailedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d32f12a12814
+  - id: ev_faafa8faf30d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetRespectFailedMessageComposer.java
     symbol: PetRespectFailedMessageComposer
     line: 17

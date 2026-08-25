@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d81eaa91de2f36aa073c49537f2d5b36c3e6ff848eff5e2b9e4e2f32b2c0d4c4"
+generated_digest: "sha256:8ddb2c78777e9de5080a74e45d97f20778e37b09f0f61d7bda0fae1b1b790e66"
 generated:
   name: CheckUserName
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_a6736c1a918f
+    - ev_6a870ce9c1a8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d2aaf1d64f9c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_a6736c1a918f
+    evidence: ev_6a870ce9c1a8
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: CheckUserNameComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a6736c1a918f
+  - id: ev_6a870ce9c1a8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/CheckUserNameMessageEvent.java
     symbol: CheckUserNameMessageEvent
     line: 15

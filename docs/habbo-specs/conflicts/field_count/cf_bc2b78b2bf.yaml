@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:61547ed0445866e3539af312ff136b5f87e6091c63b799b283bd52d6b19c12c9"
+generated_digest: "sha256:7591a33d6ec928bb1c7610329d49d0ff783aef284adae4a148a0ca82adcad422"
 generated:
   id: cf_bc2b78b2bf
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "5 fields: int32, int32, int32, int32, string, int32, boolean, int32"
     evidence: ev_9ad9fac68eb5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "11 fields: int32, int32, int32, int32, int32, string, int32, int32, int32, string, int32"
-    evidence: ev_e3221db6ee4d
+    evidence: ev_7148a208dd0f
   - origin: vortex
     authority: vortex_emulator
     claim: "5 fields: int32, int32, array, boolean, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: _SafeCls_3521
     line: 59
     note: official client build WIN63-202607011411-782849652
-  - id: ev_e3221db6ee4d
+  - id: ev_7148a208dd0f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/RoomDimmerPresetsMessageComposer.java
     symbol: RoomDimmerPresetsMessageComposer
     line: 17

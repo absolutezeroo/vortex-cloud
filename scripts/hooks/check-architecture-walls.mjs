@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env node
 // The boundaries CONTEXT.md states in prose, made executable.
 //
-// Four rules that no compiler, test or grep enforces today, all of them currently respected --
+// Six rules that no compiler, test or grep enforces today, all of them currently respected --
 // which is exactly why encoding them is cheap: there is nothing to clean up first, only a state to
 // hold. A rule that lives in a document is a rule that erodes on the first busy afternoon; the
 // stale project references this repository carried for months are the proof.
@@ -120,6 +120,46 @@ if (verifiers.length > 0) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Wall 6 -- a RoomGrain partial stays a facade.
+//
+// The grain is a core plus ~28 partials, and the architecture note's word for what those partials
+// are is "facades": they take a call, hand it to a Module or a System, and hold no behaviour of
+// their own. That is the property; these are the two halves of it that a script can hold.
+//
+// The exact half: a concrete furniture behaviour is a class carrying [RoomObjectLogic("...")] and
+// it lives under Object/Logic. One declared inside the grain would be a behaviour nobody can test
+// without a room, which is the whole thing the wired extraction was for.
+//
+// The proxy half: size. A facade that reaches nine hundred lines has stopped being one whatever it
+// contains, and no rule that reads code can say that as cheaply. The ceiling is not a target --
+// RoomGrain.Settings.cs is at 847 and is the file to watch. Crossing it means the partial has a
+// System inside it waiting to be lifted out, not that the number needs raising.
+// ---------------------------------------------------------------------------------------------
+const FACADE_CEILING = 900;
+
+const grainLogics = hits('Vortex.Rooms/Grains', /\[RoomObjectLogic\s*\(/);
+if (grainLogics.length > 0) {
+  failures.push([
+    'A concrete furniture logic is declared inside a RoomGrain partial. It belongs under '
+      + 'Object/Logic, where it can be built without a room.',
+    grainLogics,
+  ]);
+}
+
+const oversized = sources('Vortex.Rooms/Grains')
+  .filter((f) => path.basename(f).startsWith('RoomGrain'))
+  .map((f) => [f, fs.readFileSync(f, 'utf8').split(/\r?\n/).length])
+  .filter(([, lines]) => lines > FACADE_CEILING)
+  .map(([f, lines]) => `${path.relative(root, f)} (${lines} lines)`);
+if (oversized.length > 0) {
+  failures.push([
+    `A RoomGrain partial is past ${FACADE_CEILING} lines. It is not a facade any more -- lift the `
+      + 'behaviour into a Module or a System rather than raising the ceiling.',
+    oversized,
+  ]);
+}
+
+// ---------------------------------------------------------------------------------------------
 // Wall 3 -- protocol does not leak into contracts.
 //
 // Vortex.Primitives is referenced by every project in the solution; Vortex.Protocol holds the 1,092
@@ -203,7 +243,7 @@ if (newLeak.length > 0) {
 if (failures.length === 0) {
   const healed = baseline.filter((f) => !leakFiles.includes(f));
   const note = healed.length > 0 ? ` (${healed.length} baselined leak(s) now gone -- --update)` : '';
-  console.log(`Architecture walls hold: 5 checked, ${leakFiles.length} baselined leak(s)${note}.`);
+  console.log(`Architecture walls hold: 6 checked, ${leakFiles.length} baselined leak(s)${note}.`);
   process.exit(0);
 }
 

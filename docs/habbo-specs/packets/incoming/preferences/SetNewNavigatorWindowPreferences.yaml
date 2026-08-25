@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e7f25f3e73eb958fc735a4799e0093c761c5520e1b94892b2d726bc01dbcb261"
+generated_digest: "sha256:d10906faa62353793b32ecc97fc3f092f2c834affd7e470316ab248864eb792e"
 generated:
   name: SetNewNavigatorWindowPreferences
   direction: incoming
@@ -62,7 +62,7 @@ generated:
     semantic_type: NavigatorViewModeType
     evidence:
     - ev_cdfc98dc5c13
-    - ev_095c7ff1abc2
+    - ev_78fb1d07af8a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -82,7 +82,7 @@ generated:
     - boolean
     - unknown
     evidence: ev_cdfc98dc5c13
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -93,7 +93,7 @@ generated:
     - int32
     - boolean
     - int32
-    evidence: ev_095c7ff1abc2
+    evidence: ev_78fb1d07af8a
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -123,10 +123,10 @@ generated:
     symbol: SetNewNavigatorWindowPreferencesComposer
     line: 15
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_095c7ff1abc2
+  - id: ev_78fb1d07af8a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/SetNewNavigatorWindowPreferencesMessageEvent.java
     symbol: SetNewNavigatorWindowPreferencesMessageEvent
     line: 8

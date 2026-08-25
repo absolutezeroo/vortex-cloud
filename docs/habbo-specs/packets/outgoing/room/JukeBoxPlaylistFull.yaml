@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a80abbd65eed16d079fbf49f443ac53de2fa39f619bd1063d74555e2981160c8"
+generated_digest: "sha256:bbdb52755a1d4c5f1940f2bd5834dd91362b070e4262587f94b5213b136221f7"
 generated:
   name: JukeBoxPlaylistFull
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e41361a2f0ab
+    evidence: ev_23e943af1f0e
   evidence:
-  - id: ev_e41361a2f0ab
+  - id: ev_23e943af1f0e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/JukeBoxPlaylistFullComposer.java
     symbol: JukeBoxPlaylistFullComposer
     line: 9

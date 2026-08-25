@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf365edd4e436b191bb0f0bf88f55eaaf217befbbaf1a45a6c00d2ef8cff0024"
+generated_digest: "sha256:51a4b531679854c34f732f015e9d0e95dad3f389fc7f712814b5cc380ff6f05b"
 generated:
   name: HotelClosesAndWillOpenAt
   direction: outgoing
@@ -52,7 +52,7 @@ generated:
     - int32
     - boolean
     evidence: ev_9f97db7528c7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -60,7 +60,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_6cef04fda362
+    evidence: ev_2257443dda46
   evidence:
   - id: ev_9f97db7528c7
     kind: client_parser
@@ -70,10 +70,10 @@ generated:
     symbol: HotelClosesAndWillOpenAtMessageParser
     line: 36
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6cef04fda362
+  - id: ev_2257443dda46
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/HotelClosesAndWillOpenAtMessageComposer.java
     symbol: HotelClosesAndWillOpenAtMessageComposer
     line: 19

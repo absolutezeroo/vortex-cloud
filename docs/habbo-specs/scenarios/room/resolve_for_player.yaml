@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d76b05465b3ee2fba2818f37b41f16785c6dd7592a5e67c2b274b23dd1c6bbdd"
+generated_digest: "sha256:e7ae3acc0a24253c384b7011c17969dd45dcd51bedc2e39623ba17059e8be609"
 generated:
   feature: room.resolve_for_player
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cf84110a3cbf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_1
     title: "resolve for player: the guard '!permissions.Has(Capabilities.Room.FurniEdit)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cf84110a3cbf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_10
     title: "resolve for player: the guard 'furniOwnerId != actorPlayerId' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_11
     title: "resolve for player: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_2
     title: "resolve for player: the guard 'item is null' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cf84110a3cbf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_3
     title: "resolve for player: the guard 'playerId <= 0' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_4
     title: "resolve for player: the guard 'ctx.PlayerId <= 0 || message.FurnitureId <= 0' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f76516a101b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_5
     title: "resolve for player: the guard '!success' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f76516a101b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_6
     title: "resolve for player: the guard '!isStaff && furniOwnerId != actorPlayerId' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_7
     title: "resolve for player: the guard '!currencyExists' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_8
     title: "resolve for player: the guard '!succeeded' holds"
     given:
@@ -265,11 +265,11 @@ generated:
       - RentableSpaceRentFailed
       - RentableSpaceStatus
       evidence: ev_be784b9c248c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.guard_9
     title: "resolve for player: the guard '_space?.RenterPlayerEntityId is null || _space.RentedUnti...' holds"
     given:
@@ -288,11 +288,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3bfcf2d3587b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   - scenario: room.resolve_for_player.success
     title: "resolve for player: the request is accepted"
     given:
@@ -313,16 +313,16 @@ generated:
       - RentableSpaceRentFailed
       - RentableSpaceStatus
       evidence: ev_0702950c7160
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_574b844f86c2
+      evidence: ev_e1a2ccdd7dc8
   evidence:
-  - id: ev_574b844f86c2
+  - id: ev_e1a2ccdd7dc8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/rentablespace/RentableSpaceCancelRentMessageEvent.java
     symbol: RentableSpaceCancelRentMessageEvent
     line: 11

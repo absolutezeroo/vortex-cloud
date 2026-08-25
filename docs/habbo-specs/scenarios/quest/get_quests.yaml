@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5c34e6134d4075967f88f076e97c63fc81a6a654a334a6593c36dec69de895f7"
+generated_digest: "sha256:c5139eb8a02d4f6ed2c907c7574b89ac76308328bd3df54b8bef11cdffd7d489"
 generated:
   feature: quest.get_quests
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_154995b507c3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quests
-      evidence: ev_a0175d5aa843
+      evidence: ev_ab59d553aa3d
   - scenario: quest.get_quests.success
     title: "get quests: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - Quests
       evidence: ev_154995b507c3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Quests
-      evidence: ev_a0175d5aa843
+      evidence: ev_ab59d553aa3d
   evidence:
-  - id: ev_a0175d5aa843
+  - id: ev_ab59d553aa3d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/quests/GetQuestsEvent.java
     symbol: GetQuestsEvent
     line: 13

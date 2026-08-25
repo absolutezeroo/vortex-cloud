@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7ecc7abb484954e9fd09e725705bd090d24dce8b14fab7777d9d70d5637b88a9"
+generated_digest: "sha256:556acd71f34152b1305354571015b752f5e240406ef8feca9f9ea8938f646794"
 generated:
   name: MoveWallItem
   direction: incoming
@@ -48,14 +48,14 @@ generated:
     - int32
     - string
     evidence: ev_d067dcd67e7a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_039eb84648db
+    evidence: ev_7d7220ce435b
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -81,10 +81,10 @@ generated:
     symbol: MoveWallItemComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_039eb84648db
+  - id: ev_7d7220ce435b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/MoveWallItemMessageEvent.java
     symbol: MoveWallItemMessageEvent
     line: 14

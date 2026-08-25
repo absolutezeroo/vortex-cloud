@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e2809c7368d22ccb1efaaae7424789405ec5318a5df77f556bf37ff8d8d88d00"
+generated_digest: "sha256:49e8cafeb69dc3b165d0d414a46c7b3cd5d5f7350cc7b58cd7de485b2aec2fb9"
 generated:
   id: uk_f2002de925
   subject: "outgoing/BannedUsersFromRoom: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3887
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_bd02948aeda3
+  - id: ev_690bef591cac
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/BannedUsersFromRoomMessageComposer.java
     symbol: BannedUsersFromRoomMessageComposer
     line: 22

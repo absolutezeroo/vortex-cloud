@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:23a971208d717d791986b296c7421f0fb98699a14faa45c3b5e66bb9990d12da"
+generated_digest: "sha256:22b7b098e303c8d92eb773065331d20925056d9be269b8ad1f62a660369fee9d"
 generated:
   id: uk_2160ed8170
   subject: "outgoing/UserObject: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: UserObjectMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_970a763ea500
+  - id: ev_90668e4a182d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/UserObjectMessageComposer.java
     symbol: UserObjectMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2d7bc2d2ad1418f6fba303393f6dbf5a1edaea9d9642a987e5504d8f36760d2b"
+generated_digest: "sha256:9aafc9040fab1cf701a7e1d899f4e15c1ad110cff3995cc464b117d259612b64"
 generated:
   name: SlideObjectBundle
   direction: outgoing
@@ -196,7 +196,7 @@ generated:
     - string
     - string
     evidence: ev_f94842b82dc8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 10
     partial: false
@@ -211,7 +211,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_8843b698e5a9
+    evidence: ev_0718ce23804f
   - origin: vortex
     authority: vortex_emulator
     field_count: 13
@@ -248,10 +248,10 @@ generated:
     symbol: SlideObjectBundleMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8843b698e5a9
+  - id: ev_0718ce23804f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/SlideObjectBundleMessageComposer.java
     symbol: SlideObjectBundleMessageComposer
     line: 56

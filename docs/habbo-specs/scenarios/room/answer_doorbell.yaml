@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e3e3611804202951e95faa320c93fd479c8d8e6edd957682525ba3cda62ff66e"
+generated_digest: "sha256:a6bae8c11124bda14c63b9d9139ecf57bc4590434086ffe6489a2226660a9cd7"
 generated:
   feature: room.answer_doorbell
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a1cfcc1f8f41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_1
     title: "answer doorbell: the guard 'targetPlayerId is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a1cfcc1f8f41
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_10
     title: "answer doorbell: the guard 'origin == ActionOrigin.System' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_11
     title: "answer doorbell: the guard 'isExplicitOwner' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_2
     title: "answer doorbell: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_3
     title: "answer doorbell: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_4
     title: "answer doorbell: the guard 'foundId is null' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_5
     title: "answer doorbell: the guard 'actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx...' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_93b2d0946619
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_6
     title: "answer doorbell: the guard 'controllerLevel < RoomControllerType.Rights' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_93b2d0946619
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_7
     title: "answer doorbell: the guard '!wasRinging' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_93b2d0946619
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_8
     title: "answer doorbell: the guard '!admit' holds"
     given:
@@ -265,11 +265,11 @@ generated:
       - FlatAccessible
       - unresolved
       evidence: ev_93b2d0946619
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_9
     title: "answer doorbell: the guard 'ctx.Origin == ActionOrigin.System' holds"
     given:
@@ -288,11 +288,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.success
     title: "answer doorbell: the request is accepted"
     given:
@@ -313,16 +313,16 @@ generated:
       - FlatAccessible
       - unresolved
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bc75f4b39963
+      evidence: ev_ef036baa527e
   evidence:
-  - id: ev_bc75f4b39963
+  - id: ev_ef036baa527e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/LetUserInMessageEvent.java
     symbol: LetUserInMessageEvent
     line: 12

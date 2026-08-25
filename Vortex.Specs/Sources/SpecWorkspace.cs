@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Vortex.Specs.Sources;
 
@@ -110,6 +111,69 @@ public sealed class SpecWorkspace
         IReadOnlyList<SourceTree> trees
     ) => new(repositoryRoot, outputRoot, trees);
 
+    /// <summary>
+    /// A stable origin id from a checkout's directory name: lowercased, non-alphanumerics collapsed
+    /// to a dash. A folder called <c>Arcturus</c> still reports <c>arcturus</c>; one called
+    /// <c>HABBO-ARCTURUS-DAYBREAK</c> reports itself.
+    /// </summary>
+    private static string ReferenceId(string directoryName)
+    {
+        StringBuilder id = new(directoryName.Length);
+
+        foreach (char c in directoryName)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                id.Append(char.ToLowerInvariant(c));
+                continue;
+            }
+
+            if (id.Length > 0 && id[^1] != '-')
+            {
+                id.Append('-');
+            }
+        }
+
+        return id.ToString().Trim('-') is { Length: > 0 } slug ? slug : "reference";
+    }
+
+    /// <summary>
+    /// The commit a source tree is at, when it is a git checkout at all. The note asks evidence to
+    /// carry <c>repo@sha</c>; a tree that was copied rather than cloned has no sha to carry, and
+    /// saying so is better than inventing one.
+    /// </summary>
+    private static string? GitHead(string directory)
+    {
+        string head = Path.Combine(directory, ".git", "HEAD");
+
+        if (!File.Exists(head))
+        {
+            return null;
+        }
+
+        try
+        {
+            string content = File.ReadAllText(head).Trim();
+
+            if (!content.StartsWith("ref:", StringComparison.Ordinal))
+            {
+                return content.Length >= 7 ? content[..7] : null;
+            }
+
+            string refPath = Path.Combine(
+                directory,
+                ".git",
+                content[4..].Trim().Replace('/', Path.DirectorySeparatorChar)
+            );
+
+            return File.Exists(refPath) ? File.ReadAllText(refPath).Trim()[..7] : null;
+        }
+        catch (IOException)
+        {
+            return null;
+        }
+    }
+
     private static IEnumerable<SourceTree> DiscoverExternalTrees(string sources)
     {
         foreach (
@@ -155,11 +219,17 @@ public sealed class SpecWorkspace
                 )
             )
             {
+                // Named after the directory, not after the family. Daybreak is derived from
+                // Arcturus, so labelling both "arcturus" made two evidences from one lineage read as
+                // two independent implementations agreeing -- which is corroboration the specs have
+                // not actually got. The official clients were already named this way; the reference
+                // emulators now are too.
                 yield return new SourceTree
                 {
-                    Id = "arcturus",
+                    Id = ReferenceId(name),
                     Root = directory,
                     Kind = SourceTreeKind.ReferenceEmulator,
+                    Revision = GitHead(directory),
                 };
             }
         }

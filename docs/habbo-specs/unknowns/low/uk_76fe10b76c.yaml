@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b46447ea536404e5c61c4ecf4f5b1b6564769e0db23749f0342b62c5cae685b6"
+generated_digest: "sha256:918a43924bc697b0be267ed196ad6da7796c382c754d440fbdf580395ae292c0"
 generated:
   id: uk_76fe10b76c
   subject: "outgoing/ItemAdd: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: ItemAddMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_79d942336fcb
+  - id: ev_ab62d337af3c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemAddMessageComposer.java
     symbol: ItemAddMessageComposer
     line: 18

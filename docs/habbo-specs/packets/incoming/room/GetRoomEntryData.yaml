@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d106c4e9b6830ce5907a7b599029a8fbc9dcaa8b563507d47534262c289f144b"
+generated_digest: "sha256:962d1ad0bbfb5f7e014fdb98aca953510388d2faf54c273a8e7af2853c2b5a59"
 generated:
   name: GetRoomEntryData
   direction: incoming
@@ -20,12 +20,12 @@ generated:
   vortex_handler: GetRoomEntryDataMessageHandler
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_e9598cc5d56a
+    evidence: ev_fd4c50c7f66d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -33,10 +33,10 @@ generated:
     types: []
     evidence: ev_7d23e5e0b152
   evidence:
-  - id: ev_e9598cc5d56a
+  - id: ev_fd4c50c7f66d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetRoomEntryDataMessageEvent.java
     symbol: GetRoomEntryDataMessageEvent
     line: 11

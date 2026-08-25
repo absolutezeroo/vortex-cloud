@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5337a2817158e943dfe61f2dd59c5f794a619490e43d1c0617a7b31ae3154022"
+generated_digest: "sha256:f50acbe7398b6afd1f89aef7e56e8ff0e3e8969054be6c11e07dbfb2b566bd65"
 generated:
   id: uk_6d62a49342
   subject: "outgoing/GameCenterAchievementsConfiguration: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GameCenterAchievementsConfiguration
   known_evidence:
-  - id: ev_6ace8422c488
+  - id: ev_5dbb9c9e2628
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/GameCenterAchievementsConfigurationComposer.java
     symbol: GameCenterAchievementsConfigurationComposer
     line: 8

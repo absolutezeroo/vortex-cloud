@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:894aba5af98fc86de0b0dad2396b00859068513a86000e3c775791e9fee3cda7"
+generated_digest: "sha256:4e5de6e4d33e109cd5a723bffa152ced9ea1b1032f03ba720b1ecb3c7502e4a3"
 generated:
   feature: avatar.save_wardrobe_outfit
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_03a2cdace80a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f1e3a77439ea
+      evidence: ev_3ccc9833c403
   - scenario: avatar.save_wardrobe_outfit.guard_1
     title: "save wardrobe outfit: the guard 'slotId < 1 || slotId > MaxWardrobeSlotId' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_92cbb97e9171
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f1e3a77439ea
+      evidence: ev_3ccc9833c403
   - scenario: avatar.save_wardrobe_outfit.guard_2
     title: "save wardrobe outfit: the guard '_registry is null' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f1e3a77439ea
+      evidence: ev_3ccc9833c403
   - scenario: avatar.save_wardrobe_outfit.success
     title: "save wardrobe outfit: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_03a2cdace80a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f1e3a77439ea
+      evidence: ev_3ccc9833c403
   evidence:
-  - id: ev_f1e3a77439ea
+  - id: ev_3ccc9833c403
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SaveWardrobeOutfitMessageEvent.java
     symbol: SaveWardrobeOutfitMessageEvent
     line: 11

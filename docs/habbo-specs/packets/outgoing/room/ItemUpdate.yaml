@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6bd186e3bc41c943b39ef9b309c7e575e57b869c008c4677f29a789e4ecc46cd"
+generated_digest: "sha256:acb39500a8ee6570d764df8e596c614d5f28f75d580ed513e9bcaa16aa3a3575"
 generated:
   name: ItemUpdate
   direction: outgoing
@@ -96,13 +96,13 @@ generated:
     types:
     - block
     evidence: ev_94a79c7a97f1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: true
     types:
     - string
-    evidence: ev_fd6f3a129ac7
+    evidence: ev_1e73da0c8679
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -127,10 +127,10 @@ generated:
     symbol: ItemUpdateMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fd6f3a129ac7
+  - id: ev_1e73da0c8679
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemUpdateMessageComposer.java
     symbol: ItemUpdateMessageComposer
     line: 16

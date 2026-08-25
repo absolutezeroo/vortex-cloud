@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c3ad3c6089f32dfc1946947c753de1017caf6d7478472d7488753431643d4cee"
+generated_digest: "sha256:d92326eb8c6acb073255bb3abe2dee580b73a3ef57baef48df74e450e478ce15"
 generated:
   id: cf_82cb580038
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: string, int32, string, string"
     evidence: ev_06af2d26e972
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "4 fields: string, int32, string, string"
-    evidence: ev_120a1596135f
+    evidence: ev_2c3429a12182
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: string, int32, array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2688
     line: 27
     note: official client build WIN63-202607011411-782849652
-  - id: ev_120a1596135f
+  - id: ev_2c3429a12182
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/NotificationDialogMessageComposer.java
     symbol: NotificationDialogMessageComposer
     line: 31

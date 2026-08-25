@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:596da609ad83f580cd92b54fce9fe4728a6cedf3fff4d89f6fe57610fa1d695b"
+generated_digest: "sha256:187eecbdacaa0ab5bac2ecfe6cee1b6005db26c74d0aa226e4682bafc36f8b24"
 generated:
   name: RequestFriendRequests
   direction: incoming
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_4e3c52f27528
+    evidence: ev_8e5e59728847
   evidence:
-  - id: ev_4e3c52f27528
+  - id: ev_8e5e59728847
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/RequestFriendRequestsEvent.java
     symbol: RequestFriendRequestsEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3bcb2dc096c1d5cbf556e8b2b245db92d2aba7ce337b91e5e08e5bc8045e191d"
+generated_digest: "sha256:f54cebaf5ca8260f02ca14051e41c3f1b93c9c891df1bbe5a9179d6d9ffa5135"
 generated:
   name: SnowWarsFullGameStatus
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 4
     name: unknown_4
     type: int32
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   - index: 12
     name: unknown_12
     type: int32
@@ -121,9 +121,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c2cd32451808
+    - ev_320de4a1b646
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 13
     partial: false
@@ -141,12 +141,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_c2cd32451808
+    evidence: ev_320de4a1b646
   evidence:
-  - id: ev_c2cd32451808
+  - id: ev_320de4a1b646
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsFullGameStatusComposer.java
     symbol: SnowWarsFullGameStatusComposer
     line: 8

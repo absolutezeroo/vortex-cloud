@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f29bfd5f7c52b3a6bf1fc7582d08c162eb38a35e37995e215bc62a06eb8e2ae2"
+generated_digest: "sha256:8bc8ab0dfad32e99fd580e9aa0a8089cc09879f9857cd7cf78e2a2be17ef4403"
 generated:
   feature: preferences.set_chat_style_preference
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_43fea8875098
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94cb5c86e425
+      evidence: ev_36d5510b8443
   - scenario: preferences.set_chat_style_preference.guard_1
     title: "set chat style preference: the guard '_state.RoomChatStyleId == chatStyle' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94cb5c86e425
+      evidence: ev_36d5510b8443
   - scenario: preferences.set_chat_style_preference.success
     title: "set chat style preference: the request is accepted"
     given:
@@ -77,16 +77,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_94cb5c86e425
+      evidence: ev_36d5510b8443
   evidence:
-  - id: ev_94cb5c86e425
+  - id: ev_36d5510b8443
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetChatStylePreferenceEvent.java
     symbol: SetChatStylePreferenceEvent
     line: 10

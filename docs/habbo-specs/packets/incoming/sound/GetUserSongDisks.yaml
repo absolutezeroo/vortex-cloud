@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a3594934ebbff971a3ef196909d7850a28cfce610c0afc1ea838a22cd95c64b3"
+generated_digest: "sha256:5b6b5ce83503e59bd784fd5dd779cc09fed38fd35dcf9ed2137346aeda7cb790"
 generated:
   name: GetUserSongDisks
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_552443514ebc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_32894d1bdb27
+    evidence: ev_5c2fb0a0e101
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetUserSongDisksComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_32894d1bdb27
+  - id: ev_5c2fb0a0e101
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetUserSongDisksMessageEvent.java
     symbol: GetUserSongDisksMessageEvent
     line: 10

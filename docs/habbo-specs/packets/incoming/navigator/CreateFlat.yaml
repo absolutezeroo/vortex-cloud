@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c7f7fdf851a3f94d41b3d47352c1893f478f10e86afded4d126276280f3c22d4"
+generated_digest: "sha256:a6da114546ab64da209226074842eba1168837d0078895041e9184b359fb8c5f"
 generated:
   name: CreateFlat
   direction: incoming
@@ -62,7 +62,7 @@ generated:
     semantic_type: RoomTradeModeType
     evidence:
     - ev_ebca1069fe6e
-    - ev_ad5fd845af29
+    - ev_7df5fc1c65de
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -82,7 +82,7 @@ generated:
     - int32
     - unknown
     evidence: ev_ebca1069fe6e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -93,7 +93,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_ad5fd845af29
+    evidence: ev_7df5fc1c65de
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -123,10 +123,10 @@ generated:
     symbol: CreateFlatComposer
     line: 15
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ad5fd845af29
+  - id: ev_7df5fc1c65de
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/CreateFlatMessageEvent.java
     symbol: CreateFlatMessageEvent
     line: 18

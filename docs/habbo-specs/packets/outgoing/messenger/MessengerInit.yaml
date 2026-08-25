@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0326f9b0a49a9f7a2f8cfcc9643235f30eb5ac6d5abe633e32bacd44119d3144"
+generated_digest: "sha256:f4637e3a7f9eb2cc913630e523cc6c5d8faf0f84bf95a969f0fe65031eb3f2a1"
 generated:
   name: MessengerInit
   direction: outgoing
@@ -90,7 +90,7 @@ generated:
     - int32
     - int32
     evidence: ev_d9d5ec99f2bf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 10
     partial: false
@@ -105,7 +105,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_b97ccac9a78c
+    evidence: ev_0aa6491064e1
   - origin: vortex
     authority: vortex_emulator
     field_count: 5
@@ -134,10 +134,10 @@ generated:
     symbol: MessengerInitMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b97ccac9a78c
+  - id: ev_0aa6491064e1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/MessengerInitMessageComposer.java
     symbol: MessengerInitMessageComposer
     line: 20

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1809e70242d1f622325ae8bc83059d1c31b4380474e47d89aa956065856b5ebb"
+generated_digest: "sha256:c609044ffa5fc39340dbb69760eecb4751b7c856a44eda77f387c9a8fd99b119"
 generated:
   id: uk_7fefdf0f84
   subject: "outgoing/HotelClosesAndWillOpenAt: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: HotelClosesAndWillOpenAtMessageParser
     line: 36
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_6cef04fda362
+  - id: ev_2257443dda46
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/HotelClosesAndWillOpenAtMessageComposer.java
     symbol: HotelClosesAndWillOpenAtMessageComposer
     line: 19

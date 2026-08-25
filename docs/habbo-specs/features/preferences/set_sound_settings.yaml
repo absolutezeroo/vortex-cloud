@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2d6f1deef1d679d7302c884e8020498451a015149fac85f4faa295a8aca9bfdc"
+generated_digest: "sha256:a124aa1288a2d1c4c8b5d548019b1c8b399cc924dffd94f2f5f17a865a6c30e3"
 generated:
   id: preferences.set_sound_settings
   domain: preferences
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

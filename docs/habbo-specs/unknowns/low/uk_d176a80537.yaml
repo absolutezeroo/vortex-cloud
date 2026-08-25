@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e7f8d35d41d53c7b681d645e417e69862ff428beabe5aecd172cab3c9315ad7b"
+generated_digest: "sha256:1d4ec2837d429ce71da8c054a94c8778eb5bcb6df0195003a47c34f8ba530348"
 generated:
   id: uk_d176a80537
   subject: "incoming/FriendFurniConfirmLock: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: FriendFurniConfirmLockComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_94da840eaeae
+  - id: ev_56878dd8e0b4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/lovelock/FriendFurniConfirmLockMessageEvent.java
     symbol: FriendFurniConfirmLockMessageEvent
     line: 14

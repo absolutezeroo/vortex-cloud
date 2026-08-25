@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:48590405c465c9cd9248a70c5c054526f381a80816f774738e4e9225e0a9725f"
+generated_digest: "sha256:6667ab83046af4b28a8a0255f90e26555d5a110f434b4b918aeae2b38512d19c"
 generated:
   name: UpdateCondition
   direction: incoming
@@ -24,7 +24,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_84157d5604eb
+    - ev_b08791c0bd2d
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -38,13 +38,13 @@ generated:
     partial: true
     types: []
     evidence: ev_61f3165c7b68
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_84157d5604eb
+    evidence: ev_b08791c0bd2d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -68,10 +68,10 @@ generated:
     symbol: UpdateConditionMessageComposer
     line: 31
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/roomevents/userdefinedroomevents/UserDefinedRoomEventsCtrl.as:339 with 5 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_84157d5604eb
+  - id: ev_b08791c0bd2d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/UpdateConditionMessageEvent.java
     symbol: UpdateConditionMessageEvent
     line: 20

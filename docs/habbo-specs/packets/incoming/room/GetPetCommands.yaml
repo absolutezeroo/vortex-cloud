@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6863fd577cad79089b869a9d4813ad27bf3d155387baacab7e6111be6080ae83"
+generated_digest: "sha256:553ecb599233f634ad1210a3100ca59e4c00c83af2e21751aaeb972680a70df9"
 generated:
   name: GetPetCommands
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_dc3d9d6c1a72
-    - ev_1958d0c42caa
+    - ev_ab4e8a640b16
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_76fc6f13a736
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_1958d0c42caa
+    evidence: ev_ab4e8a640b16
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: GetPetCommandsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1958d0c42caa
+  - id: ev_ab4e8a640b16
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/GetPetCommandsMessageEvent.java
     symbol: GetPetCommandsMessageEvent
     line: 9

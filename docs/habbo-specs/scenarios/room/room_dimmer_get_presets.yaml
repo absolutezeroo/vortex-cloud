@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:310a6024c4c48bcdad71a9469ad06cb870b066915ee035933626331242a03da8"
+generated_digest: "sha256:80f326941c4c78d86053472a913887d81242982ad2c2f32d9b4c95b915275f50"
 generated:
   feature: room.room_dimmer_get_presets
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_75b51ff43f71
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_2ecbb4c06165
+      evidence: ev_c3c0642d9281
   - scenario: room.room_dimmer_get_presets.guard_1
     title: "room dimmer get presets: the guard 'state is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_75b51ff43f71
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_2ecbb4c06165
+      evidence: ev_c3c0642d9281
   - scenario: room.room_dimmer_get_presets.success
     title: "room dimmer get presets: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - RoomDimmerPresets
       evidence: ev_40274c7704f4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomDimmerPresets
-      evidence: ev_2ecbb4c06165
+      evidence: ev_c3c0642d9281
   evidence:
-  - id: ev_2ecbb4c06165
+  - id: ev_c3c0642d9281
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RoomDimmerGetPresetsMessageEvent.java
     symbol: RoomDimmerGetPresetsMessageEvent
     line: 8

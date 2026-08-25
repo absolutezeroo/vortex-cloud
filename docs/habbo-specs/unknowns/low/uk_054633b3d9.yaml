@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c895b74478c9ac7ab62b0132303b82e0490723418b669395d289594a918a5d04"
+generated_digest: "sha256:ee2ae7fd73e02051118eff83d7a30d6ac086a1540e8083c6d0be98cb3fe514d9"
 generated:
   id: uk_054633b3d9
   subject: "outgoing/ModToolUserRoomVisits: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ModToolUserRoomVisits
   known_evidence:
-  - id: ev_5dc4b143c1cb
+  - id: ev_80b6e0cab269
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/ModToolUserRoomVisitsComposer.java
     symbol: ModToolUserRoomVisitsComposer
     line: 23

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3c1b85dc71e47eb773fc44e2952c665e71c45b2e081bc09291927a5abd3f21c3"
+generated_digest: "sha256:59f06a467d274ce2c6a71459097ec2c4c55f2bd067d1cbeb6e0c8ff2feca44dd"
 generated:
   id: cf_83be257d62
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, string, string"
     evidence: ev_9ab1cb2c5b3c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, string, string"
-    evidence: ev_3436122cfc80
+    evidence: ev_c67426f4e109
   - origin: vortex
     authority: vortex_emulator
     claim: "1 fields: block"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2021
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_3436122cfc80
+  - id: ev_c67426f4e109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/NewFriendRequestMessageComposer.java
     symbol: NewFriendRequestMessageComposer
     line: 16

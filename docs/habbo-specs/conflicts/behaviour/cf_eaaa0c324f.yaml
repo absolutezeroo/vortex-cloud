@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3119c159da73e690c9eaac635ac3260def1e5434bd67205fff1bb2c262da97fb"
+generated_digest: "sha256:1768e0312ad38d3d2b0a0cfd49564b58e8637609b6a4ea0f85391d1e857a0b36"
 generated:
   id: cf_eaaa0c324f
   kind: behaviour
   subject: "RemoveAdminRightsFromMember: packets emitted in response"
   packet: RemoveAdminRightsFromMember
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuildMembershipUpdated
-    evidence: ev_1351373b019e
+    evidence: ev_90a9b66a8e58
   - origin: vortex
     authority: vortex_emulator
     claim: GuildMembershipUpdated then GuildMemberMgmtFailed
     evidence: ev_c7a116d6502e
   evidence:
-  - id: ev_1351373b019e
+  - id: ev_90a9b66a8e58
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/RemoveAdminRightsFromMemberMessageEvent.java
     symbol: RemoveAdminRightsFromMemberMessageEvent
     line: 16

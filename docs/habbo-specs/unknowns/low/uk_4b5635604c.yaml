@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:61af591970a2368450ec7ecc083f65b5def1fde9f37176142fb0eee2253e2860"
+generated_digest: "sha256:6321aabbb36f73e2feea43c13ca436d94a46508e8f060a8b767198e9c887e08b"
 generated:
   id: uk_4b5635604c
   subject: "outgoing/LoadGameMessage: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: LoadGameMessage
   known_evidence:
-  - id: ev_152654354ef1
+  - id: ev_62fddf97d5bc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LoadGameMessageMessageComposer.java
     symbol: LoadGameMessageMessageComposer
     line: 21

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:caa5140985075ec504f4b8933d59df7e8deb7ecbc99292abd11839e492467e65"
+generated_digest: "sha256:214d9745d0caa9ed9ec70ac030ead64a5494140d8eccc640241b5b13b1444ca0"
 generated:
   name: BadgePointLimits
   direction: outgoing
@@ -54,7 +54,7 @@ generated:
     - string
     - int32
     evidence: ev_2cf3d7f0d3d9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -64,7 +64,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_deb82bccd443
+    evidence: ev_d54ee7f5b3d1
   evidence:
   - id: ev_2cf3d7f0d3d9
     kind: client_parser
@@ -74,10 +74,10 @@ generated:
     symbol: _SafeCls_3205
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_deb82bccd443
+  - id: ev_d54ee7f5b3d1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/BadgePointLimitsMessageComposer.java
     symbol: BadgePointLimitsMessageComposer
     line: 14

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:80cf25b4fc78c201a91b7b2c8a08638d24545cee6ff153b7ef79b43641ae9798"
+generated_digest: "sha256:e4f2bda11ef25d4ec9c9645fb0f85d38dc486dc4b3576c7a5169012fda590b93"
 generated:
   id: uk_1b8b993382
   subject: "outgoing/RoomSettingsData: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3719
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_7a9d7794f699
+  - id: ev_5cf57048d2a0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomSettingsDataMessageComposer.java
     symbol: RoomSettingsDataMessageComposer
     line: 16

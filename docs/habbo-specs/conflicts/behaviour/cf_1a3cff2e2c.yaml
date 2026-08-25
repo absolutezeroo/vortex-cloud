@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:033fac2f09ffe6ee946eb58e11162ea9da5d2ec573cd29755d2f5bd70183115f"
+generated_digest: "sha256:ecc3b768c9f56f94d581ec527c7e1601fc0d6c8367c53c6ff8c7275560167e97"
 generated:
   id: cf_1a3cff2e2c
   kind: behaviour
   subject: "GetPetCommands: packets emitted in response"
   packet: GetPetCommands
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: PetTrainingPanel
-    evidence: ev_1958d0c42caa
+    evidence: ev_ab4e8a640b16
   - origin: vortex
     authority: vortex_emulator
     claim: PetCommands
     evidence: ev_27f95296070c
   evidence:
-  - id: ev_1958d0c42caa
+  - id: ev_ab4e8a640b16
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/GetPetCommandsMessageEvent.java
     symbol: GetPetCommandsMessageEvent
     line: 9

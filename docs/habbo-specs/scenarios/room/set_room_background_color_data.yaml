@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ad4d98d46f5ebfe83e99021b4c5199f0c4acfba469d9da55cd77248aed4fcefd"
+generated_digest: "sha256:150cd82624e7959dd41248d89d2f7494c76084428c71f6300e603948e00a7799"
 generated:
   feature: room.set_room_background_color_data
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f5b38117337e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eb3a2b00057b
+      evidence: ev_dc56d8c19122
   - scenario: room.set_room_background_color_data.guard_1
     title: "set room background color data: the guard 'item?.Logic is not FurnitureBackgroundColorLogic toner' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eb3a2b00057b
+      evidence: ev_dc56d8c19122
   - scenario: room.set_room_background_color_data.guard_2
     title: "set room background color data: the guard 'StuffData is not INumberStuffData numbers' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_554142d23342
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eb3a2b00057b
+      evidence: ev_dc56d8c19122
   - scenario: room.set_room_background_color_data.success
     title: "set room background color data: the request is accepted"
     given:
@@ -100,16 +100,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_554142d23342
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_eb3a2b00057b
+      evidence: ev_dc56d8c19122
   evidence:
-  - id: ev_eb3a2b00057b
+  - id: ev_dc56d8c19122
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/SetRoomBackgroundColorDataEvent.java
     symbol: SetRoomBackgroundColorDataEvent
     line: 12

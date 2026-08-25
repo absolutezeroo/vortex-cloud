@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bab6f52ce7232e6f241f183c90c9aa3810d7839e96b48fe69a9eced47e5bc976"
+generated_digest: "sha256:f5297257c4d665c20fdf32cbc4f0b245029db78f47b1887e353f0d85e7366f8b"
 generated:
   feature: moderation.guide_session_message
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c2d3b5fb2daf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_aca47f31c629
+      evidence: ev_465e4b8629e3
   - scenario: moderation.guide_session_message.guard_1
     title: "guide session message: the guard 'partnerId <= 0' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c2d3b5fb2daf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_aca47f31c629
+      evidence: ev_465e4b8629e3
   - scenario: moderation.guide_session_message.success
     title: "guide session message: the request is accepted"
     given:
@@ -78,16 +78,16 @@ generated:
       emits:
       - GuideSessionMessage
       evidence: ev_5e4aba593bd7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_aca47f31c629
+      evidence: ev_465e4b8629e3
   evidence:
-  - id: ev_aca47f31c629
+  - id: ev_465e4b8629e3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionMessageMessageEvent.java
     symbol: GuideSessionMessageMessageEvent
     line: 12

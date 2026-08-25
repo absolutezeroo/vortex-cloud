@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bb643116be96d5504e504429def421ff1ab8ce56003fb204b2462964066dd689"
+generated_digest: "sha256:8e65744c6bdb85bed78e735735d1b9869b034e6024bc198b0078bfb195e258db"
 generated:
   feature: catalog.get_owned_furniture_count
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec964ee8774f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
-      evidence: ev_592bac837a15
+      evidence: ev_0c5b085bab0e
   - scenario: catalog.get_owned_furniture_count.success
     title: "get owned furniture count: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - BuildersClubFurniCount
       evidence: ev_2b653ae253b4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
-      evidence: ev_592bac837a15
+      evidence: ev_0c5b085bab0e
   evidence:
-  - id: ev_592bac837a15
+  - id: ev_0c5b085bab0e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubQueryFurniCountMessageEvent.java
     symbol: BuildersClubQueryFurniCountMessageEvent
     line: 8

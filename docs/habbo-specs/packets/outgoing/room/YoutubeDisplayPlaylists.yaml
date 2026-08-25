@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59d43e53f1f67ef0832bc12677b028f3b964656108e4d9e29949eb7ce58cc444"
+generated_digest: "sha256:90856dd4fc136c8a6019c5b114cf47cc7a1cad346be1f70225e7b5b2961fe986"
 generated:
   name: YoutubeDisplayPlaylists
   direction: outgoing
@@ -100,7 +100,7 @@ generated:
     partial: true
     types: []
     evidence: ev_bbd4207e480e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -111,7 +111,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_e2cb95095ffb
+    evidence: ev_621b18a8627d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -143,10 +143,10 @@ generated:
     symbol: YoutubeDisplayPlaylistsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e2cb95095ffb
+  - id: ev_621b18a8627d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/youtube/YoutubeDisplayPlaylistsMessageComposer.java
     symbol: YoutubeDisplayPlaylistsMessageComposer
     line: 22

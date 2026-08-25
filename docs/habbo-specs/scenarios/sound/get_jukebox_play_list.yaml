@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6e8f6b608771a819dcea1f6c02c6fca1a102d7ddb6adfc8efe89af812a3255ce"
+generated_digest: "sha256:bdd2e839dab0c93410e5710d64a2032f2f4961ce6b975ab7595c4e5adc36fca1"
 generated:
   feature: sound.get_jukebox_play_list
   scenarios:
@@ -31,18 +31,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a452a691fccf
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - JukeboxSongDisks
       - UserSongDisksInventory
-      evidence: ev_84b20a5349c1
+      evidence: ev_3d8adc6239e7
   evidence:
-  - id: ev_84b20a5349c1
+  - id: ev_3d8adc6239e7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetJukeboxPlayListMessageEvent.java
     symbol: GetJukeboxPlayListMessageEvent
     line: 10

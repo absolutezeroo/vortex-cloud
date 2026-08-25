@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:305c63716d15bc4e5f56302ff1e3710cb173f3ffa5aa5d2f2a85b93396174e9d"
+generated_digest: "sha256:6634fa331a7175493dabd4b8e581c64169802a40ae7e5b33d238e4551d0b880f"
 generated:
   name: ChangeMotto
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_688b81d888bc
-    - ev_89bfb8547eaa
+    - ev_2407931e65ff
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_19748d16fb1e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_89bfb8547eaa
+    evidence: ev_2407931e65ff
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: ChangeMottoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_89bfb8547eaa
+  - id: ev_2407931e65ff
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ChangeMottoMessageEvent.java
     symbol: ChangeMottoMessageEvent
     line: 11

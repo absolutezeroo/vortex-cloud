@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1e05ad12c93b6a9ea91d760a15e92d179b4d040dba50c760700fdfabed8d5745"
+generated_digest: "sha256:05d7cb0e6b8007d8e9e8e31d04807506fddd55f754dba8c0d209cf229feed89f"
 generated:
   id: cf_bf19b93a73
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, boolean"
     evidence: ev_dd42ce80f618
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, boolean"
-    evidence: ev_5d16ed7daa8f
+    evidence: ev_30ef14ff6689
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, boolean"
@@ -50,10 +50,10 @@ generated:
     symbol: SleepMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5d16ed7daa8f
+  - id: ev_30ef14ff6689
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/SleepMessageComposer.java
     symbol: SleepMessageComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:157640ad5352f0db66cf9298237bfcfd7db43069c5a1584f8570bc22600a7ad3"
+generated_digest: "sha256:36f051e0b756e4eac017148bbd1512cd2230cd46e95af622b4a59ec066d1ac74"
 generated:
   name: SetRoomBackgroundColorData
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_94d3fd8e71ec
-    - ev_eb3a2b00057b
+    - ev_dc56d8c19122
   - index: 1
     name: hue
     type: int32
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_94d3fd8e71ec
-    - ev_eb3a2b00057b
+    - ev_dc56d8c19122
   - index: 2
     name: saturation
     type: int32
@@ -42,7 +42,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_94d3fd8e71ec
-    - ev_eb3a2b00057b
+    - ev_dc56d8c19122
   - index: 3
     name: brightness
     type: int32
@@ -50,7 +50,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_94d3fd8e71ec
-    - ev_eb3a2b00057b
+    - ev_dc56d8c19122
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -68,7 +68,7 @@ generated:
     partial: true
     types: []
     evidence: ev_aca6be4691cb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -77,7 +77,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_eb3a2b00057b
+    evidence: ev_dc56d8c19122
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -105,10 +105,10 @@ generated:
     symbol: SetRoomBackgroundColorDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eb3a2b00057b
+  - id: ev_dc56d8c19122
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/SetRoomBackgroundColorDataEvent.java
     symbol: SetRoomBackgroundColorDataEvent
     line: 12

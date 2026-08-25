@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1640104299d7c5990a7ed801dbe9761ec822a203376abb9c80392762685b3a4d"
+generated_digest: "sha256:0e83b5f64df7f9f0899180620eed70e254cfd8cb4276b7e9ed19d143805316b3"
 generated:
   name: ChangeNameUpdated
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a9738902513e
+    - ev_2c66fc575866
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a9738902513e
+    - ev_2c66fc575866
   - index: 2
     name: unknown_2
     type: int32
@@ -41,9 +41,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_a9738902513e
+    - ev_2c66fc575866
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -51,12 +51,12 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_a9738902513e
+    evidence: ev_2c66fc575866
   evidence:
-  - id: ev_a9738902513e
+  - id: ev_2c66fc575866
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/ChangeNameUpdatedComposer.java
     symbol: ChangeNameUpdatedComposer
     line: 16

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f66bcec7ca31238aa06f9c5450fdc6a86b7db94fbab2cbf7bb80175a6142c769"
+generated_digest: "sha256:443de5911a4fdc3ec89123e9ef7f3d5bbb28d7b18fda5c69b1a754840524da6f"
 generated:
   feature: groups.get_unread_forums_count
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_667e72aed004
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnreadForumsCount
-      evidence: ev_a268976e5ed0
+      evidence: ev_c0a5a54402ef
   - scenario: groups.get_unread_forums_count.guard_1
     title: "get unread forums count: the guard 'groupIds.Count == 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnreadForumsCount
-      evidence: ev_a268976e5ed0
+      evidence: ev_c0a5a54402ef
   - scenario: groups.get_unread_forums_count.guard_2
     title: "get unread forums count: the guard 'visibleMessageCounts.Count == 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnreadForumsCount
-      evidence: ev_a268976e5ed0
+      evidence: ev_c0a5a54402ef
   - scenario: groups.get_unread_forums_count.success
     title: "get unread forums count: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - UnreadForumsCount
       evidence: ev_06d9b29b6a55
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnreadForumsCount
-      evidence: ev_a268976e5ed0
+      evidence: ev_c0a5a54402ef
   evidence:
-  - id: ev_a268976e5ed0
+  - id: ev_c0a5a54402ef
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetUnreadForumsCountMessageEvent.java
     symbol: GetUnreadForumsCountMessageEvent
     line: 19

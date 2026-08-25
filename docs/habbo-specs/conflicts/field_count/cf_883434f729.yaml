@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:433e6ea47f70afdff73e3a2cc5b653dbb0339d0beca3de9fc6d030dd79bda4be"
+generated_digest: "sha256:c5e0fe2cb59c0c51329460b1f033924e0597d103620c67b2d328bde5aecddff3"
 generated:
   id: cf_883434f729
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: boolean, string, boolean, int32, int32, int32"
     evidence: ev_3fc55b211108
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "6 fields: boolean, string, boolean, int32, int32, int32"
-    evidence: ev_4edd2f1d7f5d
+    evidence: ev_e62a8873b16e
   - origin: vortex
     authority: vortex_emulator
     claim: "6 fields: boolean, string, boolean, int32, int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: FurniRentOrBuyoutOfferMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4edd2f1d7f5d
+  - id: ev_e62a8873b16e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/FurniRentOrBuyoutOfferMessageComposer.java
     symbol: FurniRentOrBuyoutOfferMessageComposer
     line: 25

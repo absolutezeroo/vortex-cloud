@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:66d229e6325cddfe956c55cef41a32690348e95df6c8d8786f8043dd538aee5a"
+generated_digest: "sha256:f56de54a039739a518f2d932e3ba2142b6ff5ac3b924dfa6fab0e10fe241a6a1"
 generated:
   id: cf_4f1ffae1f5
   kind: behaviour
   subject: "GetExtendedProfile: packets emitted in response"
   packet: GetExtendedProfile
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ExtendedProfile then ExtendedProfile
-    evidence: ev_4856865581d8
+    evidence: ev_a7ab39560ea1
   - origin: vortex
     authority: vortex_emulator
     claim: ExtendedProfile
     evidence: ev_d92be4fc9598
   evidence:
-  - id: ev_4856865581d8
+  - id: ev_a7ab39560ea1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetExtendedProfileMessageEvent.java
     symbol: GetExtendedProfileMessageEvent
     line: 11

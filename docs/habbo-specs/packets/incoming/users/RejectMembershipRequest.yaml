@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:96b4f4ade8add594073d232424265db9164e2e3313b88a7eed1620b06f84169f"
+generated_digest: "sha256:edd6ab8d436a4dce932f953b983de5c7d21f16e534dd5d0e6a58699dd8058c0e"
 generated:
   name: RejectMembershipRequest
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8d021e9852d7
+    - ev_937fb99e78db
   - index: 1
     name: user_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_8d021e9852d7
+    - ev_937fb99e78db
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_94ad923041e7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_8d021e9852d7
+    evidence: ev_937fb99e78db
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -79,10 +79,10 @@ generated:
     symbol: RejectMembershipRequestComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8d021e9852d7
+  - id: ev_937fb99e78db
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/RejectMembershipRequestMessageEvent.java
     symbol: RejectMembershipRequestMessageEvent
     line: 18

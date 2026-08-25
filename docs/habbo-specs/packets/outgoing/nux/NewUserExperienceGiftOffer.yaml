@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f648b1c5158d41b46ab8f83a9af0f8a5bf81a28d173b9cf53f4d9111e224af73"
+generated_digest: "sha256:b8107b9c42e4e478419e1f9b209c9704be8072d0b2b3f9e00237c642159dea1d"
 generated:
   name: NewUserExperienceGiftOffer
   direction: outgoing
@@ -74,7 +74,7 @@ generated:
     - int32
     - int32
     evidence: ev_b0473386ae38
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: true
@@ -83,7 +83,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_467683c35b6e
+    evidence: ev_8cc1adfe7699
   evidence:
   - id: ev_8d76776aec38
     kind: client_parser
@@ -101,10 +101,10 @@ generated:
     symbol: _SafeCls_3894
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_467683c35b6e
+  - id: ev_8cc1adfe7699
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/nux/NewUserExperienceGiftOfferMessageComposer.java
     symbol: NewUserExperienceGiftOfferMessageComposer
     line: 18

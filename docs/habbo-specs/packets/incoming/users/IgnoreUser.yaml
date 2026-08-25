@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:10f887e1579a47fb0559045171e66e83de97b1a93c0f0b8f214098012fc80e7e"
+generated_digest: "sha256:399159d93f491eda0401c2f093da8d85fcf277be0b804d8d65c34e986d350b42"
 generated:
   name: IgnoreUser
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_e849bb187ad2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_636e568dfb4a
+    evidence: ev_9877c69635f8
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: IgnoreUserComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_636e568dfb4a
+  - id: ev_9877c69635f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/IgnoreUserMessageEvent.java
     symbol: IgnoreUserMessageEvent
     line: 12

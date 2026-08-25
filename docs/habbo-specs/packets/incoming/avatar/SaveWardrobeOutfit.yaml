@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6776ea7f741027278c937d39927318a7ee89b3c1ff309e0968bb5d47e830557a"
+generated_digest: "sha256:87f9881d60213d84dc16bee946a688abc772b649283f7d8880db5e68c7109371"
 generated:
   name: SaveWardrobeOutfit
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f1e3a77439ea
+    - ev_3ccc9833c403
   - index: 1
     name: look
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f1e3a77439ea
+    - ev_3ccc9833c403
   - index: 2
     name: gender
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f1e3a77439ea
+    - ev_3ccc9833c403
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -53,7 +53,7 @@ generated:
     partial: true
     types: []
     evidence: ev_ab9050c8cc16
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -61,7 +61,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_f1e3a77439ea
+    evidence: ev_3ccc9833c403
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -88,10 +88,10 @@ generated:
     symbol: SaveWardrobeOutfitComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f1e3a77439ea
+  - id: ev_3ccc9833c403
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SaveWardrobeOutfitMessageEvent.java
     symbol: SaveWardrobeOutfitMessageEvent
     line: 11

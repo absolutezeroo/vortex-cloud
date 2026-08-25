@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6d2daf1f97733aef3eb016a760ed8d13d9856bc597f55f41c61eca55de4290e7"
+generated_digest: "sha256:8b583522328c7c46ad135c6e15f6e93e7c1e163d9e713d6960cb41da5552b379"
 generated:
   name: ModeratorToolPreferences
   direction: outgoing
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     evidence: ev_86034322ef13
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_642c0682d980
+    evidence: ev_08f5cfdd47c9
   evidence:
   - id: ev_86034322ef13
     kind: client_parser
@@ -76,10 +76,10 @@ generated:
     symbol: _SafeCls_3632
     line: 52
     note: official client build WIN63-202607011411-782849652
-  - id: ev_642c0682d980
+  - id: ev_08f5cfdd47c9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/ModeratorToolPreferencesMessageComposer.java
     symbol: ModeratorToolPreferencesMessageComposer
     line: 21

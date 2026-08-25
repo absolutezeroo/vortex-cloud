@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:256c048a1cac3c21783e816290cb02b589f611352280da814836aa2cba13798b"
+generated_digest: "sha256:6541fe16ef1ae64f262bc9a9748102645f748d559399d1b4e74ea40a580b5723"
 generated:
   name: MoveObject
   direction: incoming
@@ -72,7 +72,7 @@ generated:
     - int32
     - int32
     evidence: ev_d1d8a5d9df75
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -81,7 +81,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_d63af3431caf
+    evidence: ev_e8538d5e835d
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -109,10 +109,10 @@ generated:
     symbol: MoveObjectComposer
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d63af3431caf
+  - id: ev_e8538d5e835d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/MoveObjectMessageEvent.java
     symbol: MoveObjectMessageEvent
     line: 14

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f4b2b17f7444629169568c497b8771f692e1078849445497b57ba8b1819543a7"
+generated_digest: "sha256:0621ca539f5f554aa342330ef075df54d840ac2c17a08697c45211625baa6913"
 generated:
   feature: room.assign_rights
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3fffbe68a58d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_1
     title: "assign rights: the guard 'target <= 0 || actor == target || !await IsRoomOwnerAsync...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_2
     title: "assign rights: the guard 'alreadyHasRights' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_3
     title: "assign rights: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_4
     title: "assign rights: the guard '_state.ActiveRoomId != roomId' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_5
     title: "assign rights: the guard 'controllerType >= RoomControllerType.Rights' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.guard_6
     title: "assign rights: the guard '_registry is null' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   - scenario: room.assign_rights.success
     title: "assign rights: the request is accepted"
     given:
@@ -197,16 +197,16 @@ generated:
       - YouAreNotController
       - YouAreOwner
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_805b538d3195
+      evidence: ev_ba22de774884
   evidence:
-  - id: ev_805b538d3195
+  - id: ev_ba22de774884
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/AssignRightsMessageEvent.java
     symbol: AssignRightsMessageEvent
     line: 13

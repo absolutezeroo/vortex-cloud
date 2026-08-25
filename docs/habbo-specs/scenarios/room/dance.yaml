@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:53e3e85b89c3673ccc055007e8cba0d43ad1837706411971efb11e0a6a544877"
+generated_digest: "sha256:05da3d7b9c8f6bccb0d201603b16095bda74ef9936409356f24d6bdf8b36db23"
 generated:
   feature: room.dance
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e202f0e0c1a0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.guard_1
     title: "dance: the guard '!await _grainFactory .GetRoomAvatars(ctx.RoomId) .SetAvat...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e202f0e0c1a0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.guard_2
     title: "dance: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.guard_3
     title: "dance: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.guard_4
     title: "dance: the guard 'DanceType == danceType' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7fd0730f7cca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.guard_5
     title: "dance: the guard 'HasStatus(AvatarStatusType.Sit, AvatarStatusType.Lay)' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7fd0730f7cca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   - scenario: room.dance.success
     title: "dance: the request is accepted"
     given:
@@ -170,16 +170,16 @@ generated:
       emits:
       - Dance
       evidence: ev_274cd76a0729
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3678faf198ee
+      evidence: ev_d980d0ba0a93
   evidence:
-  - id: ev_3678faf198ee
+  - id: ev_d980d0ba0a93
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/DanceMessageEvent.java
     symbol: DanceMessageEvent
     line: 13

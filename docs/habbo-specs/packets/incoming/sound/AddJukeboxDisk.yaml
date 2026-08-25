@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67b0db851099d106d843ca6d3267ae95ddbbffd069c16e078b425e35ba1a0981"
+generated_digest: "sha256:4bd3bc9840833f4d1ca5ddc42d77646aa12d83d528d9f0afbc795dec41061d82"
 generated:
   name: AddJukeboxDisk
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_7b2d1e07bb8a
+    - ev_8ca52059ecf8
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_7b2d1e07bb8a
+    - ev_8ca52059ecf8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_4f57a660225e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_7b2d1e07bb8a
+    evidence: ev_8ca52059ecf8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -78,10 +78,10 @@ generated:
     symbol: AddJukeboxDiskComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7b2d1e07bb8a
+  - id: ev_8ca52059ecf8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/AddJukeboxDiskEvent.java
     symbol: AddJukeboxDiskEvent
     line: 10

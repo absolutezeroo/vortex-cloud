@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f4e3e9352045646e8a25cbd96cf555f267031decb06264b9fdc36a949aedf780"
+generated_digest: "sha256:78720e0189233f1823ceb9079e591283a74bdc1877658a45f78e1d0ade42946b"
 generated:
   name: GetNowPlaying
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_ae4f199a8c0f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_844d920cc624
+    evidence: ev_0c29e0399130
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetNowPlayingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_844d920cc624
+  - id: ev_0c29e0399130
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/GetNowPlayingMessageEvent.java
     symbol: GetNowPlayingMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a1155718dcac3067acb8bc2a4c8fdc14e9cb517281b157166dfe70d3568cff8e"
+generated_digest: "sha256:1dba3a930dbe9ed80cdc6917e92a2f7910772c9c4e141a73bf293a972ae6aed2"
 generated:
   feature: room.remove_saddle_from_pet
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_85b544fbe508
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnseenItems
       - FurniListInvalidate
-      evidence: ev_d6ed291eb9f2
+      evidence: ev_52eb3665510b
   - scenario: room.remove_saddle_from_pet.guard_1
     title: "remove saddle from pet: the guard '!_roomGrain._state.PetsById.TryGetValue(petId, out PetSna...' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_acc1f9bce7eb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnseenItems
       - FurniListInvalidate
-      evidence: ev_d6ed291eb9f2
+      evidence: ev_52eb3665510b
   - scenario: room.remove_saddle_from_pet.success
     title: "remove saddle from pet: the request is accepted"
     given:
@@ -81,18 +81,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_472f140d6fa1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UnseenItems
       - FurniListInvalidate
-      evidence: ev_d6ed291eb9f2
+      evidence: ev_52eb3665510b
   evidence:
-  - id: ev_d6ed291eb9f2
+  - id: ev_52eb3665510b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/RemoveSaddleFromPetMessageEvent.java
     symbol: RemoveSaddleFromPetMessageEvent
     line: 25

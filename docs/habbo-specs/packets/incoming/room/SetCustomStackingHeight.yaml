@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6aa9dde7c2fd209e4a7f272edbd207f046d526c97afb47ef788c3daafdb1f483"
+generated_digest: "sha256:18b51f69930e39c7973e03897e994f0e1fc630b2b2ac4b46540add066597d9f3"
 generated:
   name: SetCustomStackingHeight
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_41c487039f37
+    - ev_1aef48f5f62d
   - index: 1
     name: stacker_height
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_41c487039f37
+    - ev_1aef48f5f62d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_97fac333720c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_41c487039f37
+    evidence: ev_1aef48f5f62d
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -80,10 +80,10 @@ generated:
     symbol: SetCustomStackingHeightComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_41c487039f37
+  - id: ev_1aef48f5f62d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetCustomStackingHeightEvent.java
     symbol: SetCustomStackingHeightEvent
     line: 15

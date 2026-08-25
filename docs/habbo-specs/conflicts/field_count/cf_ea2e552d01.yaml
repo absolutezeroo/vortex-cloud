@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:09b42f792f7e4bf53b9bd4749dd615d91c578fb63d37684bc61b351f020ba039"
+generated_digest: "sha256:cde53a68ccd7ff40f17163203cd73aa97da91f6f0cbfc0167bcf8363b7d4c8cb"
 generated:
   id: cf_ea2e552d01
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: string, string"
     evidence: ev_ea90037ec8f7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: string, string"
-    evidence: ev_0751d2e9341c
+    evidence: ev_68e70f6bca25
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: string, string"
@@ -50,10 +50,10 @@ generated:
     symbol: RoomPropertyMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0751d2e9341c
+  - id: ev_68e70f6bca25
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomPropertyMessageComposer.java
     symbol: RoomPropertyMessageComposer
     line: 17

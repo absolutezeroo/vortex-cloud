@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:353a03aa2b38ad45bac9ca6b538f6db9a0c1689224c1cfcd3974984b9bf51d56"
+generated_digest: "sha256:f8c1f54f2a7b37cddc84fbe531fb7d2e2f7d95c47b70e6794b703357c6cacd56"
 generated:
   name: GameUnloaded
   direction: incoming
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_9d7656a3da7d
+    evidence: ev_0575117f3cf4
   evidence:
-  - id: ev_9d7656a3da7d
+  - id: ev_0575117f3cf4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GameUnloadedMessageEvent.java
     symbol: GameUnloadedMessageEvent
     line: 8

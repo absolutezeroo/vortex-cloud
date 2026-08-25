@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:50f513be4c43621cd9dec50e147de2719f59507aa27fed54363105898d5cda79"
+generated_digest: "sha256:ec1939b37ffed4f1f761037d697d7bca7b3a3970c839151c5429d9f3a12f4d62"
 generated:
   name: MysticBoxClose
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_fb38cac23c06
+    evidence: ev_b45841a9d898
   evidence:
-  - id: ev_fb38cac23c06
+  - id: ev_b45841a9d898
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/events/mysticbox/MysticBoxCloseComposer.java
     symbol: MysticBoxCloseComposer
     line: 9

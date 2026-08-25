@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:41d91859a4d778bbe153a6f5161c5a5ba934ac7b9a2facc795af686201f35866"
+generated_digest: "sha256:69f1e81335fa880a4f07055e30557fb29c412061d54325da702bdbcc5475ccd2"
 generated:
   feature: wired.apply_snapshot
   scenarios:
@@ -31,18 +31,18 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2e4c52f88d8e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
       - FloorItemOnRoller
-      evidence: ev_aeda2b9a7995
+      evidence: ev_939ae271f2b0
   evidence:
-  - id: ev_aeda2b9a7995
+  - id: ev_939ae271f2b0
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/ApplySnapshotMessageEvent.java
     symbol: ApplySnapshotMessageEvent
     line: 26

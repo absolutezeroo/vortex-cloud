@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:84171d55770839e58baf82c7c1d3e1b84feb3458263dc6e058eb8d63a03e09f1"
+generated_digest: "sha256:dcf477b9b3625541193d3912893989ed51fd1ff904f7befd302df1333bc516e0"
 generated:
   feature: moderation.mod_kick
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d5fb3a1b3a4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.guard_1
     title: "mod kick: the guard 'ModerationPolicy.IsAllowed(actorPermissions, targetPermis...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.guard_2
     title: "mod kick: the guard 'playerId <= 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.guard_3
     title: "mod kick: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.guard_4
     title: "mod kick: the guard 'actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._...' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9eb84a2a2088
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.guard_5
     title: "mod kick: the guard 'string.IsNullOrWhiteSpace(message)' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   - scenario: moderation.mod_kick.success
     title: "mod kick: the request is accepted"
     given:
@@ -171,16 +171,16 @@ generated:
       - ModeratorActionResult
       - ModeratorCautionEvent
       evidence: ev_1d5fb3a1b3a4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_29132b00b365
+      evidence: ev_907a939ef104
   evidence:
-  - id: ev_29132b00b365
+  - id: ev_907a939ef104
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModKickMessageEvent.java
     symbol: ModKickMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:935f3545196c038b4464580d851b22b535d165b244fac39d5f34291928f8a0d7"
+generated_digest: "sha256:02ba36896dd5ccf3632efcf2d05aabf0f002c4017ccfccfe28f80ecfd854ade2"
 generated:
   id: uk_e4618f13d0
   subject: "outgoing/RemoveFriend: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RemoveFriend
   known_evidence:
-  - id: ev_8d13b5c2a00b
+  - id: ev_918fddb7d266
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/RemoveFriendComposer.java
     symbol: RemoveFriendComposer
     line: 21

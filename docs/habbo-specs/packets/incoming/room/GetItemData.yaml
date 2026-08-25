@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f259d2eef8949296797aba60ab095a596a21e01b63784bb742abb5841d486038"
+generated_digest: "sha256:f7fe10b6ad9541942a2db55aaa63835fdbdbd346bbe0af8aa86bd2a5de705d8e"
 generated:
   name: GetItemData
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_336ecc6ff35d
-    - ev_cc59c60f447d
+    - ev_550c8b7bbfce
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_f8bdbe2c048f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_cc59c60f447d
+    evidence: ev_550c8b7bbfce
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -71,10 +71,10 @@ generated:
     symbol: GetItemDataComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_cc59c60f447d
+  - id: ev_550c8b7bbfce
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/GetItemDataMessageEvent.java
     symbol: GetItemDataMessageEvent
     line: 11

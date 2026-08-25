@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1e82b4e5680abdd9e1899a1da19bb7bb76a6c0dee591fdbc15635986ce1719f4"
+generated_digest: "sha256:93abc1aaed32dc3fc9d13bff5c6d8b9eca43cbf8afbdc781cf7ffea72a9d66a0"
 generated:
   id: uk_afc7ecd2d0
   subject: "outgoing/UserChatlog: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2857
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_621f2b07be52
+  - id: ev_9228834115a8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/UserChatlogMessageComposer.java
     symbol: UserChatlogMessageComposer
     line: 25

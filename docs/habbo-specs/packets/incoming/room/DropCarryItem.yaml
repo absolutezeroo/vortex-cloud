@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:61cf50f4ca003558888e2acffacc65cf105cbadf48330bfeef300aac5d1536c5"
+generated_digest: "sha256:b3ac3b59130a768ae84053b15ef530bb31b081f7268ba2a7e85373f16f2cd1b6"
 generated:
   name: DropCarryItem
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_96c9d04c588e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_671d8b532f7e
+    evidence: ev_e2c0cd4f65c9
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: DropCarryItemComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_671d8b532f7e
+  - id: ev_e2c0cd4f65c9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/DropCarryItemMessageEvent.java
     symbol: DropCarryItemMessageEvent
     line: 9

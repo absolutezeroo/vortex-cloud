@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9c37d5d7bdd2a02b1993c8e3279e94d7ab76f1712aa15b08d5e94d63c65c452f"
+generated_digest: "sha256:cee3ee838f4e36a477da1387dc9ae16c6d20f4c43a2e4f40b5f9a2347d04bd03"
 generated:
   name: GetOfficialSongId
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_9c9063a3c86a
+    - ev_3d1f09715c85
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_c88ad3f592ac
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_9c9063a3c86a
+    evidence: ev_3d1f09715c85
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: GetOfficialSongIdComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9c9063a3c86a
+  - id: ev_3d1f09715c85
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetOfficialSongIdMessageEvent.java
     symbol: GetOfficialSongIdMessageEvent
     line: 10

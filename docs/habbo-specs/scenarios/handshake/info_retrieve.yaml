@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f256d33e61de92225a7d1c5b5811e1dd17c08135a42cdc196896d4e91fbfeb84"
+generated_digest: "sha256:65b3d90207a7f42b91516563be1890d233892cadad43352fac8601b180a8d5ac"
 generated:
   feature: handshake.info_retrieve
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bc151838dd5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ecd7117718e9
+      evidence: ev_9a1d07232a27
   - scenario: handshake.info_retrieve.success
     title: "info retrieve: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ecd7117718e9
+      evidence: ev_9a1d07232a27
   evidence:
-  - id: ev_ecd7117718e9
+  - id: ev_9a1d07232a27
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/InfoRetrieveMessageEvent.java
     symbol: InfoRetrieveMessageEvent
     line: 31

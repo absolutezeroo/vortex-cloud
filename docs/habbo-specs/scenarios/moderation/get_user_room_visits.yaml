@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8250ed42777c27f3bde36ced7db87aa9a64811086a20cc231717e65e0c373fab"
+generated_digest: "sha256:e3c0df0fa9f5a35d5ce3831f6e3d4706704f2936a273f9496b425832d3177e82"
 generated:
   feature: moderation.get_user_room_visits
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a11449b6dbcb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ModToolUserRoomVisits
-      evidence: ev_dd471a377e3e
+      evidence: ev_d94132821a78
   - scenario: moderation.get_user_room_visits.guard_1
     title: "get user room visits: the guard '!permissions.HasAny(Capabilities.Moderation.Chatlogs, Cap...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a11449b6dbcb
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ModToolUserRoomVisits
-      evidence: ev_dd471a377e3e
+      evidence: ev_d94132821a78
   - scenario: moderation.get_user_room_visits.guard_2
     title: "get user room visits: the guard 'playerId <= 0' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ModToolUserRoomVisits
-      evidence: ev_dd471a377e3e
+      evidence: ev_d94132821a78
   - scenario: moderation.get_user_room_visits.success
     title: "get user room visits: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - RoomVisitsEvent
       evidence: ev_3939b030ad18
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ModToolUserRoomVisits
-      evidence: ev_dd471a377e3e
+      evidence: ev_d94132821a78
   evidence:
-  - id: ev_dd471a377e3e
+  - id: ev_d94132821a78
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetRoomVisitsMessageEvent.java
     symbol: GetRoomVisitsMessageEvent
     line: 11

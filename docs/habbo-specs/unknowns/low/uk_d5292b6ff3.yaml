@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2316114b470422c633bfe18de1619b07b96f86f4b425b114cb0ebba0e5558f81"
+generated_digest: "sha256:1a91378c6ffb2dd6caac0b993f2054599e6f68d48a86636048c9fda8543d214e"
 generated:
   id: uk_d5292b6ff3
   subject: "outgoing/HotelWillCloseInMinutes: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: HotelWillCloseInMinutesMessageParser
     line: 22
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_940b9d9b2d9b
+  - id: ev_98863a9ae897
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/HotelWillCloseInMinutesMessageComposer.java
     symbol: HotelWillCloseInMinutesMessageComposer
     line: 15

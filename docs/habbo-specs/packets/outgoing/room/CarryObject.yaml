@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e09025f8543574f76a97f2e307ec08dc725a7e93cc0d33d14776127847fd6856"
+generated_digest: "sha256:31ef20c536d375ed9754046365bf296ae115d32ce12ec20a589712396e5dceae"
 generated:
   name: CarryObject
   direction: outgoing
@@ -49,14 +49,14 @@ generated:
     - int32
     - int32
     evidence: ev_cf46ca7dbf18
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_bb99fe39aeaa
+    evidence: ev_29da54151f60
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: CarryObjectMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bb99fe39aeaa
+  - id: ev_29da54151f60
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/CarryObjectMessageComposer.java
     symbol: CarryObjectMessageComposer
     line: 16

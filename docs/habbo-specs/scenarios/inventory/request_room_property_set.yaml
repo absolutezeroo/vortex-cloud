@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1cfbddef4934ae03091342334ad95c7e7a50bab19bf20177ff8109a9df952ba0"
+generated_digest: "sha256:f4e0fa0e5df01972d9727b5de837090c9b716b71449aaf786fb251660220f993"
 generated:
   feature: inventory.request_room_property_set
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_fc75e6123bc2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FurniListRemove
       - RoomProperty
       - FurniListRemove
-      evidence: ev_7c51a6cff5ca
+      evidence: ev_5d5af748423d
   - scenario: inventory.request_room_property_set.success
     title: "request room property set: the request is accepted"
     given:
@@ -58,19 +58,19 @@ generated:
       emits:
       - RoomProperty
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FurniListRemove
       - RoomProperty
       - FurniListRemove
-      evidence: ev_7c51a6cff5ca
+      evidence: ev_5d5af748423d
   evidence:
-  - id: ev_7c51a6cff5ca
+  - id: ev_5d5af748423d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/RequestRoomPropertySetEvent.java
     symbol: RequestRoomPropertySetEvent
     line: 14

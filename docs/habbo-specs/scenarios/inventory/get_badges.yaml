@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bb514334e1087fb80359039bcb65542bb89047e54ab1c7966d56103b7bcd223b"
+generated_digest: "sha256:957c87aa61850b01aa3a73d3cd48378f2d2898107c922c2d1b7af4abfa79d686"
 generated:
   feature: inventory.get_badges
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6d72f2969639
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Badges
-      evidence: ev_7460c100c4ce
+      evidence: ev_de3a58cb55f8
   - scenario: inventory.get_badges.success
     title: "get badges: the request is accepted"
     given:
@@ -57,17 +57,17 @@ generated:
       - BadgesEvent
       - HabboUserBadges
       evidence: ev_6d72f2969639
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Badges
-      evidence: ev_7460c100c4ce
+      evidence: ev_de3a58cb55f8
   evidence:
-  - id: ev_7460c100c4ce
+  - id: ev_de3a58cb55f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetBadgesEvent.java
     symbol: GetBadgesEvent
     line: 8

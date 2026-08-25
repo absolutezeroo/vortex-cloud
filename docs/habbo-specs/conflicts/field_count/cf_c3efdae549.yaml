@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:cf2ae14e06ee9f82884915c1d173ea14909d7c97f799bc3c0a4bcdc0b0641fc5"
+generated_digest: "sha256:0b7237fd7bb22b170a796363629178b031dcaab71bbba5ae92332fe9457eaf0f"
 generated:
   id: cf_c3efdae549
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "3 fields: int32, int32, int32, int32, int32, string, string"
     evidence: ev_e0e763d32d46
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "17 fields: int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string, int32, int32, int32, string, string"
-    evidence: ev_302f98196462
+    evidence: ev_1c57eefaa21e
   evidence:
   - id: ev_e0e763d32d46
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3604
     line: 31
     note: official client build WIN63-202607011411-782849652
-  - id: ev_302f98196462
+  - id: ev_1c57eefaa21e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/RelationshipStatusInfoMessageComposer.java
     symbol: RelationshipStatusInfoMessageComposer
     line: 60

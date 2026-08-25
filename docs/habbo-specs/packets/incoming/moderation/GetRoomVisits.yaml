@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5669a08b01361a46fb19a28441be6972a261c6e739dab33048c4e8e3dd425e22"
+generated_digest: "sha256:84157ede26dc4eab7c478db947e7ffddfc718810efcd4c4b9cb1ca3930d703d2"
 generated:
   name: GetRoomVisits
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_dd471a377e3e
+    - ev_d94132821a78
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_ecb513f38f32
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_dd471a377e3e
+    evidence: ev_d94132821a78
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GetRoomVisitsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd471a377e3e
+  - id: ev_d94132821a78
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetRoomVisitsMessageEvent.java
     symbol: GetRoomVisitsMessageEvent
     line: 11

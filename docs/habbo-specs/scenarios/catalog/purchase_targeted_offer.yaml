@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:25907dcfcbb607a15235c06b876af39d36ce15ca755fda0834c83ea23d927a22"
+generated_digest: "sha256:48108d0ca7373ea96d3a6a2d336227ec0344e0c53b1dd81d3992021851aa1c4c"
 generated:
   feature: catalog.purchase_targeted_offer
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4595f06449c6
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_1
     title: "purchase targeted offer: the guard 'definition is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_2
     title: "purchase targeted offer: the guard '!TargetedOfferMapper.CanPurchase(definition, purchaseCoun...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_3
     title: "purchase targeted offer: the guard '!result.Succeeded' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_4
     title: "purchase targeted offer: the guard 'definition.ExpiresAt is DateTime expiresAt && expiresAt <...' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_481db2ad8bfa
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_5
     title: "purchase targeted offer: the guard '_registry is null' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.success
     title: "purchase targeted offer: the request is accepted"
     given:
@@ -169,16 +169,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d5cec86b988c
+      evidence: ev_cea6063f9719
   evidence:
-  - id: ev_d5cec86b988c
+  - id: ev_cea6063f9719
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseTargetedOfferEvent.java
     symbol: PurchaseTargetedOfferEvent
     line: 13

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8bc516dc559bd3a3fca2b54abd8eb20f4b2278f2e8493c08ca57348bb4378740"
+generated_digest: "sha256:c6130743c74b1a2adb07119c2a14ce551909a0aa331394d384e1042d4e7238e2"
 generated:
   name: BonusRareInfo
   direction: outgoing
@@ -67,7 +67,7 @@ generated:
     - int32
     - int32
     evidence: ev_c3ac47e6f63d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -76,7 +76,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_fb815243379c
+    evidence: ev_aba11ffc23cf
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -104,10 +104,10 @@ generated:
     symbol: BonusRareInfoMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fb815243379c
+  - id: ev_aba11ffc23cf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/BonusRareInfoMessageComposer.java
     symbol: BonusRareInfoMessageComposer
     line: 17

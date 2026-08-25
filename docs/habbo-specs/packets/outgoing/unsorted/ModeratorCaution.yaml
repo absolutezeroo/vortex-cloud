@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cff9232e581b164f80df258f6e1c58ceb32cfe6576e1e68b07e4275a3301c618"
+generated_digest: "sha256:91dd0c07434944aa586040427a8eecd98670543614b35226c69d7d49fd2414fe"
 generated:
   name: ModeratorCaution
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - string
     - string
     evidence: ev_caacd02941a3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_9c4724b95137
+    evidence: ev_b5cc6e4765cd
   evidence:
   - id: ev_caacd02941a3
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_3718
     line: 36
     note: official client build WIN63-202607011411-782849652
-  - id: ev_9c4724b95137
+  - id: ev_b5cc6e4765cd
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/ModeratorCautionMessageComposer.java
     symbol: ModeratorCautionMessageComposer
     line: 17

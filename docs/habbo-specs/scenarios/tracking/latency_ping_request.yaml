@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fbcb5803bcfc612c5f82234bebdfe534170ba9b27e96d25846b32678853057a9"
+generated_digest: "sha256:b65bb91c9e5d17089207c3716b0cada39636a74d26a4e2167c59b707231c0c07"
 generated:
   feature: tracking.latency_ping_request
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dc405f0ecf0a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - LatencyPingResponse
-      evidence: ev_0b6f013626b5
+      evidence: ev_c430de160900
   evidence:
-  - id: ev_0b6f013626b5
+  - id: ev_c430de160900
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/LatencyPingRequestMessageEvent.java
     symbol: LatencyPingRequestMessageEvent
     line: 8

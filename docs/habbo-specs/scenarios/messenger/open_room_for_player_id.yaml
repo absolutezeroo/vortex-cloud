@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b0bf2ee68648c9cc5e7843a4bdd24899f77c1cf935494d8ed13f5f08efb142d0"
+generated_digest: "sha256:f8b20a576716d4931b986c43cc93de71de5b1de2878ba1beb58e536d489de34c"
 generated:
   feature: messenger.open_room_for_player_id
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1337aa94b186
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_1
     title: "open room for player id: the guard 'targetId is null' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1337aa94b186
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_10
     title: "open room for player id: the guard 'snapshot.DoorMode == RoomDoorModeType.Locked' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_11
     title: "open room for player id: the guard 'roomId <= 0 || playerId <= 0' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2747c101d5f4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_2
     title: "open room for player id: the guard '!isOnline' holds"
     given:
@@ -156,7 +156,7 @@ generated:
       - UserRemove
       - Users
       evidence: ev_1337aa94b186
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -166,7 +166,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_3
     title: "open room for player id: the guard 'activeRoom.RoomId <= 0' holds"
     given:
@@ -193,7 +193,7 @@ generated:
       - UserRemove
       - Users
       evidence: ev_1337aa94b186
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -203,7 +203,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_4
     title: "open room for player id: the guard 'string.IsNullOrWhiteSpace(name)' holds"
     given:
@@ -222,7 +222,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -232,7 +232,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_5
     title: "open room for player id: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
     given:
@@ -251,7 +251,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -261,7 +261,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_6
     title: "open room for player id: the guard 'foundId is null' holds"
     given:
@@ -280,7 +280,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -290,7 +290,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_7
     title: "open room for player id: the guard 'await _roomModerationStore .IsBannedAsync(roomId.Value, p...' holds"
     given:
@@ -317,7 +317,7 @@ generated:
       - UserRemove
       - Users
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -327,7 +327,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_8
     title: "open room for player id: the guard 'pendingRoom.RoomId == roomId' holds"
     given:
@@ -346,7 +346,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -356,7 +356,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.guard_9
     title: "open room for player id: the guard 'isFull || isPasswordMismatch' holds"
     given:
@@ -383,7 +383,7 @@ generated:
       - UserRemove
       - Users
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -393,7 +393,7 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   - scenario: messenger.open_room_for_player_id.success
     title: "open room for player id: the request is accepted"
     given:
@@ -419,7 +419,7 @@ generated:
       - UserRemove
       - Users
       evidence: ev_0e5bd3223d28
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -429,12 +429,12 @@ generated:
       - FollowFriendFailed
       - RoomForward
       - Whisper
-      evidence: ev_d60769819feb
+      evidence: ev_b3f57a983a5e
   evidence:
-  - id: ev_d60769819feb
+  - id: ev_b3f57a983a5e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/VisitUserMessageEvent.java
     symbol: VisitUserMessageEvent
     line: 16

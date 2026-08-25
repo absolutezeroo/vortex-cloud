@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:14a9b5033cfc7cf23e27c3d07b3ddff441f216a428ef67dd94859f9057316870"
+generated_digest: "sha256:713c44b05ae8fc4899dbc887a2b6a034f1bee94b00e432a02c7e5ee82ddf733c"
 generated:
   name: HabboGroupDeactivated
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_eee830c3ebe3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_40a5d8cb92f7
+    evidence: ev_e9dd527d5c26
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: HabboGroupDeactivatedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_40a5d8cb92f7
+  - id: ev_e9dd527d5c26
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/HabboGroupDeactivatedMessageComposer.java
     symbol: HabboGroupDeactivatedMessageComposer
     line: 15

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:26943c0a8caf9c6951eb8a579f10cd6f34116c9fe14ee3083ed1e63bfae65dca"
+generated_digest: "sha256:52c8be6d0f3acd5a00f0c994a112743633c7d82777aeace1a08d7ae3f2c053c5"
 generated:
   feature: groups.update_forum_settings
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4b362c522ed1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   - scenario: groups.update_forum_settings.guard_1
     title: "update forum settings: the guard 'forum is null' holds"
     given:
@@ -59,7 +59,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4b362c522ed1
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -67,7 +67,7 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   - scenario: groups.update_forum_settings.guard_2
     title: "update forum settings: the guard 'group is null || group.ForumSettings is null' holds"
     given:
@@ -86,7 +86,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -94,7 +94,7 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   - scenario: groups.update_forum_settings.guard_3
     title: "update forum settings: the guard 'group.OwnerPlayerEntityId != actor.Value' holds"
     given:
@@ -113,7 +113,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -121,7 +121,7 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   - scenario: groups.update_forum_settings.guard_4
     title: "update forum settings: the guard '_registry is null' holds"
     given:
@@ -140,7 +140,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -148,7 +148,7 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   - scenario: groups.update_forum_settings.success
     title: "update forum settings: the request is accepted"
     given:
@@ -167,7 +167,7 @@ generated:
       emits:
       - ForumData
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -175,12 +175,12 @@ generated:
       - ErrorReport
       - NotificationDialog
       - ForumData
-      evidence: ev_f524822a6929
+      evidence: ev_c31a44db4fd7
   evidence:
-  - id: ev_f524822a6929
+  - id: ev_c31a44db4fd7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/UpdateForumSettingsMessageEvent.java
     symbol: UpdateForumSettingsMessageEvent
     line: 14

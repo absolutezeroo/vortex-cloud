@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c01657736546fffdaa21952cf4e1fd2bb8c22630264f8747348c73d110387c70"
+generated_digest: "sha256:7531e596cd410e573c9c9d177edee059b01c7198e016c794e47a466384038fbb"
 generated:
   name: CreateGuild
   direction: incoming
@@ -25,63 +25,63 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 1
     name: description
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 2
     name: room_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 3
     name: color_one
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 4
     name: color_two
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 5
     name: count
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 6
     name: id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 7
     name: color
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   - index: 8
     name: pos
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2b31ac43a317
+    - ev_13f312c48deb
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -101,7 +101,7 @@ generated:
     partial: true
     types: []
     evidence: ev_37a012e827c8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 9
     partial: false
@@ -115,7 +115,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_2b31ac43a317
+    evidence: ev_13f312c48deb
   - origin: vortex
     authority: vortex_emulator
     field_count: 7
@@ -154,10 +154,10 @@ generated:
     symbol: CreateGuildComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2b31ac43a317
+  - id: ev_13f312c48deb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/CreateGuildMessageEvent.java
     symbol: CreateGuildMessageEvent
     line: 23

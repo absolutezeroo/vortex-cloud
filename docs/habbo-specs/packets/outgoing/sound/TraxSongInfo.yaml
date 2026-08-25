@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2a147d1bf5de3c6c6864ba122d07b86b949b1a82da8ea1b0a2cf3bfe7c643480"
+generated_digest: "sha256:a44ca6f0517eb993b733014a5b70d180adc0b9739b287fa8a46ab5401bf40ef5"
 generated:
   name: TraxSongInfo
   direction: outgoing
@@ -100,7 +100,7 @@ generated:
     partial: true
     types: []
     evidence: ev_d0daca86e7c0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 7
     partial: false
@@ -112,7 +112,7 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_e953a06269f1
+    evidence: ev_d2f75bf5132b
   evidence:
   - id: ev_b909cb6a6ced
     kind: client_parser
@@ -130,10 +130,10 @@ generated:
     symbol: TraxSongInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e953a06269f1
+  - id: ev_d2f75bf5132b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/TraxSongInfoMessageComposer.java
     symbol: TraxSongInfoMessageComposer
     line: 18

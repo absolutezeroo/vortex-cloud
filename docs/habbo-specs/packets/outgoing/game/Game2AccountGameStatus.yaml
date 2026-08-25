@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f99642872bd40e5f9c7feea82fb157bd8e01ec7906d0ddd748c65b9dd0efcb32"
+generated_digest: "sha256:3bc1a7bb71684f8e6cc1d11d52b5719bcec7d47428d2195f9c502f11413eacb4"
 generated:
   name: Game2AccountGameStatus
   direction: outgoing
@@ -49,7 +49,7 @@ generated:
     - int32
     - int32
     evidence: ev_ab9e83693ec0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -57,7 +57,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_96a267513558
+    evidence: ev_c13c63a8c878
   evidence:
   - id: ev_ab9e83693ec0
     kind: client_parser
@@ -67,10 +67,10 @@ generated:
     symbol: Game2AccountGameStatusMessageParser
     line: 45
     note: official client build WIN63-202607011411-782849652
-  - id: ev_96a267513558
+  - id: ev_c13c63a8c878
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/Game2AccountGameStatusMessageComposer.java
     symbol: Game2AccountGameStatusMessageComposer
     line: 17

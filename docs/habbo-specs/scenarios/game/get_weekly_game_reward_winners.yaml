@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2dced72ba1dd25de4e825e1b188958cb2ea9c86bfea13a62752ab4b1cc13f858"
+generated_digest: "sha256:ddf4175b2d39e926bf8f9222da0afe6980b73f9052488d3fb8db2ff39e183b82"
 generated:
   feature: game.get_weekly_game_reward_winners
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_99b749134347
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_be5c9d28a6d1
+      evidence: ev_ca81527c6a2d
   evidence:
-  - id: ev_be5c9d28a6d1
+  - id: ev_ca81527c6a2d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/GetWeeklyGameRewardWinnersEvent.java
     symbol: GetWeeklyGameRewardWinnersEvent
     line: 7

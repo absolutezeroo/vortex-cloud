@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5f30b81c909c7b7030dd2aedd48b82dd82555ef1217020b87bd64a419cf6bf8c"
+generated_digest: "sha256:ed8a38d121ff738dccdd49fb897b241be7a9affa435a51644dc3600b5b87b299"
 generated:
   name: RemoveJukeboxDisk
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_86fcf592711c
+    - ev_0ecd99b6bb70
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_38602bb31ba6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_86fcf592711c
+    evidence: ev_0ecd99b6bb70
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: RemoveJukeboxDiskComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_86fcf592711c
+  - id: ev_0ecd99b6bb70
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/RemoveJukeboxDiskEvent.java
     symbol: RemoveJukeboxDiskEvent
     line: 8

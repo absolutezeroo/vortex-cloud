@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2b16a1943f04a573c86fbc1ef345fec640fef5f4f427ba39b48cff4946f46d31"
+generated_digest: "sha256:000ee51b5b060bc0643cda151783714cba3061dc248caf0e49d4b6df7363668e"
 generated:
   name: SetIgnoreRoomInvites
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_eeeee4bcba72
+    - ev_0ac0919b0e07
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_9a5a3d857ff1
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_eeeee4bcba72
+    evidence: ev_0ac0919b0e07
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: SetIgnoreRoomInvitesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eeeee4bcba72
+  - id: ev_0ac0919b0e07
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/SetIgnoreRoomInvitesMessageEvent.java
     symbol: SetIgnoreRoomInvitesMessageEvent
     line: 9

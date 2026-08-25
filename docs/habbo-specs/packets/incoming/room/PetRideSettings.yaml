@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:441655600f7892f372c8c7d363a368de4d2355aac7ab10f5da4cfa645e15d707"
+generated_digest: "sha256:514a5b0a087652974a72547a48291a15f2b332d95977b14cb47ea430242135a7"
 generated:
   name: PetRideSettings
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_9f421e20c6aa
+    - ev_ba4d3445025f
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_9f421e20c6aa
+    evidence: ev_ba4d3445025f
   evidence:
-  - id: ev_9f421e20c6aa
+  - id: ev_ba4d3445025f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/PetRideSettingsEvent.java
     symbol: PetRideSettingsEvent
     line: 11

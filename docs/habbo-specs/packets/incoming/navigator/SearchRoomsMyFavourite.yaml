@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:72345e3cb589cb09db02ec5bd82d6823e63b1f01223063182f70190022fb7315"
+generated_digest: "sha256:586259aa24de1da6854fe2622ee49018b6b7d45a4c048857beb0e8d065f00a08"
 generated:
   name: SearchRoomsMyFavourite
   direction: incoming
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_ab2f84f1b702
+    evidence: ev_6a5220829814
   evidence:
-  - id: ev_ab2f84f1b702
+  - id: ev_6a5220829814
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/SearchRoomsMyFavouriteEvent.java
     symbol: SearchRoomsMyFavouriteEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fcf6973be7f0be1822c95c48dd8bd0200efa376eed7f7f7e71dab5305d42168e"
+generated_digest: "sha256:ca2a44a8322a3098d9778e9947c6535da4c55c0a86f295a8383646fc594e52af"
 generated:
   id: cf_b50b9075a9
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, string, int32, int32"
     evidence: ev_3fe2647238f0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, string"
-    evidence: ev_38e8b67a1702
+    evidence: ev_0118153d8e2f
   evidence:
   - id: ev_3fe2647238f0
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3771
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_38e8b67a1702
+  - id: ev_0118153d8e2f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/BadgeReceivedMessageComposer.java
     symbol: BadgeReceivedMessageComposer
     line: 16

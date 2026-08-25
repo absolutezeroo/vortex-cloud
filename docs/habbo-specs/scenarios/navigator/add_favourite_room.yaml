@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:87d9635b9e26e1e8b86f013b2ba40199b38d58c28dc5ff38bfb4b05e9b1f306c"
+generated_digest: "sha256:d1ac8a1dd46576f994dc4e13e96bb8bb32d4089e2e8d67534d7140ed1ca0348f"
 generated:
   feature: navigator.add_favourite_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_06536aa69567
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FavouriteChanged
-      evidence: ev_d94716018abf
+      evidence: ev_93e29ed12a06
   - scenario: navigator.add_favourite_room.guard_1
     title: "add favourite room: the guard 'alreadyFavourited' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d429657b2673
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FavouriteChanged
-      evidence: ev_d94716018abf
+      evidence: ev_93e29ed12a06
   - scenario: navigator.add_favourite_room.success
     title: "add favourite room: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_06536aa69567
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FavouriteChanged
-      evidence: ev_d94716018abf
+      evidence: ev_93e29ed12a06
   evidence:
-  - id: ev_d94716018abf
+  - id: ev_93e29ed12a06
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/AddFavouriteRoomMessageEvent.java
     symbol: AddFavouriteRoomMessageEvent
     line: 10

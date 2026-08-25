@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:07ed87c3d9942041ce79bfa369cb76f7fc7003133307eda5261d1ac6ddbaf69d"
+generated_digest: "sha256:a1d295c2181e5d6c3d3331b5da865881f4f4170080d4af225fa7fd54930cdc97"
 generated:
   id: room.credit_furni_redeem
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

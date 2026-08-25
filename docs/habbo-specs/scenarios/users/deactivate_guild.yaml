@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dfc057e65021ea67e76a85692e3f090f5887aa08f2e338ec7385d877fb67c14b"
+generated_digest: "sha256:7314301ede358d9181ce3ddd5f7dfcaae1631aed600308538eb93b98bc1dea8d"
 generated:
   feature: users.deactivate_guild
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_59a6057911bc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_5cc8355562a2
+      evidence: ev_54f7add20a7a
   - scenario: users.deactivate_guild.guard_1
     title: "deactivate guild: the guard 'group is null || group.OwnerPlayerEntityId != actor.Value' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_861d7eb0e4b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_5cc8355562a2
+      evidence: ev_54f7add20a7a
   - scenario: users.deactivate_guild.guard_2
     title: "deactivate guild: the guard '_registry is null' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_5cc8355562a2
+      evidence: ev_54f7add20a7a
   - scenario: users.deactivate_guild.success
     title: "deactivate guild: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - HabboGroupDeactivated
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GetGuestRoomResult
-      evidence: ev_5cc8355562a2
+      evidence: ev_54f7add20a7a
   evidence:
-  - id: ev_5cc8355562a2
+  - id: ev_54f7add20a7a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/DeactivateGuildMessageEvent.java
     symbol: DeactivateGuildMessageEvent
     line: 17

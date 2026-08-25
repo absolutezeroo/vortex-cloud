@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3c3b36c6dca8826a7898cb5f3a6f7f6d5e623e756841ba905e3eb02347025294"
+generated_digest: "sha256:f01115f8cf633128f900c4e6bde029a6c1c31fa8c83ad8c1837c2a9d844fc2cd"
 generated:
   feature: room.place_pet_in_room
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d4c75baab22
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.guard_1
     title: "place pet in room: the guard '!_roomGrain._state.RoomSnapshot.AllowPets && _roomGrain._...' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.guard_2
     title: "place pet in room: the guard '!TryResolvePetPlacementTile(x, y, out x, out y)' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.guard_3
     title: "place pet in room: the guard 'pet is null' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.guard_4
     title: "place pet in room: the guard 'pet.RoomEntityId is not null && pet.RoomEntityId != _room...' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.guard_5
     title: "place pet in room: the guard '_registry is null' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   - scenario: room.place_pet_in_room.success
     title: "place pet in room: the request is accepted"
     given:
@@ -205,7 +205,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_07b0b89f70ab
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -215,12 +215,12 @@ generated:
       - PetPlacingError
       - PetFigureUpdate
       - PetRemovedFromInventory
-      evidence: ev_a7c18a98429c
+      evidence: ev_d0ca882096e4
   evidence:
-  - id: ev_a7c18a98429c
+  - id: ev_d0ca882096e4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/PlacePetMessageEvent.java
     symbol: PlacePetMessageEvent
     line: 14

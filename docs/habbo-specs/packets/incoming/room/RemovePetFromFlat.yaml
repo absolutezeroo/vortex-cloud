@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:42c258a6e34c45d39d7b4925b3f604b20a7825e30a3653cf00ae11dc11ff556e"
+generated_digest: "sha256:c0fa208700d039c7acf0f222f54be2c24d23e36c54edcd8a07178cd6af293f4c"
 generated:
   name: RemovePetFromFlat
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_be5f556e2b39
-    - ev_f78f1b432d0d
+    - ev_2d4dbcb0c12b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b2c80fd46950
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_f78f1b432d0d
+    evidence: ev_2d4dbcb0c12b
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: RemovePetFromFlatComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f78f1b432d0d
+  - id: ev_2d4dbcb0c12b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/RemovePetFromFlatMessageEvent.java
     symbol: RemovePetFromFlatMessageEvent
     line: 15

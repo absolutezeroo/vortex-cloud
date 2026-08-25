@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c6e12d588600b27f28dcc639024dc8247dca740a41c8fa6b5884cdc0e5e8f554"
+generated_digest: "sha256:c054909f6407e3fa48c902d3172626f779d884a11aae70b5b274fca1513e6d02"
 generated:
   id: cf_79ecf51eb8
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, int32"
     evidence: ev_6b60d23423d3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_115a9e0d80b5
+    evidence: ev_c1a29daf7d7b
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: RoomEntryTileMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_115a9e0d80b5
+  - id: ev_c1a29daf7d7b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/floorplaneditor/RoomEntryTileMessageComposer.java
     symbol: RoomEntryTileMessageComposer
     line: 16

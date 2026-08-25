@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3ce35e88c7daa189d40bf04e2d9947711bdc4d5571d26a530854860f554438f7"
+generated_digest: "sha256:fadc706c376e92ae10c5e32af6a920319e1a79d80750edb4c48d68efa0ee89af"
 generated:
   feature: inventory.get_pet_inventory
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_fdfd185d7468
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInventory
-      evidence: ev_ccaab92cba21
+      evidence: ev_a264b10e15f6
   - scenario: inventory.get_pet_inventory.success
     title: "get pet inventory: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - PetInventoryEvent
       evidence: ev_55d55f5c1d10
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetInventory
-      evidence: ev_ccaab92cba21
+      evidence: ev_a264b10e15f6
   evidence:
-  - id: ev_ccaab92cba21
+  - id: ev_a264b10e15f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetPetInventoryEvent.java
     symbol: GetPetInventoryEvent
     line: 8

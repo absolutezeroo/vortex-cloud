@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6f710d467bc561424923b4919a014dc96ce7aef5f852bd0467abbffccb4a596d"
+generated_digest: "sha256:647209a3d062cc39d1e45551f8ae017e85dd0cb668e8632c36f452508d05d205"
 generated:
   name: AchievementResolutionProgress
   direction: outgoing
@@ -97,7 +97,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3a6261558b64
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 6
     partial: false
@@ -108,7 +108,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_d8871a1d637b
+    evidence: ev_4c8832a26f72
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -146,10 +146,10 @@ generated:
     symbol: AchievementResolutionProgressMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d8871a1d637b
+  - id: ev_4c8832a26f72
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/events/resolution/AchievementResolutionProgressMessageComposer.java
     symbol: AchievementResolutionProgressMessageComposer
     line: 25

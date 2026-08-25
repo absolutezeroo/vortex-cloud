@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0b6153b7d438b46a165d2d84184abd1fdfe28ee1edcf76bf4ebfd22302df27f0"
+generated_digest: "sha256:988e1a687d269aa47bba7a6e9db29bcce64dd2a59919dad6784b9769ee93e169"
 generated:
   name: RoomMessageNotification
   direction: outgoing
@@ -55,7 +55,7 @@ generated:
     partial: true
     types: []
     evidence: ev_25e53a7e9c0d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -63,7 +63,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_65eab9de7fbb
+    evidence: ev_b3602fedf5d8
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -90,10 +90,10 @@ generated:
     symbol: RoomMessageNotificationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_65eab9de7fbb
+  - id: ev_b3602fedf5d8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/RoomMessageNotificationMessageComposer.java
     symbol: RoomMessageNotificationMessageComposer
     line: 18

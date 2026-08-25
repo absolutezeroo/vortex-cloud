@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7b025edadcfb7fe272162f9077a54c5c9e4d061b1a3ded03691424bbac65f9a1"
+generated_digest: "sha256:d1b08cfb653aa694b70d831b693a54375307ed2006e0ee44f15af24d3e35e1ca"
 generated:
   id: camera.request_camera_configuration
   domain: camera
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6c6fb7f68463ccffcbff804b07ca99f31dbe9a40d6d423297a2a24bbe98c8a11"
+generated_digest: "sha256:03dbd38845748ebf02f14f8850d9aced131e5d8715482b1bf5c0a29d44136082"
 generated:
   feature: room.get_room_entry_data
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_873d3938edba
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_1
     title: "get room entry data: the guard 'roomId <= 0' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_873d3938edba
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_10
     title: "get room entry data: the guard '_state.ActiveRoomId == roomId' holds"
     given:
@@ -82,13 +82,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_11
     title: "get room entry data: the guard '!flags.Has(RoomTileFlags.AvatarOccupied)' holds"
     given:
@@ -107,13 +107,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c26714967e6b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_2
     title: "get room entry data: the guard 'ctx.Origin == ActionOrigin.System' holds"
     given:
@@ -132,13 +132,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_82c2d2746361
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_3
     title: "get room entry data: the guard 'origin == ActionOrigin.System' holds"
     given:
@@ -157,13 +157,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_4
     title: "get room entry data: the guard 'isExplicitOwner' holds"
     given:
@@ -182,13 +182,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_5
     title: "get room entry data: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
@@ -207,13 +207,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_6
     title: "get room entry data: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
@@ -232,13 +232,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_7
     title: "get room entry data: the guard 'group.IsAdmin' holds"
     given:
@@ -257,13 +257,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_8
     title: "get room entry data: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
@@ -282,13 +282,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_9
     title: "get room entry data: the guard 'hasExplicitRights' holds"
     given:
@@ -307,13 +307,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.success
     title: "get room entry data: the request is accepted"
     given:
@@ -342,18 +342,18 @@ generated:
       - YouAreOwner
       - unresolved
       evidence: ev_0080929ab318
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HeightMap
       - FloorHeightMap
-      evidence: ev_e9598cc5d56a
+      evidence: ev_fd4c50c7f66d
   evidence:
-  - id: ev_e9598cc5d56a
+  - id: ev_fd4c50c7f66d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetRoomEntryDataMessageEvent.java
     symbol: GetRoomEntryDataMessageEvent
     line: 11

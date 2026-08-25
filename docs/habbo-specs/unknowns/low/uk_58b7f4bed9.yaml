@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8b728f54b7ecfb929036a492ca7e713df51dba9438f1ba143e45d3f547c3723e"
+generated_digest: "sha256:50e33e672713e2d73ae6fb0e698cdc0dfa090eeedf45d95ca562bd75acbc0c75"
 generated:
   id: uk_58b7f4bed9
   subject: "outgoing/RoomPollResult: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: RoomPollResultParser
     line: 46
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_0f18cb27db18
+  - id: ev_714196e68832
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/infobus/RoomPollResultMessageComposer.java
     symbol: RoomPollResultMessageComposer
     line: 19

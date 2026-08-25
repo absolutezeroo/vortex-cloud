@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f81cbe071a997f42adfc8617256f84b360bf0ca127bb39b8bff000da017a86d4"
+generated_digest: "sha256:449dbf3ccac511d24831ba2e647e26c66b476e83a2a84a7a9d347dec6f2cc432"
 generated:
   name: PetInfo
   direction: outgoing
@@ -257,7 +257,7 @@ generated:
     partial: true
     types: []
     evidence: ev_310f3a3473e2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 30
     partial: false
@@ -292,7 +292,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_2440daf3bc54
+    evidence: ev_0e04bc2bcf61
   - origin: vortex
     authority: vortex_emulator
     field_count: 28
@@ -344,10 +344,10 @@ generated:
     symbol: PetInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2440daf3bc54
+  - id: ev_0e04bc2bcf61
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetInfoMessageComposer.java
     symbol: PetInfoMessageComposer
     line: 26

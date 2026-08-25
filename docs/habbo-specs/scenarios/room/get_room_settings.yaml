@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:71c9fc08eb25043bb7be2cf2e7834018f39dcd2a19768be6f1aff87cee636866"
+generated_digest: "sha256:40cbc8a5e46beb9beffbf7547dfed047e16f1ce728c238ac9ccc534cf1d3594f"
 generated:
   feature: room.get_room_settings
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2f074d4ea877
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomSettingsData
-      evidence: ev_f07514c3244b
+      evidence: ev_92eea08f9ac2
   - scenario: room.get_room_settings.guard_1
     title: "get room settings: the guard 'snapshot is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2f074d4ea877
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomSettingsData
-      evidence: ev_f07514c3244b
+      evidence: ev_92eea08f9ac2
   - scenario: room.get_room_settings.guard_2
     title: "get room settings: the guard '!await IsRoomOwnerAsync(actor).ConfigureAwait(true)' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomSettingsData
-      evidence: ev_f07514c3244b
+      evidence: ev_92eea08f9ac2
   - scenario: room.get_room_settings.success
     title: "get room settings: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - RoomSettingsDataEvent
       evidence: ev_2f074d4ea877
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RoomSettingsData
-      evidence: ev_f07514c3244b
+      evidence: ev_92eea08f9ac2
   evidence:
-  - id: ev_f07514c3244b
+  - id: ev_92eea08f9ac2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetRoomSettingsMessageEvent.java
     symbol: GetRoomSettingsMessageEvent
     line: 10

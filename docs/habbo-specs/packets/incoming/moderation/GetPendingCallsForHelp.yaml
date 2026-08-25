@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f374cd19ea62fee57e2e51bbf66ef948ab97e38f6247c8832978cc4c30a2fe6a"
+generated_digest: "sha256:8713d32e2e26a387116eafe6976799456bef7f147ebc6ca5650e31e9d94bee64"
 generated:
   name: GetPendingCallsForHelp
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_533423a27908
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_0cdbbfd70d88
+    evidence: ev_dab140bad13c
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetPendingCallsForHelpComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0cdbbfd70d88
+  - id: ev_dab140bad13c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetPendingCallsForHelpMessageEvent.java
     symbol: GetPendingCallsForHelpMessageEvent
     line: 9

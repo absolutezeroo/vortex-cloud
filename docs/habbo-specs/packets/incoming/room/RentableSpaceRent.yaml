@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:970b1722bb93071b609415b0963987f80992f9152e7a97d6dda4e718130347eb"
+generated_digest: "sha256:fa65cca9209e3690f78874a72343126d58a10ccd9e3cbae01e5bc1d667e8a4c1"
 generated:
   name: RentableSpaceRent
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_4416956a41fc
+    - ev_cc88415ff021
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_f4d2c5d1b558
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_4416956a41fc
+    evidence: ev_cc88415ff021
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: RentableSpaceRentComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4416956a41fc
+  - id: ev_cc88415ff021
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/rentablespace/RentableSpaceRentMessageEvent.java
     symbol: RentableSpaceRentMessageEvent
     line: 10

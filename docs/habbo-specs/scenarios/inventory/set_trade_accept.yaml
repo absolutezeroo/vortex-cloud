@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cc4903735c830a064d2c24440c2a2f49ad77273ac70217f6bc7d0565825bfc1c"
+generated_digest: "sha256:0db47ed63bdf042f6238d10f61d006a1f72882ccd306e7f96a68553f4d217f7b"
 generated:
   feature: inventory.set_trade_accept
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a8707f5e7b6c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d67b172a8e62
+      evidence: ev_79762ff5fabd
   - scenario: inventory.set_trade_accept.guard_1
     title: "set trade accept: the guard '!TryGetSession(requesterId, out RoomTradeSession? session)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d67b172a8e62
+      evidence: ev_79762ff5fabd
   - scenario: inventory.set_trade_accept.guard_2
     title: "set trade accept: the guard 'session.Phase != TradePhase.Building || session.AcceptedO...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d91c4a1b72c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d67b172a8e62
+      evidence: ev_79762ff5fabd
   - scenario: inventory.set_trade_accept.success
     title: "set trade accept: the request is accepted"
     given:
@@ -102,16 +102,16 @@ generated:
       - TradingAcceptEvent
       - TradingConfirmationEvent
       evidence: ev_17349bcc2f7a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d67b172a8e62
+      evidence: ev_79762ff5fabd
   evidence:
-  - id: ev_d67b172a8e62
+  - id: ev_79762ff5fabd
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/trading/AcceptTradingEvent.java
     symbol: AcceptTradingEvent
     line: 9

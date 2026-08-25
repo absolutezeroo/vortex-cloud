@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2bf17e7f02ace6e6bc98604fdc8254f3e82910f6ea6a34f6347f23cb9206502d"
+generated_digest: "sha256:aaa9fdc4472bedf7f87ad3e99ddacdd60e3dfdd37cacc2d36e7633561019a086"
 generated:
   id: uk_37e5d943a9
   subject: "incoming/AddJukeboxDisk: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: AddJukeboxDiskComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7b2d1e07bb8a
+  - id: ev_8ca52059ecf8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/AddJukeboxDiskEvent.java
     symbol: AddJukeboxDiskEvent
     line: 10

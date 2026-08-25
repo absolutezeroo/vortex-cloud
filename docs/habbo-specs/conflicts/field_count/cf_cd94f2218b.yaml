@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e3ef5da91f2bf902653d478fdc29db928c99fd10700bd35dd7a4bef1f51fd0e8"
+generated_digest: "sha256:77422984a09be37f963dc1f567f514ca9adf6fd5898409a4b5d41772c0c2c94a"
 generated:
   id: cf_cd94f2218b
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, boolean"
     evidence: ev_739ca4c3187b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, boolean"
-    evidence: ev_c1d8c614cc5a
+    evidence: ev_e58b21c53d1d
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, boolean"
@@ -50,10 +50,10 @@ generated:
     symbol: UserRightsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c1d8c614cc5a
+  - id: ev_e58b21c53d1d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/UserRightsMessageComposer.java
     symbol: UserRightsMessageComposer
     line: 20

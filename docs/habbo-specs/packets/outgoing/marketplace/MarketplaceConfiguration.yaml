@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a968edc7ad927d16a5ae0da8c2fbd7718a5ca7c0c616cfb80910e72a48ed66ae"
+generated_digest: "sha256:594f71d4baf5f5c15ba479750855acdaa6a90f1d0a934a7b5be9cf90d3511b68"
 generated:
   name: MarketplaceConfiguration
   direction: outgoing
@@ -114,7 +114,7 @@ generated:
     - int32
     - int32
     evidence: ev_21b81594e0dd
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 8
     partial: false
@@ -127,7 +127,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_0590c7c6af94
+    evidence: ev_912089d66928
   evidence:
   - id: ev_21b81594e0dd
     kind: client_parser
@@ -145,10 +145,10 @@ generated:
     symbol: MarketplaceConfigurationMessageParser
     line: 63
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_0590c7c6af94
+  - id: ev_912089d66928
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/marketplace/MarketplaceConfigurationMessageComposer.java
     symbol: MarketplaceConfigurationMessageComposer
     line: 9

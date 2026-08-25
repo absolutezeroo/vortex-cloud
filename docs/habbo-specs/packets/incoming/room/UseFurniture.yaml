@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d285cf6806651f8fd062361b2cb30db823c8db540a2adcb766be9dcdb6e12bfb"
+generated_digest: "sha256:5fdfacf47e0f16b5be9b42247fb106516de2a5a8af438df97ac33f1463c4fd2d"
 generated:
   name: UseFurniture
   direction: incoming
@@ -52,14 +52,14 @@ generated:
     - int32
     - int32
     evidence: ev_53d9d128c383
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_9c2100a541e1
+    evidence: ev_06650a14a184
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -85,10 +85,10 @@ generated:
     symbol: UseFurnitureComposer
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9c2100a541e1
+  - id: ev_06650a14a184
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/UseFurnitureMessageEvent.java
     symbol: UseFurnitureMessageEvent
     line: 28

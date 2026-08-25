@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0de45415f49b7701b787e48997312e9fe44af5d70a1dd32288fb0038a8b5c400"
+generated_digest: "sha256:0838cc0a4b4f0c20e755c5fbeb391b46720ebd899e2bc7f8dd513c03c64a034c"
 generated:
   id: uk_877bf4e4c9
   subject: "outgoing/PetInventory: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2926
     line: 32
     note: official client build WIN63-202607011411-782849652
-  - id: ev_951d346d409c
+  - id: ev_4e36e5cb94ea
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/PetInventoryMessageComposer.java
     symbol: PetInventoryMessageComposer
     line: 20

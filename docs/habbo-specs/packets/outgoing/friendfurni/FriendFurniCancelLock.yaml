@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ddfb938c7b338e5954e373b0e4de1d4585b6a93e7b12adf9fad858e476826c6e"
+generated_digest: "sha256:aa4fa242f58762979d2854b367e959c3af09b80e06e8e48b13dbdd812da3fc78"
 generated:
   name: FriendFurniCancelLock
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_0e86abc19531
+    - ev_691e18ee4c28
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -33,13 +33,13 @@ generated:
     partial: true
     types: []
     evidence: ev_5be3de71ab30
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_0e86abc19531
+    evidence: ev_691e18ee4c28
   evidence:
   - id: ev_5be3de71ab30
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: FriendFurniCancelLockMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0e86abc19531
+  - id: ev_691e18ee4c28
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/lovelock/FriendFurniCancelLockMessageComposer.java
     symbol: FriendFurniCancelLockMessageComposer
     line: 16

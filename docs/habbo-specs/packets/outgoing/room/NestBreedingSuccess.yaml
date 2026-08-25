@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:54eb9daf89fedc431d95872a6ce606443a87703dc2b4e36f9fa67c39413d6595"
+generated_digest: "sha256:3c781f7fc7a58bdfbadf8aa88a08b431b0c7d97ff7fe1bb0c12d55506f9f14cc"
 generated:
   name: NestBreedingSuccess
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - int32
     - int32
     evidence: ev_2ace46d094fb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_4245dda720c9
+    evidence: ev_567202d7be39
   evidence:
   - id: ev_2ace46d094fb
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_4023
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_4245dda720c9
+  - id: ev_567202d7be39
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/breeding/NestBreedingSuccessMessageComposer.java
     symbol: NestBreedingSuccessMessageComposer
     line: 17

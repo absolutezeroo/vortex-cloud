@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:09f6e393510c720c0ef5558416d181287790cd2698d187987cfd5ff7eeb81b4b"
+generated_digest: "sha256:c25a688c8f8514fa759d01f9126e39e08cba755a97ce5cf23597bb1ff6dbc7f5"
 generated:
   feature: room.cancel_typing
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_69849d5f0fe4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0a3307c5e8c2
+      evidence: ev_bb974628ce4f
   - scenario: room.cancel_typing.guard_1
     title: "cancel typing: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0a3307c5e8c2
+      evidence: ev_bb974628ce4f
   - scenario: room.cancel_typing.guard_2
     title: "cancel typing: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0a3307c5e8c2
+      evidence: ev_bb974628ce4f
   - scenario: room.cancel_typing.success
     title: "cancel typing: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - UserTyping
       evidence: ev_69849d5f0fe4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0a3307c5e8c2
+      evidence: ev_bb974628ce4f
   evidence:
-  - id: ev_0a3307c5e8c2
+  - id: ev_bb974628ce4f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/CancelTypingMessageEvent.java
     symbol: CancelTypingMessageEvent
     line: 8

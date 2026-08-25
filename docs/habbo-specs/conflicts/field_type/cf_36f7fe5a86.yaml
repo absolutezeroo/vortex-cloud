@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:952e2893cc38c93eda381d0a1dc2eb7848dbe5143c0e32b6c2cc6d02da71646d"
+generated_digest: "sha256:48471813cefae1a5dc63e48baaf78b601bba1377193e03f3e59fccc91c3d993f"
 generated:
   id: cf_36f7fe5a86
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "room_forward: boolean"
     evidence: ev_11f9bd3e71e5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "something2: int32"
-    evidence: ev_229493220f24
+    evidence: ev_3c5f7d7443f6
   - origin: vortex
     authority: vortex_emulator
     claim: "room_forward: int32"
@@ -38,10 +38,10 @@ generated:
     symbol: GetGuestRoomComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_229493220f24
+  - id: ev_3c5f7d7443f6
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/GetGuestRoomMessageEvent.java
     symbol: GetGuestRoomMessageEvent
     line: 10

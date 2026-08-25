@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:79811a5435b091b76ada07a8ff6c667fa36ffeda66afb4a167fc170438d7f901"
+generated_digest: "sha256:ad9b71d2559f625c9a81e54738c0d6e034e86ae11813ea305e9eab3d617cbb83"
 generated:
   id: navigator.update_home_room
   domain: navigator
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

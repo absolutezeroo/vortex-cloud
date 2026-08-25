@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1ccd46e2602568f49a31913e3970c595bab53974e1e746e12d37cdaa41c4b7d2"
+generated_digest: "sha256:61b93b4781a4324fb7349a0573641944c60385ba7520d6dbb9d58b77d639ca9c"
 generated:
   id: messenger.send_room_invite
   domain: messenger
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

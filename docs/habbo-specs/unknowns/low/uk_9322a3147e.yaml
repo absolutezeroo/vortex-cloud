@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2cfb41e91f0ca67beeb3a88631bcc5127cc67d02f3148ce7ae9a2ccc20b3bde2"
+generated_digest: "sha256:701e18e1fd681f5f76efe3745c8af912af88165c38e67b745ab61dbba1dac654"
 generated:
   id: uk_9322a3147e
   subject: "outgoing/SnowWarsPreviousRoom: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsPreviousRoom
   known_evidence:
-  - id: ev_ee7421cd7a2a
+  - id: ev_0ec2108087c9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsPreviousRoomComposer.java
     symbol: SnowWarsPreviousRoomComposer
     line: 8

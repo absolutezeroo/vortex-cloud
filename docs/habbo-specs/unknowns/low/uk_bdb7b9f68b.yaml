@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2439d1219fb6ec4a01d02abfe4a4f3dab6d6cade009980e7a07ceed43178a632"
+generated_digest: "sha256:1479b7b7943ae74f4dd28fccf385ab70a0c685720db87fed84b1ce4822d7a960"
 generated:
   id: uk_bdb7b9f68b
   subject: "outgoing/GuildForumThreads: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: GuildForumThreadsParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_2a868f625ab7
+  - id: ev_e12fca687071
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/GuildForumThreadsMessageComposer.java
     symbol: GuildForumThreadsMessageComposer
     line: 28

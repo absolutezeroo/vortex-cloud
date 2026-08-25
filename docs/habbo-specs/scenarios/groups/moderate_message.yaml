@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0abb83edf7a1cb1b3493eb8570c78b6c5c95f0ed5245fc923bdb1b13cce1de5e"
+generated_digest: "sha256:2dde00a6435ae956da6c4499f81f9a7c5addb98bca27c4270bca3fd4b3144669"
 generated:
   feature: groups.moderate_message
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_948071c08d09
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -44,7 +44,7 @@ generated:
       - UpdateMessage
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_565c9e33cede
+      evidence: ev_52d937997853
   - scenario: groups.moderate_message.guard_1
     title: "moderate message: the guard 'post is null' holds"
     given:
@@ -63,7 +63,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_948071c08d09
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -75,7 +75,7 @@ generated:
       - UpdateMessage
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_565c9e33cede
+      evidence: ev_52d937997853
   - scenario: groups.moderate_message.guard_2
     title: "moderate message: the guard 'group is null' holds"
     given:
@@ -94,7 +94,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -106,7 +106,7 @@ generated:
       - UpdateMessage
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_565c9e33cede
+      evidence: ev_52d937997853
   - scenario: groups.moderate_message.guard_3
     title: "moderate message: the guard '_registry is null' holds"
     given:
@@ -125,7 +125,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -137,7 +137,7 @@ generated:
       - UpdateMessage
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_565c9e33cede
+      evidence: ev_52d937997853
   - scenario: groups.moderate_message.success
     title: "moderate message: the request is accepted"
     given:
@@ -156,7 +156,7 @@ generated:
       emits:
       - UpdateMessage
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -168,12 +168,12 @@ generated:
       - UpdateMessage
       - NotificationDialog
       - NotificationDialog
-      evidence: ev_565c9e33cede
+      evidence: ev_52d937997853
   evidence:
-  - id: ev_565c9e33cede
+  - id: ev_52d937997853
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/ModerateMessageMessageEvent.java
     symbol: ModerateMessageMessageEvent
     line: 20

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f6a1971eef30ac969e9e41594095e9a2db5663d49664d9148752531f1d4bbd82"
+generated_digest: "sha256:f24b44f7e31272179bf2cc2e93d81be5ff6a24fa316a4f4ab2a16ebd2cbc6e57"
 generated:
   name: LimitedOfferAppearingNext
   direction: outgoing
@@ -63,7 +63,7 @@ generated:
     partial: true
     types: []
     evidence: ev_3363938b5d70
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -72,7 +72,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_f6fd553b1533
+    evidence: ev_f42ff04add31
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -100,10 +100,10 @@ generated:
     symbol: LimitedOfferAppearingNextMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f6fd553b1533
+  - id: ev_f42ff04add31
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/LimitedOfferAppearingNextMessageComposer.java
     symbol: LimitedOfferAppearingNextMessageComposer
     line: 21

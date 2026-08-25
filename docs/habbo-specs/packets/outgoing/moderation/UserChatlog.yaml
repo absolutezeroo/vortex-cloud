@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:915c08465a0d7263a9d247b8f266822e39bc87432039a5fcb3aa92482546f215"
+generated_digest: "sha256:7a0a2defc2971c85d2f0b226fe0f1673295cbc92e40dad33229bbc1df9f3bfa0"
 generated:
   name: UserChatlog
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 3
     name: unknown_3
     type: byte
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 4
     name: unknown_4
     type: short
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 5
     name: unknown_5
     type: string
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 6
     name: unknown_6
     type: byte
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 7
     name: unknown_7
     type: string
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 8
     name: unknown_8
     type: string
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 9
     name: unknown_9
     type: byte
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 11
     name: unknown_11
     type: short
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 12
     name: unknown_12
     type: string
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 13
     name: unknown_13
     type: int32
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 14
     name: unknown_14
     type: string
@@ -137,7 +137,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 15
     name: unknown_15
     type: string
@@ -145,7 +145,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   - index: 16
     name: unknown_16
     type: boolean
@@ -153,7 +153,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_621f2b07be52
+    - ev_9228834115a8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -164,7 +164,7 @@ generated:
     - string
     - int32
     evidence: ev_2a878ef04c60
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 17
     partial: false
@@ -186,7 +186,7 @@ generated:
     - string
     - string
     - boolean
-    evidence: ev_621f2b07be52
+    evidence: ev_9228834115a8
   evidence:
   - id: ev_2a878ef04c60
     kind: client_parser
@@ -196,10 +196,10 @@ generated:
     symbol: _SafeCls_2857
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_621f2b07be52
+  - id: ev_9228834115a8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/UserChatlogMessageComposer.java
     symbol: UserChatlogMessageComposer
     line: 25

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59ca9fe064760d61f1944b937b0494a1fbf2e98d2082e02c288796a4c1ac735e"
+generated_digest: "sha256:59e5ce3af52f4cc3eed96947eeee7c8b9fd0a33bb17f77461cfc9993ff9c77ea"
 generated:
   name: CancelMarketplaceOffer
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_bcc5a9e136d4
+    - ev_ba2c087f087d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_b9aabeda9082
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_bcc5a9e136d4
+    evidence: ev_ba2c087f087d
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: CancelMarketplaceOfferComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bcc5a9e136d4
+  - id: ev_ba2c087f087d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/CancelMarketplaceOfferMessageEvent.java
     symbol: CancelMarketplaceOfferMessageEvent
     line: 8

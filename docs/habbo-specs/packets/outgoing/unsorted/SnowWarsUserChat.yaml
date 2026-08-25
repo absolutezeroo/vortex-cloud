@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1c9945a8d940879984dbe8a330e8bfaa135daa130f0cbc72d96efe6436f538e0"
+generated_digest: "sha256:6161d8eb95f6e8d202b2d5f80fa70424ea9bf3d408a3c206574de0db2c06b67e"
 generated:
   name: SnowWarsUserChat
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_661aadc8638f
+    - ev_4ba32ec4fef9
   - index: 1
     name: unknown_1
     type: string
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_661aadc8638f
+    - ev_4ba32ec4fef9
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_661aadc8638f
+    evidence: ev_4ba32ec4fef9
   evidence:
-  - id: ev_661aadc8638f
+  - id: ev_4ba32ec4fef9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsUserChatComposer.java
     symbol: SnowWarsUserChatComposer
     line: 8

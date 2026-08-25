@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e1a94ef6ad12d089aeb2d55d9d1d2a9c1ad116f34284224e91a794b77e855bfa"
+generated_digest: "sha256:9124059d651b119407075433a602d6fe03124b536d48d2bb3403eea4684c63b9"
 generated:
   name: QuizResults
   direction: outgoing
@@ -57,7 +57,7 @@ generated:
     partial: true
     types: []
     evidence: ev_fe70af7be98b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -65,7 +65,7 @@ generated:
     - string
     - int32
     - int32
-    evidence: ev_a0fd5dccdb55
+    evidence: ev_6c35c3cd7a2d
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -92,10 +92,10 @@ generated:
     symbol: QuizResultsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a0fd5dccdb55
+  - id: ev_6c35c3cd7a2d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/QuizResultsMessageComposer.java
     symbol: QuizResultsMessageComposer
     line: 19

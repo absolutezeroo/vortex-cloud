@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:72ee1d3ebf195b775b188c73052619131b393cf23a2a55c29d1113a652f5707b"
+generated_digest: "sha256:10e99da92f8a976fb52a4bd1002af89fa043ba8e858dd74954884575a9892623"
 generated:
   feature: room.get_enabled_command_ids
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f5497704ca87
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetTrainingPanel
-      evidence: ev_1958d0c42caa
+      evidence: ev_ab4e8a640b16
   - scenario: room.get_enabled_command_ids.guard_1
     title: "get enabled command ids: the guard 'pet is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f5497704ca87
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetTrainingPanel
-      evidence: ev_1958d0c42caa
+      evidence: ev_ab4e8a640b16
   - scenario: room.get_enabled_command_ids.success
     title: "get enabled command ids: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - PetCommands
       evidence: ev_1c352a1c81b4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetTrainingPanel
-      evidence: ev_1958d0c42caa
+      evidence: ev_ab4e8a640b16
   evidence:
-  - id: ev_1958d0c42caa
+  - id: ev_ab4e8a640b16
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/GetPetCommandsMessageEvent.java
     symbol: GetPetCommandsMessageEvent
     line: 9

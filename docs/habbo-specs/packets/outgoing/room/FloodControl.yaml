@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9d8d831ac269ccf280591987950bac093ee96b0884ffa78b493eed70cd71def1"
+generated_digest: "sha256:b1eed1ef538b8d7adf37b8df6cf25819b2c9a05ceebf8de4673129f9476db7b7"
 generated:
   name: FloodControl
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_3eb5165d2fad
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_e4d222ddeb2d
+    evidence: ev_edbe2df8bc6e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: FloodControlMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e4d222ddeb2d
+  - id: ev_edbe2df8bc6e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/FloodControlMessageComposer.java
     symbol: FloodControlMessageComposer
     line: 15

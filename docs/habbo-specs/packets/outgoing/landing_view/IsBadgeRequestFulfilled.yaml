@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c4d11e6ef55b41c7c6485432db2fe6169695ba5dbefce24392b04d35da8e7aca"
+generated_digest: "sha256:a174bc3ba5e1021af334e7b1173367ddbc9ac061b5c04759e69684908e30199e"
 generated:
   name: IsBadgeRequestFulfilled
   direction: outgoing
@@ -41,14 +41,14 @@ generated:
     - string
     - boolean
     evidence: ev_86f1b32c5be9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - boolean
-    evidence: ev_2f73f4519e3b
+    evidence: ev_252b4311c99e
   evidence:
   - id: ev_86f1b32c5be9
     kind: client_parser
@@ -58,10 +58,10 @@ generated:
     symbol: _SafeCls_4066
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_2f73f4519e3b
+  - id: ev_252b4311c99e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/IsBadgeRequestFulfilledMessageComposer.java
     symbol: IsBadgeRequestFulfilledMessageComposer
     line: 17

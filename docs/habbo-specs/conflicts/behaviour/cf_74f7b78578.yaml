@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:28cd37295a89255ad331042901a5d5d2117342af77321ddb0bae21a106b25d1e"
+generated_digest: "sha256:8634dbb5f50f17565b22e6709e9e4602c4349d724fd70507f9dc93b1c7c75420"
 generated:
   id: cf_74f7b78578
   kind: behaviour
   subject: "NewNavigatorInit: packets emitted in response"
   packet: NewNavigatorInit
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: NewNavigatorPreferences then NavigatorMetaData then NavigatorLiftedRooms then CollapsedCategories then NavigatorSavedSearches then UserEventCats
-    evidence: ev_567721736d20
+    evidence: ev_b4979eab29b5
   - origin: vortex
     authority: vortex_emulator
     claim: CategoriesWithVisitorCount then NewNavigatorPreferences
     evidence: ev_8862c7e0fdc9
   evidence:
-  - id: ev_567721736d20
+  - id: ev_b4979eab29b5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NewNavigatorInitEvent.java
     symbol: NewNavigatorInitEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:23e94a1557ac5c7d1f384f6da06c0a564f17d564b021419ada881a71b389ba82"
+generated_digest: "sha256:a48918102554f8b5d2c4c143cc32c75f239f948d66efda32b17bb6092918c3ce"
 generated:
   id: uk_494f6b01c1
   subject: "outgoing/SnowWarsUserExitArena: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsUserExitArena
   known_evidence:
-  - id: ev_cc42e817ee23
+  - id: ev_749b00375bd9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsUserExitArenaComposer.java
     symbol: SnowWarsUserExitArenaComposer
     line: 8

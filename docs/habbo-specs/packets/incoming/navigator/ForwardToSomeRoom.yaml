@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:75d15b926cd67745c28cc2ef367a53ed724348acc130095ef2dab13f059156d0"
+generated_digest: "sha256:1352eae036e17061680abb4f3b38565a45e2a37f4d0b81a8dc377e9da73466a1"
 generated:
   name: ForwardToSomeRoom
   direction: incoming
@@ -42,13 +42,13 @@ generated:
     types:
     - string
     evidence: ev_f933afe8269c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_4a56eac7e5ea
+    evidence: ev_bdf4a449395f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -73,10 +73,10 @@ generated:
     symbol: ForwardToSomeRoomComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4a56eac7e5ea
+  - id: ev_bdf4a449395f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/ForwardToSomeRoomMessageEvent.java
     symbol: ForwardToSomeRoomMessageEvent
     line: 14

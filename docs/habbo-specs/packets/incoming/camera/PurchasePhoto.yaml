@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ab77758996d2959f1526e10dc2edb5e5bba3404923fb5d1f806f242540e75687"
+generated_digest: "sha256:014ecf0e1e617cb7b9f7f0d15f4cb3a647fc61cd8f5561c399e0cd484800d672"
 generated:
   name: PurchasePhoto
   direction: incoming
@@ -38,12 +38,12 @@ generated:
     partial: true
     types: []
     evidence: ev_e779e7c5b3db
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7e7903c9b972
+    evidence: ev_eb5c12f3b0e3
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -75,10 +75,10 @@ generated:
     symbol: PurchasePhotoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7e7903c9b972
+  - id: ev_eb5c12f3b0e3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/PurchasePhotoMessageEvent.java
     symbol: PurchasePhotoMessageEvent
     line: 19

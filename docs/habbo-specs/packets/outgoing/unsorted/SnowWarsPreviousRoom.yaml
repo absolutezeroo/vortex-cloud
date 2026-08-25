@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b47e40a1cc11789d421001162ae89328660206b3fb7aa91e4378228265801be"
+generated_digest: "sha256:ee2eb8036c60c4bd5af198c6ebb443118a7d430233281ff32d07b0cf79da87e4"
 generated:
   name: SnowWarsPreviousRoom
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_ee7421cd7a2a
+    - ev_0ec2108087c9
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_ee7421cd7a2a
+    evidence: ev_0ec2108087c9
   evidence:
-  - id: ev_ee7421cd7a2a
+  - id: ev_0ec2108087c9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsPreviousRoomComposer.java
     symbol: SnowWarsPreviousRoomComposer
     line: 8

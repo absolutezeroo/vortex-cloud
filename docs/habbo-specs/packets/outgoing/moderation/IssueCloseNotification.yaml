@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0947401cca70dc1918711629c99b0bced41c6c4b4744a40b8fafd8621d507c93"
+generated_digest: "sha256:a4f36d6c5d5c2ba0623b29012394449330e10a4059c6f4f6a4a1568047b9c07b"
 generated:
   name: IssueCloseNotification
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_02dad79b2cba
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_9d714a9133c5
+    evidence: ev_e4b4be341bf9
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: IssueCloseNotificationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9d714a9133c5
+  - id: ev_e4b4be341bf9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/IssueCloseNotificationMessageComposer.java
     symbol: IssueCloseNotificationMessageComposer
     line: 26

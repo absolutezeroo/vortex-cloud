@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6da1e10e0a38b7d914d8dfb2d3c11247ceb791c658a804b67b67591026613fdf"
+generated_digest: "sha256:4b610992a8dfd7f9f6a099d5d3b4a9ec64a5f9814844c78e9c2421858b0c35dd"
 generated:
   name: YouAreOwner
   direction: outgoing
@@ -40,12 +40,12 @@ generated:
     types:
     - int32
     evidence: ev_5a989411d381
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_47190f15f6c7
+    evidence: ev_e8a0e36c1659
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: YouAreOwnerMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_47190f15f6c7
+  - id: ev_e8a0e36c1659
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/YouAreOwnerMessageComposer.java
     symbol: YouAreOwnerMessageComposer
     line: 9

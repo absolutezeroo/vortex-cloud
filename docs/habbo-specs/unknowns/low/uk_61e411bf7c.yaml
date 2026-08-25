@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:34c7afb45138aaa8ee9a27c0ec52b763517e5b3f7c17d957a0b832041b1dc15d"
+generated_digest: "sha256:f673f1efcf818af74fb822b282a69d98d48e28e12d3994c96210af10ea49633e"
 generated:
   id: uk_61e411bf7c
   subject: "incoming/ModBan: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: ModBanComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8bc16fae4610
+  - id: ev_e727e3a71b13
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModBanMessageEvent.java
     symbol: ModBanMessageEvent
     line: 25

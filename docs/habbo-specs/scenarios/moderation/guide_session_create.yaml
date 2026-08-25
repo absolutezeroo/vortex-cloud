@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:805d7454f95820a11864b0e4d88be610f567c7dde4024990e809af44da274e25"
+generated_digest: "sha256:14469f6e2da9e85785d23872bde62065b6792abb514c6a4c659807cd1fde6ed9"
 generated:
   feature: moderation.guide_session_create
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2c65b12061ed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   - scenario: moderation.guide_session_create.guard_1
     title: "guide session create: the guard 'requesterId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   - scenario: moderation.guide_session_create.guard_2
     title: "guide session create: the guard '_pendingByRequester.ContainsKey(requesterId) || _sessions...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   - scenario: moderation.guide_session_create.guard_3
     title: "guide session create: the guard 'guideId == 0' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   - scenario: moderation.guide_session_create.guard_4
     title: "guide session create: the guard '_registry is null' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   - scenario: moderation.guide_session_create.success
     title: "guide session create: the request is accepted"
     given:
@@ -151,17 +151,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2c65b12061ed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - GuideSessionError
-      evidence: ev_7b78106c60e0
+      evidence: ev_84c3d6b0c749
   evidence:
-  - id: ev_7b78106c60e0
+  - id: ev_84c3d6b0c749
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionCreateMessageEvent.java
     symbol: GuideSessionCreateMessageEvent
     line: 10

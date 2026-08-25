@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f35785d7f90210b261d222dab26f2602fcb89b64ca1b9c94ec09ef4c368ad2b1"
+generated_digest: "sha256:19663ab6312b5f801f79878b84b8bb044b3f6ab924d61bffc3ef6dbc205d12e9"
 generated:
   feature: moderation.chat_review_guide_decides_on_offer
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_35d1c84f63e7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ffb7832778ad
+      evidence: ev_b7c98067a7e5
   - scenario: moderation.chat_review_guide_decides_on_offer.guard_1
     title: "chat review guide decides on offer: the guard '!TryFindReview(guardianId, out ChatReview? review) || !re...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ffb7832778ad
+      evidence: ev_b7c98067a7e5
   - scenario: moderation.chat_review_guide_decides_on_offer.guard_2
     title: "chat review guide decides on offer: the guard '!accepted' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5ea072b947f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ffb7832778ad
+      evidence: ev_b7c98067a7e5
   - scenario: moderation.chat_review_guide_decides_on_offer.success
     title: "chat review guide decides on offer: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - ChatReviewSessionStarted
       evidence: ev_35d1c84f63e7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_ffb7832778ad
+      evidence: ev_b7c98067a7e5
   evidence:
-  - id: ev_ffb7832778ad
+  - id: ev_b7c98067a7e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guardians/ChatReviewGuideDecidesOnOfferMessageEvent.java
     symbol: ChatReviewGuideDecidesOnOfferMessageEvent
     line: 8

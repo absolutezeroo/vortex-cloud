@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1d7ab0167874a42c0b6d6a62cf4f4d77f700e7551c4b63cb620d87654255e2f8"
+generated_digest: "sha256:67cc5cc7a0d46939e3865c760e38a70669e65107eea841578d36bdf090bc8bdb"
 generated:
   name: BotError
   direction: outgoing
@@ -47,13 +47,13 @@ generated:
     partial: true
     types: []
     evidence: ev_284c738f7d9e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_7af093a988dc
+    evidence: ev_9d0357541cd0
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -86,10 +86,10 @@ generated:
     symbol: BotErrorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7af093a988dc
+  - id: ev_9d0357541cd0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/BotErrorMessageComposer.java
     symbol: BotErrorMessageComposer
     line: 21

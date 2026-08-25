@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5dee210e01e3b3c5e326b8081c9b7e2d59ab00a9ba58cc6b7c753c1b19334ab7"
+generated_digest: "sha256:23e78d4ffef92646e056071167476327d0c0e56a59d8f7c2fbf42e19856ed3f1"
 generated:
   feature: camera.purchase_photo
   scenarios:
@@ -31,7 +31,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4c9f3999a78d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,12 +40,12 @@ generated:
       - CameraPurchaseOK
       - UnseenItems
       - FurniListInvalidate
-      evidence: ev_7e7903c9b972
+      evidence: ev_eb5c12f3b0e3
   evidence:
-  - id: ev_7e7903c9b972
+  - id: ev_eb5c12f3b0e3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/PurchasePhotoMessageEvent.java
     symbol: PurchasePhotoMessageEvent
     line: 19

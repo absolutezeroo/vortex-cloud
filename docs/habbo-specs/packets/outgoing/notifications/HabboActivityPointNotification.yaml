@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1ee4f6442e621dae9231d7843457412670ff8f4ab7c8929a815f7e0ff04bf95b"
+generated_digest: "sha256:7313daac96771618ef5ee3bfabcfe82722d979346c0bfffa2b9788a377ce1905"
 generated:
   name: HabboActivityPointNotification
   direction: outgoing
@@ -55,7 +55,7 @@ generated:
     partial: true
     types: []
     evidence: ev_a2d5238bfa3d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -63,7 +63,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_0d7baa0b78ae
+    evidence: ev_968f2a22bb6a
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -90,10 +90,10 @@ generated:
     symbol: HabboActivityPointNotificationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0d7baa0b78ae
+  - id: ev_968f2a22bb6a
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/HabboActivityPointNotificationMessageComposer.java
     symbol: HabboActivityPointNotificationMessageComposer
     line: 19

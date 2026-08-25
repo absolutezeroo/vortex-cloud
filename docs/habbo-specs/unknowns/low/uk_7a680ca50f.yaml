@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8ad2e5348a4cf5f15207f053cea9c83a4ac71a5439ac5b8d50720197a02c2108"
+generated_digest: "sha256:f3c6ecaa3c0153e4b8d49b51c3013b3be5807646fa3e1f002d380d819bd5646b"
 generated:
   id: uk_7a680ca50f
   subject: "outgoing/FriendListUpdate: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: FriendListUpdateMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_41448effbcc6
+  - id: ev_f9c83f185a12
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/FriendListUpdateMessageComposer.java
     symbol: FriendListUpdateMessageComposer
     line: 34

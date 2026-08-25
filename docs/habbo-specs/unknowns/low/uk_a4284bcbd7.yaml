@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a0548d538cf1ca796842b713d7dcf36ba186b3e15156b5b993b033fccd457ab0"
+generated_digest: "sha256:3ed242b2ce021014a05b7b265052d95b21df7e6e2c3b7080722ef0b640c72fb9"
 generated:
   id: uk_a4284bcbd7
   subject: "outgoing/HabboWayQuizComposer1: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HabboWayQuizComposer1
   known_evidence:
-  - id: ev_3b8364f09912
+  - id: ev_b37e1efd4eae
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/HabboWayQuizComposer1.java
     symbol: HabboWayQuizComposer1
     line: 17

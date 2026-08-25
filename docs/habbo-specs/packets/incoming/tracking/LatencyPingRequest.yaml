@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d6feb6d654521e0c12e10407f7c54a5566a60f34bfeee07d0e9deb9e44bb12d7"
+generated_digest: "sha256:11dca381866f4696d285950d331602164c2f67bb82ea65bd40aeb63a077cd233"
 generated:
   name: LatencyPingRequest
   direction: incoming
@@ -48,13 +48,13 @@ generated:
     types:
     - int32
     evidence: ev_a8a61445e836
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_0b6f013626b5
+    evidence: ev_c430de160900
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -87,10 +87,10 @@ generated:
     symbol: LatencyPingRequestComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0b6f013626b5
+  - id: ev_c430de160900
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/LatencyPingRequestMessageEvent.java
     symbol: LatencyPingRequestMessageEvent
     line: 8

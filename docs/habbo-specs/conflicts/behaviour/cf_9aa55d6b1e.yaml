@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:75688f0baee70ddcea0524a82f2855b9d9f6cd020900237ec6a317bbd5c3a9d1"
+generated_digest: "sha256:c1b1587293797f6f236199e54f2d61d4822753cf1a05bf33a174982a4df6acc5"
 generated:
   id: cf_9aa55d6b1e
   kind: behaviour
   subject: "SelectClubGift: packets emitted in response"
   packet: SelectClubGift
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: PurchaseError then PurchaseError then PurchaseError then PurchaseError then PurchaseError then ClubGiftSelected
-    evidence: ev_a4c825f97017
+    evidence: ev_d72f1911f56e
   - origin: vortex
     authority: vortex_emulator
     claim: ClubGiftSelectedEvent then BadgeReceivedEvent
     evidence: ev_8dde45c38f16
   evidence:
-  - id: ev_a4c825f97017
+  - id: ev_d72f1911f56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/SelectClubGiftEvent.java
     symbol: SelectClubGiftEvent
     line: 20

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7f06e175ad0d5acc49ea49f3d68277cb487a32cf69e772732dde83a20fe48690"
+generated_digest: "sha256:43e55bad8bb6103b03c70aff12f4994b6f5138d7639523c3e6b9edacc3948333"
 generated:
   name: OpenPetPackage
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_1d599c0b348f
-    - ev_f20a064ffc4d
+    - ev_ec5b3c9e2918
   - index: 1
     name: name
     type: string
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_1d599c0b348f
-    - ev_f20a064ffc4d
+    - ev_ec5b3c9e2918
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -50,14 +50,14 @@ generated:
     partial: true
     types: []
     evidence: ev_0a535fb5baad
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_f20a064ffc4d
+    evidence: ev_ec5b3c9e2918
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: OpenPetPackageComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f20a064ffc4d
+  - id: ev_ec5b3c9e2918
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/OpenPetPackageMessageEvent.java
     symbol: OpenPetPackageMessageEvent
     line: 17

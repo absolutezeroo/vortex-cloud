@@ -70,7 +70,7 @@ const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
   ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
   ['check-architecture-walls.mjs', [], 2, 'fuite protocole + reference rendue a un projet protege'],
-  ['check-architecture-walls.mjs', [], 0, 'murs archi : les quatre tiennent'],
+  ['check-architecture-walls.mjs', [], 0, 'murs archi : les six tiennent'],
 ];
 
 let failed = 0;

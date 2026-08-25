@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c3b1d9b9189e41d179732410207814bd293d069cee6ddf486bb83d20cf0e7037"
+generated_digest: "sha256:ac7fa05939858e73b7b7429be85ca8170af665fab4cf30250ffe5584d9a777d3"
 generated:
   name: Moderator
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_b820364e3026
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - string
-    evidence: ev_355fdae8b7d8
+    evidence: ev_6b5e5d0a7543
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: ModeratorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_355fdae8b7d8
+  - id: ev_6b5e5d0a7543
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/generic/alerts/ModeratorMessageComposer.java
     symbol: ModeratorMessageComposer
     line: 17

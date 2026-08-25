@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:210ec0174587d049b884da43f30bed719466bef54d1954984735a2c3040343f0"
+generated_digest: "sha256:239d9fb1398c2c6b06bb9f973b935c2eb964fa89aad2ab274f180f5262c76349"
 generated:
   name: MiniMailNewMessage
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_5f9e00ddd22d
+    evidence: ev_d780df60f354
   evidence:
-  - id: ev_5f9e00ddd22d
+  - id: ev_d780df60f354
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/MiniMailNewMessageMessageComposer.java
     symbol: MiniMailNewMessageMessageComposer
     line: 9

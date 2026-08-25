@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2a765c89a85e9290b539443e2065233766ecb0a37010c66067a289c763446d3d"
+generated_digest: "sha256:b15d183677978db8e9450c098cc770b238e44dfe99827a09fdd7d5ed59553024"
 generated:
   name: RoomPromotion
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 4
     name: unknown_4
     type: int32
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 5
     name: unknown_5
     type: string
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 6
     name: unknown_6
     type: string
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 12
     name: unknown_12
     type: string
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 13
     name: unknown_13
     type: int32
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 14
     name: unknown_14
     type: int32
@@ -137,7 +137,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 15
     name: unknown_15
     type: string
@@ -145,7 +145,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 16
     name: unknown_16
     type: string
@@ -153,7 +153,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 17
     name: unknown_17
     type: int32
@@ -161,7 +161,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 18
     name: unknown_18
     type: int32
@@ -169,7 +169,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   - index: 19
     name: unknown_19
     type: int32
@@ -177,9 +177,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c8cbf58a4a8c
+    - ev_70b3383a66a7
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 20
     partial: false
@@ -204,12 +204,12 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_c8cbf58a4a8c
+    evidence: ev_70b3383a66a7
   evidence:
-  - id: ev_c8cbf58a4a8c
+  - id: ev_70b3383a66a7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/promotions/RoomPromotionMessageComposer.java
     symbol: RoomPromotionMessageComposer
     line: 20

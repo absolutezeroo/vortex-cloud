@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8b1800bffb950e7908f1179780593ddb6fbf2c364f0e669d77428954a28b5a2f"
+generated_digest: "sha256:f8b4ae7f67be2d14eae1a1f7a1664eb2adf18410c7b007940d43d7c0d2e84f9b"
 generated:
   name: Favourites
   direction: outgoing
@@ -58,7 +58,7 @@ generated:
     types:
     - int32
     evidence: ev_80ce8ac99d66
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_96c3a2db66d4
+    evidence: ev_d75a89a12930
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -93,10 +93,10 @@ generated:
     symbol: FavouritesMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_96c3a2db66d4
+  - id: ev_d75a89a12930
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/FavouritesMessageComposer.java
     symbol: FavouritesMessageComposer
     line: 18

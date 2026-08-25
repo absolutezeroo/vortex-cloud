@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e595f81569d67d1f1bfac697715ed276b1b0ed8bcf147806ff6e261231f6aa1b"
+generated_digest: "sha256:dba09ff1c906081e0dadab671c600830d78828a70b6d52ed6d298375d5c91b00"
 generated:
   feature: groups.get_messages
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_521b40de641f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -40,7 +40,7 @@ generated:
       - ThreadMessages
       - ForumData
       - NotificationDialog
-      evidence: ev_b6409304f400
+      evidence: ev_37ba8f2d7174
   - scenario: groups.get_messages.guard_1
     title: "get messages: the guard 'page is null' holds"
     given:
@@ -59,7 +59,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_521b40de641f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -67,7 +67,7 @@ generated:
       - ThreadMessages
       - ForumData
       - NotificationDialog
-      evidence: ev_b6409304f400
+      evidence: ev_37ba8f2d7174
   - scenario: groups.get_messages.guard_2
     title: "get messages: the guard 'group is null || group.ForumSettings is null' holds"
     given:
@@ -86,7 +86,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -94,7 +94,7 @@ generated:
       - ThreadMessages
       - ForumData
       - NotificationDialog
-      evidence: ev_b6409304f400
+      evidence: ev_37ba8f2d7174
   - scenario: groups.get_messages.guard_3
     title: "get messages: the guard '!CanRead(group.ForumSettings, role)' holds"
     given:
@@ -113,7 +113,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -121,7 +121,7 @@ generated:
       - ThreadMessages
       - ForumData
       - NotificationDialog
-      evidence: ev_b6409304f400
+      evidence: ev_37ba8f2d7174
   - scenario: groups.get_messages.success
     title: "get messages: the request is accepted"
     given:
@@ -140,7 +140,7 @@ generated:
       emits:
       - ThreadMessages
       evidence: ev_09932710687b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -148,12 +148,12 @@ generated:
       - ThreadMessages
       - ForumData
       - NotificationDialog
-      evidence: ev_b6409304f400
+      evidence: ev_37ba8f2d7174
   evidence:
-  - id: ev_b6409304f400
+  - id: ev_37ba8f2d7174
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/forums/GetMessagesMessageEvent.java
     symbol: GetMessagesMessageEvent
     line: 21

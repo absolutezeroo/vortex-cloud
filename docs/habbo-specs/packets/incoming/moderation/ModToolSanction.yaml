@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d202eff4c27ac1f8ae23123a16e5bd88c7ffb3bf47c71adf2555ff0d5acd84ed"
+generated_digest: "sha256:7906f81b6afa20f16c2767e408af2602b22ffd5b8120592b7e36f5d2c8c934d6"
 generated:
   name: ModToolSanction
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_e1c9a70757b3
+    - ev_2db32074c227
   - index: 1
     name: account_id
     type: int32
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_e1c9a70757b3
+    - ev_2db32074c227
     - ev_74fc6de56c08
   - index: 2
     name: category_id
@@ -40,7 +40,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_e1c9a70757b3
+    - ev_2db32074c227
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -54,7 +54,7 @@ generated:
     partial: true
     types: []
     evidence: ev_20ca08118f3b
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -62,7 +62,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_e1c9a70757b3
+    evidence: ev_2db32074c227
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -89,10 +89,10 @@ generated:
     symbol: ModToolSanctionComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e1c9a70757b3
+  - id: ev_2db32074c227
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModToolSanctionEvent.java
     symbol: ModToolSanctionEvent
     line: 11

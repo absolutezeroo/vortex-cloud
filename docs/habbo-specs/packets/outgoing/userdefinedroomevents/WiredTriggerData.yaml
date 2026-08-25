@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:92db7ce9de08848a9cc362718774287e76e4fe1c1212a7ac8289590fba8438f3"
+generated_digest: "sha256:658083fe7e1ac75a44e21c14f6e11c1c84d8f2f6032bcaca441b9dfde438d314"
 generated:
   name: WiredTriggerData
   direction: outgoing
@@ -55,12 +55,12 @@ generated:
     - int32
     - int32
     evidence: ev_76a4b1dd8df8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7e7a81c5e6e3
+    evidence: ev_75677baebc86
   evidence:
   - id: ev_76a4b1dd8df8
     kind: client_parser
@@ -70,10 +70,10 @@ generated:
     symbol: WiredTriggerDataMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_7e7a81c5e6e3
+  - id: ev_75677baebc86
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/WiredTriggerDataMessageComposer.java
     symbol: WiredTriggerDataMessageComposer
     line: 19

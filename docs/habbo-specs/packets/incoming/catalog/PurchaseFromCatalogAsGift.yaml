@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c7c41ddf9ec13fdb68f2480fd0b6a3b654428909bcf90ff2d001a085d1ce32a7"
+generated_digest: "sha256:de1cdde75fbe55177739fd2bfcc5f4e108b312f9d485daa14cd7fd6f0383ca10"
 generated:
   name: PurchaseFromCatalogAsGift
   direction: incoming
@@ -104,7 +104,7 @@ generated:
     - int32
     - boolean
     evidence: ev_773b4ea213fe
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 9
     partial: false
@@ -118,7 +118,7 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_b2e01469d96f
+    evidence: ev_24d5bc76ecea
   - origin: vortex
     authority: vortex_emulator
     field_count: 9
@@ -151,10 +151,10 @@ generated:
     symbol: PurchaseFromCatalogAsGiftComposer
     line: 18
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b2e01469d96f
+  - id: ev_24d5bc76ecea
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/PurchaseFromCatalogAsGiftEvent.java
     symbol: PurchaseFromCatalogAsGiftEvent
     line: 41

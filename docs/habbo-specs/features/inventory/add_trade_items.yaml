@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:18322d4235d6e540a7b18f2528520d82c4749f7f144616589bdbd38b17cab94f"
+generated_digest: "sha256:9e781c223b1bea346e21b61c0154ef7c98f8b96fc371707fa3437c349a3ed9bf"
 generated:
   id: inventory.add_trade_items
   domain: inventory
@@ -21,7 +21,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

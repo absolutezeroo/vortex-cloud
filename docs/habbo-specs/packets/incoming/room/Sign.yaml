@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3b5a15b037b47ec8e2818d675c3398f5659f7dcda54e2fbc90e50147b73b4676"
+generated_digest: "sha256:9035b207b83ada668fe72e376ed6cb4635a6ad94e27970918851f35e5fd0bef3"
 generated:
   name: Sign
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_32dcc808eaa2
-    - ev_5d0274148f9d
+    - ev_a15faebc3027
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_5b67dc505685
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_5d0274148f9d
+    evidence: ev_a15faebc3027
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: SignComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5d0274148f9d
+  - id: ev_a15faebc3027
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/SignMessageEvent.java
     symbol: SignMessageEvent
     line: 13

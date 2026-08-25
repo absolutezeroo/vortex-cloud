@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e2fc2f3d5106d2fe7bc95726dff8495ca015ea2d34bea9aa7d52c18961e21e50"
+generated_digest: "sha256:f8833ce58c496938290320b4e3e0186d5ed726fa296a050e41cb65104a960eb7"
 generated:
   id: cf_dfd8ef8cfe
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "11 fields: boolean, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32"
     evidence: ev_21b81594e0dd
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "8 fields: boolean, int32, int32, int32, int32, int32, int32, int32"
-    evidence: ev_0590c7c6af94
+    evidence: ev_912089d66928
   evidence:
   - id: ev_21b81594e0dd
     kind: client_parser
@@ -46,10 +46,10 @@ generated:
     symbol: MarketplaceConfigurationMessageParser
     line: 63
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_0590c7c6af94
+  - id: ev_912089d66928
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/marketplace/MarketplaceConfigurationMessageComposer.java
     symbol: MarketplaceConfigurationMessageComposer
     line: 9

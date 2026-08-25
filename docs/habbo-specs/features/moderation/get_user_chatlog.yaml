@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d5f321ae306594aacff2a3297d83c10232093ed2a7bf08d70f6d61ba8e900750"
+generated_digest: "sha256:05109f5c6f4f206a25a754e494756f7b759405a49b83a1e742622b4eb4474206"
 generated:
   id: moderation.get_user_chatlog
   domain: moderation
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

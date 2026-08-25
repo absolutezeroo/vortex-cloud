@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d06ff41db88a4a40a68ebca5b7806c04c4855116f425f4725109f8ed2c17f8bc"
+generated_digest: "sha256:eb50973b181c7691ac1ee3d37f0df0ae22505c09b28e172aa64a29ebc70c2260"
 generated:
   name: MyGuildBasesSearch
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_6dfbc8e2e2eb
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_dbb3e172aa7d
+    evidence: ev_0561c8c47427
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: MyGuildBasesSearchComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dbb3e172aa7d
+  - id: ev_0561c8c47427
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/MyGuildBasesSearchMessageEvent.java
     symbol: MyGuildBasesSearchMessageEvent
     line: 8

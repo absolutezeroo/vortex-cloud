@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fdd69b818d16950d0a662650e91ee0b04d43407e71cfcbf2f7598ab5a08fdb38"
+generated_digest: "sha256:05ae730a47824b5d094eb127e2b1e063ecee232c95e49a17d009fa4c1626627f"
 generated:
   name: SnowWarsAddUser
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 4
     name: unknown_4
     type: int32
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   - index: 8
     name: unknown_8
     type: boolean
@@ -89,9 +89,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_c7445c4bbbcf
+    - ev_8215c9c4e0c2
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 9
     partial: false
@@ -105,12 +105,12 @@ generated:
     - int32
     - int32
     - boolean
-    evidence: ev_c7445c4bbbcf
+    evidence: ev_8215c9c4e0c2
   evidence:
-  - id: ev_c7445c4bbbcf
+  - id: ev_8215c9c4e0c2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsAddUserComposer.java
     symbol: SnowWarsAddUserComposer
     line: 9

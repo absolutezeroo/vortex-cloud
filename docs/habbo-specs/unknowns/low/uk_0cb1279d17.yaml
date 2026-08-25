@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b287ccc435a56801834526ef97d8b20544b1d4f99ebe27c0052d7084b3d6dd34"
+generated_digest: "sha256:18b9b760882ffb11a9351d3dbff0be96af4e7d7f20c7edce0e6d302382394ca7"
 generated:
   id: uk_0cb1279d17
   subject: "outgoing/HotelViewCustomTimer: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HotelViewCustomTimer
   known_evidence:
-  - id: ev_9a43fe16e3c8
+  - id: ev_e7bd52a84177
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/HotelViewCustomTimerComposer.java
     symbol: HotelViewCustomTimerComposer
     line: 17

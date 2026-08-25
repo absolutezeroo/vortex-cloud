@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0a297843846cf4c79997793eadf62de51238ee73c41be3473839010435448d6a"
+generated_digest: "sha256:b61b91ac8a17083554c11580bf75c3b7166b287900489e7ed5f42790fdc7ed33"
 generated:
   name: SnowWarsGenericError
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_aca2bf61a3f6
+    - ev_0605bd1e7b48
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_aca2bf61a3f6
+    evidence: ev_0605bd1e7b48
   evidence:
-  - id: ev_aca2bf61a3f6
+  - id: ev_0605bd1e7b48
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsGenericErrorComposer.java
     symbol: SnowWarsGenericErrorComposer
     line: 8

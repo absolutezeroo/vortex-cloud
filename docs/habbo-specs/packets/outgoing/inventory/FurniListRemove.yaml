@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e358f4c6c9e9477f24f05f91a2c15a2a162cf4e955b975b52362e1efb3c0ae03"
+generated_digest: "sha256:5b216ffb442f83fcc9052859ab69b658f14db7d7537629f916d4f7149a1a41ed"
 generated:
   name: FurniListRemove
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_398a0f777832
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_990f87ec0f38
+    evidence: ev_199bb05e9ac4
   evidence:
   - id: ev_398a0f777832
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_3325
     line: 17
     note: official client build WIN63-202607011411-782849652
-  - id: ev_990f87ec0f38
+  - id: ev_199bb05e9ac4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/FurniListRemoveMessageComposer.java
     symbol: FurniListRemoveMessageComposer
     line: 15

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b6fc8e4ae824c6130f2083a17e4d05c761f1c59492fc3701a9481eec389a08fa"
+generated_digest: "sha256:6c76a391b94a4502c9f462af41ab2f733a816e67a3b6a25dbde0ed8969913e1b"
 generated:
   feature: room.open_room_for_player_id
   scenarios:
@@ -39,11 +39,11 @@ generated:
       - UserRemove
       - Users
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_1
     title: "open room for player id: the guard 'pendingRoom.RoomId == roomId' holds"
     given:
@@ -62,11 +62,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_10
     title: "open room for player id: the guard '_registry is null' holds"
     given:
@@ -85,11 +85,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_11
     title: "open room for player id: the guard '!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? ...' holds"
     given:
@@ -108,11 +108,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_74aa24a9a756
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_2
     title: "open room for player id: the guard 'isFull || isPasswordMismatch' holds"
     given:
@@ -138,11 +138,11 @@ generated:
       - UserRemove
       - Users
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_3
     title: "open room for player id: the guard 'snapshot.DoorMode == RoomDoorModeType.Locked' holds"
     given:
@@ -161,11 +161,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7c6cea3bc17b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_4
     title: "open room for player id: the guard 'roomId <= 0 || playerId <= 0' holds"
     given:
@@ -184,11 +184,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2747c101d5f4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_5
     title: "open room for player id: the guard '_state.ActiveRoomId <= 0' holds"
     given:
@@ -207,11 +207,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_6
     title: "open room for player id: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue( playerI...' holds"
     given:
@@ -230,11 +230,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_7
     title: "open room for player id: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
     given:
@@ -253,11 +253,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_761b76967e2f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_8
     title: "open room for player id: the guard 'item.Logic is null' holds"
     given:
@@ -276,11 +276,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4c36667ce9b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_9
     title: "open room for player id: the guard '!avatar.IsWalking' holds"
     given:
@@ -299,11 +299,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.success
     title: "open room for player id: the request is accepted"
     given:
@@ -328,16 +328,16 @@ generated:
       - UserRemove
       - Users
       evidence: ev_0e5bd3223d28
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3d435bdd22ea
+      evidence: ev_ef83570fa232
   evidence:
-  - id: ev_3d435bdd22ea
+  - id: ev_ef83570fa232
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/OpenFlatConnectionMessageEvent.java
     symbol: OpenFlatConnectionMessageEvent
     line: 10

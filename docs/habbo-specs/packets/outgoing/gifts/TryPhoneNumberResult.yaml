@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fb914d0074c4cfce35253270222bb16732a285c4b8c0f052e8f6000310452295"
+generated_digest: "sha256:db51f6bf61a837f095bb0f0f0f4f068531b4c0c99e2791123ec3d068c8d0f63d"
 generated:
   name: TryPhoneNumberResult
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_b83f3a5182a5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_126f11519b1e
+    evidence: ev_e2f3830b3c2d
   evidence:
   - id: ev_c2e9380e96ab
     kind: client_parser
@@ -72,10 +72,10 @@ generated:
     symbol: TryPhoneNumberResultMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_126f11519b1e
+  - id: ev_e2f3830b3c2d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/verification/TryPhoneNumberResultMessageComposer.java
     symbol: TryPhoneNumberResultMessageComposer
     line: 17

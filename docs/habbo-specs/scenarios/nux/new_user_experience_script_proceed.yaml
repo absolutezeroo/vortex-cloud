@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b164375a2f8855c463c69b55fd0ab1adf97e262ba7ed8ea962f2effd508f6351"
+generated_digest: "sha256:f0bd48b67ea3cc741d387aa7f836497fb2871b2013b706d9fe890ac290691958"
 generated:
   feature: nux.new_user_experience_script_proceed
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_520cb850ebd3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7b1f43c50829
+      evidence: ev_ccb16fae170d
   evidence:
-  - id: ev_7b1f43c50829
+  - id: ev_ccb16fae170d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/NewUserExperienceScriptProceedEvent.java
     symbol: NewUserExperienceScriptProceedEvent
     line: 43

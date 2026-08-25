@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c8b4a21e5fddeecc06d343bc9d477c2e3f28633783a9806c33b0c9e952dd947d"
+generated_digest: "sha256:67215eccae9d8e1500ac0d7af22a6ec3465188809310ed224d014b3a01eb333c"
 generated:
   id: uk_773d55b022
   subject: "outgoing/RecyclerPrizes: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: RecyclerPrizesMessageParser
     line: 17
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_c53ea7285538
+  - id: ev_0a05247d7a82
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/RecyclerPrizesMessageComposer.java
     symbol: RecyclerPrizesMessageComposer
     line: 14

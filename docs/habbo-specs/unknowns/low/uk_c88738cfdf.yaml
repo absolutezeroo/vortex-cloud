@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7f8e747a593e432e2ac55686c848f7478098e4cf897e21713b2c7e2a764cfaf9"
+generated_digest: "sha256:bc1c8557526165742530cd440401dff114a425b7f3000fca37c72b8691e0f6be"
 generated:
   id: uk_c88738cfdf
   subject: "outgoing/BadgePointLimits: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3205
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_deb82bccd443
+  - id: ev_d54ee7f5b3d1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/BadgePointLimitsMessageComposer.java
     symbol: BadgePointLimitsMessageComposer
     line: 14

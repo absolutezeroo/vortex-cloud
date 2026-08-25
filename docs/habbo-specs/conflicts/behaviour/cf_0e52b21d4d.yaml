@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0e41637790299aaf685889e30c52d62a769c5f14362b17e64da9b76fbd413d86"
+generated_digest: "sha256:6b065cb4c0144e03e339cf2229d158e20938e7e4720f9842b15777281efec1c6"
 generated:
   id: cf_0e52b21d4d
   kind: behaviour
   subject: "PlacePostIt: packets emitted in response"
   packet: PlacePostIt
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ItemAdd then FurniListRemove then NotificationDialog
-    evidence: ev_33770d4af188
+    evidence: ev_5da58fd12051
   - origin: vortex
     authority: vortex_emulator
     claim: ItemAdd then Users then ItemAdd then FurniListRemoveEvent
     evidence: ev_7b638b94ca76
   evidence:
-  - id: ev_33770d4af188
+  - id: ev_5da58fd12051
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PlacePostItMessageEvent.java
     symbol: PlacePostItMessageEvent
     line: 18

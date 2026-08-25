@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ae752b0aa20064edf3299c6621f7bcaf1be2f7117c20798d3ccd1c14f665f342"
+generated_digest: "sha256:3d435e2dc9788f6881e008fb17d07fdcd41603610dc675088486ce055a696244"
 generated:
   name: GetBundleDiscountRuleset
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_744c512811e4
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_11dcf3354114
+    evidence: ev_39ad5c5b63ed
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetBundleDiscountRulesetComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_11dcf3354114
+  - id: ev_39ad5c5b63ed
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetBundleDiscountRulesetEvent.java
     symbol: GetBundleDiscountRulesetEvent
     line: 8

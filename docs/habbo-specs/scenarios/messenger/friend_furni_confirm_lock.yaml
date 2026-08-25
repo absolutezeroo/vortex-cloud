@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:df36f4a4cb07177bb3aa2c02e196acacd05132de269a3dba2889a9fbff76e97d"
+generated_digest: "sha256:4ee7019d8458b56f214f57b537a487aafa50ea6ee9af8d92a5ebfd067ae494a5"
 generated:
   feature: messenger.friend_furni_confirm_lock
   scenarios:
@@ -31,17 +31,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1974402aaa8a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FriendFurniCancelLock
-      evidence: ev_94da840eaeae
+      evidence: ev_56878dd8e0b4
   evidence:
-  - id: ev_94da840eaeae
+  - id: ev_56878dd8e0b4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/lovelock/FriendFurniConfirmLockMessageEvent.java
     symbol: FriendFurniConfirmLockMessageEvent
     line: 14

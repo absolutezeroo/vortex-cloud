@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0eb3b7adb81ec8f6c02a91bcac34be6495306ebadc475be86d7d9cb143c12e04"
+generated_digest: "sha256:cd6fa17b20b2f9140017dae50c097aaf9f07981cc5f4a149733dd1ebb50adccb"
 generated:
   name: Craft
   direction: incoming
@@ -25,14 +25,14 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f2aa4d96b441
+    - ev_ff9760f2c47d
   - index: 1
     name: recipe
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f2aa4d96b441
+    - ev_ff9760f2c47d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,14 +46,14 @@ generated:
     partial: true
     types: []
     evidence: ev_c8aaf54b9ae6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_f2aa4d96b441
+    evidence: ev_ff9760f2c47d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -77,10 +77,10 @@ generated:
     symbol: CraftComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f2aa4d96b441
+  - id: ev_ff9760f2c47d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/crafting/CraftEvent.java
     symbol: CraftEvent
     line: 23

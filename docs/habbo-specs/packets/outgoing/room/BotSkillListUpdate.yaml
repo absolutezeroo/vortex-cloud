@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a31842ed519dc2da7a8bf8ef3b78ba9322e699a8db140e3aab3177ea8a353637"
+generated_digest: "sha256:3b97847695770e14b3ac56540c973cb3c8356809e8e8d0901de57c9a9ad1bcd5"
 generated:
   name: BotSkillListUpdate
   direction: outgoing
@@ -57,7 +57,7 @@ generated:
     partial: true
     types: []
     evidence: ev_7b19b3b35bdc
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -66,7 +66,7 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_70b65a1c2456
+    evidence: ev_e4587b4e03fa
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -101,10 +101,10 @@ generated:
     symbol: BotSkillListUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_70b65a1c2456
+  - id: ev_e4587b4e03fa
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/BotSkillListUpdateMessageComposer.java
     symbol: BotSkillListUpdateMessageComposer
     line: 19

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:889f550ff15591af756a455e69d2619164b133e0ed765bebd7bb1a13d69f1f43"
+generated_digest: "sha256:3a8aa99ba63d8a2b7a576d6f85e4d39062a42ba27a6b8b4bd873a2514fe87000"
 generated:
   feature: moderation.call_for_help_from_forum_thread
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0d8f0a936b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_a0e32a948e98
+      evidence: ev_a54d008d6585
   - scenario: moderation.call_for_help_from_forum_thread.guard_1
     title: "call for help from forum thread: the guard 'threadId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_da3ad2e8d895
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_a0e32a948e98
+      evidence: ev_a54d008d6585
   - scenario: moderation.call_for_help_from_forum_thread.success
     title: "call for help from forum thread: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c0486e4a505d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpResult
-      evidence: ev_a0e32a948e98
+      evidence: ev_a54d008d6585
   evidence:
-  - id: ev_a0e32a948e98
+  - id: ev_a54d008d6585
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CallForHelpFromForumThreadMessageEvent.java
     symbol: CallForHelpFromForumThreadMessageEvent
     line: 15

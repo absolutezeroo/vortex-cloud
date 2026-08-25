@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bbad4a4b36cd7a723171afb7d2359c878625ba2ae65eba13ff599c28376b5da3"
+generated_digest: "sha256:5810d6561e67cbf40b858fc31ba991e5059d318638025adc92c3068b6812eeb0"
 generated:
   feature: room.respect_pet
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1557b71ceec2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   - scenario: room.respect_pet.guard_1
     title: "respect pet: the guard '!_roomGrain._state.PetsById.TryGetValue(petId, out PetSna...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3b983736fec5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   - scenario: room.respect_pet.guard_2
     title: "respect pet: the guard 'RoomPetRuntime.IsPlant(pet)' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3b983736fec5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   - scenario: room.respect_pet.guard_3
     title: "respect pet: the guard 'ageDays < minimumAgeDays' holds"
     given:
@@ -102,11 +102,11 @@ generated:
       emits:
       - PetRespectFailed
       evidence: ev_3b983736fec5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   - scenario: room.respect_pet.guard_4
     title: "respect pet: the guard 'pet.RespectTodayCount >= dailyCap' holds"
     given:
@@ -125,11 +125,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_3b983736fec5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   - scenario: room.respect_pet.success
     title: "respect pet: the request is accepted"
     given:
@@ -148,16 +148,16 @@ generated:
       emits:
       - PetRespectFailed
       evidence: ev_1557b71ceec2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8b5b3e27d8c5
+      evidence: ev_cb9974479c1a
   evidence:
-  - id: ev_8b5b3e27d8c5
+  - id: ev_cb9974479c1a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/RespectPetMessageEvent.java
     symbol: RespectPetMessageEvent
     line: 19

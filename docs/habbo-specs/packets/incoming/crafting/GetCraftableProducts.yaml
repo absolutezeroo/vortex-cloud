@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc1d3852852663dee0d96f5864dc54012d490b01abe5307fa6498d3795c37689"
+generated_digest: "sha256:138c05f03ab700b731b2634baa9e25e4bb562165b3c9d335d7a3f197e95edd90"
 generated:
   name: GetCraftableProducts
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_4355b3de174d
+    - ev_9f64e119838c
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_74dd40fd836e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_4355b3de174d
+    evidence: ev_9f64e119838c
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: GetCraftableProductsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4355b3de174d
+  - id: ev_9f64e119838c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/crafting/GetCraftableProductsEvent.java
     symbol: GetCraftableProductsEvent
     line: 11

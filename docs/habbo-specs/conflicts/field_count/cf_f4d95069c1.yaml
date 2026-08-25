@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dcf824503b913a4c2bc606e1232e3e40f275be754021a601d7373414c82476ef"
+generated_digest: "sha256:35be784aea2b3c65025f39e2141423516e1a2230a98b573a5e95bb13b3ef2feb"
 generated:
   id: cf_f4d95069c1
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32"
     evidence: ev_678716c8cec7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
-    evidence: ev_4eaad52ebf56
+    evidence: ev_4a8734fd221b
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, int32"
@@ -50,10 +50,10 @@ generated:
     symbol: ActivityPointsMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_4eaad52ebf56
+  - id: ev_4a8734fd221b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/ActivityPointsMessageComposer.java
     symbol: ActivityPointsMessageComposer
     line: 21

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8c4153028afc936c8b6039224f6e1dec816f93437b7380cbdebdb874d477e1e7"
+generated_digest: "sha256:c30b76abef93836053de77dfe5f70102b9f450b443ca973eb723255d37224a89"
 generated:
   id: uk_72db2087b5
   subject: "outgoing/ModeratorUserInfo: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_3310
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_4af35d420fb1
+  - id: ev_7b37e042b652
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/ModeratorUserInfoMessageComposer.java
     symbol: ModeratorUserInfoMessageComposer
     line: 27

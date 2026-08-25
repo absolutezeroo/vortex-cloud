@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:21bd9ce3a449e4771758a7dda3729600e04b389e4eefb1810fb83b3ccde9135d"
+generated_digest: "sha256:3033912cc787fd739142d6fa99f6cbc2cfbfb020ba67ea38b91c17e0493f0942"
 generated:
   feature: users.get_relationship_status_info
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bf22cc5b6280
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RelationshipStatusInfo
       - RelationshipStatusInfo
-      evidence: ev_ee8c80c7a5fa
+      evidence: ev_463c147f250f
   - scenario: users.get_relationship_status_info.success
     title: "get relationship status info: the request is accepted"
     given:
@@ -57,18 +57,18 @@ generated:
       emits:
       - RelationshipStatusInfoEvent
       evidence: ev_bf22cc5b6280
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - RelationshipStatusInfo
       - RelationshipStatusInfo
-      evidence: ev_ee8c80c7a5fa
+      evidence: ev_463c147f250f
   evidence:
-  - id: ev_ee8c80c7a5fa
+  - id: ev_463c147f250f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetRelationshipStatusInfoMessageEvent.java
     symbol: GetRelationshipStatusInfoMessageEvent
     line: 11

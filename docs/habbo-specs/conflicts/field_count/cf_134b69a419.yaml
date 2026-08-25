@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0cbba63f1b2bb754f4bced4ba4115c03b906ea484a64bdd179c9c484a47816f3"
+generated_digest: "sha256:563f47eb5550dd4ff7e0fecec14849de74561e51a0ffdeac0d59ee8098538385"
 generated:
   id: cf_134b69a419
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32, int32"
     evidence: ev_daa4af4e1a22
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "16 fields: int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32"
-    evidence: ev_38bc7127caf2
+    evidence: ev_9b13f1e65de2
   evidence:
   - id: ev_daa4af4e1a22
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_2693
     line: 28
     note: official client build WIN63-202607011411-782849652
-  - id: ev_38bc7127caf2
+  - id: ev_9b13f1e65de2
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/UnseenItemsMessageComposer.java
     symbol: UnseenItemsMessageComposer
     line: 44

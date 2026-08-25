@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3149c735119c0fe15028b8831dc3c519b8d5ea93784e38ed29ff8b82dc544317"
+generated_digest: "sha256:f635ab0893da4e12b7f4e6897575a2bd2ddb2bd805d62983ade411b2b40b3471"
 generated:
   name: Open
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_2df4ae25622f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_6256571d6617
+    evidence: ev_7cc70f3f65be
   evidence:
   - id: ev_2df4ae25622f
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_2993
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_6256571d6617
+  - id: ev_7cc70f3f65be
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/OpenMessageComposer.java
     symbol: OpenMessageComposer
     line: 16

@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:9440e67ca0bd67cbe441f187a8968b99638c6638aa2e5414d2a7d9658fc787e6"
+generated_digest: "sha256:904a24ca2435e9a12e0106371a45f5c0e9047d1866b20b129959f727fa29011b"
 generated:
   id: cf_676b07a797
   kind: behaviour
   subject: "ApproveMembershipRequest: packets emitted in response"
   packet: ApproveMembershipRequest
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuildMemberMgmtFailed then GuildMemberMgmtFailed then GuildMembershipRejected
-    evidence: ev_8fcbb143013b
+    evidence: ev_4140aaf1b434
   - origin: vortex
     authority: vortex_emulator
     claim: GuildMembershipUpdated then GuildMemberMgmtFailed
     evidence: ev_c8f11b0849a4
   evidence:
-  - id: ev_8fcbb143013b
+  - id: ev_4140aaf1b434
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/ApproveMembershipRequestMessageEvent.java
     symbol: ApproveMembershipRequestMessageEvent
     line: 23

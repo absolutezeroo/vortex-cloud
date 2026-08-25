@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3270b3a657d2b31bf7c83d502204cd9d615008087b04e63797b325f656c3be90"
+generated_digest: "sha256:800a1cd901bf846e474d726030a6dbedd2d25ad7a2301fd5d4777c14f3d1fcd4"
 generated:
   feature: campaign.open_campaign_calendar_door_as_staff
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d999f9ed3536
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_90a32b175f0d
+      evidence: ev_dd55fb44cc9b
   evidence:
-  - id: ev_90a32b175f0d
+  - id: ev_dd55fb44cc9b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/events/calendar/OpenCampaignCalendarDoorAsStaffEvent.java
     symbol: OpenCampaignCalendarDoorAsStaffEvent
     line: 8

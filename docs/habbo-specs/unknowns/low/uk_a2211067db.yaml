@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:69fd22a5779dd33fab792e96ee77661931f591960d5bddfca0b0cac470348d80"
+generated_digest: "sha256:16b9d3fffecface9d738096ed1d7a6e7b34a0c89798654ac2ca917f5f6cd80ad"
 generated:
   id: uk_a2211067db
   subject: "outgoing/GuideTicketResolution: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: GuideTicketResolutionMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_61b2a3e1ae2d
+  - id: ev_1e96d80aebee
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guides/GuideTicketResolutionMessageComposer.java
     symbol: GuideTicketResolutionMessageComposer
     line: 18

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:49a23249c7d061319d6b05667431c2a4828faee8dd493337ed37a8cf861f17af"
+generated_digest: "sha256:26e84786808cb9844967e53fbcf52bdb57e3715dad493d8e50722fe3c0350249"
 generated:
   name: UserClassification
   direction: outgoing
@@ -70,7 +70,7 @@ generated:
     partial: true
     types: []
     evidence: ev_7e526a3c4637
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -79,7 +79,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_ffbc5686eb0e
+    evidence: ev_738917448fb7
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -105,10 +105,10 @@ generated:
     symbol: UserClassificationMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ffbc5686eb0e
+  - id: ev_738917448fb7
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/UserClassificationMessageComposer.java
     symbol: UserClassificationMessageComposer
     line: 18

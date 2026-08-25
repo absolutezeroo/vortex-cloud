@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:60ad3e51024cefbab73af59fa709afd8a9ba9eb0aee62c94472780bd36330899"
+generated_digest: "sha256:326f2d983e684ddb9b00aa5512bc030a4e8c764a922068a48e7274ba93b0838b"
 generated:
   name: GetGuestRoomResult
   direction: outgoing
@@ -311,7 +311,7 @@ generated:
     - boolean
     - boolean
     evidence: ev_85a4aa0bb395
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 43
     partial: false
@@ -359,7 +359,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_274d6a188d60
+    evidence: ev_c03ef48e11a5
   - origin: vortex
     authority: vortex_emulator
     field_count: 10
@@ -393,10 +393,10 @@ generated:
     symbol: GetGuestRoomResultMessage
     line: 17
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_274d6a188d60
+  - id: ev_c03ef48e11a5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/GetGuestRoomResultMessageComposer.java
     symbol: GetGuestRoomResultMessageComposer
     line: 26

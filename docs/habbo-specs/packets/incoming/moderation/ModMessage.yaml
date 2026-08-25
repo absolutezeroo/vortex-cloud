@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a8c7f16bae95ad3485eefedd2ed212d20d93bea4541dd7a24e620ba7a53dfe71"
+generated_digest: "sha256:e569581901f064209d01a89abe4b5506dc54e57758f0edcfa2f38cbaabd9e7f9"
 generated:
   name: ModMessage
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_44e6fc7a5ed2
+    - ev_364da72c2746
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_44e6fc7a5ed2
+    - ev_364da72c2746
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,14 +41,14 @@ generated:
     partial: true
     types: []
     evidence: ev_e90b8c8594c5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_44e6fc7a5ed2
+    evidence: ev_364da72c2746
   - origin: vortex
     authority: vortex_emulator
     field_count: 6
@@ -70,10 +70,10 @@ generated:
     symbol: _SafeCls_3552
     line: 26
     note: "the client constructs this composer at 2 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/moderation/ModActionCtrl.as:322 with 4 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_44e6fc7a5ed2
+  - id: ev_364da72c2746
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModMessageMessageEvent.java
     symbol: ModMessageMessageEvent
     line: 12

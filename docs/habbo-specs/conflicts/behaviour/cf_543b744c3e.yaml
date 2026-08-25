@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:905ee0748c83df96c7516a936b31a139164442fe4a7a0be7515e1ab0c53e8ec6"
+generated_digest: "sha256:14dd156e324435db85239cf84ccf02a3fd5bbf5320121b16527c5ad7dde33dd3"
 generated:
   id: cf_543b744c3e
   kind: behaviour
   subject: "KickMember: packets emitted in response"
   packet: KickMember
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GuildMembershipRejected
-    evidence: ev_052b54c0e5c1
+    evidence: ev_5a67319ee97f
   - origin: vortex
     authority: vortex_emulator
     claim: GuildMemberMgmtFailed
     evidence: ev_d90cdf1638a0
   evidence:
-  - id: ev_052b54c0e5c1
+  - id: ev_5a67319ee97f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/KickMemberMessageEvent.java
     symbol: KickMemberMessageEvent
     line: 18

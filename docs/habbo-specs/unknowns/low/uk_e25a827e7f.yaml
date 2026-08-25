@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:85c56d63e133c367a5a746440d173d971e98ca7005d3520cbfe5a65940f68461"
+generated_digest: "sha256:00cd3b7537fa35d8f20c073d2152594c9f5c0360d9f93754a58f6b1f54d9bf1a"
 generated:
   id: uk_e25a827e7f
   subject: "outgoing/WiredConditionData: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: WiredConditionDataMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_1664ffdc5c50
+  - id: ev_71dec5e5da9b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/wired/WiredConditionDataMessageComposer.java
     symbol: WiredConditionDataMessageComposer
     line: 19

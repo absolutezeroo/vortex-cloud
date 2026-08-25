@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f8eb3edacec01aafb04de75db885b2bcef5579ef6e978a9ce8a555ee3310b30a"
+generated_digest: "sha256:bb001f592469487254cd2f433602b6b855d2b42c99d7de3028277fdce66244e8"
 generated:
   feature: inventory.request_furni_inventory
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3cca687e112
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FurniList
       - FurniList
       - FurniList
-      evidence: ev_d4d1bf248390
+      evidence: ev_81d201b35257
   - scenario: inventory.request_furni_inventory.success
     title: "request furni inventory: the request is accepted"
     given:
@@ -58,19 +58,19 @@ generated:
       emits:
       - FurniListEvent
       evidence: ev_373e76aa8a80
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - FurniList
       - FurniList
       - FurniList
-      evidence: ev_d4d1bf248390
+      evidence: ev_81d201b35257
   evidence:
-  - id: ev_d4d1bf248390
+  - id: ev_81d201b35257
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/RequestFurniInventoryEvent.java
     symbol: RequestFurniInventoryEvent
     line: 18

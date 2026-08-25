@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e34fe02f3f6836096e1cf5736c1f03f0257f46b312c0638ccf0e7202c1adfc37"
+generated_digest: "sha256:9d00d180cdc9a6f4513ab3e6279befcf30bab1db0ea3758672966679335237ff"
 generated:
   name: RemoveBotFromFlat
   direction: incoming
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_8b7b490a7603
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_8ff0654add70
+    evidence: ev_19ee9cbb0c4e
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: RemoveBotFromFlatComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_8ff0654add70
+  - id: ev_19ee9cbb0c4e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/RemoveBotFromFlatMessageEvent.java
     symbol: RemoveBotFromFlatMessageEvent
     line: 11

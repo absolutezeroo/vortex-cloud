@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e2ddc7902695afa9da9855e161e327688caeebada39fe334634f342ce77cd43d"
+generated_digest: "sha256:cf63288c4ab5beb1f023db2d035d6efa917bb00db371055fcbaa077fb3e25a41"
 generated:
   name: AnswerPoll
   direction: incoming
@@ -24,30 +24,30 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_45dc3d450c15
+    - ev_f37deecda7cf
   - index: 1
     name: question_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_45dc3d450c15
+    - ev_f37deecda7cf
   - index: 2
     name: count
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_45dc3d450c15
+    - ev_f37deecda7cf
   - index: 3
     name: answers
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_45dc3d450c15
+    - ev_f37deecda7cf
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -56,12 +56,12 @@ generated:
     - int32
     - int32
     - string
-    evidence: ev_45dc3d450c15
+    evidence: ev_f37deecda7cf
   evidence:
-  - id: ev_45dc3d450c15
+  - id: ev_f37deecda7cf
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/polls/AnswerPollEvent.java
     symbol: AnswerPollEvent
     line: 20

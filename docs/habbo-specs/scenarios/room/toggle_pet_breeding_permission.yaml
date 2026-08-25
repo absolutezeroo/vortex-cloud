@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dbb7b81dda3b35d1b8849ee4583de23099d734a3ac6dfa3f20cdc64248a5a3f4"
+generated_digest: "sha256:a800ae44d634a0dc9ef62381dc3668a4ef92347a92c7886d0e5210f878482445"
 generated:
   feature: room.toggle_pet_breeding_permission
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2a21931a8cea
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetStatusUpdate
-      evidence: ev_a5a4b706a468
+      evidence: ev_da29ca146a48
   - scenario: room.toggle_pet_breeding_permission.guard_1
     title: "toggle pet breeding permission: the guard '!_roomGrain._state.PetsById.TryGetValue(petId, out PetSna...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3aeea05728f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetStatusUpdate
-      evidence: ev_a5a4b706a468
+      evidence: ev_da29ca146a48
   - scenario: room.toggle_pet_breeding_permission.guard_2
     title: "toggle pet breeding permission: the guard 'pet.OwnerId != ctx.PlayerId' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e3aeea05728f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetStatusUpdate
-      evidence: ev_a5a4b706a468
+      evidence: ev_da29ca146a48
   - scenario: room.toggle_pet_breeding_permission.success
     title: "toggle pet breeding permission: the request is accepted"
     given:
@@ -103,17 +103,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_06768524ec0c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - PetStatusUpdate
-      evidence: ev_a5a4b706a468
+      evidence: ev_da29ca146a48
   evidence:
-  - id: ev_a5a4b706a468
+  - id: ev_da29ca146a48
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/TogglePetBreedingPermissionMessageEvent.java
     symbol: TogglePetBreedingPermissionMessageEvent
     line: 12

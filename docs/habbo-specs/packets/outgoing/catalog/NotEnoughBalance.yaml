@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:717650d3275a5da4ff6994f114650b0f22d3ef6cd07b237b3a11e3bea0a25db2"
+generated_digest: "sha256:26a0b80ff3a8afb19ed7a6a97f64d0ece884b43ea6729e8ad720993d9e3a1611"
 generated:
   name: NotEnoughBalance
   direction: outgoing
@@ -56,7 +56,7 @@ generated:
     partial: true
     types: []
     evidence: ev_a63e44ce57f7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -64,7 +64,7 @@ generated:
     - boolean
     - boolean
     - int32
-    evidence: ev_2a789ebfa59c
+    evidence: ev_c365e7d19f4c
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -91,10 +91,10 @@ generated:
     symbol: NotEnoughBalanceMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2a789ebfa59c
+  - id: ev_c365e7d19f4c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/NotEnoughBalanceMessageComposer.java
     symbol: NotEnoughBalanceMessageComposer
     line: 19

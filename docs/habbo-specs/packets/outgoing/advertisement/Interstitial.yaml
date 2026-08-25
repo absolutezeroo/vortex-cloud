@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e0d9bb98f4b18b4d679a16713eb0d5dad9c645c19c41ee1de4d673c1ed3dbad"
+generated_digest: "sha256:71727ea4501aa929974fd638124613a9f3f4c62ef534323c0a988e3a1280c8c0"
 generated:
   name: Interstitial
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_d546a7714cda
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_5fd1174c37ed
+    evidence: ev_41aec3cdb083
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: InterstitialMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5fd1174c37ed
+  - id: ev_41aec3cdb083
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/InterstitialMessageComposer.java
     symbol: InterstitialMessageComposer
     line: 15

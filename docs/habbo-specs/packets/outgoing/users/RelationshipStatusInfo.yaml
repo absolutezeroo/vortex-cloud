@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ee0c530be7b1e82568dcb3f068c5e50f7156db0a4cd3b8cd39ab086237644fc9"
+generated_digest: "sha256:43f84962729eb995a1b4bc58283907529a8cbdd58f7257f75a9afbb1d95dfc35"
 generated:
   name: RelationshipStatusInfo
   direction: outgoing
@@ -92,7 +92,7 @@ generated:
     - string
     - string
     evidence: ev_e0e763d32d46
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 17
     partial: false
@@ -114,7 +114,7 @@ generated:
     - int32
     - string
     - string
-    evidence: ev_302f98196462
+    evidence: ev_1c57eefaa21e
   evidence:
   - id: ev_e0e763d32d46
     kind: client_parser
@@ -124,10 +124,10 @@ generated:
     symbol: _SafeCls_3604
     line: 31
     note: official client build WIN63-202607011411-782849652
-  - id: ev_302f98196462
+  - id: ev_1c57eefaa21e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/RelationshipStatusInfoMessageComposer.java
     symbol: RelationshipStatusInfoMessageComposer
     line: 60

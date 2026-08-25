@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5e452bcda48b9293b432a8f94ce0151dcd233cfa7b6fa8c1c8ac8f8740dafc80"
+generated_digest: "sha256:3ea4e4c97b3486509720a31d04ae1a44b02675ad2696df34a357b1200f1cd13c"
 generated:
   feature: catalog.find_by_product_code
   scenarios:
@@ -32,7 +32,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db00239c6a21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -42,7 +42,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_1
     title: "find by product code: the guard 'offer is null' holds"
     given:
@@ -61,7 +61,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db00239c6a21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -71,7 +71,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_2
     title: "find by product code: the guard '!sub.IsActive || (offer.ClubLevel > 1 && !sub.IsVip)' holds"
     given:
@@ -90,7 +90,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db00239c6a21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -100,7 +100,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_3
     title: "find by product code: the guard '!consumed' holds"
     given:
@@ -119,7 +119,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db00239c6a21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -129,7 +129,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_4
     title: "find by product code: the guard '_state.ClubGiftsAvailable <= 0' holds"
     given:
@@ -148,7 +148,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -158,7 +158,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_5
     title: "find by product code: the guard '_registry is null' holds"
     given:
@@ -177,7 +177,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -187,7 +187,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_6
     title: "find by product code: the guard 'groupId <= 0' holds"
     given:
@@ -206,7 +206,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -216,7 +216,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_7
     title: "find by product code: the guard '!isMember' holds"
     given:
@@ -235,7 +235,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -245,7 +245,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_8
     title: "find by product code: the guard 'group is null' holds"
     given:
@@ -264,7 +264,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -274,7 +274,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.guard_9
     title: "find by product code: the guard 'match is not null' holds"
     given:
@@ -293,7 +293,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_35934eb1b8df
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -303,7 +303,7 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   - scenario: catalog.find_by_product_code.success
     title: "find by product code: the request is accepted"
     given:
@@ -323,7 +323,7 @@ generated:
       - BadgeReceivedEvent
       - ClubGiftSelectedEvent
       evidence: ev_0c987f4ea07c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -333,12 +333,12 @@ generated:
       - PurchaseError
       - PurchaseError
       - ClubGiftSelected
-      evidence: ev_a4c825f97017
+      evidence: ev_d72f1911f56e
   evidence:
-  - id: ev_a4c825f97017
+  - id: ev_d72f1911f56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/SelectClubGiftEvent.java
     symbol: SelectClubGiftEvent
     line: 20

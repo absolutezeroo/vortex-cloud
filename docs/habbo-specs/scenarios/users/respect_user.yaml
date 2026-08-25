@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee7285fa689cf5dd2f472941861b7af280ae5d629be87dc7c7780095678a89bf"
+generated_digest: "sha256:1ce8c533c7d035346e18f4927b1787cec55cb7169456f96cd8bb84150af90856"
 generated:
   feature: users.respect_user
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_406f141c9aca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.guard_1
     title: "respect user: the guard 'giverPlayerId <= 0 || targetPlayerId <= 0 || giverPlayerI...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.guard_2
     title: "respect user: the guard '!targetPresent' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.guard_3
     title: "respect user: the guard '!given' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.guard_4
     title: "respect user: the guard '!allowed' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.guard_5
     title: "respect user: the guard '_registry is null' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   - scenario: users.respect_user.success
     title: "respect user: the request is accepted"
     given:
@@ -170,16 +170,16 @@ generated:
       emits:
       - RespectNotification
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c21775f06e5f
+      evidence: ev_c3a7f06e187b
   evidence:
-  - id: ev_c21775f06e5f
+  - id: ev_c3a7f06e187b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/RespectUserMessageEvent.java
     symbol: RespectUserMessageEvent
     line: 10

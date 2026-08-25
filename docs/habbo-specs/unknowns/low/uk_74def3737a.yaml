@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d8777327abe36e41afa8f21e2859d80faa9fea3ef99e780fac55b35a7b4b4f7b"
+generated_digest: "sha256:9b2a64086017b2746b69d19ba1a1e8dced3192f2c8f186595304bcdabc67434c"
 generated:
   id: uk_74def3737a
   subject: "outgoing/IssueInfo: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: IssueInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3dcfc33f48ef
+  - id: ev_b323ea68725e
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/IssueInfoMessageComposer.java
     symbol: IssueInfoMessageComposer
     line: 16

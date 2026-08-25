@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:67edd31ec058aab35f6be66946884b3da9fad9d99e6ff90fe9f16c13a6959d53"
+generated_digest: "sha256:7d78e7c962e69cd25700560ea0df1b155b88b5cbb705df2ddb1bc9048f6904d6"
 generated:
   id: cf_8758c4613f
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: multi_implementation
     claim: "category: int32"
     evidence: ev_c409c59808e3
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "values: string"
-    evidence: ev_3f14b03037d4
+    evidence: ev_637e62301919
   - origin: vortex
     authority: vortex_emulator
     claim: "data: string"
@@ -38,10 +38,10 @@ generated:
     symbol: PlaceObjectComposer
     line: 16
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3f14b03037d4
+  - id: ev_637e62301919
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PlaceObjectMessageEvent.java
     symbol: PlaceObjectMessageEvent
     line: 15

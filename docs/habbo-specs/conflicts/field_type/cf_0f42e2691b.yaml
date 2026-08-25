@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f8ead7fc1f28e7cf895f67e306d177daed5f4047ca23a6c8a298bbf99acf137d"
+generated_digest: "sha256:3180c53b96c481b3aca6d4051273a5092c7b13744fd2d51d3dd5c84e54fd4b78"
 generated:
   id: cf_0f42e2691b
   kind: field_type
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "question_ids: int32"
     evidence: ev_a7ffcd9e98da
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_2: int32"
-    evidence: ev_374c496fd253
+    evidence: ev_deaede875012
   - origin: vortex
     authority: vortex_emulator
     claim: "question_ids: array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_2728
     line: 26
     note: official client build WIN63-202607011411-782849652
-  - id: ev_374c496fd253
+  - id: ev_deaede875012
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/habboway/QuizDataMessageComposer.java
     symbol: QuizDataMessageComposer
     line: 17

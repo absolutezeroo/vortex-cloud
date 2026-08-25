@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ecdc976834339976c9b22245e8bdcd636105b50267e0d063a6b7978969633675"
+generated_digest: "sha256:4a39090ccc22e206d43d0038b39ffb90c9e35732059076984a597e0366568c1e"
 generated:
   name: AmbassadorAlertCommand
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_e529fe0ef85f
+    - ev_11048b785341
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_e529fe0ef85f
+    evidence: ev_11048b785341
   evidence:
-  - id: ev_e529fe0ef85f
+  - id: ev_11048b785341
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/ambassadors/AmbassadorAlertCommandEvent.java
     symbol: AmbassadorAlertCommandEvent
     line: 14

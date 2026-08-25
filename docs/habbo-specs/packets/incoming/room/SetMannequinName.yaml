@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e0866ec25a7dd0b063e583dab9f1de8ae4d09f132200e24a1670dd92bf4fd8ef"
+generated_digest: "sha256:3bd3218d60af970173268cd59a71d79a75157033020dca47f7e1de5e1520b1fd"
 generated:
   name: SetMannequinName
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_85d9240ec7ed
-    - ev_17713477014d
+    - ev_44e8f23b3f0e
   - index: 1
     name: name
     type: string
@@ -49,14 +49,14 @@ generated:
     partial: true
     types: []
     evidence: ev_c88154f42d1c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_17713477014d
+    evidence: ev_44e8f23b3f0e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -82,10 +82,10 @@ generated:
     symbol: SetMannequinNameComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_17713477014d
+  - id: ev_44e8f23b3f0e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/SetMannequinNameEvent.java
     symbol: SetMannequinNameEvent
     line: 10

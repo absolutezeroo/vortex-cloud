@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3742ead5e7daa0052a1cf02226bf9af617e1c16950b7923c6da551cc26215c22"
+generated_digest: "sha256:77f0853e0ea3f94e815135b5598922257edb8a31a1293bf78209445185713bf1"
 generated:
   id: uk_b89e87bde9
   subject: "outgoing/TradingItemList: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradingItemList
   known_evidence:
-  - id: ev_4a883ea30e28
+  - id: ev_fc72e8e9afa9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/trading/TradingItemListMessageComposer.java
     symbol: TradingItemListMessageComposer
     line: 19

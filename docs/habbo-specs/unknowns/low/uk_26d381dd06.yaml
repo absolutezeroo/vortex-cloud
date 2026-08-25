@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:36890bf22faaa0d636192e4681898037119b255a236471c38de73775e39a9862"
+generated_digest: "sha256:70ea5626fb062c1aad9a94e5ae33b327753ef344d758d7dc3cc4a5aab5b6d2cd"
 generated:
   id: uk_26d381dd06
   subject: "outgoing/ThreadUpdated: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ThreadUpdated
   known_evidence:
-  - id: ev_f42fd9aad90f
+  - id: ev_9269fb55511f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/ThreadUpdatedMessageComposer.java
     symbol: ThreadUpdatedMessageComposer
     line: 31

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:91407afa8a4de65b22904abde0e481ecb0e20d15a1aa6dd8a8db9863d8b75d8d"
+generated_digest: "sha256:640bc4a2c75776c789ac882d007fa11c88acf5051a8947a1de0cd048f97fd112"
 generated:
   feature: users.join_habbo_group
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c3fd7c3e3831
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_1
     title: "join habbo group: the guard 'failureReason is not null' holds"
     given:
@@ -59,13 +59,13 @@ generated:
       - HabboGroupDetails
       - HabboGroupJoinFailed
       evidence: ev_c3fd7c3e3831
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_2
     title: "join habbo group: the guard 'group is null || group.Type == GroupType.Private' holds"
     given:
@@ -84,13 +84,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_3
     title: "join habbo group: the guard 'blocked' holds"
     given:
@@ -109,13 +109,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_4
     title: "join habbo group: the guard 'alreadyMember' holds"
     given:
@@ -134,13 +134,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_5
     title: "join habbo group: the guard 'playerEntity is null || groupEntity is null' holds"
     given:
@@ -159,13 +159,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_6
     title: "join habbo group: the guard 'group.Type == GroupType.Exclusive' holds"
     given:
@@ -184,13 +184,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b1c46fe16e7f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_7
     title: "join habbo group: the guard '_registry is null' holds"
     given:
@@ -209,13 +209,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.guard_8
     title: "join habbo group: the guard 'group is null' holds"
     given:
@@ -234,13 +234,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_25e7df53e794
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   - scenario: users.join_habbo_group.success
     title: "join habbo group: the request is accepted"
     given:
@@ -260,18 +260,18 @@ generated:
       - HabboGroupDetails
       - HabboGroupJoinFailed
       evidence: ev_1ba735814128
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - HabboGroupJoinFailed
       - HabboGroupDetails
-      evidence: ev_57f7becea3a2
+      evidence: ev_3a5b060a0d71
   evidence:
-  - id: ev_57f7becea3a2
+  - id: ev_3a5b060a0d71
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/JoinHabboGroupMessageEvent.java
     symbol: JoinHabboGroupMessageEvent
     line: 13

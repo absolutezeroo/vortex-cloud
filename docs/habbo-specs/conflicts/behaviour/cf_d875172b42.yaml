@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ae8232b0e06d94f2eaea662ad17b12e0047fe7f53f7e19880e38871d18d9c859"
+generated_digest: "sha256:89b111652cd7eb5a43b27da7b54774c4f0bf1becf6f62f9872d4851e8584ea07"
 generated:
   id: cf_d875172b42
   kind: behaviour
   subject: "ChangeUserName: packets emitted in response"
   packet: ChangeUserName
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ChangeNameUpdated then UserNameChanged then UserObject then ChangeNameUpdated then UserNameChanged then ChangeNameCheckResult
-    evidence: ev_c655992185b8
+    evidence: ev_4c3c90c8d78e
   - origin: vortex
     authority: vortex_emulator
     claim: ChangeUserNameResult then UserChange then UserChange
     evidence: ev_2b042552eba1
   evidence:
-  - id: ev_c655992185b8
+  - id: ev_4c3c90c8d78e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ChangeUserNameMessageEvent.java
     symbol: ChangeUserNameMessageEvent
     line: 29

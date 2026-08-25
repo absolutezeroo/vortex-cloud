@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:855b980d941b65f1293f71bda408e98cda2b387416573d9f94ddfe684681e460"
+generated_digest: "sha256:cedda94d9a01855a690433e56613a8f86d23f55f07407bed1f165200e7893e0b"
 generated:
   name: CantConnect
   direction: outgoing
@@ -50,14 +50,14 @@ generated:
     types:
     - string
     evidence: ev_334610642b41
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_167d45a6aa34
+    evidence: ev_4ca905388891
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: CantConnectMessage
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_167d45a6aa34
+  - id: ev_4ca905388891
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/CantConnectMessageComposer.java
     symbol: CantConnectMessageComposer
     line: 32

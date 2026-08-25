@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5982ff19a3f0d10c06d75ee9c50d338fcf2e11c45f0e3b8cf8e01e39413c3683"
+generated_digest: "sha256:e5e85f5b5a5f7c790add175a43aca6ff9703a88a5d547bb8fffa10fd124ced20"
 generated:
   name: ModeratorRoomInfo
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 2
     name: unknown_2
     type: boolean
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 5
     name: unknown_5
     type: boolean
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 6
     name: unknown_6
     type: string
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 7
     name: unknown_7
     type: string
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   - index: 9
     name: unknown_9
     type: string
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_3a58db576538
+    - ev_96b54b537d97
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -110,7 +110,7 @@ generated:
     - int32
     - string
     evidence: ev_4f329235aba0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 10
     partial: false
@@ -125,7 +125,7 @@ generated:
     - string
     - int32
     - string
-    evidence: ev_3a58db576538
+    evidence: ev_96b54b537d97
   evidence:
   - id: ev_4f329235aba0
     kind: client_parser
@@ -135,10 +135,10 @@ generated:
     symbol: _SafeCls_3140
     line: 23
     note: official client build WIN63-202607011411-782849652
-  - id: ev_3a58db576538
+  - id: ev_96b54b537d97
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/modtool/ModeratorRoomInfoMessageComposer.java
     symbol: ModeratorRoomInfoMessageComposer
     line: 16

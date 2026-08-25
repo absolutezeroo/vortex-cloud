@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0951bf93bedcf083ea91a495f4cf275831bacbe29c43ef50345533950dfb5ad8"
+generated_digest: "sha256:2362288e71048b013e641667ea8c3ae4ce6f42534bd81dd043aba97cf8f9c163"
 generated:
   name: GameList
   direction: outgoing
@@ -94,7 +94,7 @@ generated:
     - string
     - string
     evidence: ev_498ef0e0e9e7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 19
     partial: false
@@ -118,7 +118,7 @@ generated:
     - string
     - string
     - string
-    evidence: ev_1a0145e38d07
+    evidence: ev_e4ea95946e1f
   evidence:
   - id: ev_498ef0e0e9e7
     kind: client_parser
@@ -128,10 +128,10 @@ generated:
     symbol: GameListMessageParser
     line: 23
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_1a0145e38d07
+  - id: ev_e4ea95946e1f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/GameListMessageComposer.java
     symbol: GameListMessageComposer
     line: 10

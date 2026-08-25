@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:588b7701df420d6add6656d341ff76d79a0170186dd3c9df611cd40acc66be79"
+generated_digest: "sha256:c57f7862ac5274f8d9eee9f47b383ca8ca63328dae30ac86b6cdd3abebfa83b5"
 generated:
   name: SnowWarsOnStageEnding
   direction: outgoing
@@ -25,20 +25,20 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_325f27e89b9a
+    - ev_9eb4bce6942d
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_325f27e89b9a
+    evidence: ev_9eb4bce6942d
   evidence:
-  - id: ev_325f27e89b9a
+  - id: ev_9eb4bce6942d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsOnStageEnding.java
     symbol: SnowWarsOnStageEnding
     line: 8

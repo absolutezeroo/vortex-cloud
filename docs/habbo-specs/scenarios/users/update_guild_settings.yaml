@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a1841f9f3e604f73e0cfd8c2344d8508768ca07963f0cd8e2205335e1dd3b4d3"
+generated_digest: "sha256:b92796a6a7302d3d460d7d4dc03612ab4e804a41e430c2f7c3735faef991dea1"
 generated:
   feature: users.update_guild_settings
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d81f2a614408
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b02339341b3a
+      evidence: ev_de6319384b72
   - scenario: users.update_guild_settings.success
     title: "update guild settings: the request is accepted"
     given:
@@ -56,16 +56,16 @@ generated:
       - GroupDetailsChanged
       - GuildEditFailed
       evidence: ev_861d7eb0e4b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b02339341b3a
+      evidence: ev_de6319384b72
   evidence:
-  - id: ev_b02339341b3a
+  - id: ev_de6319384b72
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildSettingsMessageEvent.java
     symbol: UpdateGuildSettingsMessageEvent
     line: 13

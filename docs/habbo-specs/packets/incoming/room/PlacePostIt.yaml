@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f15055689af242003c5b69cf01dfd1a35057ad0fa5ed2da8d46bcb3f6ba7b4d4"
+generated_digest: "sha256:adcead179c63977d49f5ed266ed0707af11b8ddd91d1294ab51c3e4b06a5184f"
 generated:
   name: PlacePostIt
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_473b6d0a5a71
-    - ev_33770d4af188
+    - ev_5da58fd12051
   - index: 1
     name: location
     type: string
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_473b6d0a5a71
-    - ev_33770d4af188
+    - ev_5da58fd12051
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -50,14 +50,14 @@ generated:
     partial: true
     types: []
     evidence: ev_09c88bcda99c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_33770d4af188
+    evidence: ev_5da58fd12051
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -83,10 +83,10 @@ generated:
     symbol: PlacePostItComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_33770d4af188
+  - id: ev_5da58fd12051
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/PlacePostItMessageEvent.java
     symbol: PlacePostItMessageEvent
     line: 18

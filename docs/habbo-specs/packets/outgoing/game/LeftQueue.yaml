@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e82bbc03f3a46b0cf24def95f0ed8c067824d67c1f96dcddc039313aa853b2a4"
+generated_digest: "sha256:774dbb662cc608b58b681c2a190fbdad3ae2ecbbfd05d0ce775e8d415943f1a1"
 generated:
   name: LeftQueue
   direction: outgoing
@@ -34,13 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_04e2247c9722
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_112519e23237
+    evidence: ev_3e4994e486d0
   evidence:
   - id: ev_04e2247c9722
     kind: client_parser
@@ -50,10 +50,10 @@ generated:
     symbol: LeftQueueMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
-  - id: ev_112519e23237
+  - id: ev_3e4994e486d0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LeftQueueMessageComposer.java
     symbol: LeftQueueMessageComposer
     line: 9

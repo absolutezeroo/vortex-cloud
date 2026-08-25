@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d5e71d7913657732333409e3b3919d7cbae2d597dc9ede14b4f64626b8a21f67"
+generated_digest: "sha256:ef6f8def21cc3457b5ebdbebc9243c83c06fe6c920285eb65242610626a92949"
 generated:
   name: GuideSessionIsTyping
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_6a3b968af9b8
+    - ev_85109204b6fc
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_acef8f617d37
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - boolean
-    evidence: ev_6a3b968af9b8
+    evidence: ev_85109204b6fc
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: GuideSessionIsTypingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6a3b968af9b8
+  - id: ev_85109204b6fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guides/GuideSessionIsTypingMessageEvent.java
     symbol: GuideSessionIsTypingMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9cb7c19dbcb221bd87e9093e3265467112853711ee7e4d2bf8f1130c386f1438"
+generated_digest: "sha256:91f8b1ec739067688b2d797ed89c057b9393897e978f3cb6cce39c9274c89548"
 generated:
   id: sound.get_sound_machine_play_list
   domain: sound
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: false
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

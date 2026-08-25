@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c99a8c299eabe1db10993d8d18602c8d1f6d5309a42c5ec6c0d22a5d33cc5dfd"
+generated_digest: "sha256:107c5a8569a979617760261178eeb3c611f453be98fa6a498e6e4ea480c1403f"
 generated:
   feature: campaign.open_campaign_calendar_door
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_373168126294
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f1887b966241
+      evidence: ev_88e504198ecc
   evidence:
-  - id: ev_f1887b966241
+  - id: ev_88e504198ecc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/events/calendar/OpenCampaignCalendarDoorEvent.java
     symbol: OpenCampaignCalendarDoorEvent
     line: 8

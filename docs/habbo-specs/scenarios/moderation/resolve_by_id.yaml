@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ba7e435c33d63f6cb328bb170c87f420b08465496fb73d34ca44c7a1a7f86b4a"
+generated_digest: "sha256:d4e7a4386b589ac09795be72572b1e1da652c9a8ac37136a02c3b41157aad397"
 generated:
   feature: moderation.resolve_by_id
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_084c9e56bee3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e1c9a70757b3
+      evidence: ev_2db32074c227
   - scenario: moderation.resolve_by_id.guard_1
     title: "resolve by id: the guard '!permissions.HasAny(Capabilities.Moderation.Cfh, Capabili...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_084c9e56bee3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e1c9a70757b3
+      evidence: ev_2db32074c227
   - scenario: moderation.resolve_by_id.guard_2
     title: "resolve by id: the guard 'playerId <= 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e1c9a70757b3
+      evidence: ev_2db32074c227
   - scenario: moderation.resolve_by_id.success
     title: "resolve by id: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - SanctionInfo
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_e1c9a70757b3
+      evidence: ev_2db32074c227
   evidence:
-  - id: ev_e1c9a70757b3
+  - id: ev_2db32074c227
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModToolSanctionEvent.java
     symbol: ModToolSanctionEvent
     line: 11

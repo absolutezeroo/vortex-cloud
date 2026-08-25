@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:b846f5e3b7a02aa256731a71bae8d5bbf18c0637fd746e7b5da244065b4e63a4"
+generated_digest: "sha256:dec0139b8eee6d92a98a9a9224ecfea222b2808bbc9a15a32b9c5de0035c6e5b"
 generated:
   id: cf_b3ac1a1c9b
   kind: behaviour
   subject: "GetCatalogIndex: packets emitted in response"
   packet: GetCatalogIndex
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: BuildersClubFurniCount then CatalogPagesList
-    evidence: ev_bd0d900fba76
+    evidence: ev_1b7b32632f24
   - origin: vortex
     authority: vortex_emulator
     claim: CatalogIndex
     evidence: ev_8fd6064fb989
   evidence:
-  - id: ev_bd0d900fba76
+  - id: ev_1b7b32632f24
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetCatalogIndexEvent.java
     symbol: GetCatalogIndexEvent
     line: 10

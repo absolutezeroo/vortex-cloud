@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5c321d08937b01e4d4ee44702cddea6dd53623956b6e00ff07c7acc09e91dc88"
+generated_digest: "sha256:1209db6b8babbe75da90a07cc14b3b28aa8031b3cbcee4ce88f839f3b079a716"
 generated:
   id: cf_e1ca9f369e
   kind: field_type
@@ -25,14 +25,14 @@ generated:
     authority: multi_implementation
     claim: "is_owner: boolean"
     evidence: ev_50ad26232073
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_1: string"
-    evidence: ev_98dcb3519db8
-  - origin: arcturus
+    evidence: ev_17a4cf952d99
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "unknown_1: boolean"
-    evidence: ev_ccf4f764bdda
+    evidence: ev_80ff0084ba0f
   - origin: vortex
     authority: vortex_emulator
     claim: "is_owner: boolean"
@@ -54,18 +54,18 @@ generated:
     symbol: RoomEntryInfoMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_98dcb3519db8
+  - id: ev_17a4cf952d99
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomEntryInfoComposer.java
     symbol: RoomEntryInfoComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  - id: ev_ccf4f764bdda
+  - id: ev_80ff0084ba0f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomEntryInfoMessageComposer.java
     symbol: RoomEntryInfoMessageComposer
     line: 18

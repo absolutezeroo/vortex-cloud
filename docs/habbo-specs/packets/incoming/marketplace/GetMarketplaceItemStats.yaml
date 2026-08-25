@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:88ecef32e9139077ed618d621798cc678682e5ea880eee71f8409e9085e02a9d"
+generated_digest: "sha256:207111490891ca9ccf25006932305d5e45936e0f9612ced2aa96e560b47a5241"
 generated:
   name: GetMarketplaceItemStats
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
-    - ev_48b19413cd53
+    - ev_2e22f3413a80
     - ev_7065de6e1378
   - index: 1
     name: id
@@ -33,7 +33,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_48b19413cd53
+    - ev_2e22f3413a80
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_5d6c9ade7b73
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_48b19413cd53
+    evidence: ev_2e22f3413a80
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: GetMarketplaceItemStatsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_48b19413cd53
+  - id: ev_2e22f3413a80
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceItemStatsEvent.java
     symbol: GetMarketplaceItemStatsEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ef15ce7d46221b4d949b1fbbcfaccf7866d020c5a8148e6c80aa54f437ef7c60"
+generated_digest: "sha256:1c0762ef1e17980d0822505ca626a4478517c92e6761762336087dacc07ec0b6"
 generated:
   name: GetSecondsUntil
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_3021e64545d9
+    - ev_19874b785d5f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_54d047223cf9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_3021e64545d9
+    evidence: ev_19874b785d5f
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -69,10 +69,10 @@ generated:
     symbol: GetSecondsUntilComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3021e64545d9
+  - id: ev_19874b785d5f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetSecondsUntilMessageEvent.java
     symbol: GetSecondsUntilMessageEvent
     line: 14

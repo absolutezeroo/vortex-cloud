@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b242e8fdb7179fe36e9e52a2b4bab881b4b69ff73fde04c7681f40cc1cff7ff4"
+generated_digest: "sha256:a468aa0bb52d8e8ad1c564e1c926478f4404bb9f200c645ca267c8ee353766a0"
 generated:
   feature: navigator.get_category_visitor_counts
   scenarios:
@@ -33,7 +33,7 @@ generated:
       - CategoriesWithVisitorCount
       - NewNavigatorPreferences
       evidence: ev_8862c7e0fdc9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
@@ -43,12 +43,12 @@ generated:
       - CollapsedCategories
       - NavigatorSavedSearches
       - UserEventCats
-      evidence: ev_567721736d20
+      evidence: ev_b4979eab29b5
   evidence:
-  - id: ev_567721736d20
+  - id: ev_b4979eab29b5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NewNavigatorInitEvent.java
     symbol: NewNavigatorInitEvent
     line: 8

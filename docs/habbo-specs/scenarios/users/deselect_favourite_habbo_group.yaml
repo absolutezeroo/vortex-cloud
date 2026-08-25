@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3dec0aa34e728b9f0af0ec220e946b0be4458f4f52fb39d92fb96d250ead88da"
+generated_digest: "sha256:79448a807f7a35137dd73571281db14cb113cfcf70f80c847ed5cb69171b9841"
 generated:
   feature: users.deselect_favourite_habbo_group
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f55f0ed921fd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_1
     title: "deselect favourite habbo group: the guard '!isMember' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d53218d99bdd
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_2
     title: "deselect favourite habbo group: the guard '_state.FavouriteGroupId == groupId' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_3
     title: "deselect favourite habbo group: the guard 'activeRoom.RoomId.Value <= 0' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_4
     title: "deselect favourite habbo group: the guard '!_state.AvatarsByPlayerId.TryGetValue(playerId, out RoomO...' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_5
     title: "deselect favourite habbo group: the guard '!_state.AvatarsByObjectId.TryGetValue(objectId, out IRoom...' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_6
     title: "deselect favourite habbo group: the guard '!player.SetFavouriteGroup(groupId, groupName)' holds"
     given:
@@ -176,12 +176,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ec0b4c2b0a97
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_7
     title: "deselect favourite habbo group: the guard 'GroupId == resolvedId && GroupStatus == resolvedStatus &&...' holds"
     given:
@@ -200,12 +200,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7fd0730f7cca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.guard_8
     title: "deselect favourite habbo group: the guard '_registry is null' holds"
     given:
@@ -224,12 +224,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   - scenario: users.deselect_favourite_habbo_group.success
     title: "deselect favourite habbo group: the request is accepted"
     given:
@@ -249,17 +249,17 @@ generated:
       - FavoriteMembershipUpdate
       - GroupDetailsChanged
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ExtendedProfile
-      evidence: ev_15c51b12a874
+      evidence: ev_473263751f14
   evidence:
-  - id: ev_15c51b12a874
+  - id: ev_473263751f14
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/DeselectFavouriteHabboGroupMessageEvent.java
     symbol: DeselectFavouriteHabboGroupMessageEvent
     line: 12

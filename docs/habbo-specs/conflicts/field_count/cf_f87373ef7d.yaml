@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:15faf6beb2d7ddf06e329cd4bdac2c79239b01fc57fed99dcff9c427ead7077e"
+generated_digest: "sha256:f1307f1c7c3ce127119ed13dd01334578e3522525269ce7ca27ffbd71205c129"
 generated:
   id: cf_f87373ef7d
   kind: field_count
@@ -29,10 +29,10 @@ generated:
     authority: multi_implementation
     claim: "5 fields: string, string, string, string, int32"
     evidence: ev_36fd50c16e78
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "3 fields: string, string, string"
-    evidence: ev_7518ebdf58b7
+    evidence: ev_ac1f4508f6c7
   - origin: vortex
     authority: vortex_emulator
     claim: "5 fields: string, string, string, string, int32"
@@ -62,10 +62,10 @@ generated:
     symbol: EventLogComposer
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7518ebdf58b7
+  - id: ev_ac1f4508f6c7
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/EventLogMessageEvent.java
     symbol: EventLogMessageEvent
     line: 9

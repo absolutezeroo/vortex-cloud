@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:35d931253335816b83a87f0142f2f5fac781195d375b3bc419b537843d451b02"
+generated_digest: "sha256:b1b729101cd08583f258d01b4d83159265631529405a69754ff7337c53c77f47"
 generated:
   id: uk_5a8b5ab752
   subject: "outgoing/OfficialSongId: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: OfficialSongIdMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_37ce2df6ff71
+  - id: ev_1a01dbdfeabf
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/jukebox/OfficialSongIdMessageComposer.java
     symbol: OfficialSongIdMessageComposer
     line: 16

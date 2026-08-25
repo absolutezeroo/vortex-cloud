@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e6f29103fa773364195d02e1848573c672e2616b4e7dd220ed662fe177dd2b91"
+generated_digest: "sha256:91b53f3e5ef31d6406ec192f36942795d281e991709b345e66449a624de10de5"
 generated:
   name: ApproveName
   direction: outgoing
@@ -47,14 +47,14 @@ generated:
     partial: true
     types: []
     evidence: ev_8dc653893eb2
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_22617b2ddf91
+    evidence: ev_a7cade8b881d
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -80,10 +80,10 @@ generated:
     symbol: ApproveNameMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_22617b2ddf91
+  - id: ev_a7cade8b881d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/ApproveNameMessageComposer.java
     symbol: ApproveNameMessageComposer
     line: 23

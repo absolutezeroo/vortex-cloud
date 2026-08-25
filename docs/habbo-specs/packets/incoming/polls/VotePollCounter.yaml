@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c282b811b06b8275d4d6979e9ba6e57babc147e1e55023a3415a26c3e358de21"
+generated_digest: "sha256:c83beb5b55a1504534308929b82226ed2631f326757eea1e1dd403bb4a60a18e"
 generated:
   name: VotePollCounter
   direction: incoming
@@ -24,7 +24,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_eb34e0f3921e
+    - ev_8be2bd8434ba
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -32,13 +32,13 @@ generated:
     partial: true
     types: []
     evidence: ev_615f2ba1a8a5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_eb34e0f3921e
+    evidence: ev_8be2bd8434ba
   evidence:
   - id: ev_615f2ba1a8a5
     kind: client_call_site
@@ -48,10 +48,10 @@ generated:
     symbol: VotePollCounterMessageComposer
     line: 20
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/session/RoomSession.as:660 with 1 argument(s); the class writes 0 value(s) to the wire"
-  - id: ev_eb34e0f3921e
+  - id: ev_8be2bd8434ba
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/polls/infobus/VotePollCounterEvent.java
     symbol: VotePollCounterEvent
     line: 11

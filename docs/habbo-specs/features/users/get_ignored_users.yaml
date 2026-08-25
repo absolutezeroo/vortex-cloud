@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bc1c6e7b9620314835eff2ebe08f21d4a759000e311e7d57df6bafd0b8c5181c"
+generated_digest: "sha256:f60e7e9f8c0957c4552208c37b64a49f2d56fceb0797da370d39d9bfae3c6789"
 generated:
   id: users.get_ignored_users
   domain: users
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

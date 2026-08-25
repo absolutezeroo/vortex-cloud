@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:760eafd2116d4070254e8f71407283a1a624554bbdb8ac4c07f40a2da63848d2"
+generated_digest: "sha256:8bade9bd6e37a113038ea16b0ecaf617ba6b9cf80cab4ba07686bb0bf10f382c"
 generated:
   id: uk_9aec983546
   subject: "outgoing/FurniList: unnamed fields"
@@ -27,10 +27,10 @@ generated:
     symbol: _SafeCls_2513
     line: 38
     note: official client build WIN63-202607011411-782849652
-  - id: ev_b63cae8ea216
+  - id: ev_306594cbd14c
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/FurniListMessageComposer.java
     symbol: FurniListMessageComposer
     line: 31

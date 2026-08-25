@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:515783b09e8806c1bbe692dcb2e30843e5c52dde817ca64bd353889049ac4855"
+generated_digest: "sha256:2b134c72fe7d622343b2c8fbd9ba9a065bb969bee65b4e0598b26d9106fa5f62"
 generated:
   feature: handshake.client_hello
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_bff19b686037
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_101638482dcc
+      evidence: ev_89d37d1d3fc3
   - scenario: handshake.client_hello.success
     title: "client hello: the request is accepted"
     given:
@@ -54,16 +54,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4ef51b628e13
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_101638482dcc
+      evidence: ev_89d37d1d3fc3
   evidence:
-  - id: ev_101638482dcc
+  - id: ev_89d37d1d3fc3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/ClientHelloMessageEvent.java
     symbol: ClientHelloMessageEvent
     line: 10

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4a906dd4309952cba2729c98116f8f57b559cf7536c4b33d6b15db013ea8afed"
+generated_digest: "sha256:0a7fe004a05452a0e3e748d1810bd5b51e290cfc180c22c4449af917fc46b428"
 generated:
   id: uk_89b9bd7730
   subject: "outgoing/SnowWarsPlayNowWindow: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsPlayNowWindow
   known_evidence:
-  - id: ev_7982f5220b5c
+  - id: ev_b0e6c9e2ccc9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsPlayNowWindowComposer.java
     symbol: SnowWarsPlayNowWindowComposer
     line: 8

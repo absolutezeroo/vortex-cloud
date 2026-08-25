@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:796c55f6dc0a30e655b347c5f1648f3aac06205a9a01edc3f0ef97739a40e431"
+generated_digest: "sha256:1cfb8a171cab600fd8ea621b2e6ceda1930cdeea073d092dda920dcdeb411c96"
 generated:
   name: PublishPhoto
   direction: incoming
@@ -38,12 +38,12 @@ generated:
     partial: true
     types: []
     evidence: ev_c983d7544e2d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_b229988521ac
+    evidence: ev_ec6527d1e881
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -75,10 +75,10 @@ generated:
     symbol: PublishPhotoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b229988521ac
+  - id: ev_ec6527d1e881
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/PublishPhotoMessageEvent.java
     symbol: PublishPhotoMessageEvent
     line: 23

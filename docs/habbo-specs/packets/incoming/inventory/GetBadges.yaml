@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:40af627617a569ebf704f2f6bd2eadc4e6f9fdb0d5eb40135e2f67ef073ca9cc"
+generated_digest: "sha256:736f3a1ab71cd4a74a608deae598ac2d836801d0506f15d6768216d242385aff"
 generated:
   name: GetBadges
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_8a170f2c06e7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7460c100c4ce
+    evidence: ev_de3a58cb55f8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetBadgesComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7460c100c4ce
+  - id: ev_de3a58cb55f8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetBadgesEvent.java
     symbol: GetBadgesEvent
     line: 8

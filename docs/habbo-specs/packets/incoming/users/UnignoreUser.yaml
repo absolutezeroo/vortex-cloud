@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc567d6a8589d2bd1aaea05686c8f31db93291359ce1a846fcc47794d8268b17"
+generated_digest: "sha256:1afe03b2cee33cc2e45d33c2523ddd76c9f9e016c62cdda0eb88d6afe35cd0d6"
 generated:
   name: UnignoreUser
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_9440756ea989
+    - ev_ea86ba10f265
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_310d63adcd63
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_9440756ea989
+    evidence: ev_ea86ba10f265
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: UnignoreUserComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9440756ea989
+  - id: ev_ea86ba10f265
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/UnignoreUserMessageEvent.java
     symbol: UnignoreUserMessageEvent
     line: 10

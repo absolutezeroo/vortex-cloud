@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5ff1dea841df5cfbd6f3a2ab811d68eed803730b9d7bcba97de599e96a0d4ea8"
+generated_digest: "sha256:f39ccdd0298a66827c27aa67256fdbbe8f4add9c980f1c9a9ebd4fb7e9eb4d14"
 generated:
   id: cf_3e97d008a9
   kind: behaviour
   subject: "ModMute: packets emitted in response"
   packet: ModMute
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: IssueCloseNotification
-    evidence: ev_6b03febdccf3
+    evidence: ev_2958783a8bbc
   - origin: vortex
     authority: vortex_emulator
     claim: ModeratorCautionEvent then ModeratorActionResult
     evidence: ev_bbdd07a79777
   evidence:
-  - id: ev_6b03febdccf3
+  - id: ev_2958783a8bbc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModMuteMessageEvent.java
     symbol: ModMuteMessageEvent
     line: 18

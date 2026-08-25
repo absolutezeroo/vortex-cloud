@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dd25c13f5c8aa7010dcdfd584ed726b2e0973a16810d4feb6ef4c0c69747e61c"
+generated_digest: "sha256:b1ccbc8d41f1d9fad62f3b5589051230730d113001dec2015505e4ccb51a120c"
 generated:
   id: cf_fa0754a76c
   kind: behaviour
   subject: "GetClubGiftInfo: packets emitted in response"
   packet: GetClubGiftInfo
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: ClubGiftInfo
-    evidence: ev_95815e54c9c9
+    evidence: ev_088ed5e13004
   - origin: vortex
     authority: vortex_emulator
     claim: ClubGiftInfoEvent
     evidence: ev_3d5ada5646f5
   evidence:
-  - id: ev_95815e54c9c9
+  - id: ev_088ed5e13004
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetClubGiftInfoEvent.java
     symbol: GetClubGiftInfoEvent
     line: 8

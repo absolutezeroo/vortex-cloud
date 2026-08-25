@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0fd5ddd7c122c3eaf22d637e1cee26b707b6d58719480bc0d3aa3eb40ed1ba61"
+generated_digest: "sha256:e7845af4555b47d11421eceae33b472891b726a09d79c9a79f47e78988baa2e2"
 generated:
   name: InitDiffieHandshake
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_b9e3b1065948
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_177d9358f957
+    evidence: ev_f38d4ebaaf91
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: InitDiffieHandshakeComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_177d9358f957
+  - id: ev_f38d4ebaaf91
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/handshake/InitDiffieHandshakeEvent.java
     symbol: InitDiffieHandshakeEvent
     line: 12

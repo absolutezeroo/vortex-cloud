@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:509c0f70e95072ea73b908d2a7a4ed25d5923e6abf72e2a3dca48d2783d66466"
+generated_digest: "sha256:f1e8a818c609d64de9fadb5c8acc8e9171e6aa36ae0a1e086910d85e678ccca9"
 generated:
   id: uk_9201ea34e1
   subject: "outgoing/ItemIntState: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ItemIntState
   known_evidence:
-  - id: ev_0fff7cfd0e40
+  - id: ev_19ab310c6109
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemIntStateComposer.java
     symbol: ItemIntStateComposer
     line: 17

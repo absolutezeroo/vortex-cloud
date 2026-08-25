@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:60d299557bf43e6456c815bbfcd1ce08cbd04480117a8a001d38150ff9643960"
+generated_digest: "sha256:855beb292a993f8f5b4110a445684308f2a6883294b275dbf22eeea7bb708e7e"
 generated:
   name: UpdateGuildColors
   direction: incoming
@@ -25,21 +25,21 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_a009e95ec83e
+    - ev_c657f34c8ca5
   - index: 1
     name: colors_event
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_a009e95ec83e
+    - ev_c657f34c8ca5
   - index: 2
     name: colors_event
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_a009e95ec83e
+    - ev_c657f34c8ca5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -53,7 +53,7 @@ generated:
     partial: true
     types: []
     evidence: ev_8fd0e396983a
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 3
     partial: false
@@ -61,7 +61,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_a009e95ec83e
+    evidence: ev_c657f34c8ca5
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -88,10 +88,10 @@ generated:
     symbol: UpdateGuildColorsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a009e95ec83e
+  - id: ev_c657f34c8ca5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildColorsMessageEvent.java
     symbol: UpdateGuildColorsMessageEvent
     line: 12

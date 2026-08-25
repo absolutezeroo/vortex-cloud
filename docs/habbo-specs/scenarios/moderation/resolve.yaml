@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:386ad041cf96227dbd4c8ca87becf3634d40923f2eaece85611eb81f3d646471"
+generated_digest: "sha256:87f0b244534dbd9a8c2dabf49adde4b519eb05b0b242422275fdbf9ce59fd53a"
 generated:
   feature: moderation.resolve
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_437b6bbf7f44
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   - scenario: moderation.resolve.guard_1
     title: "resolve: the guard 'ModerationPolicy.IsAllowed(actorPermissions, targetPermis...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_dd4e77d6bf65
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   - scenario: moderation.resolve.guard_2
     title: "resolve: the guard 'playerId <= 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   - scenario: moderation.resolve.guard_3
     title: "resolve: the guard '_registry is null' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   - scenario: moderation.resolve.guard_4
     title: "resolve: the guard 'accountId is null' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   - scenario: moderation.resolve.success
     title: "resolve: the request is accepted"
     given:
@@ -148,16 +148,16 @@ generated:
       - ModeratorActionResult
       - UserBanned
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8bc16fae4610
+      evidence: ev_e727e3a71b13
   evidence:
-  - id: ev_8bc16fae4610
+  - id: ev_e727e3a71b13
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/ModBanMessageEvent.java
     symbol: ModBanMessageEvent
     line: 25

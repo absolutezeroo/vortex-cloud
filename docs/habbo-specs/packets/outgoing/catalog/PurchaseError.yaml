@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d130de044019d7fd3e837702f4334157a67641e529444e37ea3ab259ec58ab6a"
+generated_digest: "sha256:9b91659ce174ed7247aca118c6cc2b5aade4ec3a02c72a3ef130b5fa606d8950"
 generated:
   name: PurchaseError
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_88e11f517355
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_7a916af3dcda
+    evidence: ev_bed66fd20f28
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: PurchaseErrorMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7a916af3dcda
+  - id: ev_bed66fd20f28
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/PurchaseErrorMessageComposer.java
     symbol: PurchaseErrorMessageComposer
     line: 18

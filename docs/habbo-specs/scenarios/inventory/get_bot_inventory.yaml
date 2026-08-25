@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8d18fcb05bcdbcb6b4b0f64b07b96a80e52a899cdd1aef434bb406e3416997a5"
+generated_digest: "sha256:034795f2a1a4eda80a8c8de51abeccf522e6cc6ed1004655a18925454bed892b"
 generated:
   feature: inventory.get_bot_inventory
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_edb01640bae6
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BotInventory
-      evidence: ev_23dedda6c50d
+      evidence: ev_bbff9e09af23
   - scenario: inventory.get_bot_inventory.success
     title: "get bot inventory: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - BotInventoryEvent
       evidence: ev_90ba9eeb98e7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BotInventory
-      evidence: ev_23dedda6c50d
+      evidence: ev_bbff9e09af23
   evidence:
-  - id: ev_23dedda6c50d
+  - id: ev_bbff9e09af23
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/GetBotInventoryEvent.java
     symbol: GetBotInventoryEvent
     line: 8

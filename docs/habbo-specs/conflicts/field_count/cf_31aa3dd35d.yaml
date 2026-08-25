@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:256512625cc6d0611e7561a41b82f4f4439475c6fb246c910bd0cbafc85bca5b"
+generated_digest: "sha256:b188897754359d8b37b142bfce5cfcf210af4b4d7d67ee6c2e47d4f0a2964639"
 generated:
   id: cf_31aa3dd35d
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "27 fields: int32, string, string, int32, int32, int32, int32, int32, string, int32, int32, int32, int32, int32, int32, int32, int32, boolean, boolean, int32, boolean, int32, boolean, int32, int32, int32, boolean"
     evidence: ev_eed23671ec9e
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "26 fields: int32, string, string, int32, int32, int32, int32, int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, boolean, int32, int32, int32"
-    evidence: ev_7a9d7794f699
+    evidence: ev_5cf57048d2a0
   evidence:
   - id: ev_eed23671ec9e
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3719
     line: 20
     note: official client build WIN63-202607011411-782849652
-  - id: ev_7a9d7794f699
+  - id: ev_5cf57048d2a0
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/RoomSettingsDataMessageComposer.java
     symbol: RoomSettingsDataMessageComposer
     line: 16

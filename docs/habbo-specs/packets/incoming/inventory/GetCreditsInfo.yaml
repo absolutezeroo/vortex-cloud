@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d0d5bf732ef920b48eb49a136ad078f8ae7e269890a890e9dfff80fa928d6391"
+generated_digest: "sha256:a574176016333738bb09244d833e9a64716272f29f8cc36b32c5b37c3d889a7b"
 generated:
   name: GetCreditsInfo
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_49894e072fa7
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_720a5bfe8c9f
+    evidence: ev_02ccc7dac0b8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: GetCreditsInfoComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_720a5bfe8c9f
+  - id: ev_02ccc7dac0b8
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/GetCreditsInfoEvent.java
     symbol: GetCreditsInfoEvent
     line: 9

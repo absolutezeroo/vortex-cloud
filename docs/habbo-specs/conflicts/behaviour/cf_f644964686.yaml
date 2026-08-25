@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:58fbbbff1e5c2172409a872e89388118ab84373cc39dde406746359843d88d6a"
+generated_digest: "sha256:39e196dca677266aa50236313ac360512b636bab89cb8c3c009214c16fd2b1c9"
 generated:
   id: cf_f644964686
   kind: behaviour
   subject: "GetUserEventCats: packets emitted in response"
   packet: GetUserEventCats
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: UserEventCats
-    evidence: ev_eb509893c99e
+    evidence: ev_940f8a9b5ec1
   - origin: vortex
     authority: vortex_emulator
     claim: UserEventCats then CanCreateRoomEvent
     evidence: ev_ddc2f0edc348
   evidence:
-  - id: ev_eb509893c99e
+  - id: ev_940f8a9b5ec1
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/GetUserEventCatsMessageEvent.java
     symbol: GetUserEventCatsMessageEvent
     line: 8

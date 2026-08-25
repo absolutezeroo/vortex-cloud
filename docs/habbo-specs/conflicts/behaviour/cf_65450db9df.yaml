@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f630b3a46b5a9d0428cd7b801b33d829b2ca78f45705924f1489aed8bbdabdb5"
+generated_digest: "sha256:cc5d37ba9ecdb1529e1309a637c56ea7dcf18217ab4b832c244b16b0d71edbd9"
 generated:
   id: cf_65450db9df
   kind: behaviour
   subject: "GetBadgePointLimits: packets emitted in response"
   packet: GetBadgePointLimits
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: BadgePointLimits
-    evidence: ev_f5ffe63178bd
+    evidence: ev_9acec307ae42
   - origin: vortex
     authority: vortex_emulator
     claim: BadgePointLimitsEvent
     evidence: ev_b60df28d7b56
   evidence:
-  - id: ev_f5ffe63178bd
+  - id: ev_9acec307ae42
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/unknown/GetBadgePointLimitsEvent.java
     symbol: GetBadgePointLimitsEvent
     line: 8

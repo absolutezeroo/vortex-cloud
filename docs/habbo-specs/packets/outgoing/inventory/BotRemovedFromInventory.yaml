@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:26073c52aa1c49bb2c54d8a843b78531c503179200e50fbc0b60d8a8ee6bcc01"
+generated_digest: "sha256:84910c1aa742d4d2bd02b152a7021a8a3e90622ca413a2f42e79c5337e6c14a5"
 generated:
   name: BotRemovedFromInventory
   direction: outgoing
@@ -33,13 +33,13 @@ generated:
     types:
     - int32
     evidence: ev_a1ecce48d1a0
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_91842327f0d1
+    evidence: ev_6acdfaabcfac
   evidence:
   - id: ev_a1ecce48d1a0
     kind: client_parser
@@ -49,10 +49,10 @@ generated:
     symbol: _SafeCls_3094
     line: 22
     note: official client build WIN63-202607011411-782849652
-  - id: ev_91842327f0d1
+  - id: ev_6acdfaabcfac
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/BotRemovedFromInventoryMessageComposer.java
     symbol: BotRemovedFromInventoryMessageComposer
     line: 16

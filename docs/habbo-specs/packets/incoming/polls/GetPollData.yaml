@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7cf1b0caf117e4b5397a9ba5b4ac79edfec09fe4ead464c8dcc5281fa3916743"
+generated_digest: "sha256:6565d6a6b0e4937dae2a423ab39ed827484dac740b81552c24b1fa84de5d5f2c"
 generated:
   name: GetPollData
   direction: incoming
@@ -24,20 +24,20 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_27efd2b05592
+    - ev_4468397cefa4
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_27efd2b05592
+    evidence: ev_4468397cefa4
   evidence:
-  - id: ev_27efd2b05592
+  - id: ev_4468397cefa4
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/polls/GetPollDataEvent.java
     symbol: GetPollDataEvent
     line: 10

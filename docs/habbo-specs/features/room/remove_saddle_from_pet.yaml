@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3e21faeea73af1bd559d38c159b2583fce265e586e03d501391d1faeb235c64d"
+generated_digest: "sha256:e1fa3e7cb26af700eac9c76ddd21fd17c7979653e78bf5dd5bd610853d7ddaed"
 generated:
   id: room.remove_saddle_from_pet
   domain: room
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

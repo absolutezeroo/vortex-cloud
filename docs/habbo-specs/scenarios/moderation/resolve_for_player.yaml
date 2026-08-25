@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:28b2f94f74aa0a7f03a8e90349580cc5ced920d1e144e708453c19f8f568c99d"
+generated_digest: "sha256:4c6547ee4548a11f35b9ea3c6b57a0f1e99759853e9af8772d7eb33fbe3bd458"
 generated:
   feature: moderation.resolve_for_player
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c3ac1b675b79
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_1
     title: "resolve for player: the guard '!permissions.HasAny(Capabilities.Moderation.Cfh)' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c3ac1b675b79
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_10
     title: "resolve for player: the guard 'ctx.PlayerId <= 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9e2f0b96a363
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_11
     title: "resolve for player: the guard '!permissions.HasAny(Capabilities.Moderation.Cfh, Capabili...' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9e2f0b96a363
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_2
     title: "resolve for player: the guard 'playerId <= 0' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_3
     title: "resolve for player: the guard 'outcomes.Length == 0' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9c67ce52dae5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_4
     title: "resolve for player: the guard 'issueIds.Count == 0' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_5
     title: "resolve for player: the guard '_registry is null' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_6
     title: "resolve for player: the guard 'ctx.PlayerId <= 0 || message.RoomId <= 0' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_21f62951b010
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_7
     title: "resolve for player: the guard '!permissions.Has(Capabilities.Room.ModerateAny)' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_21f62951b010
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_8
     title: "resolve for player: the guard 'ctx.PlayerId <= 0 || message.UserId <= 0' holds"
     given:
@@ -262,11 +262,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c5b92385037c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.guard_9
     title: "resolve for player: the guard '!permissions.HasAny(Capabilities.Moderation.Chatlogs, Cap...' holds"
     given:
@@ -285,11 +285,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_c5b92385037c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   - scenario: moderation.resolve_for_player.success
     title: "resolve for player: the request is accepted"
     given:
@@ -312,16 +312,16 @@ generated:
       - ModeratorRoomInfoEvent
       - ModeratorUserInfoEvent
       evidence: ev_01cd5117175c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_bf4882dbd736
+      evidence: ev_bc802ae183fc
   evidence:
-  - id: ev_bf4882dbd736
+  - id: ev_bc802ae183fc
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CloseIssuesMessageEvent.java
     symbol: CloseIssuesMessageEvent
     line: 12

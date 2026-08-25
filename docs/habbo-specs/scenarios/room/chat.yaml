@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ac7ebbb33354e48d2b39724e26ef96380755af20b6be33d3731dfb0aa477e4c4"
+generated_digest: "sha256:11581b752732bfe5adafe843a0edc63af2da169078e410b1948af48b4b200df6"
 generated:
   feature: room.chat
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_740a128ba258
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.guard_1
     title: "chat: the guard 'targetPlayerId is not null && !_roomGrain._state.AvatarsB...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f0fbc7d68cc3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.guard_2
     title: "chat: the guard '!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f0fbc7d68cc3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.guard_3
     title: "chat: the guard 'IsUserMuted(playerId, out int secondsRemaining)' holds"
     given:
@@ -103,11 +103,11 @@ generated:
       - FloodControl
       - RemainingMutePeriod
       evidence: ev_f0fbc7d68cc3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.guard_4
     title: "chat: the guard 'IsFloodGated(playerId, avatar, out int floodSecondsRemain...' holds"
     given:
@@ -128,11 +128,11 @@ generated:
       - FloodControl
       - RemainingMutePeriod
       evidence: ev_f0fbc7d68cc3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.success
     title: "chat: the request is accepted"
     given:
@@ -152,16 +152,16 @@ generated:
       - FloodControl
       - RemainingMutePeriod
       evidence: ev_3dfe9ba800df
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c47dc92cdeb9
+      evidence: ev_87cfcd3253bb
   evidence:
-  - id: ev_c47dc92cdeb9
+  - id: ev_87cfcd3253bb
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/ChatMessageEvent.java
     symbol: ChatMessageEvent
     line: 18

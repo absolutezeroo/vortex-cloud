@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:216c4aac17c79a687c94992da3d11e8f26943a43a166057bd1d45bf9d26d40b0"
+generated_digest: "sha256:8e8df9b90df53e27c87fca82930250435243ebff2b0f6c135be81a086f1018ba"
 generated:
   name: GiftWrappingConfiguration
   direction: outgoing
@@ -113,7 +113,7 @@ generated:
     - int32
     - int32
     evidence: ev_830fa8a25011
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 10
     partial: false
@@ -128,7 +128,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_c6ccfca7beab
+    evidence: ev_7d81e197dc01
   evidence:
   - id: ev_830fa8a25011
     kind: client_parser
@@ -138,10 +138,10 @@ generated:
     symbol: _SafeCls_3083
     line: 62
     note: official client build WIN63-202607011411-782849652
-  - id: ev_c6ccfca7beab
+  - id: ev_7d81e197dc01
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/GiftWrappingConfigurationMessageComposer.java
     symbol: GiftWrappingConfigurationMessageComposer
     line: 17

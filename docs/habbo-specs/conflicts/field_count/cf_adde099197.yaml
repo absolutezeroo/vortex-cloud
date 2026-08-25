@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c7e70d42d1d292fb817a1765d81600b294ce6db972de32a30fecedc92d46be00"
+generated_digest: "sha256:8e2c6e30b3b962dac0940389074651a6fa94a933865da0d6d1cca568e669fd1e"
 generated:
   id: cf_adde099197
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "4 fields: int32, string, int32, string, int32"
     evidence: ev_10d5056ef7a9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "7 fields: int32, string, int32, string, int32, string, int32"
-    evidence: ev_cb592dbe9e80
+    evidence: ev_e9eea4970d25
   evidence:
   - id: ev_10d5056ef7a9
     kind: client_parser
@@ -34,10 +34,10 @@ generated:
     symbol: _SafeCls_3020
     line: 45
     note: official client build WIN63-202607011411-782849652
-  - id: ev_cb592dbe9e80
+  - id: ev_e9eea4970d25
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/polls/infobus/QuestionAnsweredMessageComposer.java
     symbol: QuestionAnsweredMessageComposer
     line: 21

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cb90ebf3b790a14edb868b5f6411f698de782b4ff209c59df4f8d575abc49d9e"
+generated_digest: "sha256:128029fc75b5d415387722f7f4badf982ef18c1b54a1d38c688cd961164fa78f"
 generated:
   feature: marketplace.get_marketplace_own_offers
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d271c933118b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MarketPlaceOwnOffers
-      evidence: ev_fd1c076ac938
+      evidence: ev_acbc3c0bca7a
   - scenario: marketplace.get_marketplace_own_offers.success
     title: "get marketplace own offers: the request is accepted"
     given:
@@ -56,17 +56,17 @@ generated:
       emits:
       - MarketPlaceOwnOffersEvent
       evidence: ev_0e6cd9dbf830
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - MarketPlaceOwnOffers
-      evidence: ev_fd1c076ac938
+      evidence: ev_acbc3c0bca7a
   evidence:
-  - id: ev_fd1c076ac938
+  - id: ev_acbc3c0bca7a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/marketplace/GetMarketplaceOwnOffersMessageEvent.java
     symbol: GetMarketplaceOwnOffersMessageEvent
     line: 8

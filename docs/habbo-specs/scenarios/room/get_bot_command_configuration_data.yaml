@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:779869edc9273c56ddaab663a03d3c6999deb313e01add0fb046a49466ece814"
+generated_digest: "sha256:726a9ad9de01ed477cfd4f8182d6843fc1c10a328e8e03c7ec1d7ef778a54cc5"
 generated:
   feature: room.get_bot_command_configuration_data
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_24c13db35f99
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BotCommandConfiguration
-      evidence: ev_2ab609649428
+      evidence: ev_4cc8a3256c2a
   - scenario: room.get_bot_command_configuration_data.guard_1
     title: "get bot command configuration data: the guard 'data is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_24c13db35f99
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BotCommandConfiguration
-      evidence: ev_2ab609649428
+      evidence: ev_4cc8a3256c2a
   - scenario: room.get_bot_command_configuration_data.success
     title: "get bot command configuration data: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - BotCommandConfiguration
       evidence: ev_24c13db35f99
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BotCommandConfiguration
-      evidence: ev_2ab609649428
+      evidence: ev_4cc8a3256c2a
   evidence:
-  - id: ev_2ab609649428
+  - id: ev_4cc8a3256c2a
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/bots/GetBotCommandConfigurationDataEvent.java
     symbol: GetBotCommandConfigurationDataEvent
     line: 11

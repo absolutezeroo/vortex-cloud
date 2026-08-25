@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5321ba910785e3a3ce018237b9f2a1a0fcaeda550d501b1d415216d074ec5611"
+generated_digest: "sha256:3c3e21fdfa63dfe0f9189e4ee9f01a1ed972f1095a58f0b07e7250711daccd3d"
 generated:
   id: inventory.get_badges
   domain: inventory
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

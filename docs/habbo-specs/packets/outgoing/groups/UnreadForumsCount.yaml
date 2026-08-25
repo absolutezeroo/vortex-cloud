@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b50c8b54b837a0a3d3d9a279e7d9392e936da3fd20bca2436ce6403b5c6abfed"
+generated_digest: "sha256:af65cb74a9799be8c54deb89fd595bb7fd49a365adccd6815940ee1a37e30343"
 generated:
   name: UnreadForumsCount
   direction: outgoing
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_e66ba802cff9
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_4b2e5e758004
+    evidence: ev_f724bbcd0fbb
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: UnreadForumsCountMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4b2e5e758004
+  - id: ev_f724bbcd0fbb
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/guilds/forums/UnreadForumsCountMessageComposer.java
     symbol: UnreadForumsCountMessageComposer
     line: 15

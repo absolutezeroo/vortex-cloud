@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9a807b04f62ff62f2213bd544a5d1ac42a85b95b9cabd2bcbb43333984f66663"
+generated_digest: "sha256:9e9d2f5e716d41653e845917b23995f2ed8af434072d90e218b13639c4a58953"
 generated:
   id: uk_364db18011
   subject: "outgoing/SnowWarsJoinError: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarsJoinError
   known_evidence:
-  - id: ev_896a8445ea2a
+  - id: ev_8a4ca90b6ccc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsJoinErrorComposer.java
     symbol: SnowWarsJoinErrorComposer
     line: 12

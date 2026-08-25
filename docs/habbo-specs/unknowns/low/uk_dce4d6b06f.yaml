@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1bb92c15707b6cda035656256d84a797e3b863f14b7d70096ffb00c3585240bc"
+generated_digest: "sha256:949f5a615ca2b969edcbae5931963e9eb4287c2145e8f9bf40d0249eb1bc7ce6"
 generated:
   id: uk_dce4d6b06f
   subject: "outgoing/YoutubeStateChange: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: YoutubeStateChange
   known_evidence:
-  - id: ev_5a3871f58edf
+  - id: ev_54dbd710c870
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/youtube/YoutubeStateChangeComposer.java
     symbol: YoutubeStateChangeComposer
     line: 17

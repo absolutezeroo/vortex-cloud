@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:df9a54ab28637d77bc3d72f082bf2792701cf36be76762d2fba65e246f847837"
+generated_digest: "sha256:31d71f4a3d1b58cdb5d443d00a0cd2dc93915758874decc78150e92ebb07f324"
 generated:
   name: OpenConnection
   direction: outgoing
@@ -40,12 +40,12 @@ generated:
     types:
     - int32
     evidence: ev_bc32c0aa3e23
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_371a53fa07cd
+    evidence: ev_f5597cbee6d3
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: OpenConnectionMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_371a53fa07cd
+  - id: ev_f5597cbee6d3
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/OpenConnectionMessageComposer.java
     symbol: OpenConnectionMessageComposer
     line: 9

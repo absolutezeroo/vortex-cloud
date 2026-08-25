@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:226370dc02b2c6ef64185098b62e3dc9ff26f11d49b445657107e482fcf5f0dc"
+generated_digest: "sha256:da746ae01bbbbee96288ee2d972427755b8727f20aed7fd0f298c4e62b12379e"
 generated:
   id: cf_c130c82819
   kind: field_count
   subject: "incoming/KickMember: field count"
   packet: KickMember
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "2 fields: int32, int32"
-    evidence: ev_052b54c0e5c1
+    evidence: ev_5a67319ee97f
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, boolean"
     evidence: ev_902ac418ae36
   evidence:
-  - id: ev_052b54c0e5c1
+  - id: ev_5a67319ee97f
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/KickMemberMessageEvent.java
     symbol: KickMemberMessageEvent
     line: 18

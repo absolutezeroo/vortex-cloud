@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b99606bd17f6e55d08defe10ba6a472981d0819c2bae6155de01eee6479ab97f"
+generated_digest: "sha256:c7ae89f874b175dead486b0c4161bcb05989ff784fbe21574a377c769923e45d"
 generated:
   name: LoadGameMessage
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 1
     name: unknown_1
     type: string
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 2
     name: unknown_2
     type: string
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 3
     name: unknown_3
     type: string
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 4
     name: unknown_4
     type: string
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 9
     name: unknown_9
     type: string
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 10
     name: unknown_10
     type: string
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 11
     name: unknown_11
     type: string
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 12
     name: unknown_12
     type: string
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 13
     name: unknown_13
     type: string
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 14
     name: unknown_14
     type: string
@@ -137,7 +137,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 15
     name: unknown_15
     type: string
@@ -145,7 +145,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 16
     name: unknown_16
     type: string
@@ -153,7 +153,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 17
     name: unknown_17
     type: string
@@ -161,7 +161,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 18
     name: unknown_18
     type: string
@@ -169,7 +169,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 19
     name: unknown_19
     type: string
@@ -177,7 +177,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   - index: 20
     name: unknown_20
     type: string
@@ -185,9 +185,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_152654354ef1
+    - ev_62fddf97d5bc
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 21
     partial: false
@@ -213,12 +213,12 @@ generated:
     - string
     - string
     - string
-    evidence: ev_152654354ef1
+    evidence: ev_62fddf97d5bc
   evidence:
-  - id: ev_152654354ef1
+  - id: ev_62fddf97d5bc
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/basejump/LoadGameMessageMessageComposer.java
     symbol: LoadGameMessageMessageComposer
     line: 21

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:34f4c990a5f6196c01eb1b9d0d5e639b8ef816c319b306a6ab9e0543a790b79a"
+generated_digest: "sha256:000990dad44543df1101fbc7e01f75f4fd318817c7c5486e247226de19a1bd66"
 generated:
   name: MysteryPrize
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_5f41d6d33e4d
+    - ev_b2fd5f8d378f
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_5f41d6d33e4d
+    - ev_b2fd5f8d378f
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - string
     - int32
-    evidence: ev_5f41d6d33e4d
+    evidence: ev_b2fd5f8d378f
   evidence:
-  - id: ev_5f41d6d33e4d
+  - id: ev_b2fd5f8d378f
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/MysteryPrizeComposer.java
     symbol: MysteryPrizeComposer
     line: 8

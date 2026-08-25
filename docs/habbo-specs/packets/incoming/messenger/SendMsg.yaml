@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:138d7d194381f412d010d429d41dcb69d9a2e7a575a9bfc2191fd08a1044bcf1"
+generated_digest: "sha256:2f5e2244f1ef2435ee554e5919a67176903dae9fb1eb4c4304344566637a20b4"
 generated:
   name: SendMsg
   direction: incoming
@@ -56,14 +56,14 @@ generated:
     - string
     - int32
     evidence: ev_1771c6e09a51
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - string
-    evidence: ev_b8d56000158f
+    evidence: ev_17b79ddcc56e
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -90,10 +90,10 @@ generated:
     symbol: SendMsgComposer
     line: 12
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b8d56000158f
+  - id: ev_17b79ddcc56e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/SendMsgMessageEvent.java
     symbol: SendMsgMessageEvent
     line: 10

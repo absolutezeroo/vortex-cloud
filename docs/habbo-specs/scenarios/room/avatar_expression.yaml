@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7733944b7752e53c27cdf7598e463648d40ed5a6d5912c9f0f3cfb44f906bfdc"
+generated_digest: "sha256:a7a90405c0065218510b4b436c445d2f115d5fb53510d206a7a89daab7a0e89d"
 generated:
   feature: room.avatar_expression
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_31d0be6a25b4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Expression
-      evidence: ev_80b7099cab7f
+      evidence: ev_009baa8cac5c
   - scenario: room.avatar_expression.guard_1
     title: "avatar expression: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Expression
-      evidence: ev_80b7099cab7f
+      evidence: ev_009baa8cac5c
   - scenario: room.avatar_expression.guard_2
     title: "avatar expression: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Expression
-      evidence: ev_80b7099cab7f
+      evidence: ev_009baa8cac5c
   - scenario: room.avatar_expression.success
     title: "avatar expression: the request is accepted"
     given:
@@ -104,17 +104,17 @@ generated:
       emits:
       - Expression
       evidence: ev_31d0be6a25b4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - Expression
-      evidence: ev_80b7099cab7f
+      evidence: ev_009baa8cac5c
   evidence:
-  - id: ev_80b7099cab7f
+  - id: ev_009baa8cac5c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/AvatarExpressionMessageEvent.java
     symbol: AvatarExpressionMessageEvent
     line: 14

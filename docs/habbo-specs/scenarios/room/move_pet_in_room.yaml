@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:32967e2a98748291b79d6981b61c39f88ede42533232a1a8e207c615e9c21fcd"
+generated_digest: "sha256:33a732c04363fedbba6092b010cfdfcfc831e95c533167035917b441fb518861"
 generated:
   feature: room.move_pet_in_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5d4c75baab22
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserUpdate
-      evidence: ev_b8601b1ad57c
+      evidence: ev_ce4dd53cd6c2
   - scenario: room.move_pet_in_room.guard_1
     title: "move pet in room: the guard 'pet is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7327c7799f5f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserUpdate
-      evidence: ev_b8601b1ad57c
+      evidence: ev_ce4dd53cd6c2
   - scenario: room.move_pet_in_room.success
     title: "move pet in room: the request is accepted"
     given:
@@ -79,17 +79,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1e4f030a2935
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - UserUpdate
-      evidence: ev_b8601b1ad57c
+      evidence: ev_ce4dd53cd6c2
   evidence:
-  - id: ev_b8601b1ad57c
+  - id: ev_ce4dd53cd6c2
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/MovePetMessageEvent.java
     symbol: MovePetMessageEvent
     line: 12

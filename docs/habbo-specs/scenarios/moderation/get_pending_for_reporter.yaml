@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:984228f1f3bb810268cc3e2864637c203e60a8cdd5a2b080bff6eabe29282b64"
+generated_digest: "sha256:e6d21c1783e30ca7052acd275d8a2a80b2400b4141f29e902cb6a98b498052a1"
 generated:
   feature: moderation.get_pending_for_reporter
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d452905700d2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpPendingCalls
-      evidence: ev_0cdbbfd70d88
+      evidence: ev_dab140bad13c
   - scenario: moderation.get_pending_for_reporter.guard_1
     title: "get pending for reporter: the guard 'reporterPlayerId <= 0' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpPendingCalls
-      evidence: ev_0cdbbfd70d88
+      evidence: ev_dab140bad13c
   - scenario: moderation.get_pending_for_reporter.success
     title: "get pending for reporter: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - CallForHelpPendingCalls
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - CallForHelpPendingCalls
-      evidence: ev_0cdbbfd70d88
+      evidence: ev_dab140bad13c
   evidence:
-  - id: ev_0cdbbfd70d88
+  - id: ev_dab140bad13c
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/GetPendingCallsForHelpMessageEvent.java
     symbol: GetPendingCallsForHelpMessageEvent
     line: 9

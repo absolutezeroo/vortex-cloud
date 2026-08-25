@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:90e1cad32ac199d07fcc5d0dd117c6244aa6ef832c74533d206c1508c584e025"
+generated_digest: "sha256:14e41e88346e3afe7d2bec80c069fd99719ebd174709078226b09790f0e70ccc"
 generated:
   name: SnowWarsUserExitArena
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_cc42e817ee23
+    - ev_749b00375bd9
   - index: 1
     name: unknown_1
     type: int32
@@ -33,21 +33,21 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_cc42e817ee23
+    - ev_749b00375bd9
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 2
     partial: false
     types:
     - int32
     - int32
-    evidence: ev_cc42e817ee23
+    evidence: ev_749b00375bd9
   evidence:
-  - id: ev_cc42e817ee23
+  - id: ev_749b00375bd9
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/SnowWarsUserExitArenaComposer.java
     symbol: SnowWarsUserExitArenaComposer
     line: 8

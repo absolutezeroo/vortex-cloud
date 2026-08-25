@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b7caa133fb81b98fb2915ffa8df08d5411903ef7a5ae5f9a4ceb55803559d14f"
+generated_digest: "sha256:96b170899d017bd78757fe2c3f5cb763bcc9d14fd47a193cb435eb53221d930f"
 generated:
   name: GetGuildMembers
   direction: incoming
@@ -25,28 +25,28 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0ae554f4bbc3
+    - ev_3b1eff7761be
   - index: 1
     name: page_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0ae554f4bbc3
+    - ev_3b1eff7761be
   - index: 2
     name: query
     type: string
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0ae554f4bbc3
+    - ev_3b1eff7761be
   - index: 3
     name: level_id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_0ae554f4bbc3
+    - ev_3b1eff7761be
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -60,7 +60,7 @@ generated:
     partial: true
     types: []
     evidence: ev_0d96a61e7484
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 4
     partial: false
@@ -69,7 +69,7 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_0ae554f4bbc3
+    evidence: ev_3b1eff7761be
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -97,10 +97,10 @@ generated:
     symbol: GetGuildMembersComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0ae554f4bbc3
+  - id: ev_3b1eff7761be
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/GetGuildMembersMessageEvent.java
     symbol: GetGuildMembersMessageEvent
     line: 18

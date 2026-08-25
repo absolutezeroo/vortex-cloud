@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:89edd1d9a671ab58ad68682d39898368a4da62020e41bf3eae5069a4732f1f8b"
+generated_digest: "sha256:24339ff4437d7c0efacd46405820601525847185fb8f9d354388edddd3612edc"
 generated:
   name: GetSellablePetPalettes
   direction: incoming
@@ -40,13 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_506c5c024bb6
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - string
-    evidence: ev_2d77f3b37bc3
+    evidence: ev_1e71d2e544b5
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -71,10 +71,10 @@ generated:
     symbol: GetSellablePetPalettesComposer
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2d77f3b37bc3
+  - id: ev_1e71d2e544b5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetSellablePetPalettesEvent.java
     symbol: GetSellablePetPalettesEvent
     line: 14

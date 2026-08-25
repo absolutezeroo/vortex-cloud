@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:84449eb2dbdcf27a082464738f324bd7e434e2138057a8ac13ac668ddee77506"
+generated_digest: "sha256:4913f1ad76d727aa68d52c1ab9b17077976dc15474de6d1f1125479a964acca1"
 generated:
   name: GameCenterAchievementsConfiguration
   direction: outgoing
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 1
     name: unknown_1
     type: int32
@@ -33,7 +33,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 2
     name: unknown_2
     type: int32
@@ -41,7 +41,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 3
     name: unknown_3
     type: int32
@@ -49,7 +49,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 4
     name: unknown_4
     type: int32
@@ -57,7 +57,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 5
     name: unknown_5
     type: int32
@@ -65,7 +65,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 6
     name: unknown_6
     type: int32
@@ -73,7 +73,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 7
     name: unknown_7
     type: int32
@@ -81,7 +81,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 8
     name: unknown_8
     type: int32
@@ -89,7 +89,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 9
     name: unknown_9
     type: int32
@@ -97,7 +97,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 10
     name: unknown_10
     type: int32
@@ -105,7 +105,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 11
     name: unknown_11
     type: int32
@@ -113,7 +113,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 12
     name: unknown_12
     type: int32
@@ -121,7 +121,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 13
     name: unknown_13
     type: string
@@ -129,7 +129,7 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   - index: 14
     name: unknown_14
     type: int32
@@ -137,9 +137,9 @@ generated:
     name_confidence: unknown
     type_confidence: reference_observed
     evidence:
-    - ev_6ace8422c488
+    - ev_5dbb9c9e2628
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 15
     partial: false
@@ -159,12 +159,12 @@ generated:
     - int32
     - string
     - int32
-    evidence: ev_6ace8422c488
+    evidence: ev_5dbb9c9e2628
   evidence:
-  - id: ev_6ace8422c488
+  - id: ev_5dbb9c9e2628
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/gamecenter/GameCenterAchievementsConfigurationComposer.java
     symbol: GameCenterAchievementsConfigurationComposer
     line: 8

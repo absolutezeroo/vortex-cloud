@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f9b77e4ca2450f54096972f29d2618b587a35a8d6f94d98283a3fb8f2da88767"
+generated_digest: "sha256:e0d263d451b545ef857d34d1aa9762d36fd327e657e605653b3dc96542c8c69f"
 generated:
   id: quest.open_quest_tracker
   domain: quest
@@ -20,7 +20,7 @@ generated:
   observed_in:
     vortex: true
     references:
-    - arcturus
+    - habbo-arcturus-daybreak
   official_behavior:
     status: unknown
   flow:

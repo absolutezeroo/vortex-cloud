@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ccdc85846c1a3648db4c94af61c3ade5cb1c40e09a4938b7cc2871aa7b3497c"
+generated_digest: "sha256:88720a8db84ac68227c5db3e37aecdc0861cb8ef335fb34d41f812ead3ba360d"
 generated:
   name: BuildersClubQueryFurniCount
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_afcc5b4d98e5
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_592bac837a15
+    evidence: ev_0c5b085bab0e
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: BuildersClubQueryFurniCountComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_592bac837a15
+  - id: ev_0c5b085bab0e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/BuildersClubQueryFurniCountMessageEvent.java
     symbol: BuildersClubQueryFurniCountMessageEvent
     line: 8

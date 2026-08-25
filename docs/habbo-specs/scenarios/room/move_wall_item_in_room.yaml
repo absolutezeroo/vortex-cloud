@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9b1a066c61bbacb9551eb76a59f9bd01fea402a551ee8bb9fc5dcae35f7dcbed"
+generated_digest: "sha256:58a39bc72269992a769ed948571b9162a883d81c823c3fbb816dc9fb0f44f7dd"
 generated:
   feature: room.move_wall_item_in_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_1
     title: "move wall item in room: the guard 'coords.Length != 2 || loc.Length != 2' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_10
     title: "move wall item in room: the guard '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(...' holds"
     given:
@@ -80,12 +80,12 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_11
     title: "move wall item in room: the guard '!await _roomGrain.FurniModule.ValidateWallItemPlacementAs...' holds"
     given:
@@ -104,12 +104,12 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_2
     title: "move wall item in room: the guard '!int.TryParse(coords[0], out int x)' holds"
     given:
@@ -128,12 +128,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_3
     title: "move wall item in room: the guard '!int.TryParse(coords[1], out int y)' holds"
     given:
@@ -152,12 +152,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_4
     title: "move wall item in room: the guard '!int.TryParse(loc[0], out int wallOffset)' holds"
     given:
@@ -176,12 +176,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_5
     title: "move wall item in room: the guard '!double.TryParse(loc[1], out double z)' holds"
     given:
@@ -200,12 +200,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_d59e9d4b0b48
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_6
     title: "move wall item in room: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0 || itemId <= 0' holds"
     given:
@@ -224,12 +224,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2cb78f6b7b21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_7
     title: "move wall item in room: the guard 'await roomGrain .MoveWallItemByIdAsync(ctx, itemId, x, y,...' holds"
     given:
@@ -248,12 +248,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2cb78f6b7b21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_8
     title: "move wall item in room: the guard 'item is null' holds"
     given:
@@ -272,12 +272,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2cb78f6b7b21
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.guard_9
     title: "move wall item in room: the guard '!await ActionModule.MoveWallItemByIdAsync( ctx, itemId, n...' holds"
     given:
@@ -296,12 +296,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_07b1995558b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   - scenario: room.move_wall_item_in_room.success
     title: "move wall item in room: the request is accepted"
     given:
@@ -321,17 +321,17 @@ generated:
       - ItemUpdate
       - ObjectUpdate
       evidence: ev_07b1995558b2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NotificationDialog
-      evidence: ev_039eb84648db
+      evidence: ev_7d7220ce435b
   evidence:
-  - id: ev_039eb84648db
+  - id: ev_7d7220ce435b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/MoveWallItemMessageEvent.java
     symbol: MoveWallItemMessageEvent
     line: 14

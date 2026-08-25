@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:028bb415f4b03a3198602bf690628153417916159edfce842a6644d62a937215"
+generated_digest: "sha256:ce25b58f71e153f53ea040038e5ed490f6db3b473d4b0a01629246e1f52d04ed"
 generated:
   feature: sound.remove_jukebox_disk
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_02cdf81d88ef
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_86fcf592711c
+      evidence: ev_0ecd99b6bb70
   evidence:
-  - id: ev_86fcf592711c
+  - id: ev_0ecd99b6bb70
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/jukebox/RemoveJukeboxDiskEvent.java
     symbol: RemoveJukeboxDiskEvent
     line: 8

@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:def09282107a25acf1e579dbcf9f31d6de797d491913c72892c30ca212e3d6a7"
+generated_digest: "sha256:401ae37813961d6a8a1ccd44b4a8337996e4f803f576561d1dfe5187592bf3ed"
 generated:
   id: cf_2d3ff8a8ab
   kind: behaviour
   subject: "GetGiftWrappingConfiguration: packets emitted in response"
   packet: GetGiftWrappingConfiguration
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: GiftWrappingConfiguration
-    evidence: ev_20ebdb218d62
+    evidence: ev_1b0da768935b
   - origin: vortex
     authority: vortex_emulator
     claim: GiftWrappingConfigurationEvent
     evidence: ev_4838deaee1b1
   evidence:
-  - id: ev_20ebdb218d62
+  - id: ev_1b0da768935b
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetGiftWrappingConfigurationEvent.java
     symbol: GetGiftWrappingConfigurationEvent
     line: 8

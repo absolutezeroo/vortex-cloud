@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:73f8ea7f850ef9375c5272c4b7223772d27e50a4a63efd2775020c253b31d46e"
+generated_digest: "sha256:557dbc9bd182c34788eabbf4d6a1f8f7c10a82d6759083608dc68134418dab20"
 generated:
   name: CitizenshipVipOfferPromoEnabled
   direction: outgoing
@@ -19,17 +19,17 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_42f5374449b0
+    evidence: ev_157aba3b260b
   evidence:
-  - id: ev_42f5374449b0
+  - id: ev_157aba3b260b
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CitizenshipVipOfferPromoEnabledMessageComposer.java
     symbol: CitizenshipVipOfferPromoEnabledMessageComposer
     line: 9

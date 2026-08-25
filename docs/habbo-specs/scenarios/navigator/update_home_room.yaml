@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:805ecac8ec85ddd0ce12b83b68a3d33befa5e658de18af2879c9f37cee4b15a3"
+generated_digest: "sha256:03ff44e7783258853e88e08546458580cd72f0e563b1536baede32e55ec3f0b6"
 generated:
   feature: navigator.update_home_room
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_13f104799f2b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSettings
-      evidence: ev_ae62feb93e3c
+      evidence: ev_af9f9f0c14b3
   - scenario: navigator.update_home_room.success
     title: "update home room: the request is accepted"
     given:
@@ -55,17 +55,17 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_13f104799f2b
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSettings
-      evidence: ev_ae62feb93e3c
+      evidence: ev_af9f9f0c14b3
   evidence:
-  - id: ev_ae62feb93e3c
+  - id: ev_af9f9f0c14b3
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/UpdateHomeRoomMessageEvent.java
     symbol: UpdateHomeRoomMessageEvent
     line: 8

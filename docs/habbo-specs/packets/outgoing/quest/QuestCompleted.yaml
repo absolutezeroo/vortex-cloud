@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2edd260b8dbd1457cd7caf98ec4f64ccc71048484fb5b088f7788bd769aa18c8"
+generated_digest: "sha256:26fb7a3fa3432b353db2bc88740cd28955edc52682cdbe9c864587fa07766b12"
 generated:
   name: QuestCompleted
   direction: outgoing
@@ -225,13 +225,13 @@ generated:
     partial: true
     types: []
     evidence: ev_0546811ffdae
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: true
     types:
     - boolean
-    evidence: ev_f5c61489eab3
+    evidence: ev_02a3d31b7964
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -265,10 +265,10 @@ generated:
     symbol: QuestCompletedMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f5c61489eab3
+  - id: ev_02a3d31b7964
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/quests/QuestCompletedMessageComposer.java
     symbol: QuestCompletedMessageComposer
     line: 23

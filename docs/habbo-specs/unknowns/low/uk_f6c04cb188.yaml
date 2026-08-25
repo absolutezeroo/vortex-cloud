@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:37b09cf2bd75e219ee03c6831829d9154eec9601c1f429769f7d48f46cb316fb"
+generated_digest: "sha256:36ae8a8f16ff45546ee7afcf7960050861051e4668e7a6b829593f48b60a3fad"
 generated:
   id: uk_f6c04cb188
   subject: "outgoing/CatalogPageExpiration: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CatalogPageExpiration
   known_evidence:
-  - id: ev_c886fe5c6b63
+  - id: ev_35c4df3ec5f4
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/hotelview/CatalogPageExpirationMessageComposer.java
     symbol: CatalogPageExpirationMessageComposer
     line: 19

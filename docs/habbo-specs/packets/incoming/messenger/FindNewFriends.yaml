@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5f958e43772e773ee1f9a0845b4645f2be1e3a1b00e817bb1cb3ccd29c66a944"
+generated_digest: "sha256:03ee915121305d099a456e8b6ebfa5e07afd4b8edb7320a1aaa1803572a2bd51"
 generated:
   name: FindNewFriends
   direction: incoming
@@ -32,12 +32,12 @@ generated:
     partial: true
     types: []
     evidence: ev_04026ecdba9c
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_6e1bdfa08e70
+    evidence: ev_a8f8a7ef35ee
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -61,10 +61,10 @@ generated:
     symbol: FindNewFriendsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6e1bdfa08e70
+  - id: ev_a8f8a7ef35ee
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/friends/FindNewFriendsMessageEvent.java
     symbol: FindNewFriendsMessageEvent
     line: 15

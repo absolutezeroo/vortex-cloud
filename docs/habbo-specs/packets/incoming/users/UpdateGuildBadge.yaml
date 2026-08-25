@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:649cb9d9adc85ba75b88550143791c515a8fe07e9cc1bc799ba7dfdcf01c9cec"
+generated_digest: "sha256:368af4df8083e26c3a9b01894abd10ba6d0795b4528b10ee443840e0116928de"
 generated:
   name: UpdateGuildBadge
   direction: incoming
@@ -25,35 +25,35 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2589cd177de4
+    - ev_02f8ee361ef9
   - index: 1
     name: count
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2589cd177de4
+    - ev_02f8ee361ef9
   - index: 2
     name: id
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2589cd177de4
+    - ev_02f8ee361ef9
   - index: 3
     name: color
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2589cd177de4
+    - ev_02f8ee361ef9
   - index: 4
     name: pos
     type: int32
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_2589cd177de4
+    - ev_02f8ee361ef9
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -73,7 +73,7 @@ generated:
     partial: true
     types: []
     evidence: ev_87bb98a292e8
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 5
     partial: false
@@ -83,7 +83,7 @@ generated:
     - int32
     - int32
     - int32
-    evidence: ev_2589cd177de4
+    evidence: ev_02f8ee361ef9
   - origin: vortex
     authority: vortex_emulator
     field_count: 3
@@ -118,10 +118,10 @@ generated:
     symbol: UpdateGuildBadgeComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2589cd177de4
+  - id: ev_02f8ee361ef9
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/guilds/UpdateGuildBadgeMessageEvent.java
     symbol: UpdateGuildBadgeMessageEvent
     line: 12

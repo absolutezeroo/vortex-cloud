@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4d991f235cc7689fd42b6d7debaed96c33d3fa350253cd9664464c929da5827d"
+generated_digest: "sha256:6514a94f20d7d95b74ccb3c804d9ad00321ee626bd55e3b86e20fa07adb4322c"
 generated:
   name: RemoveItem
   direction: incoming
@@ -26,7 +26,7 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_85eefe3a6f39
-    - ev_e95fc3333e6f
+    - ev_005598a2f1e5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -41,13 +41,13 @@ generated:
     partial: true
     types: []
     evidence: ev_c03fe7d6454d
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_e95fc3333e6f
+    evidence: ev_005598a2f1e5
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -72,10 +72,10 @@ generated:
     symbol: RemoveItemComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e95fc3333e6f
+  - id: ev_005598a2f1e5
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/items/RemoveItemMessageEvent.java
     symbol: RemoveItemMessageEvent
     line: 15

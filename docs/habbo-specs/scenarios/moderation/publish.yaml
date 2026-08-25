@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b453d5f4e007f4cb5b72b38a032e48ab1638a141284e0094008a4fad33357dc4"
+generated_digest: "sha256:2c20770fa5ae400300431b869ef8a61ab7f8ba01bddec8840f625a7c5a3b5fd0"
 generated:
   feature: moderation.publish
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_507617654ef4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_1
     title: "publish: the guard '_registry is null' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_10
     title: "publish: the guard 'outcomes.Length == 0' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9c67ce52dae5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_11
     title: "publish: the guard 'issueIds.Count == 0' holds"
     given:
@@ -101,11 +101,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_055f4068589c
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_2
     title: "publish: the guard 'ctx.PlayerId <= 0 || message.PrimaryIssueId <= 0' holds"
     given:
@@ -124,11 +124,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_468db07eeeed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_3
     title: "publish: the guard 'ticket is null' holds"
     given:
@@ -147,11 +147,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_468db07eeeed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_4
     title: "publish: the guard 'ticket.Value.ReportedPlayerId <= 0' holds"
     given:
@@ -170,11 +170,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_468db07eeeed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_5
     title: "publish: the guard '!actorPermissions.HasAny(Capabilities.Moderation.Cfh) || ...' holds"
     given:
@@ -193,11 +193,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_468db07eeeed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_6
     title: "publish: the guard 'topic is null || topic.Value.DefaultSanctionPresetId is null' holds"
     given:
@@ -216,11 +216,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_468db07eeeed
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_7
     title: "publish: the guard 'playerId <= 0' holds"
     given:
@@ -239,11 +239,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_743940bb69f7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_8
     title: "publish: the guard 'preset is null' holds"
     given:
@@ -262,11 +262,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_2e4a44ebd161
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.guard_9
     title: "publish: the guard 'accountId is null' holds"
     given:
@@ -285,11 +285,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   - scenario: moderation.publish.success
     title: "publish: the request is accepted"
     given:
@@ -314,16 +314,16 @@ generated:
       - UserBanned
       - unresolved
       evidence: ev_02de116bfe4e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_dc02db68d809
+      evidence: ev_b37eeea41592
   evidence:
-  - id: ev_dc02db68d809
+  - id: ev_b37eeea41592
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/modtool/CloseIssueDefaultActionMessageEvent.java
     symbol: CloseIssueDefaultActionMessageEvent
     line: 11

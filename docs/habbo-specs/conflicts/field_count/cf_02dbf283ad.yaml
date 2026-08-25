@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:21fd6334ee0895c0e1b6af8cbebda0e5e78be5e2a6f2f87c089f2da4cc8eedac"
+generated_digest: "sha256:7c3291664ee9544902283291faf082644add53dead776eee449d45a7e1dc48b1"
 generated:
   id: cf_02dbf283ad
   kind: field_count
@@ -25,10 +25,10 @@ generated:
     authority: multi_implementation
     claim: "1 fields: int32, int32, int32"
     evidence: ev_d9d5ec99f2bf
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "10 fields: int32, int32, int32, int32, int32, int32, int32, int32, string, int32"
-    evidence: ev_b97ccac9a78c
+    evidence: ev_0aa6491064e1
   - origin: vortex
     authority: vortex_emulator
     claim: "5 fields: int32, int32, int32, int32, array"
@@ -50,10 +50,10 @@ generated:
     symbol: MessengerInitMessage
     line: 14
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b97ccac9a78c
+  - id: ev_0aa6491064e1
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/friends/MessengerInitMessageComposer.java
     symbol: MessengerInitMessageComposer
     line: 20

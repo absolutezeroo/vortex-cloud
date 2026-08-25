@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:cd5ec91b2c659aebf50874eba57f6daa84b4f00020d93af780f05d1c94ddaa66"
+generated_digest: "sha256:145ec86793d6aca6731cb1ac1a1880893848f89fda61e970171ccca086a9f90e"
 generated:
   id: cf_fa2608d22c
   kind: field_count
@@ -21,10 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, int32, int32, int32, int32, boolean"
     evidence: ev_46656d24be8f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: "9 fields: int32, int32, int32, int32, int32, int32, int32, int32, boolean"
-    evidence: ev_03745a072899
+    evidence: ev_2a1c64fe99d8
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, array"
@@ -38,10 +38,10 @@ generated:
     symbol: _SafeCls_3879
     line: 24
     note: official client build WIN63-202607011411-782849652
-  - id: ev_03745a072899
+  - id: ev_2a1c64fe99d8
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/inventory/AvatarEffectsMessageComposer.java
     symbol: AvatarEffectsMessageComposer
     line: 23

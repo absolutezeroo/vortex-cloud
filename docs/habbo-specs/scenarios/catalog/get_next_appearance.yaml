@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5e24e24ce022af38e0905e003be8d7d7a6e4d732e9004bdb7ff9b916a935bc83"
+generated_digest: "sha256:dcca2883abc797ce6aaaa3827c229ef742874b3e210bc0aa4d38aea891577e14"
 generated:
   feature: catalog.get_next_appearance
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e0224e8793f0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - LimitedOfferAppearingNext
-      evidence: ev_827f74cb4a1f
+      evidence: ev_fc2797333412
   - scenario: catalog.get_next_appearance.guard_1
     title: "get next appearance: the guard 'nextStart is null' holds"
     given:
@@ -56,12 +56,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e0224e8793f0
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - LimitedOfferAppearingNext
-      evidence: ev_827f74cb4a1f
+      evidence: ev_fc2797333412
   - scenario: catalog.get_next_appearance.success
     title: "get next appearance: the request is accepted"
     given:
@@ -80,17 +80,17 @@ generated:
       emits:
       - LimitedOfferAppearingNext
       evidence: ev_0463dc7af43f
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - LimitedOfferAppearingNext
-      evidence: ev_827f74cb4a1f
+      evidence: ev_fc2797333412
   evidence:
-  - id: ev_827f74cb4a1f
+  - id: ev_fc2797333412
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/hotelview/GetLimitedOfferAppearingNextEvent.java
     symbol: GetLimitedOfferAppearingNextEvent
     line: 15

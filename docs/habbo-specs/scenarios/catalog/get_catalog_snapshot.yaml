@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:41415da3c807a7f25353e715bc7b8a473420d5056156a4859f5b8e17366fd5a3"
+generated_digest: "sha256:f94dfc91919b95f92ec056a64c1a6c61bea9de0dbf460f7d40bbe57fbb227e3e"
 generated:
   feature: catalog.get_catalog_snapshot
   scenarios:
@@ -32,13 +32,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_86e1c100879d
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
       - CatalogPagesList
-      evidence: ev_bd0d900fba76
+      evidence: ev_1b7b32632f24
   - scenario: catalog.get_catalog_snapshot.guard_1
     title: "get catalog snapshot: the guard '!snapshot.OffersById.TryGetValue(message.OfferId, out Cat...' holds"
     given:
@@ -57,13 +57,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_514edc70e9d7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
       - CatalogPagesList
-      evidence: ev_bd0d900fba76
+      evidence: ev_1b7b32632f24
   - scenario: catalog.get_catalog_snapshot.guard_2
     title: "get catalog snapshot: the guard 'ctx.PlayerId <= 0' holds"
     given:
@@ -82,13 +82,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_696c3cad4efc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
       - CatalogPagesList
-      evidence: ev_bd0d900fba76
+      evidence: ev_1b7b32632f24
   - scenario: catalog.get_catalog_snapshot.guard_3
     title: "get catalog snapshot: the guard 'snapshot.PagesById.TryGetValue(message.PageId, out Catalo...' holds"
     given:
@@ -107,13 +107,13 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_696c3cad4efc
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
       - CatalogPagesList
-      evidence: ev_bd0d900fba76
+      evidence: ev_1b7b32632f24
   - scenario: catalog.get_catalog_snapshot.success
     title: "get catalog snapshot: the request is accepted"
     given:
@@ -135,18 +135,18 @@ generated:
       - IsOfferGiftableEvent
       - ProductOfferEvent
       evidence: ev_42689782a458
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - BuildersClubFurniCount
       - CatalogPagesList
-      evidence: ev_bd0d900fba76
+      evidence: ev_1b7b32632f24
   evidence:
-  - id: ev_bd0d900fba76
+  - id: ev_1b7b32632f24
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/catalog/GetCatalogIndexEvent.java
     symbol: GetCatalogIndexEvent
     line: 10

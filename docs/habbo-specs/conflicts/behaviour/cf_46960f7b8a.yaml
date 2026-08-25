@@ -10,26 +10,26 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:58e7747b25eb18856656b7a21f7f7405824e856483977205effa0f997fff2fa7"
+generated_digest: "sha256:63ba7b39510f335704bd76ea9f89a1f8f76f8cad2a3ccd95c96a02eeedc39031"
 generated:
   id: cf_46960f7b8a
   kind: behaviour
   subject: "RequestFurniInventory: packets emitted in response"
   packet: RequestFurniInventory
   positions:
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     claim: FurniList then FurniList then FurniList
-    evidence: ev_d4d1bf248390
+    evidence: ev_81d201b35257
   - origin: vortex
     authority: vortex_emulator
     claim: FurniListEvent
     evidence: ev_c67e24bb8d9c
   evidence:
-  - id: ev_d4d1bf248390
+  - id: ev_81d201b35257
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/inventory/RequestFurniInventoryEvent.java
     symbol: RequestFurniInventoryEvent
     line: 18

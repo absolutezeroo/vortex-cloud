@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d782befdf7cf9f044840b0225db6e30486aabdfe56357bec30b8b113d1cd69e0"
+generated_digest: "sha256:1578a68251c31d3ea48469703fd51ee21668e960e3a3243b233dd82f2207230e"
 generated:
   id: uk_bf428a371d
   subject: "outgoing/BCPlacementWarning: unnamed fields"
@@ -19,10 +19,10 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BCPlacementWarning
   known_evidence:
-  - id: ev_8218c0da7815
+  - id: ev_97d85a812add
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/BCPlacementWarningMessageComposer.java
     symbol: BCPlacementWarningMessageComposer
     line: 52

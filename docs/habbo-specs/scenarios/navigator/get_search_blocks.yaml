@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:42c686c42a7d3183654cebf6b91a3804d9feabf8c6f26b0e2a034a71966790de"
+generated_digest: "sha256:a1cc4a387c4bdd8080335dd01ab72c3ed3ec7152a701f9d98b7b7873f55b45b9"
 generated:
   feature: navigator.get_search_blocks
   scenarios:
@@ -32,14 +32,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca6db2d966f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
-      evidence: ev_439da5dcbab2
+      evidence: ev_eb5bc2d40d0e
   - scenario: navigator.get_search_blocks.guard_1
     title: "get search blocks: the guard 'quickLinks.Length > 0' holds"
     given:
@@ -58,14 +58,14 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ca6db2d966f5
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
-      evidence: ev_439da5dcbab2
+      evidence: ev_eb5bc2d40d0e
   - scenario: navigator.get_search_blocks.success
     title: "get search blocks: the request is accepted"
     given:
@@ -84,19 +84,19 @@ generated:
       emits:
       - NavigatorSearchResultBlocks
       evidence: ev_a054a6edc4c3
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
       - NavigatorSearchResultBlocks
-      evidence: ev_439da5dcbab2
+      evidence: ev_eb5bc2d40d0e
   evidence:
-  - id: ev_439da5dcbab2
+  - id: ev_eb5bc2d40d0e
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/navigator/NewNavigatorSearchEvent.java
     symbol: NewNavigatorSearchEvent
     line: 20

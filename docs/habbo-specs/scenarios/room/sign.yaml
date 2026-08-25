@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:55ddf9d1dc9c77da87ed4a6f2594a9e0633e6d5e8c9230f4e2db759d25174ba4"
+generated_digest: "sha256:1d7aaaa8060b7d7202a2417d24898f56e3d88ac4c8ca4e1ca259ce2014a6e7c5"
 generated:
   feature: room.sign
   scenarios:
@@ -32,11 +32,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8568204207b7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5d0274148f9d
+      evidence: ev_a15faebc3027
   - scenario: room.sign.guard_1
     title: "sign: the guard '!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out R...' holds"
     given:
@@ -55,11 +55,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_ac641f7283b9
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5d0274148f9d
+      evidence: ev_a15faebc3027
   - scenario: room.sign.guard_2
     title: "sign: the guard 'objectId <= 0 || !_roomGrain._state.AvatarsByObjectId.Try...' holds"
     given:
@@ -78,11 +78,11 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5d0274148f9d
+      evidence: ev_a15faebc3027
   - scenario: room.sign.success
     title: "sign: the request is accepted"
     given:
@@ -101,16 +101,16 @@ generated:
       emits:
       - UserUpdate
       evidence: ev_8568204207b7
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5d0274148f9d
+      evidence: ev_a15faebc3027
   evidence:
-  - id: ev_5d0274148f9d
+  - id: ev_a15faebc3027
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/users/SignMessageEvent.java
     symbol: SignMessageEvent
     line: 13

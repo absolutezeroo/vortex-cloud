@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a1f39184bee84c4a62e49e7244b3069cb4a48713faf1610bf48586300aaabbd2"
+generated_digest: "sha256:3457081448b83bf302a5c68d798571a10023603d95f67f5faafa18bbc66b4fea"
 generated:
   id: uk_7c1a4837a1
   subject: "incoming/NewUserExperienceGetGifts: unnamed fields"
@@ -35,10 +35,10 @@ generated:
     symbol: NewUserExperienceGetGiftsComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_ed19427831e5
+  - id: ev_5e76f097822d
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/NewUserExperienceGetGiftsMessageEvent.java
     symbol: NewUserExperienceGetGiftsMessageEvent
     line: 10

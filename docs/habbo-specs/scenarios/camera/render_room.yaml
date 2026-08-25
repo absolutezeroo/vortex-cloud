@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fa4ee77108e0089ebf2a7109118a4632642ab7f9916a0a5a59dd09d1dd7dd472"
+generated_digest: "sha256:72974b1bf02297330cc10cb3befa0e1d4d5f4e68135dc51e7bfa5294635696c6"
 generated:
   feature: camera.render_room
   scenarios:
@@ -31,16 +31,16 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_83a92c785a4e
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
       emits: []
-      evidence: ev_fa9cf4c0e041
+      evidence: ev_4a708ba19eae
   evidence:
-  - id: ev_fa9cf4c0e041
+  - id: ev_4a708ba19eae
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/camera/RenderRoomMessageEvent.java
     symbol: RenderRoomMessageEvent
     line: 23

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:28d8ffe5f13251fd17fd169de90cd012a676143e5beaa8c9fc0e71a2ea7cfc5f"
+generated_digest: "sha256:23867af8240744f2753385ad7ccb20189fbad10bd57397a552f58b7dd9c59c65"
 generated:
   name: CancelPetBreeding
   direction: incoming
@@ -25,7 +25,7 @@ generated:
     name_confidence: reference_observed
     type_confidence: reference_observed
     evidence:
-    - ev_f93390318b62
+    - ev_69b51e02c398
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -39,13 +39,13 @@ generated:
     partial: true
     types: []
     evidence: ev_864ed0e13c72
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
     partial: false
     types:
     - int32
-    evidence: ev_f93390318b62
+    evidence: ev_69b51e02c398
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -70,10 +70,10 @@ generated:
     symbol: CancelPetBreedingComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f93390318b62
+  - id: ev_69b51e02c398
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/rooms/pets/CancelPetBreedingEvent.java
     symbol: CancelPetBreedingEvent
     line: 9

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7a9f5a9e137d6261b8017780afa8e5c69b203db53f49e9fba7e7a452f480986f"
+generated_digest: "sha256:5b71731a03b03d1916316495a17a469e93ee3698c8fe2b226015d9666712d591"
 generated:
   feature: users.scr_get_user_info
   scenarios:
@@ -32,12 +32,12 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b102e26f59d4
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ScrSendUserInfo
-      evidence: ev_452ccb1e0f92
+      evidence: ev_ff6679876b95
   - scenario: users.scr_get_user_info.success
     title: "scr get user info: the request is accepted"
     given:
@@ -57,17 +57,17 @@ generated:
       - AccountPreferencesEvent
       - unresolved
       evidence: ev_1f83e61934ca
-    - origin: arcturus
+    - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
       emits:
       - ScrSendUserInfo
-      evidence: ev_452ccb1e0f92
+      evidence: ev_ff6679876b95
   evidence:
-  - id: ev_452ccb1e0f92
+  - id: ev_ff6679876b95
     kind: reference_handler
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/users/ScrGetUserInfoMessageEvent.java
     symbol: ScrGetUserInfoMessageEvent
     line: 8

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:130080025373a8c8d5882a44b2c98914a4087d96c0690166118ca7af2b1e8f5a"
+generated_digest: "sha256:91acca7a546dcb860142424c31d8cac4dbfd374cfdf7886880c70938ac6969e1"
 generated:
   name: ClubGiftInfo
   direction: outgoing
@@ -229,7 +229,7 @@ generated:
     - int32
     - boolean
     evidence: ev_5d160d36590f
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 10
     partial: true
@@ -244,7 +244,7 @@ generated:
     - boolean
     - int32
     - int32
-    evidence: ev_971d0c504d89
+    evidence: ev_a6f32a8197d5
   evidence:
   - id: ev_5d160d36590f
     kind: client_parser
@@ -254,10 +254,10 @@ generated:
     symbol: _SafeCls_2267
     line: 37
     note: official client build WIN63-202607011411-782849652
-  - id: ev_971d0c504d89
+  - id: ev_a6f32a8197d5
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/ClubGiftInfoMessageComposer.java
     symbol: ClubGiftInfoMessageComposer
     line: 28

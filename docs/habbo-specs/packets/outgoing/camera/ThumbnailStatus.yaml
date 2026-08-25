@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e25463e0386fa601bf5fe2cc890c0d28be35fb2118cf3d7bf16b1051e9e3b09"
+generated_digest: "sha256:e9dfa64b5aac974d30f79ba9d35d794d0b75258fdf586def30c7d78d517fdcba"
 generated:
   name: ThumbnailStatus
   direction: outgoing
@@ -51,12 +51,12 @@ generated:
     partial: true
     types: []
     evidence: ev_e8f2459d2e36
-  - origin: arcturus
+  - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 0
     partial: true
     types: []
-    evidence: ev_7bb6ed744f76
+    evidence: ev_902d554a643d
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -80,10 +80,10 @@ generated:
     symbol: ThumbnailStatusMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7bb6ed744f76
+  - id: ev_902d554a643d
     kind: reference_composer
     authority: reference_emulator
-    origin: arcturus
+    origin: habbo-arcturus-daybreak
     source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/camera/ThumbnailStatusMessageComposer.java
     symbol: ThumbnailStatusMessageComposer
     line: 9
