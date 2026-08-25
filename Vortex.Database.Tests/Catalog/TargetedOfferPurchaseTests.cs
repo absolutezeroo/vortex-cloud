@@ -221,6 +221,7 @@ public sealed class TargetedOfferPurchaseTests
                 h.BuildGrainFactory(definition),
                 new TestDbContextFactory(h._options),
                 FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
+                new Commerce.NullCommerceJournal(),
                 NullLogger<PlayerTargetedOfferGrain>.Instance
             );
 
@@ -275,7 +276,16 @@ public sealed class TargetedOfferPurchaseTests
 
             IInventoryGrain inventory = FakeProxy.Create<IInventoryGrain>(call =>
             {
-                if (call.Method.Name == nameof(IInventoryGrain.GrantFurnitureDefinitionAsync))
+                // The grant asks for every copy in one call now — one commit rather than one per
+                // copy — so what lands here is a definition and a count.
+                if (call.Method.Name == nameof(IInventoryGrain.GrantFurnitureDefinitionCopiesAsync))
+                {
+                    for (int i = 0; i < (int)call.Args![2]!; i++)
+                    {
+                        Granted.Add((int)call.Args![0]!);
+                    }
+                }
+                else if (call.Method.Name == nameof(IInventoryGrain.GrantFurnitureDefinitionAsync))
                 {
                     Granted.Add((int)call.Args![0]!);
                 }

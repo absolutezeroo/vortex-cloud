@@ -115,6 +115,7 @@ internal sealed class CatalogPurchaseHarness
 
                 return Task.CompletedTask;
             }),
+            new Commerce.NullCommerceJournal(),
             NullLogger<CatalogPurchaseGrain>.Instance
         );
 

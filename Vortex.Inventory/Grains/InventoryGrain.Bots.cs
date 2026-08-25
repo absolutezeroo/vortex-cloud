@@ -51,26 +51,33 @@ public sealed partial class InventoryGrain
         }
     }
 
-    public async Task<BotSnapshot> CreateBotAsync(BotCreateRequest request, CancellationToken ct)
+    /// <summary>The row a bot grant produces, without committing it — see
+    /// <see cref="BuildPetEntity"/> for why the two are separate.</summary>
+    internal BotEntity BuildBotEntity(BotCreateRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
             throw new ArgumentException("Bot name is required.", nameof(request));
         }
 
+        return new BotEntity
+        {
+            OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
+            RoomEntityId = null,
+            Name = request.Name.Trim(),
+            Motto = request.Motto,
+            Figure = request.Figure,
+            Gender = request.Gender,
+        };
+    }
+
+    public async Task<BotSnapshot> CreateBotAsync(BotCreateRequest request, CancellationToken ct)
+    {
         VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
-            BotEntity entity = new()
-            {
-                OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
-                RoomEntityId = null,
-                Name = request.Name.Trim(),
-                Motto = request.Motto,
-                Figure = request.Figure,
-                Gender = request.Gender,
-            };
+            BotEntity entity = BuildBotEntity(request);
 
             dbCtx.Bots.Add(entity);
 

@@ -55,78 +55,64 @@ public sealed class CatalogGrantWindowTests
     }
 
     /// <summary>
-    /// WINDOW A1 — the largest one. The effect grant is the last step of the whole purchase, and its
-    /// own comment in <c>InventoryGrain.Furni.cs</c> says a throw there makes the purchase
-    /// auto-refund. By then the furniture, the badge and the pet are committed and will stay
-    /// committed: the refund undoes the payment and nothing undoes the delivery.
+    /// WINDOW A1, closed. The effect grant is the last step of the purchase and lives in another
+    /// grain. It used to throw straight through to the wallet's shared purchase primitive, which
+    /// refunded the whole price while the furniture, the badge and the pet stayed in the player's
+    /// inventory — a state the code documented without seeing, in a comment on the effect block
+    /// saying a throw there "auto-refunds".
     /// </summary>
     /// <remarks>
-    /// Flipped by PR-C4: the furniture, badge and pet rows join one commit, and the effect becomes a
-    /// journalled step that is retried rather than a reason to refund a delivered purchase.
+    /// The local families now commit together, and that commit is the pivot. Past it a failure is
+    /// logged and the purchase stands: the player keeps what they paid for, and the effect that did
+    /// not land is a known, recorded gap rather than a reason to reverse a delivered sale.
     /// </remarks>
     [Fact]
-    public async Task AnEffectThatFailsLast_KeepsTheGoodsAndRefundsThePrice()
+    public async Task AnEffectThatFailsLast_KeepsTheGoodsAndTheCharge()
     {
         using CommerceFaultHarness harness = new(MultiFamilyOffer())
         {
             Fails = CommerceFaultStep.EffectGrant,
         };
 
-        Func<Task> act = () => harness.BuyAsync(extraParam: "Rex");
+        await harness.BuyAsync(extraParam: "Rex");
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
-
-        // Committed and staying committed.
-        (await harness.FurnitureRowsAsync())
-            .Should()
-            .Be(1);
+        (await harness.FurnitureRowsAsync()).Should().Be(1);
         (await harness.BadgeRowsAsync()).Should().Be(1);
         (await harness.PetRowsAsync()).Should().Be(1);
 
-        // And paid back in full.
         harness
             .Refunds.Should()
-            .ContainSingle("the shared purchase primitive refunds the whole price on any throw");
+            .BeEmpty("there is no refund past the pivot; the goods are already the player's");
 
-        harness
-            .EffectsGranted.Should()
-            .BeEmpty("the step that failed is the one that delivered nothing");
+        harness.EffectsGranted.Should().BeEmpty("that step is the one that failed");
     }
 
     /// <summary>
-    /// WINDOW A1b — the same shape one step earlier. The pet row is committed by
-    /// <c>CreatePetAsync</c>; its presence notification is a separate call that can fail on its own,
-    /// and does so after the furniture, the badge and the pet are all durable.
+    /// WINDOW A1b, closed. The pet's presence notification runs after its row is committed, so it
+    /// used to be one more way to end up with goods and a refund.
     /// </summary>
-    /// <remarks>Flipped by PR-C4 for the same reason.</remarks>
     [Fact]
-    public async Task APetNotificationThatFails_KeepsThePetAndRefundsThePrice()
+    public async Task APetNotificationThatFails_KeepsThePetAndTheCharge()
     {
         using CommerceFaultHarness harness = new(MultiFamilyOffer())
         {
             Fails = CommerceFaultStep.PetNotification,
         };
 
-        Func<Task> act = () => harness.BuyAsync(extraParam: "Rex");
-
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await harness.BuyAsync(extraParam: "Rex");
 
         (await harness.FurnitureRowsAsync()).Should().Be(1);
         (await harness.BadgeRowsAsync()).Should().Be(1);
-        (await harness.PetRowsAsync())
-            .Should()
-            .Be(1, "CreatePetAsync commits the row before anyone is told about it");
-        harness.Refunds.Should().ContainSingle();
+        (await harness.PetRowsAsync()).Should().Be(1);
+        harness.Refunds.Should().BeEmpty();
     }
 
     /// <summary>
-    /// The bot row commits in <c>CreateBotAsync</c> and the composer that opens the inventory is
-    /// sent afterwards — a third commit boundary in the same grant, and a third way to end up with
-    /// goods and a refund.
+    /// The bot's composer, one commit boundary further along before the consolidation, and now on
+    /// the far side of the same single commit as everything else.
     /// </summary>
-    /// <remarks>Flipped by PR-C4.</remarks>
     [Fact]
-    public async Task ABotNotificationThatFails_KeepsTheBotAndRefundsThePrice()
+    public async Task ABotNotificationThatFails_KeepsTheBotAndTheCharge()
     {
         using CommerceFaultHarness harness = new([
             CatalogOffers.Product(1, ProductType.Floor),
@@ -140,13 +126,46 @@ public sealed class CatalogGrantWindowTests
             Fails = CommerceFaultStep.BotNotification,
         };
 
-        Func<Task> act = () => harness.BuyAsync();
-
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await harness.BuyAsync();
 
         (await harness.FurnitureRowsAsync()).Should().Be(1);
         (await harness.BotRowsAsync()).Should().Be(1);
-        harness.Refunds.Should().ContainSingle();
+        harness.Refunds.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// The point of the consolidation, stated directly: whatever fails after the local grant, the
+    /// player never ends up holding the goods and their money back. That state was reachable from
+    /// three different steps before.
+    /// </summary>
+    [Theory]
+    [InlineData(CommerceFaultStep.PetNotification)]
+    [InlineData(CommerceFaultStep.BotNotification)]
+    [InlineData(CommerceFaultStep.EffectGrant)]
+    public async Task NoFailurePastThePivot_ProducesGoodsAndARefund(CommerceFaultStep step)
+    {
+        using CommerceFaultHarness harness = new([
+            CatalogOffers.Product(1, ProductType.Floor),
+            CatalogOffers.Product(2, ProductType.Pet, extraParam: "1"),
+            CatalogOffers.Product(
+                3,
+                ProductType.Robot,
+                extraParam: "name:Robbie;figure:hd-180-1;gender:m"
+            ),
+            CatalogOffers.Product(
+                4,
+                ProductType.Effect,
+                extraParam: $"{CommerceFaultHarness.EFFECT_ID}:0:0"
+            ),
+        ])
+        {
+            Fails = step,
+        };
+
+        await harness.BuyAsync(extraParam: "Rex");
+
+        (await harness.FurnitureRowsAsync()).Should().Be(1);
+        harness.Refunds.Should().BeEmpty();
     }
 
     /// <summary>

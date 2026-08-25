@@ -10,6 +10,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -27,6 +28,7 @@ public sealed partial class CatalogPurchaseGrain(
     ICatalogService catalogService,
     IEventPublisher events,
     IRoomAdvertisementService roomAdvertisements,
+    ICommerceJournal journal,
     ILogger<CatalogPurchaseGrain> logger
 ) : Grain, ICatalogPurchaseGrain
 {
@@ -34,6 +36,7 @@ public sealed partial class CatalogPurchaseGrain(
     private readonly ICatalogService _catalogService = catalogService;
     private readonly IEventPublisher _events = events;
     private readonly IRoomAdvertisementService _roomAdvertisements = roomAdvertisements;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<CatalogPurchaseGrain> _logger = logger;
 
     public async Task<CatalogOfferSnapshot> PurchaseOfferFromCatalogAsync(
@@ -82,11 +85,38 @@ public sealed partial class CatalogPurchaseGrain(
             (int)this.GetPrimaryKeyLong()
         );
 
+        // Opened before anything durable happens, so a crash one instruction later still leaves a
+        // row saying what was owed to whom. Preflight is finished by this point: the offer resolved,
+        // the club gate passed, the price computed — nothing below fails for a reason that was
+        // knowable in advance.
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.CatalogPurchase,
+                (int)this.GetPrimaryKeyLong(),
+                $"catalog={catalogType} offer={offerId} quantity={quantity}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<CatalogOfferSnapshot> result = await wallet
             .ExecutePurchaseAsync(
                 debitRequests,
+                operation,
                 async innerCt =>
                 {
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     // Ordered least-to-most reversible: a failure tracking a stat is harmless to
                     // compensate, but a failure *after* the inventory grant would leave the item
                     // granted for free once the wallet refunds. See SEC-06.
@@ -98,9 +128,22 @@ public sealed partial class CatalogPurchaseGrain(
                             .ConfigureAwait(true);
                     }
 
+                    // The pivot is inside this call: the inventory grain commits every family the
+                    // offer carries in one transaction, and past that commit the goods are the
+                    // player's. Nothing after it refunds.
                     await _grainFactory
                         .GetInventoryGrain((int)this.GetPrimaryKeyLong())
                         .GrantCatalogOfferAsync(offer, extraParam, quantity, innerCt)
+                        .ConfigureAwait(true);
+
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Pivoted,
+                            CommerceStepKeys.LOCAL_GRANT,
+                            null,
+                            innerCt
+                        )
                         .ConfigureAwait(true);
 
                     return offer;
@@ -112,8 +155,22 @@ public sealed partial class CatalogPurchaseGrain(
 
         if (!result.Succeeded)
         {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             throw CreateInsufficientBalanceException(result.Failure);
         }
+
+        await _journal
+            .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
+            .ConfigureAwait(true);
 
         // Published after the purchase has fully succeeded and is out of the compensated scope: it
         // is a notification, not a purchase step, so a failing subscriber must never be able to

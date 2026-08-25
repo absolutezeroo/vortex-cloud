@@ -28,10 +28,11 @@ active_slices: []
 
 accepted_decisions:
   - ADR-000
+  - ADR-001
 
 open_questions:
   - OQ-1
-  - OQ-2
+  # OQ-2 resolved by ADR-001: the pivot is the local grant commit.
   - OQ-3
   - OQ-4
   - OQ-5
@@ -49,6 +50,8 @@ audits:
       - Vortex.Players/Grains/PlayerWalletGrain.cs
       - Vortex.Players/Grains/PlayerEffectGrain.cs
       - Vortex.Primitives/Players/Wallet/**
+      - Vortex.Primitives/Commerce/**
+      - Vortex.Database/Commerce/**
       - Vortex.Events/**
     status: valid
   wired:

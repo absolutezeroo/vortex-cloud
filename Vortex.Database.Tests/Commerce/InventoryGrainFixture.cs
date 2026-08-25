@@ -37,7 +37,7 @@ namespace Vortex.Database.Tests.Commerce;
 /// commits is invisible to it: "the buyer was refunded" reads the same whether nothing was delivered
 /// or four commits' worth of goods were.
 /// </summary>
-internal enum CommerceFaultStep
+public enum CommerceFaultStep
 {
     /// <summary>Nothing fails; the baseline every window is measured against.</summary>
     None,

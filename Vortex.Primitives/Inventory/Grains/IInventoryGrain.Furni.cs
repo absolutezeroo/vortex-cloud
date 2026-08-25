@@ -74,6 +74,23 @@ public partial interface IInventoryGrain
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Grants several copies of one definition in a single commit.
+    /// </summary>
+    /// <remarks>
+    /// Callers granting <c>n</c> copies used to call the single-copy grant <c>n</c> times, and every
+    /// one of those calls committed on its own. A failure on the third of five left two copies in the
+    /// inventory while the compensated scope around the loop refunded all five — the player kept two
+    /// pieces of furniture for nothing. One commit removes the partial state rather than compensating
+    /// for it.
+    /// </remarks>
+    public Task GrantFurnitureDefinitionCopiesAsync(
+        int definitionId,
+        string? extraData,
+        int copies,
+        CancellationToken ct
+    );
+
     /// <summary>Grants one item whose legacy stuff-data string is baked in at creation -- an
     /// inscribed trophy, a pre-set display. Wraps <paramref name="legacyData"/> in the extra-data
     /// blob shape the stuff-data factory reads back.</summary>

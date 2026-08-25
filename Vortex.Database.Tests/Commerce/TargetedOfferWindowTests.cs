@@ -9,12 +9,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Catalog.Grains;
+using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Tests.Support;
@@ -45,60 +47,44 @@ public sealed class TargetedOfferWindowTests : IDisposable
     public void Dispose() => _inventory.Dispose();
 
     /// <summary>
-    /// WINDOW A5 — three units bought, the third fails, the first two stay granted and the whole
-    /// price comes back. Two pieces of furniture for nothing.
+    /// WINDOW A5, closed. Three units used to be three commits, so a failure on the third left all
+    /// three committed and refunded the whole price — three pieces of furniture for nothing. Every
+    /// copy the offer promises now lands in one commit, and that commit is the pivot: the
+    /// notification that fails afterwards cannot take the purchase back with it.
     /// </summary>
     [Fact]
-    public async Task AUnitThatFailsMidLoop_LeavesTheEarlierUnitsGrantedAndRefundsEverything()
+    public async Task ANotificationThatFailsMidGrant_KeepsEveryUnitAndTheCharge()
     {
         _inventory.Fails = CommerceFaultStep.FurnitureNotification;
         _inventory.FailFurnitureNotificationAfter = 2;
 
         PlayerTargetedOfferGrain grain = BuildGrain(limit: 5, perOfferQuantity: 1);
 
-        Func<Task> act = () => grain.PurchaseAsync(OFFER_ID, 3, CancellationToken.None);
+        await grain.PurchaseAsync(OFFER_ID, 3, CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
-
-        (await _inventory.FurnitureRowsAsync())
-            .Should()
-            .Be(
-                3,
-                "each unit grant commits its row before anyone is told about it, so all three are "
-                    + "durable by the time the third notification throws"
-            );
-
-        _refunds
-            .Should()
-            .ContainSingle()
-            .Which.Amount.Should()
-            .Be(PRICE * 3, "the compensated scope refunds the whole purchase, not the failed unit");
+        (await _inventory.FurnitureRowsAsync()).Should().Be(3, "one commit, all three copies");
+        _refunds.Should().BeEmpty("there is no refund past the pivot");
+        (await PurchaseCountAsync()).Should().Be(3, "and the allowance was spent for them");
     }
 
     /// <summary>
-    /// WINDOW A5b — the counter that enforces the per-player limit is written after the grant
-    /// succeeds and outside the operation. A crash between the two loses the increment: the player
-    /// keeps the furniture and keeps their whole allowance.
+    /// WINDOW A5b, closed. The counter that enforces the per-player limit used to be a bare
+    /// increment after the fact, outside everything: a crash between the grant and it left the
+    /// player holding the furniture with their whole allowance intact. It is a step of the operation
+    /// now, and its receipt commits with it.
     /// </summary>
-    /// <remarks>
-    /// The crash is modelled by the grant throwing on the very last notification — the goods are
-    /// committed, the counter never runs. Flipped by PR-C4, where the counter becomes a journalled
-    /// step of the operation rather than an afterthought.
-    /// </remarks>
     [Fact]
-    public async Task AFailureAfterTheLastUnit_KeepsTheGoodsAndSpendsNoAllowance()
+    public async Task AFailureAfterTheGrant_KeepsTheGoodsAndSpendsTheAllowance()
     {
         _inventory.Fails = CommerceFaultStep.FurnitureNotification;
         _inventory.FailFurnitureNotificationAfter = 1;
 
         PlayerTargetedOfferGrain grain = BuildGrain(limit: 5, perOfferQuantity: 2);
 
-        Func<Task> act = () => grain.PurchaseAsync(OFFER_ID, 1, CancellationToken.None);
-
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await grain.PurchaseAsync(OFFER_ID, 1, CancellationToken.None);
 
         (await _inventory.FurnitureRowsAsync()).Should().Be(2, "both copies committed");
-        (await PurchaseCountAsync()).Should().Be(0, "IncrementPurchaseCountAsync never ran");
+        (await PurchaseCountAsync()).Should().Be(1, "and the allowance moved with them");
     }
 
     [Fact]
@@ -112,6 +98,23 @@ public sealed class TargetedOfferWindowTests : IDisposable
         (await PurchaseCountAsync()).Should().Be(3);
         _debits.Should().ContainSingle().Which.Amount.Should().Be(PRICE * 3);
         _refunds.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Two purchases of the same offer spend two units of allowance. The receipt is keyed by
+    /// operation, not by offer — deduplicating by offer would have meant a player could buy a
+    /// limited offer exactly once ever.
+    /// </summary>
+    [Fact]
+    public async Task TwoPurchasesOfTheSameOffer_EachSpendTheirAllowance()
+    {
+        PlayerTargetedOfferGrain grain = BuildGrain(limit: 5, perOfferQuantity: 1);
+
+        await grain.PurchaseAsync(OFFER_ID, 1, CancellationToken.None);
+        await grain.PurchaseAsync(OFFER_ID, 1, CancellationToken.None);
+
+        (await PurchaseCountAsync()).Should().Be(2);
+        (await _inventory.FurnitureRowsAsync()).Should().Be(2);
     }
 
     private async Task<int> PurchaseCountAsync()
@@ -158,6 +161,11 @@ public sealed class TargetedOfferWindowTests : IDisposable
             BuildGrainFactory(definition),
             _inventory.DbContextFactory,
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
+            new CommerceJournal(
+                _inventory.DbContextFactory,
+                FakeProxy.Create<IVortexMetrics>(_ => null),
+                NullLogger<CommerceJournal>.Instance
+            ),
             NullLogger<PlayerTargetedOfferGrain>.Instance
         );
 

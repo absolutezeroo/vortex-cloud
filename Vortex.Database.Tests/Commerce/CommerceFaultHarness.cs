@@ -85,6 +85,7 @@ internal sealed class CommerceFaultHarness : IDisposable
             new StubCatalogService(Offer),
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
             FakeProxy.Create<IRoomAdvertisementService>(_ => Task.CompletedTask),
+            new NullCommerceJournal(),
             NullLogger<CatalogPurchaseGrain>.Instance
         );
 

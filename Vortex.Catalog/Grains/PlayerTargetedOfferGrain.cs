@@ -10,8 +10,10 @@ using Orleans;
 using Vortex.Catalog.TargetedOffers;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
@@ -30,12 +32,14 @@ internal sealed class PlayerTargetedOfferGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
+    ICommerceJournal journal,
     ILogger<PlayerTargetedOfferGrain> logger
 ) : Grain, IPlayerTargetedOfferGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<PlayerTargetedOfferGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -80,13 +84,36 @@ internal sealed class PlayerTargetedOfferGrain(
 
         List<WalletDebitRequest> debits = BuildDebits(definition, units);
 
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.TargetedOffer,
+                PlayerId,
+                $"offer={offerId} identifier={definition.Identifier} units={units}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<bool> result = await _grainFactory
             .GetPlayerWalletGrain(PlayerId)
             .ExecutePurchaseAsync(
                 debits,
+                operation,
                 async innerCt =>
                 {
                     IInventoryGrain inventory = _grainFactory.GetInventoryGrain((long)PlayerId);
+
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
 
                     foreach (TargetedOfferProductSnapshot product in definition.Products)
                     {
@@ -95,13 +122,28 @@ internal sealed class PlayerTargetedOfferGrain(
                             continue;
                         }
 
-                        for (int i = 0; i < product.Quantity * units; i++)
-                        {
-                            await inventory
-                                .GrantFurnitureDefinitionAsync(definitionId, null, innerCt)
-                                .ConfigureAwait(true);
-                        }
+                        // One call, one commit, however many copies. Granting them one at a time
+                        // meant a failure on the third of five left two copies in the inventory and
+                        // refunded all five.
+                        await inventory
+                            .GrantFurnitureDefinitionCopiesAsync(
+                                definitionId,
+                                null,
+                                product.Quantity * units,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
                     }
+
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Pivoted,
+                            CommerceStepKeys.LOCAL_GRANT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
 
                     return true;
                 },
@@ -113,6 +155,16 @@ internal sealed class PlayerTargetedOfferGrain(
         // Couldn't afford it: the wallet auto-refunded any partial debit; echo the unchanged offer.
         if (!result.Succeeded)
         {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             return TargetedOfferMapper.ToWire(
                 definition,
                 purchaseCount,
@@ -121,7 +173,16 @@ internal sealed class PlayerTargetedOfferGrain(
             );
         }
 
-        int newCount = await IncrementPurchaseCountAsync(offerId, units, ct).ConfigureAwait(true);
+        // Past the pivot. The counter is what enforces the per-player limit, and it used to be a
+        // bare increment after the fact: a crash between the grant and it left the player holding
+        // the furniture with their whole allowance intact. It is a step of the operation now, and
+        // its receipt commits with it, so a replay cannot spend the allowance twice either.
+        int newCount = await IncrementPurchaseCountAsync(offerId, units, operation, ct)
+            .ConfigureAwait(true);
+
+        await _journal
+            .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
+            .ConfigureAwait(true);
 
         // Success path only: feeds the dashboard's targeted-offer purchase analytics via
         // TargetedOfferPurchasedAuditHandler (economy.targeted_offer_purchase). Non-transactional --
@@ -263,15 +324,37 @@ internal sealed class PlayerTargetedOfferGrain(
         return debits;
     }
 
+    /// <summary>
+    /// Spends <paramref name="units"/> of the player's allowance for this offer, once per operation.
+    /// </summary>
+    /// <remarks>
+    /// The receipt goes in the same commit as the increment. Split across two commits there is no
+    /// safe order — receipt first loses the increment to a crash, increment first spends the
+    /// allowance twice on the retry.
+    /// </remarks>
     private async Task<int> IncrementPurchaseCountAsync(
         int offerId,
         int units,
+        CommerceOperationId operation,
         CancellationToken ct
     )
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
+
+        if (!operation.IsNone)
+        {
+            dbCtx.CommerceReceipts.Add(
+                new CommerceReceiptEntity
+                {
+                    OperationId = operation.Value,
+                    StepKey = CommerceStepKeys.TARGETED_COUNT,
+                    Result = units.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    CreatedAt = DateTime.UtcNow,
+                }
+            );
+        }
 
         PlayerTargetedOfferEntity? row = await dbCtx
             .PlayerTargetedOffers.FirstOrDefaultAsync(
@@ -295,8 +378,41 @@ internal sealed class PlayerTargetedOfferGrain(
             row.PurchaseCount += units;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        try
+        {
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (DbUpdateException ex)
+        {
+            // The receipt was already there: this operation has spent its allowance once, and the
+            // count in the database is the answer.
+            _logger.LogInformation(
+                ex,
+                "Targeted offer {OfferId} allowance for player {PlayerId} was already spent by "
+                    + "operation {OperationId}.",
+                offerId,
+                PlayerId,
+                operation
+            );
+
+            return await ReadPurchaseCountAsync(offerId, ct).ConfigureAwait(true);
+        }
+
         return row.PurchaseCount;
+    }
+
+    private async Task<int> ReadPurchaseCountAsync(int offerId, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        return await dbCtx
+            .PlayerTargetedOffers.AsNoTracking()
+            .Where(p => p.PlayerEntityId == PlayerId && p.TargetedOfferEntityId == offerId)
+            .Select(p => p.PurchaseCount)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(true);
     }
 
     private async Task<TargetedOfferDefinitionSnapshot?> GetDefinitionAsync(

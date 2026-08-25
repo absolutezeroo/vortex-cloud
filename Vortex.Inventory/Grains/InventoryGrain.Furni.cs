@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Database.Entities.Pets;
 using Vortex.Database.Entities.Players;
+using Vortex.Database.Entities.Room;
 using Vortex.Furniture;
 using Vortex.Inventory.Furniture;
 using Vortex.Logging;
@@ -162,6 +165,8 @@ public sealed partial class InventoryGrain
         List<string> badgeCodes = new();
         List<PetCreateRequest> petRequests = new();
         List<BotCreateRequest> botRequests = new();
+        List<PetEntity> committedPets = [];
+        List<BotEntity> committedBots = [];
         List<(int EffectId, int SubType, int Duration)> effectGrants = new();
 
         // Guild furni is bought from the guild pages with the guild id in extraParam; the badge and
@@ -330,6 +335,23 @@ public sealed partial class InventoryGrain
                 grantedBadgeCodes.Add(badgeCode);
             }
 
+            // Pets and bots join the same transaction as the furniture and the badges. They used to
+            // be committed by CreatePetAsync and CreateBotAsync, one commit each, after this one had
+            // already gone through — so an offer carrying several families had four commit
+            // boundaries, and a failure at any of them left the earlier families delivered while the
+            // wallet refunded the whole price. They are rows written through the same context factory
+            // in the same grain: four commits was an artefact of how the code grew, not a constraint
+            // anything imposed.
+            committedPets = [.. petRequests.Select(BuildPetEntity)];
+            committedBots = [.. botRequests.Select(BuildBotEntity)];
+
+            dbCtx.Pets.AddRange(committedPets);
+            dbCtx.Bots.AddRange(committedBots);
+
+            // THE PIVOT. Everything the offer promised that this grain owns is durable after this
+            // line, and nothing past it may refund the purchase: the goods exist. What remains is
+            // cross-grain (avatar effects) or a notification, and both are retried rather than
+            // compensated.
             await dbCtx.SaveChangesAsync(ct);
 
             foreach (FurnitureEntity entity in furniEntities)
@@ -339,35 +361,50 @@ public sealed partial class InventoryGrain
                         entity.FurnitureDefinitionEntityId
                     ) ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
-                await AddFurnitureAsync(
-                    new FurnitureItem
-                    {
-                        ItemId = entity.Id,
-                        OwnerId = entity.PlayerEntityId,
-                        OwnerName = string.Empty,
-                        Definition = def,
-                        ExtraData = new ExtraData("{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData((int)StuffDataType.LegacyKey),
-                    },
-                    ct
-                );
-
-                await _events
-                    .PublishAsync(
-                        new ItemCreatedEvent(
-                            entity.Id,
-                            entity.PlayerEntityId,
-                            JsonSerializer.Serialize(
-                                new
-                                {
-                                    source = "catalog",
-                                    definitionId = entity.FurnitureDefinitionEntityId,
-                                }
-                            )
-                        ),
+                try
+                {
+                    await AddFurnitureAsync(
+                        new FurnitureItem
+                        {
+                            ItemId = entity.Id,
+                            OwnerId = entity.PlayerEntityId,
+                            OwnerName = string.Empty,
+                            Definition = def,
+                            ExtraData = new ExtraData("{}"),
+                            StuffData = _stuffDataFactory.CreateStuffData(
+                                (int)StuffDataType.LegacyKey
+                            ),
+                        },
                         ct
-                    )
-                    .ConfigureAwait(true);
+                    );
+
+                    await _events
+                        .PublishAsync(
+                            new ItemCreatedEvent(
+                                entity.Id,
+                                entity.PlayerEntityId,
+                                JsonSerializer.Serialize(
+                                    new
+                                    {
+                                        source = "catalog",
+                                        definitionId = entity.FurnitureDefinitionEntityId,
+                                    }
+                                )
+                            ),
+                            ct
+                        )
+                        .ConfigureAwait(true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Furniture {ItemId} was granted to player {PlayerId} but could not be "
+                            + "announced.",
+                        entity.Id,
+                        this.GetPrimaryKeyLong()
+                    );
+                }
             }
 
             IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
@@ -376,7 +413,20 @@ public sealed partial class InventoryGrain
 
             foreach (string badgeCode in grantedBadgeCodes)
             {
-                await presence.OnBadgeGrantedAsync(badgeCode, ct);
+                try
+                {
+                    await presence.OnBadgeGrantedAsync(badgeCode, ct);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Badge {BadgeCode} was granted to player {PlayerId} but could not be "
+                            + "announced.",
+                        badgeCode,
+                        this.GetPrimaryKeyLong()
+                    );
+                }
             }
         }
         finally
@@ -384,55 +434,117 @@ public sealed partial class InventoryGrain
             await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
 
-        if (petRequests.Count > 0)
+        // Past the pivot. Every step below either tells the player about something that is already
+        // theirs, or grants an effect in another grain — none of it is a reason to take the purchase
+        // back, and none of it runs under the request's cancellation token: the client hanging up is
+        // the single most common way this used to fail, and it was being read as "undo the sale".
+        await AnnounceGrantedFamiliesAsync(committedPets, committedBots, effectGrants);
+    }
+
+    /// <summary>
+    /// The post-pivot half of a catalog grant: the notifications for rows that are already committed,
+    /// and the avatar effects, which live in another grain.
+    /// </summary>
+    /// <remarks>
+    /// Failures here are logged and swallowed rather than thrown. Throwing would reach the wallet's
+    /// shared purchase primitive and refund a purchase whose goods are in the player's inventory —
+    /// the exact state this whole change exists to make impossible. A notification that never arrives
+    /// costs the player a refresh; a refund of delivered goods costs them the goods.
+    /// </remarks>
+    private async Task AnnounceGrantedFamiliesAsync(
+        List<PetEntity> pets,
+        List<BotEntity> bots,
+        List<(int EffectId, int SubType, int Duration)> effectGrants
+    )
+    {
+        // ponytail: CancellationToken.None rather than a host-shutdown token. The requirement is
+        // that the request's token cannot reach here; wiring IHostApplicationLifetime into every
+        // grain buys the ability to abandon these on a graceful shutdown, which is not obviously
+        // what you want for work already owed to a player.
+        CancellationToken ct = CancellationToken.None;
+
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+            this.GetPrimaryKeyLong()
+        );
+
+        foreach (PetEntity pet in pets)
         {
-            IPlayerPresenceGrain petPresence = _grainFactory.GetPlayerPresenceGrain(
-                this.GetPrimaryKeyLong()
-            );
-
-            foreach (PetCreateRequest req in petRequests)
+            try
             {
-                PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(true);
+                await _events
+                    .PublishAsync(
+                        new PetAdoptedEvent(
+                            (int)this.GetPrimaryKeyLong(),
+                            pet.Id,
+                            pet.Name,
+                            pet.Type
+                        ),
+                        ct
+                    )
+                    .ConfigureAwait(true);
 
-                await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(true);
+                await presence.OnPetAddedToInventoryAsync(ToSnapshot(pet), ct).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Pet {PetId} was granted to player {PlayerId} but could not be announced.",
+                    pet.Id,
+                    this.GetPrimaryKeyLong()
+                );
             }
         }
 
-        if (botRequests.Count > 0)
+        foreach (BotEntity bot in bots)
         {
-            IPlayerPresenceGrain botPresence = _grainFactory.GetPlayerPresenceGrain(
-                this.GetPrimaryKeyLong()
-            );
-
-            foreach (BotCreateRequest req in botRequests)
+            try
             {
-                BotSnapshot bot = await CreateBotAsync(req, ct).ConfigureAwait(true);
-
                 // Opens the inventory on top of adding the row: the player just bought this, so
                 // showing them where it went is the point.
-                await botPresence
+                await presence
                     .SendComposerAsync(
                         new BotAddedToInventoryEventMessageComposer
                         {
-                            Bot = bot,
+                            Bot = ToSnapshot(bot),
                             OpenInventory = true,
                         }
                     )
                     .ConfigureAwait(true);
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Bot {BotId} was granted to player {PlayerId} but could not be announced.",
+                    bot.Id,
+                    this.GetPrimaryKeyLong()
+                );
+            }
         }
 
-        if (effectGrants.Count > 0)
+        if (effectGrants.Count == 0)
         {
-            // The effect grain owns the player_effects table and pushes AvatarEffectAdded itself. A throw
-            // here propagates to the wallet's ExecutePurchaseAsync so the purchase auto-refunds.
-            IPlayerEffectGrain effects = _grainFactory.GetPlayerEffectGrain(
-                this.GetPrimaryKeyLong()
-            );
+            return;
+        }
 
-            foreach ((int effectId, int subType, int duration) in effectGrants)
+        // The effect grain owns player_effects and pushes AvatarEffectAdded itself.
+        IPlayerEffectGrain effects = _grainFactory.GetPlayerEffectGrain(this.GetPrimaryKeyLong());
+
+        foreach ((int effectId, int subType, int duration) in effectGrants)
+        {
+            try
             {
                 await effects.AddEffectAsync(effectId, subType, duration, ct).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Effect {EffectId} was bought by player {PlayerId} but could not be granted.",
+                    effectId,
+                    this.GetPrimaryKeyLong()
+                );
             }
         }
     }
@@ -587,9 +699,16 @@ public sealed partial class InventoryGrain
         }
     }
 
-    public async Task GrantFurnitureDefinitionAsync(
+    public Task GrantFurnitureDefinitionAsync(
         int definitionId,
         string? extraData,
+        CancellationToken ct
+    ) => GrantFurnitureDefinitionCopiesAsync(definitionId, extraData, 1, ct);
+
+    public async Task GrantFurnitureDefinitionCopiesAsync(
+        int definitionId,
+        string? extraData,
+        int copies,
         CancellationToken ct
     )
     {
@@ -597,43 +716,78 @@ public sealed partial class InventoryGrain
             _furnitureDefinitionProvider.TryGetDefinition(definitionId)
             ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
-        FurnitureEntity entity = new()
+        if (copies <= 0)
         {
-            PlayerEntityId = (int)this.GetPrimaryKeyLong(),
-            FurnitureDefinitionEntityId = def.Id,
-            ExtraData = extraData,
-        };
+            return;
+        }
+
+        List<FurnitureEntity> entities =
+        [
+            .. Enumerable
+                .Range(0, copies)
+                .Select(_ => new FurnitureEntity
+                {
+                    PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                    FurnitureDefinitionEntityId = def.Id,
+                    ExtraData = extraData,
+                }),
+        ];
 
         VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
-            dbCtx.Add(entity);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+            dbCtx.AddRange(entities);
 
-            await AddFurnitureAsync(
-                    new FurnitureItem
-                    {
-                        ItemId = entity.Id,
-                        OwnerId = entity.PlayerEntityId,
-                        OwnerName = string.Empty,
-                        Definition = def,
-                        ExtraData = new ExtraData(extraData ?? "{}"),
-                        // Built from the stored blob, exactly like InventoryFurnitureLoader does on
-                        // login: a blank legacy default would drop whatever the grant baked in (a
-                        // guild badge, a trophy inscription) until the player next reconnected.
-                        StuffData = _stuffDataFactory.CreateStuffDataFromJson(
-                            def.StuffDataType,
-                            extraData
-                        ),
-                    },
-                    ct
-                )
-                .ConfigureAwait(true);
+            // One commit for every copy. Whatever happens next, the player either has all of them or
+            // none, and there is no in-between for a compensation to have to reason about.
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
         finally
         {
             await dbCtx.DisposeAsync().ConfigureAwait(true);
+        }
+
+        // Past the commit: cache and client notification for rows that are already the player's.
+        // A throw here used to travel back to the wallet's shared purchase primitive and refund a
+        // purchase whose furniture was in the database — the caller would have been told the grant
+        // failed when what actually failed was telling the player about it. The inventory list is
+        // rebuilt from the database on the next reload, so the cost of a lost notification is a
+        // refresh; the cost of the refund was the furniture.
+        foreach (FurnitureEntity entity in entities)
+        {
+            try
+            {
+                await AddFurnitureAsync(
+                        new FurnitureItem
+                        {
+                            ItemId = entity.Id,
+                            OwnerId = entity.PlayerEntityId,
+                            OwnerName = string.Empty,
+                            Definition = def,
+                            ExtraData = new ExtraData(extraData ?? "{}"),
+                            // Built from the stored blob, exactly like InventoryFurnitureLoader does
+                            // on login: a blank legacy default would drop whatever the grant baked in
+                            // (a guild badge, a trophy inscription) until the player reconnected.
+                            StuffData = _stuffDataFactory.CreateStuffDataFromJson(
+                                def.StuffDataType,
+                                extraData
+                            ),
+                        },
+                        ct
+                    )
+                    .ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Furniture {ItemId} was granted to player {PlayerId} but could not be added to "
+                        + "the live inventory.",
+                    entity.Id,
+                    this.GetPrimaryKeyLong()
+                );
+            }
         }
     }
 

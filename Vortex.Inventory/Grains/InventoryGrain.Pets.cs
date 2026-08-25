@@ -18,37 +18,49 @@ namespace Vortex.Inventory.Grains;
 
 public sealed partial class InventoryGrain
 {
-    public async Task<PetSnapshot> CreatePetAsync(PetCreateRequest request, CancellationToken ct)
+    /// <summary>
+    /// The row a pet grant produces, without committing it. A catalog offer can carry furniture, a
+    /// badge, a pet and a bot at once, and every one of those used to be its own commit — so a
+    /// failure partway through left the earlier families delivered and the whole purchase refunded.
+    /// Building the entity separately from committing it is what lets them all share one
+    /// transaction.
+    /// </summary>
+    internal PetEntity BuildPetEntity(PetCreateRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
             throw new ArgumentException("Pet name is required.", nameof(request));
         }
 
+        return new PetEntity
+        {
+            OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
+            RoomEntityId = null,
+            Name = request.Name.Trim(),
+            Type = request.Type,
+            Race = request.Race,
+            Color = request.Color,
+            Gender = request.Gender,
+            Level = 1,
+            Experience = 0,
+            Energy = request.Energy,
+            Nutrition = request.Nutrition,
+            Respect = 0,
+            X = 0,
+            Y = 0,
+            Z = 0,
+            Direction = (int)Rotation.South,
+            OwnerPlayerEntity = null!,
+        };
+    }
+
+    public async Task<PetSnapshot> CreatePetAsync(PetCreateRequest request, CancellationToken ct)
+    {
         VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
-            PetEntity entity = new()
-            {
-                OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
-                RoomEntityId = null,
-                Name = request.Name.Trim(),
-                Type = request.Type,
-                Race = request.Race,
-                Color = request.Color,
-                Gender = request.Gender,
-                Level = 1,
-                Experience = 0,
-                Energy = request.Energy,
-                Nutrition = request.Nutrition,
-                Respect = 0,
-                X = 0,
-                Y = 0,
-                Z = 0,
-                Direction = (int)Rotation.South,
-                OwnerPlayerEntity = null!,
-            };
+            PetEntity entity = BuildPetEntity(request);
 
             dbCtx.Pets.Add(entity);
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
