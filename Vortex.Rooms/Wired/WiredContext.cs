@@ -6,16 +6,21 @@ using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Wired;
-using Vortex.Rooms.Grains;
+using Vortex.Rooms.Wired.Engine;
 
 namespace Vortex.Rooms.Wired;
 
-public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
+internal abstract class WiredContext(IWiredRoomHost host) : IWiredContext
 {
     // Not exposed on IWiredContext. Wired boxes run inside the room's own activation, so handing
-    // them the room grain would be handing them the whole room through a back door; everything they
+    // them the room would be handing them the whole room through a back door; everything they
     // legitimately need is a method on this context.
-    protected RoomGrain _roomGrain = roomGrain;
+    //
+    // The host rather than the grain: this base only ever reads the room, and reading it through the
+    // view is what lets the engine above be built without a grain at all.
+    protected readonly IWiredRoomHost _host = host;
+
+    private IWiredRoomView Room => _host.View;
 
     public IWiredPolicy Policy { get; init; } = new WiredPolicy();
     public IWiredSelectionSet Selected { get; init; } = new WiredSelectionSet();
@@ -69,7 +74,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                             {
                                 foreach (int id in stuffIds)
                                 {
-                                    if (!_roomGrain._state.ItemsById.ContainsKey(id))
+                                    if (!Room.HasItem(id))
                                     {
                                         continue;
                                     }
@@ -84,7 +89,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                             {
                                 foreach (int id in stuffIds2)
                                 {
-                                    if (!_roomGrain._state.ItemsById.ContainsKey(id))
+                                    if (!Room.HasItem(id))
                                     {
                                         continue;
                                     }
@@ -99,7 +104,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                         break;
                     case WiredFurniSourceType.AllRoomItems:
                         {
-                            foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+                            foreach (IRoomItem item in Room.AllItems())
                             {
                                 set.SelectedFurniIds.Add((int)item.ObjectId);
                             }

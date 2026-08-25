@@ -32,10 +32,21 @@ namespace Vortex.Rooms.Grains.Systems;
 
 public sealed partial class RoomWiredSystem : IRoomEventListener
 {
+    /// <summary>The room's own engine, over the grain that owns it.</summary>
     public RoomWiredSystem(RoomGrain roomGrain)
+        : this(new RoomGrainWiredHost(roomGrain)) { }
+
+    /// <summary>
+    /// The engine over anything that can answer for a room.
+    /// </summary>
+    /// <remarks>
+    /// This is the constructor the whole extraction was for. Every component below reads the room
+    /// through the host, so a test can supply one that is not a grain — which is what the parity
+    /// matrix needs, and what was impossible while the engine held a RoomGrain field.
+    /// </remarks>
+    internal RoomWiredSystem(IWiredRoomHost host)
     {
-        _roomGrain = roomGrain;
-        _host = new RoomGrainWiredHost(roomGrain);
+        _host = host;
         _triggers = new WiredTriggerIndex(_host.View, _host.Diagnostics);
         _stacks = new WiredStackResolver(_host.View, _host.Diagnostics);
 
@@ -52,11 +63,8 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
 
     private readonly Queue<RoomEvent> _eventQueue = new();
 
-    private readonly RoomGrain _roomGrain;
-
     // Everything the engine needs from the room, and nothing else. It used to reach into the grain's
-    // fields; going through the host is what will let the pipeline be tested without building most
-    // of a room (the leaves have always been testable, the orchestrator never was).
+    // fields, which meant the only way to run the pipeline was to build most of a room.
     private readonly IWiredRoomHost _host;
 
     private IWiredRoomView Room => _host.View;
@@ -319,7 +327,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             return;
         }
 
-        WiredProcessingContext ctx = new(_roomGrain)
+        WiredProcessingContext ctx = new(_host)
         {
             Event = evt,
             Stack = stack,
@@ -518,7 +526,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
 
             try
             {
-                WiredExecutionContext ctx = new(_roomGrain)
+                WiredExecutionContext ctx = new(_host)
                 {
                     Addons = pending.Stack.Addons,
                     Policy = pending.Policy,
@@ -789,7 +797,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             return false;
         }
 
-        WiredProcessingContext ctx = new(_roomGrain)
+        WiredProcessingContext ctx = new(_host)
         {
             // No trigger and no triggering event: this pile ran because another one said so.
             Event = new WiredStackCalledEvent

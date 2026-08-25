@@ -35,6 +35,9 @@ internal interface IWiredRoomHost
 
     IWiredDiagnostics Diagnostics { get; }
 
+    /// <summary>What a wired effect is allowed to do to the room.</summary>
+    IWiredRoomActions Actions { get; }
+
     /// <summary>
     /// The variables the room itself exposes to wired boxes — the clock, the population, the
     /// scoreboards — rebuilt each time because they are computed from live state rather than stored.

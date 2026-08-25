@@ -1,11 +1,20 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Bots;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Primitives.Rooms.Object.Furniture.Wall;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Grains;
@@ -27,13 +36,16 @@ namespace Vortex.Rooms.Wired.Engine;
 internal sealed class RoomGrainWiredHost(RoomGrain roomGrain)
     : IWiredRoomHost,
         IWiredRoomView,
-        IWiredDiagnostics
+        IWiredDiagnostics,
+        IWiredRoomActions
 {
     private readonly RoomGrain _roomGrain = roomGrain;
 
     public IWiredRoomView View => this;
 
     public IWiredDiagnostics Diagnostics => this;
+
+    public IWiredRoomActions Actions => this;
 
     public IReadOnlyList<IWiredVariable> InternalVariables() =>
         [.. _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain)];
@@ -126,6 +138,69 @@ internal sealed class RoomGrainWiredHost(RoomGrain roomGrain)
 
     public void WriteRoomLog(RoomWiredLogEntry entry) =>
         _roomGrain._wiredLogChannel.TryWrite(entry);
+
+    public bool InBounds(int tileIdx) => _roomGrain.MapModule.InBounds(tileIdx);
+
+    public (int X, int Y) GetTileXY(int tileIdx) => _roomGrain.MapModule.GetTileXY(tileIdx);
+
+    public Altitude TileHeight(int tileIdx) => _roomGrain._state.TileHeights[tileIdx];
+
+    public bool MoveFloorItem(IRoomFloorItem item, int tileIdx, Altitude? z, Rotation? rotation) =>
+        _roomGrain.MapModule.MoveFloorItem(item, tileIdx, z, rotation);
+
+    public bool MoveWallItem(
+        IRoomWallItem item,
+        int x,
+        int y,
+        Altitude z,
+        Rotation rotation,
+        int wallOffset
+    ) => _roomGrain.MapModule.MoveWallItem(item, x, y, z, rotation, wallOffset);
+
+    public bool RollAvatar(IRoomAvatar avatar, int tileIdx, Altitude z) =>
+        _roomGrain.MapModule.RollAvatar(avatar, tileIdx, z);
+
+    public void CancelWalk(IRoomAvatar avatar) => _roomGrain.AvatarModule.CancelWalk(avatar);
+
+    public Task WalkAvatarToAsync(IRoomAvatar avatar, int x, int y, CancellationToken ct) =>
+        _roomGrain.AvatarModule.WalkAvatarToAsync(avatar, x, y, ct);
+
+    public bool TryGetAvatar(PlayerId playerId, [NotNullWhen(true)] out IRoomAvatar? avatar)
+    {
+        avatar = null;
+
+        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+    }
+
+    public Task<BotSnapshot?> FindBotByNameAsync(string botName, CancellationToken ct) =>
+        _roomGrain.BotSystem.FindBotByNameAsync(botName, ct);
+
+    public Task BotSayAsync(
+        int botId,
+        string text,
+        WiredBotChatType chatType,
+        PlayerId? whisperTo,
+        CancellationToken ct
+    ) => _roomGrain.BotSystem.SayAsync(botId, text, chatType, whisperTo, ct);
+
+    public Task BotTeleportAsync(int botId, int x, int y, CancellationToken ct) =>
+        _roomGrain.BotSystem.TeleportAsync(botId, x, y, ct);
+
+    public Task BotWalkToAsync(int botId, int x, int y, CancellationToken ct) =>
+        _roomGrain.BotSystem.WalkToAsync(botId, x, y, ct);
+
+    public Task BotSetFollowTargetAsync(int botId, PlayerId? target, CancellationToken ct) =>
+        _roomGrain.BotSystem.SetFollowTargetAsync(botId, target, ct);
+
+    public Task BotSetFigureAsync(int botId, string figure, CancellationToken ct) =>
+        _roomGrain.BotSystem.SetFigureAsync(botId, figure, ct);
+
+    public Task SendComposerToRoomAsync(IComposer composer) =>
+        _roomGrain.SendComposerToRoomAsync(composer);
+
+    public bool GiveHandItem(PlayerId playerId, int handItemId) =>
+        _roomGrain.HandItemModule.Give(playerId, handItemId);
 
     public void RecordError(string errorName, string category, long nowMs)
     {

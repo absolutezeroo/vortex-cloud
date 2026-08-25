@@ -1,13 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Vortex.Primitives.Bots;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Primitives.Rooms.Object.Furniture.Wall;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Wired.Engine;
@@ -28,6 +38,7 @@ internal sealed class FakeWiredRoomHost
     : IWiredRoomHost,
         IWiredRoomView,
         IWiredDiagnostics,
+        IWiredRoomActions,
         IWiredLimits
 {
     private readonly Dictionary<RoomObjectId, IRoomItem> _items = [];
@@ -36,6 +47,8 @@ internal sealed class FakeWiredRoomHost
     public IWiredRoomView View => this;
 
     public IWiredDiagnostics Diagnostics => this;
+
+    public IWiredRoomActions Actions => this;
 
     public List<IWiredVariable> Internal { get; } = [];
 
@@ -115,6 +128,125 @@ internal sealed class FakeWiredRoomHost
 
     public void RecordError(string errorName, string category, long nowMs) =>
         Errors.Add((errorName, category));
+
+    // --- what an effect did to the room --------------------------------------------------------
+    //
+    // Recorded rather than performed. An effect's whole observable behaviour is the calls it makes
+    // here, so a test asserts on these lists instead of trying to read a room that does not exist.
+
+    public List<(RoomObjectId Item, int TileIdx)> FloorItemMoves { get; } = [];
+
+    public List<(RoomObjectId Item, int X, int Y)> WallItemMoves { get; } = [];
+
+    /// <summary>Keyed by room object id: an avatar's identity inside the room is its object id.</summary>
+    public List<(int ObjectId, int TileIdx)> AvatarRolls { get; } = [];
+
+    public List<int> WalksCancelled { get; } = [];
+
+    public List<(int ObjectId, int X, int Y)> AvatarWalks { get; } = [];
+
+    public List<(int BotId, string What)> BotCommands { get; } = [];
+
+    public List<IComposer> RoomComposers { get; } = [];
+
+    public List<(int PlayerId, int HandItemId)> HandItemsGiven { get; } = [];
+
+    /// <summary>Bots the room knows about, by name. Anything else is "somebody picked it up".</summary>
+    public Dictionary<string, BotSnapshot> Bots { get; } = [];
+
+    /// <summary>Avatars in the room, by player id.</summary>
+    public Dictionary<int, IRoomAvatar> Avatars { get; } = [];
+
+    /// <summary>The room is TileCount tiles laid out ten to a row, matching ToIdx.</summary>
+    public bool InBounds(int tileIdx) => tileIdx >= 0 && tileIdx < TileCount;
+
+    public (int X, int Y) GetTileXY(int tileIdx) => (tileIdx % 10, tileIdx / 10);
+
+    public Altitude TileHeight(int tileIdx) => Altitude.FromInt(0);
+
+    public bool MoveFloorItem(IRoomFloorItem item, int tileIdx, Altitude? z, Rotation? rotation)
+    {
+        FloorItemMoves.Add((item.ObjectId, tileIdx));
+
+        return true;
+    }
+
+    public bool MoveWallItem(
+        IRoomWallItem item,
+        int x,
+        int y,
+        Altitude z,
+        Rotation rotation,
+        int wallOffset
+    )
+    {
+        WallItemMoves.Add((item.ObjectId, x, y));
+
+        return true;
+    }
+
+    public bool RollAvatar(IRoomAvatar avatar, int tileIdx, Altitude z)
+    {
+        AvatarRolls.Add((avatar.ObjectId.Value, tileIdx));
+
+        return true;
+    }
+
+    public void CancelWalk(IRoomAvatar avatar) => WalksCancelled.Add(avatar.ObjectId.Value);
+
+    public Task WalkAvatarToAsync(IRoomAvatar avatar, int x, int y, CancellationToken ct)
+    {
+        AvatarWalks.Add((avatar.ObjectId.Value, x, y));
+
+        return Task.CompletedTask;
+    }
+
+    public bool TryGetAvatar(PlayerId playerId, [NotNullWhen(true)] out IRoomAvatar? avatar) =>
+        Avatars.TryGetValue(playerId.Value, out avatar);
+
+    public Task<BotSnapshot?> FindBotByNameAsync(string botName, CancellationToken ct) =>
+        Task.FromResult(Bots.TryGetValue(botName, out BotSnapshot? bot) ? bot : null);
+
+    public Task BotSayAsync(
+        int botId,
+        string text,
+        WiredBotChatType chatType,
+        PlayerId? whisperTo,
+        CancellationToken ct
+    ) => Record(botId, $"say:{text}");
+
+    public Task BotTeleportAsync(int botId, int x, int y, CancellationToken ct) =>
+        Record(botId, $"teleport:{x},{y}");
+
+    public Task BotWalkToAsync(int botId, int x, int y, CancellationToken ct) =>
+        Record(botId, $"walk:{x},{y}");
+
+    public Task BotSetFollowTargetAsync(int botId, PlayerId? target, CancellationToken ct) =>
+        Record(botId, $"follow:{target?.Value.ToString(CultureInfo.InvariantCulture) ?? "none"}");
+
+    public Task BotSetFigureAsync(int botId, string figure, CancellationToken ct) =>
+        Record(botId, $"figure:{figure}");
+
+    public Task SendComposerToRoomAsync(IComposer composer)
+    {
+        RoomComposers.Add(composer);
+
+        return Task.CompletedTask;
+    }
+
+    public bool GiveHandItem(PlayerId playerId, int handItemId)
+    {
+        HandItemsGiven.Add((playerId.Value, handItemId));
+
+        return true;
+    }
+
+    private Task Record(int botId, string what)
+    {
+        BotCommands.Add((botId, what));
+
+        return Task.CompletedTask;
+    }
 
     // --- the wired limits the boxes read -------------------------------------------------------
 

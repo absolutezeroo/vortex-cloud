@@ -17,14 +17,20 @@ using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Furniture.Wall;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Wired;
-using Vortex.Rooms.Grains;
+using Vortex.Rooms.Wired.Engine;
 
 namespace Vortex.Rooms.Wired;
 
-public sealed class WiredExecutionContext(RoomGrain roomGrain)
-    : WiredContext(roomGrain),
+internal sealed class WiredExecutionContext(IWiredRoomHost host)
+    : WiredContext(host),
         IWiredExecutionContext
 {
+    private IWiredRoomActions Actions => _host.Actions;
+
+    private IWiredRoomView Room => _host.View;
+
+    private IWiredDiagnostics Diagnostics => _host.Diagnostics;
+
     public List<IWiredAddon> Addons { get; init; } = [];
 
     public List<WiredUserMovementSnapshot> UserMoves { get; } = [];
@@ -57,7 +63,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            Diagnostics.Logger.LogWarning(
                 ex,
                 "Failed to process wired state update ({State}) for item {ItemId}.",
                 state,
@@ -85,7 +91,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
             Altitude finalZ = z ?? floorItem.Z;
             Rotation finalRot = rot ?? floorItem.Rotation;
 
-            if (_roomGrain.MapModule.MoveFloorItem(floorItem, tileIdx, z, rot))
+            if (Actions.MoveFloorItem(floorItem, tileIdx, z, rot))
             {
                 FloorItemMoves.Add(
                     new()
@@ -108,7 +114,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            Diagnostics.Logger.LogWarning(
                 ex,
                 "Failed to process wired floor-item movement for item {ItemId} to tile {TileIdx}.",
                 floorItem.ObjectId,
@@ -143,7 +149,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 wallItem.WallOffset
             );
 
-            if (_roomGrain.MapModule.MoveWallItem(wallItem, x, y, z, rot, wallOffset))
+            if (Actions.MoveWallItem(wallItem, x, y, z, rot, wallOffset))
             {
                 WallItemMoves.Add(
                     new()
@@ -168,7 +174,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            Diagnostics.Logger.LogWarning(
                 ex,
                 "Failed to process wired wall-item movement for item {ItemId} to ({X}, {Y}).",
                 wallItem.ObjectId,
@@ -187,7 +193,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         WiredWalkMode walkMode = WiredWalkMode.KeepIfCloser
     )
     {
-        if (avatar is null || !_roomGrain.MapModule.InBounds(tileIdx))
+        if (avatar is null || !Actions.InBounds(tileIdx))
         {
             return;
         }
@@ -195,20 +201,20 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         try
         {
             (int sourceX, int sourceY, Altitude sourceZ) = (avatar.X, avatar.Y, avatar.Z);
-            Altitude targetZ = _roomGrain._state.TileHeights[tileIdx];
+            Altitude targetZ = Actions.TileHeight(tileIdx);
 
             // Capture the walk before clearing it: "keep walking" means resuming towards the same goal
             // from wherever the user lands, not replaying a path that was routed from the tile they are
             // being moved off.
             bool wasWalking = avatar.IsWalking;
             int goalTileId = avatar.GoalTileId;
-            int sourceTileIdx = _roomGrain.MapModule.ToIdx(sourceX, sourceY);
+            int sourceTileIdx = Room.ToIdx(sourceX, sourceY);
 
             // The queued path is stale the moment the avatar is relocated — the walk tick steps through
             // TilePath, so leaving it in place walks the user straight back towards where they started.
-            _roomGrain.AvatarModule.CancelWalk(avatar);
+            Actions.CancelWalk(avatar);
 
-            if (_roomGrain.MapModule.RollAvatar(avatar, tileIdx, targetZ))
+            if (Actions.RollAvatar(avatar, tileIdx, targetZ))
             {
                 // Face the direction moved (unless it was an in-place move).
                 Rotation facing =
@@ -249,7 +255,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            Diagnostics.Logger.LogWarning(
                 ex,
                 "Failed to process wired user movement for avatar {ObjectId} to tile {TileIdx}.",
                 avatar.ObjectId,
@@ -290,9 +296,9 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
             return;
         }
 
-        (int goalX, int goalY) = _roomGrain.MapModule.GetTileXY(goalTileId);
+        (int goalX, int goalY) = Actions.GetTileXY(goalTileId);
 
-        await _roomGrain.AvatarModule.WalkAvatarToAsync(
+        await Actions.WalkAvatarToAsync(
             avatar,
             goalX,
             goalY,
@@ -304,8 +310,8 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     /// as a straight step and the step count is the Chebyshev distance.</summary>
     private int StepsBetween(int fromTileIdx, int toTileIdx)
     {
-        (int fromX, int fromY) = _roomGrain.MapModule.GetTileXY(fromTileIdx);
-        (int toX, int toY) = _roomGrain.MapModule.GetTileXY(toTileIdx);
+        (int fromX, int fromY) = Actions.GetTileXY(fromTileIdx);
+        (int toX, int toY) = Actions.GetTileXY(toTileIdx);
 
         return Math.Max(Math.Abs(toX - fromX), Math.Abs(toY - fromY));
     }
@@ -336,10 +342,10 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         return Task.CompletedTask;
     }
 
-    public ActionContext AsActionContext() => ActionContext.CreateForWired(_roomGrain.RoomId);
+    public ActionContext AsActionContext() => ActionContext.CreateForWired(Room.RoomId);
 
     public Task SendComposerToRoomAsync(IComposer composer) =>
-        _roomGrain.SendComposerToRoomAsync(composer);
+        Actions.SendComposerToRoomAsync(composer);
 
     /// <summary>
     /// Makes the named bot speak. Named rather than addressed by id because that is how the client's
@@ -355,32 +361,25 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         WithBotAsync(
             botName,
             "speak",
-            bot =>
-                _roomGrain.BotSystem.SayAsync(
-                    bot.BotId,
-                    text,
-                    chatType,
-                    whisperTo,
-                    CancellationToken.None
-                )
+            bot => Actions.BotSayAsync(bot.BotId, text, chatType, whisperTo, CancellationToken.None)
         );
 
     public Task<bool> ProcessBotMovementAsync(string botName, int tileIdx, bool instant)
     {
-        if (!_roomGrain.MapModule.InBounds(tileIdx))
+        if (!Actions.InBounds(tileIdx))
         {
             return Task.FromResult(false);
         }
 
-        (int x, int y) = _roomGrain.MapModule.GetTileXY(tileIdx);
+        (int x, int y) = Actions.GetTileXY(tileIdx);
 
         return WithBotAsync(
             botName,
             "move",
             bot =>
                 instant
-                    ? _roomGrain.BotSystem.TeleportAsync(bot.BotId, x, y, CancellationToken.None)
-                    : _roomGrain.BotSystem.WalkToAsync(bot.BotId, x, y, CancellationToken.None)
+                    ? Actions.BotTeleportAsync(bot.BotId, x, y, CancellationToken.None)
+                    : Actions.BotWalkToAsync(bot.BotId, x, y, CancellationToken.None)
         );
     }
 
@@ -388,23 +387,19 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         WithBotAsync(
             botName,
             "follow",
-            bot =>
-                _roomGrain.BotSystem.SetFollowTargetAsync(bot.BotId, target, CancellationToken.None)
+            bot => Actions.BotSetFollowTargetAsync(bot.BotId, target, CancellationToken.None)
         );
 
     public Task<bool> ProcessBotFigureAsync(string botName, string figure) =>
         WithBotAsync(
             botName,
             "change look",
-            bot => _roomGrain.BotSystem.SetFigureAsync(bot.BotId, figure, CancellationToken.None)
+            bot => Actions.BotSetFigureAsync(bot.BotId, figure, CancellationToken.None)
         );
 
     public Task<bool> ProcessBotWalkToPlayerAsync(string botName, PlayerId target)
     {
-        if (
-            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(target, out RoomObjectId objectId)
-            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
-        )
+        if (!Actions.TryGetAvatar(target, out IRoomAvatar? avatar))
         {
             return Task.FromResult(false);
         }
@@ -412,18 +407,12 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         return WithBotAsync(
             botName,
             "walk over",
-            bot =>
-                _roomGrain.BotSystem.WalkToAsync(
-                    bot.BotId,
-                    avatar.X,
-                    avatar.Y,
-                    CancellationToken.None
-                )
+            bot => Actions.BotWalkToAsync(bot.BotId, avatar.X, avatar.Y, CancellationToken.None)
         );
     }
 
     public Task<bool> ProcessGiveHandItemAsync(PlayerId playerId, int handItemId) =>
-        Task.FromResult(_roomGrain.HandItemModule.Give(playerId, handItemId));
+        Task.FromResult(Actions.GiveHandItem(playerId, handItemId));
 
     /// <summary>
     /// Runs something against the bot going by a name. A stack naming a bot that is not here is
@@ -434,8 +423,8 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     {
         try
         {
-            BotSnapshot? bot = await _roomGrain
-                .BotSystem.FindBotByNameAsync(botName, CancellationToken.None)
+            BotSnapshot? bot = await Actions
+                .FindBotByNameAsync(botName, CancellationToken.None)
                 .ConfigureAwait(true);
 
             if (bot is null)
@@ -449,12 +438,12 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            Diagnostics.Logger.LogWarning(
                 ex,
                 "Failed to make bot {BotName} {What} in room {RoomId}.",
                 botName,
                 what,
-                _roomGrain.RoomId
+                Room.RoomId
             );
 
             return false;
