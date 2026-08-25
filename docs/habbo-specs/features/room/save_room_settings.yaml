@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e2b3eeb2287f613efb6c782a8048351065a8aa0913c68b402e41588d468d52d3"
+generated_digest: "sha256:ef503d56136d92a3f877580715c39ff8de8edc8d16bc747b8657c3613172ead2"
 generated:
   id: room.save_room_settings
   domain: room
@@ -229,15 +229,8 @@ generated:
   - room.save_room_settings.guard_4
   - room.save_room_settings.success
   conflicts:
-  - cf_0f23edb02a
-  - cf_107ec5eae7
   - cf_39e86c0767
-  - cf_5d74573cc4
-  - cf_6073daa6f3
-  - cf_6b916ccc25
-  - cf_879d3db714
-  - cf_cdf96f79f4
-  - cf_ec3fb4a17c
+  - cf_796fcaa1f8
   unknowns:
   - uk_2d1de12d7b
   - uk_f369fbd598

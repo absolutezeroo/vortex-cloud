@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4f1b57e81d82503fb5b3b596dc718f7b21eb1c8cbae2c530967f14097a8fe501"
+generated_digest: "sha256:3fb8b4b24d66de398418450a6b695103dbce839977ce9399ef2353a2a4bd8f1b"
 generated:
   name: HabboClubExtendOffer
   direction: outgoing
@@ -19,41 +19,41 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: original_price_per_month
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     note: read by _SafeCls_3494
     evidence:
     - ev_86ea39755596
-    - ev_e6fc799a8f56
   - index: 1
-    name: original_activity_point_price_per_month
+    name: unknown_1
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     note: read by _SafeCls_3494
     evidence:
     - ev_86ea39755596
-    - ev_e6fc799a8f56
   - index: 2
-    name: original_activity_point_type
+    name: unknown_2
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     note: read by _SafeCls_3494
     evidence:
     - ev_86ea39755596
-    - ev_e6fc799a8f56
   - index: 3
-    name: subscription_days_left
+    name: unknown_3
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     note: read by _SafeCls_3494
     evidence:
     - ev_86ea39755596
-    - ev_e6fc799a8f56
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -83,9 +83,10 @@ generated:
     evidence: ev_531cf67746ff
   - origin: vortex
     authority: vortex_emulator
-    field_count: 4
+    field_count: 5
     partial: false
     types:
+    - block
     - int32
     - int32
     - int32
@@ -123,5 +124,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Catalog/HabboClubExtendOfferMessageComposerSerializer.cs
     symbol: HabboClubExtendOfferMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_8412d6ae53
+  unknowns:
+  - uk_4a6d37f5a1
 verified: {}
 manual: {}

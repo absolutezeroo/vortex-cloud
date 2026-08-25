@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5d4ee37425c827918b581d28a7e45be696fa99fc690e90e74391bd85ce36a7cc"
+generated_digest: "sha256:6aada1fdc2d1fb6a963742d9f0a1e712ab2ddd48874c29b8a515be28766d0365"
 generated:
   name: NftClaims
   direction: outgoing
@@ -112,13 +112,94 @@ generated:
       evidence:
       - ev_712455e122fa
     - index: 11
+      name: collectible_serialization
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+      fields:
+      - index: 0
+        name: product_type_id
+        type: short
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_712455e122fa
+      - index: 1
+        name: item_type_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_712455e122fa
+      - index: 2
+        name: score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_712455e122fa
+      - index: 3
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_712455e122fa
+        fields:
+        - index: 0
+          name: pet_figure_string
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_712455e122fa
+        - index: 1
+          name: length
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_712455e122fa
+        - index: 2
+          name: figure_set_ids
+          type: array
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: "source comment: repeated block; the element count is the int written immediately before it"
+          evidence:
+          - ev_712455e122fa
+          fields:
+          - index: 0
+            name: figure_set_id
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_712455e122fa
+        - index: 3
+          name: product_code
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_712455e122fa
+        - index: 4
+          name: rarity
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_712455e122fa
+    - index: 12
       name: set_id
       type: string
       name_confidence: implementation_observed
       type_confidence: implementation_observed
       evidence:
       - ev_712455e122fa
-    - index: 12
+    - index: 13
       name: default_collection_name
       type: string
       name_confidence: implementation_observed

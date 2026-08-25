@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6239eececa4a85ae9a43a241a3eee421eb20a0a8a4a1439306e47d21b5082032"
+generated_digest: "sha256:320d29d48bf94a8b802f98712e7f899cfe58660a9cae61efffdd5b64e3c88eaa"
 generated:
   name: DailyTasksActiveList
   direction: outgoing
@@ -25,6 +25,137 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_a7950726e735
+  - index: 1
+    name: tasks
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_a7950726e735
+    fields:
+    - index: 0
+      name: daily_task_writer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_a7950726e735
+      fields:
+      - index: 0
+        name: task_id
+        type: long
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 1
+        name: task_code
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 2
+        name: quest_type_code
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 3
+        name: is_bonus
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 4
+        name: image_version
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 5
+        name: catalog_name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 6
+        name: required_repeats
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 7
+        name: repeats
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 8
+        name: status
+        type: byte
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 9
+        name: seconds_left
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 10
+        name: length
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_a7950726e735
+      - index: 11
+        name: rewards
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_a7950726e735
+        fields:
+        - index: 0
+          name: product_item_type_id
+          type: short
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_a7950726e735
+        - index: 1
+          name: reward_type_id
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_a7950726e735
+        - index: 2
+          name: extra_params
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_a7950726e735
+        - index: 3
+          name: amount
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_a7950726e735
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -46,10 +177,11 @@ generated:
     evidence: ev_c8b07fadc2ce
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - int32
+    - array
     evidence: ev_a7950726e735
   evidence:
   - id: ev_c8b07fadc2ce

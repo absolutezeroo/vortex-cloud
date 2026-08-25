@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:02165e21965fdd845d7d3081fbcf307af8c55435ebaf1c64623bdf5bda76f4eb"
+generated_digest: "sha256:4fb014cd3218efc5bb3a02188401a90bfbfb5da8e20796d92baf2d344fad0693"
 generated:
   name: SeasonalQuests
   direction: outgoing
@@ -227,10 +227,11 @@ generated:
     evidence: ev_b3a23591be44
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - int32
+    - array
     evidence: ev_26bf286de008
   evidence:
   - id: ev_1b956c51eb38
@@ -264,8 +265,6 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/SeasonalQuestsMessageComposerSerializer.cs
     symbol: SeasonalQuestsMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_1b4488f49a
   unknowns:
   - uk_4cc923d976
 verified: {}

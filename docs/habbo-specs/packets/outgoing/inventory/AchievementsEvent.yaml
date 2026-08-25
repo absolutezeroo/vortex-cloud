@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:efbb5986916d031b22ed3710220f0cd0d0673674888df9a6b0f351361ba9f3e1"
+generated_digest: "sha256:74bdc3e410614e724d729b3cf1c52588a94aa8314628e6b758118adc0061e914"
 generated:
   name: AchievementsEvent
   direction: outgoing
@@ -26,6 +26,121 @@ generated:
     evidence:
     - ev_bf07c24f9afd
   - index: 1
+    name: achievements
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_bf07c24f9afd
+    fields:
+    - index: 0
+      name: achievement_data_writer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_bf07c24f9afd
+      fields:
+      - index: 0
+        name: achievement_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 1
+        name: level
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 2
+        name: badge_code
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 3
+        name: score_at_start_of_level
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 4
+        name: level_max_score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 5
+        name: level_reward_amount
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 6
+        name: level_reward_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 7
+        name: current_progress
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 8
+        name: final_level
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 9
+        name: category
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 10
+        name: sub_category
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 11
+        name: level_count
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 12
+        name: display_method
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+      - index: 13
+        name: state
+        type: short
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bf07c24f9afd
+  - index: 2
     name: default_category
     type: string
     name_confidence: implementation_observed
@@ -41,10 +156,11 @@ generated:
     evidence: ev_063d57a9dbff
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
     - int32
+    - array
     - string
     evidence: ev_bf07c24f9afd
   evidence:

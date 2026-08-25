@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:291141114de75d99724046cdc38453e5114eb9d483137af857da83755c7e0b4b"
+generated_digest: "sha256:53c324dfdcf7926e3f29c6c499d20b597b934b4a0ff558dcc0d79952f44138aa"
 generated:
   name: QuestDaily
   direction: outgoing
@@ -249,10 +249,11 @@ generated:
     evidence: ev_5d81d6cc18dd
   - origin: vortex
     authority: vortex_emulator
-    field_count: 3
+    field_count: 4
     partial: false
     types:
     - boolean
+    - block
     - int32
     - int32
     evidence: ev_1c49a30b60db

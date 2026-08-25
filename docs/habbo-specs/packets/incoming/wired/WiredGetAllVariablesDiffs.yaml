@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:135f4a66d84adacc98760ac4ff34ed2443e2a76f9f778e79b2b54fcd42e58986"
+generated_digest: "sha256:b96e4b046335c6cc23828460b7191a93eaf399ddd22abbeb7576ffd6cd8ca35a"
 generated:
   name: WiredGetAllVariablesDiffs
   direction: incoming
@@ -37,9 +37,10 @@ generated:
     - ev_3102272a785d
     fields:
     - index: 0
-      name: wired_variable_id
-      type: block
-      name_confidence: implementation_observed
+      name: unknown_0
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
       type_confidence: implementation_observed
       evidence:
       - ev_3102272a785d

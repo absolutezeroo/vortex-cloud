@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3cc20d5236a63e89c175e8cf253f4246ca35dadd2900bdbeec95896a31cda70b"
+generated_digest: "sha256:34ba6959d7774f24ccde09aef8a00207db3cad92d4cefe555fa9ff199df639d8"
 generated:
   id: cf_4a819f001e
   kind: field_count
@@ -23,7 +23,7 @@ generated:
     evidence: ev_fc26c4939d32
   - origin: vortex
     authority: vortex_emulator
-    claim: "2 fields: short, int32"
+    claim: "3 fields: short, int32, block"
     evidence: ev_01baface9fa1
   evidence:
   - id: ev_fc26c4939d32

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:95c304ef54444d45135ccef13c265e94b9cf16af9b1373ae2682c34db177ab2b"
+generated_digest: "sha256:4f15f7ab218ee5df7fb23d91d01354c2f03515998fe224386960bf93f99ca018"
 generated:
   name: BotAddedToInventoryEvent
   direction: outgoing
@@ -19,6 +19,50 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
+    name: bot_serialization
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_1da96d855244
+    fields:
+    - index: 0
+      name: bot_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1da96d855244
+    - index: 1
+      name: name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1da96d855244
+    - index: 2
+      name: motto
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1da96d855244
+    - index: 3
+      name: unknown_3
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1da96d855244
+    - index: 4
+      name: figure
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1da96d855244
+  - index: 1
     name: open_inventory
     type: boolean
     name_confidence: implementation_observed
@@ -34,9 +78,10 @@ generated:
     evidence: ev_3c02dd429f9b
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
+    - block
     - boolean
     evidence: ev_1da96d855244
   evidence:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f583b47a1e7b7ad548c952e5ccf40ec66693a7230e5f39aeac1db33d758dcd56"
+generated_digest: "sha256:dff9dce638ca62364cff7aead2494846f05f7039f3561358fa2611832a922f7f"
 generated:
   name: SaveRoomSettings
   direction: incoming
@@ -280,7 +280,7 @@ generated:
     evidence: ev_2e941e540e15
   - origin: vortex
     authority: vortex_emulator
-    field_count: 24
+    field_count: 25
     partial: false
     types:
     - int32
@@ -290,6 +290,7 @@ generated:
     - string
     - int32
     - int32
+    - block
     - int32
     - boolean
     - boolean
@@ -341,14 +342,7 @@ generated:
     symbol: SaveRoomSettingsMessageParser
     line: 11
   conflicts:
-  - cf_879d3db714
-  - cf_0f23edb02a
-  - cf_6b916ccc25
-  - cf_6073daa6f3
-  - cf_ec3fb4a17c
-  - cf_cdf96f79f4
-  - cf_107ec5eae7
-  - cf_5d74573cc4
+  - cf_796fcaa1f8
   - cf_39e86c0767
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6bb4eed11d4449b0e4befddf12a32412610e198f4317e28242ac8dee868ab183"
+generated_digest: "sha256:5ed838d85f04fe369d2ba6e9439715abbc8c3e9d620726a4fbe939f014adbf45"
 generated:
   name: PollContentsEvent
   direction: outgoing
@@ -56,12 +56,197 @@ generated:
     - ev_68e33fc067b0
     fields:
     - index: 0
+      name: poll_question_writer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_68e33fc067b0
+      fields:
+      - index: 0
+        name: id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 1
+        name: sort_order
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 2
+        name: question_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 3
+        name: question_text
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 4
+        name: question_category
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 5
+        name: question_answer_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 6
+        name: unknown_6
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+      - index: 7
+        name: choices
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_68e33fc067b0
+        fields:
+        - index: 0
+          name: value
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 1
+          name: choice_text
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 2
+          name: choice_type
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+    - index: 1
       name: length
       type: int32
       name_confidence: implementation_observed
       type_confidence: implementation_observed
       evidence:
       - ev_68e33fc067b0
+    - index: 2
+      name: children
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_68e33fc067b0
+      fields:
+      - index: 0
+        name: poll_question_writer
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_68e33fc067b0
+        fields:
+        - index: 0
+          name: id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 1
+          name: sort_order
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 2
+          name: question_type
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 3
+          name: question_text
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 4
+          name: question_category
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 5
+          name: question_answer_type
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 6
+          name: unknown_6
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          evidence:
+          - ev_68e33fc067b0
+        - index: 7
+          name: choices
+          type: array
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: "source comment: repeated block; the element count is the int written immediately before it"
+          evidence:
+          - ev_68e33fc067b0
+          fields:
+          - index: 0
+            name: value
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_68e33fc067b0
+          - index: 1
+            name: choice_text
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_68e33fc067b0
+          - index: 2
+            name: choice_type
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_68e33fc067b0
   - index: 5
     name: nps_poll
     type: boolean

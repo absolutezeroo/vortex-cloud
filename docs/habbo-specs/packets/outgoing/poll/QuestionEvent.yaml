@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3fe7e208b1bbcf35e79d44865543cf3a029ed8663cdc1aabd4cc01d180a6b0e5"
+generated_digest: "sha256:94071b40b5cb748be1dc49cfa9166362959b8e7fa18a30f87c73d143f94d72bb"
 generated:
   name: QuestionEvent
   direction: outgoing
@@ -46,6 +46,94 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_6dcb3fd1c460
+  - index: 4
+    name: poll_question_writer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_6dcb3fd1c460
+    fields:
+    - index: 0
+      name: id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 1
+      name: sort_order
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 2
+      name: question_type
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 3
+      name: question_text
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 4
+      name: question_category
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 5
+      name: question_answer_type
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 6
+      name: unknown_6
+      type: int32
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      evidence:
+      - ev_6dcb3fd1c460
+    - index: 7
+      name: choices
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_6dcb3fd1c460
+      fields:
+      - index: 0
+        name: value
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_6dcb3fd1c460
+      - index: 1
+        name: choice_text
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_6dcb3fd1c460
+      - index: 2
+        name: choice_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_6dcb3fd1c460
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -55,13 +143,14 @@ generated:
     evidence: ev_95708764394d
   - origin: vortex
     authority: vortex_emulator
-    field_count: 4
+    field_count: 5
     partial: false
     types:
     - string
     - int32
     - int32
     - int32
+    - block
     evidence: ev_6dcb3fd1c460
   evidence:
   - id: ev_95708764394d

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bb8c0a7100bba9ca5a007b06e8b24a0d096a58c4b76307125b8d5b0f12e41c0b"
+generated_digest: "sha256:c858c42aea68ea63102c1578908cd86273a112b0da77098bc79cbb1b4af6fda4"
 generated:
   name: WiredTransactionDetails
   direction: outgoing
@@ -42,6 +42,110 @@ generated:
       evidence:
       - ev_bb765a7fd20d
   - index: 2
+    name: wired_transaction_details_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_bb765a7fd20d
+    fields:
+    - index: 0
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_bb765a7fd20d
+    - index: 1
+      name: items
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_bb765a7fd20d
+      fields:
+      - index: 0
+        name: is_wall_item
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 1
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 2
+        name: legacy_poster_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 3
+        name: count
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+  - index: 3
+    name: wired_transaction_details_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_bb765a7fd20d
+    fields:
+    - index: 0
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_bb765a7fd20d
+    - index: 1
+      name: items
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_bb765a7fd20d
+      fields:
+      - index: 0
+        name: is_wall_item
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 1
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 2
+        name: legacy_poster_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+      - index: 3
+        name: count
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_bb765a7fd20d
+  - index: 4
     name: is_incomplete_data
     type: boolean
     name_confidence: implementation_observed
@@ -64,11 +168,13 @@ generated:
     evidence: ev_d2f45e914f03
   - origin: vortex
     authority: vortex_emulator
-    field_count: 3
+    field_count: 5
     partial: false
     types:
     - int32
     - array
+    - block
+    - block
     - boolean
     evidence: ev_bb765a7fd20d
   evidence:

@@ -10,14 +10,176 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3f593983497b26a5af52640c0382a988e8eea7c8ec5bc84a865bf29c450fbd9b"
+generated_digest: "sha256:153682d739c35285d40f83eafd3ad3c47446f5caecbf70959327afd52e859fbb"
 generated:
   name: PurchaseOK
   direction: outgoing
   domain: catalog
   structure_confidence: implementation_observed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: catalog_offer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_4d73713de604
+    fields:
+    - index: 0
+      name: id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 1
+      name: localization_id
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 2
+      name: rentable
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 3
+      name: cost_credits
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 4
+      name: cost_currency
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 5
+      name: unknown_5
+      type: int32
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 6
+      name: can_gift
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 7
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 8
+      name: products
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_4d73713de604
+      fields:
+      - index: 0
+        name: catalog_product
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_4d73713de604
+        fields:
+        - index: 0
+          name: product_type
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_4d73713de604
+        - index: 1
+          name: sprite_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_4d73713de604
+        - index: 2
+          name: unknown_2
+          type: string
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_4d73713de604
+        - index: 3
+          name: quantity
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_4d73713de604
+        - index: 4
+          name: unknown_4
+          type: boolean
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_4d73713de604
+        - index: 5
+          name: unique_size
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.UniqueSize > 0
+          evidence:
+          - ev_4d73713de604
+        - index: 6
+          name: unique_remaining
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.UniqueSize > 0
+          evidence:
+          - ev_4d73713de604
+        - index: 7
+          name: unknown_7
+          type: string
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_4d73713de604
+    - index: 9
+      name: club_level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
+    - index: 10
+      name: can_bundle
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_4d73713de604
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -64,9 +226,10 @@ generated:
     evidence: ev_b24b54818669
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - block
     evidence: ev_4d73713de604
   evidence:
   - id: ev_594e82115846

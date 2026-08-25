@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f19defba69034a0cf0a8f7ad47081924c1507793910c974345545bd3b47efab9"
+generated_digest: "sha256:7fe6de6ab4211f036bc3459c84a21c09f82f12aa2da655ec7e8a658d57cad79d"
 generated:
   name: MarketPlaceOwnOffersEvent
   direction: outgoing
@@ -32,6 +32,117 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_85636bf12027
+  - index: 2
+    name: offers
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_85636bf12027
+    fields:
+    - index: 0
+      name: marketplace_offer_writer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_85636bf12027
+      fields:
+      - index: 0
+        name: offer_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 1
+        name: status
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 2
+        name: furniture_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 3
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_85636bf12027
+      - index: 4
+        name: unknown_4
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant 0; only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_85636bf12027
+      - index: 5
+        name: unknown_5
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_85636bf12027
+      - index: 6
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_85636bf12027
+      - index: 7
+        name: unknown_7
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_85636bf12027
+      - index: 8
+        name: price
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 9
+        name: unknown_9
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 10
+        name: avg_price
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_85636bf12027
+      - index: 11
+        name: offer_count
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when includeOfferCount
+        evidence:
+        - ev_85636bf12027
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -41,11 +152,12 @@ generated:
     evidence: ev_b0f00a0a35b3
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
     - int32
     - int32
+    - array
     evidence: ev_85636bf12027
   evidence:
   - id: ev_b0f00a0a35b3

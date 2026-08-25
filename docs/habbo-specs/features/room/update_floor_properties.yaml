@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:65cae2adc1e89011ae475f73256bec9729b2b0cf86682a5d68533dccaa0c62a5"
+generated_digest: "sha256:266ac064e1ed67cb9031c9aa673a12837ce5c54df4cfbdd0cec2791b9c32ec1f"
 generated:
   id: room.update_floor_properties
   domain: room
@@ -45,7 +45,12 @@ generated:
   scenarios:
   - room.update_floor_properties.success
   conflicts:
-  - cf_1578c16192
+  - cf_00baab209e
+  - cf_05b9fcf081
+  - cf_0b0859a6b6
+  - cf_8ccff07741
+  - cf_9dcb5e945e
+  - cf_ad21980f20
   unknowns:
   - uk_2abc01c4da
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:df7bead68ad3965753e4550841434e73a5df509503247f06f936aa8e6ca5b44c"
+generated_digest: "sha256:d8d22a81cc8a7534f36b629103b674dd05a81de2a9e0a4309824eff145b5a039"
 generated:
   name: IssueInfo
   direction: outgoing
@@ -213,9 +213,10 @@ generated:
     evidence: ev_3dcfc33f48ef
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - block
     evidence: ev_acfb8778f998
   evidence:
   - id: ev_4082ff299d9a
@@ -249,6 +250,8 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Moderation/IssueInfoMessageComposerSerializer.cs
     symbol: IssueInfoMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_6cf157e20d
   unknowns:
   - uk_74def3737a
 verified: {}

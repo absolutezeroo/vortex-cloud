@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:59336bcd39fb3a17b457e497db1793392f1ca1d860097db49007b09f50210736"
+generated_digest: "sha256:d2fb855e2a460cc89d3776d6f588aac33a1ed57c5b92b4745e2121ad7b8c3d41"
 generated:
   id: uk_03abd92f5f
   subject: "outgoing/ConfirmBreedingRequestEvent: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ConfirmBreedingRequestEvent
   known_evidence:

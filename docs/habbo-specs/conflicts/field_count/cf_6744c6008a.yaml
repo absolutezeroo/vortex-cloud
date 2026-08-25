@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d27155e9e0aea09ba6c1c805d65b7323c905719f81b4fadce911d86892668ba2"
+generated_digest: "sha256:d3e148eae57d02ad47728ede58fae4678219101ad5c0e4469b686d513028d690"
 generated:
   id: cf_6744c6008a
   kind: field_count
@@ -27,7 +27,7 @@ generated:
     evidence: ev_db60c5909a06
   - origin: vortex
     authority: vortex_emulator
-    claim: "1 fields: boolean"
+    claim: "2 fields: block, boolean"
     evidence: ev_61ff731bdae1
   evidence:
   - id: ev_db60c5909a06

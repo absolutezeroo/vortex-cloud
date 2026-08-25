@@ -10,14 +10,137 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2af49327ef3fa39b2177a1ec91c83883c0b5b223d1cdb1b65c9e87efc53d93de"
+generated_digest: "sha256:b5b664762131c2fe5828af24f90b91d755f4653f720e84e5e1382884a049bbfc"
 generated:
   name: RoomChatlogEvent
   direction: outgoing
   domain: moderation
   structure_confidence: implementation_observed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: chatlog_serialization
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_dd73bc2fb566
+    fields:
+    - index: 0
+      name: record_type_room
+      type: byte
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 1
+      name: unknown_1
+      type: short
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      note: written as the constant 2
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 2
+      name: unknown_2
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      note: written as the constant roomId
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 3
+      name: context_value_type_int
+      type: byte
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 4
+      name: room_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 5
+      name: unknown_5
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      note: written as the constant roomName
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 6
+      name: context_value_type_string
+      type: byte
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 7
+      name: room_name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 8
+      name: length
+      type: short
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_dd73bc2fb566
+    - index: 9
+      name: records
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_dd73bc2fb566
+      fields:
+      - index: 0
+        name: time_stamp_utc
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_dd73bc2fb566
+      - index: 1
+        name: chatter_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_dd73bc2fb566
+      - index: 2
+        name: chatter_name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_dd73bc2fb566
+      - index: 3
+        name: message
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_dd73bc2fb566
+      - index: 4
+        name: unknown_4
+        type: boolean
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant false
+        evidence:
+        - ev_dd73bc2fb566
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -27,9 +150,10 @@ generated:
     evidence: ev_62a6dfb6ebef
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - block
     evidence: ev_dd73bc2fb566
   evidence:
   - id: ev_62a6dfb6ebef

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fc889bd37349f28dcb53559004cb7986ac2fa62a3e0e281bc0bd90ac8eae134e"
+generated_digest: "sha256:96347a2249997261d540e1ce193586b0983cf639107cda3a0dc38a11584d308a"
 generated:
   name: Quests
   direction: outgoing
@@ -245,10 +245,11 @@ generated:
     evidence: ev_b566948c955e
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
     - int32
+    - array
     - boolean
     evidence: ev_65c0d67896bf
   evidence:
@@ -291,8 +292,6 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/QuestsMessageComposerSerializer.cs
     symbol: QuestsMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_49c6357b24
   unknowns:
   - uk_871cfc2e64
 verified: {}

@@ -10,14 +10,690 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ac4954550c2002fd69b18deb4f89a8a6d5ce3d095845b49c41a170ab9a4260c5"
+generated_digest: "sha256:bfc3f8ab25096cc30b88bf5aee344167af2ece2855b532f2a8876b774c6b203f"
 generated:
   name: TradingItemListEvent
   direction: outgoing
   domain: inventory
   structure_confidence: implementation_observed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: trading_item_list_event_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_f1c973b4b2c8
+    fields:
+    - index: 0
+      name: user_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 1
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 2
+      name: items
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_f1c973b4b2c8
+      fields:
+      - index: 0
+        name: trade_item
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f1c973b4b2c8
+        fields:
+        - index: 0
+          name: item_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 1
+          name: type
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 2
+          name: unknown_2
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 3
+          name: sprite_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 4
+          name: furni_category
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 5
+          name: can_group
+          type: boolean
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 6
+          name: stuff_data
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+          fields:
+          - index: 0
+            name: stuff_bitmask
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 1
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 2
+            name: score_type
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 3
+            name: clear_type
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 4
+            name: count
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 5
+            name: scores
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: key
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+            - index: 1
+              name: length
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+            - index: 2
+              name: value
+              type: array
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: "source comment: repeated block; the element count is the int written immediately before it"
+              evidence:
+              - ev_f1c973b4b2c8
+              fields:
+              - index: 0
+                name: name
+                type: string
+                name_confidence: implementation_observed
+                type_confidence: implementation_observed
+                evidence:
+                - ev_f1c973b4b2c8
+          - index: 6
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 7
+            name: hits
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 8
+            name: target
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 9
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 10
+            name: count
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 11
+            name: key
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 12
+            name: value
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 13
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 14
+            name: data
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: value
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+          - index: 15
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 16
+            name: data
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: value
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+          - index: 17
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 18
+            name: result
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 19
+            name: unique_number
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 20
+            name: unique_series
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
+            evidence:
+            - ev_f1c973b4b2c8
+        - index: 7
+          name: unknown_7
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 8
+          name: unknown_8
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 9
+          name: unknown_9
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 10
+          name: extra
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when type == ProductType.Floor
+          evidence:
+          - ev_f1c973b4b2c8
+    - index: 3
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 4
+      name: credits
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+  - index: 1
+    name: trading_item_list_event_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_f1c973b4b2c8
+    fields:
+    - index: 0
+      name: user_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 1
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 2
+      name: items
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_f1c973b4b2c8
+      fields:
+      - index: 0
+        name: trade_item
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f1c973b4b2c8
+        fields:
+        - index: 0
+          name: item_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 1
+          name: type
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 2
+          name: unknown_2
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 3
+          name: sprite_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 4
+          name: furni_category
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 5
+          name: can_group
+          type: boolean
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 6
+          name: stuff_data
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_f1c973b4b2c8
+          fields:
+          - index: 0
+            name: stuff_bitmask
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 1
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 2
+            name: score_type
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 3
+            name: clear_type
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 4
+            name: count
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 5
+            name: scores
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: key
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+            - index: 1
+              name: length
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+            - index: 2
+              name: value
+              type: array
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: "source comment: repeated block; the element count is the int written immediately before it"
+              evidence:
+              - ev_f1c973b4b2c8
+              fields:
+              - index: 0
+                name: name
+                type: string
+                name_confidence: implementation_observed
+                type_confidence: implementation_observed
+                evidence:
+                - ev_f1c973b4b2c8
+          - index: 6
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 7
+            name: hits
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 8
+            name: target
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 9
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 10
+            name: count
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 11
+            name: key
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 12
+            name: value
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 13
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 14
+            name: data
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: value
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+          - index: 15
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 16
+            name: data
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_f1c973b4b2c8
+            fields:
+            - index: 0
+              name: value
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_f1c973b4b2c8
+          - index: 17
+            name: data
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 18
+            name: result
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 19
+            name: unique_number
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
+            evidence:
+            - ev_f1c973b4b2c8
+          - index: 20
+            name: unique_series
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
+            evidence:
+            - ev_f1c973b4b2c8
+        - index: 7
+          name: unknown_7
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 8
+          name: unknown_8
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 9
+          name: unknown_9
+          type: int32
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant 0
+          evidence:
+          - ev_f1c973b4b2c8
+        - index: 10
+          name: extra
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when type == ProductType.Floor
+          evidence:
+          - ev_f1c973b4b2c8
+    - index: 3
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
+    - index: 4
+      name: credits
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f1c973b4b2c8
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -27,9 +703,11 @@ generated:
     evidence: ev_7197f6988fe1
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 2
     partial: false
-    types: []
+    types:
+    - block
+    - block
     evidence: ev_f1c973b4b2c8
   evidence:
   - id: ev_7197f6988fe1

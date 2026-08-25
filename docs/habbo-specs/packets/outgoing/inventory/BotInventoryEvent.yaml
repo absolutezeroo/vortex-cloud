@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dc847943bbf37dd76a9e9474685df8076ce8414ee5eebd40992442e6181aca00"
+generated_digest: "sha256:c879cdc17b351bdb448135d38c293802ba075136c1e2829e6b9b8e6238596178"
 generated:
   name: BotInventoryEvent
   direction: outgoing
@@ -25,6 +25,59 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_f96b9945bfe4
+  - index: 1
+    name: bots
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_f96b9945bfe4
+    fields:
+    - index: 0
+      name: bot_serialization
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_f96b9945bfe4
+      fields:
+      - index: 0
+        name: bot_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f96b9945bfe4
+      - index: 1
+        name: name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f96b9945bfe4
+      - index: 2
+        name: motto
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f96b9945bfe4
+      - index: 3
+        name: unknown_3
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f96b9945bfe4
+      - index: 4
+        name: figure
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_f96b9945bfe4
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -34,10 +87,11 @@ generated:
     evidence: ev_e613e20ad33b
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - int32
+    - array
     evidence: ev_f96b9945bfe4
   evidence:
   - id: ev_e613e20ad33b

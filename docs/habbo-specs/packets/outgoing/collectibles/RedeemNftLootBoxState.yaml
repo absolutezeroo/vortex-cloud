@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6f94e4dff36991b30adc2f9b629033d60b66045d2144804d8deea4746ebb2cca"
+generated_digest: "sha256:ff796d6462efbcbb4a4f229a53c866de7013a88760f7db1695bdbe9bd387201f"
 generated:
   name: RedeemNftLootBoxState
   direction: outgoing
@@ -19,13 +19,13 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: state
     type: short
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 1
     name: opener_avatar_id
     type: int32
@@ -34,77 +34,77 @@ generated:
     evidence:
     - ev_fc26c4939d32
   - index: 2
-    name: unknown_2
+    name: product_type_id
     type: short
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 3
-    name: unknown_3
+    name: item_type_id
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 4
-    name: unknown_4
+    name: score
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 5
-    name: unknown_5
+    name: pet_figure_string
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 6
-    name: unknown_6
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 7
-    name: unknown_7
+    name: figure_set_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 8
-    name: unknown_8
+    name: product_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   - index: 9
-    name: unknown_9
+    name: rarity
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_2582
     evidence:
     - ev_fc26c4939d32
+    - ev_01baface9fa1
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -124,11 +124,12 @@ generated:
     evidence: ev_fc26c4939d32
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
     - short
     - int32
+    - block
     evidence: ev_01baface9fa1
   evidence:
   - id: ev_fc26c4939d32
@@ -148,7 +149,5 @@ generated:
     line: 7
   conflicts:
   - cf_4a819f001e
-  unknowns:
-  - uk_232c928879
 verified: {}
 manual: {}

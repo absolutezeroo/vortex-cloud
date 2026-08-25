@@ -42,10 +42,10 @@ actually produced against the trees listed under Sources.
 
 | | Count |
 |---|---:|
-| Conflicts | 363 |
+| Conflicts | 365 |
 | Critical unknowns | 134 |
-| Unknowns in total | 713 |
-| Fields with no attested name | 1864 of 5013 |
+| Unknowns in total | 715 |
+| Fields with no attested name | 1893 of 6018 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,8 +54,8 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 270
-- unchanged: 3247
+- written: 78
+- unchanged: 3443
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded

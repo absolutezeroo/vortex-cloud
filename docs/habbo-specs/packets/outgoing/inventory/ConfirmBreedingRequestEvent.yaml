@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:439e1f819da7fa88692ec3a7d5b3680fc7acda5c1d326e2e89700ea13321abd0"
+generated_digest: "sha256:a90990ad10a38f67d79ca604a7d21a05344911c93fcbf32159bf275d084d8fd4"
 generated:
   name: ConfirmBreedingRequestEvent
   direction: outgoing
@@ -26,7 +26,93 @@ generated:
     evidence:
     - ev_5f3bbedb1d22
   - index: 1
-    name: unknown_1
+    name: confirm_breeding_request_event_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_5f3bbedb1d22
+    fields:
+    - index: 0
+      name: web_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 1
+      name: name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 2
+      name: level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 3
+      name: figure
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 4
+      name: owner
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+  - index: 2
+    name: confirm_breeding_request_event_message_composer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_5f3bbedb1d22
+    fields:
+    - index: 0
+      name: web_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 1
+      name: name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 2
+      name: level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 3
+      name: figure
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+    - index: 4
+      name: owner
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_5f3bbedb1d22
+  - index: 3
+    name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
@@ -34,7 +120,7 @@ generated:
     note: written as the constant 0
     evidence:
     - ev_5f3bbedb1d22
-  - index: 2
+  - index: 4
     name: result_pet_type
     type: int32
     name_confidence: implementation_observed
@@ -50,10 +136,12 @@ generated:
     evidence: ev_7b7384d08c24
   - origin: vortex
     authority: vortex_emulator
-    field_count: 3
+    field_count: 5
     partial: false
     types:
     - int32
+    - block
+    - block
     - int32
     - int32
     evidence: ev_5f3bbedb1d22

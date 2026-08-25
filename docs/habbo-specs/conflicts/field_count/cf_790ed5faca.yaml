@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2dabc69aa93536223ca932cfe01bbe808d88a7f6f86bc24cde30ac4281cbf8dc"
+generated_digest: "sha256:f661adfc1781fd44b770159b62749ce8e5cd9af98823268d9e2f5960ad4dd4b2"
 generated:
   id: cf_790ed5faca
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: client_code
     claim: "18 fields: string, int32, int32, int32, int32, boolean, string, string, int32, string, int32, int32, int32, string, string, boolean, boolean, int32"
     evidence: ev_cf2ab6739acf
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "1 fields: block"
+    evidence: ev_d9ff77408b75
   evidence:
   - id: ev_7f976f5d777b
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: _SafeCls_3984
     line: 24
     note: official client build WIN63-202607011411-782849652
+  - id: ev_d9ff77408b75
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Quest/QuestMessageComposerSerializer.cs
+    symbol: QuestMessageComposerSerializer
+    line: 6
   official:
     status: unknown
 verified: {}

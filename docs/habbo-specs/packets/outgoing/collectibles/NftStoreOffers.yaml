@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a52dca54eb36aad586a1e6d6ba0835d356bea81cfeeac4fef403b818d3b649ef"
+generated_digest: "sha256:8c511d0b08ecb2a33db4df8eb7a4b6e573c98a133831edd4d04cfc370c48aed8"
 generated:
   name: NftStoreOffers
   direction: outgoing
@@ -76,6 +76,87 @@ generated:
       type_confidence: implementation_observed
       evidence:
       - ev_1c2e8628cf22
+    - index: 6
+      name: collectible_serialization
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_1c2e8628cf22
+      fields:
+      - index: 0
+        name: product_type_id
+        type: short
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_1c2e8628cf22
+      - index: 1
+        name: item_type_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_1c2e8628cf22
+      - index: 2
+        name: score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_1c2e8628cf22
+      - index: 3
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_1c2e8628cf22
+        fields:
+        - index: 0
+          name: pet_figure_string
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_1c2e8628cf22
+        - index: 1
+          name: length
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_1c2e8628cf22
+        - index: 2
+          name: figure_set_ids
+          type: array
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: "source comment: repeated block; the element count is the int written immediately before it"
+          evidence:
+          - ev_1c2e8628cf22
+          fields:
+          - index: 0
+            name: figure_set_id
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_1c2e8628cf22
+        - index: 3
+          name: product_code
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_1c2e8628cf22
+        - index: 4
+          name: rarity
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_1c2e8628cf22
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code

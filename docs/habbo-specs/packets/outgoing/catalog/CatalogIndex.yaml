@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:128c4784dbf56fed27a30c5834cfd5ac570f5075174b031b2d58fad739ecfe88"
+generated_digest: "sha256:4fce087efec8642b8001e65395d39b471463e9778b7d6977a9780b5fb8f401b8"
 generated:
   name: CatalogIndex
   direction: outgoing
@@ -52,9 +52,10 @@ generated:
     evidence: ev_88b3d33f7919
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
-    partial: false
+    field_count: 3
+    partial: true
     types:
+    - block
     - boolean
     - string
     evidence: ev_aa56f4c46109
@@ -82,7 +83,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Catalog/CatalogIndexMessageComposerSerializer.cs
     symbol: CatalogIndexMessageComposerSerializer
     line: 10
-  conflicts:
-  - cf_dee3664f9f
 verified: {}
 manual: {}

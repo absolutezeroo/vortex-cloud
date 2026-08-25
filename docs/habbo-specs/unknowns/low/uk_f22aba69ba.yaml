@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ca12a102f8f87c6c5191885e0c7828d8b050f24deb6cf18d4e3edc604ad450d2"
+generated_digest: "sha256:b088d8813dbd97802e8ef92ac330d8844d87cfc24163605cb91db01e97f68c6a"
 generated:
   id: uk_f22aba69ba
   subject: "outgoing/TradeNftAssetInventory: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradeNftAssetInventory
   known_evidence:

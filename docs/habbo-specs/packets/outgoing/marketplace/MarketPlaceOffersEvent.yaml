@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:629bbea7c8ed4c54c084b01465f61657ef65c5091c7866fcabe8e04daaf5fadd"
+generated_digest: "sha256:d781e0c9b6f2e0f0985b10bb44749046d706d1cff6923abec17f73480fed4cf0"
 generated:
   name: MarketPlaceOffersEvent
   direction: outgoing
@@ -26,6 +26,117 @@ generated:
     evidence:
     - ev_32513cf06860
   - index: 1
+    name: offers
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_32513cf06860
+    fields:
+    - index: 0
+      name: marketplace_offer_writer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_32513cf06860
+      fields:
+      - index: 0
+        name: offer_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 1
+        name: status
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 2
+        name: furniture_type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 3
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_32513cf06860
+      - index: 4
+        name: unknown_4
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant 0; only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_32513cf06860
+      - index: 5
+        name: unknown_5
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_32513cf06860
+      - index: 6
+        name: sprite_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_32513cf06860
+      - index: 7
+        name: unknown_7
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: only when offer.FurnitureType == TYPE_LANDSCAPE
+        evidence:
+        - ev_32513cf06860
+      - index: 8
+        name: price
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 9
+        name: unknown_9
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 10
+        name: avg_price
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_32513cf06860
+      - index: 11
+        name: offer_count
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: only when includeOfferCount
+        evidence:
+        - ev_32513cf06860
+  - index: 2
     name: total_found
     type: int32
     name_confidence: implementation_observed
@@ -41,10 +152,11 @@ generated:
     evidence: ev_ec115e9ef1b0
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
     - int32
+    - array
     - int32
     evidence: ev_32513cf06860
   evidence:

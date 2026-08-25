@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f53794538a8b7ad10af31316e41827d046a5f96a37ad9ae013ee440d0931770a"
+generated_digest: "sha256:c6a5f422034538c7cfdacbc86fa5b6c306576e0e67fb6564eb669bbf80984943"
 generated:
   name: UserChatlogEvent
   direction: outgoing
@@ -39,6 +39,138 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_7d23ae008ea9
+  - index: 3
+    name: rooms
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_7d23ae008ea9
+    fields:
+    - index: 0
+      name: chatlog_serialization
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_7d23ae008ea9
+      fields:
+      - index: 0
+        name: record_type_room
+        type: byte
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 1
+        name: unknown_1
+        type: short
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant 2
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 2
+        name: unknown_2
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant roomId
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 3
+        name: context_value_type_int
+        type: byte
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 4
+        name: room_id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 5
+        name: unknown_5
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant roomName
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 6
+        name: context_value_type_string
+        type: byte
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 7
+        name: room_name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 8
+        name: length
+        type: short
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_7d23ae008ea9
+      - index: 9
+        name: records
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_7d23ae008ea9
+        fields:
+        - index: 0
+          name: time_stamp_utc
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_7d23ae008ea9
+        - index: 1
+          name: chatter_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_7d23ae008ea9
+        - index: 2
+          name: chatter_name
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_7d23ae008ea9
+        - index: 3
+          name: message
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_7d23ae008ea9
+        - index: 4
+          name: unknown_4
+          type: boolean
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: written as the constant false
+          evidence:
+          - ev_7d23ae008ea9
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -48,12 +180,13 @@ generated:
     evidence: ev_21665166e674
   - origin: vortex
     authority: vortex_emulator
-    field_count: 3
+    field_count: 4
     partial: false
     types:
     - int32
     - string
     - int32
+    - array
     evidence: ev_7d23ae008ea9
   evidence:
   - id: ev_21665166e674

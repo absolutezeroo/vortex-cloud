@@ -81,7 +81,23 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
         int Depth,
         List<string> Unresolved,
         HashSet<string> Visiting
-    );
+    )
+    {
+        /// <summary>
+        /// The name of the packet parameter in the method being walked. Handing that identifier to
+        /// another method is what makes the call part of this layout, and it is a far better test
+        /// than the method's name: a serializer's helpers are called <c>Serialize</c>,
+        /// <c>WriteIssue</c>, <c>Write</c> and <c>SerializeOffer</c> depending on who wrote them.
+        /// </summary>
+        public string? PacketParameter { get; init; }
+
+        /// <summary>
+        /// The type the walked method belongs to, so a helper called with no receiver —
+        /// <c>SerializeOffer(packet, offer)</c>, a private method of the same serializer — resolves
+        /// instead of being dropped.
+        /// </summary>
+        public TypeDeclarationSyntax? EnclosingType { get; init; }
+    }
 
     public WireLayout ExtractRead(TypeDeclarationSyntax parser)
     {
@@ -110,7 +126,11 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
     private WireLayout Extract(MethodDeclarationSyntax method, bool reading)
     {
         List<string> unresolved = [];
-        Context context = new(reading, 0, unresolved, new HashSet<string>(StringComparer.Ordinal));
+        Context context = new(reading, 0, unresolved, new HashSet<string>(StringComparer.Ordinal))
+        {
+            PacketParameter = PacketParameterOf(method),
+            EnclosingType = method.Parent as TypeDeclarationSyntax,
+        };
         List<WireOp> ops = [];
 
         SyntaxNode? body = (SyntaxNode?)method.Body ?? method.ExpressionBody;
@@ -122,6 +142,14 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
 
         return new WireLayout(ops, unresolved.Count > 0, unresolved);
     }
+
+    /// <summary>The name of the method's <c>IServerPacket</c>/<c>IClientPacket</c> parameter.</summary>
+    private static string? PacketParameterOf(MethodDeclarationSyntax method) =>
+        method
+            .ParameterList.Parameters.FirstOrDefault(p =>
+                p.Type is not null && p.Type.ToString() is "IServerPacket" or "IClientPacket"
+            )
+            ?.Identifier.ValueText;
 
     private static MethodDeclarationSyntax? FindMethod(TypeDeclarationSyntax type, string name) =>
         type
@@ -250,23 +278,31 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
         Context context
     )
     {
-        bool isNested = context.Reading
-            ? method is "Parse" or "ParseArray"
-            : method is "Serialize" or "SerializeArray";
-
-        if (!isNested)
+        // The test is the packet, not the name. A call that hands this method's packet to another
+        // method is doing something to the wire, and what it does belongs in this layout at this
+        // point -- whether it is called Serialize, SerializeArray, WriteIssue, Write or
+        // SerializeOffer. A name list caught the first two and missed the rest, so a serializer
+        // built out of shared writers read as a single field and disagreed with the client forever.
+        if (context.PacketParameter is null || !PassesPacket(invocation, context.PacketParameter))
         {
             return false;
         }
 
-        string? typeName = ReceiverTypeName(invocation);
+        // No receiver means a helper on the serializer itself -- `SerializeOffer(packet, offer)` --
+        // and the type to look in is the one being walked.
+        string? typeName =
+            ReceiverTypeName(invocation) ?? context.EnclosingType?.Identifier.ValueText;
 
         if (typeName is null)
         {
             return false;
         }
 
-        if (context.Depth >= MaxDepth || !context.Visiting.Add(typeName))
+        // Keyed by type AND method: two different helpers of the same serializer are two blocks, and
+        // keying by type alone made the second one look like recursion.
+        string visitKey = $"{typeName}.{method}";
+
+        if (context.Depth >= MaxDepth || !context.Visiting.Add(visitKey))
         {
             context.Unresolved.Add($"{typeName}.{method} (recursion or depth limit)");
             sink.Add(
@@ -283,9 +319,15 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
 
         try
         {
-            IndexedType? target = index.FindSingle(typeName);
+            TypeDeclarationSyntax? declaration = ReceiverTypeName(invocation) is null
+                ? context.EnclosingType
+                : index.FindSingle(typeName)?.Declaration;
 
-            if (target is null)
+            IndexedType? target = declaration is null ? index.FindSingle(typeName) : null;
+
+            declaration ??= target?.Declaration;
+
+            if (declaration is null)
             {
                 context.Unresolved.Add($"{typeName}.{method} (type not in the indexed sources)");
                 sink.Add(
@@ -300,7 +342,7 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
                 return true;
             }
 
-            MethodDeclarationSyntax? nested = FindMethod(target.Declaration, method);
+            MethodDeclarationSyntax? nested = FindMethod(declaration, method);
 
             if (nested is null)
             {
@@ -313,7 +355,17 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
 
             if (body is not null)
             {
-                Walk(body, children, context with { Depth = context.Depth + 1 });
+                Walk(
+                    body,
+                    children,
+                    context with
+                    {
+                        Depth = context.Depth + 1,
+                        // The helper names its own packet parameter, and it is rarely the same word.
+                        PacketParameter = PacketParameterOf(nested),
+                        EnclosingType = declaration,
+                    }
+                );
             }
 
             sink.Add(
@@ -330,9 +382,19 @@ public sealed class WireLayoutExtractor(CSharpSourceIndex index)
         }
         finally
         {
-            context.Visiting.Remove(typeName);
+            context.Visiting.Remove(visitKey);
         }
     }
+
+    /// <summary>Whether the call hands <paramref name="packetParameter"/> to something else.</summary>
+    private static bool PassesPacket(
+        InvocationExpressionSyntax invocation,
+        string packetParameter
+    ) =>
+        invocation.ArgumentList.Arguments.Any(a =>
+            a.Expression is IdentifierNameSyntax identifier
+            && identifier.Identifier.ValueText == packetParameter
+        );
 
     private static string StripBlockSuffix(string typeName)
     {

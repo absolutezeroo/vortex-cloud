@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dcd7fa26a1cad50935a42573163ddbbe3d19f5f4025e57600938112462826379"
+generated_digest: "sha256:4f7c1ceba5c6314e2502ff8b796f77beb39396e4ffcfa5a8c6efb263bd59f6ef"
 generated:
   name: NftCollections
   direction: outgoing
@@ -25,6 +25,445 @@ generated:
     type_confidence: implementation_observed
     evidence:
     - ev_b702fe6d4ca5
+  - index: 1
+    name: collections
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_b702fe6d4ca5
+    fields:
+    - index: 0
+      name: nft_collections_message_composer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_b702fe6d4ca5
+      fields:
+      - index: 0
+        name: length
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 1
+        name: items
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_b702fe6d4ca5
+        fields:
+        - index: 0
+          name: collectible_serialization
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+          fields:
+          - index: 0
+            name: product_type_id
+            type: short
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 1
+            name: item_type_id
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 2
+            name: score
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 3
+            name: amount
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 4
+            name: collectible_serialization
+            type: block
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+            fields:
+            - index: 0
+              name: pet_figure_string
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+            - index: 1
+              name: length
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+            - index: 2
+              name: figure_set_ids
+              type: array
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: "source comment: repeated block; the element count is the int written immediately before it"
+              evidence:
+              - ev_b702fe6d4ca5
+              fields:
+              - index: 0
+                name: figure_set_id
+                type: int32
+                name_confidence: implementation_observed
+                type_confidence: implementation_observed
+                evidence:
+                - ev_b702fe6d4ca5
+            - index: 3
+              name: product_code
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+            - index: 4
+              name: rarity
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+      - index: 2
+        name: collection_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 3
+        name: collection_name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 4
+        name: collection_score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 5
+        name: collection_total_score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 6
+        name: collection_boost_score
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 7
+        name: has_bonus_item
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 8
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+        fields:
+        - index: 0
+          name: product_type_id
+          type: short
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 1
+          name: item_type_id
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 2
+          name: score
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 3
+          name: amount
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 4
+          name: collectible_serialization
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+          fields:
+          - index: 0
+            name: pet_figure_string
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 1
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 2
+            name: figure_set_ids
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_b702fe6d4ca5
+            fields:
+            - index: 0
+              name: figure_set_id
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+          - index: 3
+            name: product_code
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 4
+            name: rarity
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+      - index: 9
+        name: has_reward_item
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 10
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+        fields:
+        - index: 0
+          name: product_type_id
+          type: short
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 1
+          name: item_type_id
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 2
+          name: score
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 3
+          name: amount
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 4
+          name: collectible_serialization
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+          fields:
+          - index: 0
+            name: pet_figure_string
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 1
+            name: length
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 2
+            name: figure_set_ids
+            type: array
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: "source comment: repeated block; the element count is the int written immediately before it"
+            evidence:
+            - ev_b702fe6d4ca5
+            fields:
+            - index: 0
+              name: figure_set_id
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_b702fe6d4ca5
+          - index: 3
+            name: product_code
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+          - index: 4
+            name: rarity
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_b702fe6d4ca5
+      - index: 11
+        name: released_time_ms
+        type: long
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 12
+        name: snapshot_time_ms
+        type: long
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 13
+        name: status
+        type: short
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+      - index: 14
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+        fields:
+        - index: 0
+          name: claim_id
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 1
+          name: claimed_amount
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 2
+          name: claim_limit
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 3
+          name: status
+          type: short
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+      - index: 15
+        name: collectible_serialization
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b702fe6d4ca5
+        fields:
+        - index: 0
+          name: claim_id
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 1
+          name: claimed_amount
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 2
+          name: claim_limit
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
+        - index: 3
+          name: status
+          type: short
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_b702fe6d4ca5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -52,10 +491,11 @@ generated:
     evidence: ev_afe74ed3f4c0
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - int32
+    - array
     evidence: ev_b702fe6d4ca5
   evidence:
   - id: ev_1003230b47ff

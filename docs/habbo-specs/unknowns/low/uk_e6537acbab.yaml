@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2c4f4f8355bf58d4fedbe0319fed86a623d19f79fece5ca54dff77de835e5bee"
+generated_digest: "sha256:9fca03e1c40a46ee7b562381c84553674047d1c3c8d322156d9c3a70137db389"
 generated:
   id: uk_e6537acbab
   subject: "outgoing/HabboClubOffers: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 carry no name from any source. What are they?
+  question: Fields 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HabboClubOffers
   known_evidence:

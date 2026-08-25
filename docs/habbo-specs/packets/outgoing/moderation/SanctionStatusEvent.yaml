@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e7e9d9dbe8e2ba7949b396ca48806ff4c0c63d862b02afc981efc7fb7180f1c7"
+generated_digest: "sha256:0cdc75f0846ef6c6530b3213817cd743801fab2008d04129c66bebd1aa570dc2"
 generated:
   name: SanctionStatusEvent
   direction: outgoing
@@ -35,26 +35,84 @@ generated:
     - ev_b78787607ab2
     fields:
     - index: 0
+      name: sanction_status_event_message_composer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_b78787607ab2
+      fields:
+      - index: 0
+        name: name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
+      - index: 1
+        name: duration_hours
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
+      - index: 2
+        name: probation_hours
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
+    - index: 1
       name: description
       type: string
       name_confidence: implementation_observed
       type_confidence: implementation_observed
       evidence:
       - ev_b78787607ab2
-    - index: 1
+    - index: 2
       name: shows_probation_details
       type: boolean
       name_confidence: implementation_observed
       type_confidence: implementation_observed
       evidence:
       - ev_b78787607ab2
-    - index: 2
+    - index: 3
       name: probation_hours_left
       type: int32
       name_confidence: implementation_observed
       type_confidence: implementation_observed
       evidence:
       - ev_b78787607ab2
+    - index: 4
+      name: sanction_status_event_message_composer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_b78787607ab2
+      fields:
+      - index: 0
+        name: name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
+      - index: 1
+        name: duration_hours
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
+      - index: 2
+        name: probation_hours
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_b78787607ab2
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation

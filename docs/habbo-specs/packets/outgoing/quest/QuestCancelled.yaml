@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9451122965170a4642361d1342d5beecf7f5a4669d93b8fb13582e4794c5b4be"
+generated_digest: "sha256:5a396d759b6bfaf02ed37061f4eef239c47443a212e08c45c49d3c6a363b8c21"
 generated:
   name: QuestCancelled
   direction: outgoing
@@ -19,13 +19,13 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: expired
+    name: unknown_0
     type: boolean
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_a03aea0d6a5f
-    - ev_955bdcb61cb0
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -74,10 +74,11 @@ generated:
     evidence: ev_c2ecf64edaae
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - boolean
+    - block
     evidence: ev_955bdcb61cb0
   evidence:
   - id: ev_a03aea0d6a5f
@@ -121,5 +122,7 @@ generated:
     line: 6
   conflicts:
   - cf_d11c5e6fa6
+  unknowns:
+  - uk_c787574334
 verified: {}
 manual: {}

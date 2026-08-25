@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c416143f0010b0590fae3f30f157202405c868f338aefa5f605ce2b6e10e2857"
+generated_digest: "sha256:cc1f9dc088dd95c77f6c0ae1cebec5d9aa2047e750046b2985d9a39fc109e920"
 generated:
   name: TradeNftAssetInventory
   direction: outgoing
@@ -19,22 +19,22 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_62ee17fbc06e
-    - ev_5d995de5491a
   - index: 1
-    name: asset_id
+    name: unknown_1
     type: long
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_62ee17fbc06e
-    - ev_5d995de5491a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -70,5 +70,7 @@ generated:
     line: 8
   conflicts:
   - cf_e35433cfa7
+  unknowns:
+  - uk_f22aba69ba
 verified: {}
 manual: {}

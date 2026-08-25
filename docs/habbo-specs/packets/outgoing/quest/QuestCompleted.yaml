@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4f30e5b82a4dc50cc30e3e4e16b59a57dd6ee3bdda456fc47494d964b1230e0c"
+generated_digest: "sha256:2edd260b8dbd1457cd7caf98ec4f64ccc71048484fb5b088f7788bd769aa18c8"
 generated:
   name: QuestCompleted
   direction: outgoing
@@ -234,9 +234,10 @@ generated:
     evidence: ev_f5c61489eab3
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 2
     partial: false
     types:
+    - block
     - boolean
     evidence: ev_61ff731bdae1
   evidence:

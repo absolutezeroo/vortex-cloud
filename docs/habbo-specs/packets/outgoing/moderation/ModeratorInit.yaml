@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f51ab09225031aff012c80621e9dbceba6416709867ecc40055d66b27a4107a5"
+generated_digest: "sha256:8441e77925e20c9a9b84e682e338fb7a1d666b99d78880d14f48cf3512de782b"
 generated:
   name: ModeratorInit
   direction: outgoing
@@ -193,10 +193,11 @@ generated:
     evidence: ev_2edbb8b37b90
   - origin: vortex
     authority: vortex_emulator
-    field_count: 13
+    field_count: 14
     partial: false
     types:
     - int32
+    - array
     - int32
     - array
     - int32
@@ -243,7 +244,11 @@ generated:
     symbol: ModeratorInitMessageComposerSerializer
     line: 7
   conflicts:
-  - cf_52ea12cccb
+  - cf_569e5fa3f1
+  - cf_3f19261e29
+  - cf_2aab9f5819
+  - cf_3625559bff
+  - cf_41846ec351
   unknowns:
   - uk_bd113d7d15
 verified: {}
