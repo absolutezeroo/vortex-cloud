@@ -284,4 +284,39 @@ internal sealed class FakeWiredRoomHost
     /// <summary>Takes an item out of the room without taking it off its tile — a stale registry
     /// entry, which is what the engine's "reindex next tick" branches exist for.</summary>
     public void RemoveItemOnly(RoomObjectId objectId) => _items.Remove(objectId);
+
+    /// <summary>Drags a box onto another tile, the way a player would. It is still in the room.</summary>
+    public void MoveToTile(int objectId, int tileIdx)
+    {
+        RoomObjectId id = new(objectId);
+
+        foreach (List<IRoomFloorItem> stack in _tiles.Values)
+        {
+            stack.RemoveAll(i => i.ObjectId == id);
+        }
+
+        if (_items.TryGetValue(id, out IRoomItem? item) && item is IRoomFloorItem floor)
+        {
+            if (!_tiles.TryGetValue(tileIdx, out List<IRoomFloorItem>? target))
+            {
+                target = [];
+                _tiles[tileIdx] = target;
+            }
+
+            target.Add(floor);
+        }
+    }
+
+    /// <summary>Picks a box up: gone from the room and off every tile.</summary>
+    public void RemoveCompletely(int objectId)
+    {
+        RoomObjectId id = new(objectId);
+
+        _items.Remove(id);
+
+        foreach (List<IRoomFloorItem> stack in _tiles.Values)
+        {
+            stack.RemoveAll(i => i.ObjectId == id);
+        }
+    }
 }

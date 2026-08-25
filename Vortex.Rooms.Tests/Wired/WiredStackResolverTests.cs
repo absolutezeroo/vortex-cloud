@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Orleans;
+using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
@@ -183,7 +184,7 @@ public sealed class WiredStackResolverTests
 
     private static IGrainFactory Grains() => FakeProxy.Create<IGrainFactory>(_ => null);
 
-    private static IStuffDataFactory Stuff() => FakeProxy.Create<IStuffDataFactory>(_ => null);
+    private static IStuffDataFactory Stuff() => new StuffDataFactory();
 
     private sealed class TestTrigger(int objectId)
         : FurnitureWiredTriggerLogic(Grains(), Stuff(), WiredTestBoxes.Context(objectId))

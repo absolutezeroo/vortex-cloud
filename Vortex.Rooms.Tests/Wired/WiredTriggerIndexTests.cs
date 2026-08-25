@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Orleans;
+using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
@@ -181,7 +182,7 @@ public sealed class WiredTriggerIndexTests
     private class TestTrigger(int objectId, List<Type> eventTypes, bool hydrationThrows)
         : FurnitureWiredTriggerLogic(
             FakeProxy.Create<IGrainFactory>(_ => null),
-            FakeProxy.Create<IStuffDataFactory>(_ => null),
+            new StuffDataFactory(),
             WiredTestBoxes.Context(objectId)
         )
     {

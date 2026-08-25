@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Furniture;
+using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
@@ -53,6 +54,11 @@ internal static class WiredTestBoxes
             call.Method.Name == "get_ExtraData" ? new ExtraData(null) : null
         );
 
+        // Nothing under test calls into these, but a wired box lights itself up when it fires -
+        // ScheduleFlashRevert then a stuff-data write - so the context has to answer for that much
+        // or every firing test dies in the flash instead of in what it is about.
+        IRoomFurniAccess furni = FakeProxy.Create<IRoomFurniAccess>(_ => null);
+
         return FakeProxy.Create<IRoomFloorItemContext>(call =>
             call.Method.Name switch
             {
@@ -60,7 +66,8 @@ internal static class WiredTestBoxes
                 "get_ObjectId" => new RoomObjectId(objectId),
                 "get_Definition" => Definition,
                 "get_RoomObject" => roomObject,
-                _ => null,
+                "get_Furni" => furni,
+                _ => call.Method.ReturnType == typeof(Task) ? Task.CompletedTask : null,
             }
         );
     }

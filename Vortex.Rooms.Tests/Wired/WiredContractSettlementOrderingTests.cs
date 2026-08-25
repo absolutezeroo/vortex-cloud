@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Wired;
+using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
@@ -174,7 +175,7 @@ public sealed class WiredContractSettlementOrderingTests
                 ROOM_ID,
                 new FaultyDbContextFactory(_options, failOnSaveNumber),
                 FakeProxy.Create<IFurnitureDefinitionProvider>(_ => null),
-                FakeProxy.Create<IStuffDataFactory>(_ => null),
+                new StuffDataFactory(),
                 Options.Create(new RoomConfig()),
                 NullLogger<IRoomGrain>.Instance,
                 FakeProxy.Create<IRoomModelProvider>(_ => null),

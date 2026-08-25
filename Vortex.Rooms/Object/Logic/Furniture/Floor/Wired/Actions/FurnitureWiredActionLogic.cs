@@ -25,7 +25,15 @@ public abstract class FurnitureWiredActionLogic(
     public override List<Type> GetDefinitionSpecificTypes() =>
         [.. base.GetDefinitionSpecificTypes(), typeof(int)];
 
-    public int GetDelayMs() => _delayMs;
+    /// <summary>
+    /// How long this action waits before running, from its own configuration.
+    /// </summary>
+    /// <remarks>
+    /// Virtual because the delay is what makes a chain a chain: the engine re-schedules on it and
+    /// re-validates co-location across it, and neither rule could be exercised while every action
+    /// read the delay out of a private field only hydration could set.
+    /// </remarks>
+    public virtual int GetDelayMs() => _delayMs;
 
     public virtual bool IsNegative() => false;
 

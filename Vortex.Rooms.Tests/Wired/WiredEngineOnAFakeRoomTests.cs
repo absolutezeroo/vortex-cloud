@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Orleans;
+using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Players;
@@ -137,7 +138,7 @@ public sealed class WiredEngineOnAFakeRoomTests
     private sealed class TestTrigger(int objectId, List<Type> eventTypes)
         : FurnitureWiredTriggerLogic(
             FakeProxy.Create<IGrainFactory>(_ => null),
-            FakeProxy.Create<IStuffDataFactory>(_ => null),
+            new StuffDataFactory(),
             WiredTestBoxes.Context(objectId)
         )
     {
