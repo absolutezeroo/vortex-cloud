@@ -43,6 +43,20 @@ internal sealed class NullCommerceJournal : ICommerceJournal
         CancellationToken ct
     ) => Task.FromResult(true);
 
+    public Task CompleteWithRelayAsync(
+        CommerceOperationId id,
+        Vortex.Primitives.Events.IEvent criticalEvent,
+        CancellationToken ct
+    ) => Task.CompletedTask;
+
+    public Task<IReadOnlyList<CommerceRelayEntry>> GetUnrelayedAsync(
+        int limit,
+        CancellationToken ct
+    ) => Task.FromResult<IReadOnlyList<CommerceRelayEntry>>([]);
+
+    public Task MarkRelayedAsync(CommerceOperationId id, CancellationToken ct) =>
+        Task.CompletedTask;
+
     public Task<string?> GetStepResultAsync(
         CommerceOperationId id,
         string stepKey,

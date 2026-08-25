@@ -168,25 +168,39 @@ public sealed partial class CatalogPurchaseGrain(
             throw CreateInsufficientBalanceException(result.Failure);
         }
 
-        await _journal
-            .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
-            .ConfigureAwait(true);
+        // Written with the terminal transition rather than published and hoped for. A crash between
+        // the commit and the publish used to lose the event outright, and with it the quest progress
+        // and the daily task that read it.
+        CatalogPurchasedEvent purchased = new(
+            (int)this.GetPrimaryKeyLong(),
+            catalogType.ToString(),
+            offerId,
+            quantity,
+            creditCost,
+            operation.ToString()
+        );
+
+        await _journal.CompleteWithRelayAsync(operation, purchased, ct).ConfigureAwait(true);
 
         // Published after the purchase has fully succeeded and is out of the compensated scope: it
         // is a notification, not a purchase step, so a failing subscriber must never be able to
-        // trigger a refund of an already-completed sale (SEC-06).
-        await _events
-            .PublishAsync(
-                new CatalogPurchasedEvent(
-                    (int)this.GetPrimaryKeyLong(),
-                    catalogType.ToString(),
-                    offerId,
-                    quantity,
-                    creditCost
-                ),
-                ct
-            )
-            .ConfigureAwait(true);
+        // trigger a refund of an already-completed sale (SEC-06). The journal holds the same event,
+        // so a failure here is a delay rather than a loss — the relay sweep publishes it.
+        try
+        {
+            await _events.PublishAsync(purchased, ct).ConfigureAwait(true);
+
+            await _journal.MarkRelayedAsync(operation, ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Catalog purchase {OperationId} completed but its event could not be published; "
+                    + "the relay will publish it.",
+                operation
+            );
+        }
 
         return result.Reward!;
     }

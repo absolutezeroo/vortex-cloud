@@ -17,6 +17,7 @@ namespace Vortex.Database.Entities.Commerce;
 /// the first write, and the identity has to exist before it.
 /// </remarks>
 [Index(nameof(State), nameof(PivotedAt))]
+[Index(nameof(RelayedAt))]
 [Index(nameof(PlayerId))]
 [Table("commerce_operations")]
 public class CommerceOperationEntity
@@ -61,6 +62,29 @@ public class CommerceOperationEntity
     /// <summary>When the operation became irreversible. Null until it does. The alert reads this.</summary>
     [Column("pivoted_at")]
     public DateTime? PivotedAt { get; set; }
+
+    /// <summary>
+    /// The short type name of the critical business event this operation owes, and the event itself
+    /// as JSON. Written in the same transaction as the terminal transition.
+    /// </summary>
+    /// <remarks>
+    /// A purchase used to publish its event immediately after succeeding, outside any transaction: a
+    /// crash between the two lost it, and with it the quest progress and the daily task it feeds.
+    /// Writing the event with the transition and relaying it afterwards is the whole of the outbox
+    /// pattern, and it needs no second table because every critical event identified so far belongs
+    /// to an operation.
+    /// </remarks>
+    [Column("relay_type")]
+    [MaxLength(128)]
+    public string? RelayType { get; set; }
+
+    [Column("relay_payload")]
+    [MaxLength(4096)]
+    public string? RelayPayload { get; set; }
+
+    /// <summary>When the relay actually published it. Null while it is still owed.</summary>
+    [Column("relayed_at")]
+    public DateTime? RelayedAt { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }

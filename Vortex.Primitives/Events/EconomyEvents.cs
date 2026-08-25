@@ -18,7 +18,12 @@ public sealed record CatalogPurchasedEvent(
     string CatalogType,
     int OfferId,
     int Quantity,
-    int CreditCost
+    int CreditCost,
+    // Which purchase this is. The relay delivers at-least-once, so a consumer that changes player
+    // state — quest progress, a daily task — has to be able to tell a redelivery from a second
+    // purchase, and nothing else on this event can. Empty for the events raised outside a commerce
+    // operation, which are the ones nobody replays.
+    string OperationId = ""
 ) : IEvent;
 
 /// <summary>

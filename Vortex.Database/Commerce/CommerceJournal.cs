@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Commerce;
 using Vortex.Primitives.Commerce;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Observability;
 
 namespace Vortex.Database.Commerce;
@@ -177,6 +179,79 @@ public sealed class CommerceJournal(
 
             return false;
         }
+    }
+
+    public async Task CompleteWithRelayAsync(
+        CommerceOperationId id,
+        IEvent criticalEvent,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        CommerceOperationEntity? row = await dbCtx
+            .CommerceOperations.FirstOrDefaultAsync(o => o.Id == id.Value, ct)
+            .ConfigureAwait(false);
+
+        if (row is null)
+        {
+            _logger.LogError(
+                "Commerce operation {OperationId} completed without ever being opened.",
+                id
+            );
+
+            return;
+        }
+
+        row.State = CommerceOperationState.Completed;
+        row.UpdatedAt = DateTime.UtcNow;
+        row.RelayType = criticalEvent.GetType().Name;
+        row.RelayPayload = Truncate(
+            JsonSerializer.Serialize(criticalEvent, criticalEvent.GetType()),
+            4096
+        );
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        _metrics.CommerceOperationTransitioned(row.Kind, CommerceOperationState.Completed);
+    }
+
+    public async Task<IReadOnlyList<CommerceRelayEntry>> GetUnrelayedAsync(
+        int limit,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await dbCtx
+            .CommerceOperations.AsNoTracking()
+            .Where(o => o.RelayPayload != null && o.RelayedAt == null)
+            .OrderBy(o => o.UpdatedAt)
+            .Take(limit)
+            .Select(o => new CommerceRelayEntry
+            {
+                OperationId = new CommerceOperationId(o.Id),
+                TypeName = o.RelayType!,
+                Payload = o.RelayPayload!,
+            })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task MarkRelayedAsync(CommerceOperationId id, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        await dbCtx
+            .CommerceOperations.Where(o => o.Id == id.Value)
+            .ExecuteUpdateAsync(up => up.SetProperty(o => o.RelayedAt, DateTime.UtcNow), ct)
+            .ConfigureAwait(false);
     }
 
     public async Task<string?> GetStepResultAsync(

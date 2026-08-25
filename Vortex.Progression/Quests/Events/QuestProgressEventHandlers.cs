@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Events.Registry;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
@@ -82,14 +83,28 @@ public sealed class QuestRespectHandler(IGrainFactory grainFactory)
 /// <summary>Advances "CatalogPurchase" quests when the player buys from the catalog. Passes the offer
 /// id as the target so a quest can require a specific offer ("buy offer 12") or, with no target, any
 /// purchase. Quantity advances the step count.</summary>
-public sealed class QuestCatalogPurchaseHandler(IGrainFactory grainFactory)
-    : IEventHandler<CatalogPurchasedEvent>
+/// <remarks>
+/// Deduplicated by operation. The commerce relay delivers at-least-once — the whole reason it exists
+/// is that a crash between a purchase committing and its event publishing used to lose the event —
+/// so a redelivery reaches here, and advancing a quest twice for one purchase is exactly the kind of
+/// silent wrongness the relay was added to avoid causing.
+/// </remarks>
+public sealed class QuestCatalogPurchaseHandler(
+    IGrainFactory grainFactory,
+    ICommerceJournal journal
+) : IEventHandler<CatalogPurchasedEvent>
 {
     public async ValueTask HandleAsync(
         CatalogPurchasedEvent e,
         EventContext ctx,
         CancellationToken ct
-    ) =>
+    )
+    {
+        if (!await CommerceReplayGuard.FirstDeliveryAsync(journal, e.OperationId, "quest", ct))
+        {
+            return;
+        }
+
         await grainFactory
             .GetPlayerQuestGrain(e.PlayerId)
             .ProgressAsync(
@@ -100,6 +115,7 @@ public sealed class QuestCatalogPurchaseHandler(IGrainFactory grainFactory)
                 ct
             )
             .ConfigureAwait(false);
+    }
 }
 
 /// <summary>Advances "Login" quests at most once per calendar day (reconnecting many times a day

@@ -79,6 +79,27 @@ public interface ICommerceJournal
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Completes the operation and, in the same write, records the critical business event it owes.
+    /// </summary>
+    /// <remarks>
+    /// A purchase used to publish its event immediately after succeeding, outside any transaction: a
+    /// crash between the commit and the publish lost the event, and with it the quest progress and
+    /// the daily task it feeds. The event is written with the transition and relayed afterwards —
+    /// at-least-once, which is why the consumers that matter deduplicate by operation id.
+    /// </remarks>
+    Task CompleteWithRelayAsync(
+        CommerceOperationId id,
+        Events.IEvent criticalEvent,
+        CancellationToken ct
+    );
+
+    /// <summary>Events written with a terminal transition and not yet published.</summary>
+    Task<IReadOnlyList<CommerceRelayEntry>> GetUnrelayedAsync(int limit, CancellationToken ct);
+
+    /// <summary>Marks a relayed event as published, so it is not published again.</summary>
+    Task MarkRelayedAsync(CommerceOperationId id, CancellationToken ct);
+
     /// <summary>The result recorded for a step, or null if it has not run.</summary>
     Task<string?> GetStepResultAsync(CommerceOperationId id, string stepKey, CancellationToken ct);
 
@@ -105,4 +126,12 @@ public sealed record CommerceOperationRecord
     public string? Detail { get; init; }
     public System.DateTime? PivotedAt { get; init; }
     public System.DateTime CreatedAt { get; init; }
+}
+
+/// <summary>One event owed by a completed operation.</summary>
+public sealed record CommerceRelayEntry
+{
+    public required CommerceOperationId OperationId { get; init; }
+    public required string TypeName { get; init; }
+    public required string Payload { get; init; }
 }

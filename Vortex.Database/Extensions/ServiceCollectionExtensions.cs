@@ -69,6 +69,14 @@ public static class ServiceCollectionExtensions
         // context factory, so a singleton.
         services.AddSingleton<ICommerceJournal, CommerceJournal>();
 
+        services
+            .AddOptions<CommerceRecoveryConfig>()
+            .Bind(builder.Configuration.GetSection(CommerceRecoveryConfig.SECTION_NAME));
+
+        // Publishes the critical events completed operations still owe, and escalates anything that
+        // has been stuck past its pivot. Finds nothing on a healthy hotel, which is the point.
+        services.AddHostedService<CommerceRelayService>();
+
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
         services.AddHostedService<DatabaseBackupScheduler>();
 

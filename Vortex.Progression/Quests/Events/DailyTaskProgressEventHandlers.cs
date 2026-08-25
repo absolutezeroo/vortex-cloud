@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Events.Registry;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
@@ -106,16 +107,26 @@ public sealed class DailyTaskItemPlacedHandler(IGrainFactory grainFactory)
 }
 
 /// <summary>Advances "CatalogPurchase" daily tasks.</summary>
-public sealed class DailyTaskCatalogHandler(IGrainFactory grainFactory)
+public sealed class DailyTaskCatalogHandler(IGrainFactory grainFactory, ICommerceJournal journal)
     : IEventHandler<CatalogPurchasedEvent>
 {
     public async ValueTask HandleAsync(
         CatalogPurchasedEvent e,
         EventContext ctx,
         CancellationToken ct
-    ) =>
+    )
+    {
+        // Its own guard key, not the quest handler's: two consumers of one event are two
+        // deliveries to deduplicate, and sharing a key would mean whichever ran first silenced the
+        // other.
+        if (!await CommerceReplayGuard.FirstDeliveryAsync(journal, e.OperationId, "daily-task", ct))
+        {
+            return;
+        }
+
         await grainFactory
             .GetPlayerDailyTaskGrain((long)e.PlayerId)
             .ProgressAsync(QuestTypes.CatalogPurchase, 1, ct)
             .ConfigureAwait(false);
+    }
 }
