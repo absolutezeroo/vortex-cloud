@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Players.Grains;
 
 namespace Vortex.Primitives.Players.Wallet;
@@ -28,9 +29,34 @@ public readonly record struct WalletPurchaseResult<TReward>
 /// </summary>
 public static class WalletPurchaseExtensions
 {
+    public static Task<WalletPurchaseResult<TReward>> ExecutePurchaseAsync<TReward>(
+        this IPlayerWalletGrain wallet,
+        List<WalletDebitRequest> debitRequests,
+        Func<CancellationToken, Task<TReward>> grantAsync,
+        ILogger logger,
+        CancellationToken ct
+    ) =>
+        wallet.ExecutePurchaseAsync(
+            debitRequests,
+            CommerceOperationId.None,
+            grantAsync,
+            logger,
+            ct
+        );
+
+    /// <summary>
+    /// The same debit-then-grant, under a named operation: the debit and its receipt commit together,
+    /// and the compensating credit is applied once however many times it is asked for.
+    /// </summary>
+    /// <remarks>
+    /// This is still the pre-pivot half of a flow. Everything it does is compensable by construction;
+    /// what a flow does <em>after</em> its pivot belongs to the journal, not here, because there is no
+    /// compensation past a pivot — only completion or an operator.
+    /// </remarks>
     public static async Task<WalletPurchaseResult<TReward>> ExecutePurchaseAsync<TReward>(
         this IPlayerWalletGrain wallet,
         List<WalletDebitRequest> debitRequests,
+        CommerceOperationId operationId,
         Func<CancellationToken, Task<TReward>> grantAsync,
         ILogger logger,
         CancellationToken ct
@@ -38,7 +64,7 @@ public static class WalletPurchaseExtensions
     {
         WalletDebitResult debitResult =
             debitRequests.Count > 0
-                ? await wallet.TryDebitAsync(debitRequests, ct).ConfigureAwait(false)
+                ? await wallet.TryDebitAsync(debitRequests, operationId, ct).ConfigureAwait(false)
                 : WalletDebitResult.Success();
 
         if (!debitResult.Succeeded)
@@ -69,7 +95,7 @@ public static class WalletPurchaseExtensions
                 try
                 {
                     await wallet
-                        .CreditBackAsync(debitRequests, CancellationToken.None)
+                        .CreditBackAsync(debitRequests, operationId, CancellationToken.None)
                         .ConfigureAwait(false);
                 }
                 catch (Exception refundEx)

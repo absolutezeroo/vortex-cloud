@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Players.Wallet;
 
 namespace Vortex.Primitives.Players.Grains;
@@ -12,7 +13,45 @@ public interface IPlayerWalletGrain : IGrainWithIntegerKey
         List<WalletDebitRequest> requests,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Debits the wallet as part of a named operation, and records that it did so inside the same
+    /// transaction as the debit itself.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A replay — the same operation asking again after a timeout, a retry, or a restart — loses the
+    /// receipt insert, rolls the whole attempt back and gets the earlier answer instead. Without this
+    /// there was no way to tell a retry from a second purchase: the contract carried no identity at
+    /// all, so a debit that timed out after committing looked exactly like one that never happened.
+    /// </para>
+    /// <para>
+    /// The transaction already existed. <see cref="TryDebitAsync(List{WalletDebitRequest}, CancellationToken)"/>
+    /// opens one, with an execution strategy and a fresh context per attempt; the receipt joins it
+    /// rather than adding a second durable write to keep consistent with the first.
+    /// </para>
+    /// </remarks>
+    public Task<WalletDebitResult> TryDebitAsync(
+        List<WalletDebitRequest> requests,
+        CommerceOperationId operationId,
+        CancellationToken ct
+    );
+
     public Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct);
+
+    /// <summary>
+    /// Credits back a debit that belongs to a named operation, once. The refund and its receipt are
+    /// one commit, so a retried compensation can neither double-credit nor be lost.
+    /// </summary>
+    /// <remarks>
+    /// Only correct <em>before</em> an operation's pivot. After the pivot the operation is owed to
+    /// the player and the answer to a failure is to finish it, never to take the goods' price back.
+    /// </remarks>
+    public Task CreditBackAsync(
+        List<WalletDebitRequest> requests,
+        CommerceOperationId operationId,
+        CancellationToken ct
+    );
     public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct);
     public Task<Dictionary<int, int>> GetActivityPointsAsync(CancellationToken ct);
     public Task GrantCreditsAsync(int amount, CancellationToken ct);

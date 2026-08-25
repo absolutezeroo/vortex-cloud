@@ -15,6 +15,7 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -311,10 +312,22 @@ public sealed class GroupDirectoryGrainCreationTests
             return Task.FromResult(WalletDebitResult.Success());
         }
 
+        public Task<WalletDebitResult> TryDebitAsync(
+            List<WalletDebitRequest> requests,
+            CommerceOperationId operationId,
+            CancellationToken ct
+        ) => TryDebitAsync(requests, ct);
+
         public Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
         {
             return Task.CompletedTask;
         }
+
+        public Task CreditBackAsync(
+            List<WalletDebitRequest> requests,
+            CommerceOperationId operationId,
+            CancellationToken ct
+        ) => CreditBackAsync(requests, ct);
 
         public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct)
         {

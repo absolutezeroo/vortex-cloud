@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -33,6 +35,10 @@ internal sealed class PlayerWalletGrain(
     private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerWalletGrain> _logger = logger;
 
+    /// <summary>What a debit or refund receipt records. Only its presence is read today; the value is
+    /// stored so a later step that needs the earlier answer has one to read.</summary>
+    private const string RECEIPT_APPLIED = "applied";
+
     private (string Currency, int? ActivityPointType) DescribeCurrency(CurrencyKind kind)
     {
         // Resolve the human currency name from the currency_types table; fall back to the enum name.
@@ -52,8 +58,14 @@ internal sealed class PlayerWalletGrain(
         await HydrateAsync(ct);
     }
 
+    public Task<WalletDebitResult> TryDebitAsync(
+        List<WalletDebitRequest> requests,
+        CancellationToken ct
+    ) => TryDebitAsync(requests, CommerceOperationId.None, ct);
+
     public async Task<WalletDebitResult> TryDebitAsync(
         List<WalletDebitRequest> requests,
+        CommerceOperationId operationId,
         CancellationToken ct
     )
     {
@@ -70,69 +82,120 @@ internal sealed class PlayerWalletGrain(
                 .ConfigureAwait(true);
             IExecutionStrategy strategy = strategyProbe.Database.CreateExecutionStrategy();
 
-            (WalletDebitFailure? failure, List<WalletCurrencyUpdateSnapshot> updates) =
-                await strategy
-                    .ExecuteAsync(async () =>
+            (
+                WalletDebitFailure? failure,
+                List<WalletCurrencyUpdateSnapshot> updates,
+                bool replayed
+            ) = await strategy
+                .ExecuteAsync(async () =>
+                {
+                    await using VortexDbContext dbCtx = await _dbCtxFactory
+                        .CreateDbContextAsync(ct)
+                        .ConfigureAwait(true);
+                    await using IDbContextTransaction tx = await dbCtx
+                        .Database.BeginTransactionAsync(ct)
+                        .ConfigureAwait(true);
+
+                    List<WalletCurrencyUpdateSnapshot> attemptUpdates =
+                        new List<WalletCurrencyUpdateSnapshot>(normalizedRequests.Count);
+
+                    foreach (WalletDebitRequest request in normalizedRequests)
                     {
-                        await using VortexDbContext dbCtx = await _dbCtxFactory
-                            .CreateDbContextAsync(ct)
-                            .ConfigureAwait(true);
-                        await using IDbContextTransaction tx = await dbCtx
-                            .Database.BeginTransactionAsync(ct)
-                            .ConfigureAwait(true);
-
-                        List<WalletCurrencyUpdateSnapshot> attemptUpdates =
-                            new List<WalletCurrencyUpdateSnapshot>(normalizedRequests.Count);
-
-                        foreach (WalletDebitRequest request in normalizedRequests)
+                        try
                         {
-                            try
+                            WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(
+                                dbCtx,
+                                request,
+                                ct
+                            );
+
+                            if (update.ChangedBy != request.Amount)
                             {
-                                WalletCurrencyUpdateSnapshot update =
-                                    await ProcessDebitRequestAsync(dbCtx, request, ct);
-
-                                if (update.ChangedBy != request.Amount)
-                                {
-                                    // Specific type (CA2201): a bare Exception cannot be caught selectively, and
-                                    // this is a wallet invariant breach — the amount actually debited did not
-                                    // match what was asked for — not an arbitrary failure.
-                                    throw new InvalidOperationException(
-                                        $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
-                                            + $"requested for {request.CurrencyKind.CurrencyType}."
-                                    );
-                                }
-
-                                attemptUpdates.Add(update);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogError(
-                                    ex,
-                                    "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
-                                    this.GetPrimaryKeyLong(),
-                                    request.CurrencyKind.CurrencyType,
-                                    request.Amount
-                                );
-
-                                await tx.RollbackAsync(ct);
-
-                                return (
-                                    new WalletDebitFailure
-                                    {
-                                        CurrencyKind = request.CurrencyKind,
-                                        Amount = request.Amount,
-                                    },
-                                    attemptUpdates
+                                // Specific type (CA2201): a bare Exception cannot be caught selectively, and
+                                // this is a wallet invariant breach — the amount actually debited did not
+                                // match what was asked for — not an arbitrary failure.
+                                throw new InvalidOperationException(
+                                    $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
+                                        + $"requested for {request.CurrencyKind.CurrencyType}."
                                 );
                             }
+
+                            attemptUpdates.Add(update);
                         }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(
+                                ex,
+                                "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
+                                this.GetPrimaryKeyLong(),
+                                request.CurrencyKind.CurrencyType,
+                                request.Amount
+                            );
 
+                            await tx.RollbackAsync(ct);
+
+                            return (
+                                new WalletDebitFailure
+                                {
+                                    CurrencyKind = request.CurrencyKind,
+                                    Amount = request.Amount,
+                                },
+                                attemptUpdates,
+                                false
+                            );
+                        }
+                    }
+
+                    // The receipt joins the debit's own transaction: mutation and proof commit
+                    // together, or neither does. A replay loses this insert on the unique index,
+                    // takes the whole attempt down with it, and is answered from the receipt
+                    // that is already there.
+                    if (!operationId.IsNone)
+                    {
+                        dbCtx.CommerceReceipts.Add(
+                            new CommerceReceiptEntity
+                            {
+                                OperationId = operationId.Value,
+                                StepKey = CommerceStepKeys.DEBIT,
+                                Result = RECEIPT_APPLIED,
+                                CreatedAt = DateTime.UtcNow,
+                            }
+                        );
+                    }
+
+                    try
+                    {
                         await dbCtx.SaveChangesAsync(ct);
                         await tx.CommitAsync(ct);
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        await tx.RollbackAsync(ct);
 
-                        return ((WalletDebitFailure?)null, attemptUpdates);
-                    })
-                    .ConfigureAwait(true);
+                        _logger.LogInformation(
+                            ex,
+                            "Wallet debit for player {PlayerId} replayed operation {OperationId}; "
+                                + "the earlier debit stands.",
+                            this.GetPrimaryKeyLong(),
+                            operationId
+                        );
+
+                        return (null, attemptUpdates, true);
+                    }
+
+                    return ((WalletDebitFailure?)null, attemptUpdates, false);
+                })
+                .ConfigureAwait(true);
+
+            if (replayed)
+            {
+                // Nothing was committed this time round, so the cached balances have to go back to
+                // what the earlier debit left them at — and no currency event is published, because
+                // publishing one per retry is how a quest counts a purchase twice.
+                await RollbackUpdatesAsync(updates, ct);
+
+                return WalletDebitResult.Success();
+            }
 
             if (failure is not null)
             {
@@ -358,6 +421,175 @@ internal sealed class PlayerWalletGrain(
                 );
             }
         }
+    }
+
+    public async Task CreditBackAsync(
+        List<WalletDebitRequest> requests,
+        CommerceOperationId operationId,
+        CancellationToken ct
+    )
+    {
+        if (operationId.IsNone)
+        {
+            await CreditBackAsync(requests, ct).ConfigureAwait(true);
+
+            return;
+        }
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        // Every currency of the refund and the receipt that vouches for it go in one commit. Split
+        // across two there is no safe order: receipt first loses the refund to a crash, refund first
+        // pays it twice on the retry.
+        List<(CurrencyKind Kind, int Amount, PlayerCurrencyEntity Entity)> credited = [];
+
+        foreach (WalletDebitRequest request in requests)
+        {
+            if (request.Amount <= 0)
+            {
+                continue;
+            }
+
+            PlayerCurrencyEntity? entity = await ResolveCurrencyRowAsync(
+                    dbCtx,
+                    request.CurrencyKind,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                _logger.LogError(
+                    "Refund of {Amount} {Currency} to player {PlayerId} did not land.",
+                    request.Amount,
+                    request.CurrencyKind.CurrencyType,
+                    this.GetPrimaryKeyLong()
+                );
+
+                continue;
+            }
+
+            entity.Amount += request.Amount;
+            credited.Add((request.CurrencyKind, request.Amount, entity));
+        }
+
+        dbCtx.CommerceReceipts.Add(
+            new CommerceReceiptEntity
+            {
+                OperationId = operationId.Value,
+                StepKey = CommerceStepKeys.REFUND,
+                Result = RECEIPT_APPLIED,
+                CreatedAt = DateTime.UtcNow,
+            }
+        );
+
+        try
+        {
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogInformation(
+                ex,
+                "Refund for operation {OperationId} was already applied to player {PlayerId}; "
+                    + "not crediting again.",
+                operationId,
+                this.GetPrimaryKeyLong()
+            );
+
+            return;
+        }
+
+        foreach ((CurrencyKind kind, int amount, PlayerCurrencyEntity entity) in credited)
+        {
+            await AnnounceCurrencyAsync(kind, amount, entity, ct).ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>
+    /// The player row for a currency, the cached one where there is one and a lazily created one
+    /// otherwise. The same resolution <see cref="GrantCurrencyAsync"/> performs, without its commit,
+    /// so a caller can put several credits and a receipt into one transaction.
+    /// </summary>
+    private async Task<PlayerCurrencyEntity?> ResolveCurrencyRowAsync(
+        VortexDbContext dbCtx,
+        CurrencyKind kind,
+        CancellationToken ct
+    )
+    {
+        if (_currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot))
+        {
+            return await dbCtx
+                .PlayerCurrencies.Where(x =>
+                    x.Id == snapshot.Id && x.PlayerEntityId == (int)this.GetPrimaryKeyLong()
+                )
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(true);
+        }
+
+        CurrencyTypeSnapshot? currencyType = _currencyTypeProvider.GetCurrencyTypeByKind(kind);
+
+        if (currencyType is null || !currencyType.Enabled)
+        {
+            return null;
+        }
+
+        PlayerCurrencyEntity entity = new()
+        {
+            PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+            CurrencyTypeEntityId = currencyType.Id,
+            Amount = currencyType.StartingAmount,
+        };
+
+        dbCtx.PlayerCurrencies.Add(entity);
+
+        return entity;
+    }
+
+    /// <summary>Cache, event and client composer for a credit that has already committed.</summary>
+    private async Task AnnounceCurrencyAsync(
+        CurrencyKind kind,
+        int amount,
+        PlayerCurrencyEntity entity,
+        CancellationToken ct
+    )
+    {
+        _currenciesByKind[kind] = new WalletCurrencySnapshot
+        {
+            Id = entity.Id,
+            CurrencyKind = kind,
+            Amount = entity.Amount,
+        };
+
+        (string currencyName, int? activityPointType) = DescribeCurrency(kind);
+
+        await _events
+            .PublishAsync(
+                new CurrencyChangedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    currencyName,
+                    activityPointType,
+                    amount,
+                    entity.Amount
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        await _grainFactory
+            .GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong())
+            .OnCurrencyUpdateAsync(
+                new WalletCurrencyUpdateSnapshot
+                {
+                    CurrencyKind = kind,
+                    ChangedBy = amount,
+                    Amount = entity.Amount,
+                },
+                ct
+            )
+            .ConfigureAwait(true);
     }
 
     public async Task<bool> GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)

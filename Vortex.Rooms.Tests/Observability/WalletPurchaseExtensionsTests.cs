@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
@@ -190,6 +191,18 @@ public sealed class WalletPurchaseExtensionsTests
                     )
             );
         }
+
+        public Task<WalletDebitResult> TryDebitAsync(
+            List<WalletDebitRequest> requests,
+            CommerceOperationId operationId,
+            CancellationToken ct
+        ) => TryDebitAsync(requests, ct);
+
+        public Task CreditBackAsync(
+            List<WalletDebitRequest> requests,
+            CommerceOperationId operationId,
+            CancellationToken ct
+        ) => CreditBackAsync(requests, ct);
 
         public Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
         {
