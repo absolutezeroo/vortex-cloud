@@ -55,7 +55,17 @@ public class RoomConfig : IWiredLimits
     /// tool. Kept configurable so a hotel can localise it; the description is blanked outright.</summary>
     public string ModeratedRoomNamePlaceholder { get; init; } = "Inappropriate room name";
 
-    public int WiredMaxDepth { get; init; } = 20;
+    /// <summary>
+    /// How deep one "execute stacks" chain may go before the wired engine stops entering piles.
+    /// <para>
+    /// The default is 8 because 8 is what rooms have actually been enforcing: this property read 20
+    /// and nothing read this property — <c>RoomWiredSystem</c> enforced a private const of 8
+    /// (RFW-101). Wiring the knob up without lowering the default would have been a silent
+    /// behaviour change dressed as a refactor. Habbo's own limit is <c>UNKNOWN</c>; raise this
+    /// deliberately, watching <c>Vortex.wired.chain.stopped{reason=depth}</c>.
+    /// </para>
+    /// </summary>
+    public int WiredMaxDepth { get; init; } = 8;
     public int WiredMaxScheduledPerTick { get; init; } = 64;
     public int WiredMaxEventsPerTick { get; init; } = 64;
     public int WiredSelectorMaxAreaSize { get; init; } = 100;

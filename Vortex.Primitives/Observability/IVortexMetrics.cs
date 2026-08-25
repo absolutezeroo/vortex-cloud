@@ -38,6 +38,14 @@ public interface IVortexMetrics
     void RoomTickCompleted(double elapsedMilliseconds);
 
     /// <summary>
+    /// A wired chain stopped short of running everything it could have.
+    /// <paramref name="reason"/> is one of <see cref="WiredStopReason"/> — a closed set, so it is
+    /// safe as a tag. Nothing before this could answer how often a room actually hits its depth
+    /// limit, which is the only evidence that settles what the limit should be.
+    /// </summary>
+    void WiredChainStopped(string reason);
+
+    /// <summary>
     /// A call to the (single, global) room directory grain returned. <paramref name="method"/> is the
     /// grain method name, which is bounded by the interface.
     /// </summary>

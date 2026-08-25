@@ -26,6 +26,7 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Histogram<double> _roomTickStepDuration;
     private readonly Histogram<double> _roomTickDuration;
     private readonly Histogram<double> _roomDirectoryCallDuration;
+    private readonly Counter<long> _wiredChainStopped;
     private readonly ILiveStatsAggregator _liveStats;
 
     public bool Enabled => _enabled;
@@ -76,6 +77,12 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             description: "Round-trip time of a call to the room directory grain, by method, "
                 + "measured at the call site."
         );
+        _wiredChainStopped = _meter.CreateCounter<long>(
+            "Vortex.wired.chain.stopped",
+            unit: "{chain}",
+            description: "Wired chains that stopped short of running everything they could have, "
+                + "by reason (depth, cycle, queue-drop, execution-limit)."
+        );
     }
 
     public void PacketReceived(string operation, long? actorId = null, int? roomId = null)
@@ -118,6 +125,14 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
         if (_enabled)
         {
             _packetDropped.Add(1, new KeyValuePair<string, object?>("reason", reason));
+        }
+    }
+
+    public void WiredChainStopped(string reason)
+    {
+        if (_enabled)
+        {
+            _wiredChainStopped.Add(1, new KeyValuePair<string, object?>("reason", reason));
         }
     }
 

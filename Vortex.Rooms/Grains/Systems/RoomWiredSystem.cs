@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Events;
@@ -71,9 +72,19 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     // executions" has something to avoid. Keyed by stack (tile) id, oldest firing first.
     private readonly Dictionary<int, Queue<HashSet<int>>> _recentRandomPicks = [];
 
-    /// <summary>How deep one "execute stacks" chain may go. The tile guard already makes a cycle
-    /// impossible; this bounds the cost of a wide, legitimate chain.</summary>
-    private const int MaxCallChainDepth = 8;
+    /// <summary>
+    /// How deep one "execute stacks" chain may go. The tile guard already makes a cycle impossible;
+    /// this bounds the cost of a wide, legitimate chain.
+    /// <para>
+    /// It used to be a private const of 8 while <c>RoomConfig.WiredMaxDepth</c> said 20 and was read
+    /// by nothing (RFW-101): an operator raising the setting changed the room's behaviour not at
+    /// all. The setting is the source of truth now, and its default was lowered to 8 rather than the
+    /// engine's ceiling being raised to 20 — 8 is what every room has actually been running, and the
+    /// depth Habbo itself allows is <c>UNKNOWN</c> (OQ-1). Changing the value and changing where it
+    /// is read are two decisions; this is only the second.
+    /// </para>
+    /// </summary>
+    private int MaxCallChainDepth => _roomGrain._roomConfig.WiredMaxDepth;
 
     // Boxes currently lit by FlashActivationStateAsync, mapped to the room-clock time their visual
     // state reverts to unlit. Re-flashing a box simply pushes its revert time back.
@@ -143,6 +154,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         if (_eventQueue.Count >= _roomGrain._roomConfig.WiredMaxQueuedEvents)
         {
             _droppedEventCount++;
+            _roomGrain._metrics.WiredChainStopped(WiredStopReason.QUEUE_DROP);
 
             return;
         }
@@ -952,8 +964,15 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         CancellationToken ct
     )
     {
-        if (targetFurniIds.Count == 0 || _callChainTiles.Count >= MaxCallChainDepth)
+        if (targetFurniIds.Count == 0)
         {
+            return 0;
+        }
+
+        if (_callChainTiles.Count >= MaxCallChainDepth)
+        {
+            _roomGrain._metrics.WiredChainStopped(WiredStopReason.DEPTH);
+
             return 0;
         }
 
@@ -976,6 +995,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
                 if (!_callChainTiles.Add(tileIdx))
                 {
+                    _roomGrain._metrics.WiredChainStopped(WiredStopReason.CYCLE);
+
                     continue;
                 }
 
@@ -1108,7 +1129,14 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             _executionWindows[stackId] = window;
         }
 
-        return window.TryConsume(policy.ExecutionLimit, policy.ExecutionWindowMs, nowMs);
+        if (window.TryConsume(policy.ExecutionLimit, policy.ExecutionWindowMs, nowMs))
+        {
+            return true;
+        }
+
+        _roomGrain._metrics.WiredChainStopped(WiredStopReason.EXECUTION_LIMIT);
+
+        return false;
     }
 
     /// <summary>
