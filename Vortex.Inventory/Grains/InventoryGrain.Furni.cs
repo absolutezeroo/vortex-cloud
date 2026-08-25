@@ -16,6 +16,7 @@ using Vortex.Database.Entities.Pets;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Furniture;
+using Vortex.Inventory.Fulfillment;
 using Vortex.Inventory.Furniture;
 using Vortex.Logging;
 using Vortex.Primitives;
@@ -163,14 +164,6 @@ public sealed partial class InventoryGrain
     {
         quantity = Math.Max(1, quantity);
 
-        List<FurnitureEntity> furniEntities = new();
-        List<string> badgeCodes = new();
-        List<PetCreateRequest> petRequests = new();
-        List<BotCreateRequest> botRequests = new();
-        List<PetEntity> committedPets = [];
-        List<BotEntity> committedBots = [];
-        List<(int EffectId, int SubType, int Duration)> effectGrants = new();
-
         // Guild furni is bought from the guild pages with the guild id in extraParam; the badge and
         // both recolours have to be baked into the item's stuff data at grant time, because the
         // client renders them straight from there and never asks the server for them again.
@@ -182,123 +175,28 @@ public sealed partial class InventoryGrain
                     .ConfigureAwait(true)
                 : null;
 
-        foreach (CatalogProductSnapshot product in offer.Products)
-        {
-            if (product.ProductType is ProductType.Floor || product.ProductType is ProductType.Wall)
+        // Everything the offer promises, worked out before anything durable happens. Pure and
+        // deterministic, so an unknown definition or a malformed product fails here — while there is
+        // still nothing to compensate — rather than halfway through the grant.
+        FulfillmentPlan plan = _planner.Plan(offer, extraParam, quantity, guildIdentity);
+
+        List<FurnitureEntity> furniEntities =
+        [
+            .. plan.Furniture.Select(f => new FurnitureEntity
             {
-                FurnitureDefinitionSnapshot def =
-                    _furnitureDefinitionProvider.TryGetDefinition(product.FurniDefinitionId)
-                    ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
+                PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                FurnitureDefinitionEntityId = f.DefinitionId,
+                ExtraData = f.ExtraData,
+            }),
+        ];
 
-                // Only string-array furni can carry the guild layout; stamping anything else would
-                // corrupt its own stuff data.
-                string? guildExtraData =
-                    guildIdentity is not null && def.StuffDataType == StuffDataType.StringKey
-                        ? BuildGuildExtraData(guildIdentity)
-                        : null;
+        IReadOnlyList<string> badgeCodes = plan.BadgeCodes;
+        IReadOnlyList<PetCreateRequest> petRequests = plan.Pets;
+        IReadOnlyList<BotCreateRequest> botRequests = plan.Bots;
+        IReadOnlyList<PlannedEffect> effectGrants = plan.Effects;
 
-                // Each product carries its own per-offer count (a bundle is an offer holding
-                // several products, and any product may bundle >1 of an item), so the copies to
-                // grant are the purchase multiplier times that count. Ignoring product.Quantity
-                // collapsed every bundle to one of each item.
-                int copies = quantity * Math.Max(1, product.Quantity);
-
-                for (int i = 0; i < copies; i++)
-                {
-                    furniEntities.Add(
-                        new FurnitureEntity
-                        {
-                            PlayerEntityId = (int)this.GetPrimaryKeyLong(),
-                            FurnitureDefinitionEntityId = def.Id,
-                            ExtraData = guildExtraData,
-                        }
-                    );
-                }
-
-                continue;
-            }
-
-            if (
-                product.ProductType is ProductType.Badge
-                && !string.IsNullOrWhiteSpace(product.ExtraParam)
-            )
-            {
-                badgeCodes.Add(product.ExtraParam);
-                continue;
-            }
-
-            if (
-                product.ProductType is ProductType.Effect
-                && !string.IsNullOrWhiteSpace(product.ExtraParam)
-            )
-            {
-                // ExtraParam encodes the effect: "effectId", "effectId:durationSeconds", or
-                // "effectId:durationSeconds:subType" (duration 0/absent = permanent). One grant per copy.
-                string[] fx = product.ExtraParam.Split(':');
-
-                if (int.TryParse(fx[0], out int effectId) && effectId > 0)
-                {
-                    int duration = fx.Length > 1 && int.TryParse(fx[1], out int d) ? d : 0;
-                    int subType = fx.Length > 2 && int.TryParse(fx[2], out int s) ? s : 0;
-                    int copies = quantity * Math.Max(1, product.Quantity);
-
-                    for (int i = 0; i < copies; i++)
-                    {
-                        effectGrants.Add((effectId, subType, duration));
-                    }
-                }
-
-                continue;
-            }
-
-            if (product.ProductType is ProductType.Robot)
-            {
-                BotCreateRequest? bot = TryReadBotProduct(product.ExtraParam, extraParam);
-
-                if (bot is null)
-                {
-                    _logger.LogWarning(
-                        "Catalog product {ProductId} is a Robot but its extra param '{ExtraParam}' carries no figure; skipping the grant.",
-                        product.Id,
-                        product.ExtraParam
-                    );
-
-                    continue;
-                }
-
-                botRequests.Add(bot);
-
-                continue;
-            }
-
-            if (product.ProductType is ProductType.Pet)
-            {
-                _ = int.TryParse(product.ExtraParam, out int petType);
-
-                string[] parts = extraParam.Split('\n');
-                string petName = parts.Length > 0 ? parts[0].Trim() : "Pet";
-                int race = parts.Length > 1 && int.TryParse(parts[1], out int r) ? r : 0;
-                string color = parts.Length > 2 ? parts[2].Trim() : "ffffff";
-
-                if (string.IsNullOrWhiteSpace(petName))
-                {
-                    petName = "Pet";
-                }
-
-                petRequests.Add(
-                    new PetCreateRequest
-                    {
-                        Name = petName,
-                        Type = petType,
-                        Race = race,
-                        Color = color,
-                        Gender = AvatarGenderType.Male,
-                        Energy = 100,
-                        Nutrition = 100,
-                    }
-                );
-            }
-        }
+        List<PetEntity> committedPets = [];
+        List<BotEntity> committedBots = [];
 
         VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
@@ -456,7 +354,7 @@ public sealed partial class InventoryGrain
     private async Task AnnounceGrantedFamiliesAsync(
         List<PetEntity> pets,
         List<BotEntity> bots,
-        List<(int EffectId, int SubType, int Duration)> effectGrants
+        IReadOnlyList<PlannedEffect> effectGrants
     )
     {
         // ponytail: CancellationToken.None rather than a host-shutdown token. The requirement is
@@ -533,85 +431,24 @@ public sealed partial class InventoryGrain
         // The effect grain owns player_effects and pushes AvatarEffectAdded itself.
         IPlayerEffectGrain effects = _grainFactory.GetPlayerEffectGrain(this.GetPrimaryKeyLong());
 
-        foreach ((int effectId, int subType, int duration) in effectGrants)
+        foreach (PlannedEffect grant in effectGrants)
         {
             try
             {
-                await effects.AddEffectAsync(effectId, subType, duration, ct).ConfigureAwait(true);
+                await effects
+                    .AddEffectAsync(grant.EffectId, grant.SubType, grant.DurationSeconds, ct)
+                    .ConfigureAwait(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
                     "Effect {EffectId} was bought by player {PlayerId} but could not be granted.",
-                    effectId,
+                    grant.EffectId,
                     this.GetPrimaryKeyLong()
                 );
             }
         }
-    }
-
-    /// <summary>
-    /// Reads a bot product's definition. Habbo writes these as semicolon-separated key:value pairs
-    /// — <c>name:Robbie;figure:hd-180-1...;gender:m;motto:...</c> — and a figure string itself
-    /// contains neither separator, so the keys are unambiguous.
-    /// <para>
-    /// A bare figure with no keys is also accepted, because that is what a hand-written product
-    /// looks like and rejecting it would be a trap rather than a rule.
-    /// </para>
-    /// </summary>
-    /// <returns>Null when no figure could be found, which is the one field a bot cannot do without.</returns>
-    internal static BotCreateRequest? TryReadBotProduct(
-        string? productExtraParam,
-        string purchaseExtraParam
-    )
-    {
-        string definition = productExtraParam ?? string.Empty;
-
-        Dictionary<string, string> fields = new(StringComparer.OrdinalIgnoreCase);
-        string? bareFigure = null;
-
-        foreach (string part in definition.Split(';', StringSplitOptions.RemoveEmptyEntries))
-        {
-            int separator = part.IndexOf(':', StringComparison.Ordinal);
-
-            if (separator <= 0)
-            {
-                bareFigure ??= part.Trim();
-                continue;
-            }
-
-            fields[part[..separator].Trim()] = part[(separator + 1)..].Trim();
-        }
-
-        string figure = fields.GetValueOrDefault("figure", bareFigure ?? string.Empty);
-
-        if (string.IsNullOrWhiteSpace(figure))
-        {
-            return null;
-        }
-
-        // The product names the bot; Habbo does not ask the buyer for one the way it does for a
-        // pet. A typed name is still honoured if the product left the field out.
-        string typedName = purchaseExtraParam.Split('\n')[0].Trim();
-        string name = fields.GetValueOrDefault("name", string.Empty);
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            name = string.IsNullOrWhiteSpace(typedName) ? "Bot" : typedName;
-        }
-
-        return new BotCreateRequest
-        {
-            Name = name,
-            Figure = figure,
-            Gender = fields
-                .GetValueOrDefault("gender", "m")
-                .StartsWith("f", StringComparison.OrdinalIgnoreCase)
-                ? AvatarGenderType.Female
-                : AvatarGenderType.Male,
-            Motto = fields.GetValueOrDefault("motto", string.Empty),
-        };
     }
 
     public async Task GrantBadgeAsync(string badgeCode, CancellationToken ct)
@@ -1103,30 +940,6 @@ public sealed partial class InventoryGrain
                 OfferId = offer.Id,
                 ExtraParam = extraParam,
                 Wrapping = FurniturePresentWrapping.Pack(wrapping.BoxTypeId, wrapping.RibbonTypeId),
-            }
-        );
-
-        return extraData.GetJsonString();
-    }
-
-    /// <summary>
-    /// Serializes the guild layout into the item's extra-data blob, in the same "stuff" section
-    /// shape <see cref="Vortex.Furniture.Providers.StuffDataFactory"/> reads back.
-    /// </summary>
-    private static string BuildGuildExtraData(GuildFurniIdentitySnapshot identity)
-    {
-        ExtraData extraData = new(null);
-
-        extraData.UpdateSection(
-            ExtraDataSectionType.STUFF,
-            new
-            {
-                Data = GuildFurniStuffData.Build(
-                    identity.GroupId,
-                    identity.BadgeCode,
-                    identity.ColorOneHex,
-                    identity.ColorTwoHex
-                ),
             }
         );
 

@@ -10,6 +10,7 @@ using Orleans.Runtime;
 using Vortex.Database.Context;
 using Vortex.Furniture.Providers;
 using Vortex.Inventory.Configuration;
+using Vortex.Inventory.Fulfillment;
 using Vortex.Inventory.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
@@ -154,6 +155,10 @@ internal sealed class InventoryGrainFixture : IDisposable
             new StubDefinitionProvider(),
             new StubFurnitureLoader(),
             new StuffDataFactory(),
+            new CatalogFulfillmentPlanner(
+                new StubDefinitionProvider(),
+                NullLogger<CatalogFulfillmentPlanner>.Instance
+            ),
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
             NullLogger<InventoryGrain>.Instance
         );

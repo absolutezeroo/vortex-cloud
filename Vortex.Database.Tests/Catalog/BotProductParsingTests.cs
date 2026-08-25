@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Vortex.Inventory.Grains;
+using Vortex.Inventory.Fulfillment;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Rooms.Enums;
 using Xunit;
@@ -20,7 +20,7 @@ public sealed class BotProductParsingTests
     [Fact]
     public void AKeyedProduct_TakesTheFigureFromItsFigureKeyNotItsFirstSegment()
     {
-        BotCreateRequest? bot = InventoryGrain.TryReadBotProduct(
+        BotCreateRequest? bot = BotProductReader.TryRead(
             $"name:Robbie;figure:{Figure};gender:m",
             string.Empty
         );
@@ -34,7 +34,7 @@ public sealed class BotProductParsingTests
     [Fact]
     public void TheKeysAreOrderIndependent()
     {
-        BotCreateRequest? bot = InventoryGrain.TryReadBotProduct(
+        BotCreateRequest? bot = BotProductReader.TryRead(
             $"gender:f;figure:{Figure};motto:at your service;name:Rosa",
             string.Empty
         );
@@ -50,7 +50,7 @@ public sealed class BotProductParsingTests
     public void ABareFigureIsStillAccepted()
     {
         // What a hand-written product looks like. Rejecting it would be a trap, not a rule.
-        BotCreateRequest? bot = InventoryGrain.TryReadBotProduct(Figure, "Custom");
+        BotCreateRequest? bot = BotProductReader.TryRead(Figure, "Custom");
 
         bot.Should().NotBeNull();
         bot!.Figure.Should().Be(Figure);
@@ -62,7 +62,7 @@ public sealed class BotProductParsingTests
     {
         // Habbo does not ask for a bot's name at the till the way it does for a pet; the product
         // names it. Letting the purchase field win would let a buyer rename a branded bot.
-        BotCreateRequest? bot = InventoryGrain.TryReadBotProduct(
+        BotCreateRequest? bot = BotProductReader.TryRead(
             $"name:Robbie;figure:{Figure}",
             "Something Else"
         );
@@ -76,8 +76,8 @@ public sealed class BotProductParsingTests
     [InlineData("name:Robbie;gender:m")]
     public void AProductWithNoFigure_IsRefusedRatherThanMintedInvisible(string? extraParam)
     {
-        InventoryGrain
-            .TryReadBotProduct(extraParam, "Robbie")
+        BotProductReader
+            .TryRead(extraParam, "Robbie")
             .Should()
             .BeNull("a bot with no appearance is worse than a purchase that visibly failed");
     }
@@ -85,7 +85,7 @@ public sealed class BotProductParsingTests
     [Fact]
     public void AnUnknownGender_FallsBackToMaleRatherThanThrowing()
     {
-        BotCreateRequest? bot = InventoryGrain.TryReadBotProduct(
+        BotCreateRequest? bot = BotProductReader.TryRead(
             $"figure:{Figure};gender:whatever",
             string.Empty
         );

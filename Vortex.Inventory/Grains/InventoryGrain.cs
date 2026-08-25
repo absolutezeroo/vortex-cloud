@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Inventory.Configuration;
+using Vortex.Inventory.Fulfillment;
 using Vortex.Inventory.Grains.Modules;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
@@ -22,6 +23,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
     private readonly IFurnitureDefinitionProvider _furnitureDefinitionProvider;
     private readonly IInventoryFurnitureLoader _furnitureItemsLoader;
     private readonly IStuffDataFactory _stuffDataFactory;
+    private readonly CatalogFulfillmentPlanner _planner;
     private readonly IEventPublisher _events;
     private readonly ILogger<InventoryGrain> _logger;
 
@@ -35,6 +37,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         IFurnitureDefinitionProvider furnitureDefinitionProvider,
         IInventoryFurnitureLoader furnitureItemsLoader,
         IStuffDataFactory stuffDataFactory,
+        CatalogFulfillmentPlanner planner,
         IEventPublisher events,
         ILogger<InventoryGrain> logger
     )
@@ -45,6 +48,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         _furnitureDefinitionProvider = furnitureDefinitionProvider;
         _furnitureItemsLoader = furnitureItemsLoader;
         _stuffDataFactory = stuffDataFactory;
+        _planner = planner;
         _events = events;
         _logger = logger;
 
