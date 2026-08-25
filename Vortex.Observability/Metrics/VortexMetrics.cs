@@ -30,6 +30,7 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Counter<long> _commerceOperation;
     private readonly Counter<long> _commerceStepReplayed;
     private readonly Counter<long> _furnitureLogicFallback;
+    private readonly Counter<long> _referenceDataPublished;
     private readonly ILiveStatsAggregator _liveStats;
 
     public bool Enabled => _enabled;
@@ -96,6 +97,11 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             "Vortex.commerce.step.replayed",
             unit: "{step}",
             description: "Post-pivot steps that found their own receipt and skipped their work."
+        );
+        _referenceDataPublished = _meter.CreateCounter<long>(
+            "Vortex.reference.published",
+            unit: "{version}",
+            description: "Reference-data caches publishing a new version, by provider."
         );
         _furnitureLogicFallback = _meter.CreateCounter<long>(
             "Vortex.furniture.logic.fallback",
@@ -168,6 +174,17 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
                 new KeyValuePair<string, object?>("flow", kind.ToString()),
                 new KeyValuePair<string, object?>("state", state.ToString())
             );
+        }
+    }
+
+    public void ReferenceDataPublished(string provider, int version)
+    {
+        if (_enabled)
+        {
+            // Tagged by provider only. The version is monotonic, so tagging by it would grow a
+            // new time series on every reload — the unbounded cardinality this interface's own
+            // contract forbids. The count of this counter IS the version, which is the same answer.
+            _referenceDataPublished.Add(1, new KeyValuePair<string, object?>("provider", provider));
         }
     }
 

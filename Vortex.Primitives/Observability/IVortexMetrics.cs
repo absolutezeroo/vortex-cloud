@@ -54,6 +54,15 @@ public interface IVortexMetrics
     void CommerceStepReplayed(string stepKey);
 
     /// <summary>
+    /// A reference-data cache published a new version. Reloads are admin actions, so the useful
+    /// question is not how often they happen but which version is being served — an operator who has
+    /// just edited definitions wants to know the emulator agrees, and the count of this counter is
+    /// that version. <paramref name="version"/> is not a tag: it is monotonic, and tagging by it
+    /// would grow a new time series per reload.
+    /// </summary>
+    void ReferenceDataPublished(string provider, int version);
+
+    /// <summary>
     /// A furniture definition asked for a logic nobody registered and got the family default. The
     /// warning that used to be the only signal is the to-do list for implementing behaviour; a
     /// counter is how a hotel finds out how much of its catalogue is on it.
