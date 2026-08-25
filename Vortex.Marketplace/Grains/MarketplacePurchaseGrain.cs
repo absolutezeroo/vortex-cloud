@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
@@ -28,6 +29,7 @@ public sealed class MarketplacePurchaseGrain(
     IGrainFactory grainFactory,
     IMarketplaceSettingsProvider settingsProvider,
     IEventPublisher events,
+    ICommerceJournal journal,
     ILogger<MarketplacePurchaseGrain> logger
 ) : Grain, IMarketplacePurchaseGrain
 {
@@ -35,7 +37,13 @@ public sealed class MarketplacePurchaseGrain(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IMarketplaceSettingsProvider _settingsProvider = settingsProvider;
     private readonly IEventPublisher _events = events;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<MarketplacePurchaseGrain> _logger = logger;
+
+    /// <summary>How many times a post-pivot delivery is retried before an operator is called. The
+    /// receipt makes each attempt safe; the point of retrying at all is that most failures here are
+    /// a moment of unavailability rather than a lasting one.</summary>
+    private const int POST_PIVOT_ATTEMPTS = 3;
 
     public async Task<(int Result, int OfferId)> MakeOfferAsync(
         int furnitureItemId,
@@ -69,16 +77,19 @@ public sealed class MarketplacePurchaseGrain(
             return (1, 0);
         }
 
-        bool removed = await inventoryGrain
-            .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
-            .ConfigureAwait(true);
-
-        if (!removed)
-        {
-            return (1, 0);
-        }
-
         int furniType = snapshot.Definition.ProductType == ProductType.Wall ? 2 : 1;
+
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.MarketplaceList,
+                (int)this.GetPrimaryKeyLong(),
+                $"item={furnitureItemId} price={price}",
+                ct
+            )
+            .ConfigureAwait(true);
 
         MarketplaceOfferEntity offer = new()
         {
@@ -88,7 +99,10 @@ public sealed class MarketplacePurchaseGrain(
             FurnitureType = furniType,
             ExtraData = snapshot.ExtraData,
             Price = price,
-            State = MarketplaceOfferState.Active,
+            // Invisible to buyers until the item has actually left the inventory. The old order —
+            // remove first, insert second — destroyed the furniture if anything went wrong in
+            // between: gone from the inventory and held by no offer.
+            State = MarketplaceOfferState.PendingRemoval,
             CreditsOwed = 0,
             ExpiresAt = DateTime.UtcNow.AddSeconds(
                 _settingsProvider.GetSettings().OfferDurationSeconds
@@ -100,6 +114,48 @@ public sealed class MarketplacePurchaseGrain(
             .ConfigureAwait(true);
         dbCtx.MarketplaceOffers.Add(offer);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        bool removed;
+
+        try
+        {
+            // THE PIVOT: the item leaves the seller's inventory here, and the offer it left for
+            // already exists.
+            removed = await inventoryGrain
+                .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            await AbandonPendingOfferAsync(offer.Id, operation, ex.Message).ConfigureAwait(true);
+
+            throw;
+        }
+
+        if (!removed)
+        {
+            await AbandonPendingOfferAsync(offer.Id, operation, "the item could not be removed")
+                .ConfigureAwait(true);
+
+            return (1, 0);
+        }
+
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.Pivoted,
+                CommerceStepKeys.MARKETPLACE_WITHDRAW,
+                null,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        offer.State = MarketplaceOfferState.Active;
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        await _journal
+            .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
+            .ConfigureAwait(true);
 
         await _events
             .PublishAsync(
@@ -139,12 +195,47 @@ public sealed class MarketplacePurchaseGrain(
             return false;
         }
 
+        // The operation id is derived from the offer, not minted fresh: a seller who clicks cancel
+        // twice, or retries after a timeout, is the same operation asking again — and the receipt on
+        // the restitution is what stops the second one handing the item back a second time.
+        CommerceOperationId operation = OperationForOffer(
+            CommerceOperationKind.MarketplaceCancel,
+            offer.Id
+        );
+
+        await _journal
+            .OpenIfNewAsync(
+                operation,
+                CommerceOperationKind.MarketplaceCancel,
+                (int)this.GetPrimaryKeyLong(),
+                $"offer={offer.Id}",
+                ct
+            )
+            .ConfigureAwait(true);
+
+        // THE PIVOT. The offer is off the market; the item is owed back.
         offer.State = MarketplaceOfferState.Cancelled;
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.Pivoted,
+                CommerceStepKeys.MARKETPLACE_RESTORE,
+                null,
+                ct
+            )
+            .ConfigureAwait(true);
+
         IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(this.GetPrimaryKeyLong());
-        await inventoryGrain
-            .GrantFurnitureDefinitionAsync(offer.FurnitureDefinitionEntityId, offer.ExtraData, ct)
+
+        await DeliverAsync(
+                inventoryGrain,
+                offer,
+                operation,
+                CommerceStepKeys.MARKETPLACE_RESTORE,
+                ct
+            )
             .ConfigureAwait(true);
 
         await _events
@@ -195,6 +286,18 @@ public sealed class MarketplacePurchaseGrain(
             },
         ];
 
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.MarketplaceBuy,
+                (int)this.GetPrimaryKeyLong(),
+                $"offer={offer.Id} price={offer.Price} seller={offer.SellerEntityId}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<bool> result;
 
         try
@@ -202,6 +305,7 @@ public sealed class MarketplacePurchaseGrain(
             result = await walletGrain
                 .ExecutePurchaseAsync(
                     debitRequests,
+                    operation,
                     async innerCt =>
                     {
                         int commission = Math.Max(
@@ -210,7 +314,9 @@ public sealed class MarketplacePurchaseGrain(
                         );
                         int creditsOwed = offer.Price - commission;
 
-                        // Atomically claim the offer so a concurrent buyer cannot purchase it twice.
+                        // THE PIVOT, and a correct one: the conditional update is what stops two
+                        // buyers owning the same offer, and it was right before any of this. What
+                        // was missing is everything after it.
                         int claimed = await dbCtx
                             .MarketplaceOffers.Where(o =>
                                 o.Id == offer.Id && o.State == MarketplaceOfferState.Active
@@ -228,48 +334,44 @@ public sealed class MarketplacePurchaseGrain(
                             throw new OfferNoLongerActiveException(offer.Id);
                         }
 
+                        await _journal
+                            .TransitionAsync(
+                                operation,
+                                CommerceOperationState.Pivoted,
+                                CommerceStepKeys.MARKETPLACE_DELIVER,
+                                null,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+
                         IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(
                             this.GetPrimaryKeyLong()
                         );
 
                         try
                         {
-                            await inventoryGrain
-                                .GrantFurnitureDefinitionAsync(
-                                    offer.FurnitureDefinitionEntityId,
-                                    offer.ExtraData,
+                            // Retried rather than compensated on the first stumble: the receipt makes
+                            // each attempt safe, and most failures at this point are a moment of
+                            // unavailability rather than a lasting one.
+                            await DeliverAsync(
+                                    inventoryGrain,
+                                    offer,
+                                    operation,
+                                    CommerceStepKeys.MARKETPLACE_DELIVER,
                                     innerCt
                                 )
                                 .ConfigureAwait(true);
                         }
                         catch (Exception)
                         {
-                            // Compensate the claim so the offer is re-listed instead of staying
-                            // Sold with no item delivered; the shared purchase helper then refunds
-                            // the buyer when this exception bubbles up.
-                            try
-                            {
-                                await dbCtx
-                                    .MarketplaceOffers.Where(o => o.Id == offer.Id)
-                                    .ExecuteUpdateAsync(
-                                        up =>
-                                            up.SetProperty(
-                                                    p => p.State,
-                                                    MarketplaceOfferState.Active
-                                                )
-                                                .SetProperty(p => p.CreditsOwed, 0),
-                                        CancellationToken.None
-                                    )
-                                    .ConfigureAwait(true);
-                            }
-                            catch (Exception compensateEx)
-                            {
-                                _logger.LogError(
-                                    compensateEx,
-                                    "Failed to re-list marketplace offer {OfferId} after grant failure",
-                                    offer.Id
-                                );
-                            }
+                            // Only then, the compensation — and it is a complete one here, unlike
+                            // anywhere else past a pivot. A marketplace offer holds no furniture row
+                            // of its own between listing and delivery: the item exists as the offer.
+                            // Putting the offer back Active therefore restores exactly the state
+                            // before the claim, and the buyer is refunded by the shared primitive as
+                            // this leaves. (ADR-002 records why this one keeps a post-pivot revert.)
+                            await RelistAfterFailedDeliveryAsync(offer.Id, operation)
+                                .ConfigureAwait(true);
 
                             throw;
                         }
@@ -286,11 +388,25 @@ public sealed class MarketplacePurchaseGrain(
             // The buyer was already refunded by the purchase helper. Report the offer as gone
             // rather than letting this escape: the handler does not catch, so an exception here
             // means the client is never answered at all and its marketplace dialog simply hangs.
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.MARKETPLACE_DELIVER,
+                    "the offer was claimed by another buyer",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             return 1;
         }
 
         if (result.Succeeded)
         {
+            await _journal
+                .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
+                .ConfigureAwait(true);
+
             await _events
                 .PublishAsync(
                     new MarketplaceOfferBoughtEvent(
@@ -300,6 +416,18 @@ public sealed class MarketplacePurchaseGrain(
                         offer.FurnitureDefinitionEntityId,
                         offer.Price
                     ),
+                    ct
+                )
+                .ConfigureAwait(true);
+        }
+        else
+        {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
                     ct
                 )
                 .ConfigureAwait(true);
@@ -340,6 +468,52 @@ public sealed class MarketplacePurchaseGrain(
             return 0;
         }
 
+        // Pay first, clear the debt second — the opposite of what this used to do. Zeroing first
+        // meant a failure to credit lost the seller their money outright: the database said they had
+        // been paid and they had not. The receipt makes the payment safe to retry, so if the clearing
+        // is what fails, the next redeem finds the debt still there, is answered "already paid" by
+        // the receipt, and clears it. Nothing is lost, nothing is paid twice.
+        CommerceOperationId operation = OperationForOffer(
+            CommerceOperationKind.MarketplaceRedeem,
+            soldOffers.Min(o => o.Id)
+        );
+
+        await _journal
+            .OpenIfNewAsync(
+                operation,
+                CommerceOperationKind.MarketplaceRedeem,
+                (int)this.GetPrimaryKeyLong(),
+                $"offers={soldOffers.Count} credits={totalCredits}",
+                ct
+            )
+            .ConfigureAwait(true);
+
+        await _grainFactory
+            .GetPlayerWalletGrain(this.GetPrimaryKeyLong())
+            .CreditOnceAsync(
+                [
+                    new WalletDebitRequest
+                    {
+                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                        Amount = totalCredits,
+                    },
+                ],
+                operation,
+                CommerceStepKeys.MARKETPLACE_CREDIT,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.Pivoted,
+                CommerceStepKeys.MARKETPLACE_CREDIT,
+                null,
+                ct
+            )
+            .ConfigureAwait(true);
+
         foreach (MarketplaceOfferEntity o in soldOffers)
         {
             o.CreditsOwed = 0;
@@ -347,9 +521,8 @@ public sealed class MarketplacePurchaseGrain(
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-        await _grainFactory
-            .GetPlayerWalletGrain(this.GetPrimaryKeyLong())
-            .GrantCreditsAsync(totalCredits, ct)
+        await _journal
+            .TransitionAsync(operation, CommerceOperationState.Completed, null, null, ct)
             .ConfigureAwait(true);
 
         await _events
@@ -366,6 +539,155 @@ public sealed class MarketplacePurchaseGrain(
         return totalCredits;
     }
 
+    /// <summary>
+    /// Hands a definition over as a named step, retrying a bounded number of times. Every attempt
+    /// carries the same receipt, so a call that timed out after committing cannot deliver twice.
+    /// </summary>
+    private async Task DeliverAsync(
+        IInventoryGrain inventory,
+        MarketplaceOfferEntity offer,
+        CommerceOperationId operation,
+        string stepKey,
+        CancellationToken ct
+    )
+    {
+        for (int attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await inventory
+                    .GrantFurnitureDefinitionCopiesAsync(
+                        offer.FurnitureDefinitionEntityId,
+                        offer.ExtraData,
+                        1,
+                        operation,
+                        stepKey,
+                        ct
+                    )
+                    .ConfigureAwait(true);
+
+                return;
+            }
+            catch (Exception ex) when (attempt < POST_PIVOT_ATTEMPTS)
+            {
+                await _journal
+                    .TransitionAsync(
+                        operation,
+                        CommerceOperationState.Completing,
+                        stepKey,
+                        ex.Message,
+                        CancellationToken.None
+                    )
+                    .ConfigureAwait(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Puts a claimed offer back on the market after a delivery that would not go through, and
+    /// escalates if even that fails — which is the state nobody could see before: the offer Sold, the
+    /// item undelivered, and a log line about it.
+    /// </summary>
+    private async Task RelistAfterFailedDeliveryAsync(int offerId, CommerceOperationId operation)
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(CancellationToken.None)
+                .ConfigureAwait(true);
+
+            await dbCtx
+                .MarketplaceOffers.Where(o => o.Id == offerId)
+                .ExecuteUpdateAsync(
+                    up =>
+                        up.SetProperty(p => p.State, MarketplaceOfferState.Active)
+                            .SetProperty(p => p.CreditsOwed, 0),
+                    CancellationToken.None
+                )
+                .ConfigureAwait(true);
+
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.MARKETPLACE_DELIVER,
+                    "delivery failed; the offer was re-listed and the buyer refunded",
+                    CancellationToken.None
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(
+                ex,
+                "Marketplace offer {OfferId} is Sold, undelivered and could not be re-listed.",
+                offerId
+            );
+
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.NeedsIntervention,
+                    CommerceStepKeys.MARKETPLACE_DELIVER,
+                    ex.Message,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>Abandons an offer that never took its item, before anything irreversible.</summary>
+    private async Task AbandonPendingOfferAsync(
+        int offerId,
+        CommerceOperationId operation,
+        string reason
+    )
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(CancellationToken.None)
+                .ConfigureAwait(true);
+
+            // Removed rather than marked cancelled: as far as the seller is concerned this listing
+            // never happened, and a cancelled offer in their history for a listing that never took
+            // their item would be a lie about what they did.
+            MarketplaceOfferEntity? pending = await dbCtx
+                .MarketplaceOffers.FirstOrDefaultAsync(o => o.Id == offerId, CancellationToken.None)
+                .ConfigureAwait(true);
+
+            if (pending is not null)
+            {
+                dbCtx.MarketplaceOffers.Remove(pending);
+                await dbCtx.SaveChangesAsync(CancellationToken.None).ConfigureAwait(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Harmless as state goes — a PendingRemoval offer is invisible to buyers and holds
+            // nothing — but it is a row that will sit there, so it is said out loud.
+            _logger.LogError(
+                ex,
+                "Marketplace offer {OfferId} could not be abandoned after {Reason}.",
+                offerId,
+                reason
+            );
+        }
+
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.FailedBeforePivot,
+                CommerceStepKeys.MARKETPLACE_WITHDRAW,
+                reason,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+    }
+
+    private static CommerceOperationId OperationForOffer(CommerceOperationKind kind, int offerId) =>
+        CommerceOperationId.Deterministic(kind, offerId);
+
     public async Task<(int CreditsOwed, List<MarketplaceOfferSnapshot> Offers)> GetOwnOffersAsync(
         CancellationToken ct
     )
@@ -379,6 +701,10 @@ public sealed class MarketplacePurchaseGrain(
             .MarketplaceOffers.Where(o =>
                 o.SellerEntityId == (int)this.GetPrimaryKeyLong()
                 && o.State != MarketplaceOfferState.Cancelled
+                // A listing that has not taken its item yet is not an offer the seller has; it is a
+                // moment. One that gets stuck there is recovery's problem, and the client has no
+                // status to render it with anyway.
+                && o.State != MarketplaceOfferState.PendingRemoval
             )
             .ToListAsync(ct)
             .ConfigureAwait(true);

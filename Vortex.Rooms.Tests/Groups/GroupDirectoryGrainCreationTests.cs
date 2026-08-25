@@ -318,6 +318,13 @@ public sealed class GroupDirectoryGrainCreationTests
             CancellationToken ct
         ) => TryDebitAsync(requests, ct);
 
+        public Task<bool> CreditOnceAsync(
+            List<WalletDebitRequest> credits,
+            CommerceOperationId operationId,
+            string stepKey,
+            CancellationToken ct
+        ) => CreditBackAsync(credits, ct).ContinueWith(_ => true, TaskScheduler.Default);
+
         public Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
         {
             return Task.CompletedTask;

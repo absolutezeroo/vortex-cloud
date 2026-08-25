@@ -436,6 +436,19 @@ internal sealed class PlayerWalletGrain(
             return;
         }
 
+        await CreditOnceAsync(requests, operationId, CommerceStepKeys.REFUND, ct)
+            .ConfigureAwait(true);
+    }
+
+    public async Task<bool> CreditOnceAsync(
+        List<WalletDebitRequest> credits,
+        CommerceOperationId operationId,
+        string stepKey,
+        CancellationToken ct
+    )
+    {
+        List<WalletDebitRequest> requests = credits;
+
         await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
@@ -479,7 +492,7 @@ internal sealed class PlayerWalletGrain(
             new CommerceReceiptEntity
             {
                 OperationId = operationId.Value,
-                StepKey = CommerceStepKeys.REFUND,
+                StepKey = stepKey,
                 Result = RECEIPT_APPLIED,
                 CreatedAt = DateTime.UtcNow,
             }
@@ -493,19 +506,22 @@ internal sealed class PlayerWalletGrain(
         {
             _logger.LogInformation(
                 ex,
-                "Refund for operation {OperationId} was already applied to player {PlayerId}; "
-                    + "not crediting again.",
+                "Step {StepKey} of operation {OperationId} was already credited to player "
+                    + "{PlayerId}; not crediting again.",
+                stepKey,
                 operationId,
                 this.GetPrimaryKeyLong()
             );
 
-            return;
+            return false;
         }
 
         foreach ((CurrencyKind kind, int amount, PlayerCurrencyEntity entity) in credited)
         {
             await AnnounceCurrencyAsync(kind, amount, entity, ct).ConfigureAwait(true);
         }
+
+        return true;
     }
 
     /// <summary>

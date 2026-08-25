@@ -62,6 +62,25 @@ public sealed class CommerceJournal(
         _metrics.CommerceOperationTransitioned(kind, CommerceOperationState.Prepared);
     }
 
+    public async Task OpenIfNewAsync(
+        CommerceOperationId id,
+        CommerceOperationKind kind,
+        int playerId,
+        string? detail,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await OpenAsync(id, kind, playerId, detail, ct).ConfigureAwait(false);
+        }
+        catch (DbUpdateException)
+        {
+            // Already open: this is a second attempt at the same operation, which is the whole point
+            // of a deterministic id.
+        }
+    }
+
     public async Task TransitionAsync(
         CommerceOperationId id,
         CommerceOperationState state,

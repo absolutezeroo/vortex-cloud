@@ -37,6 +37,19 @@ public interface ICommerceJournal
     );
 
     /// <summary>
+    /// Opens the operation unless it is already open. For flows whose id is derived from the entity
+    /// they act on (see <see cref="CommerceOperationId.Deterministic"/>), where a second attempt is
+    /// the same operation rather than a new one.
+    /// </summary>
+    Task OpenIfNewAsync(
+        CommerceOperationId id,
+        CommerceOperationKind kind,
+        int playerId,
+        string? detail,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// Moves the operation to a new state. Passing <see cref="CommerceOperationState.Pivoted"/>
     /// stamps the pivot time, which is what the "stuck past its pivot" alert reads.
     /// </summary>

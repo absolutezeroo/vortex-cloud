@@ -49,6 +49,8 @@ public sealed class MarketplaceClaimRaceTests : IAsyncLifetime
     private readonly List<int> _granted = [];
 
     private Func<Task>? _onDebit;
+    private readonly HashSet<string> _deliveredSteps = [];
+
     private bool _grantThrows;
 
     public async Task InitializeAsync()
@@ -195,6 +197,7 @@ public sealed class MarketplaceClaimRaceTests : IAsyncLifetime
                     : null
             ),
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
+            new Commerce.NullCommerceJournal(),
             NullLogger<MarketplacePurchaseGrain>.Instance
         );
 
@@ -238,7 +241,7 @@ public sealed class MarketplaceClaimRaceTests : IAsyncLifetime
 
         IInventoryGrain inventory = FakeProxy.Create<IInventoryGrain>(call =>
         {
-            if (call.Method.Name != nameof(IInventoryGrain.GrantFurnitureDefinitionAsync))
+            if (call.Method.Name != nameof(IInventoryGrain.GrantFurnitureDefinitionCopiesAsync))
             {
                 return null;
             }
@@ -248,7 +251,17 @@ public sealed class MarketplaceClaimRaceTests : IAsyncLifetime
                 throw new InvalidOperationException("inventory unreachable");
             }
 
-            _granted.Add((int)call.Args![0]!);
+            // The receipt-carrying overload: the real grain writes the receipt in the same commit as
+            // the rows, so a step that has already delivered delivers nothing on a retry.
+            if (!_deliveredSteps.Add($"{call.Args![3]}:{call.Args![4]}"))
+            {
+                return Task.CompletedTask;
+            }
+
+            for (int i = 0; i < (int)call.Args![2]!; i++)
+            {
+                _granted.Add((int)call.Args![0]!);
+            }
 
             return Task.CompletedTask;
         });

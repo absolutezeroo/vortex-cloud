@@ -21,6 +21,31 @@ public readonly record struct CommerceOperationId(Guid Value)
 {
     public static CommerceOperationId New() => new(Guid.CreateVersion7());
 
+    /// <summary>
+    /// The id of the operation that acts on a given entity in a given flow — the same id every time.
+    /// </summary>
+    /// <remarks>
+    /// Some flows have no separate retry mechanism: their retry is the player clicking the button
+    /// again. Cancelling a marketplace offer is one. A fresh id each time would make the second click
+    /// a second operation and hand the item back twice; deriving the id from the offer makes it the
+    /// same operation asking again, which the receipts already know how to answer.
+    /// </remarks>
+    public static CommerceOperationId Deterministic(CommerceOperationKind kind, int entityId)
+    {
+        Span<byte> bytes = stackalloc byte[16];
+
+        // A fixed marker in the first four bytes keeps these from colliding with a version 7 GUID,
+        // whose leading bytes are a timestamp.
+        bytes[0] = 0xC0;
+        bytes[1] = 0x4E;
+        bytes[2] = (byte)kind;
+        bytes[3] = 0x00;
+
+        BitConverter.TryWriteBytes(bytes[4..], entityId);
+
+        return new CommerceOperationId(new Guid(bytes));
+    }
+
     public static readonly CommerceOperationId None = new(Guid.Empty);
 
     public bool IsNone => Value == Guid.Empty;

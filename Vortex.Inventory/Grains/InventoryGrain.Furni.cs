@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Pets;
 using Vortex.Database.Entities.Players;
@@ -20,6 +21,7 @@ using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
@@ -705,10 +707,27 @@ public sealed partial class InventoryGrain
         CancellationToken ct
     ) => GrantFurnitureDefinitionCopiesAsync(definitionId, extraData, 1, ct);
 
+    public Task GrantFurnitureDefinitionCopiesAsync(
+        int definitionId,
+        string? extraData,
+        int copies,
+        CancellationToken ct
+    ) =>
+        GrantFurnitureDefinitionCopiesAsync(
+            definitionId,
+            extraData,
+            copies,
+            CommerceOperationId.None,
+            string.Empty,
+            ct
+        );
+
     public async Task GrantFurnitureDefinitionCopiesAsync(
         int definitionId,
         string? extraData,
         int copies,
+        CommerceOperationId operationId,
+        string stepKey,
         CancellationToken ct
     )
     {
@@ -739,9 +758,38 @@ public sealed partial class InventoryGrain
         {
             dbCtx.AddRange(entities);
 
-            // One commit for every copy. Whatever happens next, the player either has all of them or
-            // none, and there is no in-between for a compensation to have to reason about.
+            if (!operationId.IsNone)
+            {
+                dbCtx.CommerceReceipts.Add(
+                    new CommerceReceiptEntity
+                    {
+                        OperationId = operationId.Value,
+                        StepKey = stepKey,
+                        Result = copies.ToString(CultureInfo.InvariantCulture),
+                        CreatedAt = DateTime.UtcNow,
+                    }
+                );
+            }
+
+            // One commit for every copy, and for the receipt that says this step ran. Whatever
+            // happens next, the player either has all of them or none, and a replay of the step
+            // loses this insert and hands out nothing.
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (DbUpdateException ex) when (!operationId.IsNone)
+        {
+            _logger.LogInformation(
+                ex,
+                "Step {StepKey} of operation {OperationId} already granted {Copies} of definition "
+                    + "{DefinitionId} to player {PlayerId}; not granting again.",
+                stepKey,
+                operationId,
+                copies,
+                definitionId,
+                this.GetPrimaryKeyLong()
+            );
+
+            return;
         }
         finally
         {

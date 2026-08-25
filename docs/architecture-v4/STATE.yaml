@@ -29,6 +29,7 @@ active_slices: []
 accepted_decisions:
   - ADR-000
   - ADR-001
+  - ADR-002
 
 open_questions:
   - OQ-1

@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Inventory.Furniture;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Rooms.Object;
@@ -88,6 +89,25 @@ public partial interface IInventoryGrain
         int definitionId,
         string? extraData,
         int copies,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Grants several copies as a named step of a named operation, once, however many times it is
+    /// asked for.
+    /// </summary>
+    /// <remarks>
+    /// The receipt is inserted in the same transaction as the furniture rows, which is what makes a
+    /// cross-grain delivery safe to retry. Writing the receipt on the calling side instead leaves no
+    /// safe order — receipt first loses the delivery to a crash, delivery first hands out the goods
+    /// twice on the retry.
+    /// </remarks>
+    public Task GrantFurnitureDefinitionCopiesAsync(
+        int definitionId,
+        string? extraData,
+        int copies,
+        CommerceOperationId operationId,
+        string stepKey,
         CancellationToken ct
     );
 

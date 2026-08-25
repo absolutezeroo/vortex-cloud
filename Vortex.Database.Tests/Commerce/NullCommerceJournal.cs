@@ -20,6 +20,14 @@ internal sealed class NullCommerceJournal : ICommerceJournal
         CancellationToken ct
     ) => Task.CompletedTask;
 
+    public Task OpenIfNewAsync(
+        CommerceOperationId id,
+        CommerceOperationKind kind,
+        int playerId,
+        string? detail,
+        CancellationToken ct
+    ) => Task.CompletedTask;
+
     public Task TransitionAsync(
         CommerceOperationId id,
         CommerceOperationState state,

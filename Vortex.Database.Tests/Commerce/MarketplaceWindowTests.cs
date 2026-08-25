@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
+using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Marketplace.Grains;
@@ -15,6 +16,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Marketplace.Providers;
 using Vortex.Primitives.Marketplace.Snapshots;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Tests.Support;
@@ -51,6 +53,8 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
     private readonly List<int> _granted = [];
     private readonly List<int> _creditsGranted = [];
     private readonly List<int> _removed = [];
+
+    private readonly HashSet<string> _deliveredSteps = [];
 
     private bool _grantThrows;
     private bool _creditThrows;
@@ -101,16 +105,12 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// WINDOW — MakeOffer removes the item from the inventory first and inserts the offer second. A
-    /// failure in between destroys the furniture: it is gone from the inventory and there is no
-    /// offer holding it.
+    /// Closed. Listing used to remove the item from the inventory first and insert the offer second,
+    /// so a failure in between destroyed the furniture: gone from the inventory and held by nothing.
+    /// The offer is written first, invisible to buyers until the item has actually left.
     /// </summary>
-    /// <remarks>
-    /// Flipped by PR-C5, where the offer is inserted PendingRemoval first and only then does the
-    /// item leave the inventory.
-    /// </remarks>
     [Fact]
-    public async Task AnOfferInsertThatFails_LeavesTheItemRemovedAndUnlisted()
+    public async Task AnOfferInsertThatFails_LeavesTheItemWhereItWas()
     {
         _offerInsertThrows = true;
 
@@ -118,22 +118,16 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
 
         await act.Should().ThrowAsync<InvalidOperationException>();
 
-        _removed
-            .Should()
-            .Equal([ITEM_ID], "the item left the inventory before anything was listed");
-
-        await using VortexDbContext db = new(_options);
-        (await db.MarketplaceOffers.CountAsync()).Should().Be(0, "and nothing holds it now");
+        _removed.Should().BeEmpty("nothing left the inventory, because nothing held it yet");
     }
 
     /// <summary>
-    /// WINDOW — Cancel commits the Cancelled state and then gives the item back. A failure in
-    /// between leaves an offer that is neither for sale nor returned: the furniture is gone.
+    /// Closed by retry rather than by reordering. Cancel commits Cancelled and then hands the item
+    /// back; the state change is the pivot, and the restitution carries a receipt, so the seller
+    /// clicking cancel again finishes the job instead of handing the item back twice.
     /// </summary>
-    /// <remarks>Flipped by PR-C5: Cancelled becomes a journalled pivot and the restitution a
-    /// replayable step.</remarks>
     [Fact]
-    public async Task ARestitutionThatFails_LeavesTheOfferCancelledAndTheItemGone()
+    public async Task ARestitutionThatFails_IsFinishedByTheNextAttempt()
     {
         await SeedOfferAsync(MarketplaceOfferState.Active, creditsOwed: 0);
         _grantThrows = true;
@@ -143,19 +137,26 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
 
         await act.Should().ThrowAsync<InvalidOperationException>();
 
-        MarketplaceOfferEntity offer = (await OfferAsync())!;
-        offer.State.Should().Be(MarketplaceOfferState.Cancelled, "the state was committed first");
-        _granted.Should().BeEmpty("and the item never came back");
+        (await OfferAsync())!.State.Should().Be(MarketplaceOfferState.Cancelled);
+        _granted.Should().BeEmpty();
+
+        // The seller tries again.
+        _grantThrows = false;
+        (await BuildGrain().CancelOrRedeemOfferAsync(OFFER_ID, CancellationToken.None))
+            .Should()
+            .BeTrue();
+
+        _granted.Should().Equal([DEFINITION_ID], "and gets the item back exactly once");
     }
 
     /// <summary>
-    /// WINDOW — Redeem zeroes what the seller is owed and then credits the wallet. A failure in
-    /// between is the seller's money: the debt is settled in the database and the credits never
-    /// arrived.
+    /// Closed by reordering. Redeem used to zero what the seller was owed and then credit them, so a
+    /// failure in between settled the debt in the database and paid nobody. It pays first, with a
+    /// receipt, and clears the debt afterwards — so the failure that is left is a debt still shown,
+    /// which the next redeem clears without paying twice.
     /// </summary>
-    /// <remarks>Flipped by PR-C5, where the zeroing and the credit are tied by a receipt.</remarks>
     [Fact]
-    public async Task ACreditThatFails_LeavesTheDebtSettledAndUnpaid()
+    public async Task ACreditThatFails_LeavesTheDebtStandingRatherThanTheMoneyGone()
     {
         await SeedOfferAsync(MarketplaceOfferState.Sold, creditsOwed: PRICE - 1);
         _creditThrows = true;
@@ -164,9 +165,16 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
 
         await act.Should().ThrowAsync<InvalidOperationException>();
 
-        MarketplaceOfferEntity offer = (await OfferAsync())!;
-        offer.CreditsOwed.Should().Be(0, "the debt was zeroed before the credit was attempted");
-        _creditsGranted.Should().BeEmpty("and the seller was never paid");
+        (await OfferAsync())!
+            .CreditsOwed.Should()
+            .Be(PRICE - 1, "the debt is still owed, which is the honest state");
+        _creditsGranted.Should().BeEmpty();
+
+        _creditThrows = false;
+        (await BuildGrain().RedeemCreditsAsync(CancellationToken.None)).Should().Be(PRICE - 1);
+
+        (await OfferAsync())!.CreditsOwed.Should().Be(0);
+        _creditsGranted.Should().Equal([PRICE - 1], "paid once, in the end");
     }
 
     [Fact]
@@ -195,6 +203,11 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
                     : null
             ),
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
+            new CommerceJournal(
+                new TestDbContextFactory(_options, () => false),
+                FakeProxy.Create<IVortexMetrics>(_ => null),
+                NullLogger<CommerceJournal>.Instance
+            ),
             NullLogger<MarketplacePurchaseGrain>.Instance
         );
 
@@ -221,13 +234,24 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
 
                     return Task.FromResult(true);
 
-                case nameof(IInventoryGrain.GrantFurnitureDefinitionAsync):
+                case nameof(IInventoryGrain.GrantFurnitureDefinitionCopiesAsync):
                     if (_grantThrows)
                     {
                         throw new InvalidOperationException("inventory unreachable");
                     }
 
-                    _granted.Add((int)call.Args![0]!);
+                    // The receipt-carrying overload is what the marketplace uses now; the real grain
+                    // writes the receipt in the same commit as the rows, so a fake that recorded the
+                    // grant twice would be modelling a bug that cannot happen.
+                    if (!_deliveredSteps.Add((string)call.Args![4]!))
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    for (int i = 0; i < (int)call.Args![2]!; i++)
+                    {
+                        _granted.Add((int)call.Args![0]!);
+                    }
 
                     return Task.CompletedTask;
 
@@ -240,15 +264,15 @@ public sealed class MarketplaceWindowTests : IAsyncLifetime
         {
             switch (call.Method.Name)
             {
-                case nameof(IPlayerWalletGrain.GrantCreditsAsync):
+                case nameof(IPlayerWalletGrain.CreditOnceAsync):
                     if (_creditThrows)
                     {
                         throw new InvalidOperationException("wallet unreachable");
                     }
 
-                    _creditsGranted.Add((int)call.Args![0]!);
+                    _creditsGranted.Add(((List<WalletDebitRequest>)call.Args![0]!)[0].Amount);
 
-                    return Task.CompletedTask;
+                    return Task.FromResult(true);
 
                 default:
                     return null;

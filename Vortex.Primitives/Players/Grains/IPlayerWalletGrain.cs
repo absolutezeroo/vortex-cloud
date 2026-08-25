@@ -52,6 +52,22 @@ public interface IPlayerWalletGrain : IGrainWithIntegerKey
         CommerceOperationId operationId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Credits the given amounts once for a named step of a named operation. The credits and the
+    /// receipt commit together, so the step can be retried freely and cannot pay twice.
+    /// </summary>
+    /// <remarks>
+    /// This is the general form; <see cref="CreditBackAsync(List{WalletDebitRequest}, CommerceOperationId, CancellationToken)"/>
+    /// is it under the refund step. Paying a marketplace seller what their sold offers owe them is
+    /// the same mechanism and emphatically not a refund, so it gets its own step key.
+    /// </remarks>
+    public Task<bool> CreditOnceAsync(
+        List<WalletDebitRequest> credits,
+        CommerceOperationId operationId,
+        string stepKey,
+        CancellationToken ct
+    );
     public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct);
     public Task<Dictionary<int, int>> GetActivityPointsAsync(CancellationToken ct);
     public Task GrantCreditsAsync(int amount, CancellationToken ct);
