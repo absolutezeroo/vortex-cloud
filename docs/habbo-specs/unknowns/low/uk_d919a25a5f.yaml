@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1040d02cef6e8c11bed6404fcd71da3a8a03b4dcc11669f4ec8f1773d0beedb4"
+generated_digest: "sha256:022405fc9e8105ddfae992850edfa92044b72ed329412713b0c6b6f68e037a62"
 generated:
   id: uk_d919a25a5f
   subject: "outgoing/WiredValidationError: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredValidationError
   known_evidence:

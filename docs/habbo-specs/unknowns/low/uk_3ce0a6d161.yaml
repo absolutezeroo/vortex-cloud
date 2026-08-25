@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c137e2be6b1c8a923b463c57807870bf45934a56075b6637d944723af8a7c24e"
+generated_digest: "sha256:e6047657e1871acfc11b0230cad98c757638570fd83197fa2dd9e325173f0e7f"
 generated:
   id: uk_3ce0a6d161
   subject: "outgoing/NewUserExperienceGiftOffer: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: NewUserExperienceGiftOffer
   known_evidence:

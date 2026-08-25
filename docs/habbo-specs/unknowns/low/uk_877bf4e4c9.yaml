@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:88dd6e817e217eb2c5ebbda13122be190a1d9019533db7589e2e5ac705f0416d"
+generated_digest: "sha256:0de45415f49b7701b787e48997312e9fe44af5d70a1dd32288fb0038a8b5c400"
 generated:
   id: uk_877bf4e4c9
   subject: "outgoing/PetInventory: unnamed fields"
   severity: low
-  question: Fields 2 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetInventory
   known_evidence:

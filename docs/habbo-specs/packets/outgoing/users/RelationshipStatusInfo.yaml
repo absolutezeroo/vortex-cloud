@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3d9df20a6fb02573745a32fbce79a63fea5d38f44f74c18b944fad80bfcf4f28"
+generated_digest: "sha256:ee0c530be7b1e82568dcb3f068c5e50f7156db0a4cd3b8cd39ab086237644fc9"
 generated:
   name: RelationshipStatusInfo
   direction: outgoing
@@ -33,14 +33,64 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_e0e763d32d46
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e0e763d32d46
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e0e763d32d46
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e0e763d32d46
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e0e763d32d46
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e0e763d32d46
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 7
     partial: false
     types:
     - int32
     - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
     evidence: ev_e0e763d32d46
   - origin: arcturus
     authority: reference_emulator

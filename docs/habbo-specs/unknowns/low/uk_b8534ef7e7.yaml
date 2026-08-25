@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c614ecd74c6b0aefeaf3cd0727472ab9ff7b9c5fe7c8bc203ea845b8e9a82dcb"
+generated_digest: "sha256:02539fe65fddddacae501aa1ee1546cab745584a24ee3f72e76753dcd0b0818c"
 generated:
   id: uk_b8534ef7e7
   subject: "outgoing/FurniListAddOrUpdate: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FurniListAddOrUpdate
   known_evidence:

@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f1e147d9406292692fee1ff13a7bbe4398d0738191cd4ccbce509a1f62fc662d"
+generated_digest: "sha256:3daedc6cc7f8519348137bcd48c830d3d545466e7af6cf77d024891b090367b2"
 generated:
   name: NewFriendRequest
   direction: outgoing
   domain: messenger
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,31 +23,37 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2033
     evidence:
-    - ev_3436122cfc80
+    - ev_9ab1cb2c5b3c
   - index: 1
     name: unknown_1
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2033
     evidence:
-    - ev_3436122cfc80
+    - ev_9ab1cb2c5b3c
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2033
     evidence:
-    - ev_3436122cfc80
+    - ev_9ab1cb2c5b3c
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - string
+    - string
     evidence: ev_9ab1cb2c5b3c
   - origin: nitro
     authority: multi_implementation

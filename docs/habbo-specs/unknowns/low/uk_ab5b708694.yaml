@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3428528a5d87a771f2c7dfd9987635a022bef3cfef9144617a504d292f43e206"
+generated_digest: "sha256:22923ea598cb8ab0c0941a5127357c215078c133f24f8bfbd4d877e2df0604b4"
 generated:
   id: uk_ab5b708694
   subject: "outgoing/ClubGiftSelected: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ClubGiftSelected
   known_evidence:

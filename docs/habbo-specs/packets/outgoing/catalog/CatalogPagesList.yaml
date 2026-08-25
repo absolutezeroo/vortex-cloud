@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:35030441675d1cbbb6c78f943d4200a6d5df1ed562effb6887677dfdda7b31ec"
+generated_digest: "sha256:a207f7921199b1fa85ac3a1b8c3434f9adb8e53d69e780235455ba653094e6bb"
 generated:
   name: CatalogPagesList
   direction: outgoing
   domain: catalog
-  structure_confidence: client_confirmed
+  structure_confidence: reference_observed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,23 +23,87 @@ generated:
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: client_confirmed
+    type_confidence: reference_observed
     evidence:
-    - ev_0eaf1997f54c
+    - ev_9418c3d0f1de
   - index: 1
     name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 3
+    name: unknown_3
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: client_confirmed
+    type_confidence: reference_observed
     evidence:
-    - ev_0eaf1997f54c
+    - ev_9418c3d0f1de
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 7
+    name: unknown_7
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
+  - index: 8
+    name: unknown_8
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_9418c3d0f1de
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 2
-    partial: false
+    field_count: 10
+    partial: true
     types:
+    - boolean
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
     - boolean
     - string
     evidence: ev_0eaf1997f54c
@@ -75,8 +139,6 @@ generated:
     symbol: CatalogPagesListMessageComposer
     line: 34
     note: third-party server implementation; evidence, not authority
-  conflicts:
-  - cf_36abb567db
   unknowns:
   - uk_3b26a250de
 verified: {}

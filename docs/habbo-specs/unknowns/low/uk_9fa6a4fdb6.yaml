@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bc185cae1d23258b3f7e80a392ab155e195778a0871cd8fd0a9cb62a778fd4fd"
+generated_digest: "sha256:846fc84b70e30aba260a66db547c4100653e6b4da43ca94e98016f9b05c37830"
 generated:
   id: uk_9fa6a4fdb6
   subject: "outgoing/WiredAllVariablesDiffs: unnamed fields"
   severity: low
-  question: Fields 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredAllVariablesDiffs
   known_evidence:

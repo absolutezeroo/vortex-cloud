@@ -10,96 +10,462 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1946682a1954b0ce1e17deeed2d446fb4343acb46120c74e22a8db3731adc46d"
+generated_digest: "sha256:5ca7b71d507b19007dd94964280041c14910e6d5b7a6618650f945b09efdcb0a"
 generated:
   name: CatalogPage
   direction: outgoing
   domain: catalog
-  structure_confidence: confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: page_id
+    name: id
     type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
-    - ev_ecd7f54ac906
+    - ev_c5a6870907bc
   - index: 1
     name: catalog_type
     type: string
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
-    - ev_ecd7f54ac906
+    - ev_c5a6870907bc
   - index: 2
-    name: layout_code
+    name: layout
     type: string
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
-    - ev_ecd7f54ac906
+    - ev_c5a6870907bc
   - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
+    name: catalog_page_localization
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
+    - ev_c5a6870907bc
+    fields:
+    - index: 0
+      name: count
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_c5a6870907bc
+    - index: 1
+      name: image_data
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_c5a6870907bc
+      fields:
+      - index: 0
+        name: data
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+    - index: 2
+      name: count
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_c5a6870907bc
+    - index: 3
+      name: text_data
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_c5a6870907bc
+      fields:
+      - index: 0
+        name: data
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
   - index: 4
+    name: length
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_c5a6870907bc
+  - index: 5
+    name: offers
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_c5a6870907bc
+    fields:
+    - index: 0
+      name: catalog_offer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_c5a6870907bc
+      fields:
+      - index: 0
+        name: id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 1
+        name: localization_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 2
+        name: rentable
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 3
+        name: cost_credits
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 4
+        name: cost_currency
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 5
+        name: unknown_5
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 6
+        name: cost_silver
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 7
+        name: can_gift
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 8
+        name: length
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 9
+        name: products
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_c5a6870907bc
+        fields:
+        - index: 0
+          name: catalog_product
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_c5a6870907bc
+          fields:
+          - index: 0
+            name: product_type
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_c5a6870907bc
+          - index: 1
+            name: sprite_id
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_c5a6870907bc
+          - index: 2
+            name: unknown_2
+            type: string
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_c5a6870907bc
+          - index: 3
+            name: quantity
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_c5a6870907bc
+          - index: 4
+            name: unknown_4
+            type: boolean
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_c5a6870907bc
+          - index: 5
+            name: unique_size
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.UniqueSize > 0
+            evidence:
+            - ev_c5a6870907bc
+          - index: 6
+            name: unique_remaining
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.UniqueSize > 0
+            evidence:
+            - ev_c5a6870907bc
+          - index: 7
+            name: unknown_7
+            type: string
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_c5a6870907bc
+      - index: 10
+        name: club_level
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 11
+        name: can_bundle
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 12
+        name: unknown_12
+        type: boolean
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: "written as the constant false; source comment: unknownBoolean"
+        evidence:
+        - ev_c5a6870907bc
+      - index: 13
+        name: empty
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: previewImage"
+        evidence:
+        - ev_c5a6870907bc
+  - index: 6
     name: offer_id
     type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
-    - ev_ecd7f54ac906
-  - index: 5
+    - ev_c5a6870907bc
+  - index: 7
     name: accept_season_currency_as_credits
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
-    - ev_ecd7f54ac906
-  - index: 6
-    name: unknown_6
+    - ev_c5a6870907bc
+  - index: 8
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_280b9815ee55
+    - ev_c5a6870907bc
+  - index: 9
+    name: front_page_items
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_c5a6870907bc
+    fields:
+    - index: 0
+      name: catalog_front_page_item
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_c5a6870907bc
+      fields:
+      - index: 0
+        name: position
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 1
+        name: item_name
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 2
+        name: item_promo_image
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 3
+        name: type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 4
+        name: unknown_4
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 5
+        name: unknown_5
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 6
+        name: unknown_6
+        type: string
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
+      - index: 7
+        name: expires_in_seconds
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_c5a6870907bc
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 7
-    partial: false
+    field_count: 31
+    partial: true
     types:
     - int32
     - string
     - string
     - int32
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - boolean
+    - int32
+    - int32
     - int32
     - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - boolean
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - string
+    - int32
     - int32
     evidence: ev_280b9815ee55
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 7
-    partial: false
+    field_count: 32
+    partial: true
     types:
     - int32
     - string
     - string
     - int32
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
     - int32
     - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - boolean
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - string
     - int32
     evidence: ev_ecd7f54ac906
   - origin: nitro
@@ -176,9 +542,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Catalog/CatalogPageMessageComposerSerializer.cs
     symbol: CatalogPageMessageComposerSerializer
     line: 10
-  conflicts:
-  - cf_65793cbec6
-  unknowns:
-  - uk_a100bb55a8
 verified: {}
 manual: {}

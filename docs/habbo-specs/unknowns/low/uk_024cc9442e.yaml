@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:89d1dcdd73994ed885e26a7b52301accfa751fc7d72155f414faeb5999637446"
+generated_digest: "sha256:39dba280c2507d89a63132926f8f2809533a2db0b8714281f938e726d9a18c53"
 generated:
   id: uk_024cc9442e
   subject: "outgoing/PetFigureUpdate: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetFigureUpdate
   known_evidence:
@@ -27,6 +27,14 @@ generated:
     symbol: PetFigureUpdateParser
     line: 46
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_e10d4d0e91f7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_3536.as
+    symbol: _SafeCls_3536
+    line: 56
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ce82b0080047
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: PetFigureUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_526bb0d48eea
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/pets/PetFigureUpdateMessageComposer.java
-    symbol: PetFigureUpdateMessageComposer
-    line: 24
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

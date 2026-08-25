@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5250f247d01b94accd9826ed16bfeb6ada0d1063629feae557d8c416398be8e1"
+generated_digest: "sha256:2ab0602c936fd18aee19045da6f5a7b36144acb9e5065abd6dd313674f540d7c"
 generated:
   id: uk_76e881fa90
   subject: "outgoing/Game2TotalGroupLeaderboard: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Game2TotalGroupLeaderboard
   known_evidence:

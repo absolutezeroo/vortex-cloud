@@ -10,20 +10,110 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:05c6527a0274e1bafe9aaed14e472e8456fc2acb34518328836ca32dddfb0362"
+generated_digest: "sha256:2d447dab923b7810dc696c1af4235369e8a7b60df447ae269732ac73c71f7a43"
 generated:
   name: SnowStormLongData
   direction: outgoing
   domain: unsorted
   structure_confidence: unknown
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeStr_4018
+    evidence:
+    - ev_4973de148203
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
+    field_count: 9
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
     evidence: ev_4973de148203
   evidence:
   - id: ev_4973de148203
@@ -34,5 +124,7 @@ generated:
     symbol: SnowStormLongDataParser
     line: 16
     note: official client build PRODUCTION-201601012205-226667486
+  unknowns:
+  - uk_610b1fd007
 verified: {}
 manual: {}

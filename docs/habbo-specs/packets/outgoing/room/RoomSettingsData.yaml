@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bab1e0f7a03dd3af0fa25387455b02a98b1d62f7640acd81a8db089dc96e2c2b"
+generated_digest: "sha256:a6de488b65e0e6d662e663dba45ad2b1700faf3ccc220cdbfc911653c9379e78"
 generated:
   name: RoomSettingsData
   direction: outgoing
@@ -205,6 +205,33 @@ generated:
     - ev_eed23671ec9e
   - index: 23
     name: unknown_23
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2961
+    evidence:
+    - ev_eed23671ec9e
+  - index: 24
+    name: unknown_24
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2961
+    evidence:
+    - ev_eed23671ec9e
+  - index: 25
+    name: unknown_25
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2961
+    evidence:
+    - ev_eed23671ec9e
+  - index: 26
+    name: unknown_26
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
@@ -214,7 +241,7 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 24
+    field_count: 27
     partial: false
     types:
     - int32
@@ -240,6 +267,9 @@ generated:
     - boolean
     - int32
     - boolean
+    - int32
+    - int32
+    - int32
     - boolean
     evidence: ev_eed23671ec9e
   - origin: arcturus

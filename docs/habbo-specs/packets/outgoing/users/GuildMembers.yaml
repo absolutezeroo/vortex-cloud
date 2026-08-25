@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1d7b329d85ace6149bfa31c995238bafc58cf68d2720bcafcceb4c5b4a8af7a9"
+generated_digest: "sha256:a9eae15fb2105e2202b8818b9fd18e9058def0540a4d827af9e4e242a5c3eb4b"
 generated:
   name: GuildMembers
   direction: outgoing
@@ -149,9 +149,20 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 11
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - string
     evidence: ev_c630de9115f9
   - origin: nitro
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf29d7fd151166462141c286f1906f9b6cfe89a475b7a680a384ed3550c579ec"
+generated_digest: "sha256:c416143f0010b0590fae3f30f157202405c868f338aefa5f605ce2b6e10e2857"
 generated:
   name: TradeNftAssetInventory
   direction: outgoing
@@ -19,20 +19,30 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_62ee17fbc06e
+    - ev_5d995de5491a
+  - index: 1
+    name: asset_id
+    type: long
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_62ee17fbc06e
+    - ev_5d995de5491a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 2
     partial: false
     types:
     - int32
+    - long
     evidence: ev_62ee17fbc06e
   - origin: vortex
     authority: vortex_emulator
@@ -59,8 +69,6 @@ generated:
     symbol: TradeNftAssetInventoryMessageComposerSerializer
     line: 8
   conflicts:
-  - cf_7b39fb3519
-  unknowns:
-  - uk_f22aba69ba
+  - cf_e35433cfa7
 verified: {}
 manual: {}

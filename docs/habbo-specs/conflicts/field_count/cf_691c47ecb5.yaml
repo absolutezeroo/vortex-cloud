@@ -10,17 +10,13 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:02153350b5306bef365eb4ea8dfd4698211ad499b9bdf21c96ab5c8cffb4baf5"
+generated_digest: "sha256:dbb2c5243f170889423aced3e6d1a0f93bbe1e0193a497842d0daea6f0bc4cc9"
 generated:
   id: cf_691c47ecb5
   kind: field_count
   subject: "outgoing/GetGuestRoomResult: field count"
   packet: GetGuestRoomResult
   positions:
-  - origin: "as3:WIN63-202607011411-782849652"
-    authority: client_code
-    claim: "8 fields: boolean, boolean, boolean, boolean, boolean, boolean, int32, boolean"
-    evidence: ev_35878dd3f64e
   - origin: nitro
     authority: multi_implementation
     claim: "3 fields: boolean, block, boolean, boolean, boolean, boolean, boolean"
@@ -34,14 +30,6 @@ generated:
     claim: "10 fields: boolean, block, boolean, boolean, boolean, boolean, block, boolean, block, boolean"
     evidence: ev_bc61b46f1cc6
   evidence:
-  - id: ev_35878dd3f64e
-    kind: client_parser
-    authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2063.as
-    symbol: _SafeCls_2063
-    line: 40
-    note: official client build WIN63-202607011411-782849652
   - id: ev_85a4aa0bb395
     kind: client_parser
     authority: multi_implementation

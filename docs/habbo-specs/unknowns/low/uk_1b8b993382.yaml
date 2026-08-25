@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1f6820cadf907ef710da68884b6d0ddf33bd2ecc18226f692b64ce60cbc671f5"
+generated_digest: "sha256:80cf25b4fc78c201a91b7b2c8a08638d24545cee6ff153b7ef79b43641ae9798"
 generated:
   id: uk_1b8b993382
   subject: "outgoing/RoomSettingsData: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomSettingsData
   known_evidence:

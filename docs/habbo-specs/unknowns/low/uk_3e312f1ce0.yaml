@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c71d9f0c38f7595ad2046631d2f70878ed82e88f00753613c4ea199b0e3493d6"
+generated_digest: "sha256:63010778c05d9cb4edc670d743ea154df4cddbfd7dfdb617dd41f025d58ffed9"
 generated:
   id: uk_3e312f1ce0
   subject: "outgoing/CfhTopicsInit: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 5 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CfhTopicsInit
   known_evidence:

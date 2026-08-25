@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:21b4033ef5faf171fee56e6586e906de28918bfc573b27a08c53ab43bb768ac1"
+generated_digest: "sha256:e2809c7368d22ccb1efaaae7424789405ec5318a5df77f556bf37ff8d8d88d00"
 generated:
   id: uk_f2002de925
   subject: "outgoing/BannedUsersFromRoom: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BannedUsersFromRoom
   known_evidence:

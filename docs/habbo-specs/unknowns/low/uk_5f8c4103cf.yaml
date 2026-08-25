@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:67ab68c061f4d20eb79e348ff556beddf98b090d9d55b38cff89e3cb5fdca89e"
+generated_digest: "sha256:2fd8edc423ddd12fd4fcbbd54bfcb7f5913d4a8eb1ad6a947da80824776d3e4d"
 generated:
   id: uk_5f8c4103cf
   subject: "outgoing/WiredErrorLogs: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredErrorLogs
   known_evidence:

@@ -10,7 +10,7 @@
 
 spec: evidence-summary
 spec_version: 1
-generated_digest: "sha256:1f03b83bf58a28521dd749a588b98575589a0d4f2683a4613f0bd3353aa1470a"
+generated_digest: "sha256:0d0ac418ee30a5d5ee9c4e55f035b0dbafc4f24e80db5c0da2887eb3fa432e2f"
 generated:
   origin: "as3:PRODUCTION-201601012205-226667486"
   authority: client_code
@@ -19,7 +19,7 @@ generated:
   client_to_server: 495
   server_to_client: 496
   named_fields: 142
-  total_fields: 1339
+  total_fields: 2154
   revision: PRODUCTION-201601012205-226667486
   unresolved:
   - registry ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/communication/HabboMessages.as yielded 0 composer and 994 event bindings; one side is missing

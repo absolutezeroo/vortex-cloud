@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5bd549ae614625d1cfb68b1359be1646aaeef7ff77f3ba88abc234bcf2613cdc"
+generated_digest: "sha256:747d5b8e4939c815cc810e95438201521511f8a325bb818b84ed409b2bd1075b"
 generated:
   name: ExtendedProfile
   direction: outgoing
@@ -189,15 +189,53 @@ generated:
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
+    field_count: 13
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - string
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - boolean
     evidence: ev_56c482edd852
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 25
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - string
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - byte
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - int32
+    - byte
+    - int32
+    - int32
     evidence: ev_c0ae2a48c197
   - origin: nitro
     authority: multi_implementation

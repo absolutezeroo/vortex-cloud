@@ -10,114 +10,147 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:30bc6049dcf36dafced2e521b1fa3627e51296f81a6f53e2af0a8a59496cf4c3"
+generated_digest: "sha256:9c9131154523837417cbe15ab32178a0d8ba23398ecdac90d9d37a1065db7654"
 generated:
   name: CommunityGoalProgress
   direction: outgoing
   domain: quest
-  structure_confidence: reference_observed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: has_goal_expired
     type: boolean
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 1
     name: personal_contribution_score
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 2
     name: personal_contribution_rank
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 3
     name: community_total_score
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 4
     name: community_highest_achieved_level
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 5
     name: score_remaining_until_next_level
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 6
     name: percent_completion_towards_next_level
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 7
     name: goal_code
     type: string
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 8
     name: time_remaining_in_seconds
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 9
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   - index: 10
     name: limit
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by CommunityGoalProgress
     evidence:
-    - ev_df40ed879f0f
+    - ev_742382fd10cf
     - ev_a891e7dd7bea
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 11
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
     evidence: ev_742382fd10cf
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 11
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
     evidence: ev_b94c4184b991
   - origin: nitro
     authority: multi_implementation

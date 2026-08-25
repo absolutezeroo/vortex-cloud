@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a109699d5601edf8ae7cdc96de6d3092ef0552a4707b3afb7070b004fba4493a"
+generated_digest: "sha256:8788d8a95ea8753c659f10b0b693e027eeb7c473b6e5949a6207fe0591c3a509"
 generated:
   id: uk_fc9348dd9a
   subject: "outgoing/CraftingRecipe: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CraftingRecipe
   known_evidence:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:05d38a8f253a6bff86944540243b8ada60f74fe0db4c7445a54bc91b06bc0272"
+generated_digest: "sha256:e717e446b62ae260409f1d1c7a8129c6870795ce656d88f3df6e9cd669a61421"
 generated:
   name: PetFigureUpdate
   direction: outgoing
@@ -35,6 +35,78 @@ generated:
     - ev_1006a9974bec
     - ev_e10d4d0e91f7
   - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by PetFigureData
+    evidence:
+    - ev_1006a9974bec
+  - index: 10
     name: has_saddle
     type: boolean
     name_confidence: client_confirmed
@@ -42,7 +114,7 @@ generated:
     evidence:
     - ev_1006a9974bec
     - ev_e10d4d0e91f7
-  - index: 3
+  - index: 11
     name: is_riding
     type: boolean
     name_confidence: client_confirmed
@@ -53,9 +125,17 @@ generated:
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 4
+    field_count: 12
     partial: false
     types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
     - int32
     - int32
     - boolean
@@ -63,9 +143,17 @@ generated:
     evidence: ev_1006a9974bec
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 4
+    field_count: 12
     partial: false
     types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
     - int32
     - int32
     - boolean
@@ -137,5 +225,7 @@ generated:
     line: 7
   conflicts:
   - cf_9aaf2929da
+  unknowns:
+  - uk_024cc9442e
 verified: {}
 manual: {}

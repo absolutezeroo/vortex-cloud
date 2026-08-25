@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fb620f709005be51d27c0f81edf6ecd1b333ab0398b41096b3a336b0361b3ee3"
+generated_digest: "sha256:b4ebf58faadbc2a0354409da7a3b5073df7bb1ef141355ca0de9d37e821f89bf"
 generated:
   name: UserEventCats
   direction: outgoing
@@ -19,20 +19,50 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_0400dd7679d0
+    - ev_86e5e3016d07
+  - index: 1
+    name: id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_0400dd7679d0
+    - ev_86e5e3016d07
+  - index: 2
+    name: name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_0400dd7679d0
+    - ev_86e5e3016d07
+  - index: 3
+    name: visible
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_0400dd7679d0
+    - ev_86e5e3016d07
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 4
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - boolean
     evidence: ev_0400dd7679d0
   - origin: nitro
     authority: multi_implementation
@@ -87,9 +117,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/UserEventCatsMessageComposerSerializer.cs
     symbol: UserEventCatsMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_abb424ad8f
-  unknowns:
-  - uk_a494b02229
 verified: {}
 manual: {}

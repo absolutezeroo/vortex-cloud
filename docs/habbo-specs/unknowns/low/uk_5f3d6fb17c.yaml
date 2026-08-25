@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:07c522ecd16ed11bb6bb8998c3fa063cc96eedba5db3c9a5362eac7f0818bc7a"
+generated_digest: "sha256:4840b6d59901e55f172495972c6d191e507c28fc4192f196b6ae83a79bd07fd8"
 generated:
   id: uk_5f3d6fb17c
   subject: "outgoing/SnowStormQuePlayerAdded: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowStormQuePlayerAdded
   known_evidence:

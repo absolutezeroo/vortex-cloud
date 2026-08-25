@@ -10,49 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:adecbbb121d7de94279644d90955a2b50781a45ad4a1dc030220f9168451a7d6"
+generated_digest: "sha256:6d8294f5c491df3e62dd5ad8ea69a292dfbc23ea59c0c9571ce711a3290ad13d"
 generated:
   name: CompetitionRoomsData
   direction: outgoing
   domain: navigator
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: competition_room_data
-    type: block
+    name: goal_id
+    type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2307
     evidence:
+    - ev_3ffba70983bb
     - ev_d01a09937c5b
-    fields:
-    - index: 0
-      name: goal_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d01a09937c5b
-    - index: 1
-      name: page_index
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d01a09937c5b
-    - index: 2
-      name: page_count
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d01a09937c5b
+  - index: 1
+    name: page_index
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2307
+    evidence:
+    - ev_3ffba70983bb
+    - ev_d01a09937c5b
+  - index: 2
+    name: page_count
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2307
+    evidence:
+    - ev_3ffba70983bb
+    - ev_d01a09937c5b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
     evidence: ev_3ffba70983bb
   - origin: nitro
     authority: multi_implementation
@@ -91,5 +92,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/CompetitionRoomsDataMessageComposerSerializer.cs
     symbol: CompetitionRoomsDataMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_ad5046d5a1
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:53b0ac0cfbd2b2502d50af1d380b6eed0623653c48a489f0f2d9643e870be827"
+generated_digest: "sha256:130080025373a8c8d5882a44b2c98914a4087d96c0690166118ca7af2b1e8f5a"
 generated:
   name: ClubGiftInfo
   direction: outgoing
   domain: catalog
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -46,18 +46,188 @@ generated:
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 5
+    name: unknown_5
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 10
+    name: unknown_10
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 13
+    name: unknown_13
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 14
+    name: unknown_14
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 15
+    name: unknown_15
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 16
+    name: unknown_16
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_5d160d36590f
+  - index: 17
+    name: unknown_17
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 18
+    name: unknown_18
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 19
+    name: unknown_19
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_5d160d36590f
+  - index: 20
+    name: unknown_20
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
     - ev_5d160d36590f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 4
-    partial: false
+    field_count: 21
+    partial: true
     types:
     - int32
     - int32
     - int32
     - int32
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - int32
+    - boolean
+    - int32
+    - boolean
     evidence: ev_5d160d36590f
   - origin: arcturus
     authority: reference_emulator

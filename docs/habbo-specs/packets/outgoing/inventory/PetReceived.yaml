@@ -10,28 +10,113 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:638eceb198bf9de610a5a12cbd29b6ef36723d6353f73ed4cea37a831a4f70bf"
+generated_digest: "sha256:2bef36ac086e1b2e782d3b5134ef9589fcd021acf4d1d09212b1fb196ebf598b"
 generated:
   name: PetReceived
   direction: outgoing
   domain: inventory
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: bought_as_gift
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_2a90f85420fd
+    - ev_26ff4799df54
+  - index: 1
+    name: pet_data
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_26ff4799df54
+    fields:
+    - index: 0
+      name: pet_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_26ff4799df54
+    - index: 1
+      name: name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_26ff4799df54
+    - index: 2
+      name: pet_figure_data
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_26ff4799df54
+      fields:
+      - index: 0
+        name: type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_26ff4799df54
+      - index: 1
+        name: race
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_26ff4799df54
+      - index: 2
+        name: color
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_26ff4799df54
+      - index: 3
+        name: race
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_26ff4799df54
+      - index: 4
+        name: unknown_4
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant 0
+        evidence:
+        - ev_26ff4799df54
+    - index: 3
+      name: level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_26ff4799df54
+    - index: 4
+      name: rarity_level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_26ff4799df54
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 5
+    partial: true
     types:
     - boolean
+    - int32
+    - string
+    - int32
+    - int32
     evidence: ev_2a90f85420fd
   - origin: nitro
     authority: multi_implementation
@@ -86,7 +171,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/PetReceivedMessageComposerSerializer.cs
     symbol: PetReceivedMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_fd239b041b
 verified: {}
 manual: {}

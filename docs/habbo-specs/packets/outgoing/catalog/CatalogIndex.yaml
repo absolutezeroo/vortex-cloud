@@ -10,34 +10,36 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8250f3b450cbf17b8ffaa0d5a614dd93c442c12c5cd16f44afaac81a5b1c4d60"
+generated_digest: "sha256:128c4784dbf56fed27a30c5834cfd5ac570f5075174b031b2d58fad739ecfe88"
 generated:
   name: CatalogIndex
   direction: outgoing
   domain: catalog
-  structure_confidence: client_confirmed
+  structure_confidence: multi_reference_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: new_additions_available
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_bf87d57f1b71
-  - index: 1
-    name: catalog_type
-    type: string
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_bf87d57f1b71
+    - ev_88b3d33f7919
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
-    partial: false
+    field_count: 10
+    partial: true
     types:
+    - boolean
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
     - boolean
     - string
     evidence: ev_bf87d57f1b71

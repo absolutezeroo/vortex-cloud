@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:35180fa16d75ff12c6dd05cc36fcfc3d215424a1c0fc90df4d88bff0285521ef"
+generated_digest: "sha256:8fc5a8b33d224256f47805276ec45bad5bcc1abfcfbaa62b72550c6834ffe700"
 generated:
   name: UserNftWardrobe
   direction: outgoing
@@ -19,20 +19,70 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_efffc55128b3
+    - ev_281293fe63dc
+  - index: 1
+    name: copy_id
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_efffc55128b3
+    - ev_281293fe63dc
+  - index: 2
+    name: figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_efffc55128b3
+    - ev_281293fe63dc
+  - index: 3
+    name: gender
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_efffc55128b3
+    - ev_281293fe63dc
+  - index: 4
+    name: token_id
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_efffc55128b3
+    - ev_281293fe63dc
+  - index: 5
+    name: contract_key
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_efffc55128b3
+    - ev_281293fe63dc
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 6
     partial: false
     types:
     - int32
+    - string
+    - string
+    - string
+    - string
+    - string
     evidence: ev_efffc55128b3
   - origin: nitro
     authority: multi_implementation
@@ -72,9 +122,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Nft/UserNftWardrobeMessageComposerSerializer.cs
     symbol: UserNftWardrobeMessageComposerSerializer
     line: 8
-  conflicts:
-  - cf_77f4acfea3
-  unknowns:
-  - uk_fc762285fc
 verified: {}
 manual: {}

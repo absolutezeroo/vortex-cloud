@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c219fc6224c8622549ddfd9a9360778b861b968a29a41aad99f1c1fa14aebec6"
+generated_digest: "sha256:1957195e02375417096d2a59a3d88e0e8094d9f9e6fd8f0a8742fe6282483a44"
 generated:
   name: CfhSanction
   direction: outgoing
@@ -32,14 +32,74 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_daf016db5949
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
+  - index: 5
+    name: unknown_5
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
+  - index: 7
+    name: unknown_7
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3512
+    evidence:
+    - ev_daf016db5949
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 8
     partial: false
     types:
     - int32
     - int32
+    - string
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
     evidence: ev_daf016db5949
   - origin: nitro
     authority: multi_implementation
@@ -93,5 +153,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/CallForHelp/CfhSanctionMessageComposerSerializer.cs
     symbol: CfhSanctionMessageComposerSerializer
     line: 6
+  unknowns:
+  - uk_9659db3b10
 verified: {}
 manual: {}

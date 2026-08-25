@@ -10,28 +10,34 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e8ff9dc2fdd904d5dc377acff32b3738e72491cadb647d1d8ffc9d52bf75f4ad"
+generated_digest: "sha256:758a2507f2f3247a74d0e3b190822f81c5a84338d42652cf50202d985645b8a6"
 generated:
   name: SeasonalCalendarDailyOffer
   direction: outgoing
   domain: catalog
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: page_id
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_9654739e0986
+  fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 14
+    partial: true
     types:
     - int32
+    - int32
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - string
     evidence: ev_9654739e0986
   - origin: nitro
     authority: multi_implementation

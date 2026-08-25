@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:14e181138598bcaa2d178b92c2bd3f65cc3b30817e1e528bc8864191b988524f"
+generated_digest: "sha256:5a545393fcf79cc177d05ff0c46e15507287597f58f469a2447c09bdd3b0203d"
 generated:
   id: cf_9aaf2929da
   kind: field_count
@@ -19,11 +19,11 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "4 fields: int32, int32, boolean, boolean"
+    claim: "12 fields: int32, int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, boolean"
     evidence: ev_1006a9974bec
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    claim: "4 fields: int32, int32, boolean, boolean"
+    claim: "12 fields: int32, int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, boolean"
     evidence: ev_e10d4d0e91f7
   - origin: arcturus
     authority: reference_emulator

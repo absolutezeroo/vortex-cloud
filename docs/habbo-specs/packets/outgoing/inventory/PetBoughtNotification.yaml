@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bcf318de3db494cbe850f1bbe0e504e212c991533964f65e5c9d52299f46bcdb"
+generated_digest: "sha256:a9221ab8dc2c605ee4a5cb023c3adc4536e805caee8dc76848d4e866c7768209"
 generated:
   name: PetBoughtNotification
   direction: outgoing
   domain: inventory
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -26,13 +26,43 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_ab57ed8cabdc
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2848
+    evidence:
+    - ev_ab57ed8cabdc
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2848
+    evidence:
+    - ev_ab57ed8cabdc
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2848
+    evidence:
+    - ev_ab57ed8cabdc
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 4
+    partial: true
     types:
     - boolean
+    - int32
+    - string
+    - int32
     evidence: ev_ab57ed8cabdc
   evidence:
   - id: ev_ab57ed8cabdc

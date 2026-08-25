@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5753682587145febef1b06b2ba4b272f1fbd38f42de919bda1db9179943fb402"
+generated_digest: "sha256:a8ed319876d952d8db40758d7e618fdf023b666bbea4d0783d0fed9b20a75f66"
 generated:
   name: FloorHeightMap
   direction: outgoing
@@ -54,13 +54,20 @@ generated:
     evidence: ev_a7a54d303ad2
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 6
+    field_count: 13
     partial: true
     types:
     - boolean
     - int32
     - string
     - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
     - int32
     - int32
     evidence: ev_f045bb94ddf2

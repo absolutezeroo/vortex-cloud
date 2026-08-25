@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:15804959b1e67749f97672cf77b6c7d5861543c10ad0ca050f1e2ea9f1352ab8"
+generated_digest: "sha256:067db3114bdb07f2deaa8ddf7410a59950364427b35a2b8c5d13a7cd83602aa7"
 generated:
   name: AchievementResolutions
   direction: outgoing
@@ -27,14 +27,59 @@ generated:
     - ev_abfe6ac21b2c
     - ev_4ef7a184e85b
   - index: 1
-    name: unknown_1
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
   - index: 2
+    name: achievement_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
+  - index: 3
+    name: level
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
+  - index: 4
+    name: badge_id
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
+  - index: 5
+    name: required_level
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
+  - index: 6
+    name: state
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_abfe6ac21b2c
+    - ev_b54c7f937e08
+  - index: 7
     name: end_time
     type: int32
     name_confidence: client_confirmed
@@ -45,18 +90,28 @@ generated:
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 3
+    field_count: 8
     partial: false
     types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
     - int32
     - int32
     - int32
     evidence: ev_abfe6ac21b2c
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
+    field_count: 8
     partial: false
     types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
     - int32
     - int32
     - int32
@@ -138,7 +193,5 @@ generated:
     line: 7
   conflicts:
   - cf_b4f5323777
-  unknowns:
-  - uk_2dcd4edfb5
 verified: {}
 manual: {}

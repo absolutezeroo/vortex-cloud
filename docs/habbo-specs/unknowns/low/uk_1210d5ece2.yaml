@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3f0ec17dee145b0e01c4eca053c7647c573fcf729374ae5c7b3bfb5bb9d1b555"
+generated_digest: "sha256:d89e1e91e4a44dc817815774eba70684b4ff6e9647a30caef25e7f0c3ab48de0"
 generated:
   id: uk_1210d5ece2
   subject: "outgoing/ConfirmBreedingRequest: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ConfirmBreedingRequest
   known_evidence:

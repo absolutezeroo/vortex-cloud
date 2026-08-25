@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a4206e4268af7318dc243bdf1741af56bb7403095b29890d99eae26be44cb720"
+generated_digest: "sha256:296777e49d457b603c809c5072ac9b876fe0854eb869b9fbbc6d02d6784b0891"
 generated:
   id: uk_ec56f1ac67
   subject: "outgoing/ConsoleMessageHistory: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ConsoleMessageHistory
   known_evidence:

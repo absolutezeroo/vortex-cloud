@@ -10,17 +10,13 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:be5ee7bdb227da6c92ed301225a025a7cd9ec92450320e443579a2cebbb2c6dc"
+generated_digest: "sha256:81945f814aeec0dc4547c8b2f29230f3c73871b308f9773f59cc8818787ab66b"
 generated:
   id: cf_dee3664f9f
   kind: field_count
   subject: "outgoing/CatalogIndex: field count"
   packet: CatalogIndex
   positions:
-  - origin: "as3:WIN63-202607011411-782849652"
-    authority: client_code
-    claim: "2 fields: boolean, string"
-    evidence: ev_bf87d57f1b71
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: boolean"
@@ -30,14 +26,6 @@ generated:
     claim: "2 fields: boolean, string"
     evidence: ev_aa56f4c46109
   evidence:
-  - id: ev_bf87d57f1b71
-    kind: client_parser
-    authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2912.as
-    symbol: _SafeCls_2912
-    line: 43
-    note: official client build WIN63-202607011411-782849652
   - id: ev_88b3d33f7919
     kind: client_parser
     authority: multi_implementation

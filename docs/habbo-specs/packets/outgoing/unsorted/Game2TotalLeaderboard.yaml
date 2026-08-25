@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:733bcd144599426ad57119670f6a0389ed721b41e69815ff220ab30a3b2996a8"
+generated_digest: "sha256:e8367355c42ba075275b35214bca18d29d4ed9f8c76c1820149956f5af2b0510"
 generated:
   name: Game2TotalLeaderboard
   direction: outgoing
@@ -27,13 +27,67 @@ generated:
     evidence:
     - ev_3d749e59369b
   - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3d749e59369b
+  - index: 7
     name: total_list_size
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_3d749e59369b
-  - index: 2
+  - index: 8
     name: game_type_id
     type: int32
     name_confidence: client_confirmed
@@ -43,10 +97,16 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
+    field_count: 9
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - string
     - int32
     - int32
     evidence: ev_3d749e59369b

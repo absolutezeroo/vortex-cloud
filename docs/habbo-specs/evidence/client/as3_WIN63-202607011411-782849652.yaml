@@ -10,7 +10,7 @@
 
 spec: evidence-summary
 spec_version: 1
-generated_digest: "sha256:eb107b51fd769d95919c7f12e66d82244c547c44b72cbb005be51cccfd85ae6d"
+generated_digest: "sha256:ba507e93462b6a2c102ae387be22e18c70dae37e45ece4e73ab8efaace94235f"
 generated:
   origin: "as3:WIN63-202607011411-782849652"
   authority: client_code
@@ -19,7 +19,7 @@ generated:
   client_to_server: 580
   server_to_client: 588
   named_fields: 927
-  total_fields: 1570
+  total_fields: 2657
   revision: WIN63-202607011411-782849652
   unresolved: []
 verified: {}

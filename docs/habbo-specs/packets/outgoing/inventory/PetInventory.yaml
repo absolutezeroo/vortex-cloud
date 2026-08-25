@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:edc94f99c4d3e55468950650f803a2833f099f00d7823941c3066609d34eadf0"
+generated_digest: "sha256:773c67e6ecbc0f611bc4cfad3de0d6482ee229324be0250b7bd467d090213a98"
 generated:
   name: PetInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -40,13 +40,53 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_fcd72d17a3ba
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fcd72d17a3ba
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fcd72d17a3ba
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fcd72d17a3ba
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fcd72d17a3ba
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
-    partial: false
+    field_count: 7
+    partial: true
     types:
     - int32
+    - int32
+    - int32
+    - int32
+    - string
     - int32
     - int32
     evidence: ev_fcd72d17a3ba

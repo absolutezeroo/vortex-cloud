@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d3ecfa2eeea0465dd97181975964ea4a742047761688ac4ea1462b975cc5db78"
+generated_digest: "sha256:8da0f8a687db0ddd577edde44ec68f9d306fb25a7ed90f778eb3e0e009692f1d"
 generated:
   name: RoomEvent
   direction: outgoing
@@ -57,9 +57,19 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 10
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
     evidence: ev_f88af2e6efba
   - origin: nitro
     authority: multi_implementation

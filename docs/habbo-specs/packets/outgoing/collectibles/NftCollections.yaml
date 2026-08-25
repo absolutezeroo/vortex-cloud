@@ -10,29 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b461cac7219b3c6fb880d3db3751c1e49d7bba8f1105f4432fa9f6efecb124ed"
+generated_digest: "sha256:dcd7fa26a1cad50935a42573163ddbbe3d19f5f4025e57600938112462826379"
 generated:
   name: NftCollections
   direction: outgoing
   domain: collectibles
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: client_confirmed
+    type_confidence: implementation_observed
     evidence:
-    - ev_1003230b47ff
     - ev_b702fe6d4ca5
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 12
+    partial: true
     types:
     - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - long
+    - long
+    - short
     evidence: ev_1003230b47ff
   - origin: nitro
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e4e952a87b763984200de7ce2237a304e800de96bf19e992541b45466512d145"
+generated_digest: "sha256:bb118dac3934d2d0701153e6c63a176c726e086bd60904862f07994f5d2fc688"
 generated:
   name: PetLevelNotification
   direction: outgoing
@@ -39,14 +39,94 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_5733a4e20178
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
+  - index: 10
+    name: unknown_10
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3943
+    evidence:
+    - ev_5733a4e20178
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
+    field_count: 11
     partial: false
     types:
     - int32
     - string
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
     - int32
     evidence: ev_5733a4e20178
   - origin: arcturus
@@ -82,5 +162,7 @@ generated:
     note: third-party server implementation; evidence, not authority
   conflicts:
   - cf_b7cc327efa
+  unknowns:
+  - uk_b52ffbcb2b
 verified: {}
 manual: {}

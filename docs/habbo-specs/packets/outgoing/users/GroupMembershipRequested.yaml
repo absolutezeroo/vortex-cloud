@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e5cdf2af59c22d511328b706212dd4dc307f91737ab32a9bb2b68afe30a9163b"
+generated_digest: "sha256:3af9e38d304ee8fb9651ed17dbd3fae2993dd575beed89eef714437a5f2e2da8"
 generated:
   name: GroupMembershipRequested
   direction: outgoing
@@ -25,13 +25,63 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_40e3efdc6c9f
+  - index: 1
+    name: role_type
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1983
+    evidence:
+    - ev_40e3efdc6c9f
+    - ev_2d49acd768ca
+  - index: 2
+    name: user_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1983
+    evidence:
+    - ev_40e3efdc6c9f
+    - ev_2d49acd768ca
+  - index: 3
+    name: user_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1983
+    evidence:
+    - ev_40e3efdc6c9f
+    - ev_2d49acd768ca
+  - index: 4
+    name: figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1983
+    evidence:
+    - ev_40e3efdc6c9f
+    - ev_2d49acd768ca
+  - index: 5
+    name: member_since
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1983
+    evidence:
+    - ev_40e3efdc6c9f
+    - ev_2d49acd768ca
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 6
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - string
+    - string
+    - string
     evidence: ev_40e3efdc6c9f
   - origin: nitro
     authority: multi_implementation
@@ -75,7 +125,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Users/GroupMembershipRequestedMessageComposerSerializer.cs
     symbol: GroupMembershipRequestedMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_af70140760
 verified: {}
 manual: {}

@@ -10,116 +10,160 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc8c3375f75b922a4b5f06201d2659f6893bfe91f60c9cf43cd28297b84215a3"
+generated_digest: "sha256:5de7efdcc58a0030dc387bc172a063fcbb4390f1934280facaa9c3e8678c7f9a"
 generated:
   name: HabboAchievementNotification
   direction: outgoing
   domain: notifications
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 1
-    name: unknown_1
+    name: level
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 2
-    name: unknown_2
+    name: badge_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 3
-    name: unknown_3
+    name: badge_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 4
-    name: unknown_4
+    name: points
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 5
-    name: unknown_5
+    name: level_reward_points
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 6
-    name: unknown_6
+    name: level_reward_point_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 7
-    name: unknown_7
+    name: bonus_points
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 8
-    name: unknown_8
+    name: achievement_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 9
-    name: unknown_9
+    name: removed_badge_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 10
-    name: unknown_10
+    name: category
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
   - index: 11
-    name: unknown_11
+    name: show_dialog_to_user
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
     evidence:
-    - ev_8aa0e48eac97
+    - ev_895f77515b83
+    - ev_01bf7116060e
+  - index: 12
+    name: owner_count
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
+    evidence:
+    - ev_895f77515b83
+    - ev_01bf7116060e
+  - index: 13
+    name: badge_rarity_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3576
+    evidence:
+    - ev_895f77515b83
+    - ev_01bf7116060e
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 14
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
+    - int32
+    - int32
     evidence: ev_895f77515b83
   - origin: nitro
     authority: multi_implementation
@@ -199,7 +243,5 @@ generated:
     line: 6
   conflicts:
   - cf_7e0358864b
-  unknowns:
-  - uk_d438b38071
 verified: {}
 manual: {}

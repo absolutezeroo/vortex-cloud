@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1f0723e3e5c1f041800dc95ef96da8a1e0ec78b3b11f7e926c6f20418e5e0ce4"
+generated_digest: "sha256:813f4e5e4ee638fca63d14382760eb068f4c8ce4e3c5a89ab50822a7383c60dc"
 generated:
   id: uk_31064e1893
   subject: "outgoing/BotInventory: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BotInventory
   known_evidence:

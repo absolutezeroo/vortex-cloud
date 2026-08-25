@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b8cd109c875fd91502ae0f5393640f798d8c59f63eaee61011a8ff12b742727d"
+generated_digest: "sha256:2cc91f629d717f389392d35cb2ce6aa3f02bf9f8254b09499417c9badfd47675"
 generated:
   name: FurniListAddOrUpdate
   direction: outgoing
@@ -24,20 +24,166 @@ generated:
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    note: read by InventoryItemParser
     evidence:
-    - ev_2c27ac6d29f0
+    - ev_376ad2b6c7af
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 5
+    name: unknown_5
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 6
+    name: unknown_6
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 7
+    name: unknown_7
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 8
+    name: unknown_8
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 10
+    name: unknown_10
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 12
+    name: unknown_12
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
+  - index: 13
+    name: unknown_13
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by InventoryItemParser
+    evidence:
+    - ev_376ad2b6c7af
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 14
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - boolean
+    - int32
+    - string
+    - int32
     evidence: ev_376ad2b6c7af
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 15
     partial: false
     types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - boolean
+    - int32
+    - string
     - int32
     evidence: ev_2c27ac6d29f0
   evidence:
@@ -57,6 +203,8 @@ generated:
     symbol: FurniListAddOrUpdateParser
     line: 14
     note: official client build PRODUCTION-201601012205-226667486
+  conflicts:
+  - cf_541b1ce3f8
   unknowns:
   - uk_b8534ef7e7
 verified: {}

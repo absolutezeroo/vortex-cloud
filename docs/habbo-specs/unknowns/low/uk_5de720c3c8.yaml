@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:94726b99dbd333c3162dc6321df684aaac4b27ea9c088afbfde205b36d3113f9"
+generated_digest: "sha256:700d69e6c031b57ad86c6939f2303c7541f0daf85130d476c448fd71dfb76e76"
 generated:
   id: uk_5de720c3c8
   subject: "outgoing/TalentLevelUp: unnamed fields"
   severity: low
-  question: Fields 2, 3 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TalentLevelUp
   known_evidence:

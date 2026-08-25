@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d673e7e006c2d4fe8f0f743436a78e8aa232069809f739b3d72ed091814482dd"
+generated_digest: "sha256:fb858826b16ebd60d701bc3ec4b38aa3cad11eea761bb9366f1c5d8d2079dccb"
 generated:
   id: uk_3ea14b1ed2
   subject: "outgoing/NavigatorMetaData: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: NavigatorMetaData
   known_evidence:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e591d5a4e7f3c94b49bafeef179c825662fc6e08dce0ec21de86c474d39c310c"
+generated_digest: "sha256:f9b65946a4f95bd1314b731cf0cd19126c39626989bf2599fe034ad68dc15ab9"
 generated:
   name: CollectableMintableItemTypes
   direction: outgoing
@@ -19,20 +19,90 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 1
+    name: item_type_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 2
+    name: start_time
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 3
+    name: end_time
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 4
+    name: region_locked
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 5
+    name: price
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 6
+    name: limited_edition
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
+  - index: 7
+    name: item_type
+    type: short
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f3be3fdb2395
+    - ev_9f88729e4c25
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 8
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - int32
+    - boolean
+    - short
     evidence: ev_f3be3fdb2395
   - origin: nitro
     authority: multi_implementation
@@ -72,9 +142,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/CollectableMintableItemTypesMessageComposerSerializer.cs
     symbol: CollectableMintableItemTypesMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_24830aae8f
-  unknowns:
-  - uk_def708d034
 verified: {}
 manual: {}

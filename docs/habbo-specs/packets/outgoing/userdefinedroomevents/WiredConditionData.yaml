@@ -10,20 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2dd122a2f1ab3d84a899cb19163c87f649e75bf2775aa7198ecedcbfb3826fc2"
+generated_digest: "sha256:5e5c4979441849dc2ee5ceb28118f8d5a0c466a56248b24be3ea917eb0295631"
 generated:
   name: WiredConditionData
   direction: outgoing
   domain: userdefinedroomevents
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by ConditionDefinition
+    evidence:
+    - ev_6f5923a4c15b
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 1
+    partial: false
+    types:
+    - int32
     evidence: ev_6f5923a4c15b
   - origin: arcturus
     authority: reference_emulator
@@ -48,5 +58,7 @@ generated:
     symbol: WiredConditionDataMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  unknowns:
+  - uk_e25a827e7f
 verified: {}
 manual: {}

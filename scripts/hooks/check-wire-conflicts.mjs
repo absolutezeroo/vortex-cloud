@@ -14,19 +14,27 @@
 //   1. A loop in a client parser reads as its body's fields. ConflictDetector collapses runs marked
 //      "inside a repeated block" so `count + array` compares against `count + loop body`, which is
 //      what `incoming/AcceptFriend` was. Already handled.
-//   2. A parser that delegates -- `new SomeEntry(wrapper)` inside the loop -- hides those reads from
-//      the scanner, so the client side undercounts. `outgoing/AcceptFriendResult` reads as one field
-//      because its two per-entry ints happen inside a helper constructor. NOT handled: follow the
-//      helper by hand.
+//   2. A parser that delegates -- `new SomeEntry(wrapper)` inside the loop -- hides those reads.
+//      As3ClientAnalyzer follows one level of that now. What it still cannot see is a delegation
+//      through a *method* (`entry.parse(wrapper)`, which ModeratorInit does), and the mirror of the
+//      same problem on our side: WireLayoutExtractor does not follow a static helper either, so a
+//      serializer that calls `QuestDataWriter.Write(packet, ...)` reads as one field.
 //
-// The baseline grew from 23 to 64 on 2026-08-25, and that is progress rather than regression: until
-// then the client scanner bound headers only to composers, so 17 of 805 outgoing packets had any
-// evidence at all from the build this emulator targets. Every outgoing comparison was being made
-// against a client from 2016. Binding the parser behind each MessageEvent wrapper took that to 514,
-// and the entries that appeared are disagreements with the RIGHT client for the first time.
+// History, so nobody re-derives it. Until 2026-08-25 the client scanner bound headers only to
+// composers, so 17 of 805 outgoing packets had any evidence from the build this emulator targets --
+// every outgoing comparison was against a client from 2016, and that is where the original 23
+// baselined entries came from. Following the parser behind each MessageEvent wrapper took outgoing
+// evidence to 514; the list went 23 -> 64 (disagreements with the RIGHT client, for the first time),
+// then to 13 once loops and constructor delegation were understood.
 //
-// One of them was real: AcceptFriendResult was being sent on 3407, which WIN63 hands to its
-// self-donation handler. Fixed. The remaining entries are unread.
+// One entry in all of that was a real bug: AcceptFriendResult was sent on 3407, which WIN63 hands to
+// its self-donation handler. It is 3707.
+//
+// Of the 45 that stand, 17 have been read against the AS3 and are artifacts or empty composers: the
+// six incoming ones, and FloorHeightMap, RoomDimmerPresets, ModeratorInit, NewFriendRequest,
+// QuestCompleted, HabboClubOffers, WiredUserPermanentVariables, AreaHide, BundleDiscountRuleset,
+// CategoriesWithVisitorCount, CompetitionRoomsData. The other 28 are UNREAD. Start there when a
+// dialog does not open.
 //
 // This does not demand the existing disagreements be fixed. It fixes their LIST, so a new one
 // fails the gate on the commit that introduces it instead of surfacing in a running client.

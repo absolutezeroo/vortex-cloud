@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bd5cffba67f2af52cb9565909bf922256d980db0be870e6656478200c6fd5f66"
+generated_digest: "sha256:3254ddfc51c304ad74adb752c250db4f87369af4a25474167628ca32c9a1d616"
 generated:
   id: uk_2fb1ae8603
   subject: "outgoing/RelationshipStatusInfo: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RelationshipStatusInfo
   known_evidence:

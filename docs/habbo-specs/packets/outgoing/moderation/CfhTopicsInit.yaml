@@ -10,35 +10,79 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:33453593ebcc9f93de920e5dadc888c470ce1331e7c6b4c289bb3b16d93dc5fd"
+generated_digest: "sha256:8071eceb438110e1e12168f47b60c2f9ae483a565696b0bc30819b1ffceced7c"
 generated:
   name: CfhTopicsInit
   direction: outgoing
   domain: moderation
-  structure_confidence: confirmed
+  structure_confidence: reference_observed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
+    name_confidence: implementation_observed
+    type_confidence: reference_observed
+    evidence:
+    - ev_8a2b783a4827
+    - ev_01c4bfbc4a41
+  - index: 1
+    name: name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: reference_observed
+    evidence:
+    - ev_8a2b783a4827
+    - ev_01c4bfbc4a41
+  - index: 2
+    name: length
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: reference_observed
+    evidence:
+    - ev_8a2b783a4827
+    - ev_01c4bfbc4a41
+  - index: 3
+    name: name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: reference_observed
+    evidence:
+    - ev_8a2b783a4827
+    - ev_01c4bfbc4a41
+  - index: 4
+    name: id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: reference_observed
+    evidence:
+    - ev_8a2b783a4827
+    - ev_01c4bfbc4a41
+  - index: 5
+    name: unknown_5
+    type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: client_confirmed
+    type_confidence: reference_observed
     evidence:
-    - ev_97801d602988
+    - ev_8a2b783a4827
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 3
+    partial: true
     types:
+    - int32
+    - string
     - int32
     evidence: ev_97801d602988
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 3
+    partial: true
     types:
+    - int32
+    - string
     - int32
     evidence: ev_e35efd2db33c
   - origin: nitro

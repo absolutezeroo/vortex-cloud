@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:757ddcc6cfd318db2e626f6eb4429857fc11c7cfe6c54c6b2ff504458e40561a"
+generated_digest: "sha256:1d52faecf446a2c02989c530a78159354147c5226f384bd63e824a983c3831e8"
 generated:
   id: uk_a493f6b0f0
   subject: "outgoing/HabboSearchResult: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 6, 16 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HabboSearchResult
   known_evidence:

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:caa45ecc19d3b2f367673d99457da6a9199dc1e840994350385f33ae85c80467"
+generated_digest: "sha256:80c6a5b18d97190bf332c2e0b89f0f04ead37517af238362a7fe7b9224e673e7"
 generated:
   name: CfhChatlog
   direction: outgoing
@@ -213,9 +213,13 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 4
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_223715be4838
   - origin: arcturus
     authority: reference_emulator

@@ -10,20 +10,80 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:079819fbd934fad3a6448de132b5c9175d176e2c6ce6cd51925d41944259ae3f"
+generated_digest: "sha256:99757b9613dbefe373090695e84b7a3b235b6fc01e2d1da07fa5b9fdd9c3913c"
 generated:
   name: FireworkChargeData
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by FireworkChargeData
+    evidence:
+    - ev_077a6ae10432
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_077a6ae10432
   evidence:
   - id: ev_077a6ae10432
@@ -34,5 +94,7 @@ generated:
     symbol: FireworkChargeDataParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
+  unknowns:
+  - uk_6955ee3112
 verified: {}
 manual: {}

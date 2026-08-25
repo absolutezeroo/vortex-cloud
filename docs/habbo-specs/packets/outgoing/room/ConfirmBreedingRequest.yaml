@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:58c180f90391a22641483521286874a08a59a9495a8d2b0ccfd4c58a25779e2e"
+generated_digest: "sha256:00e0180af4f22c73f315be4f3616ac33c11df8c35a8ae3c9d04ecfbe1214d59f"
 generated:
   name: ConfirmBreedingRequest
   direction: outgoing
@@ -31,9 +31,126 @@ generated:
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    note: read by _SafeCls_4162
     evidence:
     - ev_15eed85d2cab
   - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 7
+    name: unknown_7
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 9
+    name: unknown_9
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 10
+    name: unknown_10
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4162
+    evidence:
+    - ev_15eed85d2cab
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_15eed85d2cab
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_15eed85d2cab
+  - index: 13
+    name: unknown_13
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_15eed85d2cab
+  - index: 14
+    name: unknown_14
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_15eed85d2cab
+  - index: 15
     name: result_pet_type
     type: int32
     name_confidence: client_confirmed
@@ -43,9 +160,22 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
+    field_count: 16
     partial: false
     types:
+    - int32
+    - int32
+    - string
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - string
+    - string
+    - int32
+    - int32
     - int32
     - int32
     - int32

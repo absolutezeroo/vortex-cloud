@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:63c4f4ecbcf59058fc39bdbcff7bb4d6f388fc68b323c914ec6651db4bd7dea1"
+generated_digest: "sha256:3d4134451b4a909e7572b43db9ebf8184a3d3ed47264be572f1b4c87b5673c7e"
 generated:
   name: WiredRoomLogs
   direction: outgoing
@@ -146,9 +146,19 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 10
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - byte
+    - boolean
+    - byte
+    - boolean
+    - string
     evidence: ev_e609c508c93d
   - origin: vortex
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9a450f57a3d61e22ce4fe8b9aa91db9444b73771d49115b2bc17ad03a85e9c4c"
+generated_digest: "sha256:aeaba4c5ad9c3f226f51e97fa2cdc65f5554e8493bbf6b4cbc358aa5369c7011"
 generated:
   name: WiredUserVariablesList
   direction: outgoing
@@ -100,9 +100,16 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 7
     partial: true
-    types: []
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_9ca289be047d
   - origin: vortex
     authority: vortex_emulator

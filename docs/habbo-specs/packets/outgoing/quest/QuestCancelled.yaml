@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:913e44449be17ce850b3a6a16e41d7ff67dab57821c2acbceb1831c16fbaa0fc"
+generated_digest: "sha256:9451122965170a4642361d1342d5beecf7f5a4669d93b8fb13582e4794c5b4be"
 generated:
   name: QuestCancelled
   direction: outgoing
   domain: quest
-  structure_confidence: confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: expired
     type: boolean
-    name_confidence: client_confirmed
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_a03aea0d6a5f
-    - ev_fb9ed13776e9
+    - ev_955bdcb61cb0
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -36,10 +36,28 @@ generated:
     evidence: ev_a03aea0d6a5f
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 19
     partial: false
     types:
     - boolean
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
+    - boolean
+    - int32
     evidence: ev_fb9ed13776e9
   - origin: nitro
     authority: multi_implementation
@@ -101,5 +119,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/QuestCancelledMessageComposerSerializer.cs
     symbol: QuestCancelledMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_d11c5e6fa6
 verified: {}
 manual: {}

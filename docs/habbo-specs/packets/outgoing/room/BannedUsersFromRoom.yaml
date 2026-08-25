@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf42dd10415eaed378495369d983a854d5fe3cd7f06a5e37665ac1c81b5410d9"
+generated_digest: "sha256:cbbd86065580e5a07756fe848521ddd1bacb37e4ec34bd12e11ee61cd9f6e01f"
 generated:
   name: BannedUsersFromRoom
   direction: outgoing
@@ -33,14 +33,34 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_55118e4903db
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_55118e4903db
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_55118e4903db
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 4
     partial: false
     types:
     - int32
     - int32
+    - int32
+    - string
     evidence: ev_55118e4903db
   - origin: arcturus
     authority: reference_emulator

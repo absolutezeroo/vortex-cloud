@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0b6ba77187002bf3b5a7d2c47b7a553dc0581f44598c8c916c0705d4a641aa33"
+generated_digest: "sha256:8f2ba962dc3bc8ea3d2048beb60b613d6782c3f747ee245c07ba7ed7f838b202"
 generated:
   name: FriendRequests
   direction: outgoing
@@ -34,14 +34,44 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_f7a691a7b599
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f7a691a7b599
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f7a691a7b599
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_f7a691a7b599
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 5
     partial: false
     types:
     - int32
     - int32
+    - int32
+    - string
+    - string
     evidence: ev_f7a691a7b599
   - origin: nitro
     authority: multi_implementation

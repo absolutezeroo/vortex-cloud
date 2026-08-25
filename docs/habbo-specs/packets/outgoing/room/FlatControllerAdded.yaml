@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0834641c1a3c6817fc2171f54a400a336aceaa1ef5b14a94a52bdef189b9ec08"
+generated_digest: "sha256:eaad5e05b785ae392a43133941581355de01438bb893158f77a6de5bbe8dd652"
 generated:
   name: FlatControllerAdded
   direction: outgoing
@@ -25,13 +25,33 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_21165f2f8a17
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3393
+    evidence:
+    - ev_21165f2f8a17
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3393
+    evidence:
+    - ev_21165f2f8a17
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 3
     partial: false
     types:
     - int32
+    - int32
+    - string
     evidence: ev_21165f2f8a17
   - origin: arcturus
     authority: reference_emulator
@@ -59,7 +79,7 @@ generated:
     symbol: FlatControllerAddedMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
-  conflicts:
-  - cf_7720577fa3
+  unknowns:
+  - uk_e67cac47ac
 verified: {}
 manual: {}

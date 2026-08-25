@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:801be33ea3999a01d5603ce43757c3a3f46923cc8449bc19e9d1a3d732c12746"
+generated_digest: "sha256:0f1912046b3426a2eb2329779c1a9ed45ad7e28b22be59c639170e73473db71d"
 generated:
   name: ConsoleMessageHistory
   direction: outgoing
@@ -33,14 +33,64 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_956505bc21f0
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_956505bc21f0
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_956505bc21f0
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_956505bc21f0
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_956505bc21f0
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_956505bc21f0
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 7
     partial: false
     types:
     - int32
     - int32
+    - int32
+    - string
+    - string
+    - int32
+    - string
     evidence: ev_956505bc21f0
   - origin: nitro
     authority: multi_implementation

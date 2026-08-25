@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4d5c899f3f9fce3a7d10569836d95829569e8a40faa40c8c297e3fb3a9be4ffa"
+generated_digest: "sha256:915c08465a0d7263a9d247b8f266822e39bc87432039a5fcb3aa92482546f215"
 generated:
   name: UserChatlog
   direction: outgoing
@@ -157,9 +157,12 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 3
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
     evidence: ev_2a878ef04c60
   - origin: arcturus
     authority: reference_emulator

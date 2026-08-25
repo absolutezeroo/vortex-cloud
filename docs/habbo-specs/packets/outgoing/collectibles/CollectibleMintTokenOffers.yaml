@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e07eb95e11ebcc1b9b350fc709dbdda2dfc488da988fc0cd6ccb3d80c32420fb"
+generated_digest: "sha256:4fa613ae2aee4be7dcf1979d695a994507547c3457c4934e9fc17d79532130fc"
 generated:
   name: CollectibleMintTokenOffers
   direction: outgoing
@@ -19,19 +19,59 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_dc2166640173
+    - ev_5622453489be
+  - index: 1
+    name: offer_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_dc2166640173
+    - ev_5622453489be
+  - index: 2
+    name: product_code
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_dc2166640173
+    - ev_5622453489be
+  - index: 3
+    name: silver_price
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_dc2166640173
+    - ev_5622453489be
+  - index: 4
+    name: amount_tokens
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_dc2166640173
+    - ev_5622453489be
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 5
     partial: false
     types:
+    - int32
+    - int32
+    - string
+    - int32
     - int32
     evidence: ev_dc2166640173
   - origin: nitro
@@ -72,9 +112,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/CollectibleMintTokenOffersMessageComposerSerializer.cs
     symbol: CollectibleMintTokenOffersMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_f5e54477ea
-  unknowns:
-  - uk_353bfeea94
 verified: {}
 manual: {}

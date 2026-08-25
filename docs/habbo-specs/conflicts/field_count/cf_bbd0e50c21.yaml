@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0090b710e89a16dd6f196551c65d8195168e16a6bb09fc8bcb3380a6cebcb898"
+generated_digest: "sha256:3e695fb41cd42e7d7e5c32cf9b2d1c6829b5359fa29a29f63321e8ffa9b1795b"
 generated:
   id: cf_bbd0e50c21
   kind: field_count
@@ -19,11 +19,11 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "2 fields: boolean, int32, int32"
+    claim: "2 fields: boolean, string, int32, int32, int32, int32, boolean, string, string, int32, string, int32, int32, int32, string, string, boolean, int32, int32"
     evidence: ev_c93a91ca487d
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    claim: "2 fields: boolean, int32, int32"
+    claim: "2 fields: boolean, string, int32, int32, int32, int32, boolean, string, string, int32, string, int32, int32, int32, string, string, boolean, boolean, int32, int32, int32"
     evidence: ev_5d48436b5283
   - origin: vortex
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e5433d03fc4e493b9b74536eba72218b926a7bc4818a4c52d24bd470a5400097"
+generated_digest: "sha256:6b8e77e824532fc78a53c985589433b5ce8c65600229bf56e1d7ee365b26cde7"
 generated:
   name: Game2TotalGroupLeaderboard
   direction: outgoing
@@ -27,20 +27,74 @@ generated:
     evidence:
     - ev_29ef493cd336
   - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_29ef493cd336
+  - index: 7
     name: total_list_size
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_29ef493cd336
-  - index: 2
+  - index: 8
     name: game_type_id
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_29ef493cd336
-  - index: 3
+  - index: 9
     name: favourite_group_id
     type: int32
     name_confidence: client_confirmed
@@ -50,10 +104,16 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 4
+    field_count: 10
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - string
     - int32
     - int32
     - int32

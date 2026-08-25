@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c180f15cb215e3387bfc8c5aa90d1ff73bd43e852bf716a67a46b0d1e7de32c1"
+generated_digest: "sha256:a9851a90e7a8d19d5aff3e991eea766dc55e32e4e4a3a0c40a8e540c6da5aa87"
 generated:
   name: CraftableProducts
   direction: outgoing
   domain: crafting
-  structure_confidence: confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -28,10 +28,11 @@ generated:
     - ev_0aa9f5c4bebc
   - index: 1
     name: unknown_1
-    type: int32
+    type: string
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
     - ev_0aa9f5c4bebc
   - index: 2
@@ -43,22 +44,44 @@ generated:
     note: inside a repeated block
     evidence:
     - ev_0aa9f5c4bebc
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_0aa9f5c4bebc
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_0aa9f5c4bebc
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 3
+    field_count: 5
     partial: false
     types:
     - int32
+    - string
+    - string
     - int32
     - string
     evidence: ev_0aa9f5c4bebc
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
+    field_count: 6
     partial: false
     types:
     - int32
+    - string
+    - string
+    - string
     - int32
     - string
     evidence: ev_12c5838637c3

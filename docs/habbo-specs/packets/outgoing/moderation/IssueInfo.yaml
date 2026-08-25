@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dab11d20c8ead2758b58fb144b332c144230967a5372062bc89763e6a83cd92e"
+generated_digest: "sha256:df7bead68ad3965753e4550841434e73a5df509503247f06f936aa8e6ca5b44c"
 generated:
   name: IssueInfo
   direction: outgoing
@@ -146,10 +146,37 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_4082ff299d9a
+  - index: 16
+    name: unknown_16
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_4082ff299d9a
+  - index: 17
+    name: unknown_17
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_4082ff299d9a
+  - index: 18
+    name: unknown_18
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_4082ff299d9a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 16
+    field_count: 19
     partial: false
     types:
     - int32
@@ -165,6 +192,9 @@ generated:
     - string
     - int32
     - string
+    - string
+    - int32
+    - int32
     - string
     - int32
     - int32

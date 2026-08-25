@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c9a9f771d5c36630f44e11354d49f4f1d2f0a56100bb99809749961c1e13b301"
+generated_digest: "sha256:6f94e4dff36991b30adc2f9b629033d60b66045d2144804d8deea4746ebb2cca"
 generated:
   name: RedeemNftLootBoxState
   direction: outgoing
@@ -19,13 +19,13 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: state
+    name: unknown_0
     type: short
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_fc26c4939d32
-    - ev_01baface9fa1
   - index: 1
     name: opener_avatar_id
     type: int32
@@ -33,14 +33,94 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_fc26c4939d32
+  - index: 2
+    name: unknown_2
+    type: short
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 8
+    name: unknown_8
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
+  - index: 9
+    name: unknown_9
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2582
+    evidence:
+    - ev_fc26c4939d32
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 10
     partial: false
     types:
     - short
     - int32
+    - short
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - string
     evidence: ev_fc26c4939d32
   - origin: vortex
     authority: vortex_emulator
@@ -66,5 +146,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/RedeemNftLootBoxStateMessageComposerSerializer.cs
     symbol: RedeemNftLootBoxStateMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_4a819f001e
+  unknowns:
+  - uk_232c928879
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d3fe3c21c18708c475467139689a879406031de5c78e602064193e166910ef51"
+generated_digest: "sha256:7f1f1293456eb041711057eaf1c5a38282f4b0f784ad2d6874a4495bc8637af3"
 generated:
   id: uk_9b723fd4ca
   subject: "outgoing/HotLooks: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HotLooks
   known_evidence:

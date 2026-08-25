@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:31d411a1a1fc18086c512b8fec58313d3b3852a4ac6657b332ed16a9ca995000"
+generated_digest: "sha256:e8abcfabfcd99cd0e692acc06d1f1f979435fd87e8fb7553073f045bda84fc35"
 generated:
   name: CommunityGoalHallOfFame
   direction: outgoing
@@ -77,15 +77,19 @@ generated:
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
+    field_count: 2
     partial: true
-    types: []
+    types:
+    - string
+    - int32
     evidence: ev_0c9e94ecf3be
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 2
     partial: true
-    types: []
+    types:
+    - string
+    - int32
     evidence: ev_2fb368969c8f
   - origin: nitro
     authority: multi_implementation

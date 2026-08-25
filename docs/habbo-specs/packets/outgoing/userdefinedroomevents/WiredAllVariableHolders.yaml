@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d3d2d6b5f15b08994fc5fd80206d5c67ca0b61c86515e630e7bcb5a2bd8ebe4a"
+generated_digest: "sha256:e61620cf577b8b69f5aeadedd226741a4f8cc462fe9ab418a11535e5001260e0"
 generated:
   name: WiredAllVariableHolders
   direction: outgoing
   domain: userdefinedroomevents
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -26,12 +26,22 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_688ce03a3b21
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by VariableInfoAndHolders
+    evidence:
+    - ev_688ce03a3b21
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 2
+    partial: true
     types:
+    - int32
     - int32
     evidence: ev_688ce03a3b21
   evidence:

@@ -10,83 +10,290 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2c149737e035826b151e904e2f25c7d5edf24d5b3ee7f23485c6341ca0ec4ada"
+generated_digest: "sha256:60ad3e51024cefbab73af59fa709afd8a9ba9eb0aee62c94472780bd36330899"
 generated:
   name: GetGuestRoomResult
   direction: outgoing
   domain: navigator
-  structure_confidence: client_confirmed
+  structure_confidence: multi_reference_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: enter_room
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
+    - ev_85a4aa0bb395
   - index: 1
+    name: room_settings
+    type: block
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    evidence:
+    - ev_85a4aa0bb395
+    fields:
+    - index: 0
+      name: room_id
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 1
+      name: name
+      type: string
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 2
+      name: owner_id
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 3
+      name: owner_name
+      type: string
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 4
+      name: door_mode
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 5
+      name: population
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 6
+      name: players_max
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 7
+      name: description
+      type: string
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 8
+      name: trade_type
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 9
+      name: score
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 10
+      name: ranking
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 11
+      name: category_id
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 12
+      name: count
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 13
+      name: unknown_13
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 14
+      name: bitmask
+      type: int32
+      name_confidence: multi_reference_confirmed
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 15
+      name: unknown_15
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 16
+      name: unknown_16
+      type: int32
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 17
+      name: unknown_17
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 18
+      name: unknown_18
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 19
+      name: unknown_19
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 20
+      name: unknown_20
+      type: string
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+    - index: 21
+      name: unknown_21
+      type: int32
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: multi_reference_confirmed
+      note: inside a repeated block
+      evidence:
+      - ev_85a4aa0bb395
+  - index: 2
     name: room_forward
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
-  - index: 2
+    - ev_85a4aa0bb395
+  - index: 3
     name: staff_pick
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
-  - index: 3
+    - ev_85a4aa0bb395
+  - index: 4
     name: is_group_member
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
-  - index: 4
-    name: unknown_4
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    evidence:
-    - ev_35878dd3f64e
+    - ev_85a4aa0bb395
   - index: 5
-    name: unknown_5
+    name: all_in_room_muted
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
+    - ev_85a4aa0bb395
   - index: 6
-    name: chat_settings
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_35878dd3f64e
-  - index: 7
-    name: opening_connection
+    name: can_mute
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: multi_reference_confirmed
+    type_confidence: multi_reference_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_35878dd3f64e
+    - ev_85a4aa0bb395
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 8
-    partial: false
+    field_count: 33
+    partial: true
     types:
     - boolean
+    - int32
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - string
+    - int32
+    - string
+    - string
+    - string
+    - string
+    - int32
     - boolean
     - boolean
     - boolean
     - boolean
+    - int32
+    - int32
+    - int32
     - boolean
     - int32
     - boolean
@@ -203,7 +410,5 @@ generated:
     line: 7
   conflicts:
   - cf_691c47ecb5
-  unknowns:
-  - uk_8568d861b8
 verified: {}
 manual: {}

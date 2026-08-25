@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a6600b3fd2176b131388b929ef50a8cbaddfaf3eec759f9a62517c3b1fb628bc"
+generated_digest: "sha256:4bda67acd1f5163c92ede53eafb7401c0357d439a45ed56bf29252959ea9e55a"
 generated:
   name: GuestRoomSearchResult
   direction: outgoing
@@ -248,9 +248,13 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 4
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
+    - boolean
     evidence: ev_c94d082fb71f
   - origin: nitro
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1d3afc035980de555f831d27e3f9c2131b349f21c93cc29c81955c5c5600048f"
+generated_digest: "sha256:79e46f56875821c3e9226c7efc9582862a124cea1514077a4778073f3ac2bf89"
 generated:
   name: BotInventory
   direction: outgoing
@@ -26,13 +26,63 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_7dd2f7225ab1
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7dd2f7225ab1
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7dd2f7225ab1
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7dd2f7225ab1
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7dd2f7225ab1
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7dd2f7225ab1
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 6
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - string
+    - string
+    - string
     evidence: ev_7dd2f7225ab1
   - origin: arcturus
     authority: reference_emulator

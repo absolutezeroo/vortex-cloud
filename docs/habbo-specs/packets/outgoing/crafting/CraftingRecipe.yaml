@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b8fe37fed9bcd2cec5985ede104582b5096a5ce2281acf328667ee2d11ad5909"
+generated_digest: "sha256:a429e68563d9bd764a9acb2e9c81694b2ba25f39c49258b9db3b7410756b9fe2"
 generated:
   name: CraftingRecipe
   direction: outgoing
@@ -26,20 +26,42 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_b94d7353a6b1
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_b94d7353a6b1
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_b94d7353a6b1
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
+    field_count: 3
     partial: false
     types:
     - int32
+    - int32
+    - string
     evidence: ev_b94d7353a6b1
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 3
     partial: false
     types:
     - int32
+    - int32
+    - string
     evidence: ev_5eece20fd017
   - origin: nitro
     authority: multi_implementation

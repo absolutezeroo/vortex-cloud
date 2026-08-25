@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b3b35d651937965f9ad6f83d8d25b7341cf5f8ef0b8ab5a8d4453af736f5dc4b"
+generated_digest: "sha256:584758e6f53dcdc64cea3cb173d3a76c175a2356df3b92d55810b6f8d3a7fe23"
 generated:
   id: uk_5a27be7c57
   subject: "outgoing/OfficialRooms: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: OfficialRooms
   known_evidence:

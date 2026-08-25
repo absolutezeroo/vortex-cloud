@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0c92973880ee0f913f5a6167505007119df82d3c16ea48f252ef798464d50a45"
+generated_digest: "sha256:96cf821c91a3ebc06e6f077c8cd314f6063fea12194c65b8199eb26bbcd2d8e7"
 generated:
   id: uk_c20aae9e34
   subject: "outgoing/FlatControllers: unnamed fields"
   severity: low
-  question: Fields 1 carry no name from any source. What are they?
+  question: Fields 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FlatControllers
   known_evidence:

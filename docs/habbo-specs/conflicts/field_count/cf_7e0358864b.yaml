@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4d87850051568cf04284bebc3c6ef0344ea48e6dfeb9a9bdb5bbe8773b06d85a"
+generated_digest: "sha256:86acdda82dc6f709734d9e4dfeb6eb71294b913d744c5432022f550097055670"
 generated:
   id: cf_7e0358864b
   kind: field_count
   subject: "outgoing/HabboAchievementNotification: field count"
   packet: HabboAchievementNotification
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "14 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, string, string, boolean, int32, int32"
+    evidence: ev_895f77515b83
   - origin: arcturus
     authority: reference_emulator
     claim: "12 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, string, string, boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "14 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, string, string, boolean, int32, int32"
     evidence: ev_01bf7116060e
   evidence:
+  - id: ev_895f77515b83
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_1809.as
+    symbol: _SafeCls_1809
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8aa0e48eac97
     kind: reference_composer
     authority: reference_emulator

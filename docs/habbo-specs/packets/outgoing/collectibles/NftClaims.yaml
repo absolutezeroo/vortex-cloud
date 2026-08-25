@@ -10,29 +10,139 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:76926f7d5ffb3453c27f020fb9182ce029661587be2fac5bf5d833548112dd3a"
+generated_digest: "sha256:5d4ee37425c827918b581d28a7e45be696fa99fc690e90e74391bd85ce36a7cc"
 generated:
   name: NftClaims
   direction: outgoing
   domain: collectibles
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_0627ae773460
+    - ev_712455e122fa
+  - index: 1
+    name: claims
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
+    evidence:
+    - ev_712455e122fa
+    fields:
+    - index: 0
+      name: claim_id
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 1
+      name: status
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 2
+      name: claimed_amount
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 3
+      name: claim_limit
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 4
+      name: valid_from
+      type: long
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 5
+      name: valid_to
+      type: long
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 6
+      name: created_at
+      type: long
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 7
+      name: updated_at
+      type: long
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 8
+      name: collection
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 9
+      name: product_code
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 10
+      name: wallet
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 11
+      name: set_id
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
+    - index: 12
+      name: default_collection_name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_712455e122fa
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 12
+    partial: true
     types:
     - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - long
+    - long
+    - long
+    - long
+    - string
+    - string
+    - string
     evidence: ev_0627ae773460
   - origin: vortex
     authority: vortex_emulator
@@ -58,9 +168,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/NftClaimsMessageComposerSerializer.cs
     symbol: NftClaimsMessageComposerSerializer
     line: 8
-  conflicts:
-  - cf_4800fc9cc0
-  unknowns:
-  - uk_dfc429599d
 verified: {}
 manual: {}

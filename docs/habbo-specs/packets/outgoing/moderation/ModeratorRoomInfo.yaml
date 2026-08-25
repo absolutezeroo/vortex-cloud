@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d3d75f897122678f00724a18a0737fa5ce80a97aa4ada65d5a97223fbbdf2129"
+generated_digest: "sha256:5982ff19a3f0d10c06d75ee9c50d338fcf2e11c45f0e3b8cf8e01e39413c3683"
 generated:
   name: ModeratorRoomInfo
   direction: outgoing
@@ -101,9 +101,14 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 5
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - boolean
+    - int32
+    - string
     evidence: ev_4f329235aba0
   - origin: arcturus
     authority: reference_emulator

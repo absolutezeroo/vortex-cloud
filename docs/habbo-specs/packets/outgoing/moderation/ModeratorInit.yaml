@@ -10,131 +10,160 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fc5698f5e2268ffe424c32cc781ba868ce325f546bff7b5f282b4bec3f8c7335"
+generated_digest: "sha256:f51ab09225031aff012c80621e9dbceba6416709867ecc40055d66b27a4107a5"
 generated:
   name: ModeratorInit
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 1
-    name: length
+    name: unknown_1
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 2
-    name: message_templates
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
-    fields:
-    - index: 0
-      name: template
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: implementation_observed
-    note: "written as the constant 0; source comment: unused string list per the client parser"
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 4
-    name: cfh_permission
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 5
-    name: chatlogs_permission
+    name: unknown_5
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 6
-    name: alert_permission
+    name: unknown_6
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 7
-    name: kick_permission
+    name: unknown_7
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 8
-    name: ban_permission
+    name: unknown_8
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 9
-    name: room_alert_permission
+    name: unknown_9
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 10
-    name: room_kick_permission
+    name: unknown_10
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 11
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name: unknown_11
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
+    - ev_98e445c9d44f
   - index: 12
-    name: room_message_templates
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
     evidence:
-    - ev_4160a31c4240
-    fields:
-    - index: 0
-      name: template
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_4160a31c4240
+    - ev_98e445c9d44f
+  - index: 13
+    name: unknown_13
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2230
+    evidence:
+    - ev_98e445c9d44f
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 14
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - string
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - string
     evidence: ev_98e445c9d44f
   - origin: nitro
     authority: multi_implementation
@@ -213,6 +242,8 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorInitMessageComposerSerializer.cs
     symbol: ModeratorInitMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_52ea12cccb
   unknowns:
   - uk_bd113d7d15
 verified: {}

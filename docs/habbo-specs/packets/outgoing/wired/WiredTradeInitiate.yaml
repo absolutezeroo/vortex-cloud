@@ -10,41 +10,90 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:856e7095413845870de365f4c89f79089cd7159ed34fd6740461b647c5d5832d"
+generated_digest: "sha256:092cdf6e766d7880cbce0447a711f3cbce2d0549f38454f8a5f3b9dc6920be26"
 generated:
   name: WiredTradeInitiate
   direction: outgoing
   domain: wired
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
+    name: requirement_type
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 1
+    name: you_get_text
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: implementation_observed
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 3
+    name: mode
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: only when message.RequirementType == CustomRequirementType && message.Contract is not null
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 4
+    name: multiplier
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: only when contract.Mode == 1
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 5
+    name: auto_multiplier_max
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: only when contract.Mode == 2
+    evidence:
+    - ev_6908a4a5dae8
+  - index: 6
     name: show_requirements_immediate
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_b9ebad3a310f
-  - index: 1
+    - ev_6908a4a5dae8
+  - index: 7
     name: override_previous_trade
     type: boolean
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_b9ebad3a310f
-  - index: 2
+    - ev_6908a4a5dae8
+  - index: 8
     name: timeout_seconds
     type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_b9ebad3a310f
+    - ev_6908a4a5dae8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 3
-    partial: false
+    field_count: 6
+    partial: true
     types:
+    - int32
+    - string
+    - string
     - boolean
     - boolean
     - int32
@@ -80,7 +129,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/UserDefinedRoomEvents/Wiredtrading/WiredTradeInitiateMessageComposerSerializer.cs
     symbol: WiredTradeInitiateMessageComposerSerializer
     line: 12
-  conflicts:
-  - cf_297e776b2d
+  unknowns:
+  - uk_aa20703a7a
 verified: {}
 manual: {}

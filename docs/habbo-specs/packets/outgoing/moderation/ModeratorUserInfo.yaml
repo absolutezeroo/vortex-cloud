@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:125bfc12a4077f44e6bf0b732a2d0594bb90b82d9d4f503a21bc87057367dbb1"
+generated_digest: "sha256:829c83f6f0165824e16f4896102f9fa69ca4d2bd5d8e28d17399fef295199f0f"
 generated:
   name: ModeratorUserInfo
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,159 +23,197 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 1
     name: unknown_1
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 4
     name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 5
     name: unknown_5
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 6
     name: unknown_6
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 7
     name: unknown_7
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 8
     name: unknown_8
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 9
     name: unknown_9
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 10
     name: unknown_10
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 11
     name: unknown_11
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 12
     name: unknown_12
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 13
     name: unknown_13
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 14
     name: unknown_14
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 15
     name: unknown_15
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 16
     name: unknown_16
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 17
     name: unknown_17
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   - index: 18
     name: unknown_18
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4131
     evidence:
-    - ev_4af35d420fb1
+    - ev_435e9b5347bf
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 19
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - string
+    - string
+    - string
+    - int32
     evidence: ev_435e9b5347bf
   - origin: arcturus
     authority: reference_emulator

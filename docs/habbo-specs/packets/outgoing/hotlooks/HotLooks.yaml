@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:60efa7b4a79e33e7ac8188f63722a869a82dce6f05caa20f437bbdc28c7c33dd"
+generated_digest: "sha256:2a60dfead4dc9399d6748cca508b421e092b0e406e8d8ef6f817dcac84688699"
 generated:
   name: HotLooks
   direction: outgoing
@@ -26,13 +26,33 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_8d02189ddcb4
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8d02189ddcb4
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8d02189ddcb4
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 3
     partial: false
     types:
     - int32
+    - string
+    - string
     evidence: ev_8d02189ddcb4
   - origin: nitro
     authority: multi_implementation

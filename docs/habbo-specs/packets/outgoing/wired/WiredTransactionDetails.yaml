@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f103a41db9ecf718f24812af66be8d1e39ef1c42b0f5ea99174c8191fa173cd1"
+generated_digest: "sha256:bb8c0a7100bba9ca5a007b06e8b24a0d096a58c4b76307125b8d5b0f12e41c0b"
 generated:
   name: WiredTransactionDetails
   direction: outgoing
@@ -51,9 +51,16 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 7
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
     evidence: ev_d2f45e914f03
   - origin: vortex
     authority: vortex_emulator

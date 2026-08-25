@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa238d4368c0a067a6d2d353cd7509022919030defa19d2669ee423cc525211c"
+generated_digest: "sha256:3e17ba9583529eda09ec6efc738469a18591dafcbfcab8b83727caa2552763c8"
 generated:
   name: PetRespectNotification
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -32,12 +32,52 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_c9f238623a32
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2577
+    evidence:
+    - ev_c9f238623a32
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2577
+    evidence:
+    - ev_c9f238623a32
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2577
+    evidence:
+    - ev_c9f238623a32
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2577
+    evidence:
+    - ev_c9f238623a32
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
-    partial: false
+    field_count: 6
+    partial: true
     types:
+    - int32
+    - int32
+    - int32
+    - string
     - int32
     - int32
     evidence: ev_c9f238623a32
@@ -66,5 +106,7 @@ generated:
     symbol: PetRespectNotificationMessageComposer
     line: 26
     note: third-party server implementation; evidence, not authority
+  unknowns:
+  - uk_9692c150e2
 verified: {}
 manual: {}

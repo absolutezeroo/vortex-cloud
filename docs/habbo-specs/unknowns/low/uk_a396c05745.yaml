@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7200f80e218faf23a522355a9d9730090a139658860d9784ec1281d6ca02a16c"
+generated_digest: "sha256:a0c1761eaecf338fef3bc6b5b998a2f0485e12a364da33b2a7e848d718c83424"
 generated:
   id: uk_a396c05745
   subject: "outgoing/CommunityGoalEarnedPrizes: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CommunityGoalEarnedPrizes
   known_evidence:

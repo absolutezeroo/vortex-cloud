@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:61e490cbe3d783614170f4a22698bad16ff88292260bb791a55fe532da043a86"
+generated_digest: "sha256:21fd6334ee0895c0e1b6af8cbebda0e5e78be5e2a6f2f87c089f2da4cc8eedac"
 generated:
   id: cf_02dbf283ad
   kind: field_count
@@ -19,7 +19,7 @@ generated:
   positions:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    claim: "4 fields: int32, int32, int32, int32"
+    claim: "5 fields: int32, int32, int32, int32, int32, string"
     evidence: ev_5aacafab5197
   - origin: nitro
     authority: multi_implementation

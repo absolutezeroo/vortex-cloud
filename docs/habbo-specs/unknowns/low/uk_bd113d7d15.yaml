@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bf4f1b483ebf38c9618e89c614117898f758c7bf4278901838abe5cd0c9101b9"
+generated_digest: "sha256:c8ab34719cf8085333fd230feb7b938378794c8fcfadacf5e2b54c35b215bcc5"
 generated:
   id: uk_bd113d7d15
   subject: "outgoing/ModeratorInit: unnamed fields"
   severity: low
-  question: Fields 3 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ModeratorInit
   known_evidence:

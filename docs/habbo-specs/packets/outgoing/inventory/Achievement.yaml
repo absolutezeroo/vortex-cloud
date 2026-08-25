@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:62ee706ac75a393647ac8bd2470f7a3d8e489bec083a3c8d22d72c07d9ad900a"
+generated_digest: "sha256:b6fc230ad48b33e3068ba2b68e9395ceebb8cc1c37149d6db708a41e2bd07c78"
 generated:
   name: Achievement
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,117 +23,157 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 4
     name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 5
     name: unknown_5
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 6
     name: unknown_6
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 7
     name: unknown_7
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 8
     name: unknown_8
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 9
     name: unknown_9
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 10
     name: unknown_10
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 11
     name: unknown_11
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   - index: 12
     name: unknown_12
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by Achievement
     evidence:
-    - ev_159db837a6d2
+    - ev_e441168a3932
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 13
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - int32
     evidence: ev_e441168a3932
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 14
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - int32
+    - short
     evidence: ev_7361095241ab
   - origin: arcturus
     authority: reference_emulator
@@ -179,6 +219,8 @@ generated:
     symbol: AchievementMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_99230436bd
   unknowns:
   - uk_bef1fbe136
 verified: {}

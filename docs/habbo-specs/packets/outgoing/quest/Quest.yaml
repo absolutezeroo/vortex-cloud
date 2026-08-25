@@ -10,26 +10,204 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2441eb3451bdf3bbdbc41717323ac335abc59443e773ebaa384fe15d438a5118"
+generated_digest: "sha256:5c4b772d1fe735106125aad646ef2ac2a72c946dcc2624bc6e92e3b15b60ff73"
 generated:
   name: Quest
   direction: outgoing
   domain: quest
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 5
+    name: unknown_5
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 7
+    name: unknown_7
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 9
+    name: unknown_9
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 10
+    name: unknown_10
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 13
+    name: unknown_13
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 14
+    name: unknown_14
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
+  - index: 15
+    name: unknown_15
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _Str_2455
+    evidence:
+    - ev_7f976f5d777b
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 16
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
     evidence: ev_7f976f5d777b
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 18
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
+    - boolean
+    - int32
     evidence: ev_cf2ab6739acf
   - origin: nitro
     authority: multi_implementation
@@ -89,5 +267,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/QuestMessageComposerSerializer.cs
     symbol: QuestMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_790ed5faca
+  unknowns:
+  - uk_a1c973223e
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a1ca15d57b148d714f980c376b16afc4991cf0281d1a82300868834ed90c5158"
+generated_digest: "sha256:d8777327abe36e41afa8f21e2859d80faa9fea3ef99e780fac55b35a7b4b4f7b"
 generated:
   id: uk_74def3737a
   subject: "outgoing/IssueInfo: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: IssueInfo
   known_evidence:

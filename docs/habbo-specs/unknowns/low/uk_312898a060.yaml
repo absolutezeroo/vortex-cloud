@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:032ba9724cebc40841ef77bd1e8acd7322a7b85b57080854547513e60b1ffb83"
+generated_digest: "sha256:60c27743387dc0ede0171a90b467db0e60109d1e2856aa31c6873e2afd7b9e0c"
 generated:
   id: uk_312898a060
   subject: "outgoing/WiredUserPermanentVariables: unnamed fields"
   severity: low
-  question: Fields 4, 5, 6 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredUserPermanentVariables
   known_evidence:

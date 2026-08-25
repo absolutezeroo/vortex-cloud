@@ -10,28 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0c42f98967a94cadb026ed45a9fc2683489e991e5fbf9a0a601db23829c8715a"
+generated_digest: "sha256:19a4f6112e67270024f013d3f14229c627c0e4bda4ffbc07bb1821a6c774c4f8"
 generated:
   name: DailyTasksTasksAdded
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: implementation_observed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: client_confirmed
+    type_confidence: implementation_observed
     evidence:
-    - ev_27f8e678d842
     - ev_ad5af04ca890
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 12
+    partial: true
     types:
+    - int32
+    - long
+    - string
+    - string
+    - boolean
+    - string
+    - string
+    - int32
+    - int32
+    - byte
+    - int32
     - int32
     evidence: ev_27f8e678d842
   - origin: vortex

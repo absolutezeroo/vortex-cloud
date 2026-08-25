@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:96492bd9ae232b41303b33c5c6bab831c173547777bde08f28f2edb550245bb6"
+generated_digest: "sha256:8ed75375da75061988f0ca1bb73df0fc314b1ff4c0103fe2eb129d8494682ee9"
 generated:
   name: Wardrobe
   direction: outgoing
@@ -26,21 +26,51 @@ generated:
     evidence:
     - ev_7fa044e79e34
   - index: 1
-    name: unknown_1
+    name: count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_7fa044e79e34
+    - ev_93cb88e5fce2
+  - index: 2
+    name: slot_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7fa044e79e34
+    - ev_93cb88e5fce2
+  - index: 3
+    name: figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7fa044e79e34
+    - ev_93cb88e5fce2
+  - index: 4
+    name: gender
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7fa044e79e34
+    - ev_93cb88e5fce2
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 5
     partial: false
     types:
     - int32
     - int32
+    - int32
+    - string
+    - string
     evidence: ev_7fa044e79e34
   - origin: nitro
     authority: multi_implementation
@@ -102,7 +132,5 @@ generated:
     line: 7
   conflicts:
   - cf_060cbc0c2d
-  unknowns:
-  - uk_1fe6679272
 verified: {}
 manual: {}

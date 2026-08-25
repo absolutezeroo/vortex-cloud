@@ -10,20 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:942a2b0dc08a5b092ac39ed6db673ad49cd912489fddbe39860e6bda597bff23"
+generated_digest: "sha256:92db7ce9de08848a9cc362718774287e76e4fe1c1212a7ac8289590fba8438f3"
 generated:
   name: WiredTriggerData
   direction: outgoing
   domain: userdefinedroomevents
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TriggerDefinition
+    evidence:
+    - ev_76a4b1dd8df8
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TriggerDefinition
+    evidence:
+    - ev_76a4b1dd8df8
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TriggerDefinition
+    evidence:
+    - ev_76a4b1dd8df8
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
     evidence: ev_76a4b1dd8df8
   - origin: arcturus
     authority: reference_emulator
@@ -48,5 +78,7 @@ generated:
     symbol: WiredTriggerDataMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  unknowns:
+  - uk_72f0cf3dcb
 verified: {}
 manual: {}

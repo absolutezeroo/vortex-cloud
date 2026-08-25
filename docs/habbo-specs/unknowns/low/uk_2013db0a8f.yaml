@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:abdc5ffe4b9113cc7db676e1c4dfe36305bdc5830d67bbf6e111ec157767d346"
+generated_digest: "sha256:fab41db319884ae79f3cec0fba19be4dee5a7923af55edc247033e93e2e1a70d"
 generated:
   id: uk_2013db0a8f
   subject: "outgoing/PromoArticles: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PromoArticles
   known_evidence:

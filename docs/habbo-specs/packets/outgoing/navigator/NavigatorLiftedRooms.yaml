@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f95d2f2646cf2806ed2a4bf94af219c67eac05506fd03dbf9feab509aa8ba69d"
+generated_digest: "sha256:f9dc9de72a36918392b9c976ce9cfb59e93687addcd02eb27acc6dc58be7f951"
 generated:
   name: NavigatorLiftedRooms
   direction: outgoing
@@ -19,27 +19,71 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_e1120954b333
+    - ev_5d1a2b399f73
+  - index: 1
+    name: flat_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e1120954b333
+    - ev_5d1a2b399f73
+  - index: 2
+    name: area_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e1120954b333
+    - ev_5d1a2b399f73
+  - index: 3
+    name: image
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e1120954b333
+    - ev_5d1a2b399f73
+  - index: 4
+    name: caption
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_e1120954b333
+    - ev_5d1a2b399f73
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
+    field_count: 5
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - string
+    - string
     evidence: ev_e1120954b333
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 5
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - string
+    - string
     evidence: ev_0e475eba71df
   - origin: nitro
     authority: multi_implementation
@@ -104,7 +148,5 @@ generated:
     line: 7
   conflicts:
   - cf_e0fae606de
-  unknowns:
-  - uk_abe9b2eb32
 verified: {}
 manual: {}

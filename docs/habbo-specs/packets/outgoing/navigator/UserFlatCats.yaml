@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:825414a57d22fcd5fac5c08572a03f5f4e66c8d721647e87ba0e8b1614656dbd"
+generated_digest: "sha256:7f482037d2a14bcd7074fa40e1e23bf07a4a0ecc2156f820c036731451b03e9a"
 generated:
   name: UserFlatCats
   direction: outgoing
@@ -19,20 +19,90 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 1
+    name: id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 2
+    name: name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 3
+    name: visible
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 4
+    name: automatic
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 5
+    name: automatic_category
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 6
+    name: global_category
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
+  - index: 7
+    name: staff_only
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_257e72038ed9
+    - ev_d743f775c56a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 8
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - boolean
+    - boolean
+    - string
+    - string
+    - boolean
     evidence: ev_257e72038ed9
   - origin: nitro
     authority: multi_implementation
@@ -97,7 +167,5 @@ generated:
     line: 7
   conflicts:
   - cf_179b7bc2e1
-  unknowns:
-  - uk_098b5b3f8d
 verified: {}
 manual: {}

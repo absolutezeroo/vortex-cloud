@@ -10,20 +10,110 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:981977834584a8175c2f4f2c0265116bf5de3fd724eea04b78831dceabd90835"
+generated_digest: "sha256:c7e5827f624f77a38c29d8b51d02ebe387f5486018999aa104f7741dc3f1956e"
 generated:
   name: Game2GameLongData
   direction: outgoing
   domain: game
   structure_confidence: unknown
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by GameLobbyData
+    evidence:
+    - ev_0476751168f7
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 9
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
     evidence: ev_0476751168f7
   - origin: nitro
     authority: multi_implementation
@@ -48,5 +138,7 @@ generated:
     symbol: Game2GameLongDataMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  unknowns:
+  - uk_e6c5888f27
 verified: {}
 manual: {}

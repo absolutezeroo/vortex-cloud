@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8ab8e5ba65a499905802d8b7c5353925409dca0a0fb0559a1c836cf9c21a785c"
+generated_digest: "sha256:f8d70fcf795f0aeb4011e18e71170641f34804f9436081dab15b9595531bde09"
 generated:
   id: uk_173b56d768
   subject: "outgoing/SnowStormOnGameEnding: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowStormOnGameEnding
   known_evidence:

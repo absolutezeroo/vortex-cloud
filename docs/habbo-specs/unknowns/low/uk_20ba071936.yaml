@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0a43ac4e22a96c31106a726bd0351890879d7588d1e8b81e8045c83b66f79e4d"
+generated_digest: "sha256:6fb38664e4b9de6b5b337b00a051ac116b8675669bb7336b1293729239614adc"
 generated:
   id: uk_20ba071936
   subject: "outgoing/CraftingResult: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CraftingResult
   known_evidence:
+  - id: ev_457fd32df980
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4124.as
+    symbol: _SafeCls_4124
+    line: 19
+    note: official client build WIN63-202607011411-782849652
   - id: ev_631ff47970a2
     kind: client_parser
     authority: client_code
@@ -35,13 +43,5 @@ generated:
     symbol: CraftingResultMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_335de13250f2
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/crafting/CraftingResultMessageComposer.java
-    symbol: CraftingResultMessageComposer
-    line: 23
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

@@ -84,6 +84,21 @@ public sealed partial class As3ClientAnalyzer(
     [GeneratedRegex(@"super\s*\(\s*[^,()]+,\s*(\w+)\s*\)", RegexOptions.None, 2000)]
     private static partial Regex EventSuperCall();
 
+    /// <summary>
+    /// A parser handing the wrapper to a helper's constructor: <c>new AreaHideMessageData(param1)</c>.
+    /// Those reads are the packet's too, and nothing in the parse method itself shows them.
+    /// </summary>
+    [GeneratedRegex(@"new\s+(\w+)\s*\(\s*(\w+)\s*\)", RegexOptions.None, 2000)]
+    private static partial Regex DelegatedRead();
+
+    /// <summary>The helper's own constructor — the one that takes the wrapper and reads from it.</summary>
+    [GeneratedRegex(
+        @"function\s+\w+\s*\(\s*\w+\s*:\s*IMessageDataWrapper",
+        RegexOptions.None,
+        2000
+    )]
+    private static partial Regex WrapperConstructor();
+
     [GeneratedRegex(@"public\s+function\s+getMessageArray\s*\(\s*\)", RegexOptions.None, 2000)]
     private static partial Regex MessageArrayMethod();
 
@@ -128,7 +143,9 @@ public sealed partial class As3ClientAnalyzer(
             unresolved
         );
 
-        BindParsersBehindEvents(source, toClient, unresolved);
+        Dictionary<string, string> classFiles = IndexClassFiles(source);
+
+        BindParsersBehindEvents(classFiles, toClient, unresolved);
 
         List<ClientPacket> packets = [];
         Dictionary<string, CallSite> callSites = new(StringComparer.Ordinal);
@@ -153,7 +170,7 @@ public sealed partial class As3ClientAnalyzer(
 
             ClientPacket? packet =
                 declaration.Groups[2].Value == "Parser"
-                    ? ReadParser(file, text, masked, className, toClient)
+                    ? ReadParser(file, text, masked, className, toClient, classFiles)
                     : ReadComposer(file, text, masked, className, toServer);
 
             if (packet is not null)
@@ -430,14 +447,13 @@ public sealed partial class As3ClientAnalyzer(
     /// registry it came from.
     /// </para>
     /// </remarks>
-    private void BindParsersBehindEvents(
-        string source,
-        Dictionary<string, int> toClient,
-        List<string> unresolved
-    )
+    /// <summary>
+    /// Class name to file path. AS3 requires one public class per file, named after it, so this is
+    /// the file listing and costs no reads — which is what makes following a reference cheap enough
+    /// to do twice: once for the parser behind an event, once for a helper a parser delegates to.
+    /// </summary>
+    private static Dictionary<string, string> IndexClassFiles(string source)
     {
-        // AS3 requires one public class per file, named after it, so the class name is the file name
-        // and nothing has to be read to find a class -- only to resolve the one hop inside it.
         Dictionary<string, string> byClassName = new(StringComparer.Ordinal);
 
         foreach (
@@ -447,6 +463,15 @@ public sealed partial class As3ClientAnalyzer(
             byClassName[Path.GetFileNameWithoutExtension(file)] = file;
         }
 
+        return byClassName;
+    }
+
+    private void BindParsersBehindEvents(
+        Dictionary<string, string> byClassName,
+        Dictionary<string, int> toClient,
+        List<string> unresolved
+    )
+    {
         int bound = 0;
 
         foreach (KeyValuePair<string, int> entry in toClient.ToArray())
@@ -488,7 +513,8 @@ public sealed partial class As3ClientAnalyzer(
         string text,
         string masked,
         string className,
-        IReadOnlyDictionary<string, int> headers
+        IReadOnlyDictionary<string, int> headers,
+        IReadOnlyDictionary<string, string> classFiles
     )
     {
         Match parse = ParseMethod().Match(masked);
@@ -509,29 +535,70 @@ public sealed partial class As3ClientAnalyzer(
         List<ClientField> fields = [];
         bool partial = false;
         int index = 0;
+        string wrapper = parse.Groups[1].Value;
 
-        foreach (
-            Match read in SourceTextScanner.Matches(
-                masked,
-                ReadCall(),
-                body.Value.Start,
-                body.Value.End
-            )
-        )
+        // Two things put a value on the wire and they interleave, so both are walked in the order
+        // they appear rather than one after the other: a read the parser does itself, and a helper
+        // it hands the wrapper to. Taking them separately would reorder the layout, which is the one
+        // thing a wire spec must never do.
+        List<Match> steps =
+        [
+            .. SourceTextScanner
+                .Matches(masked, ReadCall(), body.Value.Start, body.Value.End)
+                .Concat(
+                    SourceTextScanner
+                        .Matches(masked, DelegatedRead(), body.Value.Start, body.Value.End)
+                        .Where(m => m.Groups[2].Value == wrapper)
+                )
+                .OrderBy(m => m.Index),
+        ];
+
+        foreach (Match step in steps)
         {
-            if (!ReadOps.TryGetValue(read.Groups[1].Value, out WireType type))
+            bool inLoop = SourceTextScanner.DepthAt(masked, body.Value.Start, step.Index) > 0;
+
+            if (step.Groups.Count > 2 && step.Groups[2].Success)
+            {
+                // Delegated. Everything the helper's constructor reads belongs here, at this point,
+                // and carries this site's loop marker: a helper built inside a `while` is one entry
+                // of a repeated block however many values it reads.
+                (IReadOnlyList<WireType> delegated, bool complete) = DelegatedFields(
+                    step.Groups[1].Value,
+                    classFiles
+                );
+
+                partial |= !complete;
+
+                foreach (WireType delegatedType in delegated)
+                {
+                    fields.Add(
+                        new ClientField
+                        {
+                            Name = null,
+                            Type = delegatedType,
+                            Note = inLoop
+                                ? "inside a repeated block"
+                                : $"read by {step.Groups[1].Value}",
+                        }
+                    );
+
+                    index++;
+                }
+
+                continue;
+            }
+
+            if (!ReadOps.TryGetValue(step.Groups[1].Value, out WireType type))
             {
                 partial = true;
                 continue;
             }
 
-            string? backingField = AssignmentTargetBefore(masked, body.Value.Start, read.Index);
+            string? backingField = AssignmentTargetBefore(masked, body.Value.Start, step.Index);
             string? name =
                 backingField is not null && names.TryGetValue(backingField, out string? getter)
                     ? PacketNaming.SnakeCase(getter)
                     : null;
-
-            bool inLoop = SourceTextScanner.DepthAt(masked, body.Value.Start, read.Index) > 0;
 
             fields.Add(
                 new ClientField
@@ -560,6 +627,71 @@ public sealed partial class As3ClientAnalyzer(
                 SourceTextScanner.LineAt(text, parse.Index)
             ),
         };
+    }
+
+    /// <summary>
+    /// What a helper class reads from the wrapper in its constructor, in order.
+    /// </summary>
+    /// <returns>
+    /// The types, and whether the helper was fully understood. A helper that delegates in turn, or
+    /// that this scan cannot find at all, comes back incomplete — the layout is then marked partial
+    /// rather than published as a claim about how many values cross the wire. Under-counting quietly
+    /// is what made `outgoing/AcceptFriendResult` read as one field.
+    /// </returns>
+    private static (IReadOnlyList<WireType> Fields, bool Complete) DelegatedFields(
+        string helperName,
+        IReadOnlyDictionary<string, string> classFiles
+    )
+    {
+        if (!classFiles.TryGetValue(helperName, out string? helperFile))
+        {
+            return ([], false);
+        }
+
+        string masked = SourceTextScanner.Mask(File.ReadAllText(helperFile));
+        Match ctor = WrapperConstructor().Match(masked);
+
+        if (!ctor.Success)
+        {
+            return ([], false);
+        }
+
+        (int Start, int End)? body = SourceTextScanner.BlockAfter(masked, ctor.Index);
+
+        if (body is null)
+        {
+            return ([], false);
+        }
+
+        List<WireType> fields = [];
+        bool complete = true;
+
+        foreach (
+            Match read in SourceTextScanner.Matches(
+                masked,
+                ReadCall(),
+                body.Value.Start,
+                body.Value.End
+            )
+        )
+        {
+            if (ReadOps.TryGetValue(read.Groups[1].Value, out WireType type))
+            {
+                fields.Add(type);
+                continue;
+            }
+
+            complete = false;
+        }
+
+        // One level only. A helper that builds another helper is rare and would need the same care
+        // about ordering; saying so is better than guessing at it.
+        if (DelegatedRead().IsMatch(masked[body.Value.Start..body.Value.End]))
+        {
+            complete = false;
+        }
+
+        return (fields, complete);
     }
 
     private ClientPacket? ReadComposer(

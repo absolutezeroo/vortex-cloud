@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5103016a79580869c25bd742855b174216a4aff4b5759d5801926afd2a4bebaa"
+generated_digest: "sha256:f60b52f50eaab8d760acc9c877f710cd80b7a6f0cf05354541f80578dadfee01"
 generated:
   name: WiredValidationError
   direction: outgoing
@@ -33,14 +33,34 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_031395435afe
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_031395435afe
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_031395435afe
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 4
     partial: false
     types:
     - string
     - int32
+    - string
+    - string
     evidence: ev_031395435afe
   - origin: arcturus
     authority: reference_emulator

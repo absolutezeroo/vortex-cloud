@@ -10,92 +10,110 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6aee4bbbeb91de835fb1b13b0e745fe0cc8de409efa5b48673e005342a2f41d8"
+generated_digest: "sha256:c0a84532186cd9404d2c5d39dc947981145be5fcd5f2e5841b18dac8e6ae01ae"
 generated:
   name: ScrSendKickbackInfo
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: current_hc_streak
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 1
     name: first_subscription_date
     type: string
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 2
     name: kickback_percentage
     type: double
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 3
     name: total_credits_missed
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 4
     name: total_credits_rewarded
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 5
     name: total_credits_spent
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 6
     name: credit_reward_for_streak_bonus
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 7
     name: credit_reward_for_monthly_spent
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   - index: 8
     name: time_until_payday
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_2820
     evidence:
-    - ev_bedf41a61930
+    - ev_df88fa0e9e86
     - ev_a379c814f96b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 9
+    partial: false
+    types:
+    - int32
+    - string
+    - double
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_df88fa0e9e86
   - origin: nitro
     authority: multi_implementation

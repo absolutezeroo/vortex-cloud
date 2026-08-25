@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2bd01fbf0a49ed2420443c462be8a2b8d15e8de87b49fc435c35114dae307e95"
+generated_digest: "sha256:27546727b89bd96d7facf37f7a6e81cdfb14f63a39ed314d1a736c0e60bed07c"
 generated:
   id: uk_02b44b8df1
   subject: "outgoing/ClubGiftInfo: unnamed fields"
   severity: low
-  question: Fields 2, 3 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ClubGiftInfo
   known_evidence:

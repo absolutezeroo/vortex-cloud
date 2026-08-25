@@ -105,6 +105,7 @@ completed:
   - PR-Q2a # wired observability completed; the loss window measured, documented and narrowed
   - PR-Z1a # the wired baseline that PR-G1 promised, plus the commerce walkthrough
   - PR-Q2b # the client scanner reads parsers; outgoing evidence 17 -> 514; one live header bug
+  - PR-Q2c # the scanner follows constructor delegation; the queue 64 -> 45, 17 of them read
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -114,7 +115,7 @@ remaining:
       the planner already isolates every rule and is fully tested; splitting it into one strategy per
       type is structure, not correctness, and earns itself when a third caller needs one.
   - id: PR-Q2
-    what: triage the 64 wire disagreements, now that they are against the right client
+    what: the 28 wire disagreements nobody has read yet
     note: >
       PR-Q2b did the enabling half rather than 23 hand verdicts. The client scanner bound headers only
       to composers, so 17 of 805 outgoing packets carried evidence from WIN63-202607011411 -- the
@@ -122,9 +123,13 @@ remaining:
       made against a client from 2016, which is where the "known disagreements" came from. Binding the
       parser behind each MessageEvent wrapper took outgoing evidence to 514, and ConflictDetector now
       collapses repeated blocks so a client loop compares against an emulator array.
-      The baseline is 23 -> 64 and that is progress: the new entries are disagreements with the right
-      client. One was already real (see below). The rest are unread, and the two artifact shapes that
-      produce false entries are written at the top of check-wire-conflicts.mjs.
+      PR-Q2c then taught it to follow one level of constructor delegation -- a parser doing
+      `new SomeEntry(wrapper)` inside its loop -- which resolved 32 entries at a stroke and took the
+      queue to 45. 17 of those have since been read against the AS3 and are artifacts or empty
+      composers; 28 are unread and named in the hook's comment.
+      The next lever is the mirror image on our own side: WireLayoutExtractor does not follow a
+      static helper either, so `QuestDataWriter.Write(packet, ...)` reads as one field. That is what
+      most of the remaining 28 look like, and fixing it would collapse them the same way.
     found:
       - id: AcceptFriendResult sent on 3407
         what: >

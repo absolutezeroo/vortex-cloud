@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:26710a52b2389a7afc21e2d09687320c29f7879db97185c31acd1ef50c0b5a91"
+generated_digest: "sha256:d6de22c19d9a9060e9e0d2081be8800ada1f8136851cc6f4f6b51a5be38f6573"
 generated:
   name: HabboClubOffers
   direction: outgoing
@@ -19,14 +19,140 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: count
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_8fcc41ffef49
-    - ev_064749a00127
   - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 3
+    name: unknown_3
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 7
+    name: unknown_7
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 10
+    name: unknown_10
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 13
+    name: unknown_13
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 14
+    name: unknown_14
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8fcc41ffef49
+  - index: 15
     name: source
     type: int32
     name_confidence: client_confirmed
@@ -36,9 +162,23 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 16
     partial: false
     types:
+    - int32
+    - int32
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
     - int32
     - int32
     evidence: ev_8fcc41ffef49
@@ -96,5 +236,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Catalog/HabboClubOffersMessageComposerSerializer.cs
     symbol: HabboClubOffersMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_e47fd2999e
+  unknowns:
+  - uk_e6537acbab
 verified: {}
 manual: {}

@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1d52761ed0898c88b5c34348371d4fd1bc511ea887bd2f1c5245b2a016262ff1"
+generated_digest: "sha256:34ba8e47aa47a0a4a538e2cb744b923330198db1411e2413ef79c489c5e56582"
 generated:
   id: uk_b52ffbcb2b
   subject: "outgoing/PetLevelNotification: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7 carry no name from any source. What are they?
+  question: Fields 3, 4, 5, 6, 7, 8, 9, 10 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetLevelNotification
   known_evidence:
+  - id: ev_5733a4e20178
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3586.as
+    symbol: _SafeCls_3586
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e09802f832c6
     kind: reference_composer
     authority: reference_emulator

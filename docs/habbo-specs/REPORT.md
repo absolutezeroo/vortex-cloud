@@ -31,21 +31,21 @@ actually produced against the trees listed under Sources.
 
 | Level | Packets | Share |
 |---|---:|---:|
-| confirmed | 63 | 4.4% |
-| client_confirmed | 597 | 41.5% |
-| multi_reference_confirmed | 85 | 5.9% |
-| reference_observed | 247 | 17.2% |
-| implementation_observed | 297 | 20.6% |
+| confirmed | 51 | 3.5% |
+| client_confirmed | 606 | 42.1% |
+| multi_reference_confirmed | 87 | 6% |
+| reference_observed | 242 | 16.8% |
+| implementation_observed | 303 | 21% |
 | unknown | 151 | 10.5% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 369 |
+| Conflicts | 363 |
 | Critical unknowns | 134 |
-| Unknowns in total | 705 |
-| Fields with no attested name | 1325 of 4160 |
+| Unknowns in total | 713 |
+| Fields with no attested name | 1864 of 5013 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,8 +54,8 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 4
-- unchanged: 3511
+- written: 270
+- unchanged: 3247
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded

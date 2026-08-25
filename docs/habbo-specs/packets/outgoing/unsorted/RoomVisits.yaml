@@ -10,20 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:31693dd4a6cc9c205ced5bf96a5dbc74459e33cccde93b26acd8ea9e3f489aa1"
+generated_digest: "sha256:4b49ba1a1552e0d08cbe708134dd79654c344bb3ed2cf46c7b0ceb57e5f19bcb"
 generated:
   name: RoomVisits
   direction: outgoing
   domain: unsorted
   structure_confidence: unknown
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4105
+    evidence:
+    - ev_6728c5f1349d
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4105
+    evidence:
+    - ev_6728c5f1349d
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_4105
+    evidence:
+    - ev_6728c5f1349d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 3
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - int32
     evidence: ev_6728c5f1349d
   evidence:
   - id: ev_6728c5f1349d
@@ -34,5 +64,7 @@ generated:
     symbol: _SafeCls_2799
     line: 23
     note: official client build WIN63-202607011411-782849652
+  unknowns:
+  - uk_4ae5e59bd3
 verified: {}
 manual: {}

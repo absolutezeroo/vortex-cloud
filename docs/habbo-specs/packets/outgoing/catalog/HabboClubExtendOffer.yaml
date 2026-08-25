@@ -10,48 +10,60 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e19ef97f2953df493ee6980d28b3ffc681e081fd159b6cc4d89f80069b66470f"
+generated_digest: "sha256:4f1b57e81d82503fb5b3b596dc718f7b21eb1c8cbae2c530967f14097a8fe501"
 generated:
   name: HabboClubExtendOffer
   direction: outgoing
   domain: catalog
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: original_price_per_month
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3494
     evidence:
+    - ev_86ea39755596
     - ev_e6fc799a8f56
   - index: 1
     name: original_activity_point_price_per_month
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3494
     evidence:
+    - ev_86ea39755596
     - ev_e6fc799a8f56
   - index: 2
     name: original_activity_point_type
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3494
     evidence:
+    - ev_86ea39755596
     - ev_e6fc799a8f56
   - index: 3
     name: subscription_days_left
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3494
     evidence:
+    - ev_86ea39755596
     - ev_e6fc799a8f56
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_86ea39755596
   - origin: nitro
     authority: multi_implementation

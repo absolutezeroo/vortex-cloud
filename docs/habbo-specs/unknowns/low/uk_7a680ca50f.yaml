@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1a991d59e53fe04973461b13dc3f29d663b6ffee39b47bc9e027032f8d00dba3"
+generated_digest: "sha256:8ad2e5348a4cf5f15207f053cea9c83a4ac71a5439ac5b8d50720197a02c2108"
 generated:
   id: uk_7a680ca50f
   subject: "outgoing/FriendListUpdate: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FriendListUpdate
   known_evidence:

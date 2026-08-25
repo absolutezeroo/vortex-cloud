@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:07e197564b91c6bbbeb2dacb4c2aac5fa19272c0a473611e87a649023950f360"
+generated_digest: "sha256:2a457ad5992675122a6316ba7411c9ddae9de33b75e94e9b6678d05818154d17"
 generated:
   name: MyCfhReportStatus
   direction: outgoing
@@ -26,13 +26,123 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_621602a2defe
+  - index: 1
+    name: unknown_1
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 2
+    name: unknown_2
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 6
+    name: unknown_6
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 7
+    name: unknown_7
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 8
+    name: unknown_8
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 9
+    name: unknown_9
+    type: byte
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 10
+    name: unknown_10
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
+  - index: 11
+    name: unknown_11
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_621602a2defe
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 12
     partial: false
     types:
     - int32
+    - long
+    - long
+    - string
+    - int32
+    - string
+    - long
+    - boolean
+    - boolean
+    - byte
+    - long
+    - long
     evidence: ev_621602a2defe
   evidence:
   - id: ev_621602a2defe

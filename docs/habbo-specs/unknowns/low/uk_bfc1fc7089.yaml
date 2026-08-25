@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2003c7421538e6d4f6fc40600f84082b3df8ed04d4a2dc01efca087494061efb"
+generated_digest: "sha256:60e932b0b25de232251fbbb925aeb1eba8830813d512dae7bf2b260bb81ce38a"
 generated:
   id: uk_bfc1fc7089
   subject: "outgoing/PetAddedToInventory: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetAddedToInventory
   known_evidence:

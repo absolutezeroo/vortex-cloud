@@ -10,52 +10,60 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3788adb4dd069c09b02e135741dfdb214e449b8fce2f2243ec2897675fde8f6e"
+generated_digest: "sha256:a318538bd86c8bb5655fb394a854b92a94bf3dc0f8ada67e7172e67d4c947396"
 generated:
   name: CategoriesWithVisitorCount
   direction: outgoing
   domain: navigator
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3603
     evidence:
-    - ev_249ca7ff34ad
+    - ev_022e014608e8
     - ev_3a0121ab35ba
   - index: 1
     name: key
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3603
     evidence:
-    - ev_249ca7ff34ad
+    - ev_022e014608e8
     - ev_3a0121ab35ba
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3603
     evidence:
-    - ev_249ca7ff34ad
+    - ev_022e014608e8
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3603
     evidence:
-    - ev_249ca7ff34ad
+    - ev_022e014608e8
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_022e014608e8
   - origin: nitro
     authority: multi_implementation

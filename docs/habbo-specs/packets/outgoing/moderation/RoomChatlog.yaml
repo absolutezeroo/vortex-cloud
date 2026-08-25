@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c68e5bf3762394da8df9bd133149f75d724ed7befebf250340459105e63e2af5"
+generated_digest: "sha256:2b6f11a1b5c5aa0e6278b935a905dd0c58ea90e69469496e6a2d5c22cd1bd1e7"
 generated:
   name: RoomChatlog
   direction: outgoing
@@ -133,9 +133,17 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 8
     partial: true
-    types: []
+    types:
+    - byte
+    - short
+    - string
+    - byte
+    - boolean
+    - int32
+    - string
+    - short
     evidence: ev_17bbd22aa99f
   - origin: arcturus
     authority: reference_emulator

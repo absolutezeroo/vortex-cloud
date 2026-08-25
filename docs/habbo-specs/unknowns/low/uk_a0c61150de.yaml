@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:adb0d30a665ec637a3f71b5336e91721b4d30d70fcdee515964964e3becbc026"
+generated_digest: "sha256:2d8205296abf9f687e6e2ffceb9f331978fb30572b3483bacbf9754ccad70453"
 generated:
   id: uk_a0c61150de
   subject: "outgoing/PetBoughtNotification: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetBoughtNotification
   known_evidence:

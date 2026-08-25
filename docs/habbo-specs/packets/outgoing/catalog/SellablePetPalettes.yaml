@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:786ddfa75c707c1bdcae4ff7f7c191d6f5a518400c01b8e697f5f6c888e90542"
+generated_digest: "sha256:928c7322de818cff4805e42d89ecaf53667499edb3ef5f4bd0bc1f80b101cd32"
 generated:
   name: SellablePetPalettes
   direction: outgoing
@@ -26,21 +26,71 @@ generated:
     evidence:
     - ev_c8dffcef2fe4
   - index: 1
-    name: unknown_1
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
+  - index: 2
+    name: pet_type
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
+  - index: 3
+    name: breed_index
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
+  - index: 4
+    name: color
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
+  - index: 5
+    name: sellable
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
+  - index: 6
+    name: rare
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_c8dffcef2fe4
+    - ev_3713206c5d2a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 7
     partial: false
     types:
     - string
     - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
     evidence: ev_c8dffcef2fe4
   - origin: nitro
     authority: multi_implementation
@@ -104,7 +154,5 @@ generated:
     line: 7
   conflicts:
   - cf_28f0906257
-  unknowns:
-  - uk_fddc69206d
 verified: {}
 manual: {}

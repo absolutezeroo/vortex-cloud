@@ -10,68 +10,80 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:96a3af0e7f394d333db3427342b5013204f71b60da2cf7915bede03280512b4f"
+generated_digest: "sha256:2436e84ad87bbafb6e008165e1a948bba0c6cd90f54d236f7f0da2dbd6dec3cd"
 generated:
   name: BundleDiscountRuleset
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: max_purchase_size
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   - index: 1
     name: bundle_size
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   - index: 2
     name: bundle_discount_size
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   - index: 3
     name: bonus_threshold
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   - index: 4
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   - index: 5
     name: quantity
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1903
     evidence:
-    - ev_0666b3ef6ae1
+    - ev_1115b6afdc6a
     - ev_102bebb2a33a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_1115b6afdc6a
   - origin: nitro
     authority: multi_implementation

@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8743e5d9fbd599202cd992ff53ec19c72856da0d01333d4c9055b2a7aad7a972"
+generated_digest: "sha256:97057557505a206b8b581660e2c0103e7491675868901bdfdc2e637087172f3c"
 generated:
   name: RecyclerPrizes
   direction: outgoing
   domain: recycler
-  structure_confidence: confirmed
+  structure_confidence: reference_observed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,22 +23,84 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: client_confirmed
+    type_confidence: reference_observed
     evidence:
-    - ev_b35ef2bb9515
+    - ev_c53ea7285538
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: reference_observed
+    evidence:
+    - ev_c53ea7285538
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 4
+    partial: true
     types:
+    - int32
+    - int32
+    - int32
     - int32
     evidence: ev_b35ef2bb9515
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
-    partial: false
+    field_count: 4
+    partial: true
     types:
+    - int32
+    - int32
+    - int32
     - int32
     evidence: ev_76d02d68f83f
   - origin: arcturus
@@ -80,8 +142,6 @@ generated:
     symbol: RecyclerPrizesMessageComposer
     line: 14
     note: third-party server implementation; evidence, not authority
-  conflicts:
-  - cf_936b5ea13c
   unknowns:
   - uk_773d55b022
 verified: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8b94d3cf3e3b7331509445245ca816e5aa12d0519bce627e008a267962309b0e"
+generated_digest: "sha256:24a3226b8f0eed14a1c2cc86fcf8b6b115505470534e1c099df3f2f79958f351"
 generated:
   id: uk_599395c2f9
   subject: "outgoing/FriendRequests: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FriendRequests
   known_evidence:

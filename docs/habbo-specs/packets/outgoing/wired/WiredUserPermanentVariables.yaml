@@ -10,96 +10,100 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c6911299b19c320d594d7393970f2cce79383e292924771a68c4c7e685c6a52d"
+generated_digest: "sha256:9bb92acbf8c74dd4bda88d23e4e5d92263663b394f88211237de158b63011e70"
 generated:
   name: WiredUserPermanentVariables
   direction: outgoing
   domain: wired
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: entity_type
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 1
-    name: entity_id
+    name: unknown_1
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 2
-    name: entity_name
+    name: unknown_2
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 3
-    name: entity_figure
+    name: unknown_3
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 4
     name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: implementation_observed
-    note: only when snapshot.EntityType != WiredVariableTargetType.User
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 5
     name: unknown_5
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: implementation_observed
-    note: only when snapshot.EntityType != WiredVariableTargetType.User
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 6
     name: unknown_6
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: implementation_observed
-    note: only when snapshot.EntityType != WiredVariableTargetType.User
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   - index: 7
-    name: count
+    name: unknown_7
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredUserPermanentVariablesList
     evidence:
-    - ev_e638ea7ea3ff
-  - index: 8
-    name: variable_id
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e638ea7ea3ff
-  - index: 9
-    name: value
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e638ea7ea3ff
+    - ev_b35c5f6e2a2b
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 8
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - string
+    - int32
     evidence: ev_b35c5f6e2a2b
   - origin: vortex
     authority: vortex_emulator
@@ -133,6 +137,8 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/UserDefinedRoomEvents/Wiredmenu/WiredUserPermanentVariablesComposerSerializer.cs
     symbol: WiredUserPermanentVariablesComposerSerializer
     line: 8
+  conflicts:
+  - cf_bcb0d428e9
   unknowns:
   - uk_312898a060
 verified: {}

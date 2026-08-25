@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:645abe5f08c1642174e6407ddb3d278f083ed0706f34faffd4617d96d942ba41"
+generated_digest: "sha256:299cf2c807293a178b7f07cbfb69266ac8b1b68b32ed1f282ffc3e49cc910122"
 generated:
   name: BotAddedToInventory
   direction: outgoing
@@ -20,6 +20,51 @@ generated:
   fields:
   - index: 0
     name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3143
+    evidence:
+    - ev_5c457b2cad08
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3143
+    evidence:
+    - ev_5c457b2cad08
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3143
+    evidence:
+    - ev_5c457b2cad08
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3143
+    evidence:
+    - ev_5c457b2cad08
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_3143
+    evidence:
+    - ev_5c457b2cad08
+  - index: 5
+    name: unknown_5
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
@@ -29,9 +74,14 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 6
     partial: false
     types:
+    - int32
+    - string
+    - string
+    - string
+    - string
     - boolean
     evidence: ev_5c457b2cad08
   - origin: arcturus
@@ -63,8 +113,6 @@ generated:
     symbol: BotAddedToInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  conflicts:
-  - cf_884ed06ed1
   unknowns:
   - uk_3c08937620
 verified: {}

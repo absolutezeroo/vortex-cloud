@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:817521906ceea14f31183e2efd803ca6c1bb08e5afefecd436b2aa2051ab4e9b"
+generated_digest: "sha256:8c6d5a801e268df7261994181785ed1f836a76f6a744869496964d84f25695a2"
 generated:
   id: uk_de43006fb2
   subject: "outgoing/WiredAllVariableHolders: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredAllVariableHolders
   known_evidence:

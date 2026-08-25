@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d8088d314a07fec56eb2763c5dc4bb96273461834a2bbd3847a309cfd00df115"
+generated_digest: "sha256:bed27a63cfbf6d874361bd8443c7f847e8917f2cce1758c4a810bbb805f1ad9c"
 generated:
   id: uk_e67cac47ac
   subject: "outgoing/FlatControllerAdded: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2 carry no name from any source. What are they?
+  question: Fields 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: FlatControllerAdded
   known_evidence:
+  - id: ev_21165f2f8a17
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3956.as
+    symbol: _SafeCls_3956
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4e91f01e3e5b
     kind: reference_composer
     authority: reference_emulator

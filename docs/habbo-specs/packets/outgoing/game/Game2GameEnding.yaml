@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:86c92e9c8589caf6b4193366374b050e37e13a1d9249f06093f934674997befd"
+generated_digest: "sha256:12bdab7d7b75957c96ddd85f7b012d58b715b2332056443a6455a1975f765734"
 generated:
   name: Game2GameEnding
   direction: outgoing
@@ -27,18 +27,98 @@ generated:
     - ev_44e277c7be5a
   - index: 1
     name: unknown_1
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by Game2GameResult
+    evidence:
+    - ev_44e277c7be5a
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by Game2GameResult
+    evidence:
+    - ev_44e277c7be5a
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by Game2GameResult
+    evidence:
+    - ev_44e277c7be5a
+  - index: 4
+    name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_44e277c7be5a
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_44e277c7be5a
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_44e277c7be5a
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_44e277c7be5a
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by Game2SnowWarGameStats
+    evidence:
+    - ev_44e277c7be5a
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by Game2SnowWarGameStats
+    evidence:
+    - ev_44e277c7be5a
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 2
+    field_count: 10
     partial: false
     types:
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
     - int32
     - int32
     evidence: ev_44e277c7be5a

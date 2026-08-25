@@ -10,35 +10,213 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:25f66de8209d574ad7326dac4243a71922fe70103892472ac584a7bc14138090"
+generated_digest: "sha256:02165e21965fdd845d7d3081fbcf307af8c55435ebaf1c64623bdf5bda76f4eb"
 generated:
   name: SeasonalQuests
   direction: outgoing
   domain: quest
-  structure_confidence: confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_91f2cd28b9bc
-    - ev_26bf286de008
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 6
+    name: unknown_6
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 7
+    name: unknown_7
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 8
+    name: unknown_8
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 10
+    name: unknown_10
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 11
+    name: unknown_11
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 13
+    name: unknown_13
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 14
+    name: unknown_14
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 15
+    name: unknown_15
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
+  - index: 16
+    name: unknown_16
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91f2cd28b9bc
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
+    field_count: 17
     partial: false
     types:
     - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
     evidence: ev_91f2cd28b9bc
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 19
     partial: false
     types:
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
+    - boolean
     - int32
     evidence: ev_1b956c51eb38
   - origin: nitro
@@ -86,5 +264,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/SeasonalQuestsMessageComposerSerializer.cs
     symbol: SeasonalQuestsMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_1b4488f49a
+  unknowns:
+  - uk_4cc923d976
 verified: {}
 manual: {}

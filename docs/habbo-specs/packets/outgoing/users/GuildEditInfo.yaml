@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:af03d561f069d4ccc8171b300db298a4335ceda9355f971d1745c15f4e7b289a"
+generated_digest: "sha256:a0d5cd04defcd95a62c24225b042fce166fe68146ef732b73503e9ce72626fb2"
 generated:
   name: GuildEditInfo
   direction: outgoing
@@ -229,9 +229,27 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 18
     partial: true
-    types: []
+    types:
+    - int32
+    - int32
+    - string
+    - boolean
+    - boolean
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - int32
+    - string
+    - int32
     evidence: ev_0ed0a82911c1
   - origin: nitro
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8d3cba622401070b586dc7f9c571c87c5b5e4ecfdf99161c7900650ff06a74d0"
+generated_digest: "sha256:7636791c4aecdb5f4f5e610b2e9536a894cf364a7c2fe6be6c9fb678e04d13f9"
 generated:
   name: TalentLevelUp
   direction: outgoing
@@ -44,31 +44,64 @@ generated:
     - ev_246493ecf874
   - index: 3
     name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_246493ecf874
+  - index: 4
+    name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
     - ev_246493ecf874
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_246493ecf874
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_246493ecf874
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 4
+    field_count: 7
     partial: false
     types:
     - string
     - int32
     - int32
+    - string
+    - int32
+    - string
     - int32
     evidence: ev_246493ecf874
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 4
+    field_count: 7
     partial: false
     types:
     - string
     - int32
     - int32
+    - string
+    - int32
+    - string
     - int32
     evidence: ev_4a56b5e6608a
   - origin: nitro

@@ -10,20 +10,70 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2473f241c4443374b0f3fa3a5837ecfc6ccce7487c16d6dc62a5e83b516cd9bb"
+generated_digest: "sha256:47db27c4b87698024a24d3cdee20c3129c2208e29a431f3eeb3d68edab61e951"
 generated:
   name: TreasureHuntFirstWinner
   direction: outgoing
   domain: unsorted
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TreasureHuntWinnerInfo
+    evidence:
+    - ev_1cdd8354f21d
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TreasureHuntWinnerInfo
+    evidence:
+    - ev_1cdd8354f21d
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TreasureHuntWinnerInfo
+    evidence:
+    - ev_1cdd8354f21d
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TreasureHuntWinnerInfo
+    evidence:
+    - ev_1cdd8354f21d
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by TreasureHuntWinnerInfo
+    evidence:
+    - ev_1cdd8354f21d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 5
+    partial: false
+    types:
+    - string
+    - int32
+    - string
+    - string
+    - string
     evidence: ev_1cdd8354f21d
   evidence:
   - id: ev_1cdd8354f21d
@@ -34,5 +84,7 @@ generated:
     symbol: _SafeCls_2655
     line: 23
     note: official client build WIN63-202607011411-782849652
+  unknowns:
+  - uk_b808fb53b3
 verified: {}
 manual: {}

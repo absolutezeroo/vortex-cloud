@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:aa6c0d4a19ca7206bf8632cf85026962d5249a88e35b3cc9e94dcda5b7d95570"
+generated_digest: "sha256:5bf48be92cc356a3340b6a27c529d30e829d61c19784896feb31f1a1c2276ced"
 generated:
   name: NavigatorSavedSearches
   direction: outgoing
@@ -19,27 +19,71 @@ generated:
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_3014c348b843
+    - ev_74569836586b
+  - index: 1
+    name: id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3014c348b843
+    - ev_74569836586b
+  - index: 2
+    name: search_code
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3014c348b843
+    - ev_74569836586b
+  - index: 3
+    name: filter
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3014c348b843
+    - ev_74569836586b
+  - index: 4
+    name: localization
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3014c348b843
+    - ev_74569836586b
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    field_count: 1
+    field_count: 5
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - string
+    - string
     evidence: ev_3014c348b843
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 5
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - string
+    - string
     evidence: ev_617316e0ec41
   - origin: nitro
     authority: multi_implementation
@@ -108,7 +152,5 @@ generated:
     line: 8
   conflicts:
   - cf_73bbd8a905
-  unknowns:
-  - uk_b74db1fe30
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a9478931a833ecaeaa3b0d6bac5e3d86b100e506ea8488b4a159276cf9ccda24"
+generated_digest: "sha256:811785af099e8c9a560cf2a8d8e4f2a6d4d8dd333c89a349855fb64f44f540d1"
 generated:
   id: uk_b2cdd30201
   subject: "outgoing/SnowWarGameTokens: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarGameTokens
   known_evidence:

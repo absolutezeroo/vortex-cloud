@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4df5c350c8821e1f0576af6ee9ee1509937ce2455b392c96db92ef1d33001a7c"
+generated_digest: "sha256:157bf89f65d0bae2edcc2739cc8c81f2ad4a7b3c039e7ac9bba8e2ccd041303d"
 generated:
   name: WiredAllVariablesDiffs
   direction: outgoing
@@ -66,10 +66,163 @@ generated:
     note: inside a repeated block
     evidence:
     - ev_51765377cd65
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 8
+    name: unknown_8
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 10
+    name: unknown_10
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 11
+    name: unknown_11
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 12
+    name: unknown_12
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 13
+    name: unknown_13
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 14
+    name: unknown_14
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 15
+    name: unknown_15
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 16
+    name: unknown_16
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 17
+    name: unknown_17
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 18
+    name: unknown_18
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 19
+    name: unknown_19
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 20
+    name: unknown_20
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 21
+    name: unknown_21
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
+  - index: 22
+    name: unknown_22
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_51765377cd65
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 6
+    field_count: 23
     partial: false
     types:
     - int32
@@ -78,6 +231,23 @@ generated:
     - string
     - int32
     - int32
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - string
     evidence: ev_51765377cd65
   evidence:
   - id: ev_51765377cd65

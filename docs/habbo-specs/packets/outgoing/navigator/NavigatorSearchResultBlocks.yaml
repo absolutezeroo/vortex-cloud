@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6dd4bf037fb1718e174c28d5f89cbd5a1509d3e10ad1f8896b06d1c1f15a6bd8"
+generated_digest: "sha256:22202ea5a492958d83fbecdbef33c807b5cc45782e53a0398f3bd032f5d75f89"
 generated:
   name: NavigatorSearchResultBlocks
   direction: outgoing
@@ -37,9 +37,12 @@ generated:
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 3
     partial: true
-    types: []
+    types:
+    - string
+    - string
+    - int32
     evidence: ev_6ff142e2aebc
   - origin: nitro
     authority: multi_implementation

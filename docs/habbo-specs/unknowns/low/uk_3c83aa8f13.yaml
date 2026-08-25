@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e9d963e39c06ed5f4236f7c4c8eb30a0fb10ba7d49772a7832d09a187acf17a7"
+generated_digest: "sha256:627b731a52edc3dd6c0a966060a9079000817379bd05d14394b5da005e231b02"
 generated:
   id: uk_3c83aa8f13
   subject: "outgoing/CraftableProducts: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CraftableProducts
   known_evidence:

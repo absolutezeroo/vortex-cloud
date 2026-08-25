@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ddd10b44b00b98e4df6aa7cced63728dad07a66a6e0149f538787c80c795ef46"
+generated_digest: "sha256:003fedd8b3560384b694856076357d20f1c975dc4c6888b7eb3088d82eb0fba6"
 generated:
   name: WiredErrorLogs
   direction: outgoing
@@ -26,13 +26,63 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_43965f856d93
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_43965f856d93
+  - index: 2
+    name: unknown_2
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_43965f856d93
+  - index: 3
+    name: unknown_3
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_43965f856d93
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_43965f856d93
+  - index: 5
+    name: unknown_5
+    type: long
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_43965f856d93
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 6
     partial: false
     types:
     - int32
+    - int32
+    - string
+    - string
+    - int32
+    - long
     evidence: ev_43965f856d93
   evidence:
   - id: ev_43965f856d93

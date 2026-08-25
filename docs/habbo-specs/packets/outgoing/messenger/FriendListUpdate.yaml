@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:724bda80eee37b1487bfa4903009dd4f4b2ede4aee15d177f9a229d14e5aa9f4"
+generated_digest: "sha256:a652a53ead89693935c5c46410f94b089c77df29fad0dbe316c0a3a023e6f663"
 generated:
   name: FriendListUpdate
   direction: outgoing
@@ -32,11 +32,12 @@ generated:
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
     - ev_6dad5605a748
   - index: 2
     name: unknown_2
-    type: int32
+    type: string
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
@@ -49,19 +50,318 @@ generated:
     name_is_placeholder: true
     name_confidence: unknown
     type_confidence: client_confirmed
+    evidence:
+    - ev_6dad5605a748
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 7
+    name: unknown_7
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 9
+    name: unknown_9
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 10
+    name: unknown_10
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 11
+    name: unknown_11
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 12
+    name: unknown_12
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 13
+    name: unknown_13
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 14
+    name: unknown_14
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 15
+    name: unknown_15
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 16
+    name: unknown_16
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 17
+    name: unknown_17
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 18
+    name: unknown_18
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 19
+    name: unknown_19
+    type: short
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 20
+    name: unknown_20
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 21
+    name: unknown_21
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 22
+    name: unknown_22
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 23
+    name: unknown_23
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 24
+    name: unknown_24
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 25
+    name: unknown_25
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 26
+    name: unknown_26
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 27
+    name: unknown_27
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 28
+    name: unknown_28
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 29
+    name: unknown_29
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 30
+    name: unknown_30
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 31
+    name: unknown_31
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 32
+    name: unknown_32
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6dad5605a748
+  - index: 33
+    name: unknown_33
+    type: short
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_6dad5605a748
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 4
+    field_count: 34
     partial: false
     types:
     - int32
     - int32
+    - string
     - int32
     - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - string
+    - string
+    - string
+    - boolean
+    - boolean
+    - boolean
+    - short
+    - int32
+    - string
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - string
+    - string
+    - string
+    - boolean
+    - boolean
+    - boolean
+    - short
     evidence: ev_6dad5605a748
   - origin: nitro
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:685e7c47520c0fa02a567bee9b9f640c6ea5ad441e448cc150ec9d99a14ace7b"
+generated_digest: "sha256:358c312ea1535c7d32b658ccd32f2257b23825064dc335dbdc32c43dd07bf3fe"
 generated:
   name: GuideReportingStatus
   direction: outgoing
@@ -25,13 +25,123 @@ generated:
     type_confidence: client_confirmed
     evidence:
     - ev_fbfff98925ec
+  - index: 1
+    name: ticket_type
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 2
+    name: seconds_ago
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 3
+    name: is_guide
+    type: boolean
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 4
+    name: other_party_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 5
+    name: other_party_figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 6
+    name: other_party_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 7
+    name: other_party_figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 8
+    name: description
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 9
+    name: other_party_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 10
+    name: other_party_figure
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
+  - index: 11
+    name: room_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_fbfff98925ec
+    - ev_defb59cfe4d0
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 1
+    field_count: 12
     partial: false
     types:
     - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - string
+    - string
+    - string
+    - string
+    - string
+    - string
+    - string
     evidence: ev_fbfff98925ec
   - origin: nitro
     authority: multi_implementation

@@ -10,20 +10,100 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c1c3916516aa287a0ef341cf9e6738dfb1843c5131bbc596a6dd837df1212f65"
+generated_digest: "sha256:718633a05b922d5cd6c3e3b53b90e1540828ec15a935037b9db6ab9125c6d59c"
 generated:
   name: WiredVariablesForObject
   direction: outgoing
   domain: userdefinedroomevents
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by WiredObjectInspectionData
+    evidence:
+    - ev_035d1cc0c5c0
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
-    partial: true
-    types: []
+    field_count: 8
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
     evidence: ev_035d1cc0c5c0
   evidence:
   - id: ev_035d1cc0c5c0
@@ -34,5 +114,7 @@ generated:
     symbol: _SafeCls_4143
     line: 23
     note: official client build WIN63-202607011411-782849652
+  unknowns:
+  - uk_94e9f9b664
 verified: {}
 manual: {}

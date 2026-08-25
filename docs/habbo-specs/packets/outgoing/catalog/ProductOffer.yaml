@@ -10,20 +10,150 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e19e20c53fa6616792cd30e17644919ba4b1fba3f081d25d0b08d754c54b79a"
+generated_digest: "sha256:d19378aa488ffe48c16ad05546eabd1f2638af17a1c4ea1c768e0224aa03754f"
 generated:
   name: ProductOffer
   direction: outgoing
   domain: catalog
   structure_confidence: unknown
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 1
+    name: unknown_1
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 2
+    name: unknown_2
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 4
+    name: unknown_4
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 7
+    name: unknown_7
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 10
+    name: unknown_10
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 11
+    name: unknown_11
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
+  - index: 12
+    name: unknown_12
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: read by _SafeCls_1923
+    evidence:
+    - ev_4bf467f6effb
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
-    field_count: 0
+    field_count: 13
     partial: true
-    types: []
+    types:
+    - int32
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - string
     evidence: ev_4bf467f6effb
   - origin: arcturus
     authority: reference_emulator
@@ -48,5 +178,7 @@ generated:
     symbol: ProductOfferMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  unknowns:
+  - uk_bddaa0d750
 verified: {}
 manual: {}
