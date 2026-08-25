@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:69d6bf107217aa16713e5fa992cfc735f447c94d8f243f989bce42f2da6c4f85"
+generated_digest: "sha256:a1645fff57a4ad4a56eb81c69e3c7d9768c9e79266f32f9cdbfe20ed927b9903"
 generated:
   id: inventory.get_pet_inventory
   domain: inventory
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Pets.cs
     symbol: InventoryGrain
-    line: 106
+    line: 131
   - id: ev_c8c1d68678a8
     kind: emulator_handler
     authority: vortex_emulator

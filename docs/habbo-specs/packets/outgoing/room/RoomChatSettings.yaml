@@ -10,55 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c830205e093babb09f7fd1090eb085190e36dec8e52bce8b477dbc2724dbb002"
+generated_digest: "sha256:d62e92f14f4110a0bb0067b26d01102492777a54e6811f31b562518b98cf3389"
 generated:
   name: RoomChatSettings
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: chat_settings
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ceb4f777926b
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ceb4f777926b
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ceb4f777926b
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ceb4f777926b
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ceb4f777926b
+    - ev_f37424a0f72f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_f37424a0f72f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -84,6 +58,14 @@ generated:
     - int32
     evidence: ev_eb7aa74978be
   evidence:
+  - id: ev_f37424a0f72f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_3195.as
+    symbol: _SafeCls_3195
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ff979d56ad1b
     kind: client_parser
     authority: multi_implementation
@@ -109,7 +91,5 @@ generated:
     line: 6
   conflicts:
   - cf_4289b2f5ed
-  unknowns:
-  - uk_b0c8169760
 verified: {}
 manual: {}

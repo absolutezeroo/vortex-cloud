@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6eb373967fc96ea0e30b468c96e92892b10c2892a06458f568200f37780b4690"
+generated_digest: "sha256:889f550ff15591af756a455e69d2619164b133e0ed765bebd7bb1a13d69f1f43"
 generated:
   feature: moderation.call_for_help_from_forum_thread
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -78,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_c0486e4a505d
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -94,11 +94,18 @@ generated:
     symbol: CallForHelpFromForumThreadMessageEvent
     line: 15
     note: third-party server implementation; evidence, not authority
-  - id: ev_76106ea21309
+  - id: ev_c0486e4a505d
+    kind: emulator_handler
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Help/CallForHelpFromForumThreadMessageHandler.cs
+    symbol: CallForHelpFromForumThreadMessageHandler
+    line: 16
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 46
   - id: ev_ec0d8f0a936b

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d413ff803bf800f15966120d888a5d9bc7119507401867be513a44ed70813e95"
+generated_digest: "sha256:a109699d5601edf8ae7cdc96de6d3092ef0552a4707b3afb7070b004fba4493a"
 generated:
   id: uk_fc9348dd9a
   subject: "outgoing/CraftingRecipe: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CraftingRecipe
   known_evidence:
+  - id: ev_5eece20fd017
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4240.as
+    symbol: _SafeCls_4240
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b94d7353a6b1
     kind: client_parser
     authority: client_code
@@ -35,13 +43,5 @@ generated:
     symbol: CraftingRecipeMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7307917c57a9
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/crafting/CraftingRecipeMessageComposer.java
-    symbol: CraftingRecipeMessageComposer
-    line: 19
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

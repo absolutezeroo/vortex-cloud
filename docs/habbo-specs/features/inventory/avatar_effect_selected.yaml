@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d09be490717c024ad222a72bb75a7ec9f2474e5b396ac45c15bb26682d3f3906"
+generated_digest: "sha256:d714698f97468010843fe304c48382f9eedeac7a0c3c76814affa5fec982a21e"
 generated:
   id: inventory.avatar_effect_selected
   domain: inventory
@@ -131,7 +131,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 203
+    line: 213
   - id: ev_7f3075d7b8ac
     kind: emulator_flow
     authority: vortex_emulator

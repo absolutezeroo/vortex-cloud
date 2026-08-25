@@ -10,23 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4d45ab609eca3ec5f285e485790c1a4776f57ad09356f8f74a48bcbfd1bf8734"
+generated_digest: "sha256:855b980d941b65f1293f71bda408e98cda2b387416573d9f94ddfe684681e460"
 generated:
   name: CantConnect
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: additional_info
+    name: reason
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_83038975cb7d
+  - index: 1
+    name: unknown_1
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_334610642b41
+    - ev_83038975cb7d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_83038975cb7d
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -51,6 +67,14 @@ generated:
     - string
     evidence: ev_37644871c6cc
   evidence:
+  - id: ev_83038975cb7d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_2738.as
+    symbol: _SafeCls_2738
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_334610642b41
     kind: client_parser
     authority: multi_implementation
@@ -76,5 +100,7 @@ generated:
     line: 7
   conflicts:
   - cf_b7c67a0749
+  unknowns:
+  - uk_f23767810a
 verified: {}
 manual: {}

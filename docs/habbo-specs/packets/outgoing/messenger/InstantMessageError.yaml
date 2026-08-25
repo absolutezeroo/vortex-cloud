@@ -10,31 +10,48 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:02f542636870a22772d6619a9f4baedfa5e559e6cd29f0a3bcaebec1d0a312e1"
+generated_digest: "sha256:9d5043f83de1ee366dbb47de8939029c9c714b585840111aa6e3ee448e84acd7"
 generated:
   name: InstantMessageError
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
+    name: error_code
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_7dfa4725aa5a
+    - ev_5545fefaab05
+  - index: 1
     name: player_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ed7932978d58
-  - index: 1
+    - ev_7dfa4725aa5a
+    - ev_5545fefaab05
+  - index: 2
     name: message
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ed7932978d58
+    - ev_7dfa4725aa5a
+    - ev_5545fefaab05
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_7dfa4725aa5a
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -62,6 +79,14 @@ generated:
     - string
     evidence: ev_5545fefaab05
   evidence:
+  - id: ev_7dfa4725aa5a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2207.as
+    symbol: _SafeCls_2207
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ed7932978d58
     kind: client_parser
     authority: multi_implementation

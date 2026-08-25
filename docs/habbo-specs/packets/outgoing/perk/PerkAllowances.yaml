@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa57c17c8addce6bed3b54c107b356b41c6e1a7ed9108e1ee2a3d741d7538386"
+generated_digest: "sha256:6cab5ca90d4019f9c3d83aca13e597d3e88ca18adf905aca2393cc799a233ed9"
 generated:
   name: PerkAllowances
   direction: outgoing
   domain: perk
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -64,6 +64,16 @@ generated:
     - string
     - boolean
     evidence: ev_6adf55fdb02f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - boolean
+    evidence: ev_f26e247139a0
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -97,6 +107,14 @@ generated:
     symbol: PerkAllowancesMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_f26e247139a0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2643/_SafeCls_2997.as
+    symbol: _SafeCls_2997
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ff08eae547f3
     kind: client_parser
     authority: multi_implementation

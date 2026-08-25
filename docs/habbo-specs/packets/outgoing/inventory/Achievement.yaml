@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5132da96a0fedc256376503a0c327923d0e7d322cee94b2e089a69de470f9537"
+generated_digest: "sha256:62ee706ac75a393647ac8bd2470f7a3d8e489bec083a3c8d22d72c07d9ad900a"
 generated:
   name: Achievement
   direction: outgoing
@@ -129,6 +129,12 @@ generated:
     partial: true
     types: []
     evidence: ev_e441168a3932
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_7361095241ab
   - origin: arcturus
     authority: reference_emulator
     field_count: 13
@@ -149,6 +155,14 @@ generated:
     - int32
     evidence: ev_159db837a6d2
   evidence:
+  - id: ev_7361095241ab
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_3023.as
+    symbol: _SafeCls_3023
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e441168a3932
     kind: client_parser
     authority: client_code

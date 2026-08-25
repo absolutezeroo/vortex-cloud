@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:22579e06407988aa077506ecfdac96511fb9aa7ca5b11fdeb923f4fb4f127074"
+generated_digest: "sha256:c79405f38f6043ff60e86adcbe9523453d3ea27cca41959c9c9f93aebced6709"
 generated:
   id: uk_fd7d1382ec
   subject: "marketplace.make_offer: what the server sends when it refuses"
   severity: medium
-  question: marketplace.make_offer changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: marketplace.make_offer changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: marketplace.make_offer
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/MakeOfferMessageHandler.cs
     symbol: MakeOfferMessageHandler
     line: 21
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 769
+    line: 812
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -88,6 +95,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 37
+    line: 48
 verified: {}
 manual: {}

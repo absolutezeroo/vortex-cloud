@@ -10,23 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a98657750453017b6792545b6922e332634d9c8d904e9f224657bcded76e498e"
+generated_digest: "sha256:2a4170295821875437a987d121a2de60a1fb7c9406d2e33e3b4415134ee4d4e6"
 generated:
   name: IncomeRewardClaimResponse
   direction: outgoing
   domain: vault
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
+    name: reward_category
+    type: byte
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_ae1938eedc7c
+  - index: 1
     name: result
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9410fddb3e1b
+    - ev_ae1938eedc7c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - byte
+    - boolean
+    evidence: ev_ae1938eedc7c
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -43,6 +57,14 @@ generated:
     - boolean
     evidence: ev_98c9628dff0c
   evidence:
+  - id: ev_ae1938eedc7c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3468/_SafeCls_3467.as
+    symbol: _SafeCls_3467
+    line: 19
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9410fddb3e1b
     kind: client_parser
     authority: multi_implementation

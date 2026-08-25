@@ -10,39 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8f6be59f0ea89da8e2c5285b93481023fa6054390b908912e9fffe325d7cb69f"
+generated_digest: "sha256:16abb432637d8462fe5e5814a9511bbda0f9c47a765bbb40f44145296ad4f680"
 generated:
   name: FurniList
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: total_fragments
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_b63cae8ea216
+    - ev_5376a3252d4b
   - index: 1
-    name: unknown_1
+    name: fragment_no
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_b63cae8ea216
+    - ev_5376a3252d4b
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_b63cae8ea216
+    - ev_5376a3252d4b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_5376a3252d4b
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +60,14 @@ generated:
     - int32
     evidence: ev_b63cae8ea216
   evidence:
+  - id: ev_5376a3252d4b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2514/_SafeCls_2513.as
+    symbol: _SafeCls_2513
+    line: 38
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b63cae8ea216
     kind: reference_composer
     authority: reference_emulator

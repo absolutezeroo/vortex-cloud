@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7aac33d1c325880b515569cbd0039b41b9084a084f3084e9dbedf80a9dda92e2"
+generated_digest: "sha256:89c36231fcae37ebecc05675c2572339e4b7e441f1329e4d1e818fd6cea0480f"
 generated:
   name: Dance
   direction: incoming
@@ -86,5 +86,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Room/Avatar/DanceMessageParser.cs
     symbol: DanceMessageParser
     line: 7
+  conflicts:
+  - cf_f551be9676
 verified: {}
 manual: {}

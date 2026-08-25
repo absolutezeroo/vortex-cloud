@@ -10,46 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f50a72f87449c3ad6b01f2ba1813fe2b814ce4026648cd2177c7bac714a506af"
+generated_digest: "sha256:31926587a5c782b1a1cacd84014a73240d1b284632195a18f2afc7c429c603dd"
 generated:
   name: HeightMapUpdate
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: count
+    name: unknown_0
     type: byte
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_c8ad98ba9d80
-  - index: 1
-    name: x
-    type: byte
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_c8ad98ba9d80
-  - index: 2
-    name: y
-    type: byte
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_c8ad98ba9d80
-  - index: 3
-    name: height
-    type: short
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_c8ad98ba9d80
+    - ev_2a1bb0e1c076
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - byte
+    evidence: ev_2a1bb0e1c076
   - origin: nitro
     authority: multi_implementation
     field_count: 4
@@ -90,6 +74,14 @@ generated:
     - array
     evidence: ev_24d5f4184cd7
   evidence:
+  - id: ev_2a1bb0e1c076
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3335.as
+    symbol: _SafeCls_3335
+    line: 80
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c8ad98ba9d80
     kind: client_parser
     authority: multi_implementation
@@ -115,5 +107,7 @@ generated:
     line: 6
   conflicts:
   - cf_8922aa22fe
+  unknowns:
+  - uk_1800128d3b
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5c7246926a5b9496d19a46dfcc07cecf5e1eb8a47e724d6135cabc26042922c1"
+generated_digest: "sha256:c1b54957b2bf29bbb81d63eecd9cec2faad5d6ae5185692bc0caa4bc427ccd97"
 generated:
   id: uk_cb5a471725
   subject: "inventory.avatar_effect_selected: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 203
+    line: 213
   - id: ev_7f3075d7b8ac
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f2859e277955230bc0d18623c5991f7f53d1b1e972f694d8689c0431b0962640"
+generated_digest: "sha256:2127d789547e88b312a2753b9d6a5bd9a0448ae9eb3a5440ef3c78da3215ac89"
 generated:
   id: moderation.guide_session_on_duty_update
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.SetDutyAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -40,11 +40,11 @@ generated:
   - expression: playerId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - expression: "!onDuty"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   state_changes:
   - target: grainFactory .GetGuideDirectoryGrain()
     value: grainFactory .GetGuideDirectoryGrain() .SetDutyAsync( ctx.PlayerId, message.OnDuty, message.HandlesGuideRequests, message.HandlesHelperRequests, message.HandlesGuardianRequests, ct )
@@ -59,13 +59,13 @@ generated:
       evidence: ev_a78458c74fc8
   reaches_persistence: false
   evidence:
-  - id: ev_9c06d4d48950
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 72
+    line: 76
   - id: ev_a78458c74fc8
     kind: emulator_flow
     authority: vortex_emulator

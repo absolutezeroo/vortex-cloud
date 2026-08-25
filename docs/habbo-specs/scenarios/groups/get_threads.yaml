@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4b865397e534582dbe2d53d0fa9f813ceef32df3e4aa6986cf5d0c4676a58b7e"
+generated_digest: "sha256:d9955d9e182be1298a3bd5139248886fcdbdbf3533b732bbdd8809a8acb4d181"
 generated:
   feature: groups.get_threads
   scenarios:
@@ -83,7 +83,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -109,7 +109,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -160,11 +160,11 @@ generated:
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
     line: 217
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 141
   - id: ev_e7ca800ad2bd

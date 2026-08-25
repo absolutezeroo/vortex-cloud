@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c08e85d522287dad9257b5429457b853f9d32dc83bff14d900a536cad04de939"
+generated_digest: "sha256:e09025f8543574f76a97f2e307ec08dc725a7e93cc0d33d14776127847fd6856"
 generated:
   name: CarryObject
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cf46ca7dbf18
+    - ev_81b100ec7fdc
   - index: 1
     name: item_type
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cf46ca7dbf18
+    - ev_81b100ec7fdc
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_81b100ec7fdc
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_939f52a4c68c
   evidence:
+  - id: ev_81b100ec7fdc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2488/_SafeCls_2505.as
+    symbol: _SafeCls_2505
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cf46ca7dbf18
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Action/CarryObjectMessageComposerSerializer.cs
     symbol: CarryObjectMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_e6190942c0
 verified: {}
 manual: {}

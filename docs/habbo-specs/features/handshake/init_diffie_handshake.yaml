@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e7fc499cffaa8a0265bf52aabbce82660632889fc4a4ebadec71b9ed9f36f7ca"
+generated_digest: "sha256:ffdee4cf794e535989582d16218e39b9e31bd18329315c0e8eafb2ccc66695a1"
 generated:
   id: handshake.init_diffie_handshake
   domain: handshake
@@ -55,5 +55,7 @@ generated:
     line: 10
   scenarios:
   - handshake.init_diffie_handshake.success
+  conflicts:
+  - cf_d2f77ed25d
 verified: {}
 manual: {}

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:521db33ec794c1f8c2b164e453dd787f87100c0c23c6ba5b849fbfd60c49e1c3"
+generated_digest: "sha256:40a1bf0307c2c51d6947c2be3325fc4b3580058d6e7bba265265718358c30b71"
 generated:
   name: ItemStateUpdate
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_367e99ffd358
+    - ev_c61ff20d2e39
   - index: 1
-    name: data
+    name: item_data
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_367e99ffd358
+    - ev_c61ff20d2e39
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_c61ff20d2e39
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -52,6 +58,14 @@ generated:
     - string
     evidence: ev_b83af202b1db
   evidence:
+  - id: ev_c61ff20d2e39
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3716.as
+    symbol: _SafeCls_3716
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_367e99ffd358
     kind: client_parser
     authority: multi_implementation
@@ -67,5 +81,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/ItemStateUpdateMessageComposerSerializer.cs
     symbol: ItemStateUpdateMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_8e0d53dfa8
 verified: {}
 manual: {}

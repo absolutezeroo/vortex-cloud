@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4bd195e15689de5d5a999bacc0eba95e839e836b51f1030f80733833b3a66f8b"
+generated_digest: "sha256:e8b8b86dfc04a3958428e4949a4a4ec279108fb9d4d592b36c4108da6ea0fc28"
 generated:
   id: navigator.cancel
   domain: navigator
@@ -31,6 +31,10 @@ generated:
     layer: service
     symbol: RoomAdvertisementService.CancelAsync
     evidence: ev_89f5ad7deadb
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.AdvertisementId <= 0
     on_fail: return
@@ -44,6 +48,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_89f5ad7deadb
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: entity.ExpiresAt
     value: now
@@ -58,13 +66,20 @@ generated:
       evidence: ev_cc2f079ff2d9
   reaches_persistence: true
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 59
+    line: 75
   - id: ev_9c556fe9a1d3
     kind: emulator_handler
     authority: vortex_emulator
@@ -83,6 +98,7 @@ generated:
   - navigator.cancel.guard_0
   - navigator.cancel.guard_1
   - navigator.cancel.guard_2
+  - navigator.cancel.guard_3
   - navigator.cancel.success
   unknowns:
   - uk_de5f37f209

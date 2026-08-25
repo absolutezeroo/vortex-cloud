@@ -10,103 +10,110 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf7853ca29eb6ae32f783ecdd6f4c5b871be3b7df84ec268b173b85d4ce789e5"
+generated_digest: "sha256:57200ac6dc05274ad884d403a85147deeac366c55a475ac713ab824ddf8b0b1e"
 generated:
   name: ScrSendUserInfo
   direction: outgoing
   domain: users
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: product_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 1
     name: days_to_period_end
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 2
     name: member_periods
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 3
     name: periods_subscribed_ahead
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 4
     name: response_type
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 5
     name: has_ever_been_member
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 6
     name: is_vip
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 7
     name: past_club_days
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 8
     name: past_vip_days
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 9
     name: minutes_until_expiration
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   - index: 10
     name: minutes_since_last_modified
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_fdfd63013daa
+    - ev_35354f9e378d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 11
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_35354f9e378d
   - origin: nitro
     authority: multi_implementation
     field_count: 11
@@ -169,6 +176,14 @@ generated:
     - int32
     evidence: ev_4822d4057bd5
   evidence:
+  - id: ev_35354f9e378d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_1956.as
+    symbol: _SafeCls_1956
+    line: 50
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fdfd63013daa
     kind: client_parser
     authority: multi_implementation

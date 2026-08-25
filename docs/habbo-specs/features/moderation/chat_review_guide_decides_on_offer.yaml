@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c07ecd5aad28141cbca7921757725971873b5553d672238c65df6dc46abb04a6"
+generated_digest: "sha256:2d025e69010def252ab10e35b62f1a0040d8e1ac08c4fab80d49523aa0fefd5c"
 generated:
   id: moderation.chat_review_guide_decides_on_offer
   domain: moderation
@@ -31,11 +31,11 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.ChatReviewDecideAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - order: 2
     layer: domain
     symbol: ChatReviewDispatch.SendRecordAsync
-    evidence: ev_478447d36dd0
+    evidence: ev_81344840deda
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -44,11 +44,11 @@ generated:
   - expression: "!TryFindReview(guardianId, out ChatReview? review) || !review.Offered.Remove(guardianId)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - expression: "!accepted"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -56,7 +56,7 @@ generated:
     - packet: ChatReviewSessionStarted
       recipient: unknown
       recipient_confidence: unknown
-      evidence: ev_478447d36dd0
+      evidence: ev_81344840deda
   reaches_persistence: false
   evidence:
   - id: ev_35d1c84f63e7
@@ -66,13 +66,13 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewGuideDecidesOnOfferMessageHandler.cs
     symbol: ChatReviewGuideDecidesOnOfferMessageHandler
     line: 24
-  - id: ev_478447d36dd0
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/ChatReviewDispatch.cs
-    symbol: ChatReviewDispatch
-    line: 92
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
+    symbol: GuideDirectoryGrain
+    line: 300
   - id: ev_6fdc2993df63
     kind: emulator_handler
     authority: vortex_emulator
@@ -80,13 +80,13 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewGuideDecidesOnOfferMessageHandler.cs
     symbol: ChatReviewGuideDecidesOnOfferMessageHandler
     line: 15
-  - id: ev_9c06d4d48950
+  - id: ev_81344840deda
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
-    symbol: GuideDirectoryGrain
-    line: 284
+    source: Vortex.Social/Grains/ChatReviewDispatch.cs
+    symbol: ChatReviewDispatch
+    line: 92
   scenarios:
   - moderation.chat_review_guide_decides_on_offer.guard_0
   - moderation.chat_review_guide_decides_on_offer.guard_1

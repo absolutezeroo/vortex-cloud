@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7c1217f0f1f10a9f20ba0992327aa81b4637435e534cd83ad86cd5d2af028bf1"
+generated_digest: "sha256:c827516f32d6aa677ed6c26498be5013d919b090e2b8568fe5837c65a0d7255f"
 generated:
   name: WiredSetUserPermanentVariableResult
   direction: outgoing
   domain: wired
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: success
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e7921373e636
+    - ev_41f1bb1367f2
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_41f1bb1367f2
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -34,6 +41,14 @@ generated:
     - boolean
     evidence: ev_e7921373e636
   evidence:
+  - id: ev_41f1bb1367f2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4074/_SafeCls_4203.as
+    symbol: _SafeCls_4203
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e7921373e636
     kind: emulator_serializer
     authority: vortex_emulator

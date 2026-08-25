@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:95755f83af7efcfec9a5cb01c96e6a48bf48a959e9c0cab7916e0070719554b3"
+generated_digest: "sha256:a77bba083fb0d59034b68be98521f09e84f2dddfb8a7a699c925f3dff1dd59e4"
 generated:
   id: cf_be53a47adf
   kind: field_count
   subject: "outgoing/FriendListUpdate: field count"
   packet: FriendListUpdate
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, int32, int32"
+    evidence: ev_6dad5605a748
   - origin: arcturus
     authority: reference_emulator
     claim: "20 fields: int32, int32, string, int32, int32, int32, int32, string, int32, boolean, boolean, string, int32, string, string, string, boolean, boolean, boolean, short"
@@ -26,6 +30,14 @@ generated:
     claim: "4 fields: int32, array, int32, array"
     evidence: ev_d9fec1cc4282
   evidence:
+  - id: ev_6dad5605a748
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2817.as
+    symbol: _SafeCls_2817
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_41448effbcc6
     kind: reference_composer
     authority: reference_emulator

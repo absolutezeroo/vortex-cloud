@@ -10,29 +10,36 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:160f99bb1be2bbdbbf330294e998c63d951b4cf5d494244381366f4131d75a07"
+generated_digest: "sha256:06c25f16047b0841cf4c1b7af95bfc584d5412158940c89a87b037b478c3876d"
 generated:
   id: uk_6f0a6bae5e
   subject: "catalog.find_by_product_code: what the server sends when it refuses"
   severity: medium
-  question: catalog.find_by_product_code changes state and has 12 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: catalog.find_by_product_code changes state and has 11 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: catalog.find_by_product_code
   known_evidence:
+  - id: ev_0c987f4ea07c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
+    symbol: CatalogFulfillmentPlanner
+    line: 53
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 393
+    line: 408
   - id: ev_2ec03446aa2a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,6 +47,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 36
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,20 +68,6 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Inventory.cs
     symbol: PlayerPresenceGrain
     line: 23
-  - id: ev_5e99184ee3a3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 36
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 583
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,13 +75,6 @@ generated:
     source: Vortex.Furniture/Providers/StuffDataFactory.cs
     symbol: StuffDataFactory
     line: 27
-  - id: ev_7ef4c91324dc
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerEffectGrain.cs
-    symbol: PlayerEffectGrain
-    line: 71
   - id: ev_8dde45c38f16
     kind: emulator_handler
     authority: vortex_emulator
@@ -102,7 +95,14 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 152
+    line: 158
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 582
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ed50c45d94b96f8c4c5ca1960ededcc1ecfdbb24cde6f8396e2d12cb4a1446aa"
+generated_digest: "sha256:decf0a2ede6126fb214dc592b00204a5721d6e4f87b85615b8a3be42a074bcde"
 generated:
   id: uk_64f8c369bb
   subject: "wired.withdraw_wired_chest_items: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -130,7 +130,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 52
+    line: 58
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

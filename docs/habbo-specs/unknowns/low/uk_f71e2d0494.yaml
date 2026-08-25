@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:57dc36415cedc6b5eb8d6f37d5bd87f85fa7a12950b6bbdf970f438b12cc12c9"
+generated_digest: "sha256:8e74e7e4725f20c5bb52eec019d28722008505d6f9966ea8f9c3b4211fc31e68"
 generated:
   id: uk_f71e2d0494
   subject: "outgoing/ExtendedProfile: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: ExtendedProfileMessageParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_c0ae2a48c197
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3992.as
+    symbol: _SafeCls_3992
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ce259a1ed609
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: ExtendedProfileMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b324eb0850aa
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/ExtendedProfileMessageComposer.java
-    symbol: ExtendedProfileMessageComposer
-    line: 43
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

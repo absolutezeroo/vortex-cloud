@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fe83d8684c5fbedef17db90aa93963a3963a0b51d2ba7da255b559f5dce97c81"
+generated_digest: "sha256:9c14f8fbbb9edb89f03762dbefa74b4cabd67f4b7c2c76d9fdfdb9f15e17dcb8"
 generated:
   name: GamePlayerValue
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d2c088d7dafd
+    - ev_7c57e6a2373d
   - index: 1
     name: value
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d2c088d7dafd
+    - ev_7c57e6a2373d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_7c57e6a2373d
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -52,6 +58,14 @@ generated:
     - int32
     evidence: ev_36c0db261460
   evidence:
+  - id: ev_7c57e6a2373d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_2838.as
+    symbol: _SafeCls_2838
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d2c088d7dafd
     kind: client_parser
     authority: multi_implementation
@@ -67,5 +81,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Session/GamePlayerValueMessageComposerSerializer.cs
     symbol: GamePlayerValueMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_a27c2e7340
 verified: {}
 manual: {}

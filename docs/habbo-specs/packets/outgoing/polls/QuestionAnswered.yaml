@@ -10,71 +10,66 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c1da692162fdba8944ce202c6d76fd206ef7c22bfd3e31acf63ae141121ce646"
+generated_digest: "sha256:fb7e10e337c335d397023a12f870d74c4150175470e554fe4e8cceb93c072d77"
 generated:
   name: QuestionAnswered
   direction: outgoing
   domain: polls
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cb592dbe9e80
+    - ev_10d5056ef7a9
   - index: 1
-    name: unknown_1
+    name: value
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cb592dbe9e80
+    - ev_10d5056ef7a9
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cb592dbe9e80
+    - ev_10d5056ef7a9
   - index: 3
     name: unknown_3
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_cb592dbe9e80
+    - ev_10d5056ef7a9
   - index: 4
     name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_cb592dbe9e80
-  - index: 5
-    name: unknown_5
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_cb592dbe9e80
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_cb592dbe9e80
+    - ev_10d5056ef7a9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 5
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - string
+    - int32
+    evidence: ev_10d5056ef7a9
   - origin: arcturus
     authority: reference_emulator
     field_count: 7
@@ -89,6 +84,14 @@ generated:
     - int32
     evidence: ev_cb592dbe9e80
   evidence:
+  - id: ev_10d5056ef7a9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3020.as
+    symbol: _SafeCls_3020
+    line: 45
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cb592dbe9e80
     kind: reference_composer
     authority: reference_emulator
@@ -97,6 +100,8 @@ generated:
     symbol: QuestionAnsweredMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_adde099197
   unknowns:
   - uk_a471d552e9
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:394c57f713584159aa078e575d2794a612a6ec4307795b9f0320b87fb6d61094"
+generated_digest: "sha256:326a0ac3543c7d451794c0884f4ff68e518183c3999704dbd0ad40e8357b0030"
 generated:
   feature: inventory.avatar_effect_selected
   scenarios:
@@ -176,7 +176,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 235
+    line: 245
   - id: ev_7f3075d7b8ac
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:19bc84cee3de210826b6432396216d6fd0330c9c970a00a1ed6f6af29b5c9abe"
+generated_digest: "sha256:9b4f3f5a341cffe0234973922bf068d36ca455eb822692bfa872ab54d6d906ee"
 generated:
   feature: quest.claim_daily_task
   scenarios:
@@ -49,7 +49,25 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d37c83ff4871
+      evidence: ev_2abb3cf8a990
+  - scenario: quest.claim_daily_task.guard_2
+    title: "claim daily task: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: ClaimDailyTask
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of ClaimDailyTask sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: quest.claim_daily_task.success
     title: "claim daily task: the request is accepted"
     given:
@@ -76,12 +94,19 @@ generated:
     source: Vortex.PacketHandlers/Quest/ClaimDailyTaskMessageHandler.cs
     symbol: ClaimDailyTaskMessageHandler
     line: 23
-  - id: ev_d37c83ff4871
+  - id: ev_2abb3cf8a990
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerDailyTaskGrain.cs
+    source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 169
+    line: 172
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
 verified: {}
 manual: {}

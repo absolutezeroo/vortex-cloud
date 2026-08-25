@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e6fac298399374b6b08282a5cb6dfc127fb2ed830cc4d4fc04e59492878865e4"
+generated_digest: "sha256:caa45ecc19d3b2f367673d99457da6a9199dc1e840994350385f33ae85c80467"
 generated:
   name: CfhChatlog
   direction: outgoing
@@ -211,6 +211,12 @@ generated:
     evidence:
     - ev_d00db6c1a054
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_223715be4838
   - origin: arcturus
     authority: reference_emulator
     field_count: 24
@@ -242,6 +248,14 @@ generated:
     - boolean
     evidence: ev_d00db6c1a054
   evidence:
+  - id: ev_223715be4838
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2697.as
+    symbol: _SafeCls_2697
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d00db6c1a054
     kind: reference_composer
     authority: reference_emulator

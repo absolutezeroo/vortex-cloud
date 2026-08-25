@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:53f3df946dd8a0a445dba40e1554d044708d644e1e8693578a258f89e816e179"
+generated_digest: "sha256:d4428d883b159fb96467a17a201fc9a7cf6fee95208eb804df5c6d64b6a6a58d"
 generated:
   name: CanCreateRoomEvent
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: can_create_event
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_87271bb7ca4d
+    - ev_0787fa636907
   - index: 1
     name: error_code
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_87271bb7ca4d
+    - ev_0787fa636907
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - boolean
+    - int32
+    evidence: ev_0787fa636907
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_1350e97a5e9c
   evidence:
+  - id: ev_0787fa636907
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3897.as
+    symbol: _SafeCls_3897
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_87271bb7ca4d
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/CanCreateRoomEventMessageComposerSerializer.cs
     symbol: CanCreateRoomEventMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_2c534038fc
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3ab50891f7e7aec531611d78a1f9416169f380ab99f55063166b6cd3b253fc4b"
+generated_digest: "sha256:2fda5421678e25160a452630afa9432c75507996a980d458ff5d3fdd9a50a22c"
 generated:
   id: uk_f369fbd598
   subject: "room.save_room_settings: what the server sends when it refuses"
   severity: medium
-  question: room.save_room_settings changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.save_room_settings changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.save_room_settings
   known_evidence:
@@ -32,7 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 48
+    line: 49
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator

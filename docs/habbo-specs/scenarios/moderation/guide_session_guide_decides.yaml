@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6e0978fd8bdd950d22f824bdd0a099bcdec9dcc71435fcd45e8a959e1f2d10aa"
+generated_digest: "sha256:6d88dbc7f4c3cd8d0a5f03e14e5a9c8b1c6976b73ddf13398b41ec66ce6adc32"
 generated:
   feature: moderation.guide_session_guide_decides
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -77,7 +77,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -100,7 +100,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -123,7 +123,30 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_a458dc8242dc
+  - scenario: moderation.guide_session_guide_decides.guard_5
+    title: "guide session guide decides: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: GuideSessionGuideDecides
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GuideSessionGuideDecides sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -167,13 +190,20 @@ generated:
     source: Vortex.PacketHandlers/Help/GuideSessionGuideDecidesMessageHandler.cs
     symbol: GuideSessionGuideDecidesMessageHandler
     line: 16
-  - id: ev_9c06d4d48950
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
+  - id: ev_5ea072b947f5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 159
+    line: 167
   - id: ev_a96cf2a06b36
     kind: emulator_flow
     authority: vortex_emulator

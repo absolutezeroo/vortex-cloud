@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:015a3d7892652d7b7fc83cf3edd2c7fed0e4d40d5a35841eb6b9ba9dc3a99c27"
+generated_digest: "sha256:75781ea6c2c22a4df8eb61524aa22bcfe252006e1e2b6f07f0180da8ab51e68b"
 generated:
   id: uk_098b5b3f8d
   subject: "outgoing/UserFlatCats: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8 carry no name from any source. What are they?
+  question: Fields 0 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UserFlatCats
   known_evidence:
+  - id: ev_257e72038ed9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2986.as
+    symbol: _SafeCls_2986
+    line: 18
+    note: official client build WIN63-202607011411-782849652
   - id: ev_789581a48b6d
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: UserFlatCatsMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  - id: ev_d743f775c56a
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/UserFlatCatsMessageComposerSerializer.cs
-    symbol: UserFlatCatsMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

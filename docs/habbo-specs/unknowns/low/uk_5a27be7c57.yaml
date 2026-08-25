@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:784fe1c2e3c6fa0c61512279cfac45371be59baec14354353bc80a9ee1b9cbdf"
+generated_digest: "sha256:b3b35d651937965f9ad6f83d8d25b7341cf5f8ef0b8ab5a8d4453af736f5dc4b"
 generated:
   id: uk_5a27be7c57
   subject: "outgoing/OfficialRooms: unnamed fields"
   severity: low
-  question: Fields 1, 2 carry no name from any source. What are they?
+  question: Fields 0 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: OfficialRooms
   known_evidence:
+  - id: ev_fff130fee61b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2806.as
+    symbol: _SafeCls_2806
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_5d8357bd45c8
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: OfficialRoomsMessageComposer
     line: 28
     note: third-party server implementation; evidence, not authority
-  - id: ev_e9e751a3cbc9
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/OfficialRoomsMessageComposerSerializer.cs
-    symbol: OfficialRoomsMessageComposerSerializer
-    line: 15
 verified: {}
 manual: {}

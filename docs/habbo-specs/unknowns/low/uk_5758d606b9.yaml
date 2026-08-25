@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:dfc53e58196a152c8c8d96aa42146471c297f488210bee58a93d06d005b59cd6"
+generated_digest: "sha256:9da55728b407a06e230d76fba9a0a16813aeca3c9e5edf4c30f5c3d80f6e7a6e"
 generated:
   id: uk_5758d606b9
   subject: "outgoing/RoomDimmerPresets: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: RoomDimmerPresetsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_9ad9fac68eb5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3521.as
+    symbol: _SafeCls_3521
+    line: 59
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d2e13198974e
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: RoomDimmerPresetsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e3221db6ee4d
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/RoomDimmerPresetsMessageComposer.java
-    symbol: RoomDimmerPresetsMessageComposer
-    line: 17
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

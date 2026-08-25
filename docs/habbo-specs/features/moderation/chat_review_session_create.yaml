@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8c2411dffe97d235d954837558d2a4f4d656c1339c652f164344357ec8707100"
+generated_digest: "sha256:33b6f70bea512394ea58ddb8add64e4994234935e4c2022d2d6b33da4f229c3f"
 generated:
   id: moderation.chat_review_session_create
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.CreateChatReviewAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   checks:
   - expression: ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.Message)
     on_fail: return
@@ -40,11 +40,11 @@ generated:
   - expression: reporterId <= 0 || _reviewsByReporter.ContainsKey(reporterId)
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - expression: review.Offered.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -65,13 +65,13 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewSessionCreateMessageHandler.cs
     symbol: ChatReviewSessionCreateMessageHandler
     line: 23
-  - id: ev_9c06d4d48950
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 242
+    line: 258
   scenarios:
   - moderation.chat_review_session_create.guard_0
   - moderation.chat_review_session_create.guard_1

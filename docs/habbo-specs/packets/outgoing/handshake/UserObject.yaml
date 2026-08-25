@@ -10,127 +10,182 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:07c312d3db18cb220ae193542e7c194e8d1ab83f501726acbe43e75b98ccd101"
+generated_digest: "sha256:4cffbd070b7e3ba6f005c71934c88da3ae8eaf8d0a10f90bf16537600baf5950"
 generated:
   name: UserObject
   direction: outgoing
   domain: handshake
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: user_id
+    name: unknown_0
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 1
-    name: name
+    name: unknown_1
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 2
-    name: figure
+    name: unknown_2
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 3
-    name: sex
+    name: unknown_3
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 4
-    name: custom_data
+    name: unknown_4
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 5
-    name: real_name
+    name: unknown_5
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 6
-    name: direct_mail
+    name: unknown_6
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 7
-    name: respect_total
+    name: unknown_7
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 8
-    name: respect_left
+    name: unknown_8
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 9
-    name: pet_respect_left
+    name: unknown_9
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 10
-    name: stream_publishing_allowed
+    name: unknown_10
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 11
-    name: last_access_date
+    name: unknown_11
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 12
-    name: name_change_allowed
+    name: unknown_12
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
   - index: 13
     name: account_safety_locked
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_7767cf187e1e
+  - index: 14
+    name: account_trade_locked
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_15abd2fcd92f
+    - ev_7767cf187e1e
+  - index: 15
+    name: name_color
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7767cf187e1e
+  - index: 16
+    name: respect_replenishes_left
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7767cf187e1e
+  - index: 17
+    name: max_respect_per_day
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_7767cf187e1e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 18
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - string
+    - string
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    - boolean
+    - string
+    - boolean
+    - boolean
+    - boolean
+    - string
+    - int32
+    - int32
+    evidence: ev_7767cf187e1e
   - origin: nitro
     authority: multi_implementation
     field_count: 14
@@ -192,6 +247,14 @@ generated:
     - boolean
     evidence: ev_4980e675a61a
   evidence:
+  - id: ev_7767cf187e1e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_1819.as
+    symbol: _SafeCls_1819
+    line: 56
+    note: official client build WIN63-202607011411-782849652
   - id: ev_15abd2fcd92f
     kind: client_parser
     authority: multi_implementation
@@ -215,5 +278,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Handshake/UserObjectMessageSerializer.cs
     symbol: UserObjectMessageSerializer
     line: 7
+  conflicts:
+  - cf_597b03759f
+  unknowns:
+  - uk_2160ed8170
 verified: {}
 manual: {}

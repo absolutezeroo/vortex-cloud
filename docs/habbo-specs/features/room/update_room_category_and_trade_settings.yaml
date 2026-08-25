@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ea6d1addf5f8e2dc65ea6bd24497aa6bfd4efa45f3323263d53aa2aa2fb6bfc9"
+generated_digest: "sha256:96fc405c2f624042bae190adde8d1fb562870caf4086a03d56a79d296cf9afeb"
 generated:
   id: room.update_room_category_and_trade_settings
   domain: room
@@ -31,6 +31,10 @@ generated:
     layer: grain
     symbol: RoomGrain.UpdateCategoryAndTradeAsync
     evidence: ev_329537530b13
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.RoomId <= 0
     on_fail: return
@@ -44,6 +48,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_329537530b13
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.RoomSnapshot
     value: _state.RoomSnapshot with { CategoryId = entity.NavigatorCategoryEntityId ?? -1, TradeType = entity.TradeType, LastUpdatedUtc = DateTime.UtcNow, }
@@ -76,7 +84,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 296
+    line: 316
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_37beffd9f8d0
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,6 +110,7 @@ generated:
   - room.update_room_category_and_trade_settings.guard_0
   - room.update_room_category_and_trade_settings.guard_1
   - room.update_room_category_and_trade_settings.guard_2
+  - room.update_room_category_and_trade_settings.guard_3
   - room.update_room_category_and_trade_settings.success
   unknowns:
   - uk_0bee4d5cef

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:06a39ceadab352f2af961bf9e7b21c8f2db1b0ba1d8aea33a0382ccfe164abf6"
+generated_digest: "sha256:f8568807f2eb3755dc372bfeda87dcc5b1b46ded0b9a0149d3546e02f6e73c58"
 generated:
   feature: users.select_favourite_habbo_group
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -270,7 +270,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 225
+    line: 240
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -278,13 +278,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 362
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -299,6 +292,13 @@ generated:
     source: Vortex.PacketHandlers/Users/SelectFavouriteHabboGroupMessageHandler.cs
     symbol: SelectFavouriteHabboGroupMessageHandler
     line: 22
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 361
   - id: ev_ec0b4c2b0a97
     kind: emulator_flow
     authority: vortex_emulator

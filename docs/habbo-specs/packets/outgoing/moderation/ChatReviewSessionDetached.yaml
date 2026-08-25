@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8d364f9e11ee34ab8fd49f2a602410384e25d7f11bf34b4bfd584b4fa38ba07a"
+generated_digest: "sha256:5c46a18cf4bb4d0a0ac2a7dd4f73a8cf042469ee07c2aa4a00c7ea9e0241a1ff"
 generated:
   name: ChatReviewSessionDetached
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_a16d0ae68112
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -32,6 +38,14 @@ generated:
     types: []
     evidence: ev_a752efc3a6ce
   evidence:
+  - id: ev_a16d0ae68112
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4384.as
+    symbol: _SafeCls_4384
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cafdd2b92dca
     kind: client_parser
     authority: multi_implementation

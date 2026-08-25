@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9628c1513246ad2f11f5a0ad0e471dd69161a6ab39fc6d02e85bb86aeb3d1550"
+generated_digest: "sha256:b193841bcce8bac9459738f3a01b7393b9b76b16b7c631c0e154dd75d90c6406"
 generated:
   id: room.get_enabled_command_ids
   domain: room
@@ -92,7 +92,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 234
+    line: 249
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator

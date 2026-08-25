@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3a7ce0bb79b716b4e25f35818d34b34cc5706ae3acae141d7a692921ffa2dcbc"
+generated_digest: "sha256:6daa2df2ecdbe12920a0c12e2a1fddb7a6ca580e6fd6a8e38cd0bbd2a29ed0de"
 generated:
   name: InfoHotelClosing
   direction: outgoing
   domain: availability
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: minutes_until_closing
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9c9404410d23
+    - ev_0a1b8a482adc
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_0a1b8a482adc
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +47,14 @@ generated:
     - int32
     evidence: ev_9c9404410d23
   evidence:
+  - id: ev_0a1b8a482adc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2152/_SafeCls_2483.as
+    symbol: _SafeCls_2483
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_5ac04602fa3c
     kind: client_parser
     authority: multi_implementation

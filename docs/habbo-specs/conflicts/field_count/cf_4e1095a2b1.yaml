@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7f6c499193f2e606ea72382b4b4b51cc2b1dca0bbfca1582f51a507a214e5175"
+generated_digest: "sha256:c4fba311a8d45203cf980c38866d4e4634706a19391d4bdb71e043bf7281d2e2"
 generated:
   id: cf_4e1095a2b1
   kind: field_count
   subject: "outgoing/RoomInviteError: field count"
   packet: RoomInviteError
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32, int32"
+    evidence: ev_539d63a5a5b6
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: int32"
@@ -30,6 +34,14 @@ generated:
     claim: "3 fields: int32, int32, array"
     evidence: ev_d17d38d4199e
   evidence:
+  - id: ev_539d63a5a5b6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2291.as
+    symbol: _SafeCls_2291
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_183d1034e9bc
     kind: client_parser
     authority: multi_implementation

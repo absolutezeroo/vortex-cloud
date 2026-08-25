@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:92dc21390f31c6165ac00281768b1fe92b3bf967c0c7222813e6783d33714310"
+generated_digest: "sha256:21bd9ce3a449e4771758a7dda3729600e04b389e4eefb1810fb83b3ccde9135d"
 generated:
   feature: users.get_relationship_status_info
   scenarios:
@@ -56,7 +56,7 @@ generated:
       outcome: success
       emits:
       - RelationshipStatusInfoEvent
-      evidence: ev_b9c3cebcd883
+      evidence: ev_bf22cc5b6280
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -73,13 +73,6 @@ generated:
     symbol: GetRelationshipStatusInfoMessageEvent
     line: 11
     note: third-party server implementation; evidence, not authority
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 51
   - id: ev_bf22cc5b6280
     kind: emulator_flow
     authority: vortex_emulator

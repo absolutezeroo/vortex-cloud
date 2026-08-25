@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:474f7e4f61fd3fbfef86fd96badf2ab823277c48a3d2dbe90ed3b6050103f8be"
+generated_digest: "sha256:262f260acef27161ff77b1121340cd1ee0e1d4650b1bc4a5a257eb473423bfd9"
 generated:
   id: navigator.edit
   domain: navigator
@@ -31,6 +31,10 @@ generated:
     layer: service
     symbol: RoomAdvertisementService.EditAsync
     evidence: ev_89f5ad7deadb
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.Id <= 0 || string.IsNullOrWhiteSpace(message.Name)
     on_fail: return
@@ -44,6 +48,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_89f5ad7deadb
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: entity.Description
     value: "description is not null && description.Length > 255 ? description[..255] : description"
@@ -69,6 +77,13 @@ generated:
     source: Vortex.PacketHandlers/Navigator/EditEventMessageHandler.cs
     symbol: EditEventMessageHandler
     line: 22
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_3ae62105b409
     kind: emulator_handler
     authority: vortex_emulator
@@ -82,11 +97,12 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 16
+    line: 20
   scenarios:
   - navigator.edit.guard_0
   - navigator.edit.guard_1
   - navigator.edit.guard_2
+  - navigator.edit.guard_3
   - navigator.edit.success
   unknowns:
   - uk_830cd58e00

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5a81a0bd4b9990986bc5b6bd4979c2863854d8804c1da4b4bc1783094d14edfa"
+generated_digest: "sha256:92886def23cc8d98cb75a5464e7de005b724031833894850901b827adb51f990"
 generated:
   id: quest.get_concurrent_users_reward
   domain: quest
@@ -30,11 +30,11 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuestGrain.ClaimConcurrentUsersRewardAsync
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   - order: 2
     layer: domain
     symbol: ConcurrentUsersGoalRule.CanClaim
-    evidence: ev_e7d3eb341406
+    evidence: ev_e46df41dce67
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -53,6 +53,13 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetConcurrentUsersRewardMessageHandler.cs
     symbol: GetConcurrentUsersRewardMessageHandler
     line: 27
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 76
   - id: ev_7dfdc26947ad
     kind: emulator_handler
     authority: vortex_emulator
@@ -60,20 +67,13 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetConcurrentUsersRewardMessageHandler.cs
     symbol: GetConcurrentUsersRewardMessageHandler
     line: 16
-  - id: ev_e7d3eb341406
+  - id: ev_e46df41dce67
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Quests/ConcurrentUsersGoalRule.cs
+    source: Vortex.Progression/Quests/ConcurrentUsersGoalRule.cs
     symbol: ConcurrentUsersGoalRule
     line: 44
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 73
   scenarios:
   - quest.get_concurrent_users_reward.guard_0
   - quest.get_concurrent_users_reward.success

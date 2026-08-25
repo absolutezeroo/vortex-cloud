@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:23efcfb572dce2a9fc40307550b0a8279cb51fa5b0e765d8d3c45ed9012eeeaf"
+generated_digest: "sha256:95677a390c1e9125166f757d2f1801293f9d5523aa6cd044f679216affa770c9"
 generated:
   id: messenger.accept_friend
   domain: messenger
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.AcceptFriendRequestsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: grain
     symbol: ServerConfigGrain.GetIntAsync
@@ -54,7 +54,7 @@ generated:
   - order: 7
     layer: grain
     symbol: MessengerGrain.NotifyFriendPresenceChangedAsync
-    evidence: ev_55e9c6b16f82
+    evidence: ev_8db29db3d5af
   - order: 8
     layer: grain
     symbol: PlayerDirectoryGrain.GetPlayerNameAsync
@@ -70,7 +70,7 @@ generated:
   - order: 11
     layer: grain
     symbol: MessengerGrain.GetFriendsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   checks:
   - expression: ctx.PlayerId <= 0 || message.Friends.Count == 0
     on_fail: return
@@ -92,7 +92,7 @@ generated:
   - target: dbCtx.MessengerRequests
     value: dbCtx.MessengerRequests.RemoveRange(pendingRequests)
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   outgoing:
     ordering: unknown
     packets:
@@ -107,7 +107,7 @@ generated:
     - packet: FriendListUpdate
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_55e9c6b16f82
+      evidence: ev_8db29db3d5af
   reaches_persistence: true
   evidence:
   - id: ev_09932710687b
@@ -138,13 +138,6 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 107
-  - id: ev_55e9c6b16f82
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Presence.cs
-    symbol: MessengerGrain
-    line: 82
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -159,13 +152,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_b9c3cebcd883
+  - id: ev_8db29db3d5af
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Presence.cs
     symbol: MessengerGrain
-    line: 195
+    line: 82
   - id: ev_bc65e4b1ddef
     kind: emulator_handler
     authority: vortex_emulator
@@ -180,6 +173,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 199
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,15 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1a4a847132d49d07098be94d216e8df30a6baa1e6544a3893b3c7408993fb6c5"
+generated_digest: "sha256:494cc9d4852851c8c48918a5bbe63598b3930c2ee4c0746ac9240dafab17123e"
 generated:
   name: PromoArticles
   direction: outgoing
   domain: landing_view
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_1cc67cd567d5
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_1cc67cd567d5
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +41,14 @@ generated:
     types: []
     evidence: ev_ea4df26fdb7a
   evidence:
+  - id: ev_1cc67cd567d5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/landingview/_SafeCls_4009.as
+    symbol: _SafeCls_4009
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ea4df26fdb7a
     kind: client_parser
     authority: multi_implementation
@@ -34,5 +57,7 @@ generated:
     symbol: PromoArticlesMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  unknowns:
+  - uk_2013db0a8f
 verified: {}
 manual: {}

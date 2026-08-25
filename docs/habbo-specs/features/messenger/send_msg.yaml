@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f7019b81afc3c172151a06a5e95029e73d696f5bc9cdc8d703adb141466737b0"
+generated_digest: "sha256:048966b50694da33381d2b266e0353cde20776bc8770bd9152d7a6b364bd5404"
 generated:
   id: messenger.send_msg
   domain: messenger
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.SendMessageAsync
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - order: 2
     layer: domain
     symbol: WiredChestStore.FindAsync
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: grain
     symbol: MessengerGrain.ReceiveMessageAsync
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - order: 4
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -52,19 +52,19 @@ generated:
   - expression: "!_friends.ContainsKey(receiverId)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - expression: _blockedIds.Contains(receiverId.Value)
     on_fail: return
     observed_in: vortex
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - expression: selfEntity is null || receiverEntity is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - expression: _ignoredIds.Contains(senderId.Value)
     on_fail: return
     observed_in: vortex
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   state_changes: []
   outgoing:
     ordering: unknown
@@ -76,7 +76,7 @@ generated:
     - packet: NewConsoleMessage
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_c0304e5ad0cf
+      evidence: ev_564bd0580d41
   reaches_persistence: true
   evidence:
   - id: ev_373e76aa8a80
@@ -86,6 +86,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_564bd0580d41
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
+    symbol: MessengerGrain
+    line: 25
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator
@@ -93,13 +100,6 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendMsgMessageHandler.cs
     symbol: SendMsgMessageHandler
     line: 24
-  - id: ev_c0304e5ad0cf
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
-    symbol: MessengerGrain
-    line: 25
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,39 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b9c4d01840d43da1a4d8fd56dcefd25562fbe5d194e292a3938079d66c7df10b"
+generated_digest: "sha256:e6cc92d71490c9e41f2fa9dfb782a7ebc71401cfa782dc1e267cda7a5059c713"
 generated:
   name: MarketplaceCanMakeOfferResult
   direction: outgoing
   domain: marketplace
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: result_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a88311017da8
+    - ev_ece73f11f7df
   - index: 1
-    name: unknown_1
+    name: token_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a88311017da8
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_a88311017da8
+    - ev_ece73f11f7df
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_ece73f11f7df
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -67,6 +65,14 @@ generated:
     - int32
     evidence: ev_432034bfd209
   evidence:
+  - id: ev_ece73f11f7df
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_3545.as
+    symbol: _SafeCls_3545
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_84152262014c
     kind: client_parser
     authority: multi_implementation
@@ -92,7 +98,5 @@ generated:
     line: 6
   conflicts:
   - cf_5d75b18902
-  unknowns:
-  - uk_7343947ae4
 verified: {}
 manual: {}

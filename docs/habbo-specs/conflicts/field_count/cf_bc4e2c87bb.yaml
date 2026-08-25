@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:6e5348f48a5c2726e5a7f4d34f74b60666ff2fb05a2bb162c439350122483897"
+generated_digest: "sha256:d13beb5e9825163408343ff8c58ffd34ffdffa0edcd9cb2733a1149ae3abdfb1"
 generated:
   id: cf_bc4e2c87bb
   kind: field_count
   subject: "outgoing/HabboGroupBadges: field count"
   packet: HabboGroupBadges
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32, string"
+    evidence: ev_4e7e91585037
   - origin: arcturus
     authority: reference_emulator
     claim: "3 fields: int32, int32, string"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: int32, array"
     evidence: ev_62665f62e38d
   evidence:
+  - id: ev_4e7e91585037
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4298.as
+    symbol: _SafeCls_4298
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_acdb61f127ca
     kind: reference_composer
     authority: reference_emulator

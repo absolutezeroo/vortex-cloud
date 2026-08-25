@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3c6b435375aa71f6c22e8a1becb7efde8f3fee8b5c137b130a133e37a5c6ecae"
+generated_digest: "sha256:d4ff53b209ce5af3c0037358d063a6b5e35600d9ccc8ade83aab0efe1a427a6f"
 generated:
   id: uk_49fe014f56
   subject: "room.delete_room: what the server sends when it refuses"
   severity: medium
-  question: room.delete_room changes state and has 12 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.delete_room changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.delete_room
   known_evidence:
@@ -32,7 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 173
+    line: 186
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_4c36667ce9b9
     kind: emulator_flow
     authority: vortex_emulator

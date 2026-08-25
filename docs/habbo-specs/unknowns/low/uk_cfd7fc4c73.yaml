@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7af39e049741261258f2be1c09eb481b92de7f590d9f39b1d59d7d049bcad845"
+generated_digest: "sha256:bea0c19c18041e863062e5d64fd69476130078f459835fe0af593a6eb60dfd96"
 generated:
   id: uk_cfd7fc4c73
   subject: "outgoing/TraxSongInfo: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TraxSongInfo
   known_evidence:
+  - id: ev_b909cb6a6ced
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_2898.as
+    symbol: _SafeCls_2898
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d0daca86e7c0
     kind: client_parser
     authority: multi_implementation

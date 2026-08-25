@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6ec18069efe309f02e7f925dadf9db0c37fe85f23c719a30d71650e3ba18404d"
+generated_digest: "sha256:7d659e8b83d24fd60b9d2d00203826d592c94ec650e9b993e5b9f78a1b35021a"
 generated:
   feature: messenger.send_msg
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c0304e5ad0cf
+      evidence: ev_564bd0580d41
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -77,7 +77,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c0304e5ad0cf
+      evidence: ev_564bd0580d41
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -100,7 +100,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c0304e5ad0cf
+      evidence: ev_564bd0580d41
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -123,7 +123,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c0304e5ad0cf
+      evidence: ev_564bd0580d41
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -169,6 +169,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_564bd0580d41
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
+    symbol: MessengerGrain
+    line: 33
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator
@@ -176,12 +183,5 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendMsgMessageHandler.cs
     symbol: SendMsgMessageHandler
     line: 24
-  - id: ev_c0304e5ad0cf
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
-    symbol: MessengerGrain
-    line: 33
 verified: {}
 manual: {}

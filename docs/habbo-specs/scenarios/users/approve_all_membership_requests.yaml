@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:18287b33fc235e9a57a710b09537a35dcbf418c8c3efd44757ebfc83290f7a53"
+generated_digest: "sha256:1bf64888b258924be4a5ec1950327f413a53f1f65875d9f2f7164b2fb9337d13"
 generated:
   feature: users.approve_all_membership_requests
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
   - scenario: users.approve_all_membership_requests.guard_2
     title: "approve all membership requests: the guard 'requests.Count == 0' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
   - scenario: users.approve_all_membership_requests.guard_3
     title: "approve all membership requests: the guard '_registry is null' holds"
     given:
@@ -103,15 +103,8 @@ generated:
       outcome: success
       emits:
       - GuildMembershipUpdated
-      evidence: ev_12ce06c785f7
+      evidence: ev_34bf3ac088e2
   evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 51
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -126,11 +119,11 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveAllMembershipRequestsMessageHandler.cs
     symbol: ApproveAllMembershipRequestsMessageHandler
     line: 24
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 223
 verified: {}

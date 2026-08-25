@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dbf8aa745661aa11df91906964fb5513c8a622320b73f322a27d923ceea297d6"
+generated_digest: "sha256:32967e2a98748291b79d6981b61c39f88ede42533232a1a8e207c615e9c21fcd"
 generated:
   feature: room.move_pet_in_room
   scenarios:
@@ -114,6 +114,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 146
+    line: 154
 verified: {}
 manual: {}

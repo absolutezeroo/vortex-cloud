@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2e7127ceb8a6e76e25a7d3bb5fd5cfd6b320790cfc604bc53e9238110fb7c304"
+generated_digest: "sha256:c4c339f5f910a436fe548c625abceeabb0aa741d9070cebb476ee8603e3df3ec"
 generated:
   id: moderation.post_quiz_answers
   domain: moderation
@@ -30,15 +30,19 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuizGrain.SubmitAsync
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
   - order: 2
     layer: domain
     symbol: QuizGrader.Grade
-    evidence: ev_1e98d75fbfb2
+    evidence: ev_df06c80c3a14
   - order: 3
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -47,11 +51,15 @@ generated:
   - expression: quiz is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
   - expression: questions.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -59,7 +67,7 @@ generated:
     - packet: QuizResults
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
   reaches_persistence: false
   evidence:
   - id: ev_14db4ca86628
@@ -69,20 +77,13 @@ generated:
     source: Vortex.PacketHandlers/Help/PostQuizAnswersMessageHandler.cs
     symbol: PostQuizAnswersMessageHandler
     line: 21
-  - id: ev_1e98d75fbfb2
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Help/QuizGrader.cs
-    symbol: QuizGrader
-    line: 19
-  - id: ev_1eb3967e3979
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuizGrain.cs
-    symbol: PlayerQuizGrain
-    line: 85
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -97,10 +98,25 @@ generated:
     source: Vortex.PacketHandlers/Help/PostQuizAnswersMessageHandler.cs
     symbol: PostQuizAnswersMessageHandler
     line: 10
+  - id: ev_df06c80c3a14
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Help/QuizGrader.cs
+    symbol: QuizGrader
+    line: 19
+  - id: ev_fd80c081bc3a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/PlayerQuizGrain.cs
+    symbol: PlayerQuizGrain
+    line: 88
   scenarios:
   - moderation.post_quiz_answers.guard_0
   - moderation.post_quiz_answers.guard_1
   - moderation.post_quiz_answers.guard_2
+  - moderation.post_quiz_answers.guard_3
   - moderation.post_quiz_answers.success
 verified: {}
 manual: {}

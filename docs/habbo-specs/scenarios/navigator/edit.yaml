@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1a1fabd25028c7c2eb7b36eba5712eac7e4fa0153d4dcbf86ce5ca9a57545658"
+generated_digest: "sha256:d68031aa8f62d2765a477c61f82e619ce031c446df5d479a1193b5cd0cf6a7bb"
 generated:
   feature: navigator.edit
   scenarios:
@@ -68,6 +68,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_89f5ad7deadb
+  - scenario: navigator.edit.guard_3
+    title: "edit: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: EditEvent
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EditEvent sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: navigator.edit.success
     title: "edit: the request is accepted"
     given:
@@ -94,12 +112,19 @@ generated:
     source: Vortex.PacketHandlers/Navigator/EditEventMessageHandler.cs
     symbol: EditEventMessageHandler
     line: 22
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 38
+    line: 42
 verified: {}
 manual: {}

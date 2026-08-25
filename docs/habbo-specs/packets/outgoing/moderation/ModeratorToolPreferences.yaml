@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:47d4519c8b4985bab295e4dfe1950aa23d69d9f99f2a13f3a0efc1af75294733"
+generated_digest: "sha256:6d2daf1f97733aef3eb016a760ed8d13d9856bc597f55f41c61eca55de4290e7"
 generated:
   name: ModeratorToolPreferences
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: window_x
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642c0682d980
+    - ev_86034322ef13
   - index: 1
-    name: unknown_1
+    name: window_y
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642c0682d980
+    - ev_86034322ef13
   - index: 2
-    name: unknown_2
+    name: window_width
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642c0682d980
+    - ev_86034322ef13
   - index: 3
-    name: unknown_3
+    name: window_height
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642c0682d980
+    - ev_86034322ef13
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_86034322ef13
   - origin: arcturus
     authority: reference_emulator
     field_count: 4
@@ -62,6 +68,14 @@ generated:
     - int32
     evidence: ev_642c0682d980
   evidence:
+  - id: ev_86034322ef13
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3632.as
+    symbol: _SafeCls_3632
+    line: 52
+    note: official client build WIN63-202607011411-782849652
   - id: ev_642c0682d980
     kind: reference_composer
     authority: reference_emulator
@@ -70,7 +84,5 @@ generated:
     symbol: ModeratorToolPreferencesMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_a8c54d02a4
 verified: {}
 manual: {}

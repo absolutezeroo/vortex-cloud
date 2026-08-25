@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d510878546f54f43c8665f2f02fb0e57f327db2f3702609e7c8252afefff5829"
+generated_digest: "sha256:09c48b60bdda1fbacbdf4852622ec7e1b6582adf72c540d4bd2bf138c904afc0"
 generated:
   id: uk_f6e0880180
   subject: "outgoing/Badges: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Badges
   known_evidence:
+  - id: ev_3f7c158d32c9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3206/_SafeCls_3564.as
+    symbol: _SafeCls_3564
+    line: 48
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ae08cfc66788
     kind: reference_composer
     authority: reference_emulator

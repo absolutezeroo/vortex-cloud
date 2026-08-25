@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:53dc5376a97577bb40b1f01e19dbffb5d92a6fb582917b84b61e2f3b61c8e585"
+generated_digest: "sha256:db0bb3816980d943b11a6c81db3256842f7cb44bddd111f3b978a277a04d74c8"
 generated:
   name: QuestDaily
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -29,21 +29,21 @@ generated:
   - index: 1
     name: easy_quest_count
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_c93a91ca487d
-    - ev_1c49a30b60db
+    - ev_5d48436b5283
   - index: 2
     name: hard_quest_count
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_c93a91ca487d
-    - ev_1c49a30b60db
+    - ev_5d48436b5283
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -54,6 +54,15 @@ generated:
     - int32
     - int32
     evidence: ev_c93a91ca487d
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    evidence: ev_5d48436b5283
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -70,6 +79,14 @@ generated:
     - int32
     evidence: ev_1c49a30b60db
   evidence:
+  - id: ev_5d48436b5283
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_4046.as
+    symbol: _SafeCls_4046
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c93a91ca487d
     kind: client_parser
     authority: client_code
@@ -93,5 +110,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/QuestDailyMessageComposerSerializer.cs
     symbol: QuestDailyMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_bbd0e50c21
 verified: {}
 manual: {}

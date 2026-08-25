@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:aa8144ee43cd42ad285a57a4775ea8df8d0697a12194b84bb97e369ad8ab706a"
+generated_digest: "sha256:bbaf83d627b9a46b2e5f215788be06415d289e7038dc9ee1f54e267413a3bf62"
 generated:
   id: messenger.follow_friend
   domain: messenger
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.IsFriendAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.IsOnlineAsync
@@ -48,114 +48,122 @@ generated:
     symbol: RoomDirectoryGrain.AddPlayerToRoomAsync
     evidence: ev_74aa24a9a756
   - order: 6
+    layer: domain
+    symbol: AccountSessionStore.Create
+    evidence: ev_680fc4a69aa8
+  - order: 7
+    layer: domain
+    symbol: WiredVariableId.ToHexString
+    evidence: ev_7c8de830bc47
+  - order: 8
     layer: grain
     symbol: PlayerGrain.GetSummaryAsync
     evidence: ev_1f83e61934ca
-  - order: 7
+  - order: 9
     layer: grain
     symbol: RoomGrain.CreateAvatarFromPlayerAsync
     evidence: ev_ac641f7283b9
-  - order: 8
+  - order: 10
     layer: module
     symbol: RoomAvatarModule.CreateAvatarFromPlayerAsync
     evidence: ev_e6fef545a42a
-  - order: 9
+  - order: 11
     layer: module
     symbol: RoomMapModule.InBounds
     evidence: ev_c26714967e6b
-  - order: 10
+  - order: 12
     layer: module
     symbol: RoomMapModule.FindFallbackSpawnTile
     evidence: ev_c26714967e6b
-  - order: 11
+  - order: 13
     layer: domain
     symbol: RoomAvatarProvider.CreateAvatarFromPlayerSnapshot
     evidence: ev_8e58361a3afa
-  - order: 12
+  - order: 14
     layer: domain
     symbol: RoomPlayerAvatar.UpdateWithPlayer
     evidence: ev_7fd0730f7cca
-  - order: 13
+  - order: 15
     layer: module
     symbol: RoomSecurityModule.GetControllerLevelAsync
     evidence: ev_82c2d2746361
-  - order: 14
+  - order: 16
     layer: domain
     symbol: RoomSecurityPolicy.ResolveControllerLevel
     evidence: ev_7aa1dee31dfd
-  - order: 15
+  - order: 17
     layer: domain
     symbol: PermissionSet.Has
     evidence: ev_3fdb23ee39cd
-  - order: 16
+  - order: 18
     layer: module
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
-  - order: 17
+  - order: 19
     layer: module
     symbol: RoomObjectModule.AttatchObjectAsync
     evidence: ev_761b76967e2f
-  - order: 18
+  - order: 20
     layer: grain
     symbol: PlayerDirectoryGrain.GetPlayerNameAsync
     evidence: ev_7f41f2bdde62
-  - order: 19
+  - order: 21
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 20
+  - order: 22
     layer: domain
     symbol: RoomItem.SetOwnerName
     evidence: ev_b4a557a65d81
-  - order: 21
+  - order: 23
     layer: module
     symbol: RoomMapModule.AddItem
     evidence: ev_c26714967e6b
-  - order: 22
+  - order: 24
     layer: module
     symbol: RoomAvatarModule.ProcessNextAvatarStepAsync
     evidence: ev_e6fef545a42a
-  - order: 23
+  - order: 25
     layer: module
     symbol: RoomMapModule.GetTileXY
     evidence: ev_c26714967e6b
-  - order: 24
+  - order: 26
     layer: module
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
-  - order: 25
+  - order: 27
     layer: module
     symbol: RoomMapModule.AddAvatar
     evidence: ev_db615f36b20b
-  - order: 26
+  - order: 28
     layer: module
     symbol: RoomMapModule.UpdateHeightForAvatar
     evidence: ev_db615f36b20b
-  - order: 27
+  - order: 29
     layer: domain
     symbol: FurnitureFloorLogic.GetPostureOffset
     evidence: ev_a2be027c2714
-  - order: 28
+  - order: 30
     layer: domain
     symbol: RoomAvatar.SetHeight
     evidence: ev_9f45a8c43da8
-  - order: 29
+  - order: 31
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
-  - order: 30
+  - order: 32
     layer: module
     symbol: RoomGameSystem.OnPlayerEnteredAsync
     evidence: ev_7db64e908d04
-  - order: 31
+  - order: 33
     layer: grain
     symbol: PlayerEffectGrain.GetSelectedEffectAsync
     evidence: ev_7ef4c91324dc
-  - order: 32
+  - order: 34
     layer: domain
     symbol: RoomAvatar.SetEffect
     evidence: ev_9f45a8c43da8
-  - order: 33
+  - order: 35
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -368,7 +376,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 204
+    line: 219
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -397,6 +405,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/FollowFriendMessageHandler.cs
     symbol: FollowFriendMessageHandler
     line: 26
+  - id: ev_680fc4a69aa8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Authentication/AccountSessionStore.cs
+    symbol: AccountSessionStore
+    line: 58
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -425,6 +440,13 @@ generated:
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
     line: 17
+  - id: ev_7c8de830bc47
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Rooms/Wired/Variable/WiredVariableId.cs
+    symbol: WiredVariableId
+    line: 17
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator
@@ -438,7 +460,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 289
+    line: 299
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -509,13 +531,6 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItem.cs
     symbol: RoomItem
     line: 58
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 74
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -537,6 +552,13 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
     line: 90
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 74
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

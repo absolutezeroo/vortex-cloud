@@ -10,38 +10,40 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:422b11d6d48eb0af4097046529aab00d2d41f9bac9242f4564b0be9906b95657"
+generated_digest: "sha256:8fbf9ada0bf7707414a0504e1fe5009ae1ba4329ac74715c5159b2abb6f25f2f"
 generated:
   name: GetCustomFilterResult
   direction: outgoing
   domain: preferences
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_b4f77e221387
     - ev_b9a007d81aaa
   - index: 1
-    name: words
-    type: array
+    name: word
+    type: string
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
+    - ev_b4f77e221387
     - ev_b9a007d81aaa
-    fields:
-    - index: 0
-      name: word
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b9a007d81aaa
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_b4f77e221387
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -51,6 +53,14 @@ generated:
     - array
     evidence: ev_b9a007d81aaa
   evidence:
+  - id: ev_b4f77e221387
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4205/GetCustomFilterResultMessageEventParser.as
+    symbol: GetCustomFilterResultMessageEventParser
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b9a007d81aaa
     kind: emulator_serializer
     authority: vortex_emulator
@@ -58,5 +68,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Preferences/GetCustomFilterResultMessageComposerSerializer.cs
     symbol: GetCustomFilterResultMessageComposerSerializer
     line: 11
+  conflicts:
+  - cf_41d42715cd
 verified: {}
 manual: {}

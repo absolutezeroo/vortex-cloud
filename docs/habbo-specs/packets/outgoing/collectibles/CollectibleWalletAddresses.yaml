@@ -10,45 +10,47 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c4381e41e623bf8d07748e0ca4b865157a6220cb36870b92a267e74c46326465"
+generated_digest: "sha256:5ef61856c32738978e02f2e2293c699683eee267fe582a39a82ed513ad7073d3"
 generated:
   name: CollectibleWalletAddresses
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: stardust_wallet_address
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_64c4de60e8fb
+    - ev_19b5ae7e87db
   - index: 1
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_19b5ae7e87db
     - ev_64c4de60e8fb
   - index: 2
     name: wallet_addresses
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_64c4de60e8fb
-    fields:
-    - index: 0
-      name: address
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_64c4de60e8fb
+    - ev_19b5ae7e87db
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - int32
+    - string
+    evidence: ev_19b5ae7e87db
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -65,6 +67,14 @@ generated:
     - array
     evidence: ev_64c4de60e8fb
   evidence:
+  - id: ev_19b5ae7e87db
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4305.as
+    symbol: _SafeCls_4305
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_97c48cb04a15
     kind: client_parser
     authority: multi_implementation
@@ -80,5 +90,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/CollectibleWalletAddressesMessageComposerSerializer.cs
     symbol: CollectibleWalletAddressesMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_a1c79a70b7
 verified: {}
 manual: {}

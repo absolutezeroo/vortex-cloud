@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:46d4a49354b092ee42db4f271ac3da925ed0eed656bc5ffeedcbe2eb61e9c64b"
+generated_digest: "sha256:4a51d0d09b61a05a2e4f5e3c4e588a992bc2542c3546b807583d9acfb7b1287d"
 generated:
   name: RoomSettingsSaved
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d9549d649473
+    - ev_b683f7c3aa84
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_b683f7c3aa84
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_d9549d649473
   evidence:
+  - id: ev_b683f7c3aa84
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_2451.as
+    symbol: _SafeCls_2451
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d9549d649473
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: RoomSettingsSavedMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_9543b5b311
 verified: {}
 manual: {}

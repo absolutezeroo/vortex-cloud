@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0f8b0291b60f06546ff096e29d20ec6e8fda7d8ad4b6bf0a062c3b09f1877466"
+generated_digest: "sha256:b28009f87b4cf1a795abfc649076a1b61926fb3ebfb03cfa06fe4245802980f7"
 generated:
   name: WiredPermissionsEvent
   direction: outgoing
@@ -67,5 +67,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/UserDefinedRoomEvents/Wiredmenu/WiredPermissionsEventMessageComposerSerializer.cs
     symbol: WiredPermissionsEventMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_cd32c72338
 verified: {}
 manual: {}

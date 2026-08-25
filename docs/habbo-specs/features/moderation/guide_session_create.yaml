@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:52366d9f494cf85d4e136e824a18c7c6f01b605b0ef507961a6359cf5854b0b0"
+generated_digest: "sha256:232799c6540641c8cc8f923840176fdf8c5ca7a46a674162e814222f577e5604"
 generated:
   id: moderation.guide_session_create
   domain: moderation
@@ -31,7 +31,11 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.CreateRequestAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -40,15 +44,19 @@ generated:
   - expression: requesterId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - expression: _pendingByRequester.ContainsKey(requesterId) || _sessionsByPlayer.ContainsKey(requesterId)
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - expression: guideId == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -62,6 +70,13 @@ generated:
     source: Vortex.PacketHandlers/Help/GuideSessionCreateMessageHandler.cs
     symbol: GuideSessionCreateMessageHandler
     line: 25
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_455d3c52cc2a
     kind: emulator_handler
     authority: vortex_emulator
@@ -69,18 +84,19 @@ generated:
     source: Vortex.PacketHandlers/Help/GuideSessionCreateMessageHandler.cs
     symbol: GuideSessionCreateMessageHandler
     line: 16
-  - id: ev_9c06d4d48950
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 115
+    line: 119
   scenarios:
   - moderation.guide_session_create.guard_0
   - moderation.guide_session_create.guard_1
   - moderation.guide_session_create.guard_2
   - moderation.guide_session_create.guard_3
+  - moderation.guide_session_create.guard_4
   - moderation.guide_session_create.success
 verified: {}
 manual: {}

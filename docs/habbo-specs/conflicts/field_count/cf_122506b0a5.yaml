@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:60d934677114e8db44596a1d2f90837f1a141f979a6049cccde63dcf3dcd6796"
+generated_digest: "sha256:51597c11567966189f49a2118891b3d7f6cc5cc82f663bc09c88b3df4246f0cc"
 generated:
   id: cf_122506b0a5
   kind: field_count
   subject: "outgoing/FlatAccessDenied: field count"
   packet: FlatAccessDenied
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, string"
+    evidence: ev_d18cfa69cafe
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: int32, string"
+    claim: "1 fields: int32, string"
     evidence: ev_3688ae0b987a
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "2 fields: int32, string"
     evidence: ev_1df3b7f651fd
   evidence:
+  - id: ev_d18cfa69cafe
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2583.as
+    symbol: _SafeCls_2583
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3688ae0b987a
     kind: client_parser
     authority: multi_implementation

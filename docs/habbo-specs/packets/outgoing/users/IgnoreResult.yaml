@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0873cbcd7b6269d42ce2dadc57251d36d53de1045ffa4e0e6724928edd7bdd5e"
+generated_digest: "sha256:91fc272c4e450ecfff098b6b2be0e4d1e7189790ae53eef04b0913c5f4c75d1c"
 generated:
   name: IgnoreResult
   direction: outgoing
   domain: users
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a74d45ef0f43
+    - ev_c19676e30531
   - index: 1
-    name: user_id
+    name: ignored_user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a74d45ef0f43
+    - ev_c19676e30531
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_c19676e30531
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_4b512ec8fb82
   evidence:
+  - id: ev_c19676e30531
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4394.as
+    symbol: _SafeCls_4394
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a74d45ef0f43
     kind: client_parser
     authority: multi_implementation
@@ -84,6 +98,7 @@ generated:
     symbol: IgnoreResultMessageComposerSerializer
     line: 6
   conflicts:
+  - cf_b8f7a6d2ae
   - cf_08825b6d8a
 verified: {}
 manual: {}

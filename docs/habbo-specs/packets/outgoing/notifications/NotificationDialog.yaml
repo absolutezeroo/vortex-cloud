@@ -10,47 +10,58 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:016c91ad1e4b3d3aed02f130560e5c775c3c9189f24cc6d0ec427e8f746d9dfa"
+generated_digest: "sha256:a87352cb1549908cb0804b0d648427abd2c3a8f8cff162dd4276fa3cda2763c7"
 generated:
   name: NotificationDialog
   direction: outgoing
   domain: notifications
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: type
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_120a1596135f
-    - ev_17e73cb1e5c7
+    - ev_06af2d26e972
   - index: 1
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_120a1596135f
+    - ev_06af2d26e972
     - ev_17e73cb1e5c7
   - index: 2
     name: key
     type: string
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_120a1596135f
+    - ev_06af2d26e972
     - ev_17e73cb1e5c7
   - index: 3
     name: value
     type: string
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_120a1596135f
+    - ev_06af2d26e972
     - ev_17e73cb1e5c7
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - string
+    - int32
+    - string
+    - string
+    evidence: ev_06af2d26e972
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -77,6 +88,14 @@ generated:
     - array
     evidence: ev_17e73cb1e5c7
   evidence:
+  - id: ev_06af2d26e972
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_2688.as
+    symbol: _SafeCls_2688
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_822ccd552292
     kind: client_parser
     authority: multi_implementation

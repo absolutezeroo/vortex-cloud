@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:eeb9384949a949a4680c35014681372877efa7783c7f54350d3c79d4c474e6e9"
+generated_digest: "sha256:e838760b199d52bafb9d68dc6807302e048bbf3caf4d6a03e03887fa11ad2092"
 generated:
   id: uk_88f399ae45
   subject: "avatar.change_user_name: what the server sends when it refuses"
   severity: medium
-  question: avatar.change_user_name changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: avatar.change_user_name changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: avatar.change_user_name
   known_evidence:
@@ -40,6 +40,13 @@ generated:
     source: Vortex.PacketHandlers/Avatar/ChangeUserNameMessageHandler.cs
     symbol: ChangeUserNameMessageHandler
     line: 27
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_6d94b7c1bb77
     kind: emulator_flow
     authority: vortex_emulator

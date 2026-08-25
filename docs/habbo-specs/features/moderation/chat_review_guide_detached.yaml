@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:73ba74d6b0589785929dc239e18440f001d38004007c621ad3600f812cfd9824"
+generated_digest: "sha256:6c4daf5b39c83516d1217cc1bf5ca401e4124ee1ca13842e308058d2c91d1d17"
 generated:
   id: moderation.chat_review_guide_detached
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.ChatReviewDetachAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -40,7 +40,7 @@ generated:
   - expression: "!TryFindReview(guardianId, out ChatReview? review)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -61,13 +61,13 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewGuideDetachedMessageHandler.cs
     symbol: ChatReviewGuideDetachedMessageHandler
     line: 15
-  - id: ev_9c06d4d48950
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 344
+    line: 360
   scenarios:
   - moderation.chat_review_guide_detached.guard_0
   - moderation.chat_review_guide_detached.guard_1

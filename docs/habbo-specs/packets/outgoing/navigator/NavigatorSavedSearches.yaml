@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d03498324fabc64221d4dccbd61a36e50cd467fd3378d1542dec31175d3e4aaf"
+generated_digest: "sha256:aa6c0d4a19ca7206bf8632cf85026962d5249a88e35b3cc9e94dcda5b7d95570"
 generated:
   name: NavigatorSavedSearches
   direction: outgoing
   domain: navigator
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_3014c348b843
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_617316e0ec41
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +75,14 @@ generated:
     symbol: NavigatorSavedSearchesParser
     line: 20
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_617316e0ec41
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_2204.as
+    symbol: _SafeCls_2204
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_35abfb5f615c
     kind: client_parser
     authority: multi_implementation

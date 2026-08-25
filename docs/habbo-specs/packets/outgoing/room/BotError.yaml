@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6366beff4d476bfc5838520c7f3eb3e9306284c6e7a54020c6f0bb7049955ea7"
+generated_digest: "sha256:1d7ab0167874a42c0b6d6a62cf4f4d77f700e7551c4b63cb620d87654255e2f8"
 generated:
   name: BotError
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_6e333be43d17
-    - ev_c6cc55da8c8d
+    - ev_4ccb4edfa9df
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_6e333be43d17
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_4ccb4edfa9df
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -55,6 +62,14 @@ generated:
     - int32
     evidence: ev_c6cc55da8c8d
   evidence:
+  - id: ev_4ccb4edfa9df
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_4173.as
+    symbol: _SafeCls_4173
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6e333be43d17
     kind: client_parser
     authority: client_code

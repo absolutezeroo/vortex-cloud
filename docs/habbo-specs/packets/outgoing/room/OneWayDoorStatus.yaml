@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5ddc4101488c53991424473a2d38da4784a8838f092d2750788db7552f8e8317"
+generated_digest: "sha256:a64eb15063406326b438be6acb2d9de279fd11a1ee43d25e0882f1e9984b25d4"
 generated:
   name: OneWayDoorStatus
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: furni_id
+    name: id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2783ce708fab
+    - ev_0ae0d0734864
   - index: 1
     name: status
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2783ce708fab
+    - ev_0ae0d0734864
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_0ae0d0734864
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -61,6 +67,14 @@ generated:
     - int32
     evidence: ev_561b9cc8114f
   evidence:
+  - id: ev_0ae0d0734864
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3016.as
+    symbol: _SafeCls_3016
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2783ce708fab
     kind: client_parser
     authority: multi_implementation

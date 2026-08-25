@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e90e5b0c62111ee5824e9823085037a5402b3edcf65fc8e213737af2674cf889"
+generated_digest: "sha256:c180f15cb215e3387bfc8c5aa90d1ff73bd43e852bf716a67a46b0d1e7de32c1"
 generated:
   name: CraftableProducts
   direction: outgoing
   domain: crafting
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -53,6 +53,15 @@ generated:
     - int32
     - string
     evidence: ev_0aa9f5c4bebc
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_12c5838637c3
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -79,6 +88,14 @@ generated:
     symbol: CraftableProductsMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_12c5838637c3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4350.as
+    symbol: _SafeCls_4350
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f1a670f4809f
     kind: client_parser
     authority: multi_implementation

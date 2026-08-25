@@ -931,7 +931,16 @@ internal static class MessageComposer
     public const int NftTransferAssetsResultMessageComposer = 2357; // AS3-verified (name-only): onNftTransferResultMessage @ TransferNftsTab
     public const int NftTransferFeeMessageComposer = 3700; // AS3-verified (ghost fix): onNftTransferFeeMessage @ TransferNftsTab
     public const int SilverBalanceMessageComposer = 3727; // AS3-verified (ghost fix): onSilverBalance @ HabboCatalog
-    public const int AcceptFriendResultComposer = 3407;
+
+    // AS3-verified this session, by reading the registry rather than a name: WIN63 binds
+    // server->client 3407 to SelfDonationResultMessageEvent -- one of the 25 entries whose class
+    // name survived obfuscation, which is how it was caught. The accept-friend result is 3707:
+    // _SafeStr_4546[3707] = _SafeCls_2256, whose parser _SafeCls_1878 reads a count and then
+    // _SafeCls_1782(wrapper) per entry -- two ints, senderId and errorCode -- which is exactly
+    // what AcceptFriendResultMessageSerializer writes. HabboFriendList.onAcceptFriendResult is
+    // the listener. 3707 is also GetJukeboxPlayList client->server; the two directions are
+    // separate tables and do not collide.
+    public const int AcceptFriendResultComposer = 3707;
     public const int ConsoleMessageHistoryComposer = 933;
     public const int FindFriendsProcessResultComposer = 2642;
     public const int FollowFriendFailedComposer = 240;

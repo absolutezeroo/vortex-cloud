@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a5edf4b6ba52089bbe9d3c8baa0e4e325c3064b9821b887eb3c140bc5c075e50"
+generated_digest: "sha256:5947fb30744225e481d35b5473741a6f35cbaee65ed9436350ad826f581ac2f1"
 generated:
   id: uk_71f0f07215
   subject: "outgoing/Achievements: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 0 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Achievements
   known_evidence:
+  - id: ev_c8dbd634e2f1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_2979.as
+    symbol: _SafeCls_2979
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dca48513c4e1
     kind: client_parser
     authority: client_code

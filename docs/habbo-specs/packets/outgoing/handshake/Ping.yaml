@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b3a27b5f2f8ff967403eadef19e23a922ed24bb1b3ac7e4210e14afa0149f706"
+generated_digest: "sha256:68718263e74c83be12638cba13337af65fe6bf70363d49977aec92f1327935b3"
 generated:
   name: Ping
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: true
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_03b0cd93c2d3
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -38,6 +44,14 @@ generated:
     types: []
     evidence: ev_dea490cf42ba
   evidence:
+  - id: ev_03b0cd93c2d3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_4223.as
+    symbol: _SafeCls_4223
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6b698e991af7
     kind: client_parser
     authority: multi_implementation

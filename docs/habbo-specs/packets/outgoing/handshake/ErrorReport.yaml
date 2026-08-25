@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e3a11381771f0eb0758bce3b98991df4f92a8b6d2de6166f1ff945a58f470cf7"
+generated_digest: "sha256:70fa704c27d5b50b467fe34411c8cb8f7c4cdea52584a771966138337116a5aa"
 generated:
   name: ErrorReport
   direction: outgoing
   domain: handshake
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: message_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_35876f8ef75a
+    - ev_77e51b094766
   - index: 1
-    name: unknown_1
+    name: error_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_35876f8ef75a
+    - ev_77e51b094766
   - index: 2
-    name: unknown_2
+    name: timestamp
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_35876f8ef75a
+    - ev_77e51b094766
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_77e51b094766
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +59,14 @@ generated:
     - string
     evidence: ev_35876f8ef75a
   evidence:
+  - id: ev_77e51b094766
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3941/_SafeCls_3940.as
+    symbol: _SafeCls_3940
+    line: 21
+    note: official client build WIN63-202607011411-782849652
   - id: ev_35876f8ef75a
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +75,5 @@ generated:
     symbol: ErrorReportMessageComposer
     line: 25
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_61bb825463
 verified: {}
 manual: {}

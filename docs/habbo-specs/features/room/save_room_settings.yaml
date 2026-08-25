@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4978e2f7f7433eeb34714dccce805ba25cc8555c4530ba9b0bedb2bfd3cffab4"
+generated_digest: "sha256:e2b3eeb2287f613efb6c782a8048351065a8aa0913c68b402e41588d468d52d3"
 generated:
   id: room.save_room_settings
   domain: room
@@ -40,6 +40,10 @@ generated:
     layer: grain
     symbol: RoomDirectoryGrain.UpsertActiveRoomAsync
     evidence: ev_74aa24a9a756
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.RoomId <= 0
     on_fail: return
@@ -57,6 +61,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_329537530b13
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.RoomSnapshot
     value: _state.RoomSnapshot with { Name = entity.Name, Description = entity.Description ?? string.Empty, DoorMode = entity.DoorMode, Password = entity.Password ?? string.Empty, PlayersMax = entity.PlayersMax, CategoryId = entity.NavigatorCategoryEntityId ?? -1, TradeType = entity.TradeType, AllowPets = entity.AllowPets, AllowPetsEat = entity.AllowPetsEat, AllowBlocking = entity.AllowBlocking, HideWalls = entity.HideWalls, WallThickness = entity.ThicknessWall, FloorThickness = entity.ThicknessFloor, ModSettings = new ModSettingsSnapshot { WhoCanMute = entity.MuteType, WhoCanKick = entity.KickType, WhoCanBan = entity.BanType, }, ChatSettings = new ChatSettingsSnapshot { ChatMode = entity.ChatModeType, BubbleWidth = entity.ChatBubbleType, ScrollSpeed = entity.ChatSpeedType, FullHearRange = entity.ChatDistance, FloodSensitivity = entity.ChatFloodType, }, LeaveOnDoorTile = entity.LeaveOnDoorTile, IdleSleepEnabled = entity.IdleSleepEnabled, IdleSleepTimeoutSeconds = entity.IdleSleepTimeoutSeconds, IdleAutokickEnabled = entity.IdleAutokickEnabled, IdleAutokickTimeoutSeconds = entity.IdleAutokickTimeoutSeconds, MuteAllPets = entity.MuteAllPets, LastUpdatedUtc = DateTime.UtcNow, }
@@ -184,7 +192,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 48
+    line: 49
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -211,6 +226,7 @@ generated:
   - room.save_room_settings.guard_1
   - room.save_room_settings.guard_2
   - room.save_room_settings.guard_3
+  - room.save_room_settings.guard_4
   - room.save_room_settings.success
   conflicts:
   - cf_0f23edb02a

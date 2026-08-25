@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:be8e02803a62a87b2ce09840246fe2a7299984b2bcb506d2218855c962e87506"
+generated_digest: "sha256:d8a09d071ab6c1ce8aacc3d79196df18581da44b2957e90f8a74b8a79246f798"
 generated:
   id: uk_abe9b2eb32
   subject: "outgoing/NavigatorLiftedRooms: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: NavigatorLiftedRooms
   known_evidence:
+  - id: ev_0e475eba71df
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_1813.as
+    symbol: _SafeCls_1813
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e1120954b333
     kind: client_parser
     authority: client_code
@@ -35,13 +43,5 @@ generated:
     symbol: NavigatorLiftedRoomsMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_b52b7e621841
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorLiftedRoomsMessageComposer.java
-    symbol: NavigatorLiftedRoomsMessageComposer
-    line: 9
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

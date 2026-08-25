@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:23e42fb373921904fcfa8fa7f1cd877246806e053ec7d81a220653865e3a5e18"
+generated_digest: "sha256:5b6d0dec4ed9a486a2b4e2b8344e32aee4734c82e3f505e62e92fecffa98b695"
 generated:
   id: uk_8ed40adcd8
   subject: "users.select_favourite_habbo_group: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 223
+    line: 238
   - id: ev_3034e2af196c
     kind: emulator_handler
     authority: vortex_emulator
@@ -40,13 +40,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 341
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,6 +61,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Room.cs
     symbol: PlayerPresenceGrain
     line: 27
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 340
   - id: ev_ec0b4c2b0a97
     kind: emulator_flow
     authority: vortex_emulator

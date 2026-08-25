@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1ef5ac84f962b6456d856bd1e1ded40ef5e6954896a8e885f10d57b111e95d97"
+generated_digest: "sha256:3428528a5d87a771f2c7dfd9987635a022bef3cfef9144617a504d292f43e206"
 generated:
   id: uk_ab5b708694
   subject: "outgoing/ClubGiftSelected: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ClubGiftSelected
   known_evidence:
+  - id: ev_5f2e6cb8a735
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3028.as
+    symbol: _SafeCls_3028
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_235c6831eae7
     kind: reference_composer
     authority: reference_emulator

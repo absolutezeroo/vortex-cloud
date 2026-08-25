@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1c1c7063e9e62360c529aadf9fe084c79f1b3f32ce934f25d8e2cede6be187a5"
+generated_digest: "sha256:50255b1b79b660b45b7707d36cd1927b94fad1222775bb4a7fa7f389287ea1bb"
 generated:
   feature: users.kick_member
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -157,11 +157,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 285
 verified: {}

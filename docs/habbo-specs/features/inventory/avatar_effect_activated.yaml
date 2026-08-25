@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c63bdbaa516aeb0b3b8a06f52616da6dda2880660adaacc87b864789477bbb3d"
+generated_digest: "sha256:4d537a324b9fbe933f8c3c56d0b334b6d85123bb81d8c01ec3733f8f4d42cb5c"
 generated:
   id: inventory.avatar_effect_activated
   domain: inventory
@@ -36,6 +36,10 @@ generated:
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
+  - order: 3
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.EffectType <= 0
     on_fail: return
@@ -49,6 +53,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7ef4c91324dc
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: inactive.ActivatedAt
     value: now
@@ -67,6 +75,13 @@ generated:
       evidence: ev_7ef4c91324dc
   reaches_persistence: true
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -87,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 130
+    line: 133
   - id: ev_ddf2a13e2ebd
     kind: emulator_flow
     authority: vortex_emulator
@@ -99,6 +114,7 @@ generated:
   - inventory.avatar_effect_activated.guard_0
   - inventory.avatar_effect_activated.guard_1
   - inventory.avatar_effect_activated.guard_2
+  - inventory.avatar_effect_activated.guard_3
   - inventory.avatar_effect_activated.success
   unknowns:
   - uk_8a902e23bb

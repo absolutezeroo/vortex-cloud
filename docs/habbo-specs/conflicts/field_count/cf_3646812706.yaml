@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:382c190ee52f406d4214adecdbe202a373c0aef8d9e456d8b0f6298ff696607a"
+generated_digest: "sha256:d62501ec4604c10e2358ee0df905cc91f61157062cdc704134dabb113796ef33"
 generated:
   id: cf_3646812706
   kind: field_count
@@ -19,8 +19,12 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "4 fields: int32, int32, string, int32"
+    claim: "3 fields: int32, int32, string, int32"
     evidence: ev_af3791eaa7dc
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, string, int32"
+    evidence: ev_b33da45849c4
   - origin: nitro
     authority: multi_implementation
     claim: "3 fields: block, int32, block"
@@ -38,6 +42,14 @@ generated:
     symbol: ItemsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b33da45849c4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3127.as
+    symbol: _SafeCls_3127
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef8054854073
     kind: client_parser
     authority: multi_implementation

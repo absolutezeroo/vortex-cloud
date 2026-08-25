@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b3f7cf82610b8a5498e04b0a8fc82b6a3a6d2efb66184cb119a28ed74843d2cd"
+generated_digest: "sha256:26073c52aa1c49bb2c54d8a843b78531c503179200e50fbc0b60d8a8ee6bcc01"
 generated:
   name: BotRemovedFromInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: item_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_91842327f0d1
+    - ev_a1ecce48d1a0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_a1ecce48d1a0
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_91842327f0d1
   evidence:
+  - id: ev_a1ecce48d1a0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3095/_SafeCls_3094.as
+    symbol: _SafeCls_3094
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_91842327f0d1
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: BotRemovedFromInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_ccdb2b5553
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:30f1660b23803412168d659acf66e960f47f2be2d4b2a37c81698415c4670b94"
+generated_digest: "sha256:ba2dab0028967f5fe07e3675d8319bd9d033130210eb36cfd6978165520a3691"
 generated:
   id: uk_cab1e4c8ef
   subject: "moderation.resolve_for_player: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 156
+    line: 173
   - id: ev_21f62951b010
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator

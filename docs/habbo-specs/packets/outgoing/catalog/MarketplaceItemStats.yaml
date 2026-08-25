@@ -10,15 +10,113 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9fb5d7c00df69c3d9752986d9ec7ace00af60f011fdec1e19c43fc56ecb772a2"
+generated_digest: "sha256:1e873628efd2a06fe0958e336a9a95d56cade0cc032cad0137f74e492a743e7b"
 generated:
   name: MarketplaceItemStats
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: average_price
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 1
+    name: offer_count
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 2
+    name: history_length
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 4
+    name: day_offsets
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_de34dfb58a17
+  - index: 5
+    name: average_prices
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_de34dfb58a17
+  - index: 6
+    name: sold_amounts
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_de34dfb58a17
+  - index: 7
+    name: furni_category_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 8
+    name: furni_type_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 9
+    name: lowest_current_price
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
+  - index: 10
+    name: suggested_price
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_de34dfb58a17
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 11
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_de34dfb58a17
   - origin: arcturus
     authority: reference_emulator
     field_count: 0
@@ -26,6 +124,14 @@ generated:
     types: []
     evidence: ev_f9cb4b1f957b
   evidence:
+  - id: ev_de34dfb58a17
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_1931.as
+    symbol: _SafeCls_1931
+    line: 90
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f9cb4b1f957b
     kind: reference_composer
     authority: reference_emulator
@@ -34,5 +140,7 @@ generated:
     symbol: MarketplaceItemStatsMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  unknowns:
+  - uk_f3692bc060
 verified: {}
 manual: {}

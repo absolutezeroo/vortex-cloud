@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cf47a72adbbba4ed386982f0b76d7277b2d1ae477141b76774a0fe733721c206"
+generated_digest: "sha256:e3e3611804202951e95faa320c93fd479c8d8e6edd957682525ba3cda62ff66e"
 generated:
   feature: room.answer_doorbell
   scenarios:
@@ -312,7 +312,7 @@ generated:
       - FlatAccessDenied
       - FlatAccessible
       - unresolved
-      evidence: ev_373e76aa8a80
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -327,13 +327,13 @@ generated:
     symbol: LetUserInMessageEvent
     line: 12
     note: third-party server implementation; evidence, not authority
-  - id: ev_373e76aa8a80
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_7aa1dee31dfd
     kind: emulator_flow
     authority: vortex_emulator
@@ -361,7 +361,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Doorbell.cs
     symbol: RoomService
-    line: 27
+    line: 28
   - id: ev_a1cfcc1f8f41
     kind: emulator_flow
     authority: vortex_emulator

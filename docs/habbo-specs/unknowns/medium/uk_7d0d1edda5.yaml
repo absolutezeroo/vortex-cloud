@@ -10,15 +10,22 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:282fc2feead088d6f5889bdc17657f83cd68a397c5d148ad8ea629c3186b34a4"
+generated_digest: "sha256:d80b3842cf3eaa06c17c7749eead9e79ecb8f975c08c1f6e33ae0b4084d1a8bb"
 generated:
   id: uk_7d0d1edda5
   subject: "nux.create_room: what the server sends when it refuses"
   severity: medium
-  question: nux.create_room changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: nux.create_room changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: nux.create_room
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -53,6 +60,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 18
+    line: 19
 verified: {}
 manual: {}

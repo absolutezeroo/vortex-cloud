@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a37fc39181bc7ab47f63caf568772c31f0e6ec13ad81b18e6ce7e1d38181c9d6"
+generated_digest: "sha256:a14396dcdb4b8518c9bd1a821eab2bf60b0bc6570ca39e5aade8fd63984c8a08"
 generated:
   id: navigator.convert_global_room_id
   domain: navigator
@@ -38,7 +38,7 @@ generated:
   - order: 3
     layer: grain
     symbol: GroupGrain.GetMemberRankAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 4
     layer: domain
     symbol: WiredActionBranch.Select
@@ -67,6 +67,13 @@ generated:
       evidence: ev_f4c4c4ae6ace
   reaches_persistence: false
   evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 118
   - id: ev_3a3f04f4fd85
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,13 +81,6 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ConvertGlobalRoomIdMessageHandler.cs
     symbol: ConvertGlobalRoomIdMessageHandler
     line: 26
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 118
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator

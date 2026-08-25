@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c1744d0001f6d46b5c75abd0a8b40994ac8f410d68b8fc5274fe6d49a870d5aa"
+generated_digest: "sha256:f9b77e4ca2450f54096972f29d2618b587a35a8d6f94d98283a3fb8f2da88767"
 generated:
   id: quest.open_quest_tracker
   domain: quest
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuestGrain.GetTrackedQuestAsync
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -51,6 +51,13 @@ generated:
       evidence: ev_7dca240b5281
   reaches_persistence: false
   evidence:
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 235
   - id: ev_7dca240b5281
     kind: emulator_flow
     authority: vortex_emulator
@@ -65,13 +72,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/OpenQuestTrackerMessageHandler.cs
     symbol: OpenQuestTrackerMessageHandler
     line: 12
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 232
   scenarios:
   - quest.open_quest_tracker.guard_0
   - quest.open_quest_tracker.guard_1

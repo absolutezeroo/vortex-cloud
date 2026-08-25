@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:33b0146c2f3cc993c06abaa46a2e83f0ba20aacc30cc458c5f6b4325c4ff35d2"
+generated_digest: "sha256:480c2dbd5775a67c0bb66a81012f987c645329f3d4f36b965274f9c0ffc8b02c"
 generated:
   name: PopularRoomTagsResult
   direction: outgoing
@@ -43,6 +43,12 @@ generated:
     evidence:
     - ev_dd990557914f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_f144749ec549
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -67,6 +73,14 @@ generated:
     - array
     evidence: ev_4e758f40b24b
   evidence:
+  - id: ev_f144749ec549
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4032.as
+    symbol: _SafeCls_4032
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3aa656a8492e
     kind: client_parser
     authority: multi_implementation

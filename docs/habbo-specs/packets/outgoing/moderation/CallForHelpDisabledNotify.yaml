@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c112d268fcdf7a951b74e609df540994507dec3773a4d6915cbd26ff1393205e"
+generated_digest: "sha256:bf6e0e292958b0a23fe79b5a77ede884e3d7babc8649b6bbe86db32f1204c6eb"
 generated:
   name: CallForHelpDisabledNotify
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: info_url
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a1280ab8913c
+    - ev_c6b76e5abd61
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_c6b76e5abd61
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -41,6 +47,14 @@ generated:
     - string
     evidence: ev_a1280ab8913c
   evidence:
+  - id: ev_c6b76e5abd61
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_3292.as
+    symbol: _SafeCls_3292
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d177f3165a31
     kind: client_parser
     authority: multi_implementation
@@ -57,7 +71,5 @@ generated:
     symbol: CallForHelpDisabledNotifyMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_6a233ea096
 verified: {}
 manual: {}

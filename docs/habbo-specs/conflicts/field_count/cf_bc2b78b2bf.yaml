@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:953f4f01de3fce298243347085b6bfb76ba19e98f9e0907289ba4ed974496ee3"
+generated_digest: "sha256:61547ed0445866e3539af312ff136b5f87e6091c63b799b283bd52d6b19c12c9"
 generated:
   id: cf_bc2b78b2bf
   kind: field_count
@@ -19,8 +19,12 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "6 fields: int32, int32, int32, int32, string, int32"
+    claim: "3 fields: int32, int32, int32, int32, string, int32"
     evidence: ev_092760a265ed
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "5 fields: int32, int32, int32, int32, string, int32, boolean, int32"
+    evidence: ev_9ad9fac68eb5
   - origin: arcturus
     authority: reference_emulator
     claim: "11 fields: int32, int32, int32, int32, int32, string, int32, int32, int32, string, int32"
@@ -38,6 +42,14 @@ generated:
     symbol: RoomDimmerPresetsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_9ad9fac68eb5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3521.as
+    symbol: _SafeCls_3521
+    line: 59
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e3221db6ee4d
     kind: reference_composer
     authority: reference_emulator

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9d74cd248edc40e92fea01093047143b849a9048a09fd83dc302820e42a20c0d"
+generated_digest: "sha256:e358f4c6c9e9477f24f05f91a2c15a2a162cf4e955b975b52362e1efb3c0ae03"
 generated:
   name: FurniListRemove
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: strip_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_990f87ec0f38
+    - ev_398a0f777832
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_398a0f777832
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_990f87ec0f38
   evidence:
+  - id: ev_398a0f777832
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2514/_SafeCls_3325.as
+    symbol: _SafeCls_3325
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_990f87ec0f38
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: FurniListRemoveMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_68721e575f
 verified: {}
 manual: {}

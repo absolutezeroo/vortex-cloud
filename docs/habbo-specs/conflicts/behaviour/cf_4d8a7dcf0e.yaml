@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7e57e2d8c9b3cdd3057fc9550c59dc29b28b3df871b6a7d620b5bec0d90c72a3"
+generated_digest: "sha256:562b8ff72e20db24a5a0d0552991394a1737d1212de265b8322c8264ca95ba1c"
 generated:
   id: cf_4d8a7dcf0e
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_2b31ac43a317
   - origin: vortex
     authority: vortex_emulator
-    claim: GuildCreated then CreditBalanceEvent then EmeraldBalance then SilverBalance then HabboActivityPointNotification
+    claim: GuildCreated
     evidence: ev_96f736ad3f76
   evidence:
   - id: ev_2b31ac43a317

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9d729705e9411b5221bde55a450a7d12fb5e04dc89de79801f2ae399e3f8f681"
+generated_digest: "sha256:2373f1616dded09c4e3b874150ec68f3ea30795f6d74eced79c43c206f853856"
 generated:
   id: room.room_dimmer_save_preset
   domain: room
@@ -84,7 +84,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 488
+    line: 506
   - id: ev_7db0b67a96c1
     kind: emulator_flow
     authority: vortex_emulator

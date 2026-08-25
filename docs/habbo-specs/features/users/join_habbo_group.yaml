@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d0aa0668f146b8ca9a82d4e876b160a92d58b26dc9436edcdc779128d8f42572"
+generated_digest: "sha256:1fb509a1909fb628a499994a9b4d4bb335604cea96ee7ee9c444e4a33235326b"
 generated:
   id: users.join_habbo_group
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.JoinAsync
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - order: 2
     layer: domain
     symbol: WiredChestStore.FindAsync
@@ -43,11 +43,11 @@ generated:
   - order: 4
     layer: domain
     symbol: GroupMemberMapper.NewRequest
-    evidence: ev_12ce06c785f7
+    evidence: ev_40034f33a6de
   - order: 5
     layer: grain
     symbol: GroupGrain.GetDetailsAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 6
     layer: domain
     symbol: WiredActionBranch.Select
@@ -64,23 +64,23 @@ generated:
   - expression: group is null || group.Type == GroupType.Private
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: blocked
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: alreadyMember
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: playerEntity is null || groupEntity is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: group.Type == GroupType.Exclusive
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -88,7 +88,7 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   state_changes: []
   outgoing:
     ordering: unknown
@@ -103,13 +103,6 @@ generated:
       evidence: ev_c3fd7c3e3831
   reaches_persistence: true
   evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 62
   - id: ev_1ba735814128
     kind: emulator_handler
     authority: vortex_emulator
@@ -117,6 +110,13 @@ generated:
     source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
     symbol: JoinHabboGroupMessageHandler
     line: 13
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 27
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -124,13 +124,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_9b02814f1589
+  - id: ev_40034f33a6de
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 62
+  - id: ev_b1c46fe16e7f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 27
+    line: 22
   - id: ev_c3fd7c3e3831
     kind: emulator_flow
     authority: vortex_emulator
@@ -138,13 +145,6 @@ generated:
     source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
     symbol: JoinHabboGroupMessageHandler
     line: 24
-  - id: ev_c4e53aab9ae9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 22
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

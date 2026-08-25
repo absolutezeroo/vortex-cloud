@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e600574ac546a5b14dcb82451d6a86d0acdf4b953ed8edb6ba77cf3a7bc3e4cf"
+generated_digest: "sha256:032ba9724cebc40841ef77bd1e8acd7322a7b85b57080854547513e60b1ffb83"
 generated:
   id: uk_312898a060
   subject: "outgoing/WiredUserPermanentVariables: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredUserPermanentVariables
   known_evidence:
+  - id: ev_b35c5f6e2a2b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4074/_SafeCls_4091.as
+    symbol: _SafeCls_4091
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e638ea7ea3ff
     kind: emulator_serializer
     authority: vortex_emulator

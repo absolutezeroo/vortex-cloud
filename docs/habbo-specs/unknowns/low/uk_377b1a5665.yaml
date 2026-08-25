@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:14775b3b9e42ae0751e1b17c544fba39c885e6e6d56729ee015d0db636fba720"
+generated_digest: "sha256:69724434a4e93d866b4b6735570b7bc2761838f647b743f8bb29d6157152dbe6"
 generated:
   id: uk_377b1a5665
   subject: "outgoing/CampaignCalendarData: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CampaignCalendarData
   known_evidence:
+  - id: ev_1c7709212b11
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3317/_SafeCls_3316.as
+    symbol: _SafeCls_3316
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_7f8461b0a831
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: CampaignCalendarDataMessageComposer
     line: 29
     note: third-party server implementation; evidence, not authority
-  - id: ev_d3bb829382ce
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Campaign/CampaignCalendarDataMessageComposerSerializer.cs
-    symbol: CampaignCalendarDataMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

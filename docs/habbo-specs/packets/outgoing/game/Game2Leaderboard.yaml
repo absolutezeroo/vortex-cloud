@@ -10,46 +10,15 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b824ad4fe8c3ea61533f6cc6b79dcb3c70a470142c10098ab93f4a5cf2612da5"
+generated_digest: "sha256:b25fe6948c6ed784007aa3816e6d2a203f3ce3e2898ff240b127f5d088a039e4"
 generated:
   name: Game2Leaderboard
   direction: outgoing
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
-  fields:
-  - index: 0
-    name: unknown_0
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    evidence:
-    - ev_3d749e59369b
-  - index: 1
-    name: total_list_size
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_3d749e59369b
-  - index: 2
-    name: game_type_id
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_3d749e59369b
+  fields: []
   layouts_by_source:
-  - origin: "as3:WIN63-202607011411-782849652"
-    authority: client_code
-    field_count: 3
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    evidence: ev_3d749e59369b
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -57,14 +26,6 @@ generated:
     types: []
     evidence: ev_5ffe49a4cc94
   evidence:
-  - id: ev_3d749e59369b
-    kind: client_parser
-    authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4040/Game2LeaderboardParser.as
-    symbol: Game2LeaderboardParser
-    line: 28
-    note: official client build WIN63-202607011411-782849652
   - id: ev_5ffe49a4cc94
     kind: client_parser
     authority: multi_implementation
@@ -73,7 +34,5 @@ generated:
     symbol: Game2LeaderboardMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  unknowns:
-  - uk_6d5a2b1481
 verified: {}
 manual: {}

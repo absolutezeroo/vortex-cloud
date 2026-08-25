@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:32b06ce9f21c5194b4c3d8082a3b7a336f750ac5e89c9f52bece3189b3a0758d"
+generated_digest: "sha256:15804959b1e67749f97672cf77b6c7d5861543c10ad0ca050f1e2ea9f1352ab8"
 generated:
   name: AchievementResolutions
   direction: outgoing
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: stuff_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_abfe6ac21b2c
+    - ev_4ef7a184e85b
   - index: 1
     name: unknown_1
     type: int32
@@ -35,13 +35,13 @@ generated:
     evidence:
     - ev_abfe6ac21b2c
   - index: 2
-    name: unknown_2
+    name: end_time
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_abfe6ac21b2c
+    - ev_4ef7a184e85b
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -52,6 +52,15 @@ generated:
     - int32
     - int32
     evidence: ev_abfe6ac21b2c
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_4ef7a184e85b
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -88,6 +97,14 @@ generated:
     - int32
     evidence: ev_b54c7f937e08
   evidence:
+  - id: ev_4ef7a184e85b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3055/_SafeCls_3983.as
+    symbol: _SafeCls_3983
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_abfe6ac21b2c
     kind: client_parser
     authority: client_code

@@ -10,15 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d49687a7796987c093800813e2968ac801b32197f1930f9d4c0a303a209b2a18"
+generated_digest: "sha256:c219fc6224c8622549ddfd9a9360778b861b968a29a41aad99f1c1fa14aebec6"
 generated:
   name: CfhSanction
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: issue_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_daf016db5949
+  - index: 1
+    name: account_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_daf016db5949
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_daf016db5949
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +62,14 @@ generated:
     types: []
     evidence: ev_907ff72aa1bc
   evidence:
+  - id: ev_daf016db5949
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2056/_SafeCls_3909.as
+    symbol: _SafeCls_3909
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c1f96f635ad3
     kind: client_parser
     authority: multi_implementation

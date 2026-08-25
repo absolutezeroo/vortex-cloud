@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0bc42a67b492b17623545adb499c963fe6af3170afb6c582c85bf52b1ad59005"
+generated_digest: "sha256:f9376bcf357286af358126c8dfe83b0071baeda51032268cf51da77484e57378"
 generated:
   id: room.open_room_for_player_id
   domain: room
@@ -693,7 +693,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -728,7 +728,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 52
+    line: 55
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator

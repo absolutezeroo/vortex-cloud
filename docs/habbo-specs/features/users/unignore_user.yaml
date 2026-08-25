@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2768d96520f7111564db3b11f74e278b4c6f750fe006ad10938e52b6d70c89f3"
+generated_digest: "sha256:972700281a7b41bc3a9dd566661893affee8a5ef2c624251d663863474d4fe2f"
 generated:
   id: users.unignore_user
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.UnignoreUserAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -40,7 +40,7 @@ generated:
   - expression: "!_ignoredIds.Remove(targetId.Value)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   state_changes: []
   outgoing:
     ordering: unknown
@@ -61,13 +61,13 @@ generated:
     source: Vortex.PacketHandlers/Users/UnignoreUserMessageHandler.cs
     symbol: UnignoreUserMessageHandler
     line: 23
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 562
+    line: 579
   scenarios:
   - users.unignore_user.guard_0
   - users.unignore_user.guard_1

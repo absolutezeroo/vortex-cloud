@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4448c06266c88081411c6960353fe71d1f5f2adb5ddb933888c07b5b584a08a1"
+generated_digest: "sha256:504602d5d67f133e4d24d35c1c11f30f61445177596b575b139c0a2549020da2"
 generated:
   name: CameraPublishStatus
   direction: outgoing
   domain: camera
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,26 +23,36 @@ generated:
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_5b6cb02e3770
+    - ev_8d0f66cab92e
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_5b6cb02e3770
+    - ev_8d0f66cab92e
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_5b6cb02e3770
+    - ev_8d0f66cab92e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - int32
+    - string
+    evidence: ev_8d0f66cab92e
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -65,6 +75,14 @@ generated:
     types: []
     evidence: ev_74ab11b1c69e
   evidence:
+  - id: ev_8d0f66cab92e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4017.as
+    symbol: _SafeCls_4017
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2e633f5a475
     kind: client_parser
     authority: multi_implementation

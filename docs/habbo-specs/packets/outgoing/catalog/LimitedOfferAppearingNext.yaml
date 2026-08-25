@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:34b9309ae43f6b330e34f567fc3c9a6cb7119aedd75b9e9fcee353f4bc69b4de"
+generated_digest: "sha256:f6a1971eef30ac969e9e41594095e9a2db5663d49664d9148752531f1d4bbd82"
 generated:
   name: LimitedOfferAppearingNext
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: appears_in_seconds
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f6fd553b1533
-    - ev_fc0f182c351a
+    - ev_f06250d253b2
   - index: 1
     name: page_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f6fd553b1533
-    - ev_fc0f182c351a
+    - ev_f06250d253b2
   - index: 2
     name: offer_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f6fd553b1533
-    - ev_fc0f182c351a
+    - ev_f06250d253b2
   - index: 3
     name: product_type
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f6fd553b1533
-    - ev_fc0f182c351a
+    - ev_f06250d253b2
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - string
+    evidence: ev_f06250d253b2
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -78,6 +84,14 @@ generated:
     - string
     evidence: ev_fc0f182c351a
   evidence:
+  - id: ev_f06250d253b2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_4208.as
+    symbol: _SafeCls_4208
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3363938b5d70
     kind: client_parser
     authority: multi_implementation

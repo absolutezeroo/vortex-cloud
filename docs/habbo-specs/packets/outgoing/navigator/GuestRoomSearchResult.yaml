@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e372ac052f631057dee7297134375fb027097d1109f5343dfa2bb02796c9272e"
+generated_digest: "sha256:a6600b3fd2176b131388b929ef50a8cbaddfaf3eec759f9a62517c3b1fb628bc"
 generated:
   name: GuestRoomSearchResult
   direction: outgoing
@@ -246,6 +246,12 @@ generated:
     evidence:
     - ev_eab2e4f923ea
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_c94d082fb71f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -274,6 +280,14 @@ generated:
     - boolean
     evidence: ev_eab2e4f923ea
   evidence:
+  - id: ev_c94d082fb71f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4150.as
+    symbol: _SafeCls_4150
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_674bdd566a6a
     kind: client_parser
     authority: multi_implementation

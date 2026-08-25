@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dce0bdfff056697c8f86bcb71d2ed027afb3430d3d4a9d1a1a79b26f3ed1b84b"
+generated_digest: "sha256:6453fa922e3766575d1516006400969d056a38d1053ff0dc672128f473ba7b00"
 generated:
   name: CraftingResult
   direction: outgoing
   domain: crafting
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: success
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_631ff47970a2
+    - ev_457fd32df980
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - boolean
     evidence: ev_631ff47970a2
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_457fd32df980
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +57,14 @@ generated:
     - string
     evidence: ev_335de13250f2
   evidence:
+  - id: ev_457fd32df980
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4124.as
+    symbol: _SafeCls_4124
+    line: 19
+    note: official client build WIN63-202607011411-782849652
   - id: ev_631ff47970a2
     kind: client_parser
     authority: client_code
@@ -76,7 +91,5 @@ generated:
     note: third-party server implementation; evidence, not authority
   conflicts:
   - cf_dde3e0f8d6
-  unknowns:
-  - uk_20ba071936
 verified: {}
 manual: {}

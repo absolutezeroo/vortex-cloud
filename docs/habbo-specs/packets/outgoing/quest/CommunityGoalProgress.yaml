@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:218ed36a6f74a8b4d09f26eef93a80b475ba6bf1ab9549371cf28b20850c7fb2"
+generated_digest: "sha256:30bc6049dcf36dafced2e521b1fa3627e51296f81a6f53e2af0a8a59496cf4c3"
 generated:
   name: CommunityGoalProgress
   direction: outgoing
@@ -113,6 +113,12 @@ generated:
     partial: true
     types: []
     evidence: ev_742382fd10cf
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_b94c4184b991
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -162,6 +168,14 @@ generated:
     symbol: CommunityGoalProgressParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b94c4184b991
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_4122.as
+    symbol: _SafeCls_4122
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3166a7312974
     kind: client_parser
     authority: multi_implementation

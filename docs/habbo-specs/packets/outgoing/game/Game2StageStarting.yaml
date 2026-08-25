@@ -10,15 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a45c3c4ed7ebb74213f3a8309e1bba8ddbaa88dc465daeaac75dfcd2842c14fa"
+generated_digest: "sha256:b16d5d8ec9276ce4d55746d703b7efd965b2295322372043a98b1f50ad56aade"
 generated:
   name: Game2StageStarting
   direction: outgoing
   domain: game
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: game_type
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_2504901d9f61
+  - index: 1
+    name: room_type
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_2504901d9f61
+  - index: 2
+    name: count_down
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_2504901d9f61
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    evidence: ev_2504901d9f61
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +56,14 @@ generated:
     types: []
     evidence: ev_e37348572f7b
   evidence:
+  - id: ev_2504901d9f61
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2265/_SafeCls_2264.as
+    symbol: _SafeCls_2264
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e37348572f7b
     kind: client_parser
     authority: multi_implementation

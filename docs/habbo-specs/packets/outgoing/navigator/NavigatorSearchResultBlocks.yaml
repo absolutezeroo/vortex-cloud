@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:adb2cb99d2efbac0ee7d8eda1ae8db00539c8d3dcf6c9f2c246b50fc487b99f8"
+generated_digest: "sha256:6dd4bf037fb1718e174c28d5f89cbd5a1509d3e10ad1f8896b06d1c1f15a6bd8"
 generated:
   name: NavigatorSearchResultBlocks
   direction: outgoing
@@ -35,6 +35,12 @@ generated:
     evidence:
     - ev_e8038d2ec66d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_6ff142e2aebc
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -63,6 +69,14 @@ generated:
     - array
     evidence: ev_b33294c7d8b4
   evidence:
+  - id: ev_6ff142e2aebc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_4329.as
+    symbol: _SafeCls_4329
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e8038d2ec66d
     kind: client_parser
     authority: multi_implementation

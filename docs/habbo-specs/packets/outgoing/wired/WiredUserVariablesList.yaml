@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f9fbb8bf9d11dfafa899136b85fb37a959221d28721791306c2559a382975844"
+generated_digest: "sha256:9a450f57a3d61e22ce4fe8b9aa91db9444b73771d49115b2bc17ad03a85e9c4c"
 generated:
   name: WiredUserVariablesList
   direction: outgoing
@@ -98,6 +98,12 @@ generated:
     evidence:
     - ev_52ce2ce5864d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_9ca289be047d
   - origin: vortex
     authority: vortex_emulator
     field_count: 8
@@ -113,6 +119,14 @@ generated:
     - int32
     evidence: ev_52ce2ce5864d
   evidence:
+  - id: ev_9ca289be047d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4074/_SafeCls_4429.as
+    symbol: _SafeCls_4429
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_52ce2ce5864d
     kind: emulator_serializer
     authority: vortex_emulator

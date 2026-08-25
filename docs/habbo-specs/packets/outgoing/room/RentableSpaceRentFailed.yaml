@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67cbf514f54a716a9ae253c832fd40c05cfc5ff153a48171d2976f2cc09c0bbb"
+generated_digest: "sha256:3e2c59028af32e5c64ca544579c9f12cac274e574f40488570b1e99dfe5748af"
 generated:
   name: RentableSpaceRentFailed
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: reason
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2e43d74b60ca
-    - ev_95c9f16dea21
+    - ev_414c68d0287d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_414c68d0287d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_95c9f16dea21
   evidence:
+  - id: ev_414c68d0287d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4261.as
+    symbol: _SafeCls_4261
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fc80cde8cddc
     kind: client_parser
     authority: multi_implementation

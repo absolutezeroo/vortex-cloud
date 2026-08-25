@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:49ad133c33e7437d9d74682860b052766212f7703ab46c974d410a88f63587b7"
+generated_digest: "sha256:9db381ed9addff2b90418e97a4d8458c55dcccd629dd70fb5fb39d4403ea8a10"
 generated:
   id: uk_70c8ba7508
   subject: "groups.post_message: what the server sends when it refuses"
@@ -33,13 +33,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/PostMessageMessageHandler.cs
     symbol: PostMessageMessageHandler
     line: 12
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 267
   - id: ev_8e9c8b217c58
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,5 +47,12 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 267
 verified: {}
 manual: {}

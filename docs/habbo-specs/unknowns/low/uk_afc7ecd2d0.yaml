@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:fa7e11e0fa1f39adc569db319c7e21f053860a6105905a90af38ac17c992d12b"
+generated_digest: "sha256:1e82b4e5680abdd9e1899a1da19bb7bb76a6c0dee591fdbc15635986ce1719f4"
 generated:
   id: uk_afc7ecd2d0
   subject: "outgoing/UserChatlog: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UserChatlog
   known_evidence:
+  - id: ev_2a878ef04c60
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2857.as
+    symbol: _SafeCls_2857
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_621f2b07be52
     kind: reference_composer
     authority: reference_emulator

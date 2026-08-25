@@ -10,31 +10,55 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:168599d2e1db9441581ac44416651f9782c13154ab17c0c4ae264c83a5e20ae6"
+generated_digest: "sha256:7e88a2229ada39372a3e08ea5d3979517c005a01d4fd1a5529ce51fed43695c2"
 generated:
   name: AuthenticationOK
   direction: outgoing
   domain: handshake
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: account_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_3961ef20edcd
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_3961ef20edcd
+  - index: 2
+    name: suggested_login_actions
+    type: short
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_febc4be08fc9
-  - index: 1
+    - ev_3961ef20edcd
+  - index: 3
     name: identity_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_febc4be08fc9
+    - ev_3961ef20edcd
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - short
+    - int32
+    evidence: ev_3961ef20edcd
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +84,14 @@ generated:
     - int32
     evidence: ev_2674b053a1a5
   evidence:
+  - id: ev_3961ef20edcd
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_3002.as
+    symbol: _SafeCls_3002
+    line: 30
+    note: official client build WIN63-202607011411-782849652
   - id: ev_febc4be08fc9
     kind: client_parser
     authority: multi_implementation
@@ -85,5 +117,7 @@ generated:
     line: 6
   conflicts:
   - cf_804d744d5f
+  unknowns:
+  - uk_97af60d0e0
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5d550689b99c35ec11dd57943b816603be42aa4d8de8d952496da665aabf50be"
+generated_digest: "sha256:c192db695f14b1c34046b33339be991993ef025f49ace26c603ab1f28371d8b5"
 generated:
   id: uk_773d55b022
   subject: "outgoing/RecyclerPrizes: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RecyclerPrizes
   known_evidence:
+  - id: ev_76d02d68f83f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2166/_SafeCls_2243.as
+    symbol: _SafeCls_2243
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b35ef2bb9515
     kind: client_parser
     authority: client_code

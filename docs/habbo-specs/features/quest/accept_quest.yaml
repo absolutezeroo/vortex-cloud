@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:37c0e6c8409b96c60e4d1377ce956058c93f13460d1e8496ffce247416e704a4"
+generated_digest: "sha256:f8f13e2bd5a07bb525a6caa0f19ed3fba9b23aa817ca21979dc3ee7a6fe7fced"
 generated:
   id: quest.accept_quest
   domain: quest
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuestGrain.AcceptAsync
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -50,6 +50,13 @@ generated:
     source: Vortex.PacketHandlers/Quest/AcceptQuestMessageHandler.cs
     symbol: AcceptQuestMessageHandler
     line: 19
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 242
   - id: ev_614c64f58186
     kind: emulator_handler
     authority: vortex_emulator
@@ -57,13 +64,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/AcceptQuestMessageHandler.cs
     symbol: AcceptQuestMessageHandler
     line: 10
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 239
   scenarios:
   - quest.accept_quest.guard_0
   - quest.accept_quest.success

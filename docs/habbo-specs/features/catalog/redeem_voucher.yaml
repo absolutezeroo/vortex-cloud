@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:33132891815386bb9969c7a12515b8961045f623baf017031e68d146b9a5db16"
+generated_digest: "sha256:fa8e451cfc2be3b65f2626632c3d34484c878aa163848ffc6c596b09098ac531"
 generated:
   id: catalog.redeem_voucher
   domain: catalog
@@ -75,7 +75,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/VoucherGrain.cs
     symbol: VoucherGrain
-    line: 93
+    line: 95
   - id: ev_f3f1a047aea8
     kind: emulator_handler
     authority: vortex_emulator

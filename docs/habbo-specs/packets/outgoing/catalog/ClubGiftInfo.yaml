@@ -10,95 +10,55 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5edc78b85d20eb836ea1f9a288ffcc157f491d549718547dc227ef612170962e"
+generated_digest: "sha256:53b0ac0cfbd2b2502d50af1d380b6eed0623653c48a489f0f2d9643e870be827"
 generated:
   name: ClubGiftInfo
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: days_until_next_gift
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_971d0c504d89
+    - ev_5d160d36590f
   - index: 1
-    name: unknown_1
+    name: gifts_available
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_971d0c504d89
+    - ev_5d160d36590f
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_971d0c504d89
+    - ev_5d160d36590f
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_971d0c504d89
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
-  - index: 5
-    name: unknown_5
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
-  - index: 7
-    name: unknown_7
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
-  - index: 8
-    name: unknown_8
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_971d0c504d89
+    - ev_5d160d36590f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_5d160d36590f
   - origin: arcturus
     authority: reference_emulator
     field_count: 10
@@ -116,6 +76,14 @@ generated:
     - int32
     evidence: ev_971d0c504d89
   evidence:
+  - id: ev_5d160d36590f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2267.as
+    symbol: _SafeCls_2267
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_971d0c504d89
     kind: reference_composer
     authority: reference_emulator

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:55f1823ecb7e51f95c19f1c07724e8ed8a76980788dcef62d930534f49d3c653"
+generated_digest: "sha256:41d953e31426f881baa01872d2a30352199c6adedc3ec6dc4434fc2152376878"
 generated:
   name: YouAreNotSpectator
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cef9a780cc70
+    - ev_cc3621144a1c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_cc3621144a1c
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -42,6 +48,14 @@ generated:
     - int32
     evidence: ev_d755e7fb15fe
   evidence:
+  - id: ev_cc3621144a1c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_3409.as
+    symbol: _SafeCls_3409
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cef9a780cc70
     kind: client_parser
     authority: multi_implementation

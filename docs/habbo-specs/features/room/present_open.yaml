@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6f42d22fffb84bbb3117e58d51a1ff242ee232a63c0f5484fb6141a85a8abafd"
+generated_digest: "sha256:3abb8b6dc1126b3ba7d4957f9f72c15ee92b2f8f2328b0f0849605c6a72329bb"
 generated:
   id: room.present_open
   domain: room
@@ -45,61 +45,53 @@ generated:
     symbol: ExtraDataReader.TryGet
     evidence: ev_0f9ffda870b1
   - order: 5
-    layer: grain
-    symbol: CatalogPurchaseGrain.GrantPresentContentsAsync
-    evidence: ev_b43e4f79cdaa
-  - order: 6
-    layer: grain
-    symbol: InventoryGrain.GrantCatalogOfferAsync
-    evidence: ev_c6396662000a
-  - order: 7
-    layer: grain
-    symbol: GroupDirectoryGrain.GetFurniIdentityAsync
-    evidence: ev_678209870593
-  - order: 8
-    layer: domain
-    symbol: WiredActionBranch.Select
-    evidence: ev_f13d6bcce744
-  - order: 9
-    layer: domain
-    symbol: GroupBadgePartProvider.ResolveColorHex
-    evidence: ev_5e99184ee3a3
-  - order: 10
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 11
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffData
-    evidence: ev_7a660921f135
-  - order: 12
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
+  - order: 6
+    layer: grain
+    symbol: CatalogPurchaseGrain.GrantPresentContentsAsync
+    evidence: ev_b43e4f79cdaa
+  - order: 7
+    layer: grain
+    symbol: InventoryGrain.GrantCatalogOfferAsync
+    evidence: ev_c6396662000a
+  - order: 8
+    layer: grain
+    symbol: GroupDirectoryGrain.GetFurniIdentityAsync
+    evidence: ev_d53218d99bdd
+  - order: 9
+    layer: domain
+    symbol: WiredActionBranch.Select
+    evidence: ev_f13d6bcce744
+  - order: 10
+    layer: domain
+    symbol: GroupBadgePartProvider.ResolveColorHex
+    evidence: ev_35934eb1b8df
+  - order: 11
+    layer: domain
+    symbol: CatalogFulfillmentPlanner.Plan
+    evidence: ev_0c987f4ea07c
+  - order: 12
+    layer: domain
+    symbol: FurnitureDefinitionProvider.TryGetDefinition
+    evidence: ev_2ec03446aa2a
   - order: 13
+    layer: domain
+    symbol: StuffDataFactory.CreateStuffData
+    evidence: ev_7a660921f135
+  - order: 14
     layer: grain
     symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
     evidence: ev_3a5a694b9376
-  - order: 14
+  - order: 15
     layer: module
     symbol: PlayerInventoryModule.OnBadgeGrantedAsync
     evidence: ev_d720d639bd09
-  - order: 15
+  - order: 16
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 16
-    layer: grain
-    symbol: PlayerPresenceGrain.OnPetAddedToInventoryAsync
-    evidence: ev_3a5a694b9376
-  - order: 17
-    layer: module
-    symbol: PlayerInventoryModule.OnPetAddedToInventoryAsync
-    evidence: ev_d720d639bd09
-  - order: 18
-    layer: grain
-    symbol: PlayerEffectGrain.AddEffectAsync
-    evidence: ev_7ef4c91324dc
   checks:
   - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -117,6 +109,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_5e51a330c801
+  - expression: "!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_5e51a330c801
   - expression: "!_ctx.RoomObject.ExtraData.TryGetSection( ExtraDataSectionType.PRESENT, out JsonElement element )"
     on_fail: return
     observed_in: vortex
@@ -125,6 +121,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_0f9ffda870b1
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   - expression: offer is null
     on_fail: return
     observed_in: vortex
@@ -132,52 +132,36 @@ generated:
   - expression: groupId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: "!isMember"
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: match is not null
     on_fail: return
     observed_in: vortex
-    evidence: ev_5e99184ee3a3
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
-  - expression: effectId <= 0
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_7ef4c91324dc
+    evidence: ev_35934eb1b8df
   state_changes:
   - target: dbCtx
     value: dbCtx.AddRange(furniEntities)
     observed_in: vortex
     evidence: ev_c6396662000a
-  - target: effects
-    value: effects.AddEffectAsync(effectId, subType, duration, ct)
+  - target: dbCtx.Bots
+    value: dbCtx.Bots.AddRange(committedBots)
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - target: dbCtx.Pets
+    value: dbCtx.Pets.AddRange(committedPets)
     observed_in: vortex
     evidence: ev_c6396662000a
   outgoing:
     ordering: unknown
     packets:
-    - packet: AvatarEffectAdded
-      recipient: target_user
-      recipient_confidence: inferred
-      evidence: ev_7ef4c91324dc
     - packet: BadgeReceivedEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_d720d639bd09
-    - packet: BotAddedToInventoryEvent
-      recipient: target_user
-      recipient_confidence: inferred
-      evidence: ev_c6396662000a
-    - packet: PetAddedToInventoryEvent
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
@@ -187,6 +171,13 @@ generated:
       evidence: ev_845cc9ed930f
   reaches_persistence: true
   evidence:
+  - id: ev_0c987f4ea07c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
+    symbol: CatalogFulfillmentPlanner
+    line: 53
   - id: ev_0f9ffda870b1
     kind: emulator_flow
     authority: vortex_emulator
@@ -200,7 +191,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -208,6 +199,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 36
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -228,21 +226,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 421
-  - id: ev_5e99184ee3a3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 36
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 583
+    line: 422
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -257,13 +241,6 @@ generated:
     source: Vortex.Furniture/ExtraData.cs
     symbol: ExtraData
     line: 18
-  - id: ev_7ef4c91324dc
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerEffectGrain.cs
-    symbol: PlayerEffectGrain
-    line: 71
   - id: ev_845cc9ed930f
     kind: emulator_flow
     authority: vortex_emulator
@@ -284,7 +261,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 152
+    line: 158
   - id: ev_d0f936c872c4
     kind: emulator_handler
     authority: vortex_emulator
@@ -292,6 +269,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/PresentOpenMessageHandler.cs
     symbol: PresentOpenMessageHandler
     line: 19
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 582
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

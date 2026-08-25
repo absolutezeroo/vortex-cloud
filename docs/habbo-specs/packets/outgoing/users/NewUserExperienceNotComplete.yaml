@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59dd508b5af90c3c72394acc27966c4a8a8b5f12c2954d8dff89a911bd055646"
+generated_digest: "sha256:0191e7f6e26da57cfd184ee374deb35cd45efe6c46c849ccc075e17e380faec9"
 generated:
   name: NewUserExperienceNotComplete
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_31063beb32e2
   - origin: arcturus
     authority: reference_emulator
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_eefbddfad526
   evidence:
+  - id: ev_31063beb32e2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3895/_SafeCls_4042.as
+    symbol: _SafeCls_4042
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_eefbddfad526
     kind: reference_composer
     authority: reference_emulator

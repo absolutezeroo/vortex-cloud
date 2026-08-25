@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cd8dd92f0fc5fd1da3274e94013ccc1d28e26fcc065647577a014412825f0463"
+generated_digest: "sha256:1ceb9d24870b770eb6b3fb2a40ad43d8f6ca6174e679e21cca6d6cdce736c905"
 generated:
   name: AvatarEffectAdded
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: type
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05ee327c3667
-    - ev_244aa80d5db4
+    - ev_755c0cd2cd2e
   - index: 1
     name: sub_type
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05ee327c3667
-    - ev_244aa80d5db4
+    - ev_755c0cd2cd2e
   - index: 2
     name: duration
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05ee327c3667
-    - ev_244aa80d5db4
+    - ev_755c0cd2cd2e
   - index: 3
     name: is_permanent
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05ee327c3667
-    - ev_244aa80d5db4
+    - ev_755c0cd2cd2e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - boolean
+    evidence: ev_755c0cd2cd2e
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -78,6 +84,14 @@ generated:
     - boolean
     evidence: ev_244aa80d5db4
   evidence:
+  - id: ev_755c0cd2cd2e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2975/_SafeCls_3656.as
+    symbol: _SafeCls_3656
+    line: 31
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ed906a50a852
     kind: client_parser
     authority: multi_implementation

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7135749ffe078b58d25399fa38a43a798955bb7ff7637ff2f6e8cf3d221385c9"
+generated_digest: "sha256:9bb71b89529e1233326846e071aac57d323ace7fab164dfadf6016cc1e24af89"
 generated:
   name: ChatReviewSessionOfferedToGuide
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: acceptance_timeout_seconds
+    name: acceptance_timeout
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_67cb37d1e9c7
-    - ev_2e6948123897
+    - ev_1f4f32a074be
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_1f4f32a074be
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_2e6948123897
   evidence:
+  - id: ev_1f4f32a074be
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4344.as
+    symbol: _SafeCls_4344
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_247bb708f3b5
     kind: client_parser
     authority: multi_implementation

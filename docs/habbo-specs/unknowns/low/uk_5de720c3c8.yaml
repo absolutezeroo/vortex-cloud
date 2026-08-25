@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:96908f78911b1505fca940fb71718b02332436252b097052a7d1df70ff2ea26b"
+generated_digest: "sha256:94726b99dbd333c3162dc6321df684aaac4b27ea9c088afbfde205b36d3113f9"
 generated:
   id: uk_5de720c3c8
   subject: "outgoing/TalentLevelUp: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
+  question: Fields 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TalentLevelUp
   known_evidence:
@@ -27,6 +27,14 @@ generated:
     symbol: TalentLevelUpMessageParser
     line: 24
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_4a56b5e6608a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2740/_SafeCls_4418.as
+    symbol: _SafeCls_4418
+    line: 31
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2be44e75ea3
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: TalentLevelUpMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2906883290a3
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/achievements/talenttrack/TalentLevelUpMessageComposer.java
-    symbol: TalentLevelUpMessageComposer
-    line: 20
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

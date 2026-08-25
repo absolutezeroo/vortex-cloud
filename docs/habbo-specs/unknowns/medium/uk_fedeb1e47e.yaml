@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1eabfac23ddfef82654670d4b8563af58c992d33a80e1382a634e921ca5d7f49"
+generated_digest: "sha256:1db3e126a6f25111f78fc48608ab83696a8253dcdeb48a466962e2824f633289"
 generated:
   id: uk_fedeb1e47e
   subject: "users.unblock_group_member: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: users.unblock_group_member
   known_evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 27
   - id: ev_83b7560fb58b
     kind: emulator_handler
     authority: vortex_emulator
@@ -33,18 +40,11 @@ generated:
     source: Vortex.PacketHandlers/Users/UnblockGroupMemberMessageHandler.cs
     symbol: UnblockGroupMemberMessageHandler
     line: 28
-  - id: ev_9b02814f1589
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 27
-  - id: ev_c4e53aab9ae9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 350
   - id: ev_f13d6bcce744

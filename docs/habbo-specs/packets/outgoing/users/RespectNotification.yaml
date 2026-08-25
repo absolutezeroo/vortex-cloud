@@ -10,29 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fed150412ed093f001d7fcbccf0790a36dcd2cab299dfe9525de55a3bc8673c3"
+generated_digest: "sha256:83cda24d81a4b4062788a822ce5d87fd4fab615282346840245fd10c91077d68"
 generated:
   name: RespectNotification
   direction: outgoing
   domain: users
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: user_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bd58fa9e4a48
+    - ev_ac225bc75808
   - index: 1
     name: respect_total
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bd58fa9e4a48
+    - ev_ac225bc75808
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_ac225bc75808
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +56,14 @@ generated:
     - int32
     evidence: ev_bd58fa9e4a48
   evidence:
+  - id: ev_ac225bc75808
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4125.as
+    symbol: _SafeCls_4125
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_db2c09074048
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:83d6edb7de086e1a4a44a0deef71fd106e4bac87eb40aca5a7d7fcec11a26fd9"
+generated_digest: "sha256:26943c0a8caf9c6951eb8a579f10cd6f34116c9fe14ee3083ed1e63bfae65dca"
 generated:
   feature: groups.update_forum_settings
   scenarios:
@@ -85,7 +85,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -112,7 +112,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -199,11 +199,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumSettingsMessageHandler.cs
     symbol: UpdateForumSettingsMessageHandler
     line: 23
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 580
 verified: {}

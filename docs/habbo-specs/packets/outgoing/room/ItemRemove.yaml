@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59b60ad407cb311adbe5b53ec5d46437b8a11e47ef265bbbe09bdbab7fa89127"
+generated_digest: "sha256:d1d26c668aa78fede4e54aadd30c6ef3a3733d458d139d419f55e1f9f9142198"
 generated:
   name: ItemRemove
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: item_id
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9cbfb46e7189
+    - ev_fe83f90cc8b9
   - index: 1
     name: picker_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9cbfb46e7189
+    - ev_fe83f90cc8b9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - int32
+    evidence: ev_fe83f90cc8b9
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_e610b889ece8
   evidence:
+  - id: ev_fe83f90cc8b9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2450.as
+    symbol: _SafeCls_2450
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9cbfb46e7189
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/ItemRemoveMessageComposerSerializer.cs
     symbol: ItemRemoveMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_2ddbcc3cae
 verified: {}
 manual: {}

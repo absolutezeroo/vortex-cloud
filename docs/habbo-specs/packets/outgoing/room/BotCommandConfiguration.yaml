@@ -10,38 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4467dbad73a440e105d3b0bfa24bf359bad886e2c4cb0e6dd456214e90c3e310"
+generated_digest: "sha256:d6f08076c889f734821bb8a23e4586702c9f52a2500895b7734788d4e1730739"
 generated:
   name: BotCommandConfiguration
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: bot_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_d0754dfd78b0
-    - ev_4f0b70557675
+    - ev_f4a85acab05e
   - index: 1
     name: command_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_d0754dfd78b0
-    - ev_4f0b70557675
+    - ev_f4a85acab05e
   - index: 2
     name: data
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_d0754dfd78b0
-    - ev_4f0b70557675
+    - ev_f4a85acab05e
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -52,6 +52,15 @@ generated:
     - int32
     - string
     evidence: ev_d0754dfd78b0
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_f4a85acab05e
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -91,6 +100,14 @@ generated:
     symbol: BotCommandConfigurationParser
     line: 36
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_f4a85acab05e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_4437.as
+    symbol: _SafeCls_4437
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_421ff2ae9d09
     kind: client_parser
     authority: multi_implementation

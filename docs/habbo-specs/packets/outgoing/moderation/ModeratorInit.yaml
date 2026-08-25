@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9adf9b63b404f8a8c3cced05447fdf807b66713a3715b53f77db987d2ff80718"
+generated_digest: "sha256:fc5698f5e2268ffe424c32cc781ba868ce325f546bff7b5f282b4bec3f8c7335"
 generated:
   name: ModeratorInit
   direction: outgoing
@@ -130,6 +130,12 @@ generated:
       evidence:
       - ev_4160a31c4240
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_98e445c9d44f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -176,6 +182,14 @@ generated:
     - array
     evidence: ev_4160a31c4240
   evidence:
+  - id: ev_98e445c9d44f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3131.as
+    symbol: _SafeCls_3131
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2e64536ba43
     kind: client_parser
     authority: multi_implementation

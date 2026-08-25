@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6cb3ac433840364cf0e824d63ea659fa37e7554725a1ee8ff486a5d2bbb70b43"
+generated_digest: "sha256:c137e2be6b1c8a923b463c57807870bf45934a56075b6637d944723af8a7c24e"
 generated:
   id: uk_3ce0a6d161
   subject: "outgoing/NewUserExperienceGiftOffer: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: NewUserExperienceGiftOfferParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b0473386ae38
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3895/_SafeCls_3894.as
+    symbol: _SafeCls_3894
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_467683c35b6e
     kind: reference_composer
     authority: reference_emulator

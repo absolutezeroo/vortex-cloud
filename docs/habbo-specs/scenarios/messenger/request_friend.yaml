@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0f608ccce7c543fbc2a8a30d6d06148e4a077f8b4388f847b52f4412b7fb1061"
+generated_digest: "sha256:27898c33c59313dd2e71b7ff01f560b2089b1e5fa2d2595f7ba2f744a85b2b13"
 generated:
   feature: messenger.request_friend
   scenarios:
@@ -173,7 +173,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -201,7 +201,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -229,7 +229,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -257,7 +257,35 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MessengerError
+      - MessengerError
+      - MessengerError
+      - MessengerError
+      - MessengerError
+      evidence: ev_285dd2d2d268
+  - scenario: messenger.request_friend.guard_9
+    title: "request friend: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RequestFriend
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RequestFriend sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -313,6 +341,13 @@ generated:
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
     line: 217
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -327,11 +362,11 @@ generated:
     source: Vortex.PacketHandlers/FriendList/RequestFriendMessageHandler.cs
     symbol: RequestFriendMessageHandler
     line: 26
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 100
 verified: {}

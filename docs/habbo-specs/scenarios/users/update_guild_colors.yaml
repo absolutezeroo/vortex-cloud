@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:802734e24ae7a66500f099437af97a7106fdd6ebc35ce80642be816f6a5ecefb"
+generated_digest: "sha256:aaedfe47017a796a419e6a4d2e1e382544da4ed39df49b61c5b3e16e76f9423c"
 generated:
   feature: users.update_guild_colors
   scenarios:
@@ -55,7 +55,7 @@ generated:
       emits:
       - GroupDetailsChanged
       - GuildEditFailed
-      evidence: ev_257d20d10bb7
+      evidence: ev_305cc1467cc9
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -70,13 +70,13 @@ generated:
     symbol: UpdateGuildColorsMessageEvent
     line: 12
     note: third-party server implementation; evidence, not authority
-  - id: ev_257d20d10bb7
-    kind: emulator_flow
+  - id: ev_305cc1467cc9
+    kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
-    symbol: GroupGrain
-    line: 64
+    source: Vortex.PacketHandlers/Users/UpdateGuildColorsMessageHandler.cs
+    symbol: UpdateGuildColorsMessageHandler
+    line: 11
   - id: ev_47d25c22100f
     kind: emulator_flow
     authority: vortex_emulator

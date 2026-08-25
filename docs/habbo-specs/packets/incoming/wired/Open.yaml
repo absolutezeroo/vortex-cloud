@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fb1a50f9250cf000ec5943dab4e2544d406e3e6db6e2f996f78a43ae6d2aeac0"
+generated_digest: "sha256:17300cd300078406cd59e01ac61160422b9577a13b2086c6a4d6fb0da7928f28"
 generated:
   name: Open
   direction: incoming
@@ -85,7 +85,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/UserDefinedRoomEvents/OpenMessageParser.cs
     symbol: OpenMessageParser
     line: 7
-  unknowns:
-  - uk_9c609ade17
 verified: {}
 manual: {}

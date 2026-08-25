@@ -10,10 +10,35 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2ca38b86dff99b53a5183b34e4c99cfb237aadf29ec3474bef6d58224b3de113"
+generated_digest: "sha256:d9a201416a1145da3f53799f59b9f999deded0e7d45248c7c612c372c0051b45"
 generated:
   feature: navigator.create_room
   scenarios:
+  - scenario: navigator.create_room.guard_0
+    title: "create room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: CreateFlat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of CreateFlat sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - CanCreateRoom
+      - FlatCreated
+      evidence: ev_ad5fd845af29
   - scenario: navigator.create_room.success
     title: "create room: the request is accepted"
     given:
@@ -56,5 +81,12 @@ generated:
     source: Vortex.PacketHandlers/Navigator/CreateFlatMessageHandler.cs
     symbol: CreateFlatMessageHandler
     line: 11
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
 verified: {}
 manual: {}

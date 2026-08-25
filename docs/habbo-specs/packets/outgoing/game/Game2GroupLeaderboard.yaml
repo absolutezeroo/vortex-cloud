@@ -10,54 +10,15 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a5b4ad4fa2d34fcc44f5848dee919017f20bf8dbcab70386a202c8caac9b9096"
+generated_digest: "sha256:da996c772c0f1db93227f1556aff41b63e8ab9a6fccc25ecb524d5c62bf77627"
 generated:
   name: Game2GroupLeaderboard
   direction: outgoing
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: unknown
   mapped_in_vortex: false
-  fields:
-  - index: 0
-    name: unknown_0
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    evidence:
-    - ev_29ef493cd336
-  - index: 1
-    name: total_list_size
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_29ef493cd336
-  - index: 2
-    name: game_type_id
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_29ef493cd336
-  - index: 3
-    name: favourite_group_id
-    type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
-    evidence:
-    - ev_29ef493cd336
+  fields: []
   layouts_by_source:
-  - origin: "as3:WIN63-202607011411-782849652"
-    authority: client_code
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - int32
-    evidence: ev_29ef493cd336
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -65,14 +26,6 @@ generated:
     types: []
     evidence: ev_422d8747abcc
   evidence:
-  - id: ev_29ef493cd336
-    kind: client_parser
-    authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4040/Game2GroupLeaderboardParser.as
-    symbol: Game2GroupLeaderboardParser
-    line: 31
-    note: official client build WIN63-202607011411-782849652
   - id: ev_422d8747abcc
     kind: client_parser
     authority: multi_implementation
@@ -81,7 +34,5 @@ generated:
     symbol: Game2GroupLeaderboardMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  unknowns:
-  - uk_6ddaa20cda
 verified: {}
 manual: {}

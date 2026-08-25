@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a4a8989af78d139d57f320040ad5efcb328d609cfaa339fc22aea36b87b5b4ad"
+generated_digest: "sha256:201f70277eff68275d07e45db20cb5a38627d5950c9c37a7db9b987361ca10c4"
 generated:
   name: MOTDNotification
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,26 +23,26 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a728076bc8c7
+    - ev_09f1408756fe
   - index: 1
-    name: unknown_1
+    name: messages
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_a728076bc8c7
-  - index: 2
-    name: unknown_2
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_a728076bc8c7
+    - ev_09f1408756fe
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_09f1408756fe
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +53,14 @@ generated:
     - string
     evidence: ev_a728076bc8c7
   evidence:
+  - id: ev_09f1408756fe
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_2787.as
+    symbol: _SafeCls_2787
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a728076bc8c7
     kind: reference_composer
     authority: reference_emulator
@@ -61,6 +69,8 @@ generated:
     symbol: MOTDNotificationMessageComposer
     line: 25
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_040854cf57
   unknowns:
   - uk_98bf49ffc7
 verified: {}

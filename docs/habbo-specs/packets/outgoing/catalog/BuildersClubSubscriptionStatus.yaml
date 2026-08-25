@@ -10,47 +10,54 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dbae20a606fa45000a1c6208955b6027b86ecb5004694105510057d26cecfb75"
+generated_digest: "sha256:345ed6c0a3dab45fa58769feac20600430bf09d0804b101af0d9b070d1af9971"
 generated:
   name: BuildersClubSubscriptionStatus
   direction: outgoing
   domain: catalog
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: seconds_left
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1c9386bf2920
+    - ev_803695091e8c
   - index: 1
     name: furni_limit
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1c9386bf2920
+    - ev_803695091e8c
   - index: 2
     name: max_furni_limit
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1c9386bf2920
+    - ev_803695091e8c
   - index: 3
     name: seconds_left_with_grace
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_1c9386bf2920
+    - ev_803695091e8c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_803695091e8c
   - origin: nitro
     authority: multi_implementation
     field_count: 4
@@ -86,6 +93,14 @@ generated:
     - int32
     evidence: ev_33d201667fbd
   evidence:
+  - id: ev_803695091e8c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2143.as
+    symbol: _SafeCls_2143
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1c9386bf2920
     kind: client_parser
     authority: multi_implementation

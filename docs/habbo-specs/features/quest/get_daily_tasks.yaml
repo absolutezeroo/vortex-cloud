@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:163aeac5bf865cf3e9caae510b06c8d616d10e462aa662254e67675221205196"
+generated_digest: "sha256:60b981be9ae8f7902d746a7ceecd45bc31c0082834beddcc4485b6262fa65c02"
 generated:
   id: quest.get_daily_tasks
   domain: quest
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerDailyTaskGrain.SendBoardAsync
-    evidence: ev_d37c83ff4871
+    evidence: ev_2abb3cf8a990
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -47,9 +47,16 @@ generated:
     - packet: DailyTasksActiveList
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_d37c83ff4871
+      evidence: ev_2abb3cf8a990
   reaches_persistence: false
   evidence:
+  - id: ev_2abb3cf8a990
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
+    symbol: PlayerDailyTaskGrain
+    line: 45
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -71,13 +78,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetDailyTasksMessageHandler.cs
     symbol: GetDailyTasksMessageHandler
     line: 27
-  - id: ev_d37c83ff4871
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDailyTaskGrain.cs
-    symbol: PlayerDailyTaskGrain
-    line: 42
   scenarios:
   - quest.get_daily_tasks.guard_0
   - quest.get_daily_tasks.success

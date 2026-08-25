@@ -73,6 +73,17 @@ public sealed partial class As3ClientAnalyzer(
     [GeneratedRegex(@"public\s+function\s+parse\s*\(\s*(\w+)\s*:", RegexOptions.None, 2000)]
     private static partial Regex ParseMethod();
 
+    [GeneratedRegex(@"public\s+class\s+(\w+)\s+extends\s+MessageEvent", RegexOptions.None, 2000)]
+    private static partial Regex EventDeclaration();
+
+    /// <summary>
+    /// A <c>MessageEvent</c> subclass hands its parser class to the base constructor:
+    /// <c>super(param1, _SafeCls_3521)</c>. That second argument is the only link between a header id
+    /// and the class that actually reads the bytes.
+    /// </summary>
+    [GeneratedRegex(@"super\s*\(\s*[^,()]+,\s*(\w+)\s*\)", RegexOptions.None, 2000)]
+    private static partial Regex EventSuperCall();
+
     [GeneratedRegex(@"public\s+function\s+getMessageArray\s*\(\s*\)", RegexOptions.None, 2000)]
     private static partial Regex MessageArrayMethod();
 
@@ -116,6 +127,8 @@ public sealed partial class As3ClientAnalyzer(
             source,
             unresolved
         );
+
+        BindParsersBehindEvents(source, toClient, unresolved);
 
         List<ClientPacket> packets = [];
         Dictionary<string, CallSite> callSites = new(StringComparer.Ordinal);
@@ -390,6 +403,84 @@ public sealed partial class As3ClientAnalyzer(
         }
 
         return (toServer, toClient);
+    }
+
+    /// <summary>
+    /// Re-keys the incoming table from event classes onto the parser classes behind them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The client's registry binds a header to a <c>MessageEvent</c> subclass, not to a parser:
+    /// <c>_SafeStr_4546[1093] = _SafeCls_3980</c>, and <c>_SafeCls_3980</c> is a four-line wrapper
+    /// whose constructor names the real reader. <see cref="ReadParser" /> looks the header up by the
+    /// name of the class implementing <c>IMessageParser</c>, which is never the name in the table, so
+    /// on an obfuscated build every parser came back with no header and could not be matched to a
+    /// packet at all.
+    /// </para>
+    /// <para>
+    /// The cost of that was quiet and large: 17 of 805 outgoing specs carried evidence from the
+    /// client this emulator actually targets, against 533 of 604 incoming. Every outgoing comparison
+    /// was therefore made against a client from 2016 — which is where the baselined "wire conflicts"
+    /// came from. They were not disagreements with the client; they were disagreements with a
+    /// different client.
+    /// </para>
+    /// <para>
+    /// The original entry is left in place. A wrapper class implements no parser interface, so it can
+    /// never be looked up, and removing it would only make the table harder to read against the
+    /// registry it came from.
+    /// </para>
+    /// </remarks>
+    private void BindParsersBehindEvents(
+        string source,
+        Dictionary<string, int> toClient,
+        List<string> unresolved
+    )
+    {
+        // AS3 requires one public class per file, named after it, so the class name is the file name
+        // and nothing has to be read to find a class -- only to resolve the one hop inside it.
+        Dictionary<string, string> byClassName = new(StringComparer.Ordinal);
+
+        foreach (
+            string file in Directory.EnumerateFiles(source, "*.as", SearchOption.AllDirectories)
+        )
+        {
+            byClassName[Path.GetFileNameWithoutExtension(file)] = file;
+        }
+
+        int bound = 0;
+
+        foreach (KeyValuePair<string, int> entry in toClient.ToArray())
+        {
+            if (!byClassName.TryGetValue(entry.Key, out string? file))
+            {
+                continue;
+            }
+
+            string masked = SourceTextScanner.Mask(File.ReadAllText(file));
+
+            if (!EventDeclaration().IsMatch(masked))
+            {
+                continue;
+            }
+
+            Match super = EventSuperCall().Match(masked);
+
+            if (!super.Success)
+            {
+                continue;
+            }
+
+            toClient[super.Groups[1].Value] = entry.Value;
+            bound++;
+        }
+
+        if (bound == 0)
+        {
+            unresolved.Add(
+                "no MessageEvent wrapper resolved to a parser class; outgoing packets will carry no "
+                    + "header from this build"
+            );
+        }
     }
 
     private ClientPacket? ReadParser(

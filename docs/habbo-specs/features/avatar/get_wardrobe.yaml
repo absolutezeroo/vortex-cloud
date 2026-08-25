@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2412fbbfe3d8f760dc26eb86b6be5065bba35f560ec7fd53e72951fdc58e9d9f"
+generated_digest: "sha256:18aaebbce1ce77a19b6e3710092fe028050c853d83585a690c81c91e5e5d9208"
 generated:
   id: avatar.get_wardrobe
   domain: avatar
@@ -64,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.Wardrobe.cs
     symbol: PlayerGrain
-    line: 19
+    line: 20
   - id: ev_ce19121bcb61
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:36156c94aceb591ee8b04b1333943a899c5c68f11919005a6fc595cf5bf3ca66"
+generated_digest: "sha256:8674594cf9837ba0846f59d386aa9f19b4fa3bbcb79e6246a3a21650e03c8fec"
 generated:
   feature: moderation.post_quiz_answers
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
   - scenario: moderation.post_quiz_answers.guard_2
     title: "post quiz answers: the guard 'questions.Count == 0' holds"
     given:
@@ -67,7 +67,25 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
+  - scenario: moderation.post_quiz_answers.guard_3
+    title: "post quiz answers: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: PostQuizAnswers
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PostQuizAnswers sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: moderation.post_quiz_answers.success
     title: "post quiz answers: the request is accepted"
     given:
@@ -94,12 +112,19 @@ generated:
     source: Vortex.PacketHandlers/Help/PostQuizAnswersMessageHandler.cs
     symbol: PostQuizAnswersMessageHandler
     line: 21
-  - id: ev_1eb3967e3979
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerQuizGrain.cs
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
+  - id: ev_fd80c081bc3a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/PlayerQuizGrain.cs
     symbol: PlayerQuizGrain
-    line: 99
+    line: 102
 verified: {}
 manual: {}

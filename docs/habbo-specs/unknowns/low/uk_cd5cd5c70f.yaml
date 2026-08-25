@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f59de3363a440bff29ff4b014e1a160badc6233ed800ec6c56e5de688b6c1d24"
+generated_digest: "sha256:40d21d2f17b673ffa6dbe28c902b8ab512247dfedafebeb8f0a4f32416d0fab5"
 generated:
   id: uk_cd5cd5c70f
   subject: "outgoing/CameraPublishStatus: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CameraPublishStatus
   known_evidence:
+  - id: ev_8d0f66cab92e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4017.as
+    symbol: _SafeCls_4017
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2e633f5a475
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: CameraPublishStatusMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
-  - id: ev_74ab11b1c69e
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Camera/CameraPublishStatusMessageComposerSerializer.cs
-    symbol: CameraPublishStatusMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

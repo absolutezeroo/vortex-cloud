@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d2105aa191875db3b1e599e47bb9662d9a40ae0e1d98b0ce0480eed8866ce8da"
+generated_digest: "sha256:0b5f41cf3dbcc50ccec556c042145b6b042458dd466200319e45d41254a36a8d"
 generated:
   id: uk_a100bb55a8
   subject: "outgoing/CatalogPage: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
+  question: Fields 3, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CatalogPage
   known_evidence:
@@ -27,6 +27,14 @@ generated:
     symbol: CatalogPageMessageParser
     line: 75
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ecd7f54ac906
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_1747.as
+    symbol: _SafeCls_1747
+    line: 86
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ca7d7dba3634
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: CatalogPageMessage
     line: 6
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_df2634aeca57
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/catalog/CatalogPageMessageComposer.java
-    symbol: CatalogPageMessageComposer
-    line: 39
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

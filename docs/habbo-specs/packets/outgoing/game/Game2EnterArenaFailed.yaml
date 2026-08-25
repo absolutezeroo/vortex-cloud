@@ -10,15 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9d4e054a193d0becc57bfab57af4e1fc7d4803dd575d64e10696d30ba8a44f60"
+generated_digest: "sha256:5233fe84008c04ce8b0ef189f5c27e88441a514fb2bf696958d6f39a64910098"
 generated:
   name: Game2EnterArenaFailed
   direction: outgoing
   domain: game
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: reason
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_5781b386fdd4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_5781b386fdd4
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +40,14 @@ generated:
     types: []
     evidence: ev_9b07bf3862ef
   evidence:
+  - id: ev_5781b386fdd4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2265/_SafeCls_4234.as
+    symbol: _SafeCls_4234
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9b07bf3862ef
     kind: client_parser
     authority: multi_implementation

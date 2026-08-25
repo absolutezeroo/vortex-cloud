@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:13a42c31dae29f8080a7c3a7890504f5795152b6808a07228aa5a13373b9a9b1"
+generated_digest: "sha256:f05072dcc0f13e8bd14f2d83ee0110b407df7b7d678b2faf4e9fc7b02668c013"
 generated:
   name: FigureUpdate
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: figure
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ecd41425200b
+    - ev_c922c4146816
   - index: 1
-    name: unknown_1
+    name: gender
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ecd41425200b
+    - ev_c922c4146816
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_c922c4146816
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - string
     evidence: ev_ecd41425200b
   evidence:
+  - id: ev_c922c4146816
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1869/_SafeCls_3038.as
+    symbol: _SafeCls_3038
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ecd41425200b
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: FigureUpdateMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_a69e79b649
 verified: {}
 manual: {}

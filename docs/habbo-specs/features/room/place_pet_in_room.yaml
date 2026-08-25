@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1c3a247b781cc2efb6eaca1079ab1f04c6653f7492e1b96904ccdf07722269b0"
+generated_digest: "sha256:c128bf7bd6ea898e796b44c75d59502db02a35452db465e2eb768941e83433ad"
 generated:
   id: room.place_pet_in_room
   domain: room
@@ -40,6 +40,10 @@ generated:
     layer: module
     symbol: RoomPetSystem.PlacePetAsync
     evidence: ev_7327c7799f5f
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.Origin != ActionOrigin.Player || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || petId <= 0
     on_fail: return
@@ -61,6 +65,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7327c7799f5f
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: PetSystem
     value: PetSystem.PlacePetAsync(ctx, petId, x, y, direction, ct)
@@ -106,6 +114,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/PlacePetMessageHandler.cs
     symbol: PlacePetMessageHandler
     line: 20
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -119,7 +134,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 32
+    line: 33
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator
@@ -140,6 +155,7 @@ generated:
   - room.place_pet_in_room.guard_2
   - room.place_pet_in_room.guard_3
   - room.place_pet_in_room.guard_4
+  - room.place_pet_in_room.guard_5
   - room.place_pet_in_room.success
   unknowns:
   - uk_1591c23858

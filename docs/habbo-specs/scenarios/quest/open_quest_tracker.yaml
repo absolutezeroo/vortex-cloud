@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e638fa08d1269329f74a414107886ebe93bf1e5315702f3e42ffe7811df299bb"
+generated_digest: "sha256:41ae48527e2fb41929b21d922e479c239dd884ced7ebafa30491a23504855ae5"
 generated:
   feature: quest.open_quest_tracker
   scenarios:
@@ -81,7 +81,7 @@ generated:
       outcome: success
       emits:
       - Quest
-      evidence: ev_7dca240b5281
+      evidence: ev_3e19f38401db
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -98,6 +98,13 @@ generated:
     symbol: OpenQuestTrackerEvent
     line: 15
     note: third-party server implementation; evidence, not authority
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 235
   - id: ev_7dca240b5281
     kind: emulator_flow
     authority: vortex_emulator

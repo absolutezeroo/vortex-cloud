@@ -10,63 +10,58 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ee4c64fd19bef446f7f88ec35f3946099e98a48ca11e6e3c2dfaf73f485386e3"
+generated_digest: "sha256:2e63cb095375418783a30d30ae44a0b64d8f27ef5e711bc82da4ad402a253b6f"
 generated:
   name: QuestionFinished
   direction: outgoing
   domain: polls
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: question_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_676dc5191a36
+    - ev_5fa15ee76b8f
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_676dc5191a36
+    - ev_5fa15ee76b8f
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_676dc5191a36
+    - ev_5fa15ee76b8f
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_676dc5191a36
-  - index: 4
-    name: unknown_4
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_676dc5191a36
-  - index: 5
-    name: unknown_5
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_676dc5191a36
+    - ev_5fa15ee76b8f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    evidence: ev_5fa15ee76b8f
   - origin: arcturus
     authority: reference_emulator
     field_count: 6
@@ -80,6 +75,14 @@ generated:
     - int32
     evidence: ev_676dc5191a36
   evidence:
+  - id: ev_5fa15ee76b8f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_2703.as
+    symbol: _SafeCls_2703
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_676dc5191a36
     kind: reference_composer
     authority: reference_emulator
@@ -88,6 +91,8 @@ generated:
     symbol: QuestionFinishedMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_4623aa2335
   unknowns:
   - uk_ef5569dba0
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:564852e6a4a468a430e3702de75ef9f337822d3264897bec6ec80396e87ff1d4"
+generated_digest: "sha256:4afe8d70faeb9a34cb775ff5ee9c9c41c65d30fe258c3d7479b96c885bd96427"
 generated:
   name: FigureUpdateEvent
   direction: outgoing
@@ -67,5 +67,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Avatar/FigureUpdateEventMessageComposerSerializer.cs
     symbol: FigureUpdateEventMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_2b929bb7d5
 verified: {}
 manual: {}

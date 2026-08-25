@@ -10,55 +10,69 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:438a605bad5359edafd83e35ceeb2efa505f02fbd26cea4269eb24e4323a89cf"
+generated_digest: "sha256:15f1afaebafe2157bf03b057b674631195183d513dd821a1606faf4ce63adb7c"
 generated:
   name: RentableSpaceStatus
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: rented
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_09c493e1fb29
+    - ev_9fceccc01179
   - index: 1
+    name: can_rent_error_code
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_9fceccc01179
+  - index: 2
     name: renter_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_09c493e1fb29
-  - index: 2
+    - ev_9fceccc01179
+  - index: 3
     name: renter_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_09c493e1fb29
-  - index: 3
+    - ev_9fceccc01179
+  - index: 4
     name: time_remaining
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_09c493e1fb29
-  - index: 4
+    - ev_9fceccc01179
+  - index: 5
     name: price
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_09c493e1fb29
+    - ev_9fceccc01179
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    evidence: ev_9fceccc01179
   - origin: nitro
     authority: multi_implementation
     field_count: 5
@@ -96,6 +110,14 @@ generated:
     - string
     evidence: ev_52c70c59511f
   evidence:
+  - id: ev_9fceccc01179
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4163.as
+    symbol: _SafeCls_4163
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_09c493e1fb29
     kind: client_parser
     authority: multi_implementation

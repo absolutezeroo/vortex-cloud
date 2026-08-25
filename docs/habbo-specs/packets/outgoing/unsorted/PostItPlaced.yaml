@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f4395b5ebf5dba34e193df6084929732534a4a3970ab3b730ad46d84dc81a724"
+generated_digest: "sha256:a96b6e29c476ff9d9d59edc35755469304738adb08ab6f37a44959ea3e1af9d9"
 generated:
   name: PostItPlaced
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_13aa72688a74
+    - ev_ea2414a5acb4
   - index: 1
-    name: unknown_1
+    name: items_left
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_13aa72688a74
+    - ev_ea2414a5acb4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_ea2414a5acb4
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_13aa72688a74
   evidence:
+  - id: ev_ea2414a5acb4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2514/_SafeCls_2620.as
+    symbol: _SafeCls_2620
+    line: 19
+    note: official client build WIN63-202607011411-782849652
   - id: ev_13aa72688a74
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: PostItPlacedMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_09de292094
 verified: {}
 manual: {}

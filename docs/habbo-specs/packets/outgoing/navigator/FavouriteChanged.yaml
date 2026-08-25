@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ef49e19cf4cd6f068a89fcdda0665a4d8fb1e755a633c80edf6ad81e6396c789"
+generated_digest: "sha256:22cd7074e00332c56bc1c4e56318240b5f93962b5ebbee85f201ffadf572bf5b"
 generated:
   name: FavouriteChanged
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642da1bceba2
+    - ev_7cccf3708b3e
   - index: 1
     name: added
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_642da1bceba2
+    - ev_7cccf3708b3e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - boolean
+    evidence: ev_7cccf3708b3e
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - boolean
     evidence: ev_f9e8b888ea9a
   evidence:
+  - id: ev_7cccf3708b3e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3901.as
+    symbol: _SafeCls_3901
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_642da1bceba2
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/FavouriteChangedMessageComposerSerializer.cs
     symbol: FavouriteChangedMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_3cbd6a3a55
 verified: {}
 manual: {}

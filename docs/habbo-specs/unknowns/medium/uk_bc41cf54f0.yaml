@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bc9b487273b65047116fe52c90afc913f1fe170572768971650906306cab63f1"
+generated_digest: "sha256:e5f4cf10ef567b7ad2ab82cbc08f135cd429ae7e20505dc1c0ff51f39458d1ba"
 generated:
   id: uk_bc41cf54f0
   subject: "moderation.publish: what the server sends when it refuses"
@@ -32,14 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 239
+    line: 256
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 654
+    line: 669
   - id: ev_2e4a44ebd161
     kind: emulator_flow
     authority: vortex_emulator

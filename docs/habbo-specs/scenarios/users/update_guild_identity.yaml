@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:48687659e4c29f3552c2384dfbdc7d7a1610098cca402723b4966e5e48a3aad2"
+generated_digest: "sha256:2f303a0c9434ca0b789c50b4e1b71c01acaefdc674b3a956928b97c2836ff17e"
 generated:
   feature: users.update_guild_identity
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_257d20d10bb7
+      evidence: ev_861d7eb0e4b2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -100,11 +100,11 @@ generated:
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
     line: 217
-  - id: ev_257d20d10bb7
+  - id: ev_861d7eb0e4b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
+    source: Vortex.Social/Grains/GroupGrain.Settings.cs
     symbol: GroupGrain
     line: 39
   - id: ev_da86beca341d

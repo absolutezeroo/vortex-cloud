@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:76956e8f20fe5788c5e69f6665ae448661554c0a6a3cde629493df8e67095119"
+generated_digest: "sha256:857879c185d2b8737c5fafd0229f5de8e3de28df9608d0279a919e5906c4ab50"
 generated:
   id: cf_28f0906257
   kind: field_count
   subject: "outgoing/SellablePetPalettes: field count"
   packet: SellablePetPalettes
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: string, int32"
+    evidence: ev_c8dffcef2fe4
   - origin: arcturus
     authority: reference_emulator
     claim: "7 fields: string, int32, int32, int32, int32, boolean, boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "3 fields: string, int32, array"
     evidence: ev_3713206c5d2a
   evidence:
+  - id: ev_c8dffcef2fe4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_1905.as
+    symbol: _SafeCls_1905
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1e163eb3acab
     kind: reference_composer
     authority: reference_emulator

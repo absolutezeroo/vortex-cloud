@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:314b0506e3a3e4131fc963e76899d0d654341e8ddf5db84b9ad0c2926feecb42"
+generated_digest: "sha256:ae8847cc025b284f3a153eaec5768a5c495947e7e8bb0d355f263647c53baba9"
 generated:
   id: quest.claim_daily_task
   domain: quest
@@ -30,11 +30,15 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerDailyTaskGrain.ClaimAsync
-    evidence: ev_d37c83ff4871
+    evidence: ev_2abb3cf8a990
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
+  - order: 3
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.TaskId <= 0
     on_fail: return
@@ -43,23 +47,27 @@ generated:
   - expression: assignment is null || assignment.Status != DailyTaskStatus.Completed
     on_fail: return
     observed_in: vortex
-    evidence: ev_d37c83ff4871
+    evidence: ev_2abb3cf8a990
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: assignment.ClaimedAt
     value: DateTime.UtcNow
     observed_in: vortex
-    evidence: ev_d37c83ff4871
+    evidence: ev_2abb3cf8a990
   - target: assignment.Status
     value: DailyTaskStatus.Claimed
     observed_in: vortex
-    evidence: ev_d37c83ff4871
+    evidence: ev_2abb3cf8a990
   outgoing:
     ordering: unknown
     packets:
     - packet: DailyTasksTaskUpdate
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_d37c83ff4871
+      evidence: ev_2abb3cf8a990
   reaches_persistence: true
   evidence:
   - id: ev_25e3c0ce70c6
@@ -69,6 +77,20 @@ generated:
     source: Vortex.PacketHandlers/Quest/ClaimDailyTaskMessageHandler.cs
     symbol: ClaimDailyTaskMessageHandler
     line: 23
+  - id: ev_2abb3cf8a990
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
+    symbol: PlayerDailyTaskGrain
+    line: 157
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,16 +105,10 @@ generated:
     source: Vortex.PacketHandlers/Quest/ClaimDailyTaskMessageHandler.cs
     symbol: ClaimDailyTaskMessageHandler
     line: 14
-  - id: ev_d37c83ff4871
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDailyTaskGrain.cs
-    symbol: PlayerDailyTaskGrain
-    line: 154
   scenarios:
   - quest.claim_daily_task.guard_0
   - quest.claim_daily_task.guard_1
+  - quest.claim_daily_task.guard_2
   - quest.claim_daily_task.success
   unknowns:
   - uk_2b9c662104

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:32d75f78f24298b661bd09627b6bf888072c02f3f5b0745eea8246727e2c4392"
+generated_digest: "sha256:b6231dc57e53230ef06108faf63bf00e8ea6a58de1dc2d1cfcd13b17248e0b93"
 generated:
   feature: groups.update_forum_read_marker
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
   - scenario: groups.update_forum_read_marker.success
     title: "update forum read marker: the request is accepted"
     given:
@@ -75,12 +75,12 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumReadMarkerMessageHandler.cs
     symbol: UpdateForumReadMarkerMessageHandler
     line: 26
-  - id: ev_678209870593
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 687
+    line: 686
 verified: {}
 manual: {}

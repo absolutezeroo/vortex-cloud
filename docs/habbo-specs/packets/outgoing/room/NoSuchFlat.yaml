@@ -10,31 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:982bde169dfe7c67ee25c33677d0885dc2f84ce324c4cc33267a76d9bd7d4419"
+generated_digest: "sha256:2cc64d8b3a7a77fcd448e3bbbb9dc7757243a35cfc533fbc3e8835456cdc6802"
 generated:
   name: NoSuchFlat
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: flat_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e2a8c5e3060f
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e2a8c5e3060f
+    - ev_98c2e4af165e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_98c2e4af165e
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +42,14 @@ generated:
     - int32
     evidence: ev_e2a8c5e3060f
   evidence:
+  - id: ev_98c2e4af165e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_4335.as
+    symbol: _SafeCls_4335
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2a8c5e3060f
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +58,7 @@ generated:
     symbol: NoSuchFlatMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_73905232c5
+  conflicts:
+  - cf_aecd6d77ad
 verified: {}
 manual: {}

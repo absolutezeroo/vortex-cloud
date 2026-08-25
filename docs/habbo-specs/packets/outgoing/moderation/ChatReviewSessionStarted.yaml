@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:50e5ccf9e62971aa4fda0882a41c57289af1ed85af929397a3b0afd899a8fd9c"
+generated_digest: "sha256:7e4c0d0ef38e9bdb00b052767447dcfbcb6536b771f075869152b79f0b34011f"
 generated:
   name: ChatReviewSessionStarted
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: voting_timeout_seconds
+    name: voting_timeout
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_690290358096
-    - ev_2012a598d13c
+    - ev_5e2a41ecbc26
   - index: 1
     name: chat_record
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_690290358096
-    - ev_2012a598d13c
+    - ev_5e2a41ecbc26
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_5e2a41ecbc26
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - string
     evidence: ev_2012a598d13c
   evidence:
+  - id: ev_5e2a41ecbc26
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4252.as
+    symbol: _SafeCls_4252
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c12fbf368012
     kind: client_parser
     authority: multi_implementation

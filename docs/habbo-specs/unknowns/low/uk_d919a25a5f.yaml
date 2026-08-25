@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4816b534b032dbd2c8f521ed61b7a87cec662e81f1871c9ab65f9be29b70d0f4"
+generated_digest: "sha256:1040d02cef6e8c11bed6404fcd71da3a8a03b4dcc11669f4ec8f1773d0beedb4"
 generated:
   id: uk_d919a25a5f
   subject: "outgoing/WiredValidationError: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredValidationError
   known_evidence:
+  - id: ev_031395435afe
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/userdefinedroomevents/_SafeCls_3324.as
+    symbol: _SafeCls_3324
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fce989b22df1
     kind: reference_composer
     authority: reference_emulator

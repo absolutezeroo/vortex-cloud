@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cd5c930f47d5900a098285da36740e4abe543b656ef2145e770f9c1639dce6d1"
+generated_digest: "sha256:72a9990362763708f94c1ab7c7b875e63feebcd3b91a200669146d5a91ba9a7b"
 generated:
   name: HabboGroupDetails
   direction: outgoing
@@ -171,6 +171,12 @@ generated:
     - ev_b4efa627d14c
     - ev_e146bd496103
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_d1fdd3dfb6ed
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -228,6 +234,14 @@ generated:
     - boolean
     evidence: ev_e146bd496103
   evidence:
+  - id: ev_d1fdd3dfb6ed
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3787.as
+    symbol: _SafeCls_3787
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8ae020d4622c
     kind: client_parser
     authority: multi_implementation

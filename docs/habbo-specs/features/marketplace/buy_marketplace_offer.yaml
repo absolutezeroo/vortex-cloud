@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e4192cbb32523de1e3a8e65b9071a6ef88f7ffbe46544a68ecf95b645a94e6f7"
+generated_digest: "sha256:0e66d8fb682e32ad0822cb98c294a3877bc7b53829048fbef3c8ed8cc35db2ef"
 generated:
   id: marketplace.buy_marketplace_offer
   domain: marketplace
@@ -37,17 +37,9 @@ generated:
     symbol: MarketplaceSettingsProvider.GetSettings
     evidence: ev_69c38a5cc246
   - order: 3
-    layer: grain
-    symbol: InventoryGrain.GrantFurnitureDefinitionAsync
-    evidence: ev_c6396662000a
-  - order: 4
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 5
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffDataFromJson
-    evidence: ev_7a660921f135
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -61,21 +53,13 @@ generated:
     on_fail: throw
     observed_in: vortex
     evidence: ev_db53958cdf3b
-  - expression: "!string.IsNullOrEmpty(jsonData)"
+  - expression: _registry is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_7a660921f135
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: up
     value: up.SetProperty(p => p.State, MarketplaceOfferState.Sold)
-    observed_in: vortex
-    evidence: ev_db53958cdf3b
-  - target: up
-    value: up.SetProperty(p => p.State, MarketplaceOfferState.Active)
-    observed_in: vortex
-    evidence: ev_db53958cdf3b
-  - target: up.SetProperty(p => p.State, MarketplaceOfferState.Active)
-    value: up.SetProperty(p => p.State, MarketplaceOfferState.Active) .SetProperty(p => p.CreditsOwed, 0)
     observed_in: vortex
     evidence: ev_db53958cdf3b
   - target: up.SetProperty(p => p.State, MarketplaceOfferState.Sold)
@@ -98,13 +82,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/BuyMarketplaceOfferMessageHandler.cs
     symbol: BuyMarketplaceOfferMessageHandler
     line: 22
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_69c38a5cc246
     kind: emulator_flow
     authority: vortex_emulator
@@ -119,27 +103,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/BuyMarketplaceOfferMessageHandler.cs
     symbol: BuyMarketplaceOfferMessageHandler
     line: 11
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
-  - id: ev_c6396662000a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
-    symbol: InventoryGrain
-    line: 586
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 138
+    line: 256
   scenarios:
   - marketplace.buy_marketplace_offer.guard_0
   - marketplace.buy_marketplace_offer.guard_1

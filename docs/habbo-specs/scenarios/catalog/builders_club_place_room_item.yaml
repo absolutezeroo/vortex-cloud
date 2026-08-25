@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fd5a1ac9214303d8802d1881b812d11903fc964a82b4ff801d833c22eb4e6a63"
+generated_digest: "sha256:d90a2dee82c3d73ecec9617779008fd21f678e43b65a0404b629fd1c259e1ff4"
 generated:
   feature: catalog.builders_club_place_room_item
   scenarios:
@@ -429,7 +429,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 661
+    line: 704
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator

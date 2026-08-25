@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c0f3a765485a64620c7b4f84c386ff9ef0447b062c32493d3ca110328f1b7881"
+generated_digest: "sha256:005c7b59a2ac0de770923460b66cd57feb89a9705d68a3c4262df0e98f8dbccf"
 generated:
   id: quest.get_daily_quest
   domain: quest
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuestGrain.GetDailyQuestAsync
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -53,6 +53,13 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetDailyQuestMessageHandler.cs
     symbol: GetDailyQuestMessageHandler
     line: 21
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 212
   - id: ev_c2d38e2d8d9b
     kind: emulator_handler
     authority: vortex_emulator
@@ -60,13 +67,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetDailyQuestMessageHandler.cs
     symbol: GetDailyQuestMessageHandler
     line: 12
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 209
   scenarios:
   - quest.get_daily_quest.guard_0
   - quest.get_daily_quest.success

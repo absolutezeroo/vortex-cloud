@@ -10,22 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:033bf1bca971966a746896b113a7d512aab88460eb8115d76c357768e5f850c0"
+generated_digest: "sha256:1432ee387fa1ad4107818ef925a56c80d7cd287d52bef36c8c88015daa52c348"
 generated:
   name: NftTransferAssetsResult
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result_code
     type: short
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_1b9b19036824
     - ev_95f3e6b7518b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - short
+    evidence: ev_1b9b19036824
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +48,14 @@ generated:
     - short
     evidence: ev_95f3e6b7518b
   evidence:
+  - id: ev_1b9b19036824
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4411.as
+    symbol: _SafeCls_4411
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_be7b2dc24037
     kind: client_parser
     authority: multi_implementation

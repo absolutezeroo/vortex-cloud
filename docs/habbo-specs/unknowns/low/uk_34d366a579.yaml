@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:56e2335260112aa994707cffe72fdfab997099014bcdca35b936715058ed534b"
+generated_digest: "sha256:172ea28b5bf92fa0903bcfb23888b57d21ac3df2938fc61b9c550a575944f596"
 generated:
   id: uk_34d366a579
   subject: "outgoing/InitCamera: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: InitCamera
   known_evidence:
+  - id: ev_a504b6c74dd3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4393.as
+    symbol: _SafeCls_4393
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_13a944b149c8
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: InitCameraMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
-  - id: ev_01eca4d82a77
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Camera/InitCameraMessageComposerSerializer.cs
-    symbol: InitCameraMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

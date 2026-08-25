@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:728d9f73fdc010e933e5eae12bdf487dd451b10748593c846bb4c3f9e4d0a355"
+generated_digest: "sha256:c4d11e6ef55b41c7c6485432db2fe6169695ba5dbefce24392b04d35da8e7aca"
 generated:
   name: IsBadgeRequestFulfilled
   direction: outgoing
   domain: landing_view
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: request_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2f73f4519e3b
+    - ev_86f1b32c5be9
   - index: 1
-    name: unknown_1
+    name: fulfilled
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2f73f4519e3b
+    - ev_86f1b32c5be9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - boolean
+    evidence: ev_86f1b32c5be9
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - boolean
     evidence: ev_2f73f4519e3b
   evidence:
+  - id: ev_86f1b32c5be9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3206/_SafeCls_4066.as
+    symbol: _SafeCls_4066
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2f73f4519e3b
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: IsBadgeRequestFulfilledMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_4708341e2c
 verified: {}
 manual: {}

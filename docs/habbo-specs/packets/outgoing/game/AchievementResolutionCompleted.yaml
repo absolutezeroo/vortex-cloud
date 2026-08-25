@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c2f3a99893273125415ac34c03374db4504a1f27f4af789f5228ec466772b934"
+generated_digest: "sha256:ba5da63f024900259eef52a551d265f9d9e8b89aecd84193772dd4cca52d8772"
 generated:
   name: AchievementResolutionCompleted
   direction: outgoing
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: stuff_code
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b3c254982bb3
-    - ev_f29b22a7b57b
+    - ev_c52b8e127dc1
   - index: 1
     name: badge_code
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b3c254982bb3
-    - ev_f29b22a7b57b
+    - ev_c52b8e127dc1
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - string
     - string
     evidence: ev_b3c254982bb3
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_c52b8e127dc1
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -74,6 +82,14 @@ generated:
     symbol: AchievementResolutionCompletedMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_c52b8e127dc1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3055/_SafeCls_3054.as
+    symbol: _SafeCls_3054
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_152c261e1a81
     kind: client_parser
     authority: multi_implementation

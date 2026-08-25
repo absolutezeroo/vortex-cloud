@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:aebba3efc2ecdd87079f7a454c82f87e63b79a830c319ded1a483fefb51df8d9"
+generated_digest: "sha256:16720e57df0a082dcd3e15d0d6739f0c4a0bcf951e417406642a712042313c7e"
 generated:
   name: ElementPointer
   direction: outgoing
   domain: notifications
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: key
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_01f2ae2871b2
-    - ev_5912d74fa082
+    - ev_d6c33aa70726
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_d6c33aa70726
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - string
     evidence: ev_5912d74fa082
   evidence:
+  - id: ev_d6c33aa70726
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_4146.as
+    symbol: _SafeCls_4146
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a04a5fec16ce
     kind: client_parser
     authority: multi_implementation

@@ -10,73 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:da17b1156e372581950d3aa053e53ae7b4769eb5ae647d217e3135970e1edabe"
+generated_digest: "sha256:3c85729c0cf508959fbc4a5157a6717f5dba044f105eafc0565489db605ef98f"
 generated:
   name: NftStoreOffers
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_1c2e8628cf22
-  - index: 1
-    name: offers
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_1c2e8628cf22
-    fields:
-    - index: 0
-      name: product_code
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
-    - index: 1
-      name: emerald_price
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
-    - index: 2
-      name: is_featured
-      type: boolean
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
-    - index: 3
-      name: is_limited
-      type: boolean
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
-    - index: 4
-      name: mint_limit
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
-    - index: 5
-      name: minted_count
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1c2e8628cf22
+    - ev_acd20c7a6183
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_acd20c7a6183
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -86,6 +43,14 @@ generated:
     - array
     evidence: ev_1c2e8628cf22
   evidence:
+  - id: ev_acd20c7a6183
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4058.as
+    symbol: _SafeCls_4058
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1c2e8628cf22
     kind: emulator_serializer
     authority: vortex_emulator
@@ -93,5 +58,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/NftStoreOffersMessageComposerSerializer.cs
     symbol: NftStoreOffersMessageComposerSerializer
     line: 8
+  conflicts:
+  - cf_a1364d47ae
+  unknowns:
+  - uk_f192590402
 verified: {}
 manual: {}

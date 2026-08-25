@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a7220ddead67892e9c70ec489cb83c270f4efb24ba0829e6bf888e12d0c44536"
+generated_digest: "sha256:d131a8bc77d9dc98f500010118a6237de95f9e0e5809753eebcdd0bc8cf73920"
 generated:
   name: CallForHelpPendingCalls
   direction: outgoing
   domain: moderation
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -64,6 +64,16 @@ generated:
     - string
     - string
     evidence: ev_831388729603
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - string
+    evidence: ev_55bba8bff11d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -89,6 +99,14 @@ generated:
     - array
     evidence: ev_db34462fa199
   evidence:
+  - id: ev_55bba8bff11d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2153.as
+    symbol: _SafeCls_2153
+    line: 33
+    note: official client build WIN63-202607011411-782849652
   - id: ev_831388729603
     kind: client_parser
     authority: client_code

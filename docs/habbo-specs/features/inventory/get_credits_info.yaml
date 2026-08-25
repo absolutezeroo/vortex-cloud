@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:37f9b0492f50e207f5b272881df364f7162dc18eeaa7932460fe98306b94a966"
+generated_digest: "sha256:fdfd1cced8eb3ba66c74a8ef62b2728a14f406b5d582dcafe30f5f7e0c0fe14d"
 generated:
   id: inventory.get_credits_info
   domain: inventory
@@ -75,7 +75,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 206
+    line: 269
   scenarios:
   - inventory.get_credits_info.guard_0
   - inventory.get_credits_info.success

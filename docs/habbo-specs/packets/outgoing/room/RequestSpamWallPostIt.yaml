@@ -10,23 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8ea78ff25c7899799429296aeb69e82d81040b4701a1fe8568ab7c8bec0fa11f"
+generated_digest: "sha256:39b5b2d2ac93d6c2152ddd3dcf7870e1beb441d34d891066c25a9deca22b3c1b"
 generated:
   name: RequestSpamWallPostIt
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
+    name: item_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_01ab02b675a0
+  - index: 1
     name: location
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_454a3bc3d323
+    - ev_01ab02b675a0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_01ab02b675a0
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -51,6 +65,14 @@ generated:
     - string
     evidence: ev_bec88c222daf
   evidence:
+  - id: ev_01ab02b675a0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4325.as
+    symbol: _SafeCls_4325
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_454a3bc3d323
     kind: client_parser
     authority: multi_implementation

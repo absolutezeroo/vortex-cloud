@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:31b4eaf933a658b64564b72d68e8f6784a37fd2c8f5f711057082cc243fa73aa"
+generated_digest: "sha256:bcc08993cba957be227fe344fa5dff8ba1d64e0c18223eb7686b64924953acfc"
 generated:
   id: cf_8624b71865
   kind: field_count
   subject: "outgoing/RequestSpamWallPostIt: field count"
   packet: RequestSpamWallPostIt
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, string"
+    evidence: ev_01ab02b675a0
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: string"
@@ -30,6 +34,14 @@ generated:
     claim: "2 fields: int32, string"
     evidence: ev_bec88c222daf
   evidence:
+  - id: ev_01ab02b675a0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4325.as
+    symbol: _SafeCls_4325
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_454a3bc3d323
     kind: client_parser
     authority: multi_implementation

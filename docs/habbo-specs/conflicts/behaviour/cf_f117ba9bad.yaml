@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5a91fee3423e34dc45daefb1287fb60e78a5df2144182f2585eb5883636e45f6"
+generated_digest: "sha256:4d0e9081a09d7022e2edd434065bdbb3075a8b3e050527dde2fc1f7ba2fd600b"
 generated:
   id: cf_f117ba9bad
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_60507bc9ce44
   - origin: vortex
     authority: vortex_emulator
-    claim: PurchaseError then ScrSendUserInfo then CreditBalanceEvent then EmeraldBalance then SilverBalance then HabboActivityPointNotification
+    claim: PurchaseError then ScrSendUserInfo
     evidence: ev_589bc379b9e6
   evidence:
   - id: ev_60507bc9ce44

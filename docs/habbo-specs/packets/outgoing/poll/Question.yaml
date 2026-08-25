@@ -10,87 +10,87 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8e3ed6319bf8c6a4fe7c3fed1ac5ed4f61d267ca9f15a853668ff551f8470207"
+generated_digest: "sha256:222b7cc13626f85afac632c57a814c882915e1b0e6d583b544d4c0a19e29defd"
 generated:
   name: Question
   direction: outgoing
   domain: poll
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: poll_type
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 1
-    name: unknown_1
+    name: poll_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 2
-    name: unknown_2
+    name: question_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 3
-    name: unknown_3
+    name: duration
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 4
-    name: unknown_4
+    name: question
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 5
-    name: unknown_5
+    name: question
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 6
-    name: unknown_6
+    name: question
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 7
-    name: unknown_7
+    name: question
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 8
-    name: unknown_8
+    name: question
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_faa2c7d7c56f
+    - ev_7c5b544f06ce
   - index: 9
     name: unknown_9
     type: int32
@@ -137,6 +137,24 @@ generated:
     - string
     - string
     evidence: ev_faa2c7d7c56f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 12
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - string
+    evidence: ev_7c5b544f06ce
   - origin: arcturus
     authority: reference_emulator
     field_count: 8
@@ -152,6 +170,14 @@ generated:
     - string
     evidence: ev_95258e7a510f
   evidence:
+  - id: ev_7c5b544f06ce
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3271.as
+    symbol: _SafeCls_3271
+    line: 61
+    note: official client build WIN63-202607011411-782849652
   - id: ev_faa2c7d7c56f
     kind: client_parser
     authority: client_code

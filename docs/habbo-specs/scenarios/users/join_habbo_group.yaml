@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2732ea94630eba44b1978302c1a840497bb2f8f3c4d8f14407ee3452ca7f39dc"
+generated_digest: "sha256:91407afa8a4de65b22904abde0e481ecb0e20d15a1aa6dd8a8db9863d8b75d8d"
 generated:
   feature: users.join_habbo_group
   scenarios:
@@ -83,7 +83,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -108,7 +108,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -133,7 +133,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -158,7 +158,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -183,7 +183,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -233,7 +233,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -259,7 +259,7 @@ generated:
       emits:
       - HabboGroupDetails
       - HabboGroupJoinFailed
-      evidence: ev_12ce06c785f7
+      evidence: ev_1ba735814128
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -276,13 +276,20 @@ generated:
     symbol: JoinHabboGroupMessageEvent
     line: 13
     note: third-party server implementation; evidence, not authority
-  - id: ev_12ce06c785f7
+  - id: ev_1ba735814128
+    kind: emulator_handler
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
+    symbol: JoinHabboGroupMessageHandler
+    line: 13
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 62
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 38
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -290,13 +297,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_9b02814f1589
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 38
+    line: 30
   - id: ev_c3fd7c3e3831
     kind: emulator_flow
     authority: vortex_emulator
@@ -304,12 +311,5 @@ generated:
     source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
     symbol: JoinHabboGroupMessageHandler
     line: 24
-  - id: ev_c4e53aab9ae9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 30
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ce25371ba80afc9fd2e4472ce4b1b53ff65e41c46c8ca3d6cde02e6a3946f09d"
+generated_digest: "sha256:349e8bb917962ec8f2ddc4365adbb1303da818354cf8262d7f84735aabd739f0"
 generated:
   id: users.block_user
   domain: users
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.BlockUserAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: domain
     symbol: WiredChestStore.FindAsync
@@ -47,11 +47,11 @@ generated:
   - expression: _blockedIds.Contains(targetId.Value)
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - expression: selfEntity is null || targetEntity is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -80,13 +80,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 472
   - id: ev_c8ef03527e7b
     kind: emulator_handler
     authority: vortex_emulator
@@ -101,6 +94,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 489
   scenarios:
   - users.block_user.guard_0
   - users.block_user.guard_1

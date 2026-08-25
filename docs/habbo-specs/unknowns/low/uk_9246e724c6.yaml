@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c0fa6efc00006f201e682050a49d401f88573ecb38be07c4f229a8e279839cae"
+generated_digest: "sha256:bb33c61ef07e0fc6cfde5c1038f76e153a8dce338327c9cce46bf5be2813ea8e"
 generated:
   id: uk_9246e724c6
   subject: "outgoing/Question: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 carry no name from any source. What are they?
+  question: Fields 9, 10, 11 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Question
   known_evidence:
+  - id: ev_7c5b544f06ce
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3271.as
+    symbol: _SafeCls_3271
+    line: 61
+    note: official client build WIN63-202607011411-782849652
   - id: ev_faa2c7d7c56f
     kind: client_parser
     authority: client_code

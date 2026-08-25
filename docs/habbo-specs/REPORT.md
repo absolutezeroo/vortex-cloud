@@ -16,14 +16,14 @@ actually produced against the trees listed under Sources.
 | Direction | Count |
 |---|---:|
 | Incoming (client to server) | 601 |
-| Outgoing (server to client) | 805 |
+| Outgoing (server to client) | 839 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
 | Features | 496 |
-| Scenarios | 1870 |
+| Scenarios | 1873 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -31,21 +31,21 @@ actually produced against the trees listed under Sources.
 
 | Level | Packets | Share |
 |---|---:|---:|
-| confirmed | 11 | 0.8% |
-| client_confirmed | 297 | 21.1% |
-| multi_reference_confirmed | 177 | 12.6% |
-| reference_observed | 395 | 28.1% |
-| implementation_observed | 373 | 26.5% |
-| unknown | 153 | 10.9% |
+| confirmed | 63 | 4.4% |
+| client_confirmed | 597 | 41.5% |
+| multi_reference_confirmed | 85 | 5.9% |
+| reference_observed | 247 | 17.2% |
+| implementation_observed | 297 | 20.6% |
+| unknown | 151 | 10.5% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 261 |
-| Critical unknowns | 133 |
-| Unknowns in total | 734 |
-| Fields with no attested name | 1574 of 4478 |
+| Conflicts | 369 |
+| Critical unknowns | 134 |
+| Unknowns in total | 705 |
+| Fields with no attested name | 1325 of 4160 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,14 +54,14 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 1
-- unchanged: 3400
+- written: 4
+- unchanged: 3511
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 618 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- as3:WIN63-202607011411-782849652: 123 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.get_flat_categories: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
@@ -70,7 +70,7 @@ actually produced against the trees listed under Sources.
 - messenger.open_room_for_player_id: 41 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - moderation.publish: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - moderation.resolve_for_player: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.answer_doorbell: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.answer_doorbell: 20 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.ban_user_with_duration: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.get_room_entry_data: 22 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.look_to: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
@@ -80,9 +80,7 @@ actually produced against the trees listed under Sources.
 - room.pickup_item_in_room: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.place_wall_item_in_room: 45 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.present_open: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.rentable_space_rent: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.try_get_definition: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- users.create_guild: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.deposit_to_wired_chest: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.get_wired_transaction_details: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.open_wired_chest: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks

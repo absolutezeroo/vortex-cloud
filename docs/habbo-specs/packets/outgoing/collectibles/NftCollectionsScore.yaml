@@ -10,36 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3e2808df40c2c86c2812d7135066c1bc9293a44d7cd8a2ba97b7a18709921c5c"
+generated_digest: "sha256:c35efa351b3dbf68448fac1906ab187682700ca090fd607c4f650638a75a3f62"
 generated:
   name: NftCollectionsScore
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: score
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0d180a2b0b73
+    - ev_602aed15c10c
   - index: 1
     name: highest_score
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0d180a2b0b73
+    - ev_602aed15c10c
   - index: 2
     name: level
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0d180a2b0b73
+    - ev_602aed15c10c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_602aed15c10c
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +65,14 @@ generated:
     - int32
     evidence: ev_0d180a2b0b73
   evidence:
+  - id: ev_602aed15c10c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4027.as
+    symbol: _SafeCls_4027
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_80e6bb7451b7
     kind: client_parser
     authority: multi_implementation

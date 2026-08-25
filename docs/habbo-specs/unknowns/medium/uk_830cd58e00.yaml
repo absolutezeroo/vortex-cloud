@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2d7f8befd028641dca564b5206871ef749fb998278aa0f8ee13a23776a38ec9b"
+generated_digest: "sha256:34addeeae7a10e71d125f150c11430e724bdc2ffc5460c6b65397c5e26466774"
 generated:
   id: uk_830cd58e00
   subject: "navigator.edit: what the server sends when it refuses"
   severity: medium
-  question: navigator.edit changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.edit changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.edit
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Navigator/EditEventMessageHandler.cs
     symbol: EditEventMessageHandler
     line: 22
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_3ae62105b409
     kind: emulator_handler
     authority: vortex_emulator
@@ -39,6 +46,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 16
+    line: 20
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:181ba0bd8fa9b25c12455806ec38fc6084d0a66ae773c81589a172f6d3f20259"
+generated_digest: "sha256:f3573e6599973e79cbb91dc405005d534eb089ccc0debe14f8f1ade10e88868c"
 generated:
   feature: messenger.set_relationship_status
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -101,12 +101,12 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SetRelationshipStatusMessageHandler.cs
     symbol: SetRelationshipStatusMessageHandler
     line: 22
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 454
+    line: 471
 verified: {}
 manual: {}

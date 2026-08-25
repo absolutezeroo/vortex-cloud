@@ -10,36 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67c080799f9047d68647db5f26a38ed7dd8d73b44492ec006bc02e63062fd5f2"
+generated_digest: "sha256:824205172f4be780a6d231cee296abb87c0ecaa0a7904d350dc3a96767206655"
 generated:
   name: InfoHotelClosed
   direction: outgoing
   domain: availability
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: open_hour
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0a293fd98d80
+    - ev_ef9866c7efe2
   - index: 1
     name: open_minute
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0a293fd98d80
+    - ev_ef9866c7efe2
   - index: 2
     name: user_thrown_out_at_close
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0a293fd98d80
+    - ev_ef9866c7efe2
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - boolean
+    evidence: ev_ef9866c7efe2
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +65,14 @@ generated:
     - boolean
     evidence: ev_0a293fd98d80
   evidence:
+  - id: ev_ef9866c7efe2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2152/_SafeCls_3608.as
+    symbol: _SafeCls_3608
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_39c2f018f91c
     kind: client_parser
     authority: multi_implementation

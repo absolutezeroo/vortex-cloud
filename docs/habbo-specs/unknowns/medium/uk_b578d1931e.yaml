@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:69e24114009c5532c7477683b6d878f07799ac1766985067b2333452edc62b7c"
+generated_digest: "sha256:da448699b6c674cbfe379b8460e207ed9aab806966356068e736c33adf804714"
 generated:
   id: uk_b578d1931e
   subject: "room.answer_doorbell: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: room.answer_doorbell
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Doorbell.cs
     symbol: RoomService
-    line: 20
+    line: 21
   - id: ev_a1cfcc1f8f41
     kind: emulator_flow
     authority: vortex_emulator

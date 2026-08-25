@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:84ac93c59efd9410aa4c02bdcb2108ccd821e57c4097ed78739f912baab3b24c"
+generated_digest: "sha256:8a0e824b7e724435b19285d933b0649c940e64f86a3617cc5edc4ece32a36c0f"
 generated:
   id: moderation.call_for_help_from_forum_thread
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.GetThreadAuthorAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -44,20 +44,13 @@ generated:
   - expression: threadId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   state_changes: []
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: false
   evidence:
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 44
   - id: ev_c0486e4a505d
     kind: emulator_handler
     authority: vortex_emulator
@@ -65,6 +58,13 @@ generated:
     source: Vortex.PacketHandlers/Help/CallForHelpFromForumThreadMessageHandler.cs
     symbol: CallForHelpFromForumThreadMessageHandler
     line: 16
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 44
   - id: ev_ec0d8f0a936b
     kind: emulator_flow
     authority: vortex_emulator

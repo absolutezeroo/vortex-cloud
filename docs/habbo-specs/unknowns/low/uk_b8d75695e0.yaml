@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3f32a4fbb0c3ee91afd6b3aa9970d5495d7341a9fa57401a9bb48151fae0d1b1"
+generated_digest: "sha256:8477dfd95323c96a5f56cb18d74e403d1b490ec44c5945ed80bc3b680b52da15"
 generated:
   id: uk_b8d75695e0
   subject: "outgoing/JukeboxSongDisks: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
+  question: Fields 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: JukeboxSongDisks
   known_evidence:
+  - id: ev_f085e8bc7add
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4232.as
+    symbol: _SafeCls_4232
+    line: 38
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fc9e668a4378
     kind: client_parser
     authority: multi_implementation

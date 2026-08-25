@@ -10,63 +10,69 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e95bf04ba24088d010d6a7986e0a5edde6fcd5a14cbe366f6bc8eaa2df73533c"
+generated_digest: "sha256:2ea200c7d3d5f9be1115d74583575d905fce1e1db9e2ba1ecdab77343f2630d1"
 generated:
   name: GuildFurniContextMenuInfo
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: object_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   - index: 1
     name: guild_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   - index: 2
     name: guild_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   - index: 3
     name: guild_home_room_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   - index: 4
     name: user_is_member
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   - index: 5
     name: guild_has_readable_forum
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_41c8fcd98037
+    - ev_ab89eef1cb99
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - boolean
+    - boolean
+    evidence: ev_ab89eef1cb99
   - origin: nitro
     authority: multi_implementation
     field_count: 6
@@ -104,6 +110,14 @@ generated:
     - boolean
     evidence: ev_bdaac7830b91
   evidence:
+  - id: ev_ab89eef1cb99
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4359.as
+    symbol: _SafeCls_4359
+    line: 68
+    note: official client build WIN63-202607011411-782849652
   - id: ev_41c8fcd98037
     kind: client_parser
     authority: multi_implementation
@@ -127,5 +141,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Furniture/GuildFurniContextMenuInfoMessageComposerSerializer.cs
     symbol: GuildFurniContextMenuInfoMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_f569220c2d
 verified: {}
 manual: {}

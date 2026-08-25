@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ad45f7312db2c6ec126d70f42dd3aff493977a6994dbf38f300f4a4194cb4e6e"
+generated_digest: "sha256:85f84a6928f3b8953360ca2f4f4ebc7bc52c4a936d7afb53e6e9f27b7e94b3d8"
 generated:
   name: MysteryBoxKeys
   direction: outgoing
   domain: mystery_box
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: box_color
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6382316a48af
+    - ev_45eebfb35adc
   - index: 1
     name: key_color
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6382316a48af
+    - ev_45eebfb35adc
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_45eebfb35adc
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - string
     evidence: ev_d30b817ac2ee
   evidence:
+  - id: ev_45eebfb35adc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1737/_SafeCls_1736.as
+    symbol: _SafeCls_1736
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6382316a48af
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/MysteryBox/MysteryBoxKeysMessageComposerSerializer.cs
     symbol: MysteryBoxKeysMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_ab916703a5
 verified: {}
 manual: {}

@@ -10,31 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:315a3cd64e701a0a9c19aa9fd5c774a7c39b864a54b14b7ed9af99590966bd96"
+generated_digest: "sha256:84b609d073cb9d4ac81131ce0a432b0e8173e6aa1c515d95bbadc0fc76138295"
 generated:
   name: RoomFilterSettings
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9d60f7d0bfb1
+    - ev_53eb46d32fb1
     - ev_2b4bcfca6c4e
   - index: 1
-    name: word
+    name: bad_words
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_9d60f7d0bfb1
-    - ev_2b4bcfca6c4e
+    - ev_53eb46d32fb1
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_53eb46d32fb1
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +66,14 @@ generated:
     - array
     evidence: ev_2b4bcfca6c4e
   evidence:
+  - id: ev_53eb46d32fb1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_3620.as
+    symbol: _SafeCls_3620
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_83cca827d33a
     kind: client_parser
     authority: multi_implementation

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ca649d76b15e84cb9a6dd9031fff746e1e0b603cb263b7efbdd20b9c1f919873"
+generated_digest: "sha256:23233f9b7a3a240e248ee6128c4439da0e3351ec3460d38769d132b59a70fd51"
 generated:
   id: uk_384a5d59fe
   subject: "vault.income_reward_claim: what the server sends when it refuses"
   severity: medium
-  question: vault.income_reward_claim changes state and has 3 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: vault.income_reward_claim changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: vault.income_reward_claim
   known_evidence:
@@ -26,20 +26,27 @@ generated:
     source: Vortex.PacketHandlers/Vault/IncomeRewardClaimMessageHandler.cs
     symbol: IncomeRewardClaimMessageHandler
     line: 11
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
-    line: 47
+    line: 50
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 318
+    line: 381
   - id: ev_d920210215ea
     kind: emulator_flow
     authority: vortex_emulator

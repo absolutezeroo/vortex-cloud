@@ -10,55 +10,68 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4863fb348c0297030bda023dbd6357fcd4601af12aab016e80e9057d3670d599"
+generated_digest: "sha256:dc0f3a0aa98a34e984d8dd20f2d7025df8318c5b542eadf1e396e24bdcd22ee7"
 generated:
   name: RoomAdPurchaseInfo
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: is_vip
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cfca4ec19059
+    - ev_4e0f638a4229
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cfca4ec19059
+    - ev_4e0f638a4229
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_cfca4ec19059
+    - ev_4e0f638a4229
   - index: 3
     name: unknown_3
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_cfca4ec19059
+    - ev_4e0f638a4229
   - index: 4
     name: unknown_4
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_cfca4ec19059
+    - ev_4e0f638a4229
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 5
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - string
+    - boolean
+    evidence: ev_4e0f638a4229
   - origin: arcturus
     authority: reference_emulator
     field_count: 5
@@ -71,6 +84,14 @@ generated:
     - boolean
     evidence: ev_cfca4ec19059
   evidence:
+  - id: ev_4e0f638a4229
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_4049.as
+    symbol: _SafeCls_4049
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cfca4ec19059
     kind: reference_composer
     authority: reference_emulator
@@ -79,6 +100,8 @@ generated:
     symbol: RoomAdPurchaseInfoMessageComposer
     line: 22
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_aa611d201f
   unknowns:
   - uk_a0ff1d393d
 verified: {}

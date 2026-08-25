@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2a7779dd80debe84dbd6e92cd7c417ceb882fbad346acf07204465e140771f37"
+generated_digest: "sha256:dce0354e351a3c4e878d47168f2ffaef5d45aaefebbb35d15060a61e9bbaa29c"
 generated:
   id: uk_bacb423d32
   subject: "outgoing/Items: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: ItemsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b33da45849c4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3127.as
+    symbol: _SafeCls_3127
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef8054854073
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: ItemsMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d117a89645c3
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ItemsMessageComposer.java
-    symbol: ItemsMessageComposer
-    line: 24
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

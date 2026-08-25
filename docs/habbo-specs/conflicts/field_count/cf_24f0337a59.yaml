@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:dba73b02fe26cf78594b684d953bf4f5ebbc5a26ece6f57f4c1f9b9202738aeb"
+generated_digest: "sha256:bb2bf71f94761764dfc6b2c42f5f470742667636f4ffe30b7931b17f28d7dd24"
 generated:
   id: cf_24f0337a59
   kind: field_count
   subject: "outgoing/CatalogPublished: field count"
   packet: CatalogPublished
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: boolean, string"
+    evidence: ev_8b99b9b4b2ba
   - origin: arcturus
     authority: reference_emulator
     claim: "1 fields: boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: boolean, string"
     evidence: ev_788d09e8caaf
   evidence:
+  - id: ev_8b99b9b4b2ba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3506.as
+    symbol: _SafeCls_3506
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_04d08745fdfd
     kind: reference_composer
     authority: reference_emulator

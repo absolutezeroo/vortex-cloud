@@ -10,23 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:85180563515b21c603fc130e3214acc9f9bada829800fddddb70e8e3fa770792"
+generated_digest: "sha256:801be33ea3999a01d5603ce43757c3a3f46923cc8449bc19e9d1a3d732c12746"
 generated:
   name: ConsoleMessageHistory
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: chat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e512fe22e7a3
+    - ev_956505bc21f0
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_956505bc21f0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_956505bc21f0
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -44,6 +59,14 @@ generated:
     - array
     evidence: ev_93e0dcdd390a
   evidence:
+  - id: ev_956505bc21f0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2286.as
+    symbol: _SafeCls_2286
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e512fe22e7a3
     kind: client_parser
     authority: multi_implementation
@@ -61,5 +84,7 @@ generated:
     line: 7
   conflicts:
   - cf_b8dab27860
+  unknowns:
+  - uk_ec56f1ac67
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0f5efb62e68133dc5f0d6696319d251ddde3ee60ee66b2547d413162d4b41e6b"
+generated_digest: "sha256:c90653ae1d118ebd8e642fe0b4837cf828e07018fa4dfd6d8d95f1e2b8d54f78"
 generated:
   id: uk_292c8c47f3
   subject: "users.join_habbo_group: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: users.join_habbo_group
   known_evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 62
   - id: ev_1ba735814128
     kind: emulator_handler
     authority: vortex_emulator
@@ -33,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
     symbol: JoinHabboGroupMessageHandler
     line: 13
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 27
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,13 +40,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_9b02814f1589
+  - id: ev_40034f33a6de
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 62
+  - id: ev_b1c46fe16e7f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 27
+    line: 22
   - id: ev_c3fd7c3e3831
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,13 +61,6 @@ generated:
     source: Vortex.PacketHandlers/Users/JoinHabboGroupMessageHandler.cs
     symbol: JoinHabboGroupMessageHandler
     line: 24
-  - id: ev_c4e53aab9ae9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 22
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

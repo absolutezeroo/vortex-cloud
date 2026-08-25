@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4105f6ce0d631b5d147a0ec8153e1a02be451b4bf5b49e3c1cad20c5a9beb8f5"
+generated_digest: "sha256:7f8e747a593e432e2ac55686c848f7478098e4cf897e21713b2c7e2a764cfaf9"
 generated:
   id: uk_c88738cfdf
   subject: "outgoing/BadgePointLimits: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
+  question: Fields 0, 1, 2 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BadgePointLimits
   known_evidence:
+  - id: ev_2cf3d7f0d3d9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3206/_SafeCls_3205.as
+    symbol: _SafeCls_3205
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_deb82bccd443
     kind: reference_composer
     authority: reference_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d16efd423d2546b01ec6e9dc4fdd13cf7088e8a12f3a932db0a85758e6e33f19"
+generated_digest: "sha256:c6fb8396ef7b97d4e10d1cb413eb7c356f17870a31915183aa344c33d2b33dd6"
 generated:
   id: nft.get_nft_credits
   domain: nft
@@ -70,7 +70,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 206
+    line: 269
   scenarios:
   - nft.get_nft_credits.guard_0
   - nft.get_nft_credits.success

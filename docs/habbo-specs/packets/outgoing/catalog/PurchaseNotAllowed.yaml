@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6c87b5a8da4e6e5b235e7f361ee14104de527cac3f70875c563fe47a65ab1ff2"
+generated_digest: "sha256:ee5f15601ebfd88e59a4c936c54d0f517192e8652863269f3275ed09b22695fe"
 generated:
   name: PurchaseNotAllowed
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: error_type
+    name: error_code
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_95e7c4f1bd0f
-    - ev_3b42d6682049
+    - ev_87c02a00c653
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_87c02a00c653
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_3b42d6682049
   evidence:
+  - id: ev_87c02a00c653
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2062.as
+    symbol: _SafeCls_2062
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4b7662102603
     kind: client_parser
     authority: multi_implementation

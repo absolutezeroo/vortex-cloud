@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:12e0134828e0c63de89bc167f6ec1740668fbf21dc8683274c49442e136e89b2"
+generated_digest: "sha256:d61366ef68683e4fdf756558f81a32601d6c4577b9584ef79997540828e6cd85"
 generated:
   feature: marketplace.redeem_marketplace_offer_credits
   scenarios:
@@ -60,6 +60,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f50eed87b6f6
+  - scenario: marketplace.redeem_marketplace_offer_credits.guard_2
+    title: "redeem marketplace offer credits: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RedeemMarketplaceOfferCredits
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RedeemMarketplaceOfferCredits sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f50eed87b6f6
   - scenario: marketplace.redeem_marketplace_offer_credits.success
     title: "redeem marketplace offer credits: the request is accepted"
     given:
@@ -98,6 +121,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/RedeemMarketplaceOfferCreditsMessageHandler.cs
     symbol: RedeemMarketplaceOfferCreditsMessageHandler
     line: 10
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_55e13f1d6122
     kind: emulator_flow
     authority: vortex_emulator
@@ -111,6 +141,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 272
+    line: 466
 verified: {}
 manual: {}

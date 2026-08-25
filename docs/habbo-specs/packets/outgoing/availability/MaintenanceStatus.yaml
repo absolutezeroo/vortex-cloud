@@ -10,39 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:56b63e06016a78249205ad4f7b85df34298e538569be592584a6d195489eeba0"
+generated_digest: "sha256:20eff2715668c7db45dcc079ca4c95da7d2a36521c0b922342d5a25b732b4817"
 generated:
   name: MaintenanceStatus
   direction: outgoing
   domain: availability
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: is_in_maintenance
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a4f3e63a2a36
-    - ev_a6dd6232e17a
+    - ev_4518e4db8061
   - index: 1
     name: minutes_until_maintenance
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a4f3e63a2a36
-    - ev_a6dd6232e17a
+    - ev_4518e4db8061
   - index: 2
-    name: duration_minutes
+    name: duration
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_a4f3e63a2a36
-    - ev_a6dd6232e17a
+    - ev_4518e4db8061
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    evidence: ev_4518e4db8061
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +75,14 @@ generated:
     - int32
     evidence: ev_a6dd6232e17a
   evidence:
+  - id: ev_4518e4db8061
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2152/_SafeCls_3162.as
+    symbol: _SafeCls_3162
+    line: 41
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e573d5bdf58b
     kind: client_parser
     authority: multi_implementation

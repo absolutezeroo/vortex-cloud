@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:18e780661707022ad3fccbbdef68d79954ef24ea4aab2e86db31a89ab6934b9a"
+generated_digest: "sha256:230c8614969cf19152687b7a56d28f1d72b6b936a35c7888bee5af5f3006373c"
 generated:
   id: wired.wired_get_all_variable_holders
   domain: wired
@@ -41,9 +41,17 @@ generated:
     evidence: ev_3692090a8f99
   - order: 4
     layer: domain
+    symbol: RoomGrainWiredHost.AllAvatarPlayerIds
+    evidence: ev_633652ca6548
+  - order: 5
+    layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 5
+  - order: 6
+    layer: domain
+    symbol: RoomGrainWiredHost.AllItemIds
+    evidence: ev_633652ca6548
+  - order: 7
     layer: domain
     symbol: FurnitureWiredVariableLogic.TryGetValue
     evidence: ev_3692090a8f99
@@ -88,6 +96,13 @@ generated:
     source: Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/Variables/FurnitureWiredVariableLogic.cs
     symbol: FurnitureWiredVariableLogic
     line: 248
+  - id: ev_633652ca6548
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/Engine/RoomGrainWiredHost.cs
+    symbol: RoomGrainWiredHost
+    line: 96
   - id: ev_6ad3cbcde85a
     kind: emulator_handler
     authority: vortex_emulator

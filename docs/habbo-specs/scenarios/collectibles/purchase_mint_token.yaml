@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2aba1b32232aea1122ca38d982fa4d1eac581f025899421f2a66c587ebd14bdb"
+generated_digest: "sha256:d6833f38bf819ae09b68ccbc691b929ef5491deb323610e923178a9b9ecde6f0"
 generated:
   feature: collectibles.purchase_mint_token
   scenarios:
@@ -69,60 +69,6 @@ generated:
       emits: []
       evidence: ev_a376b354a3ae
   - scenario: collectibles.purchase_mint_token.guard_3
-    title: "purchase mint token: the guard 'update.ChangedBy != request.Amount' holds"
-    given:
-      guard: update.ChangedBy != request.Amount
-      guard_holds: "true"
-    when:
-      packet: PurchaseMintToken
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseMintToken sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: collectibles.purchase_mint_token.guard_4
-    title: "purchase mint token: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: PurchaseMintToken
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseMintToken sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: collectibles.purchase_mint_token.guard_5
-    title: "purchase mint token: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseMintToken
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseMintToken sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
-  - scenario: collectibles.purchase_mint_token.guard_6
     title: "purchase mint token: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -157,10 +103,6 @@ generated:
       outcome: success
       emits:
       - CollectibleMintTokenCount
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
-      - SilverBalance
       evidence: ev_34bf3ac088e2
   evidence:
   - id: ev_34bf3ac088e2
@@ -170,27 +112,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
   - id: ev_a376b354a3ae
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 73
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 94
+    line: 76
   - id: ev_ee343dece6c3
     kind: emulator_flow
     authority: vortex_emulator

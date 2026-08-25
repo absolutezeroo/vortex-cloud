@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1d9af2f0c7afb7fa595d383c82810a1fd321b8214df7021b5bcf7c2c9a41d09e"
+generated_digest: "sha256:51808dc88da1e547f72ce9e704499616c529357b02b0f149706ed6b629643289"
 generated:
   id: cf_d56caca8e3
   kind: field_count
@@ -19,8 +19,12 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "4 fields: int32, int32, string, int32"
+    claim: "3 fields: int32, int32, string, int32"
     evidence: ev_d15cd7d56ff9
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, string, int32"
+    evidence: ev_e4f1916870b1
   - origin: vortex
     authority: vortex_emulator
     claim: "5 fields: int32, int32, string, int32, array"
@@ -34,6 +38,14 @@ generated:
     symbol: ObjectsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_e4f1916870b1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2919.as
+    symbol: _SafeCls_2919
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dd1bf7a3dabb
     kind: emulator_serializer
     authority: vortex_emulator

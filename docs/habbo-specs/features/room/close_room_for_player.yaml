@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1fca97cfe93d958f080a28db981d53a0ae46f7088be422ba69dbdf307e581d12"
+generated_digest: "sha256:ed496205cb254ba30392e0cd562d492c09a3687203a3c2e63e1f35d2473a5a66"
 generated:
   id: room.close_room_for_player
   domain: room
@@ -324,7 +324,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 274
+    line: 277
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator

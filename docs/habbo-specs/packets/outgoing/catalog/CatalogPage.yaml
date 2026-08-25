@@ -10,38 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c9dc8e3d93146e7fa7aefcd27a4377bd515f5a35f18efc30daee7277d808bcef"
+generated_digest: "sha256:1946682a1954b0ce1e17deeed2d446fb4343acb46120c74e22a8db3731adc46d"
 generated:
   name: CatalogPage
   direction: outgoing
   domain: catalog
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: page_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_280b9815ee55
+    - ev_ecd7f54ac906
   - index: 1
-    name: unknown_1
+    name: catalog_type
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_280b9815ee55
+    - ev_ecd7f54ac906
   - index: 2
-    name: unknown_2
+    name: layout_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_280b9815ee55
+    - ev_ecd7f54ac906
   - index: 3
     name: unknown_3
     type: int32
@@ -51,21 +51,21 @@ generated:
     evidence:
     - ev_280b9815ee55
   - index: 4
-    name: unknown_4
+    name: offer_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_280b9815ee55
+    - ev_ecd7f54ac906
   - index: 5
-    name: unknown_5
+    name: accept_season_currency_as_credits
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_280b9815ee55
+    - ev_ecd7f54ac906
   - index: 6
     name: unknown_6
     type: int32
@@ -89,6 +89,19 @@ generated:
     - boolean
     - int32
     evidence: ev_280b9815ee55
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 7
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    - int32
+    evidence: ev_ecd7f54ac906
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -132,6 +145,14 @@ generated:
     symbol: CatalogPageMessageParser
     line: 75
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ecd7f54ac906
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_1747.as
+    symbol: _SafeCls_1747
+    line: 86
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ca7d7dba3634
     kind: client_parser
     authority: multi_implementation

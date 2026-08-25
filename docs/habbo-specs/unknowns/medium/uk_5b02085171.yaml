@@ -10,29 +10,22 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b55b7ba7d28b18e41b09a43927a364f22c1b26ae1453d6d60a28d232c8d0bfb0"
+generated_digest: "sha256:9b7ec3392225d5948f6160b27f4067c0c7f396832e934e63f7090bab4f6311bb"
 generated:
   id: uk_5b02085171
   subject: "users.create_guild: what the server sends when it refuses"
   severity: medium
-  question: users.create_guild changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: users.create_guild changes state and has 11 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: users.create_guild
   known_evidence:
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 31
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 641
+    line: 656
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,27 +33,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 24
-  - id: ev_373e76aa8a80
+  - id: ev_680fc4a69aa8
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
-  - id: ev_432f3c2b73af
+    source: Vortex.Primitives/Authentication/AccountSessionStore.cs
+    symbol: AccountSessionStore
+    line: 58
+  - id: ev_7c8de830bc47
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 85
+    source: Vortex.Primitives/Rooms/Wired/Variable/WiredVariableId.cs
+    symbol: WiredVariableId
+    line: 17
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,13 +54,6 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_96f736ad3f76
     kind: emulator_handler
     authority: vortex_emulator
@@ -89,13 +68,6 @@ generated:
     source: Vortex.PacketHandlers/Users/CreateGuildMessageHandler.cs
     symbol: CreateGuildMessageHandler
     line: 22
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 55
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator
@@ -103,5 +75,12 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 84
 verified: {}
 manual: {}

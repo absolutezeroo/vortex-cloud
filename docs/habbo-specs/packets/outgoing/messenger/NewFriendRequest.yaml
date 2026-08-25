@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4f17f8c4ca12f78f7dc6a02e04e33ebd2cccf66f9da9380d35d80af7276c9b66"
+generated_digest: "sha256:f1e147d9406292692fee1ff13a7bbe4398d0738191cd4ccbce509a1f62fc662d"
 generated:
   name: NewFriendRequest
   direction: outgoing
@@ -43,6 +43,12 @@ generated:
     evidence:
     - ev_3436122cfc80
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_9ab1cb2c5b3c
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -66,6 +72,14 @@ generated:
     - block
     evidence: ev_63aa9512ce18
   evidence:
+  - id: ev_9ab1cb2c5b3c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2021.as
+    symbol: _SafeCls_2021
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_da127f514a76
     kind: client_parser
     authority: multi_implementation

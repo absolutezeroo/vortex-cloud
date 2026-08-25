@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c38dfe0cfcd6ff123225ddebf70b5a18ba69e5f433d09c09b61297af2d0783bc"
+generated_digest: "sha256:b8cbc15cbea88b9b97371ea9fe7fef3e5ba8de891733d08564d43ebcde19089a"
 generated:
   id: uk_0680d14542
   subject: "outgoing/PollContents: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
+  question: Fields 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PollContents
   known_evidence:
+  - id: ev_848081aabedf
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3396.as
+    symbol: _SafeCls_3396
+    line: 67
+    note: official client build WIN63-202607011411-782849652
   - id: ev_121e96246ba6
     kind: reference_composer
     authority: reference_emulator

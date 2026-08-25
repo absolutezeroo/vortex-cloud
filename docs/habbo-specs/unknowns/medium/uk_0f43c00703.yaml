@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c2b458d33c14ecf0cb2d7980e3e46462975c0de1cb315cf051b1203c90cc0a00"
+generated_digest: "sha256:43b63f44872787909d515c55faf16b28d3f0da9e0cfd31ba97077447a8bfd2c8"
 generated:
   id: uk_0f43c00703
   subject: "users.update_guild_identity: what the server sends when it refuses"
@@ -33,11 +33,11 @@ generated:
     source: Vortex.PacketHandlers/Users/UpdateGuildIdentityMessageHandler.cs
     symbol: UpdateGuildIdentityMessageHandler
     line: 11
-  - id: ev_257d20d10bb7
+  - id: ev_861d7eb0e4b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
+    source: Vortex.Social/Grains/GroupGrain.Settings.cs
     symbol: GroupGrain
     line: 24
   - id: ev_86f81f4f919c

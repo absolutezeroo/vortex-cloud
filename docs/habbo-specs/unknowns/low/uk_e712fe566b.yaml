@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ec266c83cc58b0baedc6743ab1978c89197c0999b874e49a9864837d148e02e7"
+generated_digest: "sha256:7ccdb8d47fb7b9da4d65622958d9f381c8d7fbd8a8a386add6e6e83620f444ed"
 generated:
   id: uk_e712fe566b
   subject: "outgoing/PlayListSongAdded: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PlayListSongAdded
   known_evidence:
+  - id: ev_78ea69bb6b92
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4161.as
+    symbol: _SafeCls_4161
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_80253ae4b14e
     kind: client_parser
     authority: multi_implementation

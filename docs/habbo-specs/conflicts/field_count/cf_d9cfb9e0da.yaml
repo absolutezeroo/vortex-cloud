@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:cee68cd02e98e1e0e7f1c47b3406e557a450bc34c879b570a2edb07d61bb7744"
+generated_digest: "sha256:be5dd315822ea209151386b503634e6a70855ba05428df73e2b17039f3d8b00f"
 generated:
   id: cf_d9cfb9e0da
   kind: field_count
   subject: "outgoing/Favourites: field count"
   packet: Favourites
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, int32"
+    evidence: ev_040b79bcdf5d
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: int32"
@@ -30,6 +34,14 @@ generated:
     claim: "3 fields: int32, int32, array"
     evidence: ev_2bc7894964fb
   evidence:
+  - id: ev_040b79bcdf5d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3614.as
+    symbol: _SafeCls_3614
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_80ce8ac99d66
     kind: client_parser
     authority: multi_implementation

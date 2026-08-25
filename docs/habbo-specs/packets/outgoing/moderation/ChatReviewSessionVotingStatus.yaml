@@ -10,31 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:68d01cfc37256f2ccc1eaae899c6d66c32e354f3b7d07d6f8fb139873d5417ad"
+generated_digest: "sha256:636f319cac06da5bf8eca50b8e4b6929c14e12c6af9f65e1024331c7b18d7690"
 generated:
   name: ChatReviewSessionVotingStatus
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_29a30b11ad54
+    - ev_66de1871bf06
     - ev_77be7a48d5b1
   - index: 1
     name: status
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_29a30b11ad54
-    - ev_77be7a48d5b1
+    - ev_66de1871bf06
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_66de1871bf06
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +66,14 @@ generated:
     - array
     evidence: ev_77be7a48d5b1
   evidence:
+  - id: ev_66de1871bf06
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4242.as
+    symbol: _SafeCls_4242
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_adec4922c2de
     kind: client_parser
     authority: multi_implementation

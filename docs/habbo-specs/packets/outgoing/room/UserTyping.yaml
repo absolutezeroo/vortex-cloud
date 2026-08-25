@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b9ed5bad35a59c0021f8cbfcd60f34b3164c9722fd81cf1fa6fa7067cf50428f"
+generated_digest: "sha256:3bfd717f9a45300baf1ffbd303297f3d0124de5c60f3cbe6639b628f9466c075"
 generated:
   name: UserTyping
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e108ba49efad
+    - ev_21f79435425e
   - index: 1
     name: is_typing
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e108ba49efad
+    - ev_21f79435425e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_21f79435425e
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_1269f1217139
   evidence:
+  - id: ev_21f79435425e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_3323.as
+    symbol: _SafeCls_3323
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e108ba49efad
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Chat/UserTypingMessageComposerSerializer.cs
     symbol: UserTypingMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_ce9e4f00d2
 verified: {}
 manual: {}

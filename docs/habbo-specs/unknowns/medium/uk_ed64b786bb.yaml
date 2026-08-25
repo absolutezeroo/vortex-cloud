@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:29ffb04f4f625d0837925fe5b9bd51b4f48c81ca6d3afe44881f7a3ef14ebe7f"
+generated_digest: "sha256:bd39623ef4c89e3b600d6b3fc68538bbeed701c266554811ea78247589717d13"
 generated:
   id: uk_ed64b786bb
   subject: "wired.withdraw_all_from_wired_chest: what the server sends when it refuses"
@@ -109,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 363
+    line: 611
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

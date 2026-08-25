@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:51e59d7afc5d221ffa41036347d49c08a29bc07dcea77355f2c986c5a3316650"
+generated_digest: "sha256:f469a1c817f7aaa2ef35032f6dda39d51080c75d287b1156d7443e8b87b3231e"
 generated:
   name: UserBanned
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: message
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9e32a56e47c6
-    - ev_241221160740
+    - ev_3ee6632787b7
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_3ee6632787b7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - string
     evidence: ev_241221160740
   evidence:
+  - id: ev_3ee6632787b7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2845.as
+    symbol: _SafeCls_2845
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_7424864c3415
     kind: client_parser
     authority: multi_implementation

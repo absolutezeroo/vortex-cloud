@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:901926ea8336bf9f25e8053a5b4606e1900d32e07118456be68f65035cdfb436"
+generated_digest: "sha256:e9d963e39c06ed5f4236f7c4c8eb30a0fb10ba7d49772a7832d09a187acf17a7"
 generated:
   id: uk_3c83aa8f13
   subject: "outgoing/CraftableProducts: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: CraftableProductsMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_12c5838637c3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4350.as
+    symbol: _SafeCls_4350
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f1a670f4809f
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: CraftableProductsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a412dd6accf1
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/crafting/CraftableProductsMessageComposer.java
-    symbol: CraftableProductsMessageComposer
-    line: 22
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

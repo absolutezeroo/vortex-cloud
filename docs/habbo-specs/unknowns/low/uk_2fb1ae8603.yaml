@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:11f562d0697a146f487f139af3821ac4141176eb7df3dd2e05a3908e88db5f22"
+generated_digest: "sha256:bd5cffba67f2af52cb9565909bf922256d980db0be870e6656478200c6fd5f66"
 generated:
   id: uk_2fb1ae8603
   subject: "outgoing/RelationshipStatusInfo: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RelationshipStatusInfo
   known_evidence:
+  - id: ev_e0e763d32d46
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3604.as
+    symbol: _SafeCls_3604
+    line: 31
+    note: official client build WIN63-202607011411-782849652
   - id: ev_302f98196462
     kind: reference_composer
     authority: reference_emulator

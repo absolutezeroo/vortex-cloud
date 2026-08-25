@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59328dea795458f78fc30e932a0f25f9c7145b13a29a5bc91028f9810532ba2e"
+generated_digest: "sha256:3f5dcbfe35ce48792a917e716c54e48207eed51237a1c542f9ca87470bf2e24b"
 generated:
   name: InitCamera
   direction: outgoing
   domain: camera
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,26 +23,36 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e3597b68fdba
+    - ev_a504b6c74dd3
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e3597b68fdba
+    - ev_a504b6c74dd3
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e3597b68fdba
+    - ev_a504b6c74dd3
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_a504b6c74dd3
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -65,6 +75,14 @@ generated:
     types: []
     evidence: ev_01eca4d82a77
   evidence:
+  - id: ev_a504b6c74dd3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4393.as
+    symbol: _SafeCls_4393
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_13a944b149c8
     kind: client_parser
     authority: multi_implementation

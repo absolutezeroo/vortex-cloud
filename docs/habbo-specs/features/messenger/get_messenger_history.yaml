@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c2a66df8cc52650b1f164cb599f1f12c3f548bc7db613c4ff177d1dba915c8d3"
+generated_digest: "sha256:6bf51269b7ce071c2d5b07ed89cc611893391c92be5693a4a2c7661f88c822ea"
 generated:
   id: messenger.get_messenger_history
   domain: messenger
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.GetMessageHistoryAsync
-    evidence: ev_c0304e5ad0cf
+    evidence: ev_564bd0580d41
   - order: 2
     layer: grain
     symbol: ServerConfigGrain.GetIntAsync
@@ -68,6 +68,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/GetMessengerHistoryMessageHandler.cs
     symbol: GetMessengerHistoryMessageHandler
     line: 26
+  - id: ev_564bd0580d41
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
+    symbol: MessengerGrain
+    line: 125
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,13 +82,6 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_c0304e5ad0cf
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
-    symbol: MessengerGrain
-    line: 125
   - id: ev_cd257166a831
     kind: emulator_handler
     authority: vortex_emulator

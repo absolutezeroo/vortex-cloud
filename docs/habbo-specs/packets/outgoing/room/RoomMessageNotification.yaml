@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0a6fa71b9a3dc7b6a7b1096a5473224adf3c0da4e7d73f3dc4c3c68f09d7a31f"
+generated_digest: "sha256:0b6153b7d438b46a165d2d84184abd1fdfe28ee1edcf76bf4ebfd22302df27f0"
 generated:
   name: RoomMessageNotification
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: room_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_65eab9de7fbb
-    - ev_127ebb7b19e5
+    - ev_4bac7054bab7
   - index: 1
     name: room_name
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_65eab9de7fbb
-    - ev_127ebb7b19e5
+    - ev_4bac7054bab7
   - index: 2
     name: message_count
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_65eab9de7fbb
-    - ev_127ebb7b19e5
+    - ev_4bac7054bab7
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    evidence: ev_4bac7054bab7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +74,14 @@ generated:
     - int32
     evidence: ev_127ebb7b19e5
   evidence:
+  - id: ev_4bac7054bab7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3790.as
+    symbol: _SafeCls_3790
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_25e53a7e9c0d
     kind: client_parser
     authority: multi_implementation

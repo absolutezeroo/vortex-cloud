@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:61f38e0d0a7d03c24d20d2e971308e431b4dcc8bd80fad3fbcba8c95cb4d1d6e"
+generated_digest: "sha256:db0774511a419d2809375b67c7579f8df23a44f6512315af508407f0967bece5"
 generated:
   name: AvatarEffect
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4805d7af3dec
+    - ev_bf54586bf171
   - index: 1
     name: effect_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4805d7af3dec
+    - ev_bf54586bf171
   - index: 2
-    name: delay_milliseconds
+    name: delay_milli_seconds
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4805d7af3dec
+    - ev_bf54586bf171
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_bf54586bf171
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -71,6 +77,14 @@ generated:
     - int32
     evidence: ev_1e2e02eca59b
   evidence:
+  - id: ev_bf54586bf171
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2488/_SafeCls_3361.as
+    symbol: _SafeCls_3361
+    line: 42
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4805d7af3dec
     kind: client_parser
     authority: multi_implementation
@@ -94,5 +108,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Action/AvatarEffectMessageComposerSerializer.cs
     symbol: AvatarEffectMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_0c2d3c23b5
 verified: {}
 manual: {}

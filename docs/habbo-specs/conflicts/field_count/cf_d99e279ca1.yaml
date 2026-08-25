@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2014009a457269779e792dde7ff34a476965f8de2fc985988d3ab2aff207366f"
+generated_digest: "sha256:eaa2b21c60e54de4d135b3ec95d3d0ed4659a43d67449fb892cfefe5c2d73567"
 generated:
   id: cf_d99e279ca1
   kind: field_count
   subject: "outgoing/FriendListFragment: field count"
   packet: FriendListFragment
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, int32"
+    evidence: ev_43f92600af0e
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: int32, int32"
+    claim: "1 fields: int32, int32"
     evidence: ev_ee871cd7b6aa
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "4 fields: int32, int32, int32, array"
     evidence: ev_01f71999ddf7
   evidence:
+  - id: ev_43f92600af0e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_1754.as
+    symbol: _SafeCls_1754
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ee871cd7b6aa
     kind: client_parser
     authority: multi_implementation

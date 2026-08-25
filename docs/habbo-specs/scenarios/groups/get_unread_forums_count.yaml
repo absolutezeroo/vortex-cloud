@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:66fcf843eb4d999ccaad0b5b3c77ae3d0426bf0fcbb5b9e8f202a0284786220d"
+generated_digest: "sha256:f66bcec7ca31238aa06f9c5450fdc6a86b7db94fbab2cbf7bb80175a6142c769"
 generated:
   feature: groups.get_unread_forums_count
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -133,12 +133,12 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetUnreadForumsCountMessageHandler.cs
     symbol: GetUnreadForumsCountMessageHandler
     line: 22
-  - id: ev_678209870593
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 646
+    line: 645
 verified: {}
 manual: {}

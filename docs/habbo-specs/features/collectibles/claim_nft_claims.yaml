@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9ca1e1d49055663a044dcb443fc15ed3bb5bdd31c0644d1cdb4dd9863ad49007"
+generated_digest: "sha256:b5a096fd278eeb00da21786814e51231b20660cfe3ef29083b22d6b6551d37e3"
 generated:
   id: collectibles.claim_nft_claims
   domain: collectibles
@@ -36,13 +36,9 @@ generated:
     symbol: InventoryGrain.GrantFurnitureDefinitionAsync
     evidence: ev_c6396662000a
   - order: 3
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 4
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffDataFromJson
-    evidence: ev_7a660921f135
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -52,10 +48,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_d72434a4527c
-  - expression: "!string.IsNullOrEmpty(jsonData)"
+  - expression: _registry is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_7a660921f135
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: claim.ClaimedAmount
     value: claim.ClaimLimit
@@ -70,20 +66,13 @@ generated:
       evidence: ev_b5ea56e36399
   reaches_persistence: true
   evidence:
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_a65e14c7ec3f
     kind: emulator_handler
     authority: vortex_emulator
@@ -104,14 +93,14 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 586
+    line: 541
   - id: ev_d72434a4527c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
     symbol: PlayerNftClaimsGrain
-    line: 65
+    line: 68
   scenarios:
   - collectibles.claim_nft_claims.guard_0
   - collectibles.claim_nft_claims.guard_1

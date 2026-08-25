@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d79dbd285d95ed93f9f570c1892c6519bad92e079ba9fe6a28dd05466745f6a2"
+generated_digest: "sha256:6c65cba7727f3ecb75ddea2d1bfcceb8dc020a0fa5c43b819bc08bf9b3f2c0b3"
 generated:
   id: uk_f8cd214d39
   subject: "room.open_mystery_trophy: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: room.open_mystery_trophy
   known_evidence:
+  - id: ev_199c551380d8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PrizePoolManagerGrain.cs
+    symbol: PrizePoolManagerGrain
+    line: 54
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -81,14 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 636
-  - id: ev_d6dd76076455
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PrizePoolManagerGrain.cs
-    symbol: PrizePoolManagerGrain
-    line: 54
+    line: 679
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

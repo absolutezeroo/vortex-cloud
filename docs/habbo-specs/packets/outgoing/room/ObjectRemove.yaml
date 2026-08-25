@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ae4572c4c14148bed7684aa895d6e8e5759afdb27268857860dca5599790bbd5"
+generated_digest: "sha256:bae5544d882ff41210f501bf9e6ac9e6b4126d651cc3b6af00a27cd1b1ac3ede"
 generated:
   name: ObjectRemove
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: id
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_96780f904521
+    - ev_afea3526d69b
   - index: 1
     name: is_expired
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_96780f904521
+    - ev_afea3526d69b
   - index: 2
     name: picker_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_96780f904521
+    - ev_afea3526d69b
   - index: 3
     name: delay
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_96780f904521
+    - ev_afea3526d69b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - string
+    - boolean
+    - int32
+    - int32
+    evidence: ev_afea3526d69b
   - origin: nitro
     authority: multi_implementation
     field_count: 4
@@ -82,6 +88,14 @@ generated:
     - int32
     evidence: ev_7d779cf213b3
   evidence:
+  - id: ev_afea3526d69b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3811.as
+    symbol: _SafeCls_3811
+    line: 50
+    note: official client build WIN63-202607011411-782849652
   - id: ev_96780f904521
     kind: client_parser
     authority: multi_implementation
@@ -105,5 +119,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/ObjectRemoveMessageComposerSerializer.cs
     symbol: ObjectRemoveMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_eb6d33e272
 verified: {}
 manual: {}

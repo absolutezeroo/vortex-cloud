@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:822dc5bc1d55342d4006c65489c3392e2c092633c5767ca7d87260ae804e79e4"
+generated_digest: "sha256:2f3d05d6b2a68785cebfd6946ef1b72511a1834d543b275edffaad289189e7e2"
 generated:
   id: uk_bef1fbe136
   subject: "outgoing/Achievement: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Achievement
   known_evidence:
+  - id: ev_7361095241ab
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_3023.as
+    symbol: _SafeCls_3023
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e441168a3932
     kind: client_parser
     authority: client_code

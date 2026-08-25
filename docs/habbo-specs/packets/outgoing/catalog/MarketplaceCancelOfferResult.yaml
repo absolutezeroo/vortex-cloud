@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a47899c0c22c16dee8bca6512d6119ea9d316c856c238bea42d858460449c03f"
+generated_digest: "sha256:091abef9a8e5070382b950a72a6b14d94caf771a8817adff591cc85281d90aae"
 generated:
   name: MarketplaceCancelOfferResult
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: offer_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6d5a9cc18e3d
+    - ev_3886cecd72f8
   - index: 1
-    name: unknown_1
+    name: success
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6d5a9cc18e3d
+    - ev_3886cecd72f8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - boolean
+    evidence: ev_3886cecd72f8
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - boolean
     evidence: ev_6d5a9cc18e3d
   evidence:
+  - id: ev_3886cecd72f8
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_2414.as
+    symbol: _SafeCls_2414
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6d5a9cc18e3d
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: MarketplaceCancelOfferResultMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_991396f6d1
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3531be14b828cf1238b3381ce96d9afdb35aa8f4153f04fecef56437b3e790f2"
+generated_digest: "sha256:3c87e5b5708e700c95833f907a5d7af85b9b20d2f75ece1b30447e8d1bee5b36"
 generated:
   id: uk_9629b9da77
   subject: "room.get_room_entry_data: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 204
+    line: 219
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,13 +68,20 @@ generated:
     source: Vortex.Primitives/Permissions/PermissionSet.cs
     symbol: PermissionSet
     line: 33
+  - id: ev_680fc4a69aa8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Authentication/AccountSessionStore.cs
+    symbol: AccountSessionStore
+    line: 58
   - id: ev_7327c7799f5f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -96,6 +103,13 @@ generated:
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
     line: 17
+  - id: ev_7c8de830bc47
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Rooms/Wired/Variable/WiredVariableId.cs
+    symbol: WiredVariableId
+    line: 17
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator
@@ -109,7 +123,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 289
+    line: 299
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

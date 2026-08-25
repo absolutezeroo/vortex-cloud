@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f1991cd2d702d4b077559891d0fcab8c84a2a72cdb31ef3b320f203cff626412"
+generated_digest: "sha256:368c7c55ab7a4e9463eb7b28605385d90e583a3af61f3560dbb6c097ac35444b"
 generated:
   name: GuildEditFailed
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: reason
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_933c7b6c9263
-    - ev_84338e753d7b
+    - ev_513da55e50a2
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_513da55e50a2
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_84338e753d7b
   evidence:
+  - id: ev_513da55e50a2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2310.as
+    symbol: _SafeCls_2310
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a97bf703eb92
     kind: client_parser
     authority: multi_implementation

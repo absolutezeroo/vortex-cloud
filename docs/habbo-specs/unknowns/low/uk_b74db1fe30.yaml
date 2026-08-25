@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a62a5432f06ff3a78d17ca12853f14d83d1ffda55786770f969116eb3c60ba49"
+generated_digest: "sha256:a548580775d7e94f71c0dfe7e6138d6d9e85bbfcab988738b766ea00ceff583e"
 generated:
   id: uk_b74db1fe30
   subject: "outgoing/NavigatorSavedSearches: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: NavigatorSavedSearchesParser
     line: 20
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_617316e0ec41
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_2204.as
+    symbol: _SafeCls_2204
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_35abfb5f615c
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: NavigatorSavedSearchesMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3898a5d19b5d
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/NavigatorSavedSearchesMessageComposer.java
-    symbol: NavigatorSavedSearchesMessageComposer
-    line: 18
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

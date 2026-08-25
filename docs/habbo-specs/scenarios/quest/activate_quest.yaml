@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6cb7b26dcad481b14006e74a3f9fc73edbf6cad30e392bcac3a63ba9149e602c"
+generated_digest: "sha256:8dd5e2d91300007eb40d87fc9645bfc27e9fa4f638ec16c0677d4bf8b1431bda"
 generated:
   feature: quest.activate_quest
   scenarios:
@@ -49,7 +49,25 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f7df1e322a73
+      evidence: ev_3e19f38401db
+  - scenario: quest.activate_quest.guard_2
+    title: "activate quest: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: ActivateQuest
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of ActivateQuest sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: quest.activate_quest.success
     title: "activate quest: the request is accepted"
     given:
@@ -69,15 +87,22 @@ generated:
       - Quest
       - QuestCancelled
       - Quests
-      evidence: ev_373e76aa8a80
+      evidence: ev_34bf3ac088e2
   evidence:
-  - id: ev_373e76aa8a80
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 267
   - id: ev_56c775d65c26
     kind: emulator_flow
     authority: vortex_emulator
@@ -85,12 +110,5 @@ generated:
     source: Vortex.PacketHandlers/Quest/ActivateQuestMessageHandler.cs
     symbol: ActivateQuestMessageHandler
     line: 19
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 264
 verified: {}
 manual: {}

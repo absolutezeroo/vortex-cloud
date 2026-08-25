@@ -10,55 +10,117 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4102edd5d3daf8b5809b67d1c9f32bd0ff1755ff763846ac79b8ad7a9e73252b"
+generated_digest: "sha256:d1a6b1aeb65e2aa91c573730b5b2b4ec3d3ac936e7ae338ea2451f2ca288aad4"
 generated:
   name: UserChange
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05bbcb3b8a5d
+    - ev_ae7c6e00e05a
   - index: 1
     name: figure
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05bbcb3b8a5d
+    - ev_ae7c6e00e05a
   - index: 2
-    name: gender
+    name: sex
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05bbcb3b8a5d
+    - ev_ae7c6e00e05a
   - index: 3
     name: custom_info
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_05bbcb3b8a5d
+    - ev_ae7c6e00e05a
   - index: 4
     name: achievement_score
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_ae7c6e00e05a
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_ae7c6e00e05a
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_ae7c6e00e05a
+  - index: 7
+    name: unknown_7
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_05bbcb3b8a5d
+    - ev_ae7c6e00e05a
+  - index: 8
+    name: unknown_8
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_ae7c6e00e05a
+  - index: 9
+    name: unknown_9
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_ae7c6e00e05a
+  - index: 10
+    name: badges_rank
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_ae7c6e00e05a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 11
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_ae7c6e00e05a
   - origin: nitro
     authority: multi_implementation
     field_count: 5
@@ -96,6 +158,14 @@ generated:
     - int32
     evidence: ev_e34a4bb9e2ce
   evidence:
+  - id: ev_ae7c6e00e05a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2646.as
+    symbol: _SafeCls_2646
+    line: 67
+    note: official client build WIN63-202607011411-782849652
   - id: ev_05bbcb3b8a5d
     kind: client_parser
     authority: multi_implementation
@@ -121,5 +191,7 @@ generated:
     line: 19
   conflicts:
   - cf_54f53e20a7
+  unknowns:
+  - uk_ba69c22f79
 verified: {}
 manual: {}

@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d4c0476d9d9a92fc29880ff0e4ed21a4f38bc14ee5ace4f3bdb9a0cc2a5b9095"
+generated_digest: "sha256:319f455fac6be0e8c81a31ec80fdb3cbc82001de09fdad70f41f32d595a3ed29"
 generated:
   id: cf_1e354857b2
   kind: field_count
   subject: "outgoing/FriendNotification: field count"
   packet: FriendNotification
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: string, int32, string"
+    evidence: ev_be71a6ca9c1e
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: string, string"
+    claim: "1 fields: string, string"
     evidence: ev_9166438b4ae1
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "3 fields: string, int32, string"
     evidence: ev_bb5888533e41
   evidence:
+  - id: ev_be71a6ca9c1e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_3059.as
+    symbol: _SafeCls_3059
+    line: 41
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9166438b4ae1
     kind: client_parser
     authority: multi_implementation

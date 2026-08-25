@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1ad2a9389cfe21a2c42be3997cc0f8072516abac2e003422d83d0209df49229c"
+generated_digest: "sha256:cb068035434fd1f39d19328ff437842921d3c3ae5f85560a0de1df6c74f80f7f"
 generated:
   id: avatar.save_wardrobe_outfit
   domain: avatar
@@ -32,6 +32,10 @@ generated:
     layer: grain
     symbol: PlayerGrain.SaveWardrobeOutfitAsync
     evidence: ev_92cbb97e9171
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -41,6 +45,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_92cbb97e9171
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: entity.Figure
     value: figure
@@ -62,6 +70,13 @@ generated:
     source: Vortex.PacketHandlers/Avatar/SaveWardrobeOutfitMessageHandler.cs
     symbol: SaveWardrobeOutfitMessageHandler
     line: 22
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_52d5ccae652f
     kind: emulator_handler
     authority: vortex_emulator
@@ -75,10 +90,11 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.Wardrobe.cs
     symbol: PlayerGrain
-    line: 36
+    line: 37
   scenarios:
   - avatar.save_wardrobe_outfit.guard_0
   - avatar.save_wardrobe_outfit.guard_1
+  - avatar.save_wardrobe_outfit.guard_2
   - avatar.save_wardrobe_outfit.success
   unknowns:
   - uk_a00ae52cf3

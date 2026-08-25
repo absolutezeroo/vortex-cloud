@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7145ba98467676418e6c31ece71c13d7cc91f52b96bd1a358ed9b2962497d084"
+generated_digest: "sha256:f2d5eb8f89b5b990c6f6551373018488199f87d0045f02255cbb8501e48cdc2e"
 generated:
   id: room.assign_rights
   domain: room
@@ -44,6 +44,10 @@ generated:
     layer: domain
     symbol: RoomAvatar.AddStatus
     evidence: ev_9f45a8c43da8
+  - order: 5
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.TargetUserId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -69,6 +73,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_b44ef304d36a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: avatar
     value: avatar.AddStatus( AvatarStatusType.FlatControl, ((int)controllerLevel).ToString(CultureInfo.InvariantCulture) )
@@ -109,7 +117,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 355
+    line: 387
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_3fffbe68a58d
     kind: emulator_flow
     authority: vortex_emulator
@@ -152,6 +167,7 @@ generated:
   - room.assign_rights.guard_3
   - room.assign_rights.guard_4
   - room.assign_rights.guard_5
+  - room.assign_rights.guard_6
   - room.assign_rights.success
   unknowns:
   - uk_1ad790cd70

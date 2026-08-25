@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f69d3a12f3b5c9135ed6c7522f43df9927f35e4cecb0a1ab65bf7432f5e929e1"
+generated_digest: "sha256:e0427d6398e00311cd3a917daa95fce0ae257d6a3381a21ce9eab5423b01a364"
 generated:
   id: uk_48ac5b0bde
-  subject: "catalog.find_by_product_code: who receives BadgeReceivedEvent, PetAddedToInventoryEvent"
+  subject: "catalog.find_by_product_code: who receives BadgeReceivedEvent"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room
@@ -26,12 +26,5 @@ generated:
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
     line: 86
-  - id: ev_d720d639bd09
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
-    symbol: PlayerInventoryModule
-    line: 90
 verified: {}
 manual: {}

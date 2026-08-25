@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:12f45dd5e013f0a13414196f541c0410be1f00f8e3f7af07206742a3541c7015"
+generated_digest: "sha256:7d2209e40c43e7c6deae5bf5afdea37ba13e1155d77b936c7a1965e3ddd101de"
 generated:
   id: uk_48d1626f4e
   subject: "wired.wired_trade_accept: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_3dfe9ba800df
     kind: emulator_flow
     authority: vortex_emulator
@@ -123,7 +123,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 52
+    line: 58
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

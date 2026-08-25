@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:847d69f4109242144c4c92b027a5d24d75ff91a5667c0ea3529c7a85513c30e6"
+generated_digest: "sha256:33453593ebcc9f93de920e5dadc888c470ce1331e7c6b4c289bb3b16d93dc5fd"
 generated:
   name: CfhTopicsInit
   direction: outgoing
   domain: moderation
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_97801d602988
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_e35efd2db33c
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -69,6 +76,14 @@ generated:
     symbol: CfhTopicsInitMessageParser
     line: 31
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_e35efd2db33c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2056/_SafeCls_2055.as
+    symbol: _SafeCls_2055
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f41453d4e798
     kind: client_parser
     authority: multi_implementation

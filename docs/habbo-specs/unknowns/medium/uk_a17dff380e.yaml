@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0f6d2ae7e9af81d486b0f5b17017ce1a5136fd47bfa4a4fe687bebf3878ca81c"
+generated_digest: "sha256:60369fb99056e6d8340d540f81856942b8b444ffb69668bce555b1dbb6a7f7ac"
 generated:
   id: uk_a17dff380e
   subject: "groups.get_forum_stats: what the server sends when it refuses"
@@ -26,11 +26,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetForumStatsMessageHandler.cs
     symbol: GetForumStatsMessageHandler
     line: 12
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 78
   - id: ev_e94df27f06cd

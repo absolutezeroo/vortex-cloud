@@ -10,38 +10,40 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a28fcfdfacb9089996952ff9aa2145130f3ddd97f6fc13b580835bd6f21bf2a3"
+generated_digest: "sha256:4894d8c7bee22ac4e16844c24304d0ad38069f7589fac53b371bc3368b38773b"
 generated:
   name: UserNftChatStyles
   direction: outgoing
   domain: nft
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_eff107124337
     - ev_cfcb1bf53c2e
   - index: 1
-    name: chat_style_ids
-    type: array
+    name: chat_style_id
+    type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
+    - ev_eff107124337
     - ev_cfcb1bf53c2e
-    fields:
-    - index: 0
-      name: chat_style_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_cfcb1bf53c2e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_eff107124337
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -57,6 +59,14 @@ generated:
     - array
     evidence: ev_cfcb1bf53c2e
   evidence:
+  - id: ev_eff107124337
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2933/_SafeCls_2932.as
+    symbol: _SafeCls_2932
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6a5aa032035c
     kind: client_parser
     authority: multi_implementation
@@ -72,5 +82,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Nft/UserNftChatStylesMessageComposerSerializer.cs
     symbol: UserNftChatStylesMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_3c6da5bf8b
 verified: {}
 manual: {}

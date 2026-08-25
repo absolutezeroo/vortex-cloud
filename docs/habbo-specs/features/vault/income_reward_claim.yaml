@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f3cd50003f2ea29ef82b61e865238f9a73c38c919c1b66f523d4f6de91b7af2f"
+generated_digest: "sha256:d9279234a43ad4cbca44bd4bec4d9affeec4bcb851a40413a91ea32db067e4ac"
 generated:
   id: vault.income_reward_claim
   domain: vault
@@ -39,6 +39,10 @@ generated:
     layer: grain
     symbol: PlayerWalletGrain.GrantActivityPointsAsync
     evidence: ev_d0cb8ee11644
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -48,6 +52,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_64a16635906e
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _pendingRewards
     value: _pendingRewards.RemoveAll(r => (VaultRewardCategoryType)r.RewardCategory == category)
@@ -69,20 +77,27 @@ generated:
     source: Vortex.PacketHandlers/Vault/IncomeRewardClaimMessageHandler.cs
     symbol: IncomeRewardClaimMessageHandler
     line: 11
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
-    line: 47
+    line: 50
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 318
+    line: 381
   - id: ev_d920210215ea
     kind: emulator_flow
     authority: vortex_emulator
@@ -93,6 +108,7 @@ generated:
   scenarios:
   - vault.income_reward_claim.guard_0
   - vault.income_reward_claim.guard_1
+  - vault.income_reward_claim.guard_2
   - vault.income_reward_claim.success
   unknowns:
   - uk_384a5d59fe

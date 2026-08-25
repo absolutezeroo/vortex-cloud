@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a2ac344dd904d088bd87e48b9b8fb4d52fe9ff36521130124f0bdf6a904123aa"
+generated_digest: "sha256:d8533b9d55555dfe6ba1a338a214e3f51e180fba590a74a7ace156ac672a8f4e"
 generated:
   name: RoomEntryInfo
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: guest_room_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_50ad26232073
+    - ev_174fdbf1078a
   - index: 1
-    name: is_owner
+    name: owner
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_50ad26232073
+    - ev_174fdbf1078a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - boolean
+    evidence: ev_174fdbf1078a
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -68,6 +74,14 @@ generated:
     - boolean
     evidence: ev_22c792bfee19
   evidence:
+  - id: ev_174fdbf1078a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2183.as
+    symbol: _SafeCls_2183
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_50ad26232073
     kind: client_parser
     authority: multi_implementation
@@ -100,6 +114,7 @@ generated:
     symbol: RoomEntryInfoMessageComposerSerializer
     line: 6
   conflicts:
+  - cf_f8c489a9cf
   - cf_e1ca9f369e
 verified: {}
 manual: {}

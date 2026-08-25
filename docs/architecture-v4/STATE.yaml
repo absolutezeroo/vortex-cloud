@@ -104,6 +104,7 @@ completed:
   - PR-D3  # one correlation id per request, and no raw EF message on an operator's screen (§10)
   - PR-Q2a # wired observability completed; the loss window measured, documented and narrowed
   - PR-Z1a # the wired baseline that PR-G1 promised, plus the commerce walkthrough
+  - PR-Q2b # the client scanner reads parsers; outgoing evidence 17 -> 514; one live header bug
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -113,7 +114,30 @@ remaining:
       the planner already isolates every rule and is fully tested; splitting it into one strategy per
       type is structure, not correctness, and earns itself when a third caller needs one.
   - id: PR-Q2
-    what: protocol baseline resorption (the last third of Q2)
+    what: triage the 64 wire disagreements, now that they are against the right client
+    note: >
+      PR-Q2b did the enabling half rather than 23 hand verdicts. The client scanner bound headers only
+      to composers, so 17 of 805 outgoing packets carried evidence from WIN63-202607011411 -- the
+      build this emulator targets -- against 533 of 604 incoming. Every outgoing comparison was being
+      made against a client from 2016, which is where the "known disagreements" came from. Binding the
+      parser behind each MessageEvent wrapper took outgoing evidence to 514, and ConflictDetector now
+      collapses repeated blocks so a client loop compares against an emulator array.
+      The baseline is 23 -> 64 and that is progress: the new entries are disagreements with the right
+      client. One was already real (see below). The rest are unread, and the two artifact shapes that
+      produce false entries are written at the top of check-wire-conflicts.mjs.
+    found:
+      - id: AcceptFriendResult sent on 3407
+        what: >
+          WIN63 binds server->client 3407 to SelfDonationResultMessageEvent; the accept-friend result
+          is 3707. A failed friend request reached the client's self-donation handler and the friend
+          list never heard about it. Caught by cross-checking the 25 registry entries whose class name
+          survived obfuscation. Payload was correct all along -- count, then senderId/errorCode per
+          entry -- which is why nothing else ever noticed.
+      - id: OfficialSongId on 2264
+        what: >
+          also wrong (WIN63 has WeeklyCompetitiveFriendsLeaderboardEvent there), and latent rather
+          than live: the serializer writes nothing, so it is one of the empty-composer set already
+          triaged. Left alone deliberately; the right id is unknown and guessing one would be worse.
     note: >
       the other two thirds landed as PR-Q2a. Wired observability: REVALIDATION added to StopReason --
       a delayed effect that lost its pile used to be refused in total silence, which is the report

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c6e369d393eca3c881545d27a23fe4949198e62adbfdb535cefcfda684f261af"
+generated_digest: "sha256:bc1c6e7b9620314835eff2ebe08f21d4a759000e311e7d57df6bafd0b8c5181c"
 generated:
   id: users.get_ignored_users
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.GetIgnoredUserIdsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -61,11 +61,11 @@ generated:
     source: Vortex.PacketHandlers/Users/GetIgnoredUsersMessageHandler.cs
     symbol: GetIgnoredUsersMessageHandler
     line: 13
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 41
   scenarios:

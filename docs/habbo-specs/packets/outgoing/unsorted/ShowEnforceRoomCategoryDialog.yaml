@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2278abad379b96e14ae0517e19f9fdca7b9b40abec316df481a4718d0c82e727"
+generated_digest: "sha256:728e7ea7ecdf7a4c17b249272b9411f536b5d9e1c311123f4e73bba7ac238984"
 generated:
   name: ShowEnforceRoomCategoryDialog
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: selection_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6f531e08fed9
+    - ev_893a5d5e514e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_893a5d5e514e
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_6f531e08fed9
   evidence:
+  - id: ev_893a5d5e514e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3190.as
+    symbol: _SafeCls_3190
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6f531e08fed9
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: ShowEnforceRoomCategoryDialogMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_05c480dca6
 verified: {}
 manual: {}

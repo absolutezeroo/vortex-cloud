@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c86533ed64a039841a8bce9c42de8f81b008ce96dddcb27ba2938d7b84593196"
+generated_digest: "sha256:9711150872be9e230b5bb032139a4e1fdebe59fa328e77cb2ea50854174d6289"
 generated:
   name: NavigatorSettings
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: home_room_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8e706fb22119
+    - ev_5fa45e65cc45
   - index: 1
     name: room_id_to_enter
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8e706fb22119
+    - ev_5fa45e65cc45
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_5fa45e65cc45
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_1cefc6e02fbc
   evidence:
+  - id: ev_5fa45e65cc45
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3086.as
+    symbol: _SafeCls_3086
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8e706fb22119
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/NavigatorSettingsMessageComposerSerializer.cs
     symbol: NavigatorSettingsMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_80147f0591
 verified: {}
 manual: {}

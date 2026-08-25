@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f73f87b1550a83676010f1fdaace9b2b6aa1ced33cfa5dea270925614010d5a0"
+generated_digest: "sha256:9f4ba27d6855487a2f9accc363b3aa0ec4e411a7d51c9c740210b256ee3f7ebd"
 generated:
   id: marketplace.get_marketplace_own_offers
   domain: marketplace
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 292
+    line: 691
   scenarios:
   - marketplace.get_marketplace_own_offers.guard_0
   - marketplace.get_marketplace_own_offers.success

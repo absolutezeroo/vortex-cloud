@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:73c445702784b1f9dc37f3c52e0664b50969a0317b0d92c368a0e5afe2eba3b2"
+generated_digest: "sha256:bc8c3375f75b922a4b5f06201d2659f6893bfe91f60c9cf43cd28297b84215a3"
 generated:
   name: HabboAchievementNotification
   direction: outgoing
@@ -115,6 +115,12 @@ generated:
     evidence:
     - ev_8aa0e48eac97
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_895f77515b83
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -160,6 +166,14 @@ generated:
     - int32
     evidence: ev_01bf7116060e
   evidence:
+  - id: ev_895f77515b83
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_1809.as
+    symbol: _SafeCls_1809
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_edc073f17cd2
     kind: client_parser
     authority: multi_implementation

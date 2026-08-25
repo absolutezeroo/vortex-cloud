@@ -10,48 +10,48 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:eebf7e676d63b2307855cf3dd5274581c5432999161949d485c921bb3df34ee8"
+generated_digest: "sha256:4c0012644d97e0654f2ff2dc8fa25b7523879eba420f2aee7a00569db9c6a007"
 generated:
   name: ObjectRemoveMultiple
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: numbers
-    type: block
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    evidence:
-    - ev_cc40b3b959e0
-    fields:
-    - index: 0
-      name: count
-      type: int32
-      name_confidence: multi_reference_confirmed
-      type_confidence: multi_reference_confirmed
-      note: inside a repeated block
-      evidence:
-      - ev_cc40b3b959e0
-    - index: 1
-      name: object_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: multi_reference_confirmed
-      note: inside a repeated block
-      evidence:
-      - ev_cc40b3b959e0
-      - ev_c419de8d22de
-  - index: 1
-    name: picker_id
+    name: count
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_d58298aa0632
+    - ev_cc40b3b959e0
+  - index: 1
+    name: object_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_cc40b3b959e0
+    - ev_d58298aa0632
+    - ev_c419de8d22de
+  - index: 2
+    name: picker_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_d58298aa0632
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_d58298aa0632
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -70,6 +70,14 @@ generated:
     - int32
     evidence: ev_c419de8d22de
   evidence:
+  - id: ev_d58298aa0632
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3065.as
+    symbol: _SafeCls_3065
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cc40b3b959e0
     kind: client_parser
     authority: multi_implementation

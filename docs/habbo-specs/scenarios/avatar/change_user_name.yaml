@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:642389ebdeb1db4632ab6a7170ccda011e5ed6393bd1b59c946d52ba1c4d1383"
+generated_digest: "sha256:8cf30746f7092e562fc65d6838ddae6f7c819c1741e56f27ff5a916fa6b542f1"
 generated:
   feature: avatar.change_user_name
   scenarios:
@@ -189,6 +189,35 @@ generated:
       - ChangeNameCheckResult
       evidence: ev_c655992185b8
   - scenario: avatar.change_user_name.guard_6
+    title: "change user name: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: ChangeUserName
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of ChangeUserName sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - ChangeNameUpdated
+      - UserNameChanged
+      - UserObject
+      - ChangeNameUpdated
+      - UserNameChanged
+      - ChangeNameCheckResult
+      evidence: ev_c655992185b8
+  - scenario: avatar.change_user_name.guard_7
     title: "change user name: the guard '_state.NuxCompletedAt is not null' holds"
     given:
       guard: _state.NuxCompletedAt is not null
@@ -262,7 +291,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 146
+    line: 161
   - id: ev_26f996b19e2c
     kind: emulator_flow
     authority: vortex_emulator
@@ -270,6 +299,13 @@ generated:
     source: Vortex.PacketHandlers/Avatar/ChangeUserNameMessageHandler.cs
     symbol: ChangeUserNameMessageHandler
     line: 41
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

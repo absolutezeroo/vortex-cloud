@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d5868ff0691741a3bec1601b230d1e6e81f65f1d637585392597c4018df225fe"
+generated_digest: "sha256:638c1d4c44f559313da8ff41ae5d56e4157600467113997c9b9d16e1028d230f"
 generated:
   id: uk_057b7f2ece
   subject: "outgoing/PlayList: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PlayList
   known_evidence:
+  - id: ev_52d8949667cb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4224.as
+    symbol: _SafeCls_4224
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b8e2d49b9080
     kind: client_parser
     authority: multi_implementation

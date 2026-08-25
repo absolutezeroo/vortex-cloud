@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:573183d72ff974dac784ac5a85de6d86aa8afcc01d96636f552c88becbe3b66f"
+generated_digest: "sha256:e7c943048d1fa7b185324784826c69f12f7424b56d1202a67d02d7f53ef4bff5"
 generated:
   id: cf_060cbc0c2d
   kind: field_count
   subject: "outgoing/Wardrobe: field count"
   packet: Wardrobe
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32"
+    evidence: ev_7fa044e79e34
   - origin: arcturus
     authority: reference_emulator
     claim: "5 fields: int32, int32, int32, string, string"
@@ -26,6 +30,14 @@ generated:
     claim: "3 fields: int32, int32, array"
     evidence: ev_93cb88e5fce2
   evidence:
+  - id: ev_7fa044e79e34
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1869/_SafeCls_4255.as
+    symbol: _SafeCls_4255
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d3bbcf4d1f9c
     kind: reference_composer
     authority: reference_emulator

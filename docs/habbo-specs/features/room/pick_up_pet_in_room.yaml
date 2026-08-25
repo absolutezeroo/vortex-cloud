@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5d421d1f8799d4826a6624b07ccd780e3e12d4e42dd162453f2c17c1233ec328"
+generated_digest: "sha256:548624a744fed6f334731da15ab52014ae020544e9ef1e61f07a927cc9b7b5af"
 generated:
   id: room.pick_up_pet_in_room
   domain: room
@@ -44,6 +44,10 @@ generated:
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
+  - order: 5
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.Origin != ActionOrigin.Player || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || petId <= 0
     on_fail: return
@@ -53,6 +57,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7327c7799f5f
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: pet.Energy
     value: liveSnapshot.Energy
@@ -94,6 +102,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/RemovePetFromFlatMessageHandler.cs
     symbol: RemovePetFromFlatMessageHandler
     line: 9
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -107,7 +122,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 185
+    line: 193
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator
@@ -125,6 +140,7 @@ generated:
   scenarios:
   - room.pick_up_pet_in_room.guard_0
   - room.pick_up_pet_in_room.guard_1
+  - room.pick_up_pet_in_room.guard_2
   - room.pick_up_pet_in_room.success
   conflicts:
   - cf_8af675efa7

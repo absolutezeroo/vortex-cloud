@@ -10,39 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:aeb4dc9903bb448a74b0acaf22aba643775f3a3614ff21e7355a33ba8b409a2e"
+generated_digest: "sha256:edc94f99c4d3e55468950650f803a2833f099f00d7823941c3066609d34eadf0"
 generated:
   name: PetInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: total_fragments
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_951d346d409c
+    - ev_fcd72d17a3ba
   - index: 1
-    name: unknown_1
+    name: fragment_no
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_951d346d409c
+    - ev_fcd72d17a3ba
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_951d346d409c
+    - ev_fcd72d17a3ba
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_fcd72d17a3ba
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +60,14 @@ generated:
     - int32
     evidence: ev_951d346d409c
   evidence:
+  - id: ev_fcd72d17a3ba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_2926.as
+    symbol: _SafeCls_2926
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_951d346d409c
     kind: reference_composer
     authority: reference_emulator

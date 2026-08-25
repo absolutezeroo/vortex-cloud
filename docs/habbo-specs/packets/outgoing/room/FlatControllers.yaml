@@ -10,47 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:36edac076f8f808434af88cb9fe6631eaf78204945f3e50eaaff44f3f1791378"
+generated_digest: "sha256:b6b569890da47381329ab5acc5933da0e2762c0b6b1d2a2dbf6eadf5620d2ded"
 generated:
   name: FlatControllers
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9ab6058dfc21
+    - ev_27ae4d371f1b
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9ab6058dfc21
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9ab6058dfc21
-  - index: 3
-    name: unknown_3
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9ab6058dfc21
+    - ev_27ae4d371f1b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_27ae4d371f1b
   - origin: arcturus
     authority: reference_emulator
     field_count: 4
@@ -62,6 +53,14 @@ generated:
     - string
     evidence: ev_9ab6058dfc21
   evidence:
+  - id: ev_27ae4d371f1b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3442.as
+    symbol: _SafeCls_3442
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9ab6058dfc21
     kind: reference_composer
     authority: reference_emulator
@@ -70,6 +69,8 @@ generated:
     symbol: FlatControllersMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_265f4d0987
   unknowns:
   - uk_c20aae9e34
 verified: {}

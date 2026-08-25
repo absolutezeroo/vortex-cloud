@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:21c36c8e38143b7ada271f1ba03f05a9577c7b3685949da8e080cb3ff0896734"
+generated_digest: "sha256:1d7b329d85ace6149bfa31c995238bafc58cf68d2720bcafcceb4c5b4a8af7a9"
 generated:
   name: GuildMembers
   direction: outgoing
@@ -147,6 +147,12 @@ generated:
     - ev_5250696765cb
     - ev_afdea65cfa0b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_c630de9115f9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -194,6 +200,14 @@ generated:
     - string
     evidence: ev_afdea65cfa0b
   evidence:
+  - id: ev_c630de9115f9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2779.as
+    symbol: _SafeCls_2779
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ee45cb7daf1a
     kind: client_parser
     authority: multi_implementation

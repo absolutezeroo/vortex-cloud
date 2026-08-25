@@ -10,62 +10,62 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ebf682f4feeca112d1116aaa7742c4979c5243c4decb05df9971f1943b59a1aa"
+generated_digest: "sha256:2de0c81e2d5bf05cb18b7b3bea8c0591a58694ede03579c0eefc1d29802d177a"
 generated:
   name: GuideSessionStarted
   direction: outgoing
   domain: moderation
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: requester_id
+    name: requester_user_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   - index: 1
     name: requester_name
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   - index: 2
     name: requester_figure
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   - index: 3
-    name: guide_id
+    name: guide_user_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   - index: 4
     name: guide_name
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   - index: 5
     name: guide_figure
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f7f3af394dd
-    - ev_260899dfbd0d
+    - ev_b7c4dcfecd83
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -79,6 +79,18 @@ generated:
     - string
     - string
     evidence: ev_4f7f3af394dd
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - string
+    evidence: ev_b7c4dcfecd83
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -118,6 +130,14 @@ generated:
     symbol: GuideSessionStartedMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b7c4dcfecd83
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2841.as
+    symbol: _SafeCls_2841
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_294af229199c
     kind: client_parser
     authority: multi_implementation

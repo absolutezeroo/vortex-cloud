@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1fec3d71fec471c459783be1a869240e5f4a20c1f9eb8199a87f97bbea7d63d1"
+generated_digest: "sha256:c97bdb2892a6df7d2087b0d9e6b39fddaec43ca35a1e7bebdca992ce5d861821"
 generated:
   name: FurniListInvalidate
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_9f5d5969fba6
   - origin: arcturus
     authority: reference_emulator
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_e6ef6512804e
   evidence:
+  - id: ev_9f5d5969fba6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2514/_SafeCls_4222.as
+    symbol: _SafeCls_4222
+    line: 15
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e6ef6512804e
     kind: reference_composer
     authority: reference_emulator

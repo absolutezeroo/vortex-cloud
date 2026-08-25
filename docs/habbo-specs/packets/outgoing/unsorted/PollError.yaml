@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f7ba16279933f6fb71e30df28c3ea139e92384baf270da1eefe5cd969ede0c8c"
+generated_digest: "sha256:12eed8f8e9375cdd19ff3f6c9af2eb8cc392ef380c01462408ef58261c880fec"
 generated:
   name: PollError
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_bf2a0d7ff0e4
   - origin: arcturus
     authority: reference_emulator
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_b0f8b53e254f
   evidence:
+  - id: ev_bf2a0d7ff0e4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_2966.as
+    symbol: _SafeCls_2966
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b0f8b53e254f
     kind: reference_composer
     authority: reference_emulator

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:725b9d79a6c03fd8c62c75b0769ee7849b2056e3d5503e5fdea3b943d88f3fa5"
+generated_digest: "sha256:df9a54ab28637d77bc3d72f082bf2792701cf36be76762d2fba65e246f847837"
 generated:
   name: OpenConnection
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bc32c0aa3e23
+    - ev_630d20d02b45
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_630d20d02b45
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_0d02ba84d1e8
   evidence:
+  - id: ev_630d20d02b45
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_2760.as
+    symbol: _SafeCls_2760
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_bc32c0aa3e23
     kind: client_parser
     authority: multi_implementation

@@ -10,15 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:215e9f66a9489f0f74d34b9761f7eec961408a108f17562b1fc8558efa2a9e5f"
+generated_digest: "sha256:e8ff9dc2fdd904d5dc377acff32b3738e72491cadb647d1d8ffc9d52bf75f4ad"
 generated:
   name: SeasonalCalendarDailyOffer
   direction: outgoing
   domain: catalog
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: page_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_9654739e0986
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_9654739e0986
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -39,6 +53,14 @@ generated:
     types: []
     evidence: ev_79320a4693df
   evidence:
+  - id: ev_9654739e0986
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_4309.as
+    symbol: _SafeCls_4309
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_294b620e692d
     kind: client_parser
     authority: multi_implementation

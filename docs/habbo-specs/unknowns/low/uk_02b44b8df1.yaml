@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b3441a5c789c2eb7dede9983e2327ace59dd5a2988452cd1e8291e92b19df605"
+generated_digest: "sha256:2bd01fbf0a49ed2420443c462be8a2b8d15e8de87b49fc435c35114dae307e95"
 generated:
   id: uk_02b44b8df1
   subject: "outgoing/ClubGiftInfo: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
+  question: Fields 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ClubGiftInfo
   known_evidence:
+  - id: ev_5d160d36590f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2267.as
+    symbol: _SafeCls_2267
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_971d0c504d89
     kind: reference_composer
     authority: reference_emulator

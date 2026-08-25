@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:78f26ff591fe9279ea445d58488c3c1f64b4be806f8fb8d3832b10a26f3c4802"
+generated_digest: "sha256:4ef0eb7b5b721ac5d57e7596d4dd9758dd062200969cc31541073526e5ac1ae6"
 generated:
   name: LatencyPingResponse
   direction: outgoing
   domain: tracking
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: request_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8a0c8ce2f334
+    - ev_9b1b907e0556
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_9b1b907e0556
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - int32
     evidence: ev_96387932e214
   evidence:
+  - id: ev_9b1b907e0556
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3774/_SafeCls_3773.as
+    symbol: _SafeCls_3773
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8a0c8ce2f334
     kind: client_parser
     authority: multi_implementation

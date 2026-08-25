@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6306697f1d6263945e2c4c4fbb769231d8d4e94403880bdab3277d49a29cbbb3"
+generated_digest: "sha256:0367d6c1d98f3b630f94786bb5128c064b24080ff0a0ea08a6a11691a4220d87"
 generated:
   id: moderation.resolve_for_player
   domain: moderation
@@ -314,7 +314,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 156
+    line: 173
   - id: ev_21f62951b010
     kind: emulator_flow
     authority: vortex_emulator
@@ -356,7 +356,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator

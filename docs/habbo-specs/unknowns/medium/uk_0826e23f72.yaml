@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a0892a6189f1bc049c8bd2ba2e87cf24f9aabbef13e2c72c26ef0b1b11afb7e7"
+generated_digest: "sha256:659f91065d341cea212342d026e903ce5b18e894ccfb8d50df06a6a10d29aa5c"
 generated:
   id: uk_0826e23f72
   subject: "messenger.open_room_for_player_id: what the server sends when it refuses"
@@ -102,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 52
+    line: 55
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator

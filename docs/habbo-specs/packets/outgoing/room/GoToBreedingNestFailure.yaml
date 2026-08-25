@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:002e58ce00bfdb9027691e706ebea7f3bb95d05513d893502671d278ecbe06d2"
+generated_digest: "sha256:c607abf1a806552c0bd9c77da7febf91ecfac200eccd7a4a5700a4ee46ca97aa"
 generated:
   name: GoToBreedingNestFailure
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: reason
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0aefa72c3977
+    - ev_9eb0413aee42
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_9eb0413aee42
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_0aefa72c3977
   evidence:
+  - id: ev_9eb0413aee42
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3797.as
+    symbol: _SafeCls_3797
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0aefa72c3977
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: GoToBreedingNestFailureMessageComposer
     line: 23
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_be9ead1834
 verified: {}
 manual: {}

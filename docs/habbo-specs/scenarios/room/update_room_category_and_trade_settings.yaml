@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1825c1dc0dda06eee3297a7eea3365ca466bd81cd8e30bb2b4f7c96396dc3482"
+generated_digest: "sha256:83be18a8c57b9e84154a3198441041742b621801086ed96fbad6357de0244eea"
 generated:
   feature: room.update_room_category_and_trade_settings
   scenarios:
@@ -68,6 +68,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
+  - scenario: room.update_room_category_and_trade_settings.guard_3
+    title: "update room category and trade settings: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: UpdateRoomCategoryAndTradeSettings
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateRoomCategoryAndTradeSettings sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: room.update_room_category_and_trade_settings.success
     title: "update room category and trade settings: the request is accepted"
     given:
@@ -93,7 +111,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 303
+    line: 323
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_37beffd9f8d0
     kind: emulator_flow
     authority: vortex_emulator

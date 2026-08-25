@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bfa489b899dbbba913a29fee9a302d47b5b8135e69e209828f4860a9da17a025"
+generated_digest: "sha256:994d416cb381c49f13e902528d93d86d492fcc886bf97a3b2a22ae9941a3b651"
 generated:
   id: uk_4f018bec9e
   subject: "room.remove_all_rights: what the server sends when it refuses"
   severity: medium
-  question: room.remove_all_rights changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.remove_all_rights changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.remove_all_rights
   known_evidence:
@@ -32,7 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 491
+    line: 542
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_5db4694a10c2
     kind: emulator_flow
     authority: vortex_emulator

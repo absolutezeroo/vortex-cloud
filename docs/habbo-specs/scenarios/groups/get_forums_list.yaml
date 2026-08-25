@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4992630dd63a5b5d8404c33c373106a921d82b8294a180618a3732fb61a2d668"
+generated_digest: "sha256:8fb75c185387b4b3b9a92f19963a1a9da47a6469897322beaed6994eb344ccc6"
 generated:
   feature: groups.get_forums_list
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -102,12 +102,12 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetForumsListMessageHandler.cs
     symbol: GetForumsListMessageHandler
     line: 23
-  - id: ev_678209870593
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 496
+    line: 495
 verified: {}
 manual: {}

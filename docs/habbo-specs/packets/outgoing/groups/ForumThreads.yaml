@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9856b586f39ffa0a0204e599dfcebfde841d017e9d594aab6d1d7d60f816145d"
+generated_digest: "sha256:4ccd3d19f714e31d0371cd7df8b3022eeacecbc6f88f919cdfd34909a8804eab"
 generated:
   name: ForumThreads
   direction: outgoing
@@ -168,6 +168,15 @@ generated:
       evidence:
       - ev_823370f25b52
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: true
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_e5f24f13fd92
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -185,6 +194,14 @@ generated:
     - array
     evidence: ev_823370f25b52
   evidence:
+  - id: ev_e5f24f13fd92
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2470/_SafeCls_2774.as
+    symbol: _SafeCls_2774
+    line: 52
+    note: official client build WIN63-202607011411-782849652
   - id: ev_84cfed11d3d9
     kind: client_parser
     authority: multi_implementation

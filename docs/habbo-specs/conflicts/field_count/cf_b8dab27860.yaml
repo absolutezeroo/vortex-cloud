@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2d49753ebb7d3e6324275e1138e29138c36b73f4a3ade49428b5171c2192605a"
+generated_digest: "sha256:3de852fabdabc81aae3f7792498ec71b692afab52c0e0c3407a9c92b88a35f98"
 generated:
   id: cf_b8dab27860
   kind: field_count
   subject: "outgoing/ConsoleMessageHistory: field count"
   packet: ConsoleMessageHistory
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32"
+    evidence: ev_956505bc21f0
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: int32"
@@ -26,6 +30,14 @@ generated:
     claim: "3 fields: int32, int32, array"
     evidence: ev_93e0dcdd390a
   evidence:
+  - id: ev_956505bc21f0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2286.as
+    symbol: _SafeCls_2286
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e512fe22e7a3
     kind: client_parser
     authority: multi_implementation

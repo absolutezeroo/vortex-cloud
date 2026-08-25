@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:eeb9f79bee8a9faea03f662e87b7b6825db2871f613924e6d2848e19a2125cbb"
+generated_digest: "sha256:1d0f6aa0ff5f6a84883a4f661caddc971e3146d56d506e4b55bb378bf3571610"
 generated:
   feature: messenger.follow_friend
   scenarios:
@@ -266,7 +266,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 204
+    line: 219
   - id: ev_40b1e9d27438
     kind: emulator_flow
     authority: vortex_emulator

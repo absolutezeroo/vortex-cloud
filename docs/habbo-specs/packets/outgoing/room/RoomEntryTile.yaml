@@ -10,39 +10,47 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9aa3af29e8891ff0b6f60b846230dc1d9c145ba1f12cb364e1b23182fba3de57"
+generated_digest: "sha256:c936b1a908993674737f4b1d96a8b0618cec47e2157db8a674e4d05fa978d494"
 generated:
   name: RoomEntryTile
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: x
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_a26ee8f868b4
     - ev_6b60d23423d3
   - index: 1
     name: y
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_a26ee8f868b4
     - ev_6b60d23423d3
   - index: 2
-    name: rotation
+    name: dir
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6b60d23423d3
+    - ev_a26ee8f868b4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_a26ee8f868b4
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -71,6 +79,14 @@ generated:
     - int32
     evidence: ev_74bf210652ea
   evidence:
+  - id: ev_a26ee8f868b4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2875/_SafeCls_2874.as
+    symbol: _SafeCls_2874
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6b60d23423d3
     kind: client_parser
     authority: multi_implementation
@@ -94,5 +110,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Layout/RoomEntryTileMessageComposerSerializer.cs
     symbol: RoomEntryTileMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_79ecf51eb8
 verified: {}
 manual: {}

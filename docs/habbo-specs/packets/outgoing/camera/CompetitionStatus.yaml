@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dbcb167ed63c90d1c1e722209c3335b447a082e1cfd33f12f16c36ecde9296bb"
+generated_digest: "sha256:edbb2d319888f39d28e1cb3a1ddcf9d23a23bac283907e3c0768923cfb5403df"
 generated:
   name: CompetitionStatus
   direction: outgoing
   domain: camera
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,18 +23,26 @@ generated:
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a74387ec6555
+    - ev_cbc5ecbe063c
   - index: 1
     name: unknown_1
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a74387ec6555
+    - ev_cbc5ecbe063c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - boolean
+    - string
+    evidence: ev_cbc5ecbe063c
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +64,14 @@ generated:
     types: []
     evidence: ev_becca4847c9c
   evidence:
+  - id: ev_cbc5ecbe063c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4033.as
+    symbol: _SafeCls_4033
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ed70653e2390
     kind: client_parser
     authority: multi_implementation

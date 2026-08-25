@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:68b09ee3240e51ed83a9cffdcf396d0f2dbdc456ac407c118b1189f1795bc1c2"
+generated_digest: "sha256:4ac22b64835db0bbd8b581c9d1f4b8801adee4331de9b9d482864cc82cb9ac7f"
 generated:
   id: uk_2385dc3c1a
   subject: "outgoing/Objects: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: ObjectsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_e4f1916870b1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2919.as
+    symbol: _SafeCls_2919
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a84af519bedd
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: ObjectsMessage
     line: 13
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_edc503f0baf5
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/ObjectsMessageComposer.java
-    symbol: ObjectsMessageComposer
-    line: 24
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

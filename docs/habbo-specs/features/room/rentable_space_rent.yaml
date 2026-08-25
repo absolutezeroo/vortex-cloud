@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:85b20ff74999e36cf39d50919b47bfaeaa58f234de45f9a24fe368e335394c6c"
+generated_digest: "sha256:61f7e9072ff458783cde197956555d87e49fca530631dd2232a9cea35190105c"
 generated:
   id: room.rentable_space_rent
   domain: room
@@ -33,46 +33,22 @@ generated:
     symbol: RentableSpaceGrain.RentAsync
     evidence: ev_3bfcf2d3587b
   - order: 2
-    layer: domain
-    symbol: WalletPurchaseExtensions.ExecutePurchaseAsync
-    evidence: ev_0b56492f6260
-  - order: 3
-    layer: grain
-    symbol: PlayerWalletGrain.TryDebitAsync
-    evidence: ev_d0cb8ee11644
-  - order: 4
-    layer: grain
-    symbol: PlayerPresenceGrain.OnCurrencyUpdateAsync
-    evidence: ev_94ddaa174e6d
-  - order: 5
-    layer: module
-    symbol: PlayerWalletModule.OnCurrencyUpdateAsync
-    evidence: ev_432f3c2b73af
-  - order: 6
-    layer: grain
-    symbol: PlayerPresenceGrain.SendComposerAsync
-    evidence: ev_373e76aa8a80
-  - order: 7
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
-  - order: 8
-    layer: grain
-    symbol: PlayerWalletGrain.CreditBackAsync
-    evidence: ev_d0cb8ee11644
-  - order: 9
     layer: grain
     symbol: PlayerWalletGrain.GrantCreditsAsync
     evidence: ev_d0cb8ee11644
-  - order: 10
+  - order: 3
     layer: grain
     symbol: PlayerWalletGrain.GrantActivityPointsAsync
     evidence: ev_d0cb8ee11644
-  - order: 11
+  - order: 4
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 12
+  - order: 5
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
+  - order: 6
     layer: grain
     symbol: RentableSpaceGrain.GetStatusAsync
     evidence: ev_3bfcf2d3587b
@@ -109,22 +85,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_3bfcf2d3587b
-  - expression: "!debitResult.Succeeded"
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_0b56492f6260
-  - expression: update.ChangedBy != request.Amount
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: failure is not null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: snapshot is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_432f3c2b73af
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -153,18 +113,6 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CreditBalanceEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: EmeraldBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: HabboActivityPointNotification
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
     - packet: RentableSpaceRentFailed
       recipient: actor
       recipient_confidence: implementation_observed
@@ -173,19 +121,8 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_1dd7e39f6eb4
-    - packet: SilverBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
   reaches_persistence: true
   evidence:
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 31
   - id: ev_1dd7e39f6eb4
     kind: emulator_flow
     authority: vortex_emulator
@@ -207,13 +144,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_373e76aa8a80
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
   - id: ev_3bfcf2d3587b
     kind: emulator_flow
     authority: vortex_emulator
@@ -221,27 +151,13 @@ generated:
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
     line: 84
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 55
+    line: 381
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator
@@ -252,8 +168,6 @@ generated:
   scenarios:
   - room.rentable_space_rent.guard_0
   - room.rentable_space_rent.guard_1
-  - room.rentable_space_rent.guard_10
-  - room.rentable_space_rent.guard_11
   - room.rentable_space_rent.guard_2
   - room.rentable_space_rent.guard_3
   - room.rentable_space_rent.guard_4
@@ -261,10 +175,8 @@ generated:
   - room.rentable_space_rent.guard_6
   - room.rentable_space_rent.guard_7
   - room.rentable_space_rent.guard_8
-  - room.rentable_space_rent.guard_9
   - room.rentable_space_rent.success
   unknowns:
-  - uk_a7667cc0d7
   - uk_ace284a1b7
 verified: {}
 manual: {}

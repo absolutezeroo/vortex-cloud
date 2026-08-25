@@ -10,15 +10,41 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:58f10442db85414b49af5c0e67b8ce4c9a08c40eafc6d712408879499c80a954"
+generated_digest: "sha256:2e25463e0386fa601bf5fe2cc890c0d28be35fb2118cf3d7bf16b1051e9e3b09"
 generated:
   name: ThumbnailStatus
   direction: outgoing
   domain: camera
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_13a2bfacce0e
+  - index: 1
+    name: unknown_1
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_13a2bfacce0e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - boolean
+    - boolean
+    evidence: ev_13a2bfacce0e
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -38,6 +64,14 @@ generated:
     types: []
     evidence: ev_0a3f1637baa7
   evidence:
+  - id: ev_13a2bfacce0e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4248.as
+    symbol: _SafeCls_4248
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e8f2459d2e36
     kind: client_parser
     authority: multi_implementation
@@ -61,5 +95,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Camera/ThumbnailStatusMessageComposerSerializer.cs
     symbol: ThumbnailStatusMessageComposerSerializer
     line: 6
+  unknowns:
+  - uk_4b0ac0ef82
 verified: {}
 manual: {}

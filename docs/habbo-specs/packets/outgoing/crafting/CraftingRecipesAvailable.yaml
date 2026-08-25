@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7885b7da9f43c165a447f8265daf23802713924ed360cd0afbf97a41945ed533"
+generated_digest: "sha256:a90b97becfd2608063045ce524898df45d6e38f68b1313125074d900935e49c4"
 generated:
   name: CraftingRecipesAvailable
   direction: outgoing
   domain: crafting
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_06efc4cfba0d
+    - ev_19a1551a2136
   - index: 1
-    name: unknown_1
+    name: recipe_complete
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_06efc4cfba0d
+    - ev_19a1551a2136
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - int32
     - boolean
     evidence: ev_06efc4cfba0d
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - boolean
+    evidence: ev_19a1551a2136
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -66,6 +74,14 @@ generated:
     symbol: CraftingRecipesAvailableMessageParser
     line: 12
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_19a1551a2136
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4174.as
+    symbol: _SafeCls_4174
+    line: 19
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8fd900e5a90e
     kind: client_parser
     authority: multi_implementation
@@ -82,7 +98,5 @@ generated:
     symbol: CraftingRecipesAvailableComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_f578cb6891
 verified: {}
 manual: {}

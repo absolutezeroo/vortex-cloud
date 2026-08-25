@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee416dc726486178c0dcd84ff08108d5b2574125599646fb7f5b3f710b28e1b8"
+generated_digest: "sha256:d4fa1bba1d1955c7ffd0c61ba39ff29c455175cbfdf88a60e6c6c11455650fa5"
 generated:
   feature: user_classification.room_users_classification
   scenarios:
@@ -56,7 +56,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_eea7d1d057e7
     kind: emulator_flow
     authority: vortex_emulator

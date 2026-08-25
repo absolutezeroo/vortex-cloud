@@ -10,38 +10,40 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0cbcd0340eaa663f02d79f4dffaf69ac4e324640aa30cb3f861e1c8c293f01b9"
+generated_digest: "sha256:78a7061401a5b54b281a1e80a67cac4717af1acb0fbf19ddf348152723251298"
 generated:
   name: BlockList
   direction: outgoing
   domain: users
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_420a83e9d0e7
     - ev_b76e830b0c70
   - index: 1
-    name: blocked_player_ids
-    type: array
+    name: player_id
+    type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
+    - ev_420a83e9d0e7
     - ev_b76e830b0c70
-    fields:
-    - index: 0
-      name: player_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b76e830b0c70
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_420a83e9d0e7
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -51,6 +53,14 @@ generated:
     - array
     evidence: ev_b76e830b0c70
   evidence:
+  - id: ev_420a83e9d0e7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4059.as
+    symbol: _SafeCls_4059
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b76e830b0c70
     kind: emulator_serializer
     authority: vortex_emulator
@@ -58,5 +68,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Users/BlockListMessageComposerSerializer.cs
     symbol: BlockListMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_0a10e02b3e
 verified: {}
 manual: {}

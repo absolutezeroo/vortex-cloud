@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:384b7e004404fe2eaf392af6344c9314047bfd4b8e109223be08f4338ed3a2f6"
+generated_digest: "sha256:88e7aff95855f16fb9a521f03bfe293748ace6e5b1a468feaded052111b28e75"
 generated:
   id: uk_200450bf44
   subject: "groups.update_forum_settings: what the server sends when it refuses"
@@ -33,11 +33,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumSettingsMessageHandler.cs
     symbol: UpdateForumSettingsMessageHandler
     line: 23
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 566
   - id: ev_e8a93c22d13b

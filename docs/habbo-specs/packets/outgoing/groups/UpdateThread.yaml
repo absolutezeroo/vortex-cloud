@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2d6e47fa0fd972c75486dd3fd091ce495beecdbc1b7251ca0a26ed3241cd6561"
+generated_digest: "sha256:182b69c6aeed9f0ce63207986a01d72280eb6e62e5e67c12a71a5154a34e5aaf"
 generated:
   name: UpdateThread
   direction: outgoing
@@ -145,6 +145,13 @@ generated:
     evidence:
     - ev_e6db901c8e30
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: true
+    types:
+    - int32
+    evidence: ev_c969efe056ba
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -176,6 +183,14 @@ generated:
     - int32
     evidence: ev_e6db901c8e30
   evidence:
+  - id: ev_c969efe056ba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2470/_SafeCls_3813.as
+    symbol: _SafeCls_3813
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fca42f1a6c06
     kind: client_parser
     authority: multi_implementation

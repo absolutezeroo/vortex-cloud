@@ -10,63 +10,78 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:889915d28bee8ddb86fbd2187c38939f5d0982b79f92abe5244459d622fbbc93"
+generated_digest: "sha256:3fc264e89d6258cdfc18e0e6987c92d9c04ae255e3176fd723429c67710d19f6"
 generated:
   name: PlayList
   direction: outgoing
   domain: sound
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: synchronization_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   - index: 2
     name: unknown_2
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   - index: 4
     name: unknown_4
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   - index: 5
     name: unknown_5
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_767862d1cd61
+    - ev_52d8949667cb
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    evidence: ev_52d8949667cb
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -86,6 +101,14 @@ generated:
     - string
     evidence: ev_767862d1cd61
   evidence:
+  - id: ev_52d8949667cb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4224.as
+    symbol: _SafeCls_4224
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b8e2d49b9080
     kind: client_parser
     authority: multi_implementation
@@ -102,6 +125,8 @@ generated:
     symbol: PlayListMessageComposer
     line: 24
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_da240e7476
   unknowns:
   - uk_057b7f2ece
 verified: {}

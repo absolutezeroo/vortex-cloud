@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4d427afcbdbfc8a62b424c4483d51ab17750a96aa86c26bf62981056186f51b8"
+generated_digest: "sha256:873725b29e3896c9c85f0602c7d5a112173c5a095fdcec7fcd9e6ed33ccd7fdb"
 generated:
   id: uk_ca32519122
   subject: "catalog.builders_club_place_room_item: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -179,7 +179,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 650
+    line: 693
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

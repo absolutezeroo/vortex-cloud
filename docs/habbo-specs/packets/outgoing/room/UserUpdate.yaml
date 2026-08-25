@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:48a05c85b5db2cb218fae8042e8d83a42a42544a4a2afd049947df90c4c60dc8"
+generated_digest: "sha256:9e8efb1f9ad52e0229621f352d855bece0af4db8514c2f62d555712cfa9bff7d"
 generated:
   name: UserUpdate
   direction: outgoing
@@ -104,6 +104,21 @@ generated:
     - int32
     - string
     evidence: ev_c02cb394d951
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 9
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    evidence: ev_0fd7d88483c5
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -143,6 +158,14 @@ generated:
     - array
     evidence: ev_77f2205e5e15
   evidence:
+  - id: ev_0fd7d88483c5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2826.as
+    symbol: _SafeCls_2826
+    line: 39
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c02cb394d951
     kind: client_parser
     authority: client_code

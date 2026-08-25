@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7e3b8b693092bcf8b9d8cb21e729dda17357f5a22d87f262608fc5db4d136958"
+generated_digest: "sha256:cca07cf48eb81e96711846dc9bb2ef920be33fdf433f08da9ab2cee91dd4bf69"
 generated:
   id: uk_30bbfa5722
   subject: "quest.get_community_goal_hall_of_fame: who receives CommunityGoalHallOfFame"
@@ -19,11 +19,11 @@ generated:
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room
   feature: quest.get_community_goal_hall_of_fame
   known_evidence:
-  - id: ev_4875f459ad01
+  - id: ev_faf5e938e0d5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
     symbol: CommunityGoalGrain
     line: 148
 verified: {}

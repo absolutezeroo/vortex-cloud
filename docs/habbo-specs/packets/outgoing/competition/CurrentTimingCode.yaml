@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:23b3d54ef67fe137ae11ee3c70f220ab5de0e05e4b23b4452810c51ee7f62b0a"
+generated_digest: "sha256:87f828e2e5d9502bb1ab8d1621a6d0b1d73e2b6c7af3a928c3affb8f0d6cfdc0"
 generated:
   name: CurrentTimingCode
   direction: outgoing
   domain: competition
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: slot_config
+    name: scheduling_str
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d2b9b87bae80
-    - ev_92b108814dff
+    - ev_628ee6f3e33b
   - index: 1
     name: code
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d2b9b87bae80
-    - ev_92b108814dff
+    - ev_628ee6f3e33b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_628ee6f3e33b
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - string
     evidence: ev_92b108814dff
   evidence:
+  - id: ev_628ee6f3e33b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3314/_SafeCls_4322.as
+    symbol: _SafeCls_4322
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fefc13da7af9
     kind: client_parser
     authority: multi_implementation

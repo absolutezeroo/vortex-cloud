@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6eb243eb75d9ef6e7b6fede0b5a5b9a27dd7d752cc93ef6bf016f3ddf048f52f"
+generated_digest: "sha256:52d1c79e3f98416823313f9620dad53ffb436de5be62cf1bd6e510dac8c9e314"
 generated:
   name: WiredTradeCancelled
   direction: outgoing
   domain: wired
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: transaction_failure_type_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_cc94f071423b
+    - ev_2698b44336a6
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_2698b44336a6
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -34,6 +41,14 @@ generated:
     - int32
     evidence: ev_cc94f071423b
   evidence:
+  - id: ev_2698b44336a6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/userdefinedroomevents/wiredtrading/trade/_SafeCls_3010.as
+    symbol: _SafeCls_3010
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cc94f071423b
     kind: emulator_serializer
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c250310c047815a2992ffb62dfe1ad7d2d2df505f5ae65b376ea4d18323b0650"
+generated_digest: "sha256:a83b357b5e655449212c16f541620a528a6272d3244f008ee3385c78da6a2b99"
 generated:
   id: navigator.set_room_session_tags
   domain: navigator
@@ -35,6 +35,10 @@ generated:
     layer: domain
     symbol: RoomTagMapper.ToTags
     evidence: ev_37e2f0d6a658
+  - order: 3
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -52,6 +56,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_329537530b13
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.RoomSnapshot
     value: _state.RoomSnapshot with { Tags = RoomTagMapper.ToTags(entity.Tag1, entity.Tag2), LastUpdatedUtc = DateTime.UtcNow, }
@@ -87,7 +95,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 547
+    line: 607
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_37e2f0d6a658
     kind: emulator_flow
     authority: vortex_emulator
@@ -107,6 +122,7 @@ generated:
   - navigator.set_room_session_tags.guard_1
   - navigator.set_room_session_tags.guard_2
   - navigator.set_room_session_tags.guard_3
+  - navigator.set_room_session_tags.guard_4
   - navigator.set_room_session_tags.success
   unknowns:
   - uk_e7e993f5a8

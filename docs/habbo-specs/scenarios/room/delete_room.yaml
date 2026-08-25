@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dea16e249f15a555ea6dc4b280b96ddd444b53acba1c7bd8693c7e33e9887528"
+generated_digest: "sha256:94eb021c1544748a48d3336cd281cec132966fddf8468673dd83917057c92ba0"
 generated:
   feature: room.delete_room
   scenarios:
@@ -78,6 +78,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9f45a8c43da8
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7a878a6b2890
+  - scenario: room.delete_room.guard_11
+    title: "delete room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: DeleteRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of DeleteRoom sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -314,7 +337,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 177
+    line: 190
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_4c36667ce9b9
     kind: emulator_flow
     authority: vortex_emulator

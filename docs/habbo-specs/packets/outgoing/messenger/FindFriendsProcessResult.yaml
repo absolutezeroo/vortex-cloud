@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8c87735abab8ef61a3115e5569ae794cd097b40edac5a583a9eb9634dbe88c25"
+generated_digest: "sha256:585bc88d9e804e9f03267c3b8b8f31415455f7b04c967bdf4f85adff30d2abc1"
 generated:
   name: FindFriendsProcessResult
   direction: outgoing
   domain: messenger
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name: success
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_194854845bf8
+    - ev_592067985367
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_592067985367
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -42,6 +48,14 @@ generated:
     - boolean
     evidence: ev_4edca050548e
   evidence:
+  - id: ev_592067985367
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_4176.as
+    symbol: _SafeCls_4176
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_194854845bf8
     kind: reference_composer
     authority: reference_emulator
@@ -59,7 +73,5 @@ generated:
     line: 6
   conflicts:
   - cf_86374273ea
-  unknowns:
-  - uk_d79f69e27f
 verified: {}
 manual: {}

@@ -10,39 +10,57 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d9605e2f16d1ba6d41784af8c48ee3e6f86d0f85a2a27ea0683b3d262263c9bb"
+generated_digest: "sha256:6e3b5ecc8a3084e7dc7fc258ae412890b42233d723e6cda9fb0224940797fdce"
 generated:
   name: MessengerInit
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: user_friend_limit
+    name: unknown_0
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_d9d5ec99f2bf
+    - ev_5aacafab5197
   - index: 1
-    name: normal_friend_limit
+    name: unknown_1
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_d9d5ec99f2bf
+    - ev_5aacafab5197
   - index: 2
-    name: extended_friend_limit
+    name: unknown_2
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_d9d5ec99f2bf
+    - ev_5aacafab5197
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_5aacafab5197
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_5aacafab5197
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -80,6 +98,14 @@ generated:
     - array
     evidence: ev_6784826430a5
   evidence:
+  - id: ev_5aacafab5197
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2032.as
+    symbol: _SafeCls_2032
+    line: 30
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d9d5ec99f2bf
     kind: client_parser
     authority: multi_implementation
@@ -105,5 +131,7 @@ generated:
     line: 8
   conflicts:
   - cf_02dbf283ad
+  unknowns:
+  - uk_8ab0a5d019
 verified: {}
 manual: {}

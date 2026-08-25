@@ -10,29 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5e7a287edd76bdb8076b03fe01f1dbf8e66b515023da38a0bd9ad8c9bad8156"
+generated_digest: "sha256:6279c77a6402d0c11d98a553d545f62b3fc827881e1bd90408b98a1fa0ef5033"
 generated:
   name: ModifyCustomFilterResult
   direction: outgoing
   domain: preferences
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0e7a32db3ede
+    - ev_1dbb8574c52e
   - index: 1
     name: word
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0e7a32db3ede
+    - ev_1dbb8574c52e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_1dbb8574c52e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -42,6 +50,14 @@ generated:
     - string
     evidence: ev_0e7a32db3ede
   evidence:
+  - id: ev_1dbb8574c52e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4205/ModifyCustomFilterResultMessageEventParser.as
+    symbol: ModifyCustomFilterResultMessageEventParser
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0e7a32db3ede
     kind: emulator_serializer
     authority: vortex_emulator

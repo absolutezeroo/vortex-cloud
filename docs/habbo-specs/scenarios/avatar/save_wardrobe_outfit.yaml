@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f1c27e07ac5452df406e7ffcd87d63cc67f10d836ef732baff6c961fcd8e886a"
+generated_digest: "sha256:894aba5af98fc86de0b0dad2396b00859068513a86000e3c775791e9fee3cda7"
 generated:
   feature: avatar.save_wardrobe_outfit
   scenarios:
@@ -60,6 +60,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f1e3a77439ea
+  - scenario: avatar.save_wardrobe_outfit.guard_2
+    title: "save wardrobe outfit: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SaveWardrobeOutfit
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SaveWardrobeOutfit sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f1e3a77439ea
   - scenario: avatar.save_wardrobe_outfit.success
     title: "save wardrobe outfit: the request is accepted"
     given:
@@ -98,12 +121,19 @@ generated:
     source: Vortex.PacketHandlers/Avatar/SaveWardrobeOutfitMessageHandler.cs
     symbol: SaveWardrobeOutfitMessageHandler
     line: 22
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_92cbb97e9171
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.Wardrobe.cs
     symbol: PlayerGrain
-    line: 43
+    line: 44
 verified: {}
 manual: {}

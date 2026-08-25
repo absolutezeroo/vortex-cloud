@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:28b34d77b4c0d91d41bd8fa202587d49b486d57c97f0e818de5cf3044f30e753"
+generated_digest: "sha256:bbf7ab5fc0dda2856afcc2cf96dee58d1f8e62173818a00b07106ec5e96b98af"
 generated:
   name: ClubGiftNotification
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: num_gifts
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0b22a1cf0fd0
+    - ev_9ea59a151f12
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_9ea59a151f12
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_0b22a1cf0fd0
   evidence:
+  - id: ev_9ea59a151f12
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3693.as
+    symbol: _SafeCls_3693
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0b22a1cf0fd0
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: ClubGiftNotificationMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_8519e46574
 verified: {}
 manual: {}

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ef439750a48f5259921e6344d770249692f1e2b6f81a81976fb1ec5bf2d849a7"
+generated_digest: "sha256:c2a61f97086fe60ac873fce975379cb8577c37868ee917591a2083de88a7381a"
 generated:
   name: GotMysteryBoxPrize
   direction: outgoing
   domain: mystery_box
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: content_type
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_457520ddb228
-    - ev_6b2c65035881
+    - ev_0579f784f5b4
   - index: 1
     name: class_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_457520ddb228
-    - ev_6b2c65035881
+    - ev_0579f784f5b4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - int32
+    evidence: ev_0579f784f5b4
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - int32
     evidence: ev_6b2c65035881
   evidence:
+  - id: ev_0579f784f5b4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1737/_SafeCls_4210.as
+    symbol: _SafeCls_4210
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f2449f569f63
     kind: client_parser
     authority: multi_implementation

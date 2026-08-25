@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bec07101f6f616f74998a328cd5f02b356bf8ba061cbc2ff189c8bd752971114"
+generated_digest: "sha256:cb94312773df9af2ae5d55fc79a58a64737bdc81d1c257eb6e1ae56dea690e7d"
 generated:
   name: CreditBalance
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: balance
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_080e09ca69d0
+    - ev_1f16746b5080
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_1f16746b5080
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - string
     evidence: ev_080e09ca69d0
   evidence:
+  - id: ev_1f16746b5080
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2329/_SafeCls_2328.as
+    symbol: _SafeCls_2328
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_080e09ca69d0
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: CreditBalanceMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_361d30284a
 verified: {}
 manual: {}

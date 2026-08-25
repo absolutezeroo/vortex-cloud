@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5726ac771184ef3d1b7212099aff84fc0531dac1ff8fd5dcfa1b8cc6963d174a"
+generated_digest: "sha256:058ac086800bb49dc2175719c459e45f3f09e1ae2e09e19f3ef93979e159b044"
 generated:
   id: cf_e1e2668d75
   kind: field_count
@@ -19,7 +19,7 @@ generated:
   positions:
   - origin: nitro
     authority: multi_implementation
-    claim: "11 fields: int32, int32, int32, boolean, boolean, boolean, int32, boolean, boolean, boolean, int32"
+    claim: "1 fields: int32, int32, int32, boolean, boolean, boolean, int32, boolean, boolean, boolean, int32"
     evidence: ev_41ea3f6090b8
   - origin: vortex
     authority: vortex_emulator

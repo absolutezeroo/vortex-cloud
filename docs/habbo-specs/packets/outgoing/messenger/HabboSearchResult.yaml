@@ -10,191 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8047d1ff296f1ad1ff30656d3e0146865967f75504ae0168ac960cf684df11ef"
+generated_digest: "sha256:0a6c9ed6f125dae1b9812ca46917255b16f854eb1f867f03dda71b8eac0fd183"
 generated:
   name: HabboSearchResult
   direction: outgoing
   domain: messenger
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: count
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_5318009a6fcd
+    - ev_a780f4355294
   - index: 1
-    name: friends
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_5318009a6fcd
-    fields:
-    - index: 0
-      name: messenger_search_result
-      type: block
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5318009a6fcd
-      fields:
-      - index: 0
-        name: player_id
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 1
-        name: name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 2
-        name: motto
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 3
-        name: online
-        type: boolean
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 4
-        name: following_allowed
-        type: boolean
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 5
-        name: unknown_string
-        type: string
-        name_is_placeholder: true
-        name_confidence: unknown
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 6
-        name: gender
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 7
-        name: figure
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 8
-        name: real_name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-  - index: 2
-    name: count
+    name: unknown_1
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_5318009a6fcd
-  - index: 3
-    name: others
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_5318009a6fcd
-    fields:
-    - index: 0
-      name: messenger_search_result
-      type: block
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5318009a6fcd
-      fields:
-      - index: 0
-        name: player_id
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 1
-        name: name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 2
-        name: motto
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 3
-        name: online
-        type: boolean
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 4
-        name: following_allowed
-        type: boolean
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 5
-        name: unknown_string
-        type: string
-        name_is_placeholder: true
-        name_confidence: unknown
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 6
-        name: gender
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 7
-        name: figure
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
-      - index: 8
-        name: real_name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_5318009a6fcd
+    - ev_a780f4355294
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_a780f4355294
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -212,6 +60,14 @@ generated:
     - array
     evidence: ev_5318009a6fcd
   evidence:
+  - id: ev_a780f4355294
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2237.as
+    symbol: _SafeCls_2237
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4b9bed1ecd01
     kind: client_parser
     authority: multi_implementation
@@ -227,5 +83,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/FriendList/HabboSearchResultMessageSerializer.cs
     symbol: HabboSearchResultMessageSerializer
     line: 8
+  conflicts:
+  - cf_515a4f77b7
+  unknowns:
+  - uk_a493f6b0f0
 verified: {}
 manual: {}

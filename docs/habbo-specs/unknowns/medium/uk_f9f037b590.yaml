@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a1c8794b58e1c94e53a2b838b4e3c58d41ccbd7489a914085814a1a1e595548c"
+generated_digest: "sha256:6f42b172a4f0705dc67807d6b4e80b3956adf03d84130a6e1dee47d967622dc3"
 generated:
   id: uk_f9f037b590
   subject: "preferences.set_room_camera_preferences: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 64
+    line: 66
   - id: ev_9d0c4278e411
     kind: emulator_handler
     authority: vortex_emulator

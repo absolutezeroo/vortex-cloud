@@ -10,31 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:30fce74367c96805d7b1aa6ac4649e3995f5e11c586c4510a4d24206fbcaa163"
+generated_digest: "sha256:895578756e7df9086e8ec7b7c24d511272bfeaec932d4868260b9ab01839ebc9"
 generated:
   name: ItemDataUpdate
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: object_id
     type: string
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_5cf8f832d457
     - ev_08a109209e36
   - index: 1
-    name: state
+    name: item_data
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_08a109209e36
+    - ev_5cf8f832d457
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_5cf8f832d457
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +67,14 @@ generated:
     - string
     evidence: ev_e73094b75db7
   evidence:
+  - id: ev_5cf8f832d457
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2565.as
+    symbol: _SafeCls_2565
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_08a109209e36
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +98,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/ItemDataUpdateMessageComposerSerializer.cs
     symbol: ItemDataUpdateMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_6ea0a27f03
 verified: {}
 manual: {}

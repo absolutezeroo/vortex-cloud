@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:feb139b16e194951149ea59d6ab8b2b14091570ed4e0b74e27e23eacfb23b02f"
+generated_digest: "sha256:c53e7c35a001b89f6fc4258587f2d793884004600d81f9a260a21ad1e682fea3"
 generated:
   name: IssueDeleted
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: issue_id
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_36892aa9aab3
+    - ev_b222d6c48843
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_b222d6c48843
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -46,6 +53,14 @@ generated:
     - string
     evidence: ev_36892aa9aab3
   evidence:
+  - id: ev_b222d6c48843
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2490.as
+    symbol: _SafeCls_2490
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_93e9f8306fcc
     kind: client_parser
     authority: multi_implementation

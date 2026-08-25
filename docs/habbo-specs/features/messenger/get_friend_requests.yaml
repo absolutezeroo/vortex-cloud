@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:57deaf36242e61f70d248bbc760b6908ae52062d024cb958795623906b7d6efa"
+generated_digest: "sha256:61a1891367e16bec9ce709fec8f694b58571049e60459eb0eb6c0f69b4d65cb8"
 generated:
   id: messenger.get_friend_requests
   domain: messenger
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.GetFriendRequestsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -60,11 +60,11 @@ generated:
     source: Vortex.PacketHandlers/FriendList/GetFriendRequestsMessageHandler.cs
     symbol: GetFriendRequestsMessageHandler
     line: 14
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 46
   scenarios:

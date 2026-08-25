@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a2bd3753dc6fb32ad691e3a08ed8931b552e704ccd5b53617c5b04f8ed51e75f"
+generated_digest: "sha256:64ce94d8224718ea87d955b8fd638604f86ff3b37f09cf59788ed1c0197d9383"
 generated:
   name: UserBadges
   direction: outgoing
@@ -90,6 +90,8 @@ generated:
     symbol: UserBadgesMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_03f90f2e23
   unknowns:
   - uk_08742d9203
 verified: {}

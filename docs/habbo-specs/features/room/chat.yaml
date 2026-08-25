@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7eadc5fe01803ca626ed1a1fe78d4b3814942986dc307a92c72f0e0c5f59c1dd"
+generated_digest: "sha256:31c9d6acc9ba7f48993fc2b2ca1f49a1b7031ff4a08f0acdbaf530f6cdd324c3"
 generated:
   id: room.chat
   domain: room
@@ -143,6 +143,8 @@ generated:
   - room.chat.guard_3
   - room.chat.guard_4
   - room.chat.success
+  conflicts:
+  - cf_3cd42900cc
   unknowns:
   - uk_5b3eac6254
   - uk_fb9a0f28c7

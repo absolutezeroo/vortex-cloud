@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:73c17cf2f40bc16451d758d05bbc9e0090b9daced74bd07957cb3aa071b4ec29"
+generated_digest: "sha256:8478b38a1d6123390b0253b5e3bc206d23db6eac35b8cd84841fcb8740cf4fc3"
 generated:
   feature: room.save_room_settings
   scenarios:
@@ -150,6 +150,40 @@ generated:
       - RoomInfoUpdated
       - RoomSettingsSaved
       evidence: ev_2e941e540e15
+  - scenario: room.save_room_settings.guard_4
+    title: "save room settings: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SaveRoomSettings
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SaveRoomSettings sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomSettingsSaveError
+      - RoomVisualizationSettings
+      - RoomChatSettings
+      - RoomInfoUpdated
+      - RoomSettingsSaved
+      evidence: ev_2e941e540e15
   - scenario: room.save_room_settings.success
     title: "save room settings: the request is accepted"
     given:
@@ -207,6 +241,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 54
+    line: 55
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
 verified: {}
 manual: {}

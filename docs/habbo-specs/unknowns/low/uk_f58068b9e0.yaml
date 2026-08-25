@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c285656ef61595bb4c6f004a2ef56918a835dbb1c8667939c3376f4c42787662"
+generated_digest: "sha256:426b20727a2342fef075eed8b95f17794b02bf170452cd4cd549992ed7b41716"
 generated:
   id: uk_f58068b9e0
   subject: "outgoing/WiredRoomLogs: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredRoomLogs
   known_evidence:
+  - id: ev_e609c508c93d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4026/_SafeCls_4191.as
+    symbol: _SafeCls_4191
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef661b975eb8
     kind: emulator_serializer
     authority: vortex_emulator

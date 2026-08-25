@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c64e6c0896a8964b0e03393b1d9f7cb506e33ecba950d4a718a1c63fcbcc9def"
+generated_digest: "sha256:ad98667f23bbe2afe206ff779c06598a7d967ecfc7309838bf560bb972ec1128"
 generated:
   feature: users.ignore_user
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -126,12 +126,12 @@ generated:
     source: Vortex.PacketHandlers/Users/IgnoreUserMessageHandler.cs
     symbol: IgnoreUserMessageHandler
     line: 24
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 532
+    line: 549
 verified: {}
 manual: {}

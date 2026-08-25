@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a494728aa0112a0841a7e6b714ef914861d469cf959d6dadf03579522d42b0fc"
+generated_digest: "sha256:21b4033ef5faf171fee56e6586e906de28918bfc573b27a08c53ab43bb768ac1"
 generated:
   id: uk_f2002de925
   subject: "outgoing/BannedUsersFromRoom: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BannedUsersFromRoom
   known_evidence:
+  - id: ev_55118e4903db
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3887.as
+    symbol: _SafeCls_3887
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_bd02948aeda3
     kind: reference_composer
     authority: reference_emulator

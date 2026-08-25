@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1afd809b32ca1a20f8ff157244c79dfc635a16250d77e2590b44d085383832dd"
+generated_digest: "sha256:dbf2e43526a40b2c420e0d93dabb476f796f68e9ef9c8d10dd42fbff24b1330c"
 generated:
   id: uk_7afeefccd2
   subject: "preferences.set_ui_flags: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 67
+    line: 69
   - id: ev_d8e926fbfb76
     kind: emulator_flow
     authority: vortex_emulator

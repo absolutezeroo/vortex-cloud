@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e966b949ed474800b5312b4dbd9daab0c0982836e273d0f8612ddb387ed9c8a3"
+generated_digest: "sha256:fb914d0074c4cfce35253270222bb16732a285c4b8c0f052e8f6000310452295"
 generated:
   name: TryPhoneNumberResult
   direction: outgoing
   domain: gifts
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: result_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_126f11519b1e
+    - ev_c2e9380e96ab
   - index: 1
-    name: unknown_1
+    name: millis_to_allow_process_reset
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_126f11519b1e
+    - ev_c2e9380e96ab
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_c2e9380e96ab
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +56,14 @@ generated:
     - int32
     evidence: ev_126f11519b1e
   evidence:
+  - id: ev_c2e9380e96ab
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4148/_SafeCls_4147.as
+    symbol: _SafeCls_4147
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b83f3a5182a5
     kind: client_parser
     authority: multi_implementation
@@ -66,7 +80,5 @@ generated:
     symbol: TryPhoneNumberResultMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_e75e3c4aa9
 verified: {}
 manual: {}

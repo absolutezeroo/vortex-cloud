@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e6512c0223ff4189a9a65093f911a56a43310915964f7a703685232f73ac48ae"
+generated_digest: "sha256:c7b421b782c9ffd616b5dbef64169d92660ed06278ee9a15c8b01551b5c62949"
 generated:
   id: cf_d613c4b114
   kind: field_count
   subject: "outgoing/RoomReady: field count"
   packet: RoomReady
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: string, int32"
+    evidence: ev_61f8d19768aa
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: string, int32"
+    claim: "1 fields: string, int32"
     evidence: ev_077c63323136
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "2 fields: string, int32"
     evidence: ev_6eeefb752b6e
   evidence:
+  - id: ev_61f8d19768aa
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_1743.as
+    symbol: _SafeCls_1743
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_077c63323136
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2fb26e76ccc6f99ade0faa67a41fc34de01044127827227da473c82ec27f176c"
+generated_digest: "sha256:a883e62cd6bd19fb6225b5af8dea9d8bf4e1c8a9e9b45dde9c743de336975061"
 generated:
   id: moderation.get_quiz_questions
   domain: moderation
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuizGrain.RequestAsync
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -43,11 +43,11 @@ generated:
   - expression: quiz is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
   - expression: questions.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_1eb3967e3979
+    evidence: ev_fd80c081bc3a
   state_changes: []
   outgoing:
     ordering: unknown
@@ -55,16 +55,9 @@ generated:
     - packet: QuizData
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
   reaches_persistence: false
   evidence:
-  - id: ev_1eb3967e3979
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuizGrain.cs
-    symbol: PlayerQuizGrain
-    line: 38
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -86,6 +79,13 @@ generated:
     source: Vortex.PacketHandlers/Help/GetQuizQuestionsMessageHandler.cs
     symbol: GetQuizQuestionsMessageHandler
     line: 10
+  - id: ev_fd80c081bc3a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/PlayerQuizGrain.cs
+    symbol: PlayerQuizGrain
+    line: 41
   scenarios:
   - moderation.get_quiz_questions.guard_0
   - moderation.get_quiz_questions.guard_1

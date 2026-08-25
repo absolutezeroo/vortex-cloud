@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:708d0bf7a4984d778c1a48f8b2302d60e3bfb85faeeab99633866a077a1bf791"
+generated_digest: "sha256:ba63b6a15d365b259f2367a0b42710ae09ed9ecbcc423a7644b1693138a91d80"
 generated:
   feature: groups.moderate_thread
   scenarios:
@@ -91,7 +91,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -180,11 +180,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 486
   - id: ev_f9fea23f57c8

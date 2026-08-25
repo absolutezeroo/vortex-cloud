@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bbac63a5e8d26d4689b8a521751c4953460b6538a9d31dc28f7c0d72e8188c2a"
+generated_digest: "sha256:32b63fd3f1ccbaea3d2814ac8823b1e518ac52867d3480d4d918be258f91af2a"
 generated:
   name: CanCreateRoom
   direction: incoming
@@ -76,5 +76,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Navigator/CanCreateRoomMessageParser.cs
     symbol: CanCreateRoomMessageParser
     line: 7
+  conflicts:
+  - cf_ae0db1dbfb
 verified: {}
 manual: {}

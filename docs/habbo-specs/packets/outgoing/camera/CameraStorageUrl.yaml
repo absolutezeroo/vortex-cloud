@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d73e9c83c995d3e37c9c6cddbdd93fae2f6c74d4338f1254b2e3b042e57656b6"
+generated_digest: "sha256:f8ec02c42518ce2e107bffb4543861063920a6cb48345356f36b7fb3758d2018"
 generated:
   name: CameraStorageUrl
   direction: outgoing
   domain: camera
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: url
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_98405a6a7bcd
+    - ev_c52321b699a6
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_c52321b699a6
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -47,6 +53,14 @@ generated:
     types: []
     evidence: ev_0b7e633e5902
   evidence:
+  - id: ev_c52321b699a6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4057.as
+    symbol: _SafeCls_4057
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a98ee70de39f
     kind: client_parser
     authority: multi_implementation
@@ -70,7 +84,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Camera/CameraStorageUrlMessageComposerSerializer.cs
     symbol: CameraStorageUrlMessageComposerSerializer
     line: 6
-  unknowns:
-  - uk_c948a1dc61
 verified: {}
 manual: {}

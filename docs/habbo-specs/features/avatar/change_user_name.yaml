@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d138fbdeea5acf5a2e6e268c3761ff742eb4bc359799972e37269676c6cf2131"
+generated_digest: "sha256:1a281fc0d5b10dc9287054b5705acf93e226fb81e8def569544918d5f00ccdfd"
 generated:
   id: avatar.change_user_name
   domain: avatar
@@ -69,6 +69,10 @@ generated:
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
   - order: 11
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
+  - order: 12
     layer: grain
     symbol: PlayerGrain.MarkNuxCompletedAsync
     evidence: ev_1f83e61934ca
@@ -97,6 +101,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_e6fef545a42a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   - expression: _state.NuxCompletedAt is not null
     on_fail: return
     observed_in: vortex
@@ -172,6 +180,13 @@ generated:
     source: Vortex.PacketHandlers/Avatar/ChangeUserNameMessageHandler.cs
     symbol: ChangeUserNameMessageHandler
     line: 27
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_6d94b7c1bb77
     kind: emulator_flow
     authority: vortex_emulator
@@ -236,6 +251,7 @@ generated:
   - avatar.change_user_name.guard_4
   - avatar.change_user_name.guard_5
   - avatar.change_user_name.guard_6
+  - avatar.change_user_name.guard_7
   - avatar.change_user_name.success
   conflicts:
   - cf_d875172b42

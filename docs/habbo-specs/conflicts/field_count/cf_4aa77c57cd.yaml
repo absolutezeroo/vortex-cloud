@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:50e9043a157f3872485b91c32a03f2418c3d1f92c356b3d3fe9ddccb4fe03f12"
+generated_digest: "sha256:d518c2e06a41df1e0913efabf4aed4d6c2897aafb8cf1eb460dc6a9388eabf88"
 generated:
   id: cf_4aa77c57cd
   kind: field_count
@@ -19,7 +19,7 @@ generated:
   positions:
   - origin: nitro
     authority: multi_implementation
-    claim: "8 fields: int32, string, int32, string, int32, int32, string, string"
+    claim: "1 fields: int32, string, int32, string, int32, int32, string, string"
     evidence: ev_7a0440d85a72
   - origin: arcturus
     authority: reference_emulator

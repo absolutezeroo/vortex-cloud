@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2c6b9e71f7a64f9b9c622ff2167193427e769796ff42ea18623dd4a63c0a41e7"
+generated_digest: "sha256:17b664dce730d522b06f55c195dd9fd84bd58999c8204575834b5661b431942e"
 generated:
   feature: users.approve_membership_request
   scenarios:
@@ -57,7 +57,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -83,7 +83,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -136,7 +136,7 @@ generated:
       emits:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
-      evidence: ev_12ce06c785f7
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -154,13 +154,6 @@ generated:
     symbol: ApproveMembershipRequestMessageEvent
     line: 23
     note: third-party server implementation; evidence, not authority
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 51
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -175,11 +168,11 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveMembershipRequestMessageHandler.cs
     symbol: ApproveMembershipRequestMessageHandler
     line: 23
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 134
 verified: {}

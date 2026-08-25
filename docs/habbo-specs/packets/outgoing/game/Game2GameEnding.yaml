@@ -10,15 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:24239ea9f7994d97dd678cec1155b1ed3441602d575cb877bf774dd9202299d0"
+generated_digest: "sha256:86c92e9c8589caf6b4193366374b050e37e13a1d9249f06093f934674997befd"
 generated:
   name: Game2GameEnding
   direction: outgoing
   domain: game
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: time_to_next_state
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_44e277c7be5a
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_44e277c7be5a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_44e277c7be5a
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +49,14 @@ generated:
     types: []
     evidence: ev_19ce352b22ad
   evidence:
+  - id: ev_44e277c7be5a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2265/_SafeCls_4444.as
+    symbol: _SafeCls_4444
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_19ce352b22ad
     kind: client_parser
     authority: multi_implementation
@@ -34,5 +65,7 @@ generated:
     symbol: Game2GameEndingMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  unknowns:
+  - uk_cb89604cf7
 verified: {}
 manual: {}

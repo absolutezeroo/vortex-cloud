@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e9923a5b6bfa8e425f3e1eb39a4b6cb683c1ead46f2601bcb7deff8d438a74e6"
+generated_digest: "sha256:8529da9ec8b6a40d1be6aa37b02600461f971225c8abc2525c75e32c9f57005b"
 generated:
   name: PetLevelUpdate
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: room_index
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7e57ec1f490d
-    - ev_d1a4d28197c3
+    - ev_26f6111a7816
   - index: 1
     name: pet_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7e57ec1f490d
-    - ev_d1a4d28197c3
+    - ev_26f6111a7816
   - index: 2
     name: level
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7e57ec1f490d
-    - ev_d1a4d28197c3
+    - ev_26f6111a7816
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_26f6111a7816
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +74,14 @@ generated:
     - int32
     evidence: ev_d1a4d28197c3
   evidence:
+  - id: ev_26f6111a7816
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_2830.as
+    symbol: _SafeCls_2830
+    line: 41
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e6124347198b
     kind: client_parser
     authority: multi_implementation

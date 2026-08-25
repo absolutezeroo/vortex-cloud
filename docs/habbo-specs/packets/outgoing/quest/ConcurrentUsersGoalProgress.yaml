@@ -10,38 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e8a6710915fc479a2125031950352cadd5586722839fb2f6008561ee034cba6c"
+generated_digest: "sha256:b98ed811fe8d18ac4b819227dbf0aab2286560e28356e3041fa8beaa68f818e0"
 generated:
   name: ConcurrentUsersGoalProgress
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: state
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_ab1c1137eb4a
-    - ev_6448e7b3bcda
+    - ev_88975463cf40
   - index: 1
     name: user_count
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_ab1c1137eb4a
-    - ev_6448e7b3bcda
+    - ev_88975463cf40
   - index: 2
     name: user_count_goal
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_ab1c1137eb4a
-    - ev_6448e7b3bcda
+    - ev_88975463cf40
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -52,6 +52,15 @@ generated:
     - int32
     - int32
     evidence: ev_ab1c1137eb4a
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_88975463cf40
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -77,6 +86,14 @@ generated:
     - int32
     evidence: ev_6448e7b3bcda
   evidence:
+  - id: ev_88975463cf40
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_4165.as
+    symbol: _SafeCls_4165
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ab1c1137eb4a
     kind: client_parser
     authority: client_code

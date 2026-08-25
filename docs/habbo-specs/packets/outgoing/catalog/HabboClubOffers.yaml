@@ -10,29 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f92733e90acc9b6ce537b47c3f86962fa66c118b7fadff38d79b941f0bd07a6c"
+generated_digest: "sha256:26710a52b2389a7afc21e2d09687320c29f7879db97185c31acd1ef50c0b5a91"
 generated:
   name: HabboClubOffers
   direction: outgoing
   domain: catalog
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_8fcc41ffef49
     - ev_064749a00127
   - index: 1
     name: source
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_064749a00127
+    - ev_8fcc41ffef49
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_8fcc41ffef49
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +65,14 @@ generated:
     - int32
     evidence: ev_064749a00127
   evidence:
+  - id: ev_8fcc41ffef49
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_1982.as
+    symbol: _SafeCls_1982
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1cfa76f9daf6
     kind: client_parser
     authority: multi_implementation

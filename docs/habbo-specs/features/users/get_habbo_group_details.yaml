@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:66fa0cd570d8a37ff37c38838871d225ec353bae73cdfa8f06af2e9090ef138b"
+generated_digest: "sha256:6358281ab07e7686cc26e74ebcb8f15594d1abf8a7612b4d774a6a6fe74a87b3"
 generated:
   id: users.get_habbo_group_details
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.GetDetailsAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: grain
     symbol: GroupDirectoryGrain.GetEditorDataAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -52,7 +52,7 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   state_changes: []
   outgoing:
     ordering: unknown
@@ -67,6 +67,13 @@ generated:
       evidence: ev_9c4104a52262
   reaches_persistence: false
   evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 27
   - id: ev_47032a3756bb
     kind: emulator_handler
     authority: vortex_emulator
@@ -74,20 +81,6 @@ generated:
     source: Vortex.PacketHandlers/Users/GetHabboGroupDetailsMessageHandler.cs
     symbol: GetHabboGroupDetailsMessageHandler
     line: 12
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 383
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 27
   - id: ev_9c4104a52262
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,6 +88,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetHabboGroupDetailsMessageHandler.cs
     symbol: GetHabboGroupDetailsMessageHandler
     line: 23
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 382
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

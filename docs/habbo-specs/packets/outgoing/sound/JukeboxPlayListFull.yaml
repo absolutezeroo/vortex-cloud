@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:541c8b20fdd6dd01591d88561bfd16e64097cdd02ce91196cfdf2e52b11ff403"
+generated_digest: "sha256:c4db05ab669ae197ccacc967ec616991b351fcbc3f459a8199a23f05d878347f"
 generated:
   name: JukeboxPlayListFull
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_f7adabe8f3cb
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_55276ff112c4
   evidence:
+  - id: ev_f7adabe8f3cb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4041.as
+    symbol: _SafeCls_4041
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_55276ff112c4
     kind: client_parser
     authority: multi_implementation

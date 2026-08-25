@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:40b5c710fe5b6306332b2e5d4b272a3232a3a049669e0c4a58c70f3c32a4383b"
+generated_digest: "sha256:a4fb9d52c38e8a03b9fec8678191c7771f00862af5a19cf6503de5a53723cf41"
 generated:
   id: uk_0a9133f0b3
   subject: "messenger.request_friend: what the server sends when it refuses"
   severity: medium
-  question: messenger.request_friend changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: messenger.request_friend changes state and has 11 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: messenger.request_friend
   known_evidence:
@@ -33,6 +33,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/RequestFriendMessageHandler.cs
     symbol: RequestFriendMessageHandler
     line: 15
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,13 +68,6 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 89
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,6 +75,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 89
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

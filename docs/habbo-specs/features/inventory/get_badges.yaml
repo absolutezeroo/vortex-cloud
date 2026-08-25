@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:909e959d148b246b9b256b15d75f4d1ed227e36c3a1f1e765059e4f4b7a0b658"
+generated_digest: "sha256:5321ba910785e3a3ce018237b9f2a1a0fcaeda550d501b1d415216d074ec5611"
 generated:
   id: inventory.get_badges
   domain: inventory
@@ -41,6 +41,10 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6d72f2969639
+    - packet: HabboUserBadges
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_6d72f2969639
   reaches_persistence: false
   evidence:
   - id: ev_6d72f2969639
@@ -49,14 +53,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Inventory/Badges/GetBadgesMessageHandler.cs
     symbol: GetBadgesMessageHandler
-    line: 23
+    line: 25
   - id: ev_86df5a82116b
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Inventory/Badges/GetBadgesMessageHandler.cs
     symbol: GetBadgesMessageHandler
-    line: 13
+    line: 15
   scenarios:
   - inventory.get_badges.guard_0
   - inventory.get_badges.success

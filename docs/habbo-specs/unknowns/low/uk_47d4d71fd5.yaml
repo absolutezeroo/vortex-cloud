@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:54f71e3f16020cfe822c4c64b27ee627b72775e1be86648858eb367e0d03e3ea"
+generated_digest: "sha256:3f314b8fe45155e0690977e746919ad7e4482099073ea2ec004186d1cf515810"
 generated:
   id: uk_47d4d71fd5
   subject: "outgoing/RoomChatlog: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomChatlog
   known_evidence:
+  - id: ev_17bbd22aa99f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3715.as
+    symbol: _SafeCls_3715
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef29b286b16e
     kind: reference_composer
     authority: reference_emulator

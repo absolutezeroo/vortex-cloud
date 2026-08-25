@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5874a7ccb0e12ce244ab27fd8434151de763c79b35d8cbf5bb92d156680c7e15"
+generated_digest: "sha256:1d3afc035980de555f831d27e3f9c2131b349f21c93cc29c81955c5c5600048f"
 generated:
   name: BotInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,50 +23,17 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0fe9cc81d066
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_0fe9cc81d066
-  - index: 2
-    name: unknown_2
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_0fe9cc81d066
-  - index: 3
-    name: unknown_3
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_0fe9cc81d066
-  - index: 4
-    name: unknown_4
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_0fe9cc81d066
-  - index: 5
-    name: unknown_5
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_0fe9cc81d066
+    - ev_7dd2f7225ab1
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_7dd2f7225ab1
   - origin: arcturus
     authority: reference_emulator
     field_count: 6
@@ -80,6 +47,14 @@ generated:
     - string
     evidence: ev_0fe9cc81d066
   evidence:
+  - id: ev_7dd2f7225ab1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3095/_SafeCls_3735.as
+    symbol: _SafeCls_3735
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0fe9cc81d066
     kind: reference_composer
     authority: reference_emulator
@@ -88,6 +63,8 @@ generated:
     symbol: BotInventoryMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_a8b057acc2
   unknowns:
   - uk_31064e1893
 verified: {}

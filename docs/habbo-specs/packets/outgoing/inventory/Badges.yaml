@@ -10,63 +10,86 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:376f40a3018a87ec3d2be192dee18cf601b1e043c97fcc1d35fb16d3239a826f"
+generated_digest: "sha256:3631905c3ee29e4394532f7c25bc040a8bbdbee8c0def911556e3b160e81e016"
 generated:
   name: Badges
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: total_fragments
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ae08cfc66788
+    - ev_3f7c158d32c9
   - index: 1
-    name: unknown_1
+    name: fragment_no
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ae08cfc66788
+    - ev_3f7c158d32c9
   - index: 2
     name: unknown_2
-    type: string
+    type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ae08cfc66788
+    - ev_3f7c158d32c9
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_ae08cfc66788
+    - ev_3f7c158d32c9
   - index: 4
     name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ae08cfc66788
-  - index: 5
-    name: unknown_5
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_ae08cfc66788
+    - ev_3f7c158d32c9
+  - index: 5
+    name: unknown_5
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3f7c158d32c9
+  - index: 6
+    name: unknown_6
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_3f7c158d32c9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 7
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    evidence: ev_3f7c158d32c9
   - origin: arcturus
     authority: reference_emulator
     field_count: 6
@@ -80,6 +103,14 @@ generated:
     - string
     evidence: ev_ae08cfc66788
   evidence:
+  - id: ev_3f7c158d32c9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3206/_SafeCls_3564.as
+    symbol: _SafeCls_3564
+    line: 48
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ae08cfc66788
     kind: reference_composer
     authority: reference_emulator
@@ -88,6 +119,8 @@ generated:
     symbol: BadgesMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_d2a90b4b9d
   unknowns:
   - uk_f6e0880180
 verified: {}

@@ -10,23 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b235d4c7c705ca3c72231450b75f234efa58a1a77180e255a5f76f47fed21cd7"
+generated_digest: "sha256:9265fca5bc6d5fff1e24b4b977494fb6c6e4f23bc324399e79fd49a786600222"
 generated:
   name: DisconnectReason
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: reason
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e6642e4c06ef
+    - ev_01863d3674d0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_01863d3674d0
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +42,14 @@ generated:
     - int32
     evidence: ev_e6642e4c06ef
   evidence:
+  - id: ev_01863d3674d0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_3893.as
+    symbol: _SafeCls_3893
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e6642e4c06ef
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +58,5 @@ generated:
     symbol: DisconnectReasonMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_f8ec79697b
 verified: {}
 manual: {}

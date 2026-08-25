@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:848a9f1392d783b2e2900a5947821f4350e282f290e1f3c10947aa4bd9e19a4b"
+generated_digest: "sha256:2f09f202a6e73966bac469bed6aaba5c664317ea74009c276265bcf903a8862e"
 generated:
   name: OpenPetPackageRequested
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: object_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_39117d43e7f5
+    - ev_960b0f90c360
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_960b0f90c360
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -43,6 +49,14 @@ generated:
     - block
     evidence: ev_c47a59de5357
   evidence:
+  - id: ev_960b0f90c360
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3697.as
+    symbol: _SafeCls_3697
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_39117d43e7f5
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6168d9708e90a69e8b97372394afdad461c879ff2df9682fa208659e9a8daf5f"
+generated_digest: "sha256:25907dcfcbb607a15235c06b876af39d36ce15ca755fda0834c83ea23d927a22"
 generated:
   feature: catalog.purchase_targeted_offer
   scenarios:
@@ -55,29 +55,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0f24ea6318f8
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d5cec86b988c
-  - scenario: catalog.purchase_targeted_offer.guard_10
-    title: "purchase targeted offer: the guard '!string.IsNullOrEmpty(jsonData)' holds"
-    given:
-      guard: "!string.IsNullOrEmpty(jsonData)"
-      guard_holds: "true"
-    when:
-      packet: PurchaseTargetedOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseTargetedOffer sent while '!string.IsNullOrEmpty(jsonData)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7a660921f135
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -153,98 +130,6 @@ generated:
       emits: []
       evidence: ev_d5cec86b988c
   - scenario: catalog.purchase_targeted_offer.guard_5
-    title: "purchase targeted offer: the guard '!debitResult.Succeeded' holds"
-    given:
-      guard: "!debitResult.Succeeded"
-      guard_holds: "true"
-    when:
-      packet: PurchaseTargetedOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseTargetedOffer sent while '!debitResult.Succeeded' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_0b56492f6260
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d5cec86b988c
-  - scenario: catalog.purchase_targeted_offer.guard_6
-    title: "purchase targeted offer: the guard 'update.ChangedBy != request.Amount' holds"
-    given:
-      guard: update.ChangedBy != request.Amount
-      guard_holds: "true"
-    when:
-      packet: PurchaseTargetedOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseTargetedOffer sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_d0cb8ee11644
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d5cec86b988c
-  - scenario: catalog.purchase_targeted_offer.guard_7
-    title: "purchase targeted offer: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: PurchaseTargetedOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseTargetedOffer sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d5cec86b988c
-  - scenario: catalog.purchase_targeted_offer.guard_8
-    title: "purchase targeted offer: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseTargetedOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseTargetedOffer sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d5cec86b988c
-  - scenario: catalog.purchase_targeted_offer.guard_9
     title: "purchase targeted offer: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -281,13 +166,9 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: success
-      emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
-      - SilverBalance
-      evidence: ev_0b56492f6260
+      outcome: ignored
+      emits: []
+      evidence: ev_0f24ea6318f8
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -302,20 +183,13 @@ generated:
     symbol: PurchaseTargetedOfferEvent
     line: 13
     note: third-party server implementation; evidence, not authority
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 44
   - id: ev_0f24ea6318f8
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Catalog/Grains/PlayerTargetedOfferGrain.cs
     symbol: PlayerTargetedOfferGrain
-    line: 60
+    line: 64
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -323,13 +197,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
   - id: ev_4595f06449c6
     kind: emulator_flow
     authority: vortex_emulator
@@ -344,19 +211,5 @@ generated:
     source: Vortex.Catalog/TargetedOffers/TargetedOfferMapper.cs
     symbol: TargetedOfferMapper
     line: 73
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 46
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 94
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:04397b23834fa34db9521ba8f3c08f12d6813c22ee7e97d8292020a319b93962"
+generated_digest: "sha256:73e6cf1b6dd72bee21e91a767dfb43ae53e1f0806de1c25fe4e31eddec0f9275"
 generated:
   id: uk_8501bb56d0
   subject: "navigator.remove_own_room_rights_room: what the server sends when it refuses"
   severity: medium
-  question: navigator.remove_own_room_rights_room changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.remove_own_room_rights_room changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.remove_own_room_rights_room
   known_evidence:
@@ -25,7 +25,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 703
+    line: 779
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_80d2ee0d38f3
     kind: emulator_handler
     authority: vortex_emulator

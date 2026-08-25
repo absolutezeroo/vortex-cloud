@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ca977640da95fcf4015bfdac1972d0ecade98ddc7a16dce8de67bc21a8f3d0f8"
+generated_digest: "sha256:96a3af0e7f394d333db3427342b5013204f71b60da2cf7915bede03280512b4f"
 generated:
   name: BundleDiscountRuleset
   direction: outgoing
@@ -67,6 +67,12 @@ generated:
     - ev_0666b3ef6ae1
     - ev_102bebb2a33a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_1115b6afdc6a
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -93,6 +99,14 @@ generated:
     - block
     evidence: ev_102bebb2a33a
   evidence:
+  - id: ev_1115b6afdc6a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_1713.as
+    symbol: _SafeCls_1713
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f66855c61a60
     kind: client_parser
     authority: multi_implementation

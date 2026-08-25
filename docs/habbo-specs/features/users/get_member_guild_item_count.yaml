@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:812d05c053569d95c353c1fae17dd8636cb4567aeb02f7758c8a6943d722a272"
+generated_digest: "sha256:bcfe727d73ccbe0acc804edc7603c7e51ea4484ecfc2caf27727e681ac956cd3"
 generated:
   id: users.get_member_guild_item_count
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.GetMemberFurniCountAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -44,7 +44,7 @@ generated:
   - expression: baseRoomId is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   state_changes: []
   outgoing:
     ordering: unknown
@@ -55,6 +55,13 @@ generated:
       evidence: ev_baf4718732af
   reaches_persistence: false
   evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 308
   - id: ev_3915c68132fb
     kind: emulator_handler
     authority: vortex_emulator
@@ -62,13 +69,6 @@ generated:
     source: Vortex.PacketHandlers/Users/GetMemberGuildItemCountMessageHandler.cs
     symbol: GetMemberGuildItemCountMessageHandler
     line: 11
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 308
   - id: ev_baf4718732af
     kind: emulator_flow
     authority: vortex_emulator

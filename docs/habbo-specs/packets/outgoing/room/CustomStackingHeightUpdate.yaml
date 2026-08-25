@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7d3d6cb5a913ef0149d37a874a91dc2a24118ed38326a736eb1890969c4889c2"
+generated_digest: "sha256:fec63dbc1a603f7e449c1f33ecbc7307f296e9f2cbf840923b49eb1ec0f4bcef"
 generated:
   name: CustomStackingHeightUpdate
   direction: outgoing
@@ -83,5 +83,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Furniture/CustomStackingHeightUpdateMessageComposerSerializer.cs
     symbol: CustomStackingHeightUpdateMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_52d21a907d
 verified: {}
 manual: {}

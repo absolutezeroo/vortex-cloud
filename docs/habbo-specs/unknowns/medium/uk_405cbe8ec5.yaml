@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:60481902ee721a9e4efe7ba331221e22282d32ee0cdec132a778942e427c2044"
+generated_digest: "sha256:fb91ad1243a5280ee48f1fcf817ffb88f744d96bfd52578940f947df693e3c7c"
 generated:
   id: uk_405cbe8ec5
   subject: "collectibles.mint_item: what the server sends when it refuses"
@@ -19,13 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: collectibles.mint_item
   known_evidence:
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,13 +54,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/MintItemMessageHandler.cs
     symbol: MintItemMessageHandler
     line: 43
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -81,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 140
+    line: 150
   - id: ev_aaad5abd1665
     kind: emulator_handler
     authority: vortex_emulator
@@ -95,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 769
+    line: 812
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

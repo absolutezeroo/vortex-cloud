@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0fab0b43bdd57f8a3c3c226a1417cdd76b283e68e5f50ddb09294b43164931f4"
+generated_digest: "sha256:64b1ab9ffa0632f50486048515fdfdf788a34b02ae75eea527b87fdc1ad2e350"
 generated:
   id: uk_efddd77a87
   subject: "groups.update_forum_read_marker: what the server sends when it refuses"
@@ -26,13 +26,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumReadMarkerMessageHandler.cs
     symbol: UpdateForumReadMarkerMessageHandler
     line: 26
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 681
   - id: ev_b8deb6ce5f9d
     kind: emulator_handler
     authority: vortex_emulator
@@ -40,6 +33,13 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumReadMarkerMessageHandler.cs
     symbol: UpdateForumReadMarkerMessageHandler
     line: 15
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 680
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

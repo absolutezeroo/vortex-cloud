@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:df17ffe01a01102171c1c5593360981fd03608e61f81e23ab156de61e2a6dfda"
+generated_digest: "sha256:8f6ed365e12915c54381d93e42f3b643083cbe38c70e4f291d6f161b96fba6b1"
 generated:
   name: Sleep
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_dd42ce80f618
+    - ev_5a3d1e7b9d8e
   - index: 1
-    name: is_sleeping
+    name: sleeping
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_dd42ce80f618
+    - ev_5a3d1e7b9d8e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - boolean
+    evidence: ev_5a3d1e7b9d8e
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - boolean
     evidence: ev_ff90c3359edc
   evidence:
+  - id: ev_5a3d1e7b9d8e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2488/_SafeCls_2487.as
+    symbol: _SafeCls_2487
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dd42ce80f618
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Action/SleepMessageComposerSerializer.cs
     symbol: SleepMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_bf19b93a73
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:90d10aa23d2ec454c7a11110c3248a49ca6c9899a344604b094e519d0cfaa909"
+generated_digest: "sha256:56c3c1ad4f251b0e88030ff9cfceaeb56f820b74dcc704ed3ddb36fc15c155ef"
 generated:
   id: uk_ee51d51e03
   subject: "outgoing/PopularRoomTagsResult: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PopularRoomTagsResult
   known_evidence:
+  - id: ev_f144749ec549
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4032.as
+    symbol: _SafeCls_4032
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3aa656a8492e
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: PopularRoomTagsResultMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  - id: ev_4e758f40b24b
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/PopularRoomTagsResultMessageComposerSerializer.cs
-    symbol: PopularRoomTagsResultMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

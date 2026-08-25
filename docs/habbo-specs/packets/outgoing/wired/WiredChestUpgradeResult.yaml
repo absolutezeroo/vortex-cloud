@@ -10,29 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d174b976857d0e4ddf31a56ad37595d7d61a6935b4d6ade441d185f343204bbd"
+generated_digest: "sha256:b5c13b6ac54cd2469f5a0c29a325306c6a07fb3851530edc14888269c91eb5b6"
 generated:
   name: WiredChestUpgradeResult
   direction: outgoing
   domain: wired
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: chest_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2b2d63109607
+    - ev_b16e90c2ee21
   - index: 1
     name: result_code
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2b2d63109607
+    - ev_b16e90c2ee21
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_b16e90c2ee21
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -42,6 +50,14 @@ generated:
     - int32
     evidence: ev_2b2d63109607
   evidence:
+  - id: ev_b16e90c2ee21
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/userdefinedroomevents/wiredtrading/chests/_SafeCls_4358.as
+    symbol: _SafeCls_4358
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2b2d63109607
     kind: emulator_serializer
     authority: vortex_emulator

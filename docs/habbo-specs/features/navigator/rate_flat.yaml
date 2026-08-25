@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5c4e467abd35d7601231a4629afc1d825432b54e7c9ea38524b567868171a596"
+generated_digest: "sha256:478a8e55ef9c61f55c16bb0b243b51e3064e7b082dcb21c04903b6afcef8e16c"
 generated:
   id: navigator.rate_flat
   domain: navigator
@@ -32,6 +32,10 @@ generated:
     layer: grain
     symbol: RoomGrain.RateRoomAsync
     evidence: ev_329537530b13
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -49,6 +53,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_329537530b13
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.RoomSnapshot
     value: _state.RoomSnapshot with { Score = entity.Score, LastUpdatedUtc = DateTime.UtcNow, }
@@ -69,7 +77,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 605
+    line: 677
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_87f8b30763fe
     kind: emulator_flow
     authority: vortex_emulator
@@ -89,6 +104,7 @@ generated:
   - navigator.rate_flat.guard_1
   - navigator.rate_flat.guard_2
   - navigator.rate_flat.guard_3
+  - navigator.rate_flat.guard_4
   - navigator.rate_flat.success
   unknowns:
   - uk_cfeb4c623c

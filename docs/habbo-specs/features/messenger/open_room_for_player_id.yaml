@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:519c55c5ae0f4a8a2a73e941e5171e33123fd391ec2a84347f58542a90705065"
+generated_digest: "sha256:3480d7fcd5c8bd617d6177d29fca05779b1fcdc3ee52641e6ab65d06f0e83ff7"
 generated:
   id: messenger.open_room_for_player_id
   domain: messenger
@@ -744,7 +744,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 250
+    line: 265
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -779,7 +779,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 52
+    line: 55
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator

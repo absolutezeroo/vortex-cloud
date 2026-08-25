@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d1132d8962ecd44679d0536fd4786390027584420b75a6c5a827ab6739985699"
+generated_digest: "sha256:84192e4a2762cdc248ce54e713b967f47be995489190ab48a09f9f95a00d5cd3"
 generated:
   feature: room.harvest_pet
   scenarios:
@@ -68,24 +68,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a24ca6ca32d9
-  - scenario: room.harvest_pet.guard_3
-    title: "harvest pet: the guard '!string.IsNullOrEmpty(jsonData)' holds"
-    given:
-      guard: "!string.IsNullOrEmpty(jsonData)"
-      guard_holds: "true"
-    when:
-      packet: HarvestPet
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of HarvestPet sent while '!string.IsNullOrEmpty(jsonData)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7a660921f135
   - scenario: room.harvest_pet.success
     title: "harvest pet: the request is accepted"
     given:
@@ -111,13 +93,6 @@ generated:
     source: Vortex.PacketHandlers/Room/Pets/HarvestPetMessageHandler.cs
     symbol: HarvestPetMessageHandler
     line: 24
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 46
   - id: ev_a24ca6ca32d9
     kind: emulator_flow
     authority: vortex_emulator

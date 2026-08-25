@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5ed66c27f7b3926c357783ad1c188326c9e06ef552bc92fccf0866805a5fd1c"
+generated_digest: "sha256:3ef24446267a1b2bc73c2bccde015d574a138972c0936a4e935186071ee2981f"
 generated:
   name: EmailStatusResult
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: email
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_04b66d098f7d
+    - ev_3738e7130f43
   - index: 1
-    name: unknown_1
+    name: is_verified
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_04b66d098f7d
+    - ev_3738e7130f43
   - index: 2
-    name: unknown_2
+    name: allow_change
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_04b66d098f7d
+    - ev_3738e7130f43
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - boolean
+    - boolean
+    evidence: ev_3738e7130f43
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +59,14 @@ generated:
     - boolean
     evidence: ev_04b66d098f7d
   evidence:
+  - id: ev_3738e7130f43
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_1994.as
+    symbol: _SafeCls_1994
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_04b66d098f7d
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +75,5 @@ generated:
     symbol: EmailStatusResultMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_e3b8741529
 verified: {}
 manual: {}

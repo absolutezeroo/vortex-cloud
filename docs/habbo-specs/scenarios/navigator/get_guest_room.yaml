@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d1f29cb19271a1aa028f851a1c98ddeb3413f7c4787e72257ccbd43d90cdf378"
+generated_digest: "sha256:5034c915b6f9198b4839810b44cfd1d6fc450b21f8be5660b15c44bf11b7dd7a"
 generated:
   feature: navigator.get_guest_room
   scenarios:
@@ -32,7 +32,7 @@ generated:
       emits:
       - GetGuestRoomResult
       - unresolved
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -48,11 +48,11 @@ generated:
     symbol: GetGuestRoomMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 118
 verified: {}

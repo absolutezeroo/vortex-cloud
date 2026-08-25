@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2829d4bb3d15a4370f9cb49bdd031682a45b062aa2d4a961fb80d8cf1635a081"
+generated_digest: "sha256:a4fdb0ec50eb8ea70b5a93c513ba738d0b45d48edfb86e5ef9c0c3bede322984"
 generated:
   name: RecyclerFinished
   direction: outgoing
   domain: recycler
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: recycler_finished_status
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b18c59df11f3
+    - ev_d9ec81e704b3
   - index: 1
-    name: unknown_1
+    name: prize_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b18c59df11f3
+    - ev_d9ec81e704b3
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - int32
     - int32
     evidence: ev_b18c59df11f3
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_d9ec81e704b3
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -60,6 +68,14 @@ generated:
     symbol: RecyclerFinishedMessageParser
     line: 29
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_d9ec81e704b3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2166/_SafeCls_2299.as
+    symbol: _SafeCls_2299
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_54cd0f7d4d6b
     kind: reference_composer
     authority: reference_emulator
@@ -68,7 +84,5 @@ generated:
     symbol: RecyclerFinishedMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_b613a028a8
 verified: {}
 manual: {}

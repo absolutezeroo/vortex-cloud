@@ -10,15 +10,22 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:af0b93da9f9da17e841cbbe3423c4197ff6cf8b913ef5bf274695fe7c387590e"
+generated_digest: "sha256:81d84781719d78a11484e70b4e7fc75bac963ad266f48867e578d1c50e77cdeb"
 generated:
   id: uk_8a902e23bb
   subject: "inventory.avatar_effect_activated: what the server sends when it refuses"
   severity: medium
-  question: inventory.avatar_effect_activated changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: inventory.avatar_effect_activated changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: inventory.avatar_effect_activated
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -39,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 130
+    line: 133
   - id: ev_ddf2a13e2ebd
     kind: emulator_flow
     authority: vortex_emulator

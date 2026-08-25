@@ -7,9 +7,26 @@
 // fields it never reads, and both desynchronize everything after that field. Nothing in the build,
 // the tests or grep sees it; the symptom is a dialog that never opens.
 //
-// The list is a triage queue, not a bug list. An array is ONE field on the client side and two in a
-// parser that reads its length and then its elements -- `incoming/AcceptFriend` is exactly that and
-// is correct. Read the packet before you change it.
+// The list is a triage queue, not a bug list. Read the packet before you change it.
+//
+// Two things make an entry appear that is not a bug, and knowing them saves re-deriving them:
+//
+//   1. A loop in a client parser reads as its body's fields. ConflictDetector collapses runs marked
+//      "inside a repeated block" so `count + array` compares against `count + loop body`, which is
+//      what `incoming/AcceptFriend` was. Already handled.
+//   2. A parser that delegates -- `new SomeEntry(wrapper)` inside the loop -- hides those reads from
+//      the scanner, so the client side undercounts. `outgoing/AcceptFriendResult` reads as one field
+//      because its two per-entry ints happen inside a helper constructor. NOT handled: follow the
+//      helper by hand.
+//
+// The baseline grew from 23 to 64 on 2026-08-25, and that is progress rather than regression: until
+// then the client scanner bound headers only to composers, so 17 of 805 outgoing packets had any
+// evidence at all from the build this emulator targets. Every outgoing comparison was being made
+// against a client from 2016. Binding the parser behind each MessageEvent wrapper took that to 514,
+// and the entries that appeared are disagreements with the RIGHT client for the first time.
+//
+// One of them was real: AcceptFriendResult was being sent on 3407, which WIN63 hands to its
+// self-donation handler. Fixed. The remaining entries are unread.
 //
 // This does not demand the existing disagreements be fixed. It fixes their LIST, so a new one
 // fails the gate on the commit that introduces it instead of surfacing in a running client.

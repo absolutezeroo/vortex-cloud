@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:902de8d0556be44161bf8242b82cd380c37b8ca20457577232d32816b76ed498"
+generated_digest: "sha256:2003c7421538e6d4f6fc40600f84082b3df8ed04d4a2dc01efca087494061efb"
 generated:
   id: uk_bfc1fc7089
   subject: "outgoing/PetAddedToInventory: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetAddedToInventory
   known_evidence:
+  - id: ev_c08075515603
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_2868.as
+    symbol: _SafeCls_2868
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a4d0fd3f0905
     kind: reference_composer
     authority: reference_emulator

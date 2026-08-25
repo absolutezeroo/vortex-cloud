@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e16f5f9b3d545d260dc36166096855f5d70b23a9a6b5f855e6b239a6cccbff0d"
+generated_digest: "sha256:71c9fc08eb25043bb7be2cf2e7834018f39dcd2a19768be6f1aff87cee636866"
 generated:
   feature: room.get_room_settings
   scenarios:
@@ -132,6 +132,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 40
+    line: 41
 verified: {}
 manual: {}

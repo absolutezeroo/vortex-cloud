@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:04283c314997e40c4cf88af98279437c5fff101e1fc3d5f659d35af80139e6b0"
+generated_digest: "sha256:6f56e53693f2016889fcf66fcb85a3f4821cff2e46f0bba977eebfca0e23db94"
 generated:
   name: TalentTrackLevel
   direction: outgoing
   domain: talent
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: talent_track_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d0c26660fd40
+    - ev_c531d95282ac
   - index: 1
-    name: unknown_1
+    name: level
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d0c26660fd40
+    - ev_c531d95282ac
   - index: 2
-    name: unknown_2
+    name: max_level
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d0c26660fd40
+    - ev_c531d95282ac
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    evidence: ev_c531d95282ac
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -59,6 +65,14 @@ generated:
     - int32
     evidence: ev_d0c26660fd40
   evidence:
+  - id: ev_c531d95282ac
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2740/_SafeCls_4079.as
+    symbol: _SafeCls_4079
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_58d2bc9720d4
     kind: client_parser
     authority: multi_implementation
@@ -75,7 +89,5 @@ generated:
     symbol: TalentTrackLevelMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_18a4d63906
 verified: {}
 manual: {}

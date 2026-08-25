@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:eb27c450480a09ef9c58e8f6efd0a2020ea675fbdd8c24559464fc7e36490458"
+generated_digest: "sha256:cc2f3f4bca402a4cc9a20098c7f910e8fd653536b4eecbe6f52f2ccf10541c9f"
 generated:
   id: uk_51b6e167b9
   subject: "outgoing/MarketPlaceOwnOffers: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: MarketPlaceOwnOffers
   known_evidence:
+  - id: ev_c5e734c5f3a5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_3542.as
+    symbol: _SafeCls_3542
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c5259be9d6cd
     kind: reference_composer
     authority: reference_emulator

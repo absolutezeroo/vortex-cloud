@@ -10,86 +10,40 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d173baa75db1aee67c02b2573cb602c9670c5b62f380768e024ad0940dd4b7da"
+generated_digest: "sha256:39c7c89999fc80497bc28cce5ff0cc1ed6d2d464dd75e4186a56b9e5dcfdd406"
 generated:
   name: WiredMovements
   direction: outgoing
   domain: room
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: updates_count
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_a1a1204b6970
+    - ev_3c41ee76857c
   - index: 1
-    name: users
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_a1a1204b6970
-    fields:
-    - index: 0
-      name: user
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a1a1204b6970
-  - index: 2
-    name: floor_items
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_a1a1204b6970
-    fields:
-    - index: 0
-      name: floor_item
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a1a1204b6970
-  - index: 3
-    name: wall_items
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_a1a1204b6970
-    fields:
-    - index: 0
-      name: wall_item
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a1a1204b6970
-  - index: 4
-    name: user_directions
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_a1a1204b6970
-    fields:
-    - index: 0
-      name: user_direction
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a1a1204b6970
+    - ev_3c41ee76857c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_3c41ee76857c
   - origin: nitro
     authority: multi_implementation
     field_count: 36
@@ -144,6 +98,14 @@ generated:
     - array
     evidence: ev_a1a1204b6970
   evidence:
+  - id: ev_3c41ee76857c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3809.as
+    symbol: _SafeCls_3809
+    line: 102
+    note: official client build WIN63-202607011411-782849652
   - id: ev_648fc6bf953d
     kind: client_parser
     authority: multi_implementation
@@ -159,5 +121,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/WiredMovementsMessageComposerSerializer.cs
     symbol: WiredMovementsMessageComposerSerializer
     line: 9
+  conflicts:
+  - cf_2f779cf066
+  unknowns:
+  - uk_3f74dcdc65
 verified: {}
 manual: {}

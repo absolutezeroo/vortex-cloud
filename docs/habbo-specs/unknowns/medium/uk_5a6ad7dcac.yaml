@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f82840442ef3ddf3094cc61bf283c950ced529164a9241353fd939fadb1043b1"
+generated_digest: "sha256:4e207f4a1cd92e65ab8cefa561483379bbbcb41062dac6a6549d2fb54dbbf909"
 generated:
   id: uk_5a6ad7dcac
   subject: "users.add_admin_rights_to_member: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: users.add_admin_rights_to_member
   known_evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 26
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -33,11 +26,18 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_c4e53aab9ae9
+  - id: ev_40034f33a6de
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 26
+  - id: ev_b1c46fe16e7f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 387
   - id: ev_c9a4f6f87142

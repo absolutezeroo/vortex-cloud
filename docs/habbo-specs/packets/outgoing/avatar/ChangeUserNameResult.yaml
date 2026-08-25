@@ -10,47 +10,55 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:344a393c65e4e1e0ba2a2a222e471c180fc10fca4c3755a47ad616cc99ac8de4"
+generated_digest: "sha256:84297fa316689175fb3f804d7147ddd7bb05777de3b1bdf8150858752c31814f"
 generated:
   name: ChangeUserNameResult
   direction: outgoing
   domain: avatar
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result_code
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_482bbf36b9bc
+    - ev_0783a461ed33
   - index: 1
     name: name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_482bbf36b9bc
+    - ev_0783a461ed33
   - index: 2
     name: count
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    type_confidence: client_confirmed
     evidence:
+    - ev_0783a461ed33
     - ev_482bbf36b9bc
   - index: 3
-    name: suggestion
+    name: name_suggestions
     type: string
-    name_confidence: implementation_observed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_482bbf36b9bc
-    - ev_ec832283c27e
+    - ev_0783a461ed33
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - string
+    evidence: ev_0783a461ed33
   - origin: nitro
     authority: multi_implementation
     field_count: 4
@@ -72,6 +80,14 @@ generated:
     - array
     evidence: ev_ec832283c27e
   evidence:
+  - id: ev_0783a461ed33
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1869/_SafeCls_1868.as
+    symbol: _SafeCls_1868
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_482bbf36b9bc
     kind: client_parser
     authority: multi_implementation
@@ -88,6 +104,7 @@ generated:
     symbol: ChangeUserNameResultMessageComposerSerializer
     line: 6
   conflicts:
+  - cf_371e077b5f
   - cf_64679d4615
 verified: {}
 manual: {}

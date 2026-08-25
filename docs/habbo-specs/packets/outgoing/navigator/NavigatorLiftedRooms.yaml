@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b15abb1c89ee3439ceebc4d78884c219231e802d67229dfbefc52ee50caf9e2"
+generated_digest: "sha256:f95d2f2646cf2806ed2a4bf94af219c67eac05506fd03dbf9feab509aa8ba69d"
 generated:
   name: NavigatorLiftedRooms
   direction: outgoing
   domain: navigator
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_e1120954b333
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_0e475eba71df
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +63,14 @@ generated:
     - array
     evidence: ev_5d1a2b399f73
   evidence:
+  - id: ev_0e475eba71df
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_1813.as
+    symbol: _SafeCls_1813
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e1120954b333
     kind: client_parser
     authority: client_code

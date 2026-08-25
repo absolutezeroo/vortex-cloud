@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:81143f177e7fff37b19b26462bd2d1bb045ae6655e34a8b902185c3a9adbeb53"
+generated_digest: "sha256:7dce04fdb5398acb6fd56dbbc70fb1734af42103be2a1c87b0442ff4e172dcf7"
 generated:
   name: RestoreClient
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: true
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_38d9a83106b7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -38,6 +44,14 @@ generated:
     types: []
     evidence: ev_ffc87c7092f3
   evidence:
+  - id: ev_38d9a83106b7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_4280.as
+    symbol: _SafeCls_4280
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_eea7dd18d71b
     kind: client_parser
     authority: multi_implementation

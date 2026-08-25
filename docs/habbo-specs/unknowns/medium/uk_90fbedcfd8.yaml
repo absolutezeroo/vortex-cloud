@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ad51d207ed2dbc73b3ce2062873fc0a05890afa0847095344ab43f8f62482659"
+generated_digest: "sha256:64e81032655aa589637615c8fe35d222590727fdc8390d63e3f8d2395aefd889"
 generated:
   id: uk_90fbedcfd8
   subject: "catalog.get_all: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 393
+    line: 408
   - id: ev_243579f10dcf
     kind: emulator_handler
     authority: vortex_emulator

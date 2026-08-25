@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:032fdddcb73a3155a7a2addaf914945724d4d9095a8134cc68446c598c95b58a"
+generated_digest: "sha256:2af82719023e44abc47e194f982f3b80145c121ace472c30d6319364312aa4a7"
 generated:
   feature: navigator.cancel
   scenarios:
@@ -68,6 +68,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_89f5ad7deadb
+  - scenario: navigator.cancel.guard_3
+    title: "cancel: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: CancelEvent
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of CancelEvent sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: navigator.cancel.success
     title: "cancel: the request is accepted"
     given:
@@ -85,15 +103,22 @@ generated:
       outcome: success
       emits:
       - RoomEventCancel
-      evidence: ev_89f5ad7deadb
+      evidence: ev_34bf3ac088e2
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 79
+    line: 95
   - id: ev_cc2f079ff2d9
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dfc4159d5b81f4f77e05103c33d50076bfbe589466e85474810fc8974ecce7eb"
+generated_digest: "sha256:cff9232e581b164f80df258f6e1c58ceb32cfe6576e1e68b07e4275a3301c618"
 generated:
   name: ModeratorCaution
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: message
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9c4724b95137
+    - ev_caacd02941a3
   - index: 1
-    name: unknown_1
+    name: url
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9c4724b95137
+    - ev_caacd02941a3
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_caacd02941a3
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - string
     evidence: ev_9c4724b95137
   evidence:
+  - id: ev_caacd02941a3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3718.as
+    symbol: _SafeCls_3718
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9c4724b95137
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: ModeratorCautionMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_50cc40b59c
 verified: {}
 manual: {}

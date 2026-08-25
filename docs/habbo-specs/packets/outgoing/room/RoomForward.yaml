@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1a6c3f94cd21a5546e4f500d3d97908d4b02330cc2b65b946a2698c324e22d02"
+generated_digest: "sha256:1e2be7e1468096dd216c459f44df7e3efc68c6ab29ac494754168bd36d7a320a"
 generated:
   name: RoomForward
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: room_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d2bc6f4a69f4
+    - ev_897a3be404b0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_897a3be404b0
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - int32
     evidence: ev_2b9777c4fc46
   evidence:
+  - id: ev_897a3be404b0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_3622.as
+    symbol: _SafeCls_3622
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d2bc6f4a69f4
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:474c3c78c9f50bf99addbe3f81648ff69a6ce61cf379b22fb9b5fb951b072427"
+generated_digest: "sha256:233b6b6226d58f76cd837972d1b1f4ddb4eca54e5e3d2efd9d1cd9807d5acdd1"
 generated:
   feature: moderation.get_quiz_questions
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
   - scenario: moderation.get_quiz_questions.guard_2
     title: "get quiz questions: the guard 'questions.Count == 0' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_1eb3967e3979
+      evidence: ev_fd80c081bc3a
   - scenario: moderation.get_quiz_questions.success
     title: "get quiz questions: the request is accepted"
     given:
@@ -85,15 +85,15 @@ generated:
       outcome: success
       emits:
       - QuizData
-      evidence: ev_1eb3967e3979
+      evidence: ev_373e76aa8a80
   evidence:
-  - id: ev_1eb3967e3979
+  - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerQuizGrain.cs
-    symbol: PlayerQuizGrain
-    line: 48
+    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
+    symbol: PlayerPresenceGrain
+    line: 112
   - id: ev_39dcba53e19d
     kind: emulator_flow
     authority: vortex_emulator
@@ -101,5 +101,12 @@ generated:
     source: Vortex.PacketHandlers/Help/GetQuizQuestionsMessageHandler.cs
     symbol: GetQuizQuestionsMessageHandler
     line: 21
+  - id: ev_fd80c081bc3a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/PlayerQuizGrain.cs
+    symbol: PlayerQuizGrain
+    line: 51
 verified: {}
 manual: {}

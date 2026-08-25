@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:31762e96efb56daf5cb86bb8802064eb303e2c41e74a02850a0aac96dbe134b3"
+generated_digest: "sha256:f51bdbde8e224599424695267ced768c2585a8728c0bd01f03b4c75236fc218e"
 generated:
   id: collectibles.get_nft_store_offers
   domain: collectibles
@@ -52,7 +52,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: NftStoreGrain
-    line: 54
+    line: 57
   - id: ev_56b57db5c547
     kind: emulator_handler
     authority: vortex_emulator

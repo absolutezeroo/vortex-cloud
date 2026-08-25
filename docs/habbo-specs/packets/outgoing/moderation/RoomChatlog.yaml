@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2ac0cde912c41eefb41d648eed55cb84f55f20907aa1ef4be1288d1fb6ad83bc"
+generated_digest: "sha256:c68e5bf3762394da8df9bd133149f75d724ed7befebf250340459105e63e2af5"
 generated:
   name: RoomChatlog
   direction: outgoing
@@ -131,6 +131,12 @@ generated:
     evidence:
     - ev_ef29b286b16e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_17bbd22aa99f
   - origin: arcturus
     authority: reference_emulator
     field_count: 14
@@ -152,6 +158,14 @@ generated:
     - boolean
     evidence: ev_ef29b286b16e
   evidence:
+  - id: ev_17bbd22aa99f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3715.as
+    symbol: _SafeCls_3715
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef29b286b16e
     kind: reference_composer
     authority: reference_emulator

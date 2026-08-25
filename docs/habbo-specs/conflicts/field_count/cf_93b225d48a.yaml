@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fbee77a4933727f3253df6a05d045046065a9272abc395b07dc61576c679186d"
+generated_digest: "sha256:f72bd720019a709f6d1be80408585ab70d1e4ab08dc538dd3dba8932c4570203"
 generated:
   id: cf_93b225d48a
   kind: field_count
   subject: "outgoing/OpenPetPackageRequested: field count"
   packet: OpenPetPackageRequested
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "1 fields: int32"
+    evidence: ev_960b0f90c360
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: int32"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: int32, block"
     evidence: ev_c47a59de5357
   evidence:
+  - id: ev_960b0f90c360
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3697.as
+    symbol: _SafeCls_3697
+    line: 37
+    note: official client build WIN63-202607011411-782849652
   - id: ev_39117d43e7f5
     kind: client_parser
     authority: multi_implementation

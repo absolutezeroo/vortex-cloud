@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9eeaf7e8e2bf77563c00d16efcfbbd34e2e7bb7badc42295e2444fceddb31626"
+generated_digest: "sha256:9cbd6a0985c3c0be90f7ffa53f36710a810f9f6c436a2b9d56112dd2b0762eb7"
 generated:
   name: Doorbell
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: username
+    name: user_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_edb3d3f6209c
+    - ev_09f4bb53f768
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_09f4bb53f768
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - string
     evidence: ev_4dbea1d409d2
   evidence:
+  - id: ev_09f4bb53f768
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4306.as
+    symbol: _SafeCls_4306
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_edb3d3f6209c
     kind: client_parser
     authority: multi_implementation

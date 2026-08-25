@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:541bbc97bbfdd2274ed2f81265f18eee3355a94a6052fcb48591d07b74c76589"
+generated_digest: "sha256:bb514334e1087fb80359039bcb65542bb89047e54ab1c7966d56103b7bcd223b"
 generated:
   feature: inventory.get_badges
   scenarios:
@@ -55,6 +55,7 @@ generated:
       outcome: success
       emits:
       - BadgesEvent
+      - HabboUserBadges
       evidence: ev_6d72f2969639
     - origin: arcturus
       authority: reference_emulator
@@ -77,6 +78,6 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Inventory/Badges/GetBadgesMessageHandler.cs
     symbol: GetBadgesMessageHandler
-    line: 23
+    line: 25
 verified: {}
 manual: {}

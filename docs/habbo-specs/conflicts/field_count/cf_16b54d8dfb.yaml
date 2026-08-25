@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d801064b426360da4eaaa382e325767496aea6c5d8d6c50712efbe9b0a3d3ac9"
+generated_digest: "sha256:3af42e4d3632ed4d8927a31940aebc9f94212ac038bc0d138e225a9126672f45"
 generated:
   id: cf_16b54d8dfb
   kind: field_count
@@ -19,8 +19,12 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "35 fields: int32, int32, string, string, string, int32, int32, int32, string, int32, int32, string, int32, int32, string, string, int32, boolean, int32, int32, string, int32, boolean, boolean, boolean, boolean, boolean, boolean, int32, string, string, int32, string, int32, short"
+    claim: "2 fields: int32, int32, string, string, string, int32, int32, int32, string, int32, int32, string, int32, int32, string, string, int32, boolean, int32, int32, string, int32, boolean, boolean, boolean, boolean, boolean, boolean, int32, string, string, int32, string, int32, short"
     evidence: ev_1bcc1cc7fb00
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32, string, string, string, int32, int32, int32, string, int32, int32, string, int32, int32, string, string, int32, boolean, int32, int32, int32, string, int32, boolean, boolean, boolean, boolean, boolean, boolean, int32, string, string, int32, string, int32, short"
+    evidence: ev_a4b7302f1588
   - origin: nitro
     authority: multi_implementation
     claim: "2 fields: int32, block"
@@ -42,6 +46,14 @@ generated:
     symbol: UsersMessageParser
     line: 75
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a4b7302f1588
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2309.as
+    symbol: _SafeCls_2309
+    line: 72
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4d003b1c2f7b
     kind: client_parser
     authority: multi_implementation

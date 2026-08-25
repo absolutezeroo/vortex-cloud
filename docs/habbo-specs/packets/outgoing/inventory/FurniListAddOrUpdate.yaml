@@ -10,14 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d233ec344d2f9b9c90e93a5613fd42cefa06be6e8b86faf738920782530deac2"
+generated_digest: "sha256:b8cd109c875fd91502ae0f5393640f798d8c59f63eaee61011a8ff12b742727d"
 generated:
   name: FurniListAddOrUpdate
   direction: outgoing
   domain: inventory
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_2c27ac6d29f0
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -25,7 +33,22 @@ generated:
     partial: true
     types: []
     evidence: ev_376ad2b6c7af
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_2c27ac6d29f0
   evidence:
+  - id: ev_2c27ac6d29f0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2514/_SafeCls_3289.as
+    symbol: _SafeCls_3289
+    line: 18
+    note: official client build WIN63-202607011411-782849652
   - id: ev_376ad2b6c7af
     kind: client_parser
     authority: client_code
@@ -34,5 +57,7 @@ generated:
     symbol: FurniListAddOrUpdateParser
     line: 14
     note: official client build PRODUCTION-201601012205-226667486
+  unknowns:
+  - uk_b8534ef7e7
 verified: {}
 manual: {}

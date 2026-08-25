@@ -10,135 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f2117880dd8e68e9aba02550b276dd974fee2e8a2870be65f0ff1f816680211f"
+generated_digest: "sha256:58c180f90391a22641483521286874a08a59a9495a8d2b0ccfd4c58a25779e2e"
 generated:
   name: ConfirmBreedingRequest
   direction: outgoing
   domain: room
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: nest_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e70417d5b845
+    - ev_15eed85d2cab
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e70417d5b845
+    - ev_15eed85d2cab
   - index: 2
-    name: unknown_2
+    name: result_pet_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e70417d5b845
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 5
-    name: unknown_5
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 8
-    name: unknown_8
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 10
-    name: unknown_10
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 11
-    name: unknown_11
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 12
-    name: unknown_12
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 13
-    name: unknown_13
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
-  - index: 14
-    name: unknown_14
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e70417d5b845
+    - ev_15eed85d2cab
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_15eed85d2cab
   - origin: arcturus
     authority: reference_emulator
     field_count: 15
@@ -161,6 +72,14 @@ generated:
     - int32
     evidence: ev_e70417d5b845
   evidence:
+  - id: ev_15eed85d2cab
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3500.as
+    symbol: _SafeCls_3500
+    line: 48
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e70417d5b845
     kind: reference_composer
     authority: reference_emulator

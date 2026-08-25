@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:14e71878317c568e036547830fe279f589bab59ae0c07acb8cdc3b65298ed391"
+generated_digest: "sha256:e320ee38916d0ebf0ec4a5c2ef9a3c36190fdfe72bdef4071d48c0d3a2af1277"
 generated:
   id: cf_5baffed48d
   kind: field_count
   subject: "outgoing/SlideObjectBundle: field count"
   packet: SlideObjectBundle
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "9 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string, int32, string, string"
+    evidence: ev_677f40b21dba
   - origin: nitro
     authority: multi_implementation
-    claim: "13 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string"
+    claim: "5 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string"
     evidence: ev_f94842b82dc8
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "13 fields: int32, int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string"
     evidence: ev_a9a47b503aa2
   evidence:
+  - id: ev_677f40b21dba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3407.as
+    symbol: _SafeCls_3407
+    line: 46
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f94842b82dc8
     kind: client_parser
     authority: multi_implementation

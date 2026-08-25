@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d6f9b69a0714a2adc09ea1339cf5d16d0d914bd29548f6b5cfa6db2ed90c8f4e"
+generated_digest: "sha256:913e44449be17ce850b3a6a16e41d7ff67dab57821c2acbceb1831c16fbaa0fc"
 generated:
   name: QuestCancelled
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: expired
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_a03aea0d6a5f
-    - ev_955bdcb61cb0
+    - ev_fb9ed13776e9
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - boolean
     evidence: ev_a03aea0d6a5f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_fb9ed13776e9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -63,6 +70,14 @@ generated:
     symbol: QuestCancelledParser
     line: 16
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_fb9ed13776e9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_3479.as
+    symbol: _SafeCls_3479
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_10884f76f253
     kind: client_parser
     authority: multi_implementation

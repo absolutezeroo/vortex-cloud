@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ccb20d3c38a726e9283ef02d16a0a33cb3511bad8676b944891eeafaf2494035"
+generated_digest: "sha256:415fcaee8b10fdf93f5ec05a2375cc99ab52269f3a343081e0bcd06449041189"
 generated:
   id: users.kick_member
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.KickMemberAsync
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -44,11 +44,11 @@ generated:
   - expression: group is null || group.OwnerPlayerEntityId == targetPlayerId
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: removed == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -77,11 +77,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 274
   - id: ev_d90cdf1638a0

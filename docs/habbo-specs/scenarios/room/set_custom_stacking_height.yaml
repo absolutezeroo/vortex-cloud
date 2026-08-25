@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b73810f03355f5dae8a175c9c82e3f560ae1e029dd563830326243d9b2c08670"
+generated_digest: "sha256:99222c68b14b7bbd753480c6b3693b03c3ecb2ef4ac896f197b5e27756363526"
 generated:
   feature: room.set_custom_stacking_height
   scenarios:
@@ -203,6 +203,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 118
+    line: 119
 verified: {}
 manual: {}

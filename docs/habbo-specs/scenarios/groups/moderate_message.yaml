@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d23dfdd45f22c69426e2820f9ed868d43c7522ed18adc12e4be73419e6a9da1a"
+generated_digest: "sha256:0abb83edf7a1cb1b3493eb8570c78b6c5c95f0ed5245fc923bdb1b13cce1de5e"
 generated:
   feature: groups.moderate_message
   scenarios:
@@ -93,7 +93,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -185,13 +185,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 530
   - id: ev_948071c08d09
     kind: emulator_flow
     authority: vortex_emulator
@@ -199,5 +192,12 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/ModerateMessageMessageHandler.cs
     symbol: ModerateMessageMessageHandler
     line: 23
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 530
 verified: {}
 manual: {}

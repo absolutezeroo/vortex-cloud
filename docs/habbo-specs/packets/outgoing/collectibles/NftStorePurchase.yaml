@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6dc1fe7194db8302a96e82ead975aa61946ff047c4e8016ed41764c161e63c68"
+generated_digest: "sha256:10b1fd02df0d083e803580fc3b64a28d0142cc86da4b96f2687f2e8e1c71a055"
 generated:
   name: NftStorePurchase
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result
     type: short
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6c435f225d40
+    - ev_43533794f82f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - short
+    evidence: ev_43533794f82f
   - origin: vortex
     authority: vortex_emulator
     field_count: 1
@@ -34,6 +41,14 @@ generated:
     - short
     evidence: ev_6c435f225d40
   evidence:
+  - id: ev_43533794f82f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_2241.as
+    symbol: _SafeCls_2241
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6c435f225d40
     kind: emulator_serializer
     authority: vortex_emulator

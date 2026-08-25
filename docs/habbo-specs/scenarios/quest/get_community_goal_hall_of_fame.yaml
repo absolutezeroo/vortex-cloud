@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:75381e8db311bfe5a802a66503534684cc9029e6c7f8691dcdb25917bd8bdddf"
+generated_digest: "sha256:c31503fa97e0d88e9d790fb1a56f762e888e7507212a03ab55ba4dba3cb11ee0"
 generated:
   feature: quest.get_community_goal_hall_of_fame
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4875f459ad01
+      evidence: ev_faf5e938e0d5
   - scenario: quest.get_community_goal_hall_of_fame.success
     title: "get community goal hall of fame: the request is accepted"
     given:
@@ -67,15 +67,15 @@ generated:
       outcome: success
       emits:
       - CommunityGoalHallOfFame
-      evidence: ev_4875f459ad01
+      evidence: ev_73ea6f9acd43
   evidence:
-  - id: ev_4875f459ad01
-    kind: emulator_flow
+  - id: ev_73ea6f9acd43
+    kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
-    symbol: CommunityGoalGrain
-    line: 105
+    source: Vortex.PacketHandlers/Quest/GetCommunityGoalHallOfFameMessageHandler.cs
+    symbol: GetCommunityGoalHallOfFameMessageHandler
+    line: 16
   - id: ev_a1f82bc69a5f
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,5 +83,12 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetCommunityGoalHallOfFameMessageHandler.cs
     symbol: GetCommunityGoalHallOfFameMessageHandler
     line: 29
+  - id: ev_faf5e938e0d5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
+    symbol: CommunityGoalGrain
+    line: 105
 verified: {}
 manual: {}

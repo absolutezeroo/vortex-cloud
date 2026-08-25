@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fe1d9fe06844922fa864093d0811f6953f3450bb32b8961ac883dfea4a1d6af6"
+generated_digest: "sha256:3149c735119c0fe15028b8831dc3c519b8d5ea93784e38ed29ff8b82dc544317"
 generated:
   name: Open
   direction: outgoing
   domain: wired
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: stuff_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_6256571d6617
+    - ev_2df4ae25622f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_2df4ae25622f
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_6256571d6617
   evidence:
+  - id: ev_2df4ae25622f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/userdefinedroomevents/_SafeCls_2993.as
+    symbol: _SafeCls_2993
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6256571d6617
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: OpenMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_9c609ade17
 verified: {}
 manual: {}

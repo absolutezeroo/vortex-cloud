@@ -10,23 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bebdd19035681fb75cf82b3f98ae97fdd8a82564a1390a5e2d941d6b17f5bc1b"
+generated_digest: "sha256:2584dd034b74ecfeab121c193668f7d3012f6bbb7d54a7ccb3ab2f1cec569d71"
 generated:
   name: MessengerError
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: client_message_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_36e450e4d016
+    - ev_1bb5e06c5e08
+    - ev_236b10d6ec53
+  - index: 1
+    name: error_code
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_1bb5e06c5e08
+    - ev_236b10d6ec53
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_1bb5e06c5e08
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -60,6 +76,14 @@ generated:
     - int32
     evidence: ev_236b10d6ec53
   evidence:
+  - id: ev_1bb5e06c5e08
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2057.as
+    symbol: _SafeCls_2057
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_36e450e4d016
     kind: client_parser
     authority: multi_implementation

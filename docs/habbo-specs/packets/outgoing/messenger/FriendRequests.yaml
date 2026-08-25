@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8dea7ae322db714c788d366d89de64e50a70149fb18e4ee73387503c7fa87776"
+generated_digest: "sha256:0b6ba77187002bf3b5a7d2c47b7a553dc0581f44598c8c916c0705d4a641aa33"
 generated:
   name: FriendRequests
   direction: outgoing
   domain: messenger
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,42 +23,26 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ca2690311287
+    - ev_f7a691a7b599
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ca2690311287
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ca2690311287
-  - index: 3
-    name: unknown_3
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ca2690311287
-  - index: 4
-    name: unknown_4
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_ca2690311287
+    - ev_f7a691a7b599
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_f7a691a7b599
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -86,6 +70,14 @@ generated:
     - array
     evidence: ev_eabc600b188b
   evidence:
+  - id: ev_f7a691a7b599
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_1947.as
+    symbol: _SafeCls_1947
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_71ca5b5e5872
     kind: client_parser
     authority: multi_implementation

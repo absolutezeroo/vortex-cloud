@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:992bac492202c1c19047fe5b637319f674ebff6e464362e651a45f11806465dd"
+generated_digest: "sha256:1ccd46e2602568f49a31913e3970c595bab53974e1e746e12d37cdaa41c4b7d2"
 generated:
   id: messenger.send_room_invite
   domain: messenger
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.ReceiveRoomInviteAsync
-    evidence: ev_55e9c6b16f82
+    evidence: ev_8db29db3d5af
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -44,7 +44,7 @@ generated:
   - expression: _ignoredIds.Contains(senderId.Value)
     on_fail: return
     observed_in: vortex
-    evidence: ev_55e9c6b16f82
+    evidence: ev_8db29db3d5af
   state_changes: []
   outgoing:
     ordering: unknown
@@ -52,7 +52,7 @@ generated:
     - packet: RoomInvite
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_55e9c6b16f82
+      evidence: ev_8db29db3d5af
   reaches_persistence: false
   evidence:
   - id: ev_373e76aa8a80
@@ -69,13 +69,6 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendRoomInviteMessageHandler.cs
     symbol: SendRoomInviteMessageHandler
     line: 29
-  - id: ev_55e9c6b16f82
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Presence.cs
-    symbol: MessengerGrain
-    line: 145
   - id: ev_8807300965dd
     kind: emulator_handler
     authority: vortex_emulator
@@ -83,6 +76,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendRoomInviteMessageHandler.cs
     symbol: SendRoomInviteMessageHandler
     line: 15
+  - id: ev_8db29db3d5af
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Presence.cs
+    symbol: MessengerGrain
+    line: 145
   scenarios:
   - messenger.send_room_invite.guard_0
   - messenger.send_room_invite.guard_1

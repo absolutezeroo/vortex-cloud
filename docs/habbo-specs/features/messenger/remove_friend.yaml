@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ee9709281a8c8373486861a97a695fe003fdab695c44f0fff99851ae04b2fd0d"
+generated_digest: "sha256:9e7e3a04fed645ef68a07bf331f1f34a5a3a1ff49ce16df9ee7bad2262f670e0"
 generated:
   id: messenger.remove_friend
   domain: messenger
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.RemoveFriendsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: grain
     symbol: MessengerGrain.NotifyFriendRemovedAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 4
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -72,7 +72,7 @@ generated:
     - packet: FriendListUpdate
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
   reaches_persistence: true
   evidence:
   - id: ev_34bf3ac088e2
@@ -103,13 +103,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/RemoveFriendMessageHandler.cs
     symbol: RemoveFriendMessageHandler
     line: 15
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 382
+    line: 399
   scenarios:
   - messenger.remove_friend.guard_0
   - messenger.remove_friend.guard_1

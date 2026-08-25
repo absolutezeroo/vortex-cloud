@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f0a58279404b941765e91bbcec6da3f56db17bdea8636ebcd6be58691b3502c1"
+generated_digest: "sha256:70ec3c32ee3fbf53b95474966711669b2af89fb5c3b410238af3d1cd7be2a998"
 generated:
   id: handshake.get_subscription
   domain: handshake
@@ -264,7 +264,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 787
+    line: 802
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -285,7 +285,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerClothingGrain.cs
     symbol: PlayerClothingGrain
-    line: 47
+    line: 50
   - id: ev_49cf2267089d
     kind: emulator_flow
     authority: vortex_emulator
@@ -313,7 +313,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 50
+    line: 53
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -341,7 +341,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 206
+    line: 269
   - id: ev_d429657b2673
     kind: emulator_flow
     authority: vortex_emulator

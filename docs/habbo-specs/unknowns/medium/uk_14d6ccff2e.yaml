@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:623c517b13dc49f7069ba58c6c4363e2a2c7fda28c3ef7311c72eea5995869fd"
+generated_digest: "sha256:571b5915c5fdcb490e07b317e85996d9b11692edbbab3ee514f3ef464fd8fd72"
 generated:
   id: uk_14d6ccff2e
   subject: "room.move_pet_in_room: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 127
+    line: 135
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator

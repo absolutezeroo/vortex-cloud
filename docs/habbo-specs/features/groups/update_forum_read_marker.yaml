@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a958946324be52ff87a1ca5dfc36ab72e742b36d2b19435bcddab4946d488178"
+generated_digest: "sha256:1ee9a8159d261fbe2a52204db7a03020aa802e92b0e6a2b10b33ef72754a01ff"
 generated:
   id: groups.update_forum_read_marker
   domain: groups
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupDirectoryGrain.UpdateForumReadMarkersAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -43,7 +43,7 @@ generated:
   - expression: markers.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   state_changes:
   - target: _grainFactory .GetGroupDirectoryGrain()
     value: _grainFactory .GetGroupDirectoryGrain() .UpdateForumReadMarkersAsync(ctx.PlayerId, message.Markers, ct)
@@ -52,7 +52,7 @@ generated:
   - target: marker.ReadMessageCount
     value: Math.Max(marker.ReadMessageCount, clamped)
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   outgoing:
     ordering: unknown
     packets: []
@@ -65,13 +65,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumReadMarkerMessageHandler.cs
     symbol: UpdateForumReadMarkerMessageHandler
     line: 26
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 681
   - id: ev_b8deb6ce5f9d
     kind: emulator_handler
     authority: vortex_emulator
@@ -79,6 +72,13 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumReadMarkerMessageHandler.cs
     symbol: UpdateForumReadMarkerMessageHandler
     line: 15
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 680
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

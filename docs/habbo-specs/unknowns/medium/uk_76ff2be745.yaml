@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:406fe62a7071c3d8ffc60587fea8c612786223fa4cef79e04e084094513d39ad"
+generated_digest: "sha256:33aae6859f5709d514c89c38e48616dee192fc52762e7503bef22d38c2d44a04"
 generated:
   id: uk_76ff2be745
   subject: "room.change_motto: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 163
+    line: 178
   - id: ev_2aec8f9f5aa3
     kind: emulator_flow
     authority: vortex_emulator

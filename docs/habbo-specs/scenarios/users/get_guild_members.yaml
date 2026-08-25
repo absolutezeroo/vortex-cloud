@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:df061bd3a1ff89f26e12560b435b6aa8c41cd085c11f14557b8de6128b9ab4cb"
+generated_digest: "sha256:957bb0f8f62b717a38ea19ffde9cf2d7a7e0e406054e229462718731f6047ae6"
 generated:
   feature: users.get_guild_members
   scenarios:
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -103,7 +103,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -150,6 +150,13 @@ generated:
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
     line: 217
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 147
   - id: ev_548ff518d789
     kind: emulator_flow
     authority: vortex_emulator
@@ -157,12 +164,5 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildMembersMessageHandler.cs
     symbol: GetGuildMembersMessageHandler
     line: 23
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 147
 verified: {}
 manual: {}

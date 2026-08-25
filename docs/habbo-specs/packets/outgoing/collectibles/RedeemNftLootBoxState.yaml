@@ -10,29 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa0ca2283269195f48d240a2faba1a5882b5b58d1d258b38a54443e0c185f059"
+generated_digest: "sha256:c9a9f771d5c36630f44e11354d49f4f1d2f0a56100bb99809749961c1e13b301"
 generated:
   name: RedeemNftLootBoxState
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: state
     type: short
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_fc26c4939d32
     - ev_01baface9fa1
   - index: 1
     name: opener_avatar_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_01baface9fa1
+    - ev_fc26c4939d32
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - short
+    - int32
+    evidence: ev_fc26c4939d32
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -42,6 +51,14 @@ generated:
     - int32
     evidence: ev_01baface9fa1
   evidence:
+  - id: ev_fc26c4939d32
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_2605.as
+    symbol: _SafeCls_2605
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_01baface9fa1
     kind: emulator_serializer
     authority: vortex_emulator

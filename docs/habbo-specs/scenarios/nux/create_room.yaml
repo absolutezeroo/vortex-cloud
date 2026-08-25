@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c54363c210f0f20d83c49cf14f190b0b006784be1187098ffdbe7f3ae667ded"
+generated_digest: "sha256:509b24eb392cccab9bccfccd4aaa49bb2817f13bcc7c4c1f69d1ebcdf5638e17"
 generated:
   feature: nux.create_room
   scenarios:
@@ -68,6 +68,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7f41f2bdde62
+  - scenario: nux.create_room.guard_3
+    title: "create room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SelectInitialRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SelectInitialRoom sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: nux.create_room.success
     title: "create room: the request is accepted"
     given:
@@ -85,8 +103,15 @@ generated:
       outcome: success
       emits:
       - SelectInitialRoomEvent
-      evidence: ev_7f41f2bdde62
+      evidence: ev_34bf3ac088e2
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ed3f75851ddb6c04a3f08c5b47be410c7cfb08877457824530fd4fc151defaa1"
+generated_digest: "sha256:df0c67b617f52b428fb65e128e1162fdbe75f7cea571b5a259bef33a7a09c786"
 generated:
   feature: inventory.get_badge_point_limits
   scenarios:
@@ -55,7 +55,7 @@ generated:
       outcome: success
       emits:
       - BadgePointLimitsEvent
-      evidence: ev_13211df92481
+      evidence: ev_18c3506bd65f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -71,13 +71,6 @@ generated:
     symbol: GetBadgePointLimitsEvent
     line: 8
     note: third-party server implementation; evidence, not authority
-  - id: ev_13211df92481
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/AchievementManagerGrain.cs
-    symbol: AchievementManagerGrain
-    line: 45
   - id: ev_18c3506bd65f
     kind: emulator_flow
     authority: vortex_emulator

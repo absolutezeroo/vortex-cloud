@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fbf00f04c22df6a8435ed99fd636f585bf6832c68e71c62bd2c62737a5101918"
+generated_digest: "sha256:dd0fd33948087ea764f007b852834d1dd2bfc9c4bcee450547347596b333977d"
 generated:
   feature: users.get_habbo_group_details
   scenarios:
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -104,7 +104,7 @@ generated:
       emits:
       - GuildEditorData
       - HabboGroupDetails
-      evidence: ev_47032a3756bb
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -120,18 +120,11 @@ generated:
     symbol: GetHabboGroupDetailsMessageEvent
     line: 15
     note: third-party server implementation; evidence, not authority
-  - id: ev_47032a3756bb
-    kind: emulator_handler
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.PacketHandlers/Users/GetHabboGroupDetailsMessageHandler.cs
-    symbol: GetHabboGroupDetailsMessageHandler
-    line: 12
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 38
   - id: ev_9c4104a52262

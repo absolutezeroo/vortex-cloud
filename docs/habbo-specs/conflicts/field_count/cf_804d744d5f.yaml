@@ -10,22 +10,34 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:33400e4cc823927bab8de075ca091dadc37d449cad3dd62b5eca76ce32d3bc05"
+generated_digest: "sha256:8515b990b25c4e1b6ea0a709daced868acfb3b51b07a7ea4554e8d34b1fe600c"
 generated:
   id: cf_804d744d5f
   kind: field_count
   subject: "outgoing/AuthenticationOK: field count"
   packet: AuthenticationOK
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "4 fields: int32, int32, short, int32"
+    evidence: ev_3961ef20edcd
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: int32, int32"
+    claim: "1 fields: int32, int32"
     evidence: ev_febc4be08fc9
   - origin: vortex
     authority: vortex_emulator
     claim: "4 fields: int32, int32, array, int32"
     evidence: ev_2674b053a1a5
   evidence:
+  - id: ev_3961ef20edcd
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_3002.as
+    symbol: _SafeCls_3002
+    line: 30
+    note: official client build WIN63-202607011411-782849652
   - id: ev_febc4be08fc9
     kind: client_parser
     authority: multi_implementation

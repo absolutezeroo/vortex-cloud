@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:385f56cf271591f93ea064970e22dd40e2fca9ea3e8a4bb02b611fa2a97ee70b"
+generated_digest: "sha256:fd0b1c3d3e0c80cd61c1ca8212ba1e6bd0c5e5876f04196f00dd675b6414e283"
 generated:
   name: CompleteDiffieHandshake
   direction: incoming
@@ -87,5 +87,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Handshake/CompleteDiffieHandshakeMessageParser.cs
     symbol: CompleteDiffieHandshakeMessageParser
     line: 7
+  conflicts:
+  - cf_99facea3aa
 verified: {}
 manual: {}

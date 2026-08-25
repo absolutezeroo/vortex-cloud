@@ -10,78 +10,97 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c9a45ecd6bc40c573579713eac366261258b47ffe5c2697784a709241d28e239"
+generated_digest: "sha256:e1ec24ae8620052953e48066370217225850fae30e480ce08c43afc17e6299b0"
 generated:
   name: Chat
   direction: outgoing
   domain: room
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: object_id
+    name: user_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 1
     name: text
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 2
     name: gesture
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 3
     name: style_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 4
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_300c37580336
     - ev_77c793265b06
   - index: 5
-    name: one
+    name: links
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 6
-    name: two
+    name: links
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 7
-    name: three
+    name: links
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   - index: 8
     name: tracking_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_77c793265b06
+    - ev_300c37580336
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 9
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - boolean
+    - int32
+    evidence: ev_300c37580336
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -110,6 +129,14 @@ generated:
     - int32
     evidence: ev_77c793265b06
   evidence:
+  - id: ev_300c37580336
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_2917.as
+    symbol: _SafeCls_2917
+    line: 66
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9a7f075d7238
     kind: client_parser
     authority: multi_implementation
@@ -133,5 +160,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Chat/ChatMessageComposerSerializer.cs
     symbol: ChatMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_3cd42900cc
 verified: {}
 manual: {}

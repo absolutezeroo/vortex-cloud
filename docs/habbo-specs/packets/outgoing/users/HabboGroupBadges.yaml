@@ -10,39 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:712152995586c1a49ec08b7fd23149c0dc9288d56ed80ebb3c95fe60ec5f3c56"
+generated_digest: "sha256:3bf5d195a7a373c2344b91d5c8ed42e57ffeb91179a222791b3c0989b8665a25"
 generated:
   name: HabboGroupBadges
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_acdb61f127ca
+    - ev_4e7e91585037
     - ev_62665f62e38d
   - index: 1
     name: group_id
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_acdb61f127ca
+    - ev_4e7e91585037
     - ev_62665f62e38d
   - index: 2
     name: badge_code
     type: string
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_acdb61f127ca
+    - ev_4e7e91585037
     - ev_62665f62e38d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_4e7e91585037
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -67,6 +78,14 @@ generated:
     - array
     evidence: ev_62665f62e38d
   evidence:
+  - id: ev_4e7e91585037
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4298.as
+    symbol: _SafeCls_4298
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_60abd2f765ca
     kind: client_parser
     authority: multi_implementation

@@ -10,79 +10,181 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:37dba19687f43f5dd242e12efe6841024abec08989f3313f5bff6cfb39e9ad4f"
+generated_digest: "sha256:7c76fd0c40554a36473a4826f6a385a5a38155f32a0e2102057cb66a22966ed0"
 generated:
   name: AccountPreferences
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: ui_volume
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 1
-    name: unknown_1
+    name: furni_volume
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 2
-    name: unknown_2
+    name: trax_volume
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 3
     name: unknown_3
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 4
-    name: unknown_4
+    name: room_invites_ignored
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 5
-    name: unknown_5
+    name: room_camera_follow_disabled
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 6
-    name: unknown_6
+    name: ui_flags
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
   - index: 7
-    name: unknown_7
+    name: prefered_chat_style
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_10a92303241b
+  - index: 8
+    name: wired_menu_button
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_10a92303241b
+  - index: 9
+    name: wired_inspect_button
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_10a92303241b
+  - index: 10
+    name: play_test_mode
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_10a92303241b
+  - index: 11
+    name: unknown_11
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4c3fdc18e3f9
+    - ev_10a92303241b
+  - index: 12
+    name: wired_whisper_disabled
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_10a92303241b
+  - index: 13
+    name: show_all_notifications
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
+  - index: 14
+    name: wired_ui_style
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
+  - index: 15
+    name: chat_size_preference
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
+  - index: 16
+    name: chat_mode
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
+  - index: 17
+    name: chat_bubble_width
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
+  - index: 18
+    name: chat_scroll_speed
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_10a92303241b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 19
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - boolean
+    - boolean
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_10a92303241b
   - origin: arcturus
     authority: reference_emulator
     field_count: 8
@@ -98,6 +200,14 @@ generated:
     - int32
     evidence: ev_4c3fdc18e3f9
   evidence:
+  - id: ev_10a92303241b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1927/_SafeCls_1926.as
+    symbol: _SafeCls_1926
+    line: 152
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4c3fdc18e3f9
     kind: reference_composer
     authority: reference_emulator
@@ -106,6 +216,8 @@ generated:
     symbol: AccountPreferencesMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_96bdada2c4
   unknowns:
   - uk_437dfc0d74
 verified: {}

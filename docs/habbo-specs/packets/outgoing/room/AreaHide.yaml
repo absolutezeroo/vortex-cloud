@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:aa925402988350c022a646e66c8106b2b9b195e2ff174f0ca6add6d391b4087e"
+generated_digest: "sha256:6745b884b681f4073f9a4f6cede936f7a0d9dc5a285941dadc3bdde934c4820c"
 generated:
   name: AreaHide
   direction: outgoing
@@ -76,6 +76,12 @@ generated:
       evidence:
       - ev_ebc7f48bca98
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_3e48a3fa1e02
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -90,6 +96,14 @@ generated:
     - block
     evidence: ev_ebc7f48bca98
   evidence:
+  - id: ev_3e48a3fa1e02
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3760.as
+    symbol: _SafeCls_3760
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fec8c7971d53
     kind: client_parser
     authority: multi_implementation

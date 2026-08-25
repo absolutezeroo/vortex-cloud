@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:515c8f821299ae2a3673731c75377f5157981444518aeab98f8ab07a24366679"
+generated_digest: "sha256:983531a6d3981de32a14048315b0155f1719afc7e75325140e7dfd658e33ba30"
 generated:
   name: GuideSessionRequesterRoom
   direction: outgoing
   domain: moderation
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_f0fba9c24765
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_4e22d5d356e7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -55,6 +62,14 @@ generated:
     - int32
     evidence: ev_dadeb1467ae3
   evidence:
+  - id: ev_4e22d5d356e7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4134.as
+    symbol: _SafeCls_4134
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f0fba9c24765
     kind: client_parser
     authority: client_code

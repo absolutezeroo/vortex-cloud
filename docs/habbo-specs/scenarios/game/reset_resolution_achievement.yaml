@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8b79ad4d55aa63beeac0b895482d439a381cf7699a99de2f69187f1c920e73ce"
+generated_digest: "sha256:8442afc153a3089ccc924ebe4b2f08d40750f6d8a7d2ad6270ac666eec946392"
 generated:
   feature: game.reset_resolution_achievement
   scenarios:
@@ -32,42 +32,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8fbdf1d14c5b
-  - scenario: game.reset_resolution_achievement.guard_1
-    title: "reset resolution achievement: the guard 'statue is null' holds"
-    given:
-      guard: statue is null
-      guard_holds: "true"
-    when:
-      packet: ResetResolutionAchievement
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ResetResolutionAchievement sent while 'statue is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_9b89e1ffc2b5
-  - scenario: game.reset_resolution_achievement.guard_2
-    title: "reset resolution achievement: the guard 'challenge is null || !AchievementResolutionRules.IsInProg...' holds"
-    given:
-      guard: challenge is null || !AchievementResolutionRules.IsInProgress( challenge.CompletedAt, challenge.EndsAt, DateTime.UtcNow )
-      guard_holds: "true"
-    when:
-      packet: ResetResolutionAchievement
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ResetResolutionAchievement sent while 'challenge is null || !AchievementResolutionRules.IsInProgress( challenge.CompletedAt, challenge.EndsAt, DateTime.UtcNow )' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_9b89e1ffc2b5
   - scenario: game.reset_resolution_achievement.success
     title: "reset resolution achievement: the request is accepted"
     given:
@@ -93,12 +57,5 @@ generated:
     source: Vortex.PacketHandlers/Game/Lobby/ResetResolutionAchievementMessageHandler.cs
     symbol: ResetResolutionAchievementMessageHandler
     line: 21
-  - id: ev_9b89e1ffc2b5
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementResolutionGrain.cs
-    symbol: PlayerAchievementResolutionGrain
-    line: 126
 verified: {}
 manual: {}

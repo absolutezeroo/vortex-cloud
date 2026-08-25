@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5d86285ab6dd2c1507db9c8e015b1e599fc9a805cda22dd41f976c67ced814bf"
+generated_digest: "sha256:18c8c4edbd12980983de2589fe6ad63f241cd278e9075f9d31ed148400c88a0d"
 generated:
   id: cf_54f53e20a7
   kind: field_count
   subject: "outgoing/UserChange: field count"
   packet: UserChange
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "9 fields: int32, string, string, string, int32, string, int32, int32, int32, int32, int32"
+    evidence: ev_ae7c6e00e05a
   - origin: nitro
     authority: multi_implementation
-    claim: "5 fields: int32, string, string, string, int32"
+    claim: "1 fields: int32, string, string, string, int32"
     evidence: ev_05bbcb3b8a5d
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "8 fields: int32, string, string, string, int32, string, int32, int32"
     evidence: ev_e34a4bb9e2ce
   evidence:
+  - id: ev_ae7c6e00e05a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2646.as
+    symbol: _SafeCls_2646
+    line: 67
+    note: official client build WIN63-202607011411-782849652
   - id: ev_05bbcb3b8a5d
     kind: client_parser
     authority: multi_implementation

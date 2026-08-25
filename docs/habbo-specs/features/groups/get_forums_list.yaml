@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:76d4403d1dcadb60fd83e944933c9b384968f32e70d23a5d0ec4e34a83a60b26"
+generated_digest: "sha256:a3b98a41649e2352ef44983fa3808ff241246689e7f4d9eb48d4223fc072e9fe"
 generated:
   id: groups.get_forums_list
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupDirectoryGrain.GetForumsListAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - order: 2
     layer: grain
     symbol: ServerConfigGrain.GetIntAsync
@@ -48,7 +48,7 @@ generated:
   - expression: groups.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   state_changes: []
   outgoing:
     ordering: unknown
@@ -73,13 +73,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetForumsListMessageHandler.cs
     symbol: GetForumsListMessageHandler
     line: 12
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 427
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -87,6 +80,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 426
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

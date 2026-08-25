@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:36a1e2b6bc561931a775522f1fb089951cb7bd4cc672b8d9a8f86c69c0d3c817"
+generated_digest: "sha256:ce4602cab2be4d95ef28c53497b8bc538963a7a6ade28552b11176aeec7674f6"
 generated:
   feature: vault.income_reward_status
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
-    line: 32
+    line: 35
   - id: ev_fcb1a9001f34
     kind: emulator_flow
     authority: vortex_emulator

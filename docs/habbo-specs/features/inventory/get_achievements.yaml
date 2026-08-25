@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1c792e220d7fddc64f03eb597fcf821548d30e2c30b68f56f87b0922fd1cfc2d"
+generated_digest: "sha256:88577e6f5b8e8c80fe2db91bcb5f451b7785a5c382b4b756500c5f68310d7cc8"
 generated:
   id: inventory.get_achievements
   domain: inventory
@@ -31,15 +31,15 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerAchievementGrain.GetAchievementsAsync
-    evidence: ev_c9002bf19526
+    evidence: ev_b6254b352078
   - order: 2
     layer: grain
     symbol: AchievementManagerGrain.GetDefinitionsAsync
-    evidence: ev_13211df92481
+    evidence: ev_6a825bb2f759
   - order: 3
     layer: domain
     symbol: AchievementProgressCalculator.ComputeScore
-    evidence: ev_280ae109b88c
+    evidence: ev_b71b04b4b6c4
   - order: 4
     layer: domain
     symbol: WiredVariableArithmetic.Clamp
@@ -47,7 +47,7 @@ generated:
   - order: 5
     layer: grain
     symbol: AchievementManagerGrain.GetDefaultCategoryAsync
-    evidence: ev_13211df92481
+    evidence: ev_6a825bb2f759
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -56,7 +56,7 @@ generated:
   - expression: definitions.IsEmpty
     on_fail: return
     observed_in: vortex
-    evidence: ev_c9002bf19526
+    evidence: ev_b6254b352078
   state_changes: []
   outgoing:
     ordering: unknown
@@ -67,20 +67,13 @@ generated:
       evidence: ev_a7798658d9db
   reaches_persistence: false
   evidence:
-  - id: ev_13211df92481
+  - id: ev_6a825bb2f759
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/AchievementManagerGrain.cs
+    source: Vortex.Progression/Grains/AchievementManagerGrain.cs
     symbol: AchievementManagerGrain
     line: 45
-  - id: ev_280ae109b88c
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Achievements/AchievementProgressCalculator.cs
-    symbol: AchievementProgressCalculator
-    line: 159
   - id: ev_a7798658d9db
     kind: emulator_flow
     authority: vortex_emulator
@@ -88,6 +81,20 @@ generated:
     source: Vortex.PacketHandlers/Inventory/Achievements/GetAchievementsMessageHandler.cs
     symbol: GetAchievementsMessageHandler
     line: 21
+  - id: ev_b6254b352078
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerAchievementGrain.cs
+    symbol: PlayerAchievementGrain
+    line: 98
+  - id: ev_b71b04b4b6c4
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Achievements/AchievementProgressCalculator.cs
+    symbol: AchievementProgressCalculator
+    line: 159
   - id: ev_c70390fca34b
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,13 +102,6 @@ generated:
     source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
     symbol: WiredVariableArithmetic
     line: 165
-  - id: ev_c9002bf19526
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementGrain.cs
-    symbol: PlayerAchievementGrain
-    line: 95
   - id: ev_dc142ad7bdb4
     kind: emulator_handler
     authority: vortex_emulator

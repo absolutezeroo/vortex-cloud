@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3f0b5f8324912510290ad69017e73a78beb1f5d539cfcf767b91a7bf00cb4611"
+generated_digest: "sha256:981977834584a8175c2f4f2c0265116bf5de3fd724eea04b78831dceabd90835"
 generated:
   name: Game2GameLongData
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_0476751168f7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_541958bd8044
   evidence:
+  - id: ev_0476751168f7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4164/_SafeCls_4343.as
+    symbol: _SafeCls_4343
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_541958bd8044
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1d29cdedcb750e6c6bf521061d5c0935bfee3fed2d7bf95a40420f4b1a6deebf"
+generated_digest: "sha256:1d0b1f6a090ba8018661bdad76b6fe73d73c8ddeec69f55abb99c693c627c24f"
 generated:
   id: uk_8711259128
   subject: "outgoing/Users: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: UsersMessageParser
     line: 75
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a4b7302f1588
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2309.as
+    symbol: _SafeCls_2309
+    line: 72
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4d003b1c2f7b
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: UsersMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4f9e66f05932
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/users/UsersMessageComposer.java
-    symbol: UsersMessageComposer
-    line: 39
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

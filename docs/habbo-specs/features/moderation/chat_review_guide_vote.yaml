@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6d67c9b6ec05cf1025d233ececc08807df54468cf0e327fae2eca7cbc9e1a552"
+generated_digest: "sha256:7d36c41689208aa93256643aa640016f31c5662f137c07cd484bfdb5b928939a"
 generated:
   id: moderation.chat_review_guide_vote
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.ChatReviewVoteAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - order: 2
     layer: domain
     symbol: KeyValueStore.ContainsKey
@@ -48,7 +48,7 @@ generated:
   - expression: "!TryFindReview(guardianId, out ChatReview? review) || !review.Accepted.ContainsKey(guardianId)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -69,6 +69,13 @@ generated:
     source: Vortex.Rooms/Grains/Storage/KeyValueStore.cs
     symbol: KeyValueStore
     line: 31
+  - id: ev_5ea072b947f5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
+    symbol: GuideDirectoryGrain
+    line: 339
   - id: ev_844b134c2712
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,13 +90,6 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewGuideVoteMessageHandler.cs
     symbol: ChatReviewGuideVoteMessageHandler
     line: 12
-  - id: ev_9c06d4d48950
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
-    symbol: GuideDirectoryGrain
-    line: 323
   scenarios:
   - moderation.chat_review_guide_vote.guard_0
   - moderation.chat_review_guide_vote.guard_1

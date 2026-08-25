@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ebaa72ee8d072b826653339cccf591f55acefeabe5aeb05b93f5b776380a4234"
+generated_digest: "sha256:efe89bd70f8a5c14c54353f3aaa1f2be03aadb42ccc6bf7bc510587b2822019e"
 generated:
   id: users.get_habbo_group_badges
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupDirectoryGrain.GetBadgesAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -44,7 +44,7 @@ generated:
   - expression: groupIds.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   state_changes: []
   outgoing:
     ordering: unknown
@@ -55,13 +55,6 @@ generated:
       evidence: ev_aab60cf3bcef
   reaches_persistence: false
   evidence:
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 400
   - id: ev_aab60cf3bcef
     kind: emulator_flow
     authority: vortex_emulator
@@ -76,6 +69,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetHabboGroupBadgesMessageHandler.cs
     symbol: GetHabboGroupBadgesMessageHandler
     line: 13
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 399
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

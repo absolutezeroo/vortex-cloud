@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7827b30be30ebfdf382defcae7ed5dbcdadb6b68fdfaa4c906b67712cb8f7fe0"
+generated_digest: "sha256:e6648d74ca98ec2e97a908723ad8969c4e1d619fb2b4e856ef12ab487ff5bfc1"
 generated:
   id: uk_bb4843f327
   subject: "room.pickup_item_in_room: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -102,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 326
+    line: 329
   - id: ev_7e970abb71a4
     kind: emulator_flow
     authority: vortex_emulator
@@ -172,7 +172,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 78
+    line: 84
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

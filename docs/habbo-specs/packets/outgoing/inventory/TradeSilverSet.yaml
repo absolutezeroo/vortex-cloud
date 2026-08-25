@@ -10,29 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:215ebc9ca26ca7c692be37ae4d501f1a5f2a872aa252199b2dad0333407bb679"
+generated_digest: "sha256:d5d8a1b428079e45f1bd93848c38640b985f6c7394f665243464b4d11b7e5b7d"
 generated:
   name: TradeSilverSet
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: player_silver
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4f9efd91e0be
+    - ev_0c1f7805e05b
   - index: 1
     name: other_player_silver
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4f9efd91e0be
+    - ev_0c1f7805e05b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_0c1f7805e05b
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +56,14 @@ generated:
     - int32
     evidence: ev_4f9efd91e0be
   evidence:
+  - id: ev_0c1f7805e05b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2546/_SafeCls_2855.as
+    symbol: _SafeCls_2855
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f6baffe27d96
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a2e07a1bb90a075af9fd9fb846d52ce200fc382310647ad98bd95a3b1b7b4926"
+generated_digest: "sha256:6468d2d4f5a6f4330d30d32abba84d13eb9e9a5feeac010caa3a7ec41889931e"
 generated:
   feature: collectibles.nft_store_purchase
   scenarios:
@@ -87,60 +87,6 @@ generated:
       emits: []
       evidence: ev_144151606547
   - scenario: collectibles.nft_store_purchase.guard_4
-    title: "nft store purchase: the guard 'update.ChangedBy != request.Amount' holds"
-    given:
-      guard: update.ChangedBy != request.Amount
-      guard_holds: "true"
-    when:
-      packet: NftStorePurchase
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of NftStorePurchase sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: collectibles.nft_store_purchase.guard_5
-    title: "nft store purchase: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: NftStorePurchase
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of NftStorePurchase sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: collectibles.nft_store_purchase.guard_6
-    title: "nft store purchase: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: NftStorePurchase
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of NftStorePurchase sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
-  - scenario: collectibles.nft_store_purchase.guard_7
     title: "nft store purchase: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -158,24 +104,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_34bf3ac088e2
-  - scenario: collectibles.nft_store_purchase.guard_8
-    title: "nft store purchase: the guard '!string.IsNullOrEmpty(jsonData)' holds"
-    given:
-      guard: "!string.IsNullOrEmpty(jsonData)"
-      guard_holds: "true"
-    when:
-      packet: NftStorePurchase
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of NftStorePurchase sent while '!string.IsNullOrEmpty(jsonData)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7a660921f135
   - scenario: collectibles.nft_store_purchase.success
     title: "nft store purchase: the request is accepted"
     given:
@@ -192,11 +120,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
       - NftStorePurchase
-      - SilverBalance
       evidence: ev_144151606547
   evidence:
   - id: ev_144151606547
@@ -205,7 +129,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: NftStoreGrain
-    line: 73
+    line: 76
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -220,26 +144,5 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 46
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 94
 verified: {}
 manual: {}

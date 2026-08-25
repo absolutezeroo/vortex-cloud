@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d63344a8c931fe17bd503be54604d01da8a78df59dcd6d0c8a82cdf797200837"
+generated_digest: "sha256:e1a9d89aa1a270d4ee7eaf591e8972198c0e3f9073a07b616a374846f16867d0"
 generated:
   id: uk_df387b1069
   subject: "outgoing/MarketplaceConfiguration: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: MarketplaceConfiguration
   known_evidence:
+  - id: ev_21b81594e0dd
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_1990.as
+    symbol: _SafeCls_1990
+    line: 102
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c49697ea7f95
     kind: client_parser
     authority: client_code

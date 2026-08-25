@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f974fca15e667c90b639ad806870e8888579f2f37ac9a210a083ea6e98a6eaf4"
+generated_digest: "sha256:7ecb7e2b16021e069411b0436ded64c96c3ef9375f9ad31d4939d4bb2378866e"
 generated:
   name: BotForceOpenContextMenu
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: bot_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_257075da8bc8
-    - ev_c3d7cec6e0b2
+    - ev_ab14c13cff3d
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_257075da8bc8
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_ab14c13cff3d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -63,6 +70,14 @@ generated:
     symbol: BotForceOpenContextMenuParser
     line: 17
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ab14c13cff3d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_2400.as
+    symbol: _SafeCls_2400
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fbce3ac0f737
     kind: client_parser
     authority: multi_implementation

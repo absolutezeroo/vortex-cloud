@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d6f046c1a37e575c3b2b5eee14eda1d29d1966b86e6403c3ddbc570f5b4697c8"
+generated_digest: "sha256:ff9ed5851626565b8abcc6b699a27c5ae1fd0a1ec2b2d6d2ed0f97746b034caf"
 generated:
   id: users.create_guild
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupDirectoryGrain.CreateGroupAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - order: 2
     layer: grain
     symbol: ServerConfigGrain.GetIntAsync
@@ -42,40 +42,24 @@ generated:
     evidence: ev_34bf3ac088e2
   - order: 4
     layer: domain
-    symbol: WalletPurchaseExtensions.ExecutePurchaseAsync
-    evidence: ev_0b56492f6260
-  - order: 5
-    layer: grain
-    symbol: PlayerWalletGrain.TryDebitAsync
-    evidence: ev_d0cb8ee11644
-  - order: 6
-    layer: grain
-    symbol: PlayerPresenceGrain.OnCurrencyUpdateAsync
-    evidence: ev_94ddaa174e6d
-  - order: 7
-    layer: module
-    symbol: PlayerWalletModule.OnCurrencyUpdateAsync
-    evidence: ev_432f3c2b73af
-  - order: 8
-    layer: grain
-    symbol: PlayerPresenceGrain.SendComposerAsync
-    evidence: ev_373e76aa8a80
-  - order: 9
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
-  - order: 10
-    layer: grain
-    symbol: PlayerWalletGrain.CreditBackAsync
-    evidence: ev_d0cb8ee11644
-  - order: 11
-    layer: domain
     symbol: WiredChestStore.FindAsync
     evidence: ev_d3a71568179c
-  - order: 12
+  - order: 5
+    layer: domain
+    symbol: AccountSessionStore.Create
+    evidence: ev_680fc4a69aa8
+  - order: 6
+    layer: domain
+    symbol: WiredVariableId.ToHexString
+    evidence: ev_7c8de830bc47
+  - order: 7
     layer: grain
     symbol: PlayerGrain.TrackCreditSpendAsync
     evidence: ev_1f83e61934ca
+  - order: 8
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -88,51 +72,35 @@ generated:
   - expression: preflightRoom is null || preflightRoom.PlayerEntityId != ownerId || preflightRoom.GroupEntityId != null
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: "!ownerExists"
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: creatingContext.Cancel
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: room is null || room.PlayerEntityId != ownerId || room.GroupEntityId != null
     on_fail: throw
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: ownerEntity is null
     on_fail: throw
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: "!purchase.Succeeded"
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
-  - expression: "!debitResult.Succeeded"
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_0b56492f6260
-  - expression: update.ChangedBy != request.Amount
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: failure is not null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: snapshot is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_432f3c2b73af
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
+    evidence: ev_d53218d99bdd
   - expression: credits <= 0 || _state.ClubLevel == 0
     on_fail: return
     observed_in: vortex
     evidence: ev_1f83e61934ca
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.KickbackCreditsSpent
     value: credits
@@ -145,54 +113,31 @@ generated:
   - target: created.OwnerPlayerEntity
     value: ownerEntity
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - target: created.RoomEntity
     value: room
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - target: room.GroupEntityId
     value: created.Id
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   outgoing:
     ordering: unknown
     packets:
-    - packet: CreditBalanceEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: EmeraldBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
     - packet: GuildCreated
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_abaf62c0326b
-    - packet: HabboActivityPointNotification
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: SilverBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
   reaches_persistence: true
   evidence:
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 31
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 641
+    line: 656
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -200,27 +145,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 24
-  - id: ev_373e76aa8a80
+  - id: ev_680fc4a69aa8
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
-  - id: ev_432f3c2b73af
+    source: Vortex.Primitives/Authentication/AccountSessionStore.cs
+    symbol: AccountSessionStore
+    line: 58
+  - id: ev_7c8de830bc47
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 85
+    source: Vortex.Primitives/Rooms/Wired/Variable/WiredVariableId.cs
+    symbol: WiredVariableId
+    line: 17
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -228,13 +166,6 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_96f736ad3f76
     kind: emulator_handler
     authority: vortex_emulator
@@ -249,13 +180,6 @@ generated:
     source: Vortex.PacketHandlers/Users/CreateGuildMessageHandler.cs
     symbol: CreateGuildMessageHandler
     line: 22
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 55
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator
@@ -263,11 +187,16 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 84
   scenarios:
   - users.create_guild.guard_0
   - users.create_guild.guard_1
-  - users.create_guild.guard_10
-  - users.create_guild.guard_11
   - users.create_guild.guard_2
   - users.create_guild.guard_3
   - users.create_guild.guard_4
@@ -282,6 +211,5 @@ generated:
   - cf_c805275d14
   unknowns:
   - uk_5b02085171
-  - uk_e501216c9d
 verified: {}
 manual: {}

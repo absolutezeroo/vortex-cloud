@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d4aafe5f18130cab1d820c77611bd663f58a113aa21b0ac423a484cd9e5d9af9"
+generated_digest: "sha256:ae9528c174d14effb48c8eb2cd13a4a362d7119ff2538eaba21dc3d5d513ad19"
 generated:
   id: uk_613df422b3
   subject: "room.present_open: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: room.present_open
   known_evidence:
+  - id: ev_0c987f4ea07c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
+    symbol: CatalogFulfillmentPlanner
+    line: 53
   - id: ev_0f9ffda870b1
     kind: emulator_flow
     authority: vortex_emulator
@@ -32,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,6 +47,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 36
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,21 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 421
-  - id: ev_5e99184ee3a3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 36
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 583
+    line: 422
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -89,13 +89,6 @@ generated:
     source: Vortex.Furniture/ExtraData.cs
     symbol: ExtraData
     line: 18
-  - id: ev_7ef4c91324dc
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerEffectGrain.cs
-    symbol: PlayerEffectGrain
-    line: 71
   - id: ev_845cc9ed930f
     kind: emulator_flow
     authority: vortex_emulator
@@ -116,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 152
+    line: 158
   - id: ev_d0f936c872c4
     kind: emulator_handler
     authority: vortex_emulator
@@ -124,6 +117,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/PresentOpenMessageHandler.cs
     symbol: PresentOpenMessageHandler
     line: 19
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 582
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

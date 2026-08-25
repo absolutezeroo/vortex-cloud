@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:db4ad96555aab6210cc67f0b3ac7cef4122ff382e9005d563649d4b53701498d"
+generated_digest: "sha256:b6b12d38fdbff354f697c1dbbe5706ab9e629d51194102819a1159599de95db8"
 generated:
   id: cf_60f7fc1fbc
   kind: field_count
   subject: "outgoing/BuildersClubSubscriptionStatus: field count"
   packet: BuildersClubSubscriptionStatus
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "4 fields: int32, int32, int32, int32"
+    evidence: ev_803695091e8c
   - origin: nitro
     authority: multi_implementation
-    claim: "4 fields: int32, int32, int32, int32"
+    claim: "1 fields: int32, int32, int32, int32"
     evidence: ev_1c9386bf2920
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "4 fields: int32, int32, int32, int32"
     evidence: ev_33d201667fbd
   evidence:
+  - id: ev_803695091e8c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2143.as
+    symbol: _SafeCls_2143
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1c9386bf2920
     kind: client_parser
     authority: multi_implementation

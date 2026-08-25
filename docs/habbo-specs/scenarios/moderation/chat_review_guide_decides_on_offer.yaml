@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a5ec0c0b72c92af54784ff07db652da84c74852522da855fc32a1fb9edb7f8c1"
+generated_digest: "sha256:f35785d7f90210b261d222dab26f2602fcb89b64ca1b9c94ec09ef4c368ad2b1"
 generated:
   feature: moderation.chat_review_guide_decides_on_offer
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -77,7 +77,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9c06d4d48950
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -122,12 +122,12 @@ generated:
     source: Vortex.PacketHandlers/Help/ChatReviewGuideDecidesOnOfferMessageHandler.cs
     symbol: ChatReviewGuideDecidesOnOfferMessageHandler
     line: 24
-  - id: ev_9c06d4d48950
+  - id: ev_5ea072b947f5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
     symbol: GuideDirectoryGrain
-    line: 292
+    line: 308
 verified: {}
 manual: {}

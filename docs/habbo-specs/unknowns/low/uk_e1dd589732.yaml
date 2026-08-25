@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5ff05b7d3cab8b51f56b0b9c1c912c746af598868aa258141f01cc312cd37ab8"
+generated_digest: "sha256:9dc4e45089e085be443a0a60f383bc48fb9c1fbda72afdb18aece94cb206fb0c"
 generated:
   id: uk_e1dd589732
   subject: "outgoing/NewFriendRequest: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: NewFriendRequest
   known_evidence:
+  - id: ev_9ab1cb2c5b3c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2021.as
+    symbol: _SafeCls_2021
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_da127f514a76
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: NewFriendRequestMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  - id: ev_63aa9512ce18
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/FriendList/NewFriendRequestMessageSerializer.cs
-    symbol: NewFriendRequestMessageSerializer
-    line: 7
 verified: {}
 manual: {}

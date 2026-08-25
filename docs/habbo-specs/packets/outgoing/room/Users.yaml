@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:eb997c27c90e9e8da9ea374bc2c440a78fb4a222929529c73012e8ed956f3629"
+generated_digest: "sha256:c16205e31ec7285b7eab71f5f28b7a2b816390e3c8f0ef3ee5a457ae56107227"
 generated:
   name: Users
   direction: outgoing
@@ -374,6 +374,48 @@ generated:
     - int32
     - short
     evidence: ev_1bcc1cc7fb00
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 36
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - string
+    - string
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    - int32
+    - string
+    - string
+    - int32
+    - string
+    - int32
+    - short
+    evidence: ev_a4b7302f1588
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -443,6 +485,14 @@ generated:
     symbol: UsersMessageParser
     line: 75
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a4b7302f1588
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2309.as
+    symbol: _SafeCls_2309
+    line: 72
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4d003b1c2f7b
     kind: client_parser
     authority: multi_implementation

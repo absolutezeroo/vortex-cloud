@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8ed22e812ff768da11b0dcc07b924a58ff32539850158c923750286f2d8fbc30"
+generated_digest: "sha256:393c0a5b3ba1d2a45509b59244e662e00228f0635ab36c33fa7d378b46c2c1fd"
 generated:
   id: users.get_extended_profile_by_name
   domain: users
@@ -42,15 +42,15 @@ generated:
   - order: 4
     layer: domain
     symbol: AccountLevelProvider.ResolveLevel
-    evidence: ev_946892b56c2d
+    evidence: ev_4a23882e79c7
   - order: 5
     layer: grain
     symbol: GroupDirectoryGrain.GetMembershipsAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - order: 6
     layer: domain
     symbol: GroupBadgePartProvider.ResolveColorHex
-    evidence: ev_5e99184ee3a3
+    evidence: ev_35934eb1b8df
   checks:
   - expression: playerId is null
     on_fail: return
@@ -71,11 +71,11 @@ generated:
   - expression: groupIds.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   - expression: match is not null
     on_fail: return
     observed_in: vortex
-    evidence: ev_5e99184ee3a3
+    evidence: ev_35934eb1b8df
   state_changes: []
   outgoing:
     ordering: unknown
@@ -92,7 +92,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 286
+    line: 301
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 36
   - id: ev_3bd2b1e19fbd
     kind: emulator_flow
     authority: vortex_emulator
@@ -100,20 +107,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetExtendedProfileByNameMessageHandler.cs
     symbol: GetExtendedProfileByNameMessageHandler
     line: 37
-  - id: ev_5e99184ee3a3
+  - id: ev_4a23882e79c7
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 36
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 292
+    source: Vortex.Progression/Providers/AccountLevelProvider.cs
+    symbol: AccountLevelProvider
+    line: 33
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -121,13 +121,6 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 142
-  - id: ev_946892b56c2d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/AccountLevelProvider.cs
-    symbol: AccountLevelProvider
-    line: 33
   - id: ev_bf40959b08c2
     kind: emulator_handler
     authority: vortex_emulator
@@ -135,6 +128,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetExtendedProfileByNameMessageHandler.cs
     symbol: GetExtendedProfileByNameMessageHandler
     line: 16
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 291
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

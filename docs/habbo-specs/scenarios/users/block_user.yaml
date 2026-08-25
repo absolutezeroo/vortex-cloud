@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bdbdb858648669722be91fa6ced3cafd6fd547c3ea2343bacebf182a47480f36"
+generated_digest: "sha256:9bc0b7d7dbd223803014c1c7e1490903797df5966a1f1857675bbc7eee319755"
 generated:
   feature: users.block_user
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
   - scenario: users.block_user.guard_2
     title: "block user: the guard 'selfEntity is null || targetEntity is null' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
   - scenario: users.block_user.guard_3
     title: "block user: the guard '_registry is null' holds"
     given:
@@ -119,12 +119,12 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 474
+    line: 491
 verified: {}
 manual: {}

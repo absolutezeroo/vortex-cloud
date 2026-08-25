@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:845f097c32c6320545b9f9c6fccf8f157c5097dfa9b39d6ff5e5b2cd33ddbeea"
+generated_digest: "sha256:78302acdc02324c3ee0a9e55650c9211c424858a8d7d50cb98cb4cb985153e78"
 generated:
   name: UniqueMachineID
   direction: outgoing
   domain: handshake
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: machine_id
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0aa80de394b2
+    - ev_98eebc3867f6
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_98eebc3867f6
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - string
     evidence: ev_0aa80de394b2
   evidence:
+  - id: ev_98eebc3867f6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_4080.as
+    symbol: _SafeCls_4080
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0aa80de394b2
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: UniqueMachineIDMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_45b63d090a
 verified: {}
 manual: {}

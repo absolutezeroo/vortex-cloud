@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e790fb67b764c3b72053faf2ba87fdf17ac7007882b7d859f8ddb9e176f3ade5"
+generated_digest: "sha256:ad945bea8bd3c72643d1edcf2267fb581b6e736932f7226d055271c4f2bc43a6"
 generated:
   feature: users.get_extended_profile_by_name
   scenarios:
@@ -103,7 +103,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
   - scenario: users.get_extended_profile_by_name.guard_5
     title: "get extended profile by name: the guard 'match is not null' holds"
     given:
@@ -121,7 +121,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5e99184ee3a3
+      evidence: ev_35934eb1b8df
   - scenario: users.get_extended_profile_by_name.success
     title: "get extended profile by name: the request is accepted"
     given:
@@ -147,7 +147,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 286
+    line: 301
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 43
   - id: ev_3bd2b1e19fbd
     kind: emulator_flow
     authority: vortex_emulator
@@ -155,20 +162,6 @@ generated:
     source: Vortex.PacketHandlers/Users/GetExtendedProfileByNameMessageHandler.cs
     symbol: GetExtendedProfileByNameMessageHandler
     line: 37
-  - id: ev_5e99184ee3a3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 43
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 314
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -176,5 +169,12 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 146
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 313
 verified: {}
 manual: {}

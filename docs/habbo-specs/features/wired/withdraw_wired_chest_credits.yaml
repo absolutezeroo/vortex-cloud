@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c0ed97e8a753dbbaff21fa6345ed396c02c76958b98f9411f87bf9ddae2ea537"
+generated_digest: "sha256:a4fc4c944fa3fc597d9c1a2750a53769f35872995c18fde899353ae3a3b7bda5"
 generated:
   id: wired.withdraw_wired_chest_credits
   domain: wired
@@ -292,7 +292,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 363
+    line: 611
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

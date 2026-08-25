@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5ef18bb0a6ff6d641d62331205f0c564c1dcc46b8e256481d01439d0ef2dea51"
+generated_digest: "sha256:5d8002afcc7b4a7ff626d93bebbc90ad0e840dce0c707b7544444444e9e11aca"
 generated:
   name: CompetitionVotingInfo
   direction: outgoing
   domain: competition
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: goal_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f77da34f50bd
+    - ev_a2a26ec817e6
   - index: 1
-    name: unknown_1
+    name: goal_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f77da34f50bd
+    - ev_a2a26ec817e6
   - index: 2
-    name: unknown_2
+    name: result_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f77da34f50bd
+    - ev_a2a26ec817e6
   - index: 3
-    name: unknown_3
+    name: votes_remaining
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f77da34f50bd
+    - ev_a2a26ec817e6
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - int32
+    evidence: ev_a2a26ec817e6
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +74,14 @@ generated:
     - int32
     evidence: ev_f77da34f50bd
   evidence:
+  - id: ev_a2a26ec817e6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3314/_SafeCls_4063.as
+    symbol: _SafeCls_4063
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2b4f037125a6
     kind: client_parser
     authority: multi_implementation
@@ -84,7 +98,5 @@ generated:
     symbol: CompetitionVotingInfoMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_b155e7b7be
 verified: {}
 manual: {}

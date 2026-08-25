@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fa0a291a21cd0c52b6fbe1c89832e2ac296cd1ffd808ff408d99c9b99111f9d0"
+generated_digest: "sha256:c6077c50b8adc1d30fa90bd17ea5ab80f1dd74a7e6b7bfa938cfb81eba1627a3"
 generated:
   name: FlatControllerRemoved
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: flat_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_17ebe19f44de
+    - ev_0bc3d299260a
   - index: 1
-    name: unknown_1
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_17ebe19f44de
+    - ev_0bc3d299260a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_0bc3d299260a
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_17ebe19f44de
   evidence:
+  - id: ev_0bc3d299260a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_2526.as
+    symbol: _SafeCls_2526
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_17ebe19f44de
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: FlatControllerRemovedMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_e2abe84ec2
 verified: {}
 manual: {}

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d53baf0bdbfc9d1071eb5e9fb9c7d27ddf68b5d1619318460b99ad3ef7a40149"
+generated_digest: "sha256:69189167d8f459b75d3734ff210cc24d2c010ab11a57b96455c956d72ce36dff"
 generated:
   name: ConfirmBreedingResult
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: breeding_nest_stuff_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c1f8d8322d32
+    - ev_110debfe0d0d
   - index: 1
-    name: unknown_1
+    name: result
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c1f8d8322d32
+    - ev_110debfe0d0d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_110debfe0d0d
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_c1f8d8322d32
   evidence:
+  - id: ev_110debfe0d0d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_2553.as
+    symbol: _SafeCls_2553
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c1f8d8322d32
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: ConfirmBreedingResultMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_41283cceac
 verified: {}
 manual: {}

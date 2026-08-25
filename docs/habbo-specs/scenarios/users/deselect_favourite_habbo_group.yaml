@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a44c79880f84359a2ce1a2648eb6d4366bd27ede56a9d6a6b3c30861bf3b7aa4"
+generated_digest: "sha256:3dec0aa34e728b9f0af0ec220e946b0be4458f4f52fb39d92fb96d250ead88da"
 generated:
   feature: users.deselect_favourite_habbo_group
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -270,7 +270,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 225
+    line: 240
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -278,13 +278,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 362
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -292,6 +285,13 @@ generated:
     source: Vortex.Rooms/Object/Avatars/Player/RoomPlayerAvatar.cs
     symbol: RoomPlayerAvatar
     line: 54
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 361
   - id: ev_ec0b4c2b0a97
     kind: emulator_flow
     authority: vortex_emulator

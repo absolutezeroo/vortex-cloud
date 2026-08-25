@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:592d09882c2d97aeaea7011dc0a52ca7168904cc3afec605c3cb2f55b13ff14e"
+generated_digest: "sha256:576f49cd305cc29ca100c0e884919c36e0cffea11f0f85134ab04cd4f1b0c8f3"
 generated:
   id: groups.update_forum_settings
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.UpdateSettingsAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -48,11 +48,11 @@ generated:
   - expression: group is null || group.ForumSettings is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: group.OwnerPlayerEntityId != actor.Value
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -65,23 +65,23 @@ generated:
   - target: settings.Enabled
     value: "true"
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: settings.ModPermission
     value: ClampPermission(moderatePermission)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: settings.PostPermission
     value: ClampPermission(postMessagePermission)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: settings.ReadPermission
     value: ClampPermission(readPermission)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: settings.ThreadPermission
     value: ClampPermission(postThreadPermission)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   outgoing:
     ordering: unknown
     packets:
@@ -105,11 +105,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/UpdateForumSettingsMessageHandler.cs
     symbol: UpdateForumSettingsMessageHandler
     line: 23
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 566
   - id: ev_e8a93c22d13b

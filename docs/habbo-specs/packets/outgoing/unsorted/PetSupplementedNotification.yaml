@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d0ce65c15c4ea3da67d4fbdb192889d9a6ddea52a810fd4331bde11a28172fb5"
+generated_digest: "sha256:cb6a9f9938e71c567d31ee2bfa635ebcafa5312f3cd52bbc0f807437897aa020"
 generated:
   name: PetSupplementedNotification
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_169a13b36b02
+    - ev_66fc5708fd69
   - index: 1
-    name: unknown_1
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_169a13b36b02
+    - ev_66fc5708fd69
   - index: 2
-    name: unknown_2
+    name: supplement_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_169a13b36b02
+    - ev_66fc5708fd69
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_66fc5708fd69
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +59,14 @@ generated:
     - int32
     evidence: ev_169a13b36b02
   evidence:
+  - id: ev_66fc5708fd69
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3613.as
+    symbol: _SafeCls_3613
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_169a13b36b02
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +75,5 @@ generated:
     symbol: PetSupplementedNotificationMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_40db3efdbd
 verified: {}
 manual: {}

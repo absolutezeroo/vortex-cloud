@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:52f0402712b38fad110b19131e981abf7fa8dfa48cdb512b7d95c336c3fc9cdc"
+generated_digest: "sha256:052c3b0257fbd0cb7c0a9fb79b8fd9febde850ac255bc30628d31724083a442c"
 generated:
   id: uk_569f38b0f0
   subject: "outgoing/CompetitionEntrySubmitResult: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
+  question: Fields 3, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CompetitionEntrySubmitResult
   known_evidence:
@@ -27,6 +27,14 @@ generated:
     symbol: CompetitionEntrySubmitResultMessageParser
     line: 31
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_fba4f9bde9a1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3314/_SafeCls_3313.as
+    symbol: _SafeCls_3313
+    line: 47
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a0985a1fe1f1
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: CompetitionEntrySubmitResultMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1902dd5c49df
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/CompetitionEntrySubmitResultMessageComposer.java
-    symbol: CompetitionEntrySubmitResultMessageComposer
-    line: 25
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

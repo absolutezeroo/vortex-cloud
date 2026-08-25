@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f7f524830c599db49a71d199718c811c8d6e1bbfe6ba381b383b14e0481976ae"
+generated_digest: "sha256:d35c72f1a1c98741429580b686b385fd86f13ef0987dbd1c3cba1bb835c5dd66"
 generated:
   id: room.harvest_pet
   domain: room
@@ -39,14 +39,6 @@ generated:
     layer: grain
     symbol: InventoryGrain.GrantFurnitureDefinitionAsync
     evidence: ev_c6396662000a
-  - order: 4
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 5
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffDataFromJson
-    evidence: ev_7a660921f135
   checks:
   - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.PetId <= 0
     on_fail: return
@@ -60,10 +52,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_a24ca6ca32d9
-  - expression: "!string.IsNullOrEmpty(jsonData)"
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_7a660921f135
   state_changes:
   - target: GetMotionState(spent, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).IsStatsDirty
     value: "true"
@@ -72,7 +60,7 @@ generated:
   outgoing:
     ordering: unknown
     packets: []
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_0c7e31931576
     kind: emulator_flow
@@ -81,20 +69,6 @@ generated:
     source: Vortex.PacketHandlers/Room/Pets/HarvestPetMessageHandler.cs
     symbol: HarvestPetMessageHandler
     line: 24
-  - id: ev_2ec03446aa2a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator
@@ -122,12 +96,11 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 586
+    line: 541
   scenarios:
   - room.harvest_pet.guard_0
   - room.harvest_pet.guard_1
   - room.harvest_pet.guard_2
-  - room.harvest_pet.guard_3
   - room.harvest_pet.success
   unknowns:
   - uk_8649adfe9b

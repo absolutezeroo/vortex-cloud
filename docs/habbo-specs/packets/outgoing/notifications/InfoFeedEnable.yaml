@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8672834a643f33ff9d34efb7c97f430b191006b013e50f6b1865e4ce1a1ee3e7"
+generated_digest: "sha256:a3e354c99a7d5014bad31faac542d185b4e85aeb16f72309fe665741c866e0d6"
 generated:
   name: InfoFeedEnable
   direction: outgoing
   domain: notifications
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: enabled
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_976b0c61a0c0
+    - ev_e768eaee7355
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_e768eaee7355
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - boolean
     evidence: ev_e2ae5c5f0ac9
   evidence:
+  - id: ev_e768eaee7355
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_4202.as
+    symbol: _SafeCls_4202
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_976b0c61a0c0
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:414b4beaf2f2a4ad2d53bf9904ac00d9ba9c36417d6b5262426541bdc52eb47d"
+generated_digest: "sha256:ded491dd9c490c614b6f74472e2f14cabb5d928651aa0d6544bf719036d3469e"
 generated:
   feature: messenger.decline_friend
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
   - scenario: messenger.decline_friend.guard_2
     title: "decline friend: the guard 'removedRequesterIds.Count == 0' holds"
     given:
@@ -67,7 +67,25 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
+  - scenario: messenger.decline_friend.guard_3
+    title: "decline friend: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: DeclineFriend
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of DeclineFriend sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: messenger.decline_friend.success
     title: "decline friend: the request is accepted"
     given:
@@ -84,15 +102,15 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_69ee7dc73043
+      evidence: ev_34bf3ac088e2
   evidence:
-  - id: ev_69ee7dc73043
-    kind: emulator_handler
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/FriendList/DeclineFriendMessageHandler.cs
-    symbol: DeclineFriendMessageHandler
-    line: 11
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_9e924ea1fb57
     kind: emulator_flow
     authority: vortex_emulator
@@ -100,12 +118,12 @@ generated:
     source: Vortex.PacketHandlers/FriendList/DeclineFriendMessageHandler.cs
     symbol: DeclineFriendMessageHandler
     line: 22
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 349
+    line: 353
 verified: {}
 manual: {}

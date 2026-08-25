@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:28fb871d35e0afb4df21138a6d8426db410f0c2ec786e1bebb9d990f6f242113"
+generated_digest: "sha256:6f00bce00900c6044ff59bba2f9e07b9ae25bf35c2d6576bb9914a44c9a59f74"
 generated:
   name: Items
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -63,6 +63,16 @@ generated:
     - string
     - int32
     evidence: ev_af3791eaa7dc
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    evidence: ev_b33da45849c4
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -102,6 +112,14 @@ generated:
     symbol: ItemsMessageParser
     line: 43
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b33da45849c4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3127.as
+    symbol: _SafeCls_3127
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef8054854073
     kind: client_parser
     authority: multi_implementation

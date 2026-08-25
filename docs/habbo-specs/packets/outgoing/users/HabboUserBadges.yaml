@@ -10,48 +10,78 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bb7922ca9a3a3e14aa6bbda8d71dd4a4eb1c2fc759b9a0d1b6852f9287e9954f"
+generated_digest: "sha256:d5326c9859ac9513c46f1226f2020fde9ffac7a1daa0861aa0293d30f3d4dc46"
 generated:
   name: HabboUserBadges
   direction: outgoing
   domain: users
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: user_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fa40715aa581
+    - ev_91784560a8b6
   - index: 1
-    name: count
+    name: length
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_fa40715aa581
+    - ev_91784560a8b6
+    - ev_ad571af28dc6
   - index: 2
-    name: unknown_2
+    name: slot_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: multi_reference_confirmed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_fa40715aa581
+    - ev_91784560a8b6
+    - ev_ad571af28dc6
   - index: 3
-    name: unknown_3
+    name: badge_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: multi_reference_confirmed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_fa40715aa581
+    - ev_91784560a8b6
+    - ev_ad571af28dc6
+  - index: 4
+    name: owner_count
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91784560a8b6
+    - ev_ad571af28dc6
+  - index: 5
+    name: badge_rarity_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_91784560a8b6
+    - ev_ad571af28dc6
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    evidence: ev_91784560a8b6
   - origin: nitro
     authority: multi_implementation
     field_count: 4
@@ -72,6 +102,14 @@ generated:
     - array
     evidence: ev_ad571af28dc6
   evidence:
+  - id: ev_91784560a8b6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2978.as
+    symbol: _SafeCls_2978
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fa40715aa581
     kind: client_parser
     authority: multi_implementation
@@ -87,9 +125,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Users/HabboUserBadgesMessageComposerSerializer.cs
     symbol: HabboUserBadgesMessageComposerSerializer
     line: 7
-  conflicts:
-  - cf_7fce59e4b2
-  unknowns:
-  - uk_5b48cc23b1
 verified: {}
 manual: {}

@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:258f6d061d1366049cb76fa70359c9adaf1277dd10a82b6e8c27f822a8e0eefe"
+generated_digest: "sha256:3d21bfea271199e0688324cc34c6a577b50d8a35b7df6a97be88f07d9d10b3de"
 generated:
   name: NftTransferFee
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: fee
+    name: transfer_fee
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_b81a848cfec8
+    - ev_b2c6eafbaa46
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_b2c6eafbaa46
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +47,14 @@ generated:
     - int32
     evidence: ev_b81a848cfec8
   evidence:
+  - id: ev_b2c6eafbaa46
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4321.as
+    symbol: _SafeCls_4321
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0e4f5f53cc2f
     kind: client_parser
     authority: multi_implementation

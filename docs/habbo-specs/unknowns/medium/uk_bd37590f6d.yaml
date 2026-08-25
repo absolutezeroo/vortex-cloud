@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d9ef7bee73f8521ae314370bdc8da41f1441cd4e4577962ae2cafd1f2d3c8fc3"
+generated_digest: "sha256:0cdcdfb81a996d5a92f391c044ac80e9eea4a56d0b71151baf41ae471c52a5eb"
 generated:
   id: uk_bd37590f6d
   subject: "quest.get_community_goal_progress: who receives CommunityGoalProgress"
@@ -19,11 +19,11 @@ generated:
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room
   feature: quest.get_community_goal_progress
   known_evidence:
-  - id: ev_4875f459ad01
+  - id: ev_faf5e938e0d5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
     symbol: CommunityGoalGrain
     line: 84
 verified: {}

@@ -10,59 +10,66 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4316459cabde4b046eded04f9c071dccfde05f528cc2c2abb460a3857e6d3d2f"
+generated_digest: "sha256:93ea2b961408a9b623f9d8414dbe625f3cf8f69642420d0b87c7eb7859aab903"
 generated:
   name: IncomeRewardStatus
   direction: outgoing
   domain: vault
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_6abad43ee5a9
     - ev_b2efa751fb22
   - index: 1
-    name: income_rewards
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    name: data
+    type: byte
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_b2efa751fb22
-    fields:
-    - index: 0
-      name: reward_category
-      type: byte
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b2efa751fb22
-    - index: 1
-      name: reward_type
-      type: byte
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b2efa751fb22
-    - index: 2
-      name: amount
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b2efa751fb22
-    - index: 3
-      name: product_code
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b2efa751fb22
+    - ev_6abad43ee5a9
+  - index: 2
+    name: data
+    type: byte
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6abad43ee5a9
+  - index: 3
+    name: data
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6abad43ee5a9
+  - index: 4
+    name: data
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_6abad43ee5a9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 5
+    partial: false
+    types:
+    - int32
+    - byte
+    - byte
+    - int32
+    - string
+    evidence: ev_6abad43ee5a9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -78,6 +85,14 @@ generated:
     - array
     evidence: ev_b2efa751fb22
   evidence:
+  - id: ev_6abad43ee5a9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3468/_SafeCls_3503.as
+    symbol: _SafeCls_3503
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0d35398cfc6d
     kind: client_parser
     authority: multi_implementation

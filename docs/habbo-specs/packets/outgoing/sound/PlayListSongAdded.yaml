@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3fe0251e0b4b0d05d26fa6ec475e9df72b78557f3d9c3d466faf6593b071aa49"
+generated_digest: "sha256:a76913ff3f4da71e8f78876b855c9a2c7c8a41123d323d5f392b553cd1fcc9f4"
 generated:
   name: PlayListSongAdded
   direction: outgoing
   domain: sound
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,34 +23,44 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bbc1c5293ef0
+    - ev_78ea69bb6b92
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bbc1c5293ef0
+    - ev_78ea69bb6b92
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bbc1c5293ef0
+    - ev_78ea69bb6b92
   - index: 3
     name: unknown_3
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bbc1c5293ef0
+    - ev_78ea69bb6b92
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - string
+    evidence: ev_78ea69bb6b92
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +78,14 @@ generated:
     - string
     evidence: ev_bbc1c5293ef0
   evidence:
+  - id: ev_78ea69bb6b92
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4161.as
+    symbol: _SafeCls_4161
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_80253ae4b14e
     kind: client_parser
     authority: multi_implementation

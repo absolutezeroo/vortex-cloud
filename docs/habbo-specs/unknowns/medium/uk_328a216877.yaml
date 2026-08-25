@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d0b79bf01078e7e33b9c9f188328c80397da9c963e4870844cefea20fc2f49cf"
+generated_digest: "sha256:f9ca08eed30b36bfb147ee16046d5f8ba1529e15fa4f08cf320791b162e6e751"
 generated:
   id: uk_328a216877
   subject: "catalog.get_flat_categories: what the server sends when it refuses"
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 107
+    line: 135
   - id: ev_bca43a79b6c9
     kind: emulator_flow
     authority: vortex_emulator

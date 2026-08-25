@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:69c6edbf17a6b619e41f4c72d180931db9d2537973238b28fb751c1589d5c60a"
+generated_digest: "sha256:0f521e45147c67747d989dc901818f99ce975cea70adb6f0ade241533278abb8"
 generated:
   feature: users.get_habbo_group_badges
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -77,7 +77,7 @@ generated:
       outcome: success
       emits:
       - HabboGroupBadges
-      evidence: ev_678209870593
+      evidence: ev_aab60cf3bcef
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -92,13 +92,6 @@ generated:
     symbol: GetHabboGroupBadgesMessageEvent
     line: 7
     note: third-party server implementation; evidence, not authority
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 415
   - id: ev_aab60cf3bcef
     kind: emulator_flow
     authority: vortex_emulator
@@ -106,5 +99,12 @@ generated:
     source: Vortex.PacketHandlers/Users/GetHabboGroupBadgesMessageHandler.cs
     symbol: GetHabboGroupBadgesMessageHandler
     line: 24
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 414
 verified: {}
 manual: {}

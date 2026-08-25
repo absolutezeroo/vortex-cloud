@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:9f0676708ac535b1e6ca761d830690abcb8166c21963f6647a6ab6d0f29b519b"
+generated_digest: "sha256:83cbb74c5bb40e0abd0cc41556ac6ee6c21893e37d8061bf332fb30ec288dee5"
 generated:
   id: cf_06703acd3d
   kind: field_count
   subject: "outgoing/PresentOpened: field count"
   packet: PresentOpened
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "7 fields: string, int32, string, int32, string, boolean, string"
+    evidence: ev_6595a3816141
   - origin: nitro
     authority: multi_implementation
-    claim: "5 fields: string, int32, int32, boolean, string"
+    claim: "1 fields: string, int32, int32, boolean, string"
     evidence: ev_a6bb116fe03a
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "7 fields: string, int32, string, int32, string, boolean, string"
     evidence: ev_74b5706b23d8
   evidence:
+  - id: ev_6595a3816141
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3942.as
+    symbol: _SafeCls_3942
+    line: 72
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a6bb116fe03a
     kind: client_parser
     authority: multi_implementation

@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:463109b70db36ce56a2977cf7ffe14f9e3a0c794614350a68a65f228ea812214"
+generated_digest: "sha256:b0804aeed29aab6fc29721330f9e12e8d475e75bd07117d3d8e956d4ed756eb4"
 generated:
   id: cf_2c81a43706
   kind: field_type
   subject: "outgoing/RoomFilterSettings: type of field 1"
   packet: RoomFilterSettings
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "bad_words: string"
+    evidence: ev_53eb46d32fb1
   - origin: arcturus
     authority: reference_emulator
     claim: "unknown_1: string"
@@ -26,6 +30,14 @@ generated:
     claim: "bad_words: array"
     evidence: ev_2b4bcfca6c4e
   evidence:
+  - id: ev_53eb46d32fb1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_3620.as
+    symbol: _SafeCls_3620
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9d60f7d0bfb1
     kind: reference_composer
     authority: reference_emulator

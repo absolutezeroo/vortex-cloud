@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:910ca9eb1bb9c39d251b6b147f297d5ce496fd678f3d4ba171a7b6942d77cff3"
+generated_digest: "sha256:4280af64c5c01ee9f8841202c495144b836dfbb16bdc7ce2bb6755a89a7bc6ca"
 generated:
   id: users.get_relationship_status_info
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.GetRelationshipStatusSummaryAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -51,13 +51,6 @@ generated:
       evidence: ev_bf22cc5b6280
   reaches_persistence: false
   evidence:
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 51
   - id: ev_bf22cc5b6280
     kind: emulator_flow
     authority: vortex_emulator
@@ -72,6 +65,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetRelationshipStatusInfoMessageHandler.cs
     symbol: GetRelationshipStatusInfoMessageHandler
     line: 14
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 51
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

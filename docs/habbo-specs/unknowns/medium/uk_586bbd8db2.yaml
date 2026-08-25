@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:35f462e0cb6443165beaf975ce6abf85a8ac05e8d63a05b3ed45d16b897b7d1d"
+generated_digest: "sha256:35f347e1e433265ad5560d87f022303daa5a6b374366fb805f8b7df5bab843c2"
 generated:
   id: uk_586bbd8db2
   subject: "groups.moderate_thread: what the server sends when it refuses"
@@ -26,11 +26,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 476
   - id: ev_f9fea23f57c8

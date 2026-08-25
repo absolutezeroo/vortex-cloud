@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:efef4724d2901aabcb6de0bb40ecf2e4fb0841f3925ad85e8bfdd3bea19d4d3f"
+generated_digest: "sha256:46f20f081bc8f0239222a8ca17e76f886316aa76233255b2746d7d06a95b4b17"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -565,7 +565,7 @@ generated:
     WithdrawWiredChestCredits: 2843
     WithdrawWiredChestItems: 873
   outgoing:
-    AcceptFriendResult: 3407
+    AcceptFriendResult: 3707
     AccountPreferences: 724
     AccountSafetyLockStatusChange: 3913
     Achievement: 3981

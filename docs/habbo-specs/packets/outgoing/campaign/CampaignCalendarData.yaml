@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4fe1175df42719c7b5046a7ea47e189bfcd8d05b8944c73dd00ae50eff1d7cbf"
+generated_digest: "sha256:a147d1bb2faf7f412ee44ff1414ca05911ff78318500bf6a7d0b1c9d5c6dbab7"
 generated:
   name: CampaignCalendarData
   direction: outgoing
@@ -91,6 +91,12 @@ generated:
     evidence:
     - ev_7ea1d6fdd47f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_1c7709212b11
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -119,6 +125,14 @@ generated:
     types: []
     evidence: ev_d3bb829382ce
   evidence:
+  - id: ev_1c7709212b11
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3317/_SafeCls_3316.as
+    symbol: _SafeCls_3316
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_7f8461b0a831
     kind: client_parser
     authority: multi_implementation

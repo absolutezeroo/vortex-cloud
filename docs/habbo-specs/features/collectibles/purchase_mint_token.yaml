@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f4f388690f4709ff078e793436b40d8dfb95558446be6867467c7a9845acf037"
+generated_digest: "sha256:b034a6180feea055a0e6ede0a06dd9d98e476d87c8e2dca3f014a145a9765957"
 generated:
   id: collectibles.purchase_mint_token
   domain: collectibles
@@ -40,22 +40,10 @@ generated:
     symbol: PlayerWalletGrain.TryDebitAsync
     evidence: ev_d0cb8ee11644
   - order: 4
-    layer: grain
-    symbol: PlayerPresenceGrain.OnCurrencyUpdateAsync
-    evidence: ev_94ddaa174e6d
-  - order: 5
-    layer: module
-    symbol: PlayerWalletModule.OnCurrencyUpdateAsync
-    evidence: ev_432f3c2b73af
-  - order: 6
-    layer: grain
-    symbol: PlayerPresenceGrain.SendComposerAsync
-    evidence: ev_373e76aa8a80
-  - order: 7
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 8
+  - order: 5
     layer: grain
     symbol: PlayerWalletGrain.CreditBackAsync
     evidence: ev_d0cb8ee11644
@@ -72,18 +60,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_a376b354a3ae
-  - expression: update.ChangedBy != request.Amount
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: failure is not null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: snapshot is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_432f3c2b73af
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -96,23 +72,7 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_ee343dece6c3
-    - packet: CreditBalanceEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: EmeraldBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: HabboActivityPointNotification
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: SilverBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_34bf3ac088e2
     kind: emulator_flow
@@ -121,20 +81,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_373e76aa8a80
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
   - id: ev_728e06431c52
     kind: emulator_handler
     authority: vortex_emulator
@@ -149,27 +95,20 @@ generated:
     source: Vortex.Collectibles/Grains/NftMintingGrain.cs
     symbol: NftMintingGrain
     line: 143
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_a376b354a3ae
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 63
+    line: 66
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 55
+    line: 61
   - id: ev_ee343dece6c3
     kind: emulator_flow
     authority: vortex_emulator
@@ -182,12 +121,6 @@ generated:
   - collectibles.purchase_mint_token.guard_1
   - collectibles.purchase_mint_token.guard_2
   - collectibles.purchase_mint_token.guard_3
-  - collectibles.purchase_mint_token.guard_4
-  - collectibles.purchase_mint_token.guard_5
-  - collectibles.purchase_mint_token.guard_6
   - collectibles.purchase_mint_token.success
-  unknowns:
-  - uk_055bef680f
-  - uk_5f06bb1af2
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9d96c6bf39432b605a7f2b586faee59ee8b12b1cc0938d62346bf4708011103f"
+generated_digest: "sha256:2ad336713019196b8b9446887ba35d92fe17020aeaadf49d9176ca47cccdb342"
 generated:
   id: wired.wired_trade_accept
   domain: wired
@@ -311,7 +311,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 41
+    line: 71
   - id: ev_3dfe9ba800df
     kind: emulator_flow
     authority: vortex_emulator
@@ -395,7 +395,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 52
+    line: 58
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,39 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cdd7ef6a50b7fc329df597ab9752efc414548a1364b6e343f1836e72f6ba8eb5"
+generated_digest: "sha256:717650d3275a5da4ff6994f114650b0f22d3ef6cd07b237b3a11e3bea0a25db2"
 generated:
   name: NotEnoughBalance
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: not_enough_credits
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2a789ebfa59c
-    - ev_9e6de7ada01e
+    - ev_06748ceef9bb
   - index: 1
     name: not_enough_activity_points
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2a789ebfa59c
-    - ev_9e6de7ada01e
+    - ev_06748ceef9bb
   - index: 2
     name: activity_point_type
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_2a789ebfa59c
-    - ev_9e6de7ada01e
+    - ev_06748ceef9bb
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - boolean
+    - int32
+    evidence: ev_06748ceef9bb
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +75,14 @@ generated:
     - int32
     evidence: ev_9e6de7ada01e
   evidence:
+  - id: ev_06748ceef9bb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2086.as
+    symbol: _SafeCls_2086
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a63e44ce57f7
     kind: client_parser
     authority: multi_implementation

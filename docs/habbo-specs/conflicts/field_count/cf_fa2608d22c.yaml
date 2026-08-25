@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:363031ee36a505996b579efa95ae37e89538edfed3724f1401c42eeb25580914"
+generated_digest: "sha256:cd5ec91b2c659aebf50874eba57f6daa84b4f00020d93af780f05d1c94ddaa66"
 generated:
   id: cf_fa2608d22c
   kind: field_count
   subject: "outgoing/AvatarEffects: field count"
   packet: AvatarEffects
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32, int32, int32, int32, int32, boolean"
+    evidence: ev_46656d24be8f
   - origin: arcturus
     authority: reference_emulator
     claim: "9 fields: int32, int32, int32, int32, int32, int32, int32, int32, boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: int32, array"
     evidence: ev_80a6f5cbff2e
   evidence:
+  - id: ev_46656d24be8f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2975/_SafeCls_3879.as
+    symbol: _SafeCls_3879
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_03745a072899
     kind: reference_composer
     authority: reference_emulator

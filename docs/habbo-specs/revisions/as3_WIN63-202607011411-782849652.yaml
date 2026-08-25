@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:2e02c429843441bfd5cf39e30a7bde6516f6397fe80b5c7bac5d11c93c72acef"
+generated_digest: "sha256:746da8d021072edd58f82932474a92e163ed7d9364dcc6daf3b4a3cfd82b0f1c"
 generated:
   revision: WIN63-202607011411-782849652
   origin: "as3:WIN63-202607011411-782849652"
@@ -56,6 +56,23 @@ generated:
     PurchaseSnowWarGameTokensOffer: 3243
     SaveUserNftWardrobe: 3428
     UpdateSelector: 510
-  outgoing: {}
+  outgoing:
+    Game2AccountGameStatus: 683
+    Game2GameCancelled: 2334
+    Game2GameDirectoryStatus: 3251
+    Game2GameNotFound: 37
+    Game2GroupLeaderboard: 2417
+    Game2InArenaQueue: 2756
+    Game2JoiningGameFailed: 493
+    Game2Leaderboard: 733
+    Game2StartCounter: 2008
+    Game2StartingGameFailed: 1140
+    Game2StopCounter: 2747
+    Game2UserBlocked: 1145
+    Game2UserLeftGame: 606
+    GetCustomFilterResultMessageEvent: 2231
+    ModifyCustomFilterResultMessageEvent: 3622
+    SnowWarGameTokens: 904
+    UserGameAchievements: 3949
 verified: {}
 manual: {}

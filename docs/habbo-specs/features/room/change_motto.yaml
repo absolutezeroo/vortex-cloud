@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2a8972ca00b7f9adacfe1c76fa0e4864db33cabce55f3c327c314858ba9858ea"
+generated_digest: "sha256:44714d2492978269d95d423842f0f20aadb91e79ac3ceddd9fc179db16feb6ff"
 generated:
   id: room.change_motto
   domain: room
@@ -109,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 163
+    line: 178
   - id: ev_2aec8f9f5aa3
     kind: emulator_flow
     authority: vortex_emulator

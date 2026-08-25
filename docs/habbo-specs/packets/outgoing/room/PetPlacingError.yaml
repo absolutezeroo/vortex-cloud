@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f5aeb7ae17fc767efdeba4b7e6f9df4237895bfbed3ddbf45bb90920bf55644e"
+generated_digest: "sha256:22db640a578c7a06f0e1236f5f7156ccfd3f9c55a9468fba0f5f2cd180d6dbb7"
 generated:
   name: PetPlacingError
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_a1f43ff55b3f
-    - ev_761fadde9395
+    - ev_ca1a54ceb038
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_a1f43ff55b3f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_ca1a54ceb038
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -63,6 +70,14 @@ generated:
     symbol: PetPlacingErrorParser
     line: 22
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ca1a54ceb038
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_4099.as
+    symbol: _SafeCls_4099
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_33bcff606b75
     kind: client_parser
     authority: multi_implementation

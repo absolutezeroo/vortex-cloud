@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ad529c1b8f74b8ec3937d90d6cb37575624314f51f5709998f8bf7e58acacb74"
+generated_digest: "sha256:00b3a62bdaf8d0c935e162e4d6bb35ea0a3824d9285f2e09a00cd9c778b1ca42"
 generated:
   id: uk_1ad790cd70
   subject: "room.assign_rights: what the server sends when it refuses"
   severity: medium
-  question: room.assign_rights changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.assign_rights changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.assign_rights
   known_evidence:
@@ -25,7 +25,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 355
+    line: 387
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_3fffbe68a58d
     kind: emulator_flow
     authority: vortex_emulator

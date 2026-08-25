@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0c84a63e294cced906e45505d0b209145de50ed22c112d86d62d56098f40e538"
+generated_digest: "sha256:c9709bee5d4ac88c4569989f7c0e2b136ef60b5554e930b8b74fe00f11ee2482"
 generated:
   name: UserNameChanged
   direction: outgoing
   domain: users
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
     name: web_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_aac7e30f228a
+    - ev_9db12d79c767
   - index: 1
     name: id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_aac7e30f228a
+    - ev_9db12d79c767
   - index: 2
     name: new_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_aac7e30f228a
+    - ev_9db12d79c767
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_9db12d79c767
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -62,6 +68,14 @@ generated:
     - string
     evidence: ev_97469e0ba058
   evidence:
+  - id: ev_9db12d79c767
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_1890.as
+    symbol: _SafeCls_1890
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_aac7e30f228a
     kind: client_parser
     authority: multi_implementation
@@ -78,5 +92,7 @@ generated:
     symbol: UserNameChangedMessageComposer
     line: 32
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_7d6d3502eb
 verified: {}
 manual: {}

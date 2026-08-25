@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:70ab46bb74e2e626d8602cdd74104c4f939c6d9ca0d0fca18071f2fa7cc2c6cd"
+generated_digest: "sha256:41bbe2b7721e3681ec0b99c88580251e70d4eec9c7d33936ff30546ee4e12449"
 generated:
   id: room.get_guild_furni_context_menu_info
   domain: room
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.GetDetailsAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -48,7 +48,7 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   state_changes: []
   outgoing:
     ordering: unknown
@@ -66,11 +66,11 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/GetGuildFurniContextMenuInfoMessageHandler.cs
     symbol: GetGuildFurniContextMenuInfoMessageHandler
     line: 17
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 27
   - id: ev_ca92d06cb268

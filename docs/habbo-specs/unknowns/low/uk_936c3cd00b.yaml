@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:31f0745134b80bae92866333447e72c81ac32030f7e2ad2e2095803c7aa728ea"
+generated_digest: "sha256:b07bc0c45c0b7bf6eb6b1be5a7e3be4ce0d8e31243d166416da6b365010f93b6"
 generated:
   id: uk_936c3cd00b
   subject: "outgoing/ModeratorRoomInfo: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ModeratorRoomInfo
   known_evidence:
+  - id: ev_4f329235aba0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_3140.as
+    symbol: _SafeCls_3140
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3a58db576538
     kind: reference_composer
     authority: reference_emulator

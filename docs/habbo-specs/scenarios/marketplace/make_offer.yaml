@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5c80d70e659677b1c8a26b9b9cbc76d508ccf2350e19ab3daa147800eb4aa970"
+generated_digest: "sha256:cd088176955056c9e98cf293a89303acac4fc36073225dfe779cdeda3614fcbb"
 generated:
   feature: marketplace.make_offer
   scenarios:
@@ -238,6 +238,34 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_360fb688cb93
+  - scenario: marketplace.make_offer.guard_8
+    title: "make offer: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: MakeOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MakeOffer sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MarketplaceMakeOfferResult
+      - PurchaseError
+      - PurchaseError
+      - MarketplaceMakeOfferResult
+      - MarketplaceMakeOfferResult
+      evidence: ev_360fb688cb93
   - scenario: marketplace.make_offer.success
     title: "make offer: the request is accepted"
     given:
@@ -283,6 +311,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/MakeOfferMessageHandler.cs
     symbol: MakeOfferMessageHandler
     line: 21
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
@@ -296,13 +331,13 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 108
+    line: 114
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 43
+    line: 54
 verified: {}
 manual: {}

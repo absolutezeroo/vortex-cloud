@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b44b6ae434f6a84a9ff7d33d53723443c34f52514d134ef5d1d9752c4d9c74ff"
+generated_digest: "sha256:63c4f4ecbcf59058fc39bdbcff7bb4d6f388fc68b323c914ec6651db4bd7dea1"
 generated:
   name: WiredRoomLogs
   direction: outgoing
@@ -144,6 +144,12 @@ generated:
     evidence:
     - ev_ef661b975eb8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_e609c508c93d
   - origin: vortex
     authority: vortex_emulator
     field_count: 11
@@ -162,6 +168,14 @@ generated:
     - string
     evidence: ev_ef661b975eb8
   evidence:
+  - id: ev_e609c508c93d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4026/_SafeCls_4191.as
+    symbol: _SafeCls_4191
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ef661b975eb8
     kind: emulator_serializer
     authority: vortex_emulator

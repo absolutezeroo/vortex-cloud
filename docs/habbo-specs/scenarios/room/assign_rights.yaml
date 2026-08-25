@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:329f95e2adac457e1fa1148f4a08795ca1ee686810620fb823f165f9527f22f5"
+generated_digest: "sha256:f4b2b17f7444629169568c497b8771f692e1078849445497b57ba8b1819543a7"
 generated:
   feature: room.assign_rights
   scenarios:
@@ -152,6 +152,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_805b538d3195
+  - scenario: room.assign_rights.guard_6
+    title: "assign rights: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: AssignRights
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of AssignRights sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_805b538d3195
   - scenario: room.assign_rights.success
     title: "assign rights: the request is accepted"
     given:
@@ -194,7 +217,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 357
+    line: 389
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_3fffbe68a58d
     kind: emulator_flow
     authority: vortex_emulator

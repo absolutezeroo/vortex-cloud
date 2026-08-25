@@ -10,46 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ad1a9b3ba7fb64964270914f956f059e0eca6257a4899da08dc8fd475ffc1bd"
+generated_digest: "sha256:05d38a8f253a6bff86944540243b8ada60f74fe0db4c7445a54bc91b06bc0272"
 generated:
   name: PetFigureUpdate
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: room_index
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_1006a9974bec
+    - ev_e10d4d0e91f7
   - index: 1
-    name: unknown_1
+    name: pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_1006a9974bec
+    - ev_e10d4d0e91f7
   - index: 2
-    name: unknown_2
+    name: has_saddle
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_1006a9974bec
+    - ev_e10d4d0e91f7
   - index: 3
-    name: unknown_3
+    name: is_riding
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_1006a9974bec
+    - ev_e10d4d0e91f7
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -61,6 +61,16 @@ generated:
     - boolean
     - boolean
     evidence: ev_1006a9974bec
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - boolean
+    - boolean
+    evidence: ev_e10d4d0e91f7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -94,6 +104,14 @@ generated:
     symbol: PetFigureUpdateParser
     line: 46
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_e10d4d0e91f7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_3536.as
+    symbol: _SafeCls_3536
+    line: 56
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ce82b0080047
     kind: client_parser
     authority: multi_implementation
@@ -119,7 +137,5 @@ generated:
     line: 7
   conflicts:
   - cf_9aaf2929da
-  unknowns:
-  - uk_024cc9442e
 verified: {}
 manual: {}

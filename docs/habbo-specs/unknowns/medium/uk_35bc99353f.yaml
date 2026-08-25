@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d36e32f71347296da772a4ee46275734532dda024d29c955d7e7386eff27a64f"
+generated_digest: "sha256:a06337ea6dfd5fd5b0aa46589e70b0edee3f062eb7ad2a2cb57edff4f9076b9a"
 generated:
   id: uk_35bc99353f
   subject: "messenger.follow_friend: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 204
+    line: 219
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,6 +54,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/FollowFriendMessageHandler.cs
     symbol: FollowFriendMessageHandler
     line: 26
+  - id: ev_680fc4a69aa8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Authentication/AccountSessionStore.cs
+    symbol: AccountSessionStore
+    line: 58
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -82,6 +89,13 @@ generated:
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
     line: 17
+  - id: ev_7c8de830bc47
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Rooms/Wired/Variable/WiredVariableId.cs
+    symbol: WiredVariableId
+    line: 17
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 289
+    line: 299
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -166,13 +180,6 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItem.cs
     symbol: RoomItem
     line: 58
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 74
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -194,6 +201,13 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
     line: 90
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 74
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

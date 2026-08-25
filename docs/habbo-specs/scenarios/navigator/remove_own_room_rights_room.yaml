@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:69ae802f6105789c3022d65a109292879e8dbfee35b6a7be71b04f53ea5b1af0"
+generated_digest: "sha256:7d83e92ef346bfbd64b62ad9d8c242ef77a747d99e3dabc3886dfa7958d2e3fa"
 generated:
   feature: navigator.remove_own_room_rights_room
   scenarios:
@@ -152,6 +152,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_97a16c6097f8
+  - scenario: navigator.remove_own_room_rights_room.guard_6
+    title: "remove own room rights room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RemoveOwnRoomRightsRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RemoveOwnRoomRightsRoom sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_97a16c6097f8
   - scenario: navigator.remove_own_room_rights_room.success
     title: "remove own room rights room: the request is accepted"
     given:
@@ -194,7 +217,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 705
+    line: 781
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator

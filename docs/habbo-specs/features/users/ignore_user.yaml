@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:692e9334a1aa12cf96205c16fd24ae68f25cfa05ff60adefbca0ef7ebfdd348c"
+generated_digest: "sha256:4d1697bc7f0adb42811e087512eb5d99b548a21baac318d85f2a34f1547e63ed"
 generated:
   id: users.ignore_user
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.IgnoreUserAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - order: 2
     layer: domain
     symbol: WiredChestStore.FindAsync
@@ -44,11 +44,11 @@ generated:
   - expression: _ignoredIds.Contains(targetId.Value)
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - expression: selfEntity is null || targetEntity is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   state_changes: []
   outgoing:
     ordering: unknown
@@ -73,13 +73,6 @@ generated:
     source: Vortex.PacketHandlers/Users/IgnoreUserMessageHandler.cs
     symbol: IgnoreUserMessageHandler
     line: 13
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 530
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator
@@ -87,6 +80,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 547
   scenarios:
   - users.ignore_user.guard_0
   - users.ignore_user.guard_1

@@ -10,95 +10,61 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1f0de2270c542aa4a51d34f67bf08059d0e894b3e614812989e92b694f49bbcd"
+generated_digest: "sha256:362687beb41407f53f868b753d851ee62fa98ae45a7d45f7c640a21ca8a1d73c"
 generated:
   name: NowPlaying
   direction: outgoing
   domain: sound
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: current_song_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9a111e3796fe
+    - ev_68ba38324449
   - index: 1
-    name: unknown_1
+    name: current_position
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9a111e3796fe
+    - ev_68ba38324449
   - index: 2
-    name: unknown_2
+    name: next_song_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9a111e3796fe
+    - ev_68ba38324449
   - index: 3
-    name: unknown_3
+    name: next_position
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9a111e3796fe
+    - ev_68ba38324449
   - index: 4
-    name: unknown_4
+    name: sync_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9a111e3796fe
-  - index: 5
-    name: unknown_5
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9a111e3796fe
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9a111e3796fe
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9a111e3796fe
-  - index: 8
-    name: unknown_8
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9a111e3796fe
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_9a111e3796fe
+    - ev_68ba38324449
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 5
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_68ba38324449
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -122,6 +88,14 @@ generated:
     - int32
     evidence: ev_9a111e3796fe
   evidence:
+  - id: ev_68ba38324449
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_4056.as
+    symbol: _SafeCls_4056
+    line: 60
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4a10e7dad3b6
     kind: client_parser
     authority: multi_implementation
@@ -138,7 +112,7 @@ generated:
     symbol: NowPlayingMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_204b138c0f
+  conflicts:
+  - cf_d97d9af75f
 verified: {}
 manual: {}

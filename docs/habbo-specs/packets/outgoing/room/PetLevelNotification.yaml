@@ -10,79 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:fe5cc85cdcc775d19c3b06b1206a02e84b151ef6a9ff5a9a6447c9b57756d39b"
+generated_digest: "sha256:e4e952a87b763984200de7ce2237a304e800de96bf19e992541b45466512d145"
 generated:
   name: PetLevelNotification
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e09802f832c6
+    - ev_5733a4e20178
   - index: 1
-    name: unknown_1
+    name: pet_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e09802f832c6
+    - ev_5733a4e20178
   - index: 2
-    name: unknown_2
+    name: level
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e09802f832c6
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e09802f832c6
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e09802f832c6
-  - index: 5
-    name: unknown_5
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e09802f832c6
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e09802f832c6
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_e09802f832c6
+    - ev_5733a4e20178
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    evidence: ev_5733a4e20178
   - origin: arcturus
     authority: reference_emulator
     field_count: 8
@@ -98,6 +64,14 @@ generated:
     - int32
     evidence: ev_e09802f832c6
   evidence:
+  - id: ev_5733a4e20178
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3586.as
+    symbol: _SafeCls_3586
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e09802f832c6
     kind: reference_composer
     authority: reference_emulator
@@ -106,7 +80,7 @@ generated:
     symbol: PetLevelNotificationMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_b52ffbcb2b
+  conflicts:
+  - cf_b7cc327efa
 verified: {}
 manual: {}

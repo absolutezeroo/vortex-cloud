@@ -10,55 +10,77 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6ec5fff09d34a1ebbeb310c352074183e5c98cf82f3b6d1cdab928485ed49d38"
+generated_digest: "sha256:9e2964d675edb4465dd2360f7525e0789e7991803c6a919a5d9feefb37995974"
 generated:
   name: PresentOpened
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: item_type
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a6bb116fe03a
+    - ev_6595a3816141
   - index: 1
     name: class_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a6bb116fe03a
+    - ev_6595a3816141
   - index: 2
+    name: product_code
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_6595a3816141
+  - index: 3
     name: placed_item_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a6bb116fe03a
-  - index: 3
+    - ev_6595a3816141
+  - index: 4
+    name: placed_item_type
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_6595a3816141
+  - index: 5
     name: placed_in_room
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a6bb116fe03a
-  - index: 4
+    - ev_6595a3816141
+  - index: 6
     name: pet_figure_string
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a6bb116fe03a
+    - ev_6595a3816141
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 7
+    partial: false
+    types:
+    - string
+    - int32
+    - string
+    - int32
+    - string
+    - boolean
+    - string
+    evidence: ev_6595a3816141
   - origin: nitro
     authority: multi_implementation
     field_count: 5
@@ -97,6 +119,14 @@ generated:
     - string
     evidence: ev_74b5706b23d8
   evidence:
+  - id: ev_6595a3816141
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3942.as
+    symbol: _SafeCls_3942
+    line: 72
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a6bb116fe03a
     kind: client_parser
     authority: multi_implementation

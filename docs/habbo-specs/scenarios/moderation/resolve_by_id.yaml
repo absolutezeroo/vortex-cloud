@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e7ba71915de9285af7bb05a57f0db02e124ac459cc1498823684976aa57e6e27"
+generated_digest: "sha256:ba7e435c33d63f6cb328bb170c87f420b08465496fb73d34ca44c7a1a7f86b4a"
 generated:
   feature: moderation.resolve_by_id
   scenarios:
@@ -121,7 +121,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 298
+    line: 315
   - id: ev_084c9e56bee3
     kind: emulator_flow
     authority: vortex_emulator

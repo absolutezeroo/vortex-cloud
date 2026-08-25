@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e2bc66278526b60943928ed3b1b303c59be803e6db6f8bad6c65b14a3d17371b"
+generated_digest: "sha256:b50c8b54b837a0a3d3d9a279e7d9392e936da3fd20bca2436ce6403b5c6abfed"
 generated:
   name: UnreadForumsCount
   direction: outgoing
   domain: groups
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: unread_forums_count
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4b2e5e758004
-    - ev_9d0f9855b016
+    - ev_17ddc1245b24
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_17ddc1245b24
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_9d0f9855b016
   evidence:
+  - id: ev_17ddc1245b24
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2470/_SafeCls_4031.as
+    symbol: _SafeCls_4031
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e66ba802cff9
     kind: client_parser
     authority: multi_implementation

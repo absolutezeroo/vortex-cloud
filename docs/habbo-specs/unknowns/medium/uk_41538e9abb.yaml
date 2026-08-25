@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7670467a9f4ffb1b4708fdf0222f38696e9d2649fbd8e1cdd20aac1b50e00c78"
+generated_digest: "sha256:bd3ceacdcfa33c4f906d464fd593d03dcbd74b43f5a64286181db4b72027ef7d"
 generated:
   id: uk_41538e9abb
   subject: "collectibles.nft_store_purchase: what the server sends when it refuses"
   severity: medium
-  question: collectibles.nft_store_purchase changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: collectibles.nft_store_purchase changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: collectibles.nft_store_purchase
   known_evidence:
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: NftStoreGrain
-    line: 61
+    line: 64
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -33,13 +33,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 35
-  - id: ev_2ec03446aa2a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,20 +40,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_373e76aa8a80
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
   - id: ev_7332ae30cf1e
     kind: emulator_handler
     authority: vortex_emulator
@@ -68,41 +47,27 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 21
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 586
+    line: 541
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 55
+    line: 61
   - id: ev_e224b6e2fb72
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: CachedOffer
-    line: 309
+    line: 319
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

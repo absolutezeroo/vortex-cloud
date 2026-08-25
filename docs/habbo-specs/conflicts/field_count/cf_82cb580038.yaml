@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:27d0c3d6d5df058a97890d18e91caf2052d22f4b2be63d7347151b63a008ae18"
+generated_digest: "sha256:c3ad3c6089f32dfc1946947c753de1017caf6d7478472d7488753431643d4cee"
 generated:
   id: cf_82cb580038
   kind: field_count
   subject: "outgoing/NotificationDialog: field count"
   packet: NotificationDialog
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: string, int32, string, string"
+    evidence: ev_06af2d26e972
   - origin: arcturus
     authority: reference_emulator
     claim: "4 fields: string, int32, string, string"
@@ -26,6 +30,14 @@ generated:
     claim: "3 fields: string, int32, array"
     evidence: ev_17e73cb1e5c7
   evidence:
+  - id: ev_06af2d26e972
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_2688.as
+    symbol: _SafeCls_2688
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_120a1596135f
     kind: reference_composer
     authority: reference_emulator

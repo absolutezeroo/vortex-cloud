@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:88519d4ae096bc807eb2d285e73039c322ec195a00feb073250d889f4d775f53"
+generated_digest: "sha256:5e452bcda48b9293b432a8f94ce0151dcd233cfa7b6fa8c1c8ac8f8740dafc80"
 generated:
   feature: catalog.find_by_product_code
   scenarios:
@@ -61,35 +61,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_db00239c6a21
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - ClubGiftSelected
-      evidence: ev_a4c825f97017
-  - scenario: catalog.find_by_product_code.guard_10
-    title: "find by product code: the guard 'effectId <= 0' holds"
-    given:
-      guard: effectId <= 0
-      guard_holds: "true"
-    when:
-      packet: SelectClubGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of SelectClubGift sent while 'effectId <= 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7ef4c91324dc
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -234,7 +205,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -263,7 +234,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -292,7 +263,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -321,7 +292,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5e99184ee3a3
+      evidence: ev_35934eb1b8df
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -349,12 +320,9 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AvatarEffectAdded
       - BadgeReceivedEvent
-      - BotAddedToInventoryEvent
       - ClubGiftSelectedEvent
-      - PetAddedToInventoryEvent
-      evidence: ev_1f83e61934ca
+      evidence: ev_0c987f4ea07c
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -375,13 +343,20 @@ generated:
     symbol: SelectClubGiftEvent
     line: 20
     note: third-party server implementation; evidence, not authority
+  - id: ev_0c987f4ea07c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
+    symbol: CatalogFulfillmentPlanner
+    line: 53
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 614
+    line: 629
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -389,27 +364,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_5e99184ee3a3
+  - id: ev_35934eb1b8df
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
     symbol: GroupBadgePartProvider
     line: 43
-  - id: ev_678209870593
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 589
-  - id: ev_7ef4c91324dc
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerEffectGrain.cs
-    symbol: PlayerEffectGrain
-    line: 78
+    line: 588
   - id: ev_db00239c6a21
     kind: emulator_flow
     authority: vortex_emulator

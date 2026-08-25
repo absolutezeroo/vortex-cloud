@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc76b3d532d29409c15108aac0047df2e9dbc6611f61f1f9ce165371124d09f7"
+generated_digest: "sha256:91fb9c4d6c0d50fc4c88a336ba3db9529475c55a2fac42910cf6bbb49a598070"
 generated:
   name: GuideSessionDetached
   direction: outgoing
@@ -25,6 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_8eda88b6e860
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_6fe0d2567d73
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -38,6 +44,14 @@ generated:
     types: []
     evidence: ev_0f469b21c81f
   evidence:
+  - id: ev_6fe0d2567d73
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4121.as
+    symbol: _SafeCls_4121
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8eda88b6e860
     kind: client_parser
     authority: client_code

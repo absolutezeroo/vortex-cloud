@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:908420a2805a4aead847b70a306d892296e5b3abe26c9206ea5fcd1794d6030c"
+generated_digest: "sha256:8abeb0092f57f18378d34804e5749777e4d8e4a13d656d3551aa2385c4d19664"
 generated:
   feature: room.rentable_space_rent
   scenarios:
@@ -54,59 +54,9 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
       - RentableSpaceRentFailed
       - RentableSpaceStatus
-      - SilverBalance
       evidence: ev_1dd7e39f6eb4
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4416956a41fc
-  - scenario: room.rentable_space_rent.guard_10
-    title: "rentable space rent: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: RentableSpaceRent
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RentableSpaceRent sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4416956a41fc
-  - scenario: room.rentable_space_rent.guard_11
-    title: "rentable space rent: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: RentableSpaceRent
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RentableSpaceRent sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -251,46 +201,23 @@ generated:
       emits: []
       evidence: ev_4416956a41fc
   - scenario: room.rentable_space_rent.guard_8
-    title: "rentable space rent: the guard '!debitResult.Succeeded' holds"
+    title: "rentable space rent: the guard '_registry is null' holds"
     given:
-      guard: "!debitResult.Succeeded"
+      guard: _registry is null
       guard_holds: "true"
     when:
       packet: RentableSpaceRent
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RentableSpaceRent sent while '!debitResult.Succeeded' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RentableSpaceRent sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0b56492f6260
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4416956a41fc
-  - scenario: room.rentable_space_rent.guard_9
-    title: "rentable space rent: the guard 'update.ChangedBy != request.Amount' holds"
-    given:
-      guard: update.ChangedBy != request.Amount
-      guard_holds: "true"
-    when:
-      packet: RentableSpaceRent
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RentableSpaceRent sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_d0cb8ee11644
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -312,13 +239,9 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
       - RentableSpaceRentFailed
       - RentableSpaceStatus
-      - SilverBalance
-      evidence: ev_0b56492f6260
+      evidence: ev_1dd7e39f6eb4
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -333,13 +256,6 @@ generated:
     symbol: RentableSpaceRentMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 44
   - id: ev_1dd7e39f6eb4
     kind: emulator_flow
     authority: vortex_emulator
@@ -347,6 +263,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/RentableSpaceRentMessageHandler.cs
     symbol: RentableSpaceRentMessageHandler
     line: 24
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_3bfcf2d3587b
     kind: emulator_flow
     authority: vortex_emulator
@@ -354,19 +277,5 @@ generated:
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
     line: 86
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 137
 verified: {}
 manual: {}

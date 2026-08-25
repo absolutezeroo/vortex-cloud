@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c3344c109d029d3239cf9075c9815942dc48c4cb6ce724294441409cea0c2215"
+generated_digest: "sha256:a291338ddc69ede24c077ff302aeca0b052941e98fffdb5a9503f6b5a89a4ba6"
 generated:
   feature: catalog.find_by_id
   scenarios:
@@ -50,24 +50,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_73539f066ff0
-  - scenario: catalog.find_by_id.guard_10
-    title: "find by id: the guard 'offer is null || !offer.IsVip' holds"
-    given:
-      guard: offer is null || !offer.IsVip
-      guard_holds: "true"
-    when:
-      packet: PurchaseBasicMembershipExtension
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'offer is null || !offer.IsVip' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7e6ebdef98e6
   - scenario: catalog.find_by_id.guard_2
     title: "find by id: the guard 'result != ClubPurchaseResult.Success' holds"
     given:
@@ -85,12 +67,8 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
       - PurchaseError
       - ScrSendUserInfo
-      - SilverBalance
       evidence: ev_73539f066ff0
   - scenario: catalog.find_by_id.guard_3
     title: "find by id: the guard 'offer.OfferId == offerId' holds"
@@ -129,95 +107,23 @@ generated:
       emits: []
       evidence: ev_1f83e61934ca
   - scenario: catalog.find_by_id.guard_5
-    title: "find by id: the guard '!debitResult.Succeeded' holds"
+    title: "find by id: the guard 'offer is null || !offer.IsVip' holds"
     given:
-      guard: "!debitResult.Succeeded"
+      guard: offer is null || !offer.IsVip
       guard_holds: "true"
     when:
       packet: PurchaseBasicMembershipExtension
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while '!debitResult.Succeeded' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'offer is null || !offer.IsVip' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0b56492f6260
-  - scenario: catalog.find_by_id.guard_6
-    title: "find by id: the guard 'update.ChangedBy != request.Amount' holds"
-    given:
-      guard: update.ChangedBy != request.Amount
-      guard_holds: "true"
-    when:
-      packet: PurchaseBasicMembershipExtension
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: catalog.find_by_id.guard_7
-    title: "find by id: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: PurchaseBasicMembershipExtension
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-  - scenario: catalog.find_by_id.guard_8
-    title: "find by id: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseBasicMembershipExtension
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
-  - scenario: catalog.find_by_id.guard_9
-    title: "find by id: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseBasicMembershipExtension
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
+      evidence: ev_7e6ebdef98e6
   - scenario: catalog.find_by_id.success
     title: "find by id: the request is accepted"
     given:
@@ -234,42 +140,17 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
-      - HabboActivityPointNotification
       - PurchaseError
       - ScrSendUserInfo
-      - SilverBalance
-      evidence: ev_0b56492f6260
+      evidence: ev_1f83e61934ca
   evidence:
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 44
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 425
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
+    line: 440
   - id: ev_4e6c8266ce94
     kind: emulator_flow
     authority: vortex_emulator
@@ -291,12 +172,5 @@ generated:
     source: Vortex.PacketHandlers/Catalog/PurchaseVipMembershipExtensionMessageHandler.cs
     symbol: PurchaseVipMembershipExtensionMessageHandler
     line: 39
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 94
 verified: {}
 manual: {}

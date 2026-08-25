@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:533f40df015c7d7f0c1e51d3687f7a3f340a9c95fb1bc34c27d5de86eed62c8e"
+generated_digest: "sha256:0c0acb2e098ce62cd58f1dd5568dd5ba5fc1d45320598b4556172a9e4bfd1522"
 generated:
   id: users.reject_membership_request
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.RejectMembershipAsync
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -44,11 +44,11 @@ generated:
   - expression: await LoadIfAdminAsync(dbCtx, actor, ct) is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: deleted == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -81,11 +81,11 @@ generated:
     source: Vortex.PacketHandlers/Users/RejectMembershipRequestMessageHandler.cs
     symbol: RejectMembershipRequestMessageHandler
     line: 22
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 178
   - id: ev_e5502868685f

@@ -10,39 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cf971d530a6f218f4167a86d17a976ee2fff26d9695d3affb5ba152658969412"
+generated_digest: "sha256:294ed420bc8b7eda45651b04f1c7a7f9f03d570b23c39a3a5ea42c2ea66590a8"
 generated:
   name: RoomOccupiedTiles
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_0ae73659da00
+    - ev_596234f6f9b9
     - ev_2284272b5e56
   - index: 1
     name: x
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_0ae73659da00
+    - ev_596234f6f9b9
     - ev_2284272b5e56
   - index: 2
     name: y
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_0ae73659da00
+    - ev_596234f6f9b9
     - ev_2284272b5e56
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_596234f6f9b9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -67,6 +78,14 @@ generated:
     - array
     evidence: ev_2284272b5e56
   evidence:
+  - id: ev_596234f6f9b9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2875/_SafeCls_4415.as
+    symbol: _SafeCls_4415
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_36e4655c2bca
     kind: client_parser
     authority: multi_implementation

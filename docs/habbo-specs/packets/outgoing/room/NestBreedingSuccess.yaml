@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:004feded76890d7debedda834febdb70ae737014adb8147a1e4d21476a034b13"
+generated_digest: "sha256:54eb9daf89fedc431d95872a6ce606443a87703dc2b4e36f9fa67c39413d6595"
 generated:
   name: NestBreedingSuccess
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4245dda720c9
+    - ev_2ace46d094fb
   - index: 1
-    name: unknown_1
+    name: rarity_category
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4245dda720c9
+    - ev_2ace46d094fb
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_2ace46d094fb
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_4245dda720c9
   evidence:
+  - id: ev_2ace46d094fb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_4023.as
+    symbol: _SafeCls_4023
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4245dda720c9
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: NestBreedingSuccessMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_588ef86dc5
 verified: {}
 manual: {}

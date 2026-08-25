@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:533d4a7069514d8ecb4d5366f78da31a25639138de43c4eeb11a341854185dd7"
+generated_digest: "sha256:54a04b5252408624bbd29bd0371ad8b0413315cfb894deae1428651567ddd8d2"
 generated:
   feature: users.reject_membership_request
   scenarios:
@@ -56,7 +56,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -81,7 +81,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -163,11 +163,11 @@ generated:
     source: Vortex.PacketHandlers/Users/RejectMembershipRequestMessageHandler.cs
     symbol: RejectMembershipRequestMessageHandler
     line: 22
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 186
 verified: {}

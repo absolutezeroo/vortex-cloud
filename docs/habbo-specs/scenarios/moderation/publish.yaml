@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:60fc395b39c5bca4fadd85866ac1cd734bed90151855f47acea42227c47e538c"
+generated_digest: "sha256:b453d5f4e007f4cb5b72b38a032e48ab1638a141284e0094008a4fad33357dc4"
 generated:
   feature: moderation.publish
   scenarios:
@@ -341,14 +341,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 163
+    line: 180
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 665
+    line: 680
   - id: ev_2e4a44ebd161
     kind: emulator_flow
     authority: vortex_emulator

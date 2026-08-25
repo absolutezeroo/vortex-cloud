@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c3a108782320ca95143975b3598e57eabee3b2b02291099f781960c2618a8fe7"
+generated_digest: "sha256:2abf6ae95f6fad14a7eb80a6aedb48f21dc6560876b9386a0efbd475c9abfbc6"
 generated:
   feature: users.get_guild_memberships
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5e99184ee3a3
+      evidence: ev_35934eb1b8df
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -103,7 +103,7 @@ generated:
       outcome: success
       emits:
       - GuildMemberships
-      evidence: ev_5e99184ee3a3
+      evidence: ev_35934eb1b8df
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -119,20 +119,13 @@ generated:
     symbol: GetGuildMembershipsMessageEvent
     line: 11
     note: third-party server implementation; evidence, not authority
-  - id: ev_5e99184ee3a3
+  - id: ev_35934eb1b8df
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
     symbol: GroupBadgePartProvider
     line: 43
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 314
   - id: ev_b88de3409bfe
     kind: emulator_flow
     authority: vortex_emulator
@@ -140,5 +133,12 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildMembershipsMessageHandler.cs
     symbol: GetGuildMembershipsMessageHandler
     line: 24
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 313
 verified: {}
 manual: {}

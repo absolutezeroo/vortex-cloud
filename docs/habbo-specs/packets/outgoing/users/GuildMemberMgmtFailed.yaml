@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1cc7d53bf24bef97777ff14d7055cbb15d0b219c74721bceff91f00db712a822"
+generated_digest: "sha256:e97ccf997607b2cdae2bd833cbe81840c51289cd1c8128eb0f7b969fb8521472"
 generated:
   name: GuildMemberMgmtFailed
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: group_id
+    name: guild_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_75e02af66b14
-    - ev_84b5b180f0a8
+    - ev_79142626aee0
   - index: 1
     name: reason
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_75e02af66b14
-    - ev_84b5b180f0a8
+    - ev_79142626aee0
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_79142626aee0
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - int32
     evidence: ev_84b5b180f0a8
   evidence:
+  - id: ev_79142626aee0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2837.as
+    symbol: _SafeCls_2837
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_f42c537e7650
     kind: client_parser
     authority: multi_implementation

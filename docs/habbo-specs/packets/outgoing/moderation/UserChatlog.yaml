@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8650fffa30d8fee0f1ab530b3e6ba249338335b100ec50a45b31fda55d304d55"
+generated_digest: "sha256:4d5c899f3f9fce3a7d10569836d95829569e8a40faa40c8c297e3fb3a9be4ffa"
 generated:
   name: UserChatlog
   direction: outgoing
@@ -155,6 +155,12 @@ generated:
     evidence:
     - ev_621f2b07be52
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_2a878ef04c60
   - origin: arcturus
     authority: reference_emulator
     field_count: 17
@@ -179,6 +185,14 @@ generated:
     - boolean
     evidence: ev_621f2b07be52
   evidence:
+  - id: ev_2a878ef04c60
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2857.as
+    symbol: _SafeCls_2857
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_621f2b07be52
     kind: reference_composer
     authority: reference_emulator

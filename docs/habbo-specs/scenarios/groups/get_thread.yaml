@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5309ff0e0cec8081886983fa795be376f4fa2dc5e937fda3ee9b7f643de3a6fa"
+generated_digest: "sha256:fdd06b8387eb8e7a2d613a13c19c0cd2999341294e7b671f5f181a0a2cd7badc"
 generated:
   feature: groups.get_thread
   scenarios:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
   - scenario: groups.get_thread.guard_3
     title: "get thread: the guard '!CanRead(group.ForumSettings, role)' holds"
     given:
@@ -85,7 +85,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76106ea21309
+      evidence: ev_da3ad2e8d895
   - scenario: groups.get_thread.success
     title: "get thread: the request is accepted"
     given:
@@ -119,11 +119,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetThreadMessageHandler.cs
     symbol: GetThreadMessageHandler
     line: 23
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 206
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:576f2ab891559ec1e79ad996fd897e7b1c03561a4e13f30f1129563725c376db"
+generated_digest: "sha256:6df4d5cbd912f498a648c4c225182b36c1267f3d33e61845e8ff4c5934abbfea"
 generated:
   id: users.block_list_init
   domain: users
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.GetBlockedUserIdsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -60,11 +60,11 @@ generated:
     source: Vortex.PacketHandlers/Users/BlockListInitMessageHandler.cs
     symbol: BlockListInitMessageHandler
     line: 13
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 36
   scenarios:

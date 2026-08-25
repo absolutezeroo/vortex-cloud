@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:45818f7bbbd6edd1d7c9ff35d1f55481dbaf3ff69102602c2928f5728175a57d"
+generated_digest: "sha256:3108020723fa4bc005c395d9b56dd1d083385b0f92e7dd18881b5b91392eb874"
 generated:
   name: HeightMap
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: width
     type: int32
-    name_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_97c780b9ba98
-    - ev_b676dc5d48b6
+    - ev_0b703f0398a2
   - index: 1
     name: size
     type: int32
@@ -53,6 +53,15 @@ generated:
     - int32
     - short
     evidence: ev_97c780b9ba98
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - short
+    evidence: ev_0b703f0398a2
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -83,6 +92,14 @@ generated:
     - array
     evidence: ev_abdff006cd94
   evidence:
+  - id: ev_0b703f0398a2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3230.as
+    symbol: _SafeCls_3230
+    line: 101
+    note: official client build WIN63-202607011411-782849652
   - id: ev_97c780b9ba98
     kind: client_parser
     authority: client_code

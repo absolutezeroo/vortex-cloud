@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c9aa86b81df83d56d66b080c64db53eedb02cfb0452d4247e30dab9060632fc5"
+generated_digest: "sha256:adecbbb121d7de94279644d90955a2b50781a45ad4a1dc030220f9168451a7d6"
 generated:
   name: CompetitionRoomsData
   direction: outgoing
@@ -48,6 +48,12 @@ generated:
       evidence:
       - ev_d01a09937c5b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_3ffba70983bb
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -62,6 +68,14 @@ generated:
     - block
     evidence: ev_d01a09937c5b
   evidence:
+  - id: ev_3ffba70983bb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4111.as
+    symbol: _SafeCls_4111
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0a465ed145e6
     kind: client_parser
     authority: multi_implementation

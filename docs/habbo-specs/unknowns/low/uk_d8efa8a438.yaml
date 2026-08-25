@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:dd6f0a19eb0f2322b1e6536929612bed30edb3c8f187122f442c57291b161550"
+generated_digest: "sha256:b1287db05cfe576bcc6fd12d60eadc4225cb2fc5837c53d244577f7035d55abb"
 generated:
   id: uk_d8efa8a438
   subject: "outgoing/CompetitionStatus: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CompetitionStatus
   known_evidence:
+  - id: ev_cbc5ecbe063c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4033.as
+    symbol: _SafeCls_4033
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ed70653e2390
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: CompetitionStatusMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  - id: ev_becca4847c9c
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Camera/CompetitionStatusMessageComposerSerializer.cs
-    symbol: CompetitionStatusMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

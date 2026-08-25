@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1d02c88184472990a46987301ee1324dc86e9157c4338a0f093e8ae5c817bbb4"
+generated_digest: "sha256:38e8b0ae73c7c98662dd891b3fe218b5d0e51a23fecc5be9634962f4017c1c0f"
 generated:
   id: uk_0f9ec9c2fb
   subject: "outgoing/CfhChatlog: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: CfhChatlog
   known_evidence:
+  - id: ev_223715be4838
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2697.as
+    symbol: _SafeCls_2697
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d00db6c1a054
     kind: reference_composer
     authority: reference_emulator

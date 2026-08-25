@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f4445ac1f38e0e91317c6047e1259617494f9c4dbebac9fe6afc1653f89ae3eb"
+generated_digest: "sha256:36a4cc5fee5aa512b2f1d02a3241d851f4f0017448df9b98452ffdf993196fda"
 generated:
   id: uk_11286a2477
   subject: "room.answer_doorbell: who receives FlatAccessDenied, FlatAccessible, unresolved"
@@ -25,6 +25,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Doorbell.cs
     symbol: RoomService
+    line: 61
+  - id: ev_93b2d0946619
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/RoomService.Doorbell.cs
+    symbol: RoomService
     line: 60
   - id: ev_93b2d0946619
     kind: emulator_flow
@@ -32,13 +39,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Doorbell.cs
     symbol: RoomService
-    line: 59
-  - id: ev_93b2d0946619
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/RoomService.Doorbell.cs
-    symbol: RoomService
-    line: 68
+    line: 69
 verified: {}
 manual: {}

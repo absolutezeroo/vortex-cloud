@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4699dcea3b84a82b36ddb222005c64d57dd56cc2b41081c63423843645f008d0"
+generated_digest: "sha256:a8e132b8edf035a3393e38dd90308fcdeb4e809aefe41fc800581151bfdd31f3"
 generated:
   id: uk_a0ff1d393d
   subject: "outgoing/RoomAdPurchaseInfo: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomAdPurchaseInfo
   known_evidence:
+  - id: ev_4e0f638a4229
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_4049.as
+    symbol: _SafeCls_4049
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cfca4ec19059
     kind: reference_composer
     authority: reference_emulator

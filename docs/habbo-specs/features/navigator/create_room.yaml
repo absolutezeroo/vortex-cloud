@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9c8a28573d13b0f880e4cb43560192a4adbaee13a06214be9ebfcbdbfcaafcce"
+generated_digest: "sha256:7053fbed39b69425133f9c87ae320aa0f7669fa056c91f85116f32e90977b88a"
 generated:
   id: navigator.create_room
   domain: navigator
@@ -32,7 +32,15 @@ generated:
     layer: service
     symbol: RoomService.CreateRoomAsync
     evidence: ev_f8d4827f4b8f
-  checks: []
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
+  checks:
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -54,6 +62,13 @@ generated:
     source: Vortex.PacketHandlers/Navigator/CreateFlatMessageHandler.cs
     symbol: CreateFlatMessageHandler
     line: 11
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_b72e5f3cc941
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,8 +82,9 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 18
+    line: 19
   scenarios:
+  - navigator.create_room.guard_0
   - navigator.create_room.success
   conflicts:
   - cf_2e7e3bbb3c

@@ -10,23 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2a9d73c7434f1764a79de64e586fe3725f8a77c615c48713b6a89214595d72f1"
+generated_digest: "sha256:9e48cbc1f6fef97f4173b2ea970f48e45e8d9827cd24951b1d6698e81a952e41"
 generated:
   name: CatalogPublished
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: instantly_refresh_catalogue
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_04d08745fdfd
+    - ev_8b99b9b4b2ba
+  - index: 1
+    name: new_furni_data_hash
+    type: string
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_8b99b9b4b2ba
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - boolean
+    - string
+    evidence: ev_8b99b9b4b2ba
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -49,6 +64,14 @@ generated:
     - string
     evidence: ev_788d09e8caaf
   evidence:
+  - id: ev_8b99b9b4b2ba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3506.as
+    symbol: _SafeCls_3506
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_05e66f2565e8
     kind: client_parser
     authority: multi_implementation
@@ -74,7 +97,5 @@ generated:
     line: 6
   conflicts:
   - cf_24f0337a59
-  unknowns:
-  - uk_5b99673d42
 verified: {}
 manual: {}

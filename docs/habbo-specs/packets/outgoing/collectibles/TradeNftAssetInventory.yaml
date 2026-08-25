@@ -10,38 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6861c50d0288ef963bf3d88506bcd6b499f68cf38db0d62b4f90253e98dbab27"
+generated_digest: "sha256:bf29d7fd151166462141c286f1906f9b6cfe89a475b7a680a384ed3550c579ec"
 generated:
   name: TradeNftAssetInventory
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_5d995de5491a
-  - index: 1
-    name: assets
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_5d995de5491a
-    fields:
-    - index: 0
-      name: asset_id
-      type: long
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5d995de5491a
+    - ev_62ee17fbc06e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_62ee17fbc06e
   - origin: vortex
     authority: vortex_emulator
     field_count: 2
@@ -51,6 +43,14 @@ generated:
     - array
     evidence: ev_5d995de5491a
   evidence:
+  - id: ev_62ee17fbc06e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2726/_SafeCls_3182.as
+    symbol: _SafeCls_3182
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_5d995de5491a
     kind: emulator_serializer
     authority: vortex_emulator
@@ -58,5 +58,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/TradeNftAssetInventoryMessageComposerSerializer.cs
     symbol: TradeNftAssetInventoryMessageComposerSerializer
     line: 8
+  conflicts:
+  - cf_7b39fb3519
+  unknowns:
+  - uk_f22aba69ba
 verified: {}
 manual: {}

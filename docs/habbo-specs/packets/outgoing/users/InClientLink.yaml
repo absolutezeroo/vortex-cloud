@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7ee2a424f4fd329e3eb2ecd6c03b88415a0051c71d6df64830aee11df2714e3b"
+generated_digest: "sha256:79f4539cc84b7d34d308cce6b9fde3afa3154d328886be245476c7a1aad08438"
 generated:
   name: InClientLink
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: link
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f0961d2fd27e
+    - ev_4f4afe3fdf21
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_4f4afe3fdf21
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -41,6 +47,14 @@ generated:
     - string
     evidence: ev_f0961d2fd27e
   evidence:
+  - id: ev_4f4afe3fdf21
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3870.as
+    symbol: _SafeCls_3870
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_786ed6a08d92
     kind: client_parser
     authority: multi_implementation
@@ -57,7 +71,5 @@ generated:
     symbol: InClientLinkMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_dc88dd5e8e
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cc4d35cc032b7a3076003c0ca93484a2b6f55a06a5722787164fe5d4f595a8a4"
+generated_digest: "sha256:bc00cb7f071a84db4165702d6cd9ff45b0232debbffffe0fdabc99074cbe2bb7"
 generated:
   id: game.reset_resolution_achievement
   domain: game
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - ResetResolutionAchievement
   observed_in:
-    vortex: true
+    vortex: false
     references: []
   official_behavior:
     status: unknown
@@ -27,27 +27,11 @@ generated:
     layer: handler
     symbol: ResetResolutionAchievementMessageHandler.HandleAsync
     evidence: ev_bda48786328b
-  - order: 1
-    layer: grain
-    symbol: PlayerAchievementResolutionGrain.ResetAsync
-    evidence: ev_9b89e1ffc2b5
-  - order: 2
-    layer: domain
-    symbol: AchievementResolutionRules.IsInProgress
-    evidence: ev_9af83930dfb4
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_8fbdf1d14c5b
-  - expression: statue is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_9b89e1ffc2b5
-  - expression: challenge is null || !AchievementResolutionRules.IsInProgress( challenge.CompletedAt, challenge.EndsAt, DateTime.UtcNow )
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_9b89e1ffc2b5
   state_changes:
   - target: _grainFactory .GetPlayerAchievementResolutionGrain(ctx.PlayerId)
     value: _grainFactory .GetPlayerAchievementResolutionGrain(ctx.PlayerId) .ResetAsync(message.StuffId, ct)
@@ -56,7 +40,7 @@ generated:
   outgoing:
     ordering: unknown
     packets: []
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_8fbdf1d14c5b
     kind: emulator_flow
@@ -65,20 +49,6 @@ generated:
     source: Vortex.PacketHandlers/Game/Lobby/ResetResolutionAchievementMessageHandler.cs
     symbol: ResetResolutionAchievementMessageHandler
     line: 21
-  - id: ev_9af83930dfb4
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Achievements/AchievementResolutionRules.cs
-    symbol: AchievementResolutionRules
-    line: 66
-  - id: ev_9b89e1ffc2b5
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementResolutionGrain.cs
-    symbol: PlayerAchievementResolutionGrain
-    line: 115
   - id: ev_bda48786328b
     kind: emulator_handler
     authority: vortex_emulator
@@ -88,10 +58,9 @@ generated:
     line: 10
   scenarios:
   - game.reset_resolution_achievement.guard_0
-  - game.reset_resolution_achievement.guard_1
-  - game.reset_resolution_achievement.guard_2
   - game.reset_resolution_achievement.success
   unknowns:
+  - uk_0edfdeb06d
   - uk_4629ea4776
 verified: {}
 manual: {}

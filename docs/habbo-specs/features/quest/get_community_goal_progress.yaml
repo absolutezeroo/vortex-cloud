@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0b8790b322ac0c83679857d22f1b460afe2b7b0789027a590db3e43dadce6a00"
+generated_digest: "sha256:db9f2f2efa23fbb8f71042c8eed6d9f117be6c3278e4f9b68da88aadfaf61da5"
 generated:
   id: quest.get_community_goal_progress
   domain: quest
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: CommunityGoalGrain.SendProgressAsync
-    evidence: ev_4875f459ad01
+    evidence: ev_faf5e938e0d5
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -38,7 +38,7 @@ generated:
   - order: 3
     layer: domain
     symbol: CommunityGoalLadder.RewardUserLimits
-    evidence: ev_9166ec1aa232
+    evidence: ev_da9eb17c67b9
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -47,7 +47,7 @@ generated:
   - expression: _goal is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_4875f459ad01
+    evidence: ev_faf5e938e0d5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -55,7 +55,7 @@ generated:
     - packet: CommunityGoalProgress
       recipient: unknown
       recipient_confidence: unknown
-      evidence: ev_4875f459ad01
+      evidence: ev_faf5e938e0d5
   reaches_persistence: false
   evidence:
   - id: ev_003066bbe9f3
@@ -65,20 +65,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetCommunityGoalProgressMessageHandler.cs
     symbol: GetCommunityGoalProgressMessageHandler
     line: 23
-  - id: ev_4875f459ad01
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
-    symbol: CommunityGoalGrain
-    line: 46
-  - id: ev_9166ec1aa232
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Quests/CommunityGoalLadder.cs
-    symbol: CommunityGoalLadder
-    line: 83
   - id: ev_cd2fea80a727
     kind: emulator_handler
     authority: vortex_emulator
@@ -86,6 +72,13 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetCommunityGoalProgressMessageHandler.cs
     symbol: GetCommunityGoalProgressMessageHandler
     line: 14
+  - id: ev_da9eb17c67b9
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Quests/CommunityGoalLadder.cs
+    symbol: CommunityGoalLadder
+    line: 83
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator
@@ -93,6 +86,13 @@ generated:
     source: Vortex.Rooms/Wired/WiredActionBranch.cs
     symbol: WiredActionBranch
     line: 23
+  - id: ev_faf5e938e0d5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
+    symbol: CommunityGoalGrain
+    line: 46
   scenarios:
   - quest.get_community_goal_progress.guard_0
   - quest.get_community_goal_progress.guard_1

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:62a192c2c045eaf8657c35586cd6ee13c66b22beee3cc32626818455d13db205"
+generated_digest: "sha256:ceae15976efd7d3837c485930a6af027818450f1eb22992272dff3f4d324bdaa"
 generated:
   id: uk_bbbd57b133
   subject: "users.kick_member: what the server sends when it refuses"
@@ -33,11 +33,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 274
   - id: ev_d90cdf1638a0

@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:55462098361b919d0f0991019971df04ee8df167053099ec62dc01364d71057a"
+generated_digest: "sha256:e23c91e1470cfe34fd7e412730a619a91186b4fea944e08a49b74dc3e39fa884"
 generated:
   id: cf_0eb87c200b
   kind: field_count
   subject: "outgoing/PetInfo: field count"
   packet: PetInfo
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "28 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, int32, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
+    evidence: ev_932e3f586958
   - origin: arcturus
     authority: reference_emulator
     claim: "30 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "28 fields: int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, string, int32, boolean, boolean, int32, array, int32, boolean, boolean, boolean, int32, int32, int32, int32, boolean"
     evidence: ev_85662fc8ff4d
   evidence:
+  - id: ev_932e3f586958
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_3619.as
+    symbol: _SafeCls_3619
+    line: 211
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2440daf3bc54
     kind: reference_composer
     authority: reference_emulator

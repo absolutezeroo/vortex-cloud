@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:56a88cbc2ebdb07e9efb36c435786e58477e3b62232f235e3fc2d7bae8686275"
+generated_digest: "sha256:a1841f9f3e604f73e0cfd8c2344d8508768ca07963f0cd8e2205335e1dd3b4d3"
 generated:
   feature: users.update_guild_settings
   scenarios:
@@ -55,7 +55,7 @@ generated:
       emits:
       - GroupDetailsChanged
       - GuildEditFailed
-      evidence: ev_257d20d10bb7
+      evidence: ev_861d7eb0e4b2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -70,11 +70,11 @@ generated:
     symbol: UpdateGuildSettingsMessageEvent
     line: 13
     note: third-party server implementation; evidence, not authority
-  - id: ev_257d20d10bb7
+  - id: ev_861d7eb0e4b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
+    source: Vortex.Social/Grains/GroupGrain.Settings.cs
     symbol: GroupGrain
     line: 95
   - id: ev_d81f2a614408

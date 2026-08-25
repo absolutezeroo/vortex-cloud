@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d07942dda5c2562596d53a9c56f624a74842f29f2700b48c6380b1af9a6bf3f9"
+generated_digest: "sha256:aeb25a47e73970e99f75501fa4c237d2c35f7193e8aa789d21a368dbe4977953"
 generated:
   name: CallForHelpResult
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: result_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c13552841c5c
+    - ev_0fd19c7ecb7f
   - index: 1
-    name: unknown_1
+    name: message_text
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c13552841c5c
+    - ev_0fd19c7ecb7f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_0fd19c7ecb7f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +56,14 @@ generated:
     - string
     evidence: ev_c13552841c5c
   evidence:
+  - id: ev_0fd19c7ecb7f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2862.as
+    symbol: _SafeCls_2862
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1c05fe0d5c90
     kind: client_parser
     authority: multi_implementation
@@ -66,7 +80,5 @@ generated:
     symbol: CallForHelpResultMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_bab3b040c3
 verified: {}
 manual: {}

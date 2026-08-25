@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:269ae6a2fd55b0900f7e65001cd00cdac02c2a498023b5e411173109fcd494ba"
+generated_digest: "sha256:ef06a83e1bb8f36ab5a6a2a76e0510df94e75376e72973e073d26594036d9c09"
 generated:
   id: quest.start_campaign
   domain: quest
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerQuestGrain.StartCampaignAsync
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
@@ -43,7 +43,7 @@ generated:
   - expression: campaign.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_f7df1e322a73
+    evidence: ev_3e19f38401db
   state_changes: []
   outgoing:
     ordering: unknown
@@ -51,11 +51,11 @@ generated:
     - packet: Quest
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_f7df1e322a73
+      evidence: ev_3e19f38401db
     - packet: Quests
       recipient: target_user
       recipient_confidence: inferred
-      evidence: ev_f7df1e322a73
+      evidence: ev_3e19f38401db
   reaches_persistence: false
   evidence:
   - id: ev_373e76aa8a80
@@ -65,6 +65,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 160
   - id: ev_d16850136b42
     kind: emulator_handler
     authority: vortex_emulator
@@ -79,13 +86,6 @@ generated:
     source: Vortex.PacketHandlers/Quest/StartCampaignMessageHandler.cs
     symbol: StartCampaignMessageHandler
     line: 23
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 157
   scenarios:
   - quest.start_campaign.guard_0
   - quest.start_campaign.guard_1

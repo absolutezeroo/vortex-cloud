@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6d44f93ff418fe7c4bacdb7b05869a4abf83722278bd161094c6f68e61ac6c10"
+generated_digest: "sha256:cb23ae39effcf2be06dc477ccc835d0e6f2b539b260f7b76b9b1240ad2ca2ddd"
 generated:
   feature: marketplace.buy_marketplace_offer
   scenarios:
@@ -84,23 +84,23 @@ generated:
       emits: []
       evidence: ev_494594a64c59
   - scenario: marketplace.buy_marketplace_offer.guard_3
-    title: "buy marketplace offer: the guard '!string.IsNullOrEmpty(jsonData)' holds"
+    title: "buy marketplace offer: the guard '_registry is null' holds"
     given:
-      guard: "!string.IsNullOrEmpty(jsonData)"
+      guard: _registry is null
       guard_holds: "true"
     when:
       packet: BuyMarketplaceOffer
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of BuyMarketplaceOffer sent while '!string.IsNullOrEmpty(jsonData)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of BuyMarketplaceOffer sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a660921f135
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -145,19 +145,19 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/BuyMarketplaceOfferMessageHandler.cs
     symbol: BuyMarketplaceOfferMessageHandler
     line: 22
-  - id: ev_7a660921f135
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 46
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 153
+    line: 271
 verified: {}
 manual: {}

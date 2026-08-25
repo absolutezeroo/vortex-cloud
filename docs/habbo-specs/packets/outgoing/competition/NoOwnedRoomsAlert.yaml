@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3c24ec4bb63012c412fa00c7b7e74c08e2bd28075a18cde4f43109dfde67cf2a"
+generated_digest: "sha256:84695c2539c4bd5c7f3918b7e075478a36269285e85117cc84983ca6c79f38e5"
 generated:
   name: NoOwnedRoomsAlert
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_a6386f502821
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -32,6 +38,14 @@ generated:
     types: []
     evidence: ev_be4fef6f23ae
   evidence:
+  - id: ev_a6386f502821
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3314/_SafeCls_4425.as
+    symbol: _SafeCls_4425
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8c35ca7dd306
     kind: client_parser
     authority: multi_implementation

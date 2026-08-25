@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9086ab5c79870dd90f1f7e92241d4b6e8549742123bcf73ff03107fb41d01e8f"
+generated_digest: "sha256:39b584b70aa129cc510812b22de726e100a513c8adcbccee4ef7de577add41ff"
 generated:
   name: HabboGroupJoinFailed
   direction: outgoing
   domain: users
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: reason
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_35591af1f61f
-    - ev_66973656e270
+    - ev_bc30ed46318d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_bc30ed46318d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_66973656e270
   evidence:
+  - id: ev_bc30ed46318d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_1997.as
+    symbol: _SafeCls_1997
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b9b6f1ae03d3
     kind: client_parser
     authority: multi_implementation

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7d838baeade06a6394ff382ae567edab70ce05205049c4f4a71f63bbbb341ec4"
+generated_digest: "sha256:fa238d4368c0a067a6d2d353cd7509022919030defa19d2669ee423cc525211c"
 generated:
   name: PetRespectNotification
   direction: outgoing
   domain: room
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: respect
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1342ecb1aac5
+    - ev_c9f238623a32
   - index: 1
-    name: unknown_1
+    name: pet_owner_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1342ecb1aac5
+    - ev_c9f238623a32
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_c9f238623a32
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_1342ecb1aac5
   evidence:
+  - id: ev_c9f238623a32
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2668.as
+    symbol: _SafeCls_2668
+    line: 30
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1342ecb1aac5
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: PetRespectNotificationMessageComposer
     line: 26
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_9692c150e2
 verified: {}
 manual: {}

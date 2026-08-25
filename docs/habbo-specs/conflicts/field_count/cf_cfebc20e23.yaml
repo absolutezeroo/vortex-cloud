@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:7103d20d8c400f9fb5b5660df927c9155d2dd114b0a2a9559057c4756bb8b61c"
+generated_digest: "sha256:a8ede9e853fd8d563c45de6cb0c5188deccd639fbedf6a6fc2dfa00b31508fb9"
 generated:
   id: cf_cfebc20e23
   kind: field_count
@@ -19,8 +19,12 @@ generated:
   positions:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
-    claim: "4 fields: int32, string, string, boolean"
+    claim: "2 fields: int32, string, string, boolean"
     evidence: ev_6adf55fdb02f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, string, string, boolean"
+    evidence: ev_f26e247139a0
   - origin: arcturus
     authority: reference_emulator
     claim: "4 fields: int32, string, string, boolean"
@@ -38,6 +42,14 @@ generated:
     symbol: PerkAllowancesMessageParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_f26e247139a0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2643/_SafeCls_2997.as
+    symbol: _SafeCls_2997
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_da45cbb907cd
     kind: reference_composer
     authority: reference_emulator

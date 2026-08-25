@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2740c939cf19b7f762d72d4333fb30960875f98bef2a27ca75a93d81ae336d86"
+generated_digest: "sha256:9ec12187a1a269fab8d9bfd0a1e492df4b554ab455ffc583ad01142af5a8b69c"
 generated:
   name: RemainingMutePeriod
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: seconds_remaining
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_84452fc4f51d
-    - ev_0b252083f9ee
+    - ev_a11b340afec2
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_a11b340afec2
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_0b252083f9ee
   evidence:
+  - id: ev_a11b340afec2
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_4260.as
+    symbol: _SafeCls_4260
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_34b68c62d537
     kind: client_parser
     authority: multi_implementation

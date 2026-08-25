@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8eb58424dc9b87af8d2a29c630d2fe56c9042a6fb38f9bf7824e4c4b53ec96cb"
+generated_digest: "sha256:33be10b7c4d6e2d424fee76e9b25a20d2f593c8003526527520bfc6dabfba2fb"
 generated:
   name: RoomSettingsSaveError
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_eaeae122c7a9
+    - ev_df955d87fe78
   - index: 1
-    name: unknown_1
+    name: error_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_eaeae122c7a9
+    - ev_df955d87fe78
   - index: 2
-    name: unknown_2
+    name: info
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_eaeae122c7a9
+    - ev_df955d87fe78
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_df955d87fe78
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +59,14 @@ generated:
     - string
     evidence: ev_eaeae122c7a9
   evidence:
+  - id: ev_df955d87fe78
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3857.as
+    symbol: _SafeCls_3857
+    line: 49
+    note: official client build WIN63-202607011411-782849652
   - id: ev_eaeae122c7a9
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +75,5 @@ generated:
     symbol: RoomSettingsSaveErrorMessageComposer
     line: 27
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_0e0a303c14
 verified: {}
 manual: {}

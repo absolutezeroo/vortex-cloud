@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:996eeb1861b0f8c13fcbeb09cb9d14a1ff2599563c107b07be93d80be74d2af9"
+generated_digest: "sha256:ac8d0d567f679924298881305b4196e00db46c940adac35048825850914bc8a9"
 generated:
   name: IdentityAccounts
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,26 +23,37 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_81ad68beb970
+    - ev_0ba39195b7f8
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_81ad68beb970
+    - ev_0ba39195b7f8
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_81ad68beb970
+    - ev_0ba39195b7f8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    evidence: ev_0ba39195b7f8
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +64,14 @@ generated:
     - string
     evidence: ev_81ad68beb970
   evidence:
+  - id: ev_0ba39195b7f8
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_4178.as
+    symbol: _SafeCls_4178
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_81ad68beb970
     kind: reference_composer
     authority: reference_emulator
@@ -61,6 +80,8 @@ generated:
     symbol: IdentityAccountsMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_f6a71aa55e
   unknowns:
   - uk_ba64c84f55
 verified: {}

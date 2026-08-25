@@ -222,7 +222,7 @@ generated:
 verified:
   locked_chest_refusal:
     confidence: assumed
-    claim: "A deposit refused because the chest is locked answers the actor with WiredTradeCancelled carrying failure code 15. Every other refusal on this packet still answers nothing."
+    claim: A deposit refused because the chest is locked answers the actor with WiredTradeCancelled carrying failure code 15. Every other refusal on this packet still answers nothing.
     reason: "What the official server sends for any refusal on this packet is unknown: no reference emulator and no capture observe it. The code is read off the client rather than invented. WiredTradingView.alertTradeCancelled feeds the value to wired_transactions.notification.fail.<code>, and 15 is that table's 'No chests or locked chests'; the view closes the trade screen and shows the popup titled wired_transactions.notification.fail.popup.title. Code 0 cannot carry a meaning: WiredTradingModel treats it as the 'player closed the screen themselves' sentinel and suppresses the alert, so refusing with 0 would be indistinguishable from the silence it replaces. The other refusals on this packet (not a chest, a coin chest, no rights on the room) stay silent because no entry in that table matches them closely enough to choose without guessing."
     evidence:
     - kind: client_code
@@ -238,4 +238,3 @@ verified:
       symbol: wired_transactions.notification.fail.15
 manual:
   player_report: "Raised from play: the owner locks the chest, another player presses deposit, and nothing happens at all - no screen, no message, no way to tell a locked chest from a broken one."
-

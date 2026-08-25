@@ -10,23 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:42b7b219afdd4870dd61e156c66b551844d59d250406cef67ffbe41fd0ef01e6"
+generated_digest: "sha256:d7fb9ea7cb44973771e0b9588fde4efe8800a6b398352fc43a6bf015e2a08656"
 generated:
   name: RoomInviteError
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_539d63a5a5b6
+    - ev_d17d38d4199e
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_183d1034e9bc
+    - ev_539d63a5a5b6
+  - index: 2
+    name: recipient
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_539d63a5a5b6
+    - ev_d17d38d4199e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_539d63a5a5b6
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -53,6 +80,14 @@ generated:
     - array
     evidence: ev_d17d38d4199e
   evidence:
+  - id: ev_539d63a5a5b6
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2291.as
+    symbol: _SafeCls_2291
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_183d1034e9bc
     kind: client_parser
     authority: multi_implementation
@@ -78,5 +113,7 @@ generated:
     line: 6
   conflicts:
   - cf_4e1095a2b1
+  unknowns:
+  - uk_19be4d5aa9
 verified: {}
 manual: {}

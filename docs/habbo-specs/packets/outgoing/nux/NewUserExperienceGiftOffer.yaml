@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2192dd79b332744ecb797806a753d8de310282caf7e8282e442198289edcd808"
+generated_digest: "sha256:c00531f0c52d88106dd35ff570d74863206dcddf108e95f72f305c8ead88c7e2"
 generated:
   name: NewUserExperienceGiftOffer
   direction: outgoing
   domain: nux
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_8d76776aec38
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_b0473386ae38
   - origin: arcturus
     authority: reference_emulator
     field_count: 4
@@ -53,6 +60,14 @@ generated:
     symbol: NewUserExperienceGiftOfferParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_b0473386ae38
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3895/_SafeCls_3894.as
+    symbol: _SafeCls_3894
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_467683c35b6e
     kind: reference_composer
     authority: reference_emulator

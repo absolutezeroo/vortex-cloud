@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c47cf50a050020ebfde2d7b51cee9802d239de15fd04d10af67466b00851a3b"
+generated_digest: "sha256:7ce3d7770a08dafc0fd2b015a36b5eb235a446e8f4fad97d5dfaa2182fd392b1"
 generated:
   feature: vault.income_reward_claim
   scenarios:
@@ -50,6 +50,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_64a16635906e
+  - scenario: vault.income_reward_claim.guard_2
+    title: "income reward claim: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: IncomeRewardClaim
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of IncomeRewardClaim sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: vault.income_reward_claim.success
     title: "income reward claim: the request is accepted"
     given:
@@ -76,13 +94,20 @@ generated:
     source: Vortex.PacketHandlers/Vault/IncomeRewardClaimMessageHandler.cs
     symbol: IncomeRewardClaimMessageHandler
     line: 11
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
-    line: 56
+    line: 59
   - id: ev_d920210215ea
     kind: emulator_flow
     authority: vortex_emulator

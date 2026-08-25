@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:fdfbd5ec490b105a7a834fbdc93058d2a56ca39d8a8578645b09b0c7f18958e0"
+generated_digest: "sha256:b7175efd726a85f6bd6d07fcd23bed3b2eecade0ba2942a0bb6776e10315a410"
 generated:
   id: uk_857d8bd5a5
   subject: "room.set_room_background_color_data: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 366
+    line: 367
   - id: ev_bddb39be9010
     kind: emulator_handler
     authority: vortex_emulator

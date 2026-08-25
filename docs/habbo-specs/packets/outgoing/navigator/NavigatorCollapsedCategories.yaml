@@ -10,38 +10,40 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6e4b4655e548f845a9c6ebefe219ba86f4f8d2446eeac00c0bb42c35ef25bcd1"
+generated_digest: "sha256:38103a50a6828262c220c84fc9f59fc396229948abf65ab6fc5939f3400f32d4"
 generated:
   name: NavigatorCollapsedCategories
   direction: outgoing
   domain: navigator
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_350ea5c56171
     - ev_0cc5dc23c81e
   - index: 1
-    name: collapsed_category_ids
-    type: array
+    name: category_id
+    type: string
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
+    - ev_350ea5c56171
     - ev_0cc5dc23c81e
-    fields:
-    - index: 0
-      name: category_id
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_0cc5dc23c81e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_350ea5c56171
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -57,6 +59,14 @@ generated:
     - array
     evidence: ev_0cc5dc23c81e
   evidence:
+  - id: ev_350ea5c56171
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_4193.as
+    symbol: _SafeCls_4193
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8463d8349b39
     kind: client_parser
     authority: multi_implementation
@@ -72,5 +82,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/NewNavigator/NavigatorCollapsedCategoriesMessageSerializer.cs
     symbol: NavigatorCollapsedCategoriesMessageSerializer
     line: 6
+  conflicts:
+  - cf_f163dcd242
 verified: {}
 manual: {}

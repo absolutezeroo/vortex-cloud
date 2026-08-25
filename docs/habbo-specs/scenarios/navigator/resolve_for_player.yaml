@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e6ecad97d80e1e1fea110e4834a01156892811062eaaf66deb9a87640b011f90"
+generated_digest: "sha256:e997750608776e24a817fbd40904cec3b832e13a34ad5365a4050096c125336a"
 generated:
   feature: navigator.resolve_for_player
   scenarios:
@@ -155,7 +155,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 682
+    line: 758
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator

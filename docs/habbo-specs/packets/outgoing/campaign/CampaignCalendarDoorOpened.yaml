@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:03378942acc9da555cc0e21448251a1bc897bd4e671e700077ef59101259ab7e"
+generated_digest: "sha256:8eaf2191596679073a921b28453963a987de11df10dede0eef6c95ffbc4b392d"
 generated:
   name: CampaignCalendarDoorOpened
   direction: outgoing
   domain: campaign
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: door_opened
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1f5f98ef4d40
-    - ev_8cf0d69d1d70
+    - ev_8d2b72633a98
   - index: 1
     name: product_name
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1f5f98ef4d40
-    - ev_8cf0d69d1d70
+    - ev_8d2b72633a98
   - index: 2
     name: custom_image
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1f5f98ef4d40
-    - ev_8cf0d69d1d70
+    - ev_8d2b72633a98
   - index: 3
     name: furniture_class_name
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_1f5f98ef4d40
-    - ev_8cf0d69d1d70
+    - ev_8d2b72633a98
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - boolean
+    - string
+    - string
+    - string
+    evidence: ev_8d2b72633a98
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -78,6 +84,14 @@ generated:
     - string
     evidence: ev_8cf0d69d1d70
   evidence:
+  - id: ev_8d2b72633a98
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3317/_SafeCls_3336.as
+    symbol: _SafeCls_3336
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6e668d0fced2
     kind: client_parser
     authority: multi_implementation

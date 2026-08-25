@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1e14097de674a24d2abb933a808e40d17125762e67f12993e3862a6880740003"
+generated_digest: "sha256:825414a57d22fcd5fac5c08572a03f5f4e66c8d721647e87ba0e8b1614656dbd"
 generated:
   name: UserFlatCats
   direction: outgoing
   domain: navigator
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -23,74 +23,17 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_67979a0e206f
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 2
-    name: unknown_2
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 3
-    name: unknown_3
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 4
-    name: unknown_4
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 5
-    name: unknown_5
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 6
-    name: unknown_6
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 7
-    name: unknown_7
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
-  - index: 8
-    name: unknown_8
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_67979a0e206f
+    - ev_257e72038ed9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_257e72038ed9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -121,6 +64,14 @@ generated:
     - array
     evidence: ev_d743f775c56a
   evidence:
+  - id: ev_257e72038ed9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2986.as
+    symbol: _SafeCls_2986
+    line: 18
+    note: official client build WIN63-202607011411-782849652
   - id: ev_789581a48b6d
     kind: client_parser
     authority: multi_implementation

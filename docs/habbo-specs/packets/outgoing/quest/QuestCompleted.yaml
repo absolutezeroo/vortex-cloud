@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e758863fe7f5ff2934f7c42c1a7e8cdf888a5fea84d313f8086f4ddb281a0bf0"
+generated_digest: "sha256:20f90e3b3bbf877c483de13e8aa43bcf4314496aabf401530ee0cfe3aab7cc40"
 generated:
   name: QuestCompleted
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: show_dialog
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_e26da9502e1e
-    - ev_61ff731bdae1
+    - ev_db60c5909a06
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - boolean
     evidence: ev_e26da9502e1e
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_db60c5909a06
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -55,6 +62,14 @@ generated:
     - boolean
     evidence: ev_61ff731bdae1
   evidence:
+  - id: ev_db60c5909a06
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_3084.as
+    symbol: _SafeCls_3084
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e26da9502e1e
     kind: client_parser
     authority: client_code

@@ -10,15 +10,22 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:66d70bb6d677d7c56c417a1cbe7a7e55f8e8261b39a825eab5a56ce653274020"
+generated_digest: "sha256:14adb27b66a9cde73c45de7a9339a71b79378896cc7f069b887961136358cf62"
 generated:
   id: uk_0e02c40661
   subject: "messenger.decline_friend: what the server sends when it refuses"
   severity: medium
-  question: messenger.decline_friend changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: messenger.decline_friend changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: messenger.decline_friend
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_69ee7dc73043
     kind: emulator_handler
     authority: vortex_emulator
@@ -33,12 +40,12 @@ generated:
     source: Vortex.PacketHandlers/FriendList/DeclineFriendMessageHandler.cs
     symbol: DeclineFriendMessageHandler
     line: 22
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 343
+    line: 347
 verified: {}
 manual: {}

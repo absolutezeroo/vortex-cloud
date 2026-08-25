@@ -10,62 +10,62 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b9ea1b555129b44b382fe165ced1c988db398aa57ecad3e9714ca3c0938b3953"
+generated_digest: "sha256:6f710d467bc561424923b4919a014dc96ce7aef5f852bd0467abbffccb4a596d"
 generated:
   name: AchievementResolutionProgress
   direction: outgoing
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: stuff_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   - index: 1
     name: achievement_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   - index: 2
     name: required_level_badge_code
     type: string
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   - index: 3
     name: user_progress
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   - index: 4
     name: total_progress
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   - index: 5
-    name: seconds_left
+    name: end_time
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b66b8dd16ed8
-    - ev_d779a32172dd
+    - ev_cc8ba50656fb
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -79,6 +79,18 @@ generated:
     - int32
     - int32
     evidence: ev_b66b8dd16ed8
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    evidence: ev_cc8ba50656fb
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -118,6 +130,14 @@ generated:
     symbol: AchievementResolutionProgressMessageParser
     line: 27
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_cc8ba50656fb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3055/_SafeCls_3262.as
+    symbol: _SafeCls_3262
+    line: 38
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3a6261558b64
     kind: client_parser
     authority: multi_implementation

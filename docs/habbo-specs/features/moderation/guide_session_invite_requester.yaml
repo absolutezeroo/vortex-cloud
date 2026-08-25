@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8fa52dbbd7309a32840adb70e9f8cfd22c1d13dfe329a53603712bf2a79e48d2"
+generated_digest: "sha256:064e863a67a87addb7b58a7f5dbd23f67d735b1b43199fcf2669771b6df35ab3"
 generated:
   id: moderation.guide_session_invite_requester
   domain: moderation
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GuideDirectoryGrain.GetPartnerAsync
-    evidence: ev_9c06d4d48950
+    evidence: ev_5ea072b947f5
   - order: 2
     layer: grain
     symbol: PlayerPresenceGrain.GetActiveRoomAsync
@@ -63,6 +63,13 @@ generated:
       evidence: ev_f3d085b91d9e
   reaches_persistence: false
   evidence:
+  - id: ev_5ea072b947f5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
+    symbol: GuideDirectoryGrain
+    line: 222
   - id: ev_736e606bd239
     kind: emulator_handler
     authority: vortex_emulator
@@ -70,13 +77,6 @@ generated:
     source: Vortex.PacketHandlers/Help/GuideSessionInviteRequesterMessageHandler.cs
     symbol: GuideSessionInviteRequesterMessageHandler
     line: 22
-  - id: ev_9c06d4d48950
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GuideDirectoryGrain.cs
-    symbol: GuideDirectoryGrain
-    line: 210
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

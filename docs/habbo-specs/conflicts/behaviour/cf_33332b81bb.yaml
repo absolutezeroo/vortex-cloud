@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:db7f8d615790093d0e0793f6c1baeb52f33f1e4a2c954ae57657c9b8dce70781"
+generated_digest: "sha256:fd7edcea9fc7a2607eb2da2787c7e5e9d2fa55acce5464874f1ff5828b5b372d"
 generated:
   id: cf_33332b81bb
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_7460c100c4ce
   - origin: vortex
     authority: vortex_emulator
-    claim: BadgesEvent
+    claim: BadgesEvent then HabboUserBadges
     evidence: ev_86df5a82116b
   evidence:
   - id: ev_7460c100c4ce
@@ -40,7 +40,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Inventory/Badges/GetBadgesMessageHandler.cs
     symbol: GetBadgesMessageHandler
-    line: 13
+    line: 15
   official:
     status: unknown
 verified: {}

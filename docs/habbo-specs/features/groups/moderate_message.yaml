@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:85820371e14ad007b24e5163cbb739655f94e69d795295c92536e2ebdc9f5e44"
+generated_digest: "sha256:95bc08770b77ccb609ef8b8f806d37004b7d76b8bdf3c36df39eb5546e9d2dd0"
 generated:
   id: groups.moderate_message
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.ModerateMessageAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -48,7 +48,7 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -57,15 +57,15 @@ generated:
   - target: post.AdminOperationAt
     value: DateTime.UtcNow
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: post.AdminPlayerEntityId
     value: actor.Value
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - target: post.State
     value: MapPostAction(action)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   outgoing:
     ordering: unknown
     packets:
@@ -82,13 +82,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 519
   - id: ev_948071c08d09
     kind: emulator_flow
     authority: vortex_emulator
@@ -103,6 +96,13 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/ModerateMessageMessageHandler.cs
     symbol: ModerateMessageMessageHandler
     line: 12
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 519
   scenarios:
   - groups.moderate_message.guard_0
   - groups.moderate_message.guard_1

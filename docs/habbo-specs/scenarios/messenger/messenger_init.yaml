@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9a4cb6e6b2cfd4c540131c9ce1467fcacd7d399256c9652170d90b43675e5094"
+generated_digest: "sha256:1924ba355064f6a6fdda34cd559105ecfb09de8bd0e7b0e1f217a43f57c6948f"
 generated:
   feature: messenger.messenger_init
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_55e9c6b16f82
+      evidence: ev_8db29db3d5af
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -147,13 +147,6 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
-  - id: ev_55e9c6b16f82
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Presence.cs
-    symbol: MessengerGrain
-    line: 32
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -161,6 +154,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 31
+  - id: ev_8db29db3d5af
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Presence.cs
+    symbol: MessengerGrain
+    line: 32
   - id: ev_bafd0e4f30d0
     kind: emulator_flow
     authority: vortex_emulator

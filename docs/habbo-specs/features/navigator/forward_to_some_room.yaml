@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:479f744fb00472963810c42a5a316b2b62030c8756d6eef995274d308197f4a7"
+generated_digest: "sha256:a7fcf33e1324ae803b931649395cb138e691837493b5adea9c4b40b762e8ed34"
 generated:
   id: navigator.forward_to_some_room
   domain: navigator
@@ -51,7 +51,7 @@ generated:
   - order: 6
     layer: grain
     symbol: GroupGrain.GetMemberRankAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 7
     layer: domain
     symbol: MessageContext.SendComposerAsync
@@ -84,6 +84,13 @@ generated:
       evidence: ev_f4c4c4ae6ace
   reaches_persistence: false
   evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 118
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -105,13 +112,6 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ForwardToSomeRoomMessageHandler.cs
     symbol: ForwardToSomeRoomMessageHandler
     line: 29
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
-    symbol: GroupGrain
-    line: 118
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator

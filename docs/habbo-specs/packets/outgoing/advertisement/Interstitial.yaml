@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dfbacdbcf6d136989dd02ff3425add327d77d48095104aaa9925ba0ea6d6c8bb"
+generated_digest: "sha256:2e0d9bb98f4b18b4d679a16713eb0d5dad9c645c19c41ee1de4d673c1ed3dbad"
 generated:
   name: Interstitial
   direction: outgoing
   domain: advertisement
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: can_show_interstitial
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_5fd1174c37ed
-    - ev_0af964f7432b
+    - ev_3e8b6d09c8c8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_3e8b6d09c8c8
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - boolean
     evidence: ev_0af964f7432b
   evidence:
+  - id: ev_3e8b6d09c8c8
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1719/_SafeCls_1718.as
+    symbol: _SafeCls_1718
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d546a7714cda
     kind: client_parser
     authority: multi_implementation

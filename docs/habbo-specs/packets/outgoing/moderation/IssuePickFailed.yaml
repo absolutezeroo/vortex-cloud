@@ -10,66 +10,76 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c5088b97c1f5cdf76cd7230a1c3c19b08d1ad3897b039e3b714f79b92717cbb0"
+generated_digest: "sha256:da757928c32d3c4142b13325a5789d0eb726cad68987043e3e4bc007bb54c65c"
 generated:
   name: IssuePickFailed
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
+    - ev_eece04be3380
     - ev_47b2a8ebe6f4
   - index: 1
-    name: conflicts
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_47b2a8ebe6f4
-    fields:
-    - index: 0
-      name: issue_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_47b2a8ebe6f4
-    - index: 1
-      name: picker_user_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_47b2a8ebe6f4
-    - index: 2
-      name: picker_user_name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_47b2a8ebe6f4
-  - index: 2
-    name: retry_enabled
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_47b2a8ebe6f4
-  - index: 3
-    name: retry_count
+    name: issue_id
     type: int32
     name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
+    - ev_eece04be3380
     - ev_47b2a8ebe6f4
+  - index: 2
+    name: picker_user_id
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_eece04be3380
+    - ev_47b2a8ebe6f4
+  - index: 3
+    name: picker_user_name
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_eece04be3380
+    - ev_47b2a8ebe6f4
+  - index: 4
+    name: retry_enabled
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_eece04be3380
+  - index: 5
+    name: retry_count
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_eece04be3380
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - string
+    - boolean
+    - int32
+    evidence: ev_eece04be3380
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -93,6 +103,14 @@ generated:
     - int32
     evidence: ev_47b2a8ebe6f4
   evidence:
+  - id: ev_eece04be3380
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2231/_SafeCls_2571.as
+    symbol: _SafeCls_2571
+    line: 42
+    note: official client build WIN63-202607011411-782849652
   - id: ev_903c04d0a0a2
     kind: client_parser
     authority: multi_implementation

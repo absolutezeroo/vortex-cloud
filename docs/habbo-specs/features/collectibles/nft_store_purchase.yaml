@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f6bbd3026f88df33de27a10bf6adb90af4a51ab6381c8312c1a9a4ec470d811a"
+generated_digest: "sha256:c692777316fb2e2898c415740f3a16a3bdb93bda70b1aa6195f096dbc17b565b"
 generated:
   id: collectibles.nft_store_purchase
   domain: collectibles
@@ -41,40 +41,20 @@ generated:
     evidence: ev_d0cb8ee11644
   - order: 4
     layer: grain
-    symbol: PlayerPresenceGrain.OnCurrencyUpdateAsync
-    evidence: ev_94ddaa174e6d
+    symbol: InventoryGrain.GrantFurnitureDefinitionAsync
+    evidence: ev_c6396662000a
   - order: 5
-    layer: module
-    symbol: PlayerWalletModule.OnCurrencyUpdateAsync
-    evidence: ev_432f3c2b73af
-  - order: 6
     layer: grain
-    symbol: PlayerPresenceGrain.SendComposerAsync
-    evidence: ev_373e76aa8a80
+    symbol: PlayerWalletGrain.CreditBackAsync
+    evidence: ev_d0cb8ee11644
+  - order: 6
+    layer: domain
+    symbol: CachedOffer.Sold
+    evidence: ev_e224b6e2fb72
   - order: 7
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 8
-    layer: grain
-    symbol: InventoryGrain.GrantFurnitureDefinitionAsync
-    evidence: ev_c6396662000a
-  - order: 9
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 10
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffDataFromJson
-    evidence: ev_7a660921f135
-  - order: 11
-    layer: grain
-    symbol: PlayerWalletGrain.CreditBackAsync
-    evidence: ev_d0cb8ee11644
-  - order: 12
-    layer: domain
-    symbol: CachedOffer.Sold
-    evidence: ev_e224b6e2fb72
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -92,26 +72,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_144151606547
-  - expression: update.ChangedBy != request.Amount
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: failure is not null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_d0cb8ee11644
-  - expression: snapshot is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_432f3c2b73af
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
     evidence: ev_34bf3ac088e2
-  - expression: "!string.IsNullOrEmpty(jsonData)"
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_7a660921f135
   state_changes:
   - target: row
     value: row.SetProperty(x => x.SoldCount, x => x.SoldCount + 1)
@@ -120,26 +84,10 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CreditBalanceEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: EmeraldBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
-    - packet: HabboActivityPointNotification
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
     - packet: NftStorePurchase
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_20a2d2e5ed36
-    - packet: SilverBalance
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_432f3c2b73af
   reaches_persistence: true
   evidence:
   - id: ev_144151606547
@@ -148,7 +96,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: NftStoreGrain
-    line: 61
+    line: 64
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -156,13 +104,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 35
-  - id: ev_2ec03446aa2a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -170,20 +111,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_373e76aa8a80
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
   - id: ev_7332ae30cf1e
     kind: emulator_handler
     authority: vortex_emulator
@@ -191,41 +118,27 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 21
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 586
+    line: 541
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 55
+    line: 61
   - id: ev_e224b6e2fb72
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Collectibles/Grains/NftStoreGrain.cs
     symbol: CachedOffer
-    line: 309
+    line: 319
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator
@@ -239,13 +152,8 @@ generated:
   - collectibles.nft_store_purchase.guard_2
   - collectibles.nft_store_purchase.guard_3
   - collectibles.nft_store_purchase.guard_4
-  - collectibles.nft_store_purchase.guard_5
-  - collectibles.nft_store_purchase.guard_6
-  - collectibles.nft_store_purchase.guard_7
-  - collectibles.nft_store_purchase.guard_8
   - collectibles.nft_store_purchase.success
   unknowns:
   - uk_41538e9abb
-  - uk_dd06585eeb
 verified: {}
 manual: {}

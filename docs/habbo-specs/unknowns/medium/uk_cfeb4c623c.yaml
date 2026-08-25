@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:047656d700f289e2809f11a871854646b8382d4e0c62c8b2866f878f5f38124f"
+generated_digest: "sha256:acc472ff7ecb1564e36d0e6dec390a9087435f5a6a2832d56c65a08c28545147"
 generated:
   id: uk_cfeb4c623c
   subject: "navigator.rate_flat: what the server sends when it refuses"
   severity: medium
-  question: navigator.rate_flat changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.rate_flat changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.rate_flat
   known_evidence:
@@ -25,7 +25,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 605
+    line: 677
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_87f8b30763fe
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:9d354481be455973048bcdcbb2d9683e8e99b52127200d52a76314f29ef972b4"
+generated_digest: "sha256:06c62c3197e77b347d896b64715a9b3939395425f37567d2d0d26e7ec41e84ba"
 generated:
   id: cf_b7c67a0749
   kind: field_count
   subject: "outgoing/CantConnect: field count"
   packet: CantConnect
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, string"
+    evidence: ev_83038975cb7d
   - origin: nitro
     authority: multi_implementation
     claim: "1 fields: string"
@@ -30,6 +34,14 @@ generated:
     claim: "2 fields: int32, string"
     evidence: ev_37644871c6cc
   evidence:
+  - id: ev_83038975cb7d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1744/_SafeCls_2738.as
+    symbol: _SafeCls_2738
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_334610642b41
     kind: client_parser
     authority: multi_implementation

@@ -10,47 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0e95f1227df790845f0a94f542ba3ed36543e1a4865d89ae0034f5597d6f8ae1"
+generated_digest: "sha256:bf42dd10415eaed378495369d983a854d5fe3cd7f06a5e37665ac1c81b5410d9"
 generated:
   name: BannedUsersFromRoom
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bd02948aeda3
+    - ev_55118e4903db
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bd02948aeda3
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_bd02948aeda3
-  - index: 3
-    name: unknown_3
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_bd02948aeda3
+    - ev_55118e4903db
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_55118e4903db
   - origin: arcturus
     authority: reference_emulator
     field_count: 4
@@ -62,6 +53,14 @@ generated:
     - string
     evidence: ev_bd02948aeda3
   evidence:
+  - id: ev_55118e4903db
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3887.as
+    symbol: _SafeCls_3887
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_bd02948aeda3
     kind: reference_composer
     authority: reference_emulator
@@ -70,6 +69,8 @@ generated:
     symbol: BannedUsersFromRoomMessageComposer
     line: 22
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_caf06be921
   unknowns:
   - uk_f2002de925
 verified: {}

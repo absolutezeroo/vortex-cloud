@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4133f464d774557e3a5f7e40e6a6d674afb1c239c96f2b96e1ee6acb6ce0e341"
+generated_digest: "sha256:8d3cba622401070b586dc7f9c571c87c5b5e4ecfdf99161c7900650ff06a74d0"
 generated:
   name: TalentLevelUp
   direction: outgoing
   domain: talent
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: talent_track_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_246493ecf874
+    - ev_4a56b5e6608a
   - index: 1
-    name: unknown_1
+    name: level
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_246493ecf874
+    - ev_4a56b5e6608a
   - index: 2
     name: unknown_2
     type: int32
@@ -61,6 +61,16 @@ generated:
     - int32
     - int32
     evidence: ev_246493ecf874
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    evidence: ev_4a56b5e6608a
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -90,6 +100,14 @@ generated:
     symbol: TalentLevelUpMessageParser
     line: 24
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_4a56b5e6608a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2740/_SafeCls_4418.as
+    symbol: _SafeCls_4418
+    line: 31
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e2be44e75ea3
     kind: client_parser
     authority: multi_implementation

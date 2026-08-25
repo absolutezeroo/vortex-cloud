@@ -10,38 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c5b78032572c051315699d1d37b6ade4e52b85e1fda584bca432730633ace166"
+generated_digest: "sha256:388d0cbf7ddb4288e751752f326276240c4109e793c65f87922f610489fe16b0"
 generated:
   name: PetExperience
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: pet_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f9bbac03a63
-    - ev_1ffd73d04931
+    - ev_d7d36d2c0033
   - index: 1
     name: pet_room_index
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f9bbac03a63
-    - ev_1ffd73d04931
+    - ev_d7d36d2c0033
   - index: 2
     name: gained_experience
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_4f9bbac03a63
-    - ev_1ffd73d04931
+    - ev_d7d36d2c0033
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -52,6 +52,15 @@ generated:
     - int32
     - int32
     evidence: ev_4f9bbac03a63
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_d7d36d2c0033
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -85,6 +94,14 @@ generated:
     symbol: PetExperienceParser
     line: 33
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_d7d36d2c0033
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_2523.as
+    symbol: _SafeCls_2523
+    line: 41
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8ae4b0d6a30c
     kind: client_parser
     authority: multi_implementation

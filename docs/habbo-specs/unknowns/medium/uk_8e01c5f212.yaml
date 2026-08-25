@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2b38343e1cdd6ec2f3b2c69359fe711ca67da045bd9a6f46ceb751d06a49fe09"
+generated_digest: "sha256:0581ab8144943357129065105756cbe8f0659ff6f80ca77dd3ac8ef903a95083"
 generated:
   id: uk_8e01c5f212
   subject: "messenger.set_relationship_status: what the server sends when it refuses"
@@ -33,12 +33,12 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SetRelationshipStatusMessageHandler.cs
     symbol: SetRelationshipStatusMessageHandler
     line: 11
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 447
+    line: 464
 verified: {}
 manual: {}

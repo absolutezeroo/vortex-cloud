@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b324dcfc2f685f1cf3ca35c728a5963fa143ce7157079694e24b7eb8e39d80fb"
+generated_digest: "sha256:4bcddfd717073d3eeb9b19d20155e155f8d4cd8fb297ce97dbb3b36ace78eb15"
 generated:
   feature: quest.get_seasonal_quests_only
   scenarios:
@@ -49,8 +49,15 @@ generated:
       outcome: success
       emits:
       - SeasonalQuests
-      evidence: ev_cfce1049cc44
+      evidence: ev_3e19f38401db
   evidence:
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 201
   - id: ev_cfce1049cc44
     kind: emulator_flow
     authority: vortex_emulator

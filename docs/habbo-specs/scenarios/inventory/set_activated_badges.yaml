@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6eeaae491aecaa7f2ba706d3ccbc8d1cdf1d27b012adc4e3dba91cce06426225"
+generated_digest: "sha256:24f76092b972e752b410ee6f359f4c230813fe337e33345e2f48eb6ed4e492de"
 generated:
   feature: inventory.set_activated_badges
   scenarios:
@@ -38,6 +38,30 @@ generated:
       emits:
       - UserBadges
       evidence: ev_d7b73b96fec7
+  - scenario: inventory.set_activated_badges.guard_1
+    title: "set activated badges: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SetActivatedBadges
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetActivatedBadges sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - UserBadges
+      evidence: ev_d7b73b96fec7
   - scenario: inventory.set_activated_badges.success
     title: "set activated badges: the request is accepted"
     given:
@@ -54,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b29c2b55162
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -70,6 +94,13 @@ generated:
     symbol: SetActivatedBadgesEvent
     line: 14
     note: third-party server implementation; evidence, not authority
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_9b29c2b55162
     kind: emulator_flow
     authority: vortex_emulator

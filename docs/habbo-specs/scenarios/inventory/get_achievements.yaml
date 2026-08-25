@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:52d7bce82fb19d3237d24325405d0ea74e14a239575c4cbb18a8cb9bfec9fe30"
+generated_digest: "sha256:56f719fc27d816d1f19a1aba52907201918f431fab5cf580ea174291f15e89d2"
 generated:
   feature: inventory.get_achievements
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c9002bf19526
+      evidence: ev_b6254b352078
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       outcome: success
       emits:
       - AchievementsEvent
-      evidence: ev_13211df92481
+      evidence: ev_6a825bb2f759
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -95,11 +95,11 @@ generated:
     symbol: GetAchievementsEvent
     line: 8
     note: third-party server implementation; evidence, not authority
-  - id: ev_13211df92481
+  - id: ev_6a825bb2f759
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/AchievementManagerGrain.cs
+    source: Vortex.Progression/Grains/AchievementManagerGrain.cs
     symbol: AchievementManagerGrain
     line: 45
   - id: ev_a7798658d9db
@@ -109,12 +109,12 @@ generated:
     source: Vortex.PacketHandlers/Inventory/Achievements/GetAchievementsMessageHandler.cs
     symbol: GetAchievementsMessageHandler
     line: 21
-  - id: ev_c9002bf19526
+  - id: ev_b6254b352078
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementGrain.cs
+    source: Vortex.Progression/Grains/PlayerAchievementGrain.cs
     symbol: PlayerAchievementGrain
-    line: 103
+    line: 106
 verified: {}
 manual: {}

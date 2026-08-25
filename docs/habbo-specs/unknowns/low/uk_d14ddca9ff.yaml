@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0c1460cf88c012c0ddfc165d55674988a4051a1d3df31b0943a49eef378e3b19"
+generated_digest: "sha256:5f2a85488db7c6d37e34fc3e53fe5bd36d45b0e472bb9efc36dc203640b4a844"
 generated:
   id: uk_d14ddca9ff
   subject: "outgoing/YoutubeDisplayPlaylists: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 1, 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: YoutubeDisplayPlaylists
   known_evidence:
+  - id: ev_4f18a7f528cf
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_4185.as
+    symbol: _SafeCls_4185
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e3e289a3c9a6
     kind: client_parser
     authority: client_code
@@ -35,13 +43,5 @@ generated:
     symbol: YoutubeDisplayPlaylistsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e2cb95095ffb
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/rooms/items/youtube/YoutubeDisplayPlaylistsMessageComposer.java
-    symbol: YoutubeDisplayPlaylistsMessageComposer
-    line: 22
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

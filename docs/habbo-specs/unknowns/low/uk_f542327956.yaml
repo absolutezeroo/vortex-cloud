@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c5c257ac7b69dd8ac02e714c0264da7d8d3cb97d65cba187c8794a16057534f2"
+generated_digest: "sha256:6b47d5cf193043a1ed085f1b1b04e607496a7022bbb6b890ee019fa60c963fde"
 generated:
   id: uk_f542327956
   subject: "outgoing/GuildEditInfo: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GuildEditInfo
   known_evidence:
+  - id: ev_0ed0a82911c1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_3279.as
+    symbol: _SafeCls_3279
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6752fde225fa
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: GuildEditInfoMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  - id: ev_6733a38bd27a
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Users/GuildEditInfoMessageComposerSerializer.cs
-    symbol: GuildEditInfoMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

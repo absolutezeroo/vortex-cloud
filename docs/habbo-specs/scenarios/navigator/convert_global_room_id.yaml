@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:04e3e9b037caccf699dee1f22dcda5615c4299402014c231efbaff50a13f69eb"
+generated_digest: "sha256:9ba6b9b53a8c7de14d35cedea2e9ef3edd8841c2b9b07d5a17137bc255c8cee8"
 generated:
   feature: navigator.convert_global_room_id
   scenarios:
@@ -50,8 +50,15 @@ generated:
       emits:
       - GetGuestRoomResult
       - unresolved
-      evidence: ev_3a3f04f4fd85
+      evidence: ev_25e7df53e794
   evidence:
+  - id: ev_25e7df53e794
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 118
   - id: ev_3a3f04f4fd85
     kind: emulator_flow
     authority: vortex_emulator

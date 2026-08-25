@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:14853919d98da030d8ecccdf5624611825fe652206ca49b6c2a814157ba09d13"
+generated_digest: "sha256:f8ead7fc1f28e7cf895f67e306d177daed5f4047ca23a6c8a298bbf99acf137d"
 generated:
   id: cf_0f42e2691b
   kind: field_type
   subject: "outgoing/QuizData: type of field 2"
   packet: QuizData
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "question_ids: int32"
+    evidence: ev_a7ffcd9e98da
   - origin: arcturus
     authority: reference_emulator
     claim: "unknown_2: int32"
@@ -26,6 +30,14 @@ generated:
     claim: "question_ids: array"
     evidence: ev_57c6feb7ed09
   evidence:
+  - id: ev_a7ffcd9e98da
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2728.as
+    symbol: _SafeCls_2728
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_374c496fd253
     kind: reference_composer
     authority: reference_emulator

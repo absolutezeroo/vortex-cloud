@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5fe6af4627fc4e95c89b4ca165fe58305e6bc869c87dc6935152359fd22f29b1"
+generated_digest: "sha256:a10030939e6a2fbe6861a6c8f5d88c228025f6815c2cb568a749bc1220c74d4f"
 generated:
   id: uk_994a923c89
   subject: "marketplace.cancel_marketplace_offer: what the server sends when it refuses"
@@ -19,20 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: marketplace.cancel_marketplace_offer
   known_evidence:
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_9e1e3b48bed7
     kind: emulator_handler
     authority: vortex_emulator
@@ -40,13 +33,6 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/CancelMarketplaceOfferMessageHandler.cs
     symbol: CancelMarketplaceOfferMessageHandler
     line: 11
-  - id: ev_c6396662000a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
-    symbol: InventoryGrain
-    line: 586
   - id: ev_d5cd2720508e
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,6 +46,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 104
+    line: 175
 verified: {}
 manual: {}

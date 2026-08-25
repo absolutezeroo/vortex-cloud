@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2e7ad8380be5e23a030f58591a0c70e187c7b5c665714d87c8e3b9f806a09dc1"
+generated_digest: "sha256:df5594817521b09c1586ca84ba913886d6993e08bd7ca67020a159d2c4426bd5"
 generated:
   id: uk_d231da2687
   subject: "messenger.remove_friend: what the server sends when it refuses"
@@ -47,12 +47,12 @@ generated:
     source: Vortex.PacketHandlers/FriendList/RemoveFriendMessageHandler.cs
     symbol: RemoveFriendMessageHandler
     line: 15
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 382
+    line: 399
 verified: {}
 manual: {}

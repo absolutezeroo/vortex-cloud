@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:68c75db317ed48f422c090ea07b56cf27279734cdb759b47761a9b37c099f6fb"
+generated_digest: "sha256:493e0edeb6fb64e2488c3d62719203a098dfb23edbe176c6586b702bbd390f19"
 generated:
   id: uk_6a88910505
   subject: "outgoing/SanctionStatus: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SanctionStatus
   known_evidence:
+  - id: ev_497e6cb818cc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2056/_SafeCls_2564.as
+    symbol: _SafeCls_2564
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_88f3293174c2
     kind: reference_composer
     authority: reference_emulator

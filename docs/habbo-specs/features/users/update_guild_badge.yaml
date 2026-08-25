@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2c389833f98abaec946a782a2f3b903bb00bbc749e3f1f199caf1b52ad38e111"
+generated_digest: "sha256:030747002f501c597f9f4d7c4a9b60808811055d302db41306933aacebf5e8a6"
 generated:
   id: users.update_guild_badge
   domain: users
@@ -31,11 +31,11 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.UpdateBadgeAsync
-    evidence: ev_257d20d10bb7
+    evidence: ev_861d7eb0e4b2
   - order: 2
     layer: grain
     symbol: GroupDirectoryGrain.BuildBadgeCode
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -44,7 +44,7 @@ generated:
   - expression: parts.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   state_changes:
   - target: _grainFactory .GetGroupGrain(message.GroupId)
     value: _grainFactory .GetGroupGrain(message.GroupId) .UpdateBadgeAsync(ctx.PlayerId, message.BadgeParts, ct)
@@ -53,7 +53,7 @@ generated:
   - target: group.Badge
     value: GroupDirectoryGrain.BuildBadgeCode(badgeParts)
     observed_in: vortex
-    evidence: ev_257d20d10bb7
+    evidence: ev_861d7eb0e4b2
   outgoing:
     ordering: unknown
     packets:
@@ -67,13 +67,6 @@ generated:
       evidence: ev_d5f673c3c822
   reaches_persistence: false
   evidence:
-  - id: ev_257d20d10bb7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
-    symbol: GroupGrain
-    line: 82
   - id: ev_2adb91a04bcb
     kind: emulator_handler
     authority: vortex_emulator
@@ -81,13 +74,20 @@ generated:
     source: Vortex.PacketHandlers/Users/UpdateGuildBadgeMessageHandler.cs
     symbol: UpdateGuildBadgeMessageHandler
     line: 11
-  - id: ev_678209870593
+  - id: ev_861d7eb0e4b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupGrain.Settings.cs
+    symbol: GroupGrain
+    line: 82
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 762
+    line: 761
   - id: ev_d5f673c3c822
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bafac8c6ab8782c455e1976276914539fd058b32e70f51842d5b64a295121108"
+generated_digest: "sha256:bc88a9ee462aa0a26742cc8b988d613241d8347890b2aea514552e0de0ab7a6b"
 generated:
   name: TryVerificationCodeResult
   direction: outgoing
   domain: gifts
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: result_code
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a90964fc0725
+    - ev_19a47aae6265
   - index: 1
-    name: unknown_1
+    name: milliseconds_to_allow_process_reset
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a90964fc0725
+    - ev_19a47aae6265
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_19a47aae6265
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +56,14 @@ generated:
     - int32
     evidence: ev_a90964fc0725
   evidence:
+  - id: ev_19a47aae6265
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4148/_SafeCls_4233.as
+    symbol: _SafeCls_4233
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e275109142e1
     kind: client_parser
     authority: multi_implementation
@@ -66,7 +80,5 @@ generated:
     symbol: TryVerificationCodeResultMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_2c6cdaa60c
 verified: {}
 manual: {}

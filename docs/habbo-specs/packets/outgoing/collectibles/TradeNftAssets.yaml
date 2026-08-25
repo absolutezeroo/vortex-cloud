@@ -10,15 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c1290eed759002690834a0ea10f9c6293870b5d534ce013a33ff6aca0788357b"
+generated_digest: "sha256:00b2dd64f001ebdc74a66edf9ffd6a8a20b49c849e5f3035079af312d12707c8"
 generated:
   name: TradeNftAssets
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_4769f111f7c8
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_4769f111f7c8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_4769f111f7c8
   - origin: vortex
     authority: vortex_emulator
     field_count: 0
@@ -26,6 +50,14 @@ generated:
     types: []
     evidence: ev_b375df62a1e5
   evidence:
+  - id: ev_4769f111f7c8
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2726/_SafeCls_2725.as
+    symbol: _SafeCls_2725
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b375df62a1e5
     kind: emulator_serializer
     authority: vortex_emulator
@@ -33,5 +65,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Collectibles/TradeNftAssetsMessageComposerSerializer.cs
     symbol: TradeNftAssetsMessageComposerSerializer
     line: 9
+  unknowns:
+  - uk_92bf7af87d
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8c30ec16c28632fb48b8edd854cd93bad3417331798b6e57b1ddcb9087a074cf"
+generated_digest: "sha256:60f054c0eb373d3c2d6da4cbf88b3dc6eb49d7de9221dbf151f5ee325c8442a2"
 generated:
   name: NavigatorMetaData
   direction: outgoing
   domain: navigator
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_0cf5c1c2afa6
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_466d3d5406b5
   - origin: arcturus
     authority: reference_emulator
     field_count: 9
@@ -66,6 +73,14 @@ generated:
     symbol: NavigatorMetaDataParser
     line: 20
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_466d3d5406b5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1814/_SafeCls_2232.as
+    symbol: _SafeCls_2232
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a1c89cf55fb5
     kind: reference_composer
     authority: reference_emulator

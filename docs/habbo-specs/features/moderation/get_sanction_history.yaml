@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:04b0aedbfd174b03a642a651e2557ca22dbd7e451be2ac2fcfb39e29b3a4b6d8"
+generated_digest: "sha256:15a3d9df9ff1e45669785c819f5b307662e419da4671f69d70209d5899941d5b"
 generated:
   id: moderation.get_sanction_history
   domain: moderation
@@ -61,7 +61,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 511
+    line: 528
   - id: ev_b79590e81136
     kind: emulator_handler
     authority: vortex_emulator

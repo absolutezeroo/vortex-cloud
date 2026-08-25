@@ -10,175 +10,59 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:400df0d0174c61fb198181f4de2052692683c3c2d690b00a6c44db18edf8f3cb"
+generated_digest: "sha256:724bda80eee37b1487bfa4903009dd4f4b2ede4aee15d177f9a229d14e5aa9f4"
 generated:
   name: FriendListUpdate
   direction: outgoing
   domain: messenger
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: count
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
+    - ev_6dad5605a748
   - index: 1
-    name: id
+    name: unknown_1
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
+    - ev_6dad5605a748
   - index: 2
-    name: name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
+    - ev_6dad5605a748
   - index: 3
-    name: count
+    name: unknown_3
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 4
-    name: action_type
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 5
-    name: friend_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 6
-    name: player_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 7
-    name: name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 8
-    name: gender
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 9
-    name: online
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 10
-    name: following_allowed
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 11
-    name: figure
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 12
-    name: category_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 13
-    name: motto
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 14
-    name: real_name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 15
-    name: facebook_id
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 16
-    name: persisted_message_user
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 17
-    name: vip_member
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 18
-    name: pocket_habbo_user
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
-  - index: 19
-    name: relationship_status
-    type: short
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_41448effbcc6
-    - ev_d9fec1cc4282
+    - ev_6dad5605a748
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_6dad5605a748
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -222,6 +106,14 @@ generated:
     - array
     evidence: ev_d9fec1cc4282
   evidence:
+  - id: ev_6dad5605a748
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2817.as
+    symbol: _SafeCls_2817
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d3ddccd34dec
     kind: client_parser
     authority: multi_implementation
@@ -247,5 +139,7 @@ generated:
     line: 9
   conflicts:
   - cf_be53a47adf
+  unknowns:
+  - uk_7a680ca50f
 verified: {}
 manual: {}

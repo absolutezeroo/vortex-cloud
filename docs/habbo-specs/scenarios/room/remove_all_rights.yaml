@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:24db9c4478587ada4b5039ef07cd0b03cdd4a8d20388b4d67deaa3f6238c962b"
+generated_digest: "sha256:1ebabedcba947944a3a1f11727f80cc02788183a0be3898c43027ee80c1a81f1"
 generated:
   feature: room.remove_all_rights
   scenarios:
@@ -134,6 +134,30 @@ generated:
       emits:
       - NoSuchFlat
       evidence: ev_c808b5968e2d
+  - scenario: room.remove_all_rights.guard_5
+    title: "remove all rights: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RemoveAllRights
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RemoveAllRights sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - NoSuchFlat
+      evidence: ev_c808b5968e2d
   - scenario: room.remove_all_rights.success
     title: "remove all rights: the request is accepted"
     given:
@@ -184,7 +208,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 493
+    line: 544
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_5db4694a10c2
     kind: emulator_flow
     authority: vortex_emulator

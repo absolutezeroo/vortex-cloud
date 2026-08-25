@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:cfa2973cee266232be35dd292746747793fe326cab18e77a9871822f6d6ecd0a"
+generated_digest: "sha256:202e796b28f2bab5a0cfca4f6b0829e9939f428edd762f30ccf1ef5379f24224"
 generated:
   id: uk_7cbcaeeb8d
   subject: "inventory.get_pet_inventory: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Pets.cs
     symbol: InventoryGrain
-    line: 106
+    line: 131
   - id: ev_c8c1d68678a8
     kind: emulator_handler
     authority: vortex_emulator

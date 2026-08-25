@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4b5d566eb6bd9d8826b4b00e25f8a4cad20873d40abb21db69d31f6c3c5256d4"
+generated_digest: "sha256:f1cda38837f63d8f933ddac23a85f034448a3c53d4936e449be1abce76d14f79"
 generated:
   id: uk_fb2288e8d5
   subject: "outgoing/GuestRoomSearchResult: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GuestRoomSearchResult
   known_evidence:
+  - id: ev_c94d082fb71f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4150.as
+    symbol: _SafeCls_4150
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_674bdd566a6a
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: GuestRoomSearchResultMessageComposer
     line: 34
     note: third-party server implementation; evidence, not authority
-  - id: ev_eab2e4f923ea
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/GuestRoomSearchResultMessageComposerSerializer.cs
-    symbol: GuestRoomSearchResultMessageComposerSerializer
-    line: 8
 verified: {}
 manual: {}

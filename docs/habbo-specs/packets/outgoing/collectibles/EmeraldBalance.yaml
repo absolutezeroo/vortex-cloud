@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:456768ba263dbbb0210de959b013a251f3dcc91f787890964a2af78ca9e717a8"
+generated_digest: "sha256:f9b9fe3173cc7004d5688405714bd2034433e5b769b2fd7fda4a49c63dad19af"
 generated:
   name: EmeraldBalance
   direction: outgoing
   domain: collectibles
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: emerald_balance
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_821b5987f89c
+    - ev_12af9a84e6af
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_12af9a84e6af
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -42,6 +48,14 @@ generated:
     - int32
     evidence: ev_455d93dd375f
   evidence:
+  - id: ev_12af9a84e6af
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_1841.as
+    symbol: _SafeCls_1841
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_821b5987f89c
     kind: client_parser
     authority: multi_implementation

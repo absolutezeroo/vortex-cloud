@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:79f216d28f752487b13441526363cf2b61bcf34c45ee9e2d9bdd697e79528ab9"
+generated_digest: "sha256:85e304090fc2e266bc16411e1da070c93c7dc5cdf565f3de1eda9ab4667c781f"
 generated:
   id: uk_e338fbf6e0
   subject: "outgoing/GiftWrappingConfiguration: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
+  question: Fields 2, 4, 6, 8 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: GiftWrappingConfiguration
   known_evidence:
+  - id: ev_830fa8a25011
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3083.as
+    symbol: _SafeCls_3083
+    line: 62
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c6ccfca7beab
     kind: reference_composer
     authority: reference_emulator

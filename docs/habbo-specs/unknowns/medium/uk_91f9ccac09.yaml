@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3fde3c417f4ea7d21c178d5add02aa80c9ebba8c52a54cd2e3355aca74fdc7b8"
+generated_digest: "sha256:3eecb86e9671c53554ebd2ea8ec380161da6e4b253704290a7ff303ebb3b0121"
 generated:
   id: uk_91f9ccac09
   subject: "marketplace.buy_marketplace_offer: what the server sends when it refuses"
@@ -26,13 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/BuyMarketplaceOfferMessageHandler.cs
     symbol: BuyMarketplaceOfferMessageHandler
     line: 22
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_69c38a5cc246
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,26 +47,12 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/BuyMarketplaceOfferMessageHandler.cs
     symbol: BuyMarketplaceOfferMessageHandler
     line: 11
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
-  - id: ev_c6396662000a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
-    symbol: InventoryGrain
-    line: 586
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 138
+    line: 256
 verified: {}
 manual: {}

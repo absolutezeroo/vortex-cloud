@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0b67df7ec8f6ced525a49b6ae22a04cb8c257fa3fa5f7127bcd8bd7ea1ebe375"
+generated_digest: "sha256:4a9e37c9cc05ab09f383f971ec40130b7a0d2b42f4dc3df207e5f928731742e2"
 generated:
   id: cf_aa413c1aee
   kind: field_count
@@ -21,6 +21,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32"
     evidence: ev_dffc2446d38f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32"
+    evidence: ev_208b65d57932
   - origin: arcturus
     authority: reference_emulator
     claim: "4 fields: int32, int32, int32, string"
@@ -30,6 +34,14 @@ generated:
     claim: "3 fields: int32, int32, array"
     evidence: ev_66f4fabfaf4f
   evidence:
+  - id: ev_208b65d57932
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_3342.as
+    symbol: _SafeCls_3342
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dffc2446d38f
     kind: client_parser
     authority: client_code

@@ -10,39 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:56919d65335af2923c9a01f6b42309d296558abd5ffa49a4fb81ca664b8d078f"
+generated_digest: "sha256:0834641c1a3c6817fc2171f54a400a336aceaa1ef5b14a94a52bdef189b9ec08"
 generated:
   name: FlatControllerAdded
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: flat_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_4e91f01e3e5b
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_4e91f01e3e5b
-  - index: 2
-    name: unknown_2
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_4e91f01e3e5b
+    - ev_21165f2f8a17
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_21165f2f8a17
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +43,14 @@ generated:
     - string
     evidence: ev_4e91f01e3e5b
   evidence:
+  - id: ev_21165f2f8a17
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3956.as
+    symbol: _SafeCls_3956
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4e91f01e3e5b
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +59,7 @@ generated:
     symbol: FlatControllerAddedMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_e67cac47ac
+  conflicts:
+  - cf_7720577fa3
 verified: {}
 manual: {}

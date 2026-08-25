@@ -10,47 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2f3252697cde17ee1dafdf9c0c769f0b56154b9f203694b87d5d45df5c5949df"
+generated_digest: "sha256:369c60a94b9515e934e2573440effcc9ae9f9c86791d0e5d073d43edffe8062a"
 generated:
   name: GuideOnDutyStatus
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: on_duty
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c804ff9e36d4
-    - ev_bceb073f8257
+    - ev_254f26f9b01d
   - index: 1
     name: guides_on_duty
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c804ff9e36d4
-    - ev_bceb073f8257
+    - ev_254f26f9b01d
   - index: 2
     name: helpers_on_duty
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c804ff9e36d4
-    - ev_bceb073f8257
+    - ev_254f26f9b01d
   - index: 3
     name: guardians_on_duty
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_c804ff9e36d4
-    - ev_bceb073f8257
+    - ev_254f26f9b01d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - int32
+    evidence: ev_254f26f9b01d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -78,6 +84,14 @@ generated:
     - int32
     evidence: ev_bceb073f8257
   evidence:
+  - id: ev_254f26f9b01d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4073.as
+    symbol: _SafeCls_4073
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2d18293f4bb2
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d7ce70b925b0be90fc47c048ee548b1edaae29d7af6855b0f119f38b02108b91"
+generated_digest: "sha256:feb86365c5f26124217828f10f0d43f4efd19df256261e22d5c9fb1a3dbacfab"
 generated:
   feature: quest.start_campaign
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f7df1e322a73
+      evidence: ev_3e19f38401db
   - scenario: quest.start_campaign.success
     title: "start campaign: the request is accepted"
     given:
@@ -77,6 +77,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 180
   - id: ev_e80416fbe3e6
     kind: emulator_flow
     authority: vortex_emulator
@@ -84,12 +91,5 @@ generated:
     source: Vortex.PacketHandlers/Quest/StartCampaignMessageHandler.cs
     symbol: StartCampaignMessageHandler
     line: 23
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 177
 verified: {}
 manual: {}

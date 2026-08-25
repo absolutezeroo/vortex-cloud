@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:90368466793207805b69d1e9e29dfa3fde5041cd38237d5dc2ef72c7d0d045ce"
+generated_digest: "sha256:6b131f432940e29c946a32b3236e06e12fba4e4f9fe4d410bf2a167ddbbc7241"
 generated:
   id: room.dance
   domain: room
@@ -141,6 +141,8 @@ generated:
   - room.dance.guard_4
   - room.dance.guard_5
   - room.dance.success
+  conflicts:
+  - cf_f551be9676
   unknowns:
   - uk_178f0b2a69
 verified: {}

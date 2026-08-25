@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:33a6d5cf9c9bd7f93ff67cae5e051ae0caee0f42b2100bdc4ddbc4ca650d5107"
+generated_digest: "sha256:f207e4bbcd2efd7c2f11a87b2fbb05c69e18b6b92b94b2a0ef32ced10f46803b"
 generated:
   feature: room.present_open
   scenarios:
@@ -73,23 +73,23 @@ generated:
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
   - scenario: room.present_open.guard_10
-    title: "present open: the guard 'match is not null' holds"
+    title: "present open: the guard '!isMember' holds"
     given:
-      guard: match is not null
+      guard: "!isMember"
       guard_holds: "true"
     when:
       packet: PresentOpen
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while 'match is not null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PresentOpen sent while '!isMember' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5e99184ee3a3
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -102,23 +102,23 @@ generated:
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
   - scenario: room.present_open.guard_11
-    title: "present open: the guard '_registry is null' holds"
+    title: "present open: the guard 'group is null' holds"
     given:
-      guard: _registry is null
+      guard: group is null
       guard_holds: "true"
     when:
       packet: PresentOpen
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PresentOpen sent while 'group is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_34bf3ac088e2
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -189,6 +189,35 @@ generated:
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
   - scenario: room.present_open.guard_4
+    title: "present open: the guard '!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)' holds"
+    given:
+      guard: "!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)"
+      guard_holds: "true"
+    when:
+      packet: PresentOpen
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PresentOpen sent while '!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_5e51a330c801
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - Whisper
+      - UnseenItems
+      - FurniListInvalidate
+      - PresentOpened
+      - ObjectRemove
+      - HeightMapUpdate
+      evidence: ev_32e21d9223f1
+  - scenario: room.present_open.guard_5
     title: "present open: the guard '!_ctx.RoomObject.ExtraData.TryGetSection( ExtraDataSectio...' holds"
     given:
       guard: "!_ctx.RoomObject.ExtraData.TryGetSection( ExtraDataSectionType.PRESENT, out JsonElement element )"
@@ -217,7 +246,7 @@ generated:
       - ObjectRemove
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_5
+  - scenario: room.present_open.guard_6
     title: "present open: the guard '_root.ValueKind != JsonValueKind.Object' holds"
     given:
       guard: _root.ValueKind != JsonValueKind.Object
@@ -246,7 +275,36 @@ generated:
       - ObjectRemove
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_6
+  - scenario: room.present_open.guard_7
+    title: "present open: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: PresentOpen
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PresentOpen sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - Whisper
+      - UnseenItems
+      - FurniListInvalidate
+      - PresentOpened
+      - ObjectRemove
+      - HeightMapUpdate
+      evidence: ev_32e21d9223f1
+  - scenario: room.present_open.guard_8
     title: "present open: the guard 'offer is null' holds"
     given:
       guard: offer is null
@@ -275,7 +333,7 @@ generated:
       - ObjectRemove
       - HeightMapUpdate
       evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_7
+  - scenario: room.present_open.guard_9
     title: "present open: the guard 'groupId <= 0' holds"
     given:
       guard: groupId <= 0
@@ -292,65 +350,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - Whisper
-      - UnseenItems
-      - FurniListInvalidate
-      - PresentOpened
-      - ObjectRemove
-      - HeightMapUpdate
-      evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_8
-    title: "present open: the guard '!isMember' holds"
-    given:
-      guard: "!isMember"
-      guard_holds: "true"
-    when:
-      packet: PresentOpen
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while '!isMember' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_678209870593
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - Whisper
-      - UnseenItems
-      - FurniListInvalidate
-      - PresentOpened
-      - ObjectRemove
-      - HeightMapUpdate
-      evidence: ev_32e21d9223f1
-  - scenario: room.present_open.guard_9
-    title: "present open: the guard 'group is null' holds"
-    given:
-      guard: group is null
-      guard_holds: "true"
-    when:
-      packet: PresentOpen
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while 'group is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -378,12 +378,9 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AvatarEffectAdded
       - BadgeReceivedEvent
-      - BotAddedToInventoryEvent
-      - PetAddedToInventoryEvent
       - PresentOpened
-      evidence: ev_0f9ffda870b1
+      evidence: ev_0c987f4ea07c
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -404,6 +401,13 @@ generated:
     symbol: PresentOpenMessageEvent
     line: 19
     note: third-party server implementation; evidence, not authority
+  - id: ev_0c987f4ea07c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
+    symbol: CatalogFulfillmentPlanner
+    line: 53
   - id: ev_0f9ffda870b1
     kind: emulator_flow
     authority: vortex_emulator
@@ -424,21 +428,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 430
-  - id: ev_5e99184ee3a3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 43
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 589
+    line: 431
   - id: ev_845cc9ed930f
     kind: emulator_flow
     authority: vortex_emulator
@@ -453,6 +443,13 @@ generated:
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.Gift.cs
     symbol: CatalogPurchaseGrain
     line: 190
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 602
   - id: ev_dfd698b29c69
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5c86cc818115ce3b8e3c007c7b1cda400038a28a441f12775e6b895e1ce3d8da"
+generated_digest: "sha256:55e0ccaa2e600623dc43a8b9f5838997222fb9703f5383249bf9f72280e8b0c9"
 generated:
   feature: users.get_guild_edit_info
   scenarios:
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -103,7 +103,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -151,11 +151,11 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildEditInfoMessageHandler.cs
     symbol: GetGuildEditInfoMessageHandler
     line: 12
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 256
   - id: ev_9da2e97c6ed0

@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:60063ad2ff4270e70b37c311308e4ca61fb9a110e1ccb9addd153cebcfd0c356"
+generated_digest: "sha256:9df17ad26f580ed6ae3951b6236b9266258e89aa71fb3cfc1ce882a9ef81607c"
 generated:
   id: cf_52f961c99d
   kind: field_count
   subject: "outgoing/InstantMessageError: field count"
   packet: InstantMessageError
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "3 fields: int32, int32, string"
+    evidence: ev_7dfa4725aa5a
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: int32, string"
+    claim: "1 fields: int32, string"
     evidence: ev_ed7932978d58
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "3 fields: int32, int32, string"
     evidence: ev_5545fefaab05
   evidence:
+  - id: ev_7dfa4725aa5a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2207.as
+    symbol: _SafeCls_2207
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ed7932978d58
     kind: client_parser
     authority: multi_implementation

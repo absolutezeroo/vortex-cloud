@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:70135fac974fec0f0c09cd095b7466d78d082b608432319c73eb351f7c774da4"
+generated_digest: "sha256:b8fe37fed9bcd2cec5985ede104582b5096a5ce2281acf328667ee2d11ad5909"
 generated:
   name: CraftingRecipe
   direction: outgoing
   domain: crafting
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_b94d7353a6b1
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_5eece20fd017
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +57,14 @@ generated:
     - string
     evidence: ev_7307917c57a9
   evidence:
+  - id: ev_5eece20fd017
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3516/_SafeCls_4240.as
+    symbol: _SafeCls_4240
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b94d7353a6b1
     kind: client_parser
     authority: client_code

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a9f08e1e40ebc544dde3409775d651f4f9c0c1b9716886e0834586f8f34dfdd3"
+generated_digest: "sha256:5c835ccc95e17535643ba2d48a9d8ab469c93e450f061c22d10256de16973dbe"
 generated:
   id: nux.create_room
   domain: nux
@@ -39,6 +39,10 @@ generated:
     layer: service
     symbol: RoomService.CreateRoomAsync
     evidence: ev_f8d4827f4b8f
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -52,6 +56,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7f41f2bdde62
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -62,6 +70,13 @@ generated:
       evidence: ev_aa7fca1e0066
   reaches_persistence: true
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -96,11 +111,12 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 18
+    line: 19
   scenarios:
   - nux.create_room.guard_0
   - nux.create_room.guard_1
   - nux.create_room.guard_2
+  - nux.create_room.guard_3
   - nux.create_room.success
   unknowns:
   - uk_7d0d1edda5

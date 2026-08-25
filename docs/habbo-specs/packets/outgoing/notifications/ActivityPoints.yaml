@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:921027329dcc21426fc904373c30e00ce21ed4586da443a93e955ebb2db5bdb6"
+generated_digest: "sha256:8b38469e430f8a7239cb8c2cde3463ec5b8e2ac8c42848c4ce01ebf728eaf8b3"
 generated:
   name: ActivityPoints
   direction: outgoing
   domain: notifications
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
@@ -54,6 +54,15 @@ generated:
     - int32
     - int32
     evidence: ev_6a56b407366e
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_678716c8cec7
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -79,6 +88,14 @@ generated:
     - int32
     evidence: ev_f57ac38aead2
   evidence:
+  - id: ev_678716c8cec7
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3862.as
+    symbol: _SafeCls_3862
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6a56b407366e
     kind: client_parser
     authority: client_code
@@ -110,5 +127,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Notifications/ActivityPointsMessageComposerSerializer.cs
     symbol: ActivityPointsMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_f4d95069c1
 verified: {}
 manual: {}

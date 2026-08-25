@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:51ca836a59b981bd34ec438ead8978aa9ae885d2be74cfddc14efdc874ab8492"
+generated_digest: "sha256:555300235775068e3c962fe9519850759c7e3211a6907920e6c7002df2d7dd11"
 generated:
   id: uk_b81a4f55c0
   subject: "outgoing/TalentTrack: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TalentTrack
   known_evidence:
+  - id: ev_2fbd997f6c06
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2740/_SafeCls_4217.as
+    symbol: _SafeCls_4217
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_48c09499e2ad
     kind: client_parser
     authority: multi_implementation

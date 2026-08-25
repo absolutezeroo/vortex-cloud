@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c936dadb28e1b230401d13354fa74f260851979717757ada033660ce565bb030"
+generated_digest: "sha256:e9a496ce816b9c563a2123ed2f7dfadee26ad34a782eb7417acc9326dbbf88dc"
 generated:
   id: uk_0f3958c4bc
   subject: "messenger.send_msg: what the server sends when it refuses"
@@ -26,6 +26,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_564bd0580d41
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
+    symbol: MessengerGrain
+    line: 25
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator
@@ -33,13 +40,6 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendMsgMessageHandler.cs
     symbol: SendMsgMessageHandler
     line: 24
-  - id: ev_c0304e5ad0cf
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
-    symbol: MessengerGrain
-    line: 25
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

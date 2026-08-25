@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:94894a4133382d8e9710e0af07463abf05145331fd3424367b477a0082776d53"
+generated_digest: "sha256:192792cbb5d999553a7ea97919887449cec31f6bed40ff1950d612894b17074c"
 generated:
   id: quest.get_community_goal_hall_of_fame
   domain: quest
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: CommunityGoalGrain.SendHallOfFameAsync
-    evidence: ev_4875f459ad01
+    evidence: ev_faf5e938e0d5
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -43,7 +43,7 @@ generated:
   - expression: _goal is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_4875f459ad01
+    evidence: ev_faf5e938e0d5
   state_changes: []
   outgoing:
     ordering: unknown
@@ -51,16 +51,9 @@ generated:
     - packet: CommunityGoalHallOfFame
       recipient: unknown
       recipient_confidence: unknown
-      evidence: ev_4875f459ad01
+      evidence: ev_faf5e938e0d5
   reaches_persistence: false
   evidence:
-  - id: ev_4875f459ad01
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
-    symbol: CommunityGoalGrain
-    line: 101
   - id: ev_73ea6f9acd43
     kind: emulator_handler
     authority: vortex_emulator
@@ -82,6 +75,13 @@ generated:
     source: Vortex.Rooms/Wired/WiredActionBranch.cs
     symbol: WiredActionBranch
     line: 23
+  - id: ev_faf5e938e0d5
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
+    symbol: CommunityGoalGrain
+    line: 101
   scenarios:
   - quest.get_community_goal_hall_of_fame.guard_0
   - quest.get_community_goal_hall_of_fame.guard_1

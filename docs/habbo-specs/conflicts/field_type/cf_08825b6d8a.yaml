@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:04c9a3dda62b78b46baed527f3519cd3b3ce3fd006b8f9936865fb5c9aec3a59"
+generated_digest: "sha256:bc0c3f0c7dc37e833f76ccfd3b0b12ee1a39a9359cf5ce836992b38526fc3d78"
 generated:
   id: cf_08825b6d8a
   kind: field_type
   subject: "outgoing/IgnoreResult: type of field 1"
   packet: IgnoreResult
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "ignored_user_id: int32"
+    evidence: ev_c19676e30531
   - origin: nitro
     authority: multi_implementation
     claim: "user_id: int32"
@@ -30,6 +34,14 @@ generated:
     claim: "result_code: int32"
     evidence: ev_4b512ec8fb82
   evidence:
+  - id: ev_c19676e30531
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4394.as
+    symbol: _SafeCls_4394
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a74d45ef0f43
     kind: client_parser
     authority: multi_implementation

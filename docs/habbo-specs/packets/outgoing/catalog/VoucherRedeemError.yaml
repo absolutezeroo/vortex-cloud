@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0e2578fc1a3308323ff6c9a0e93065534cc6587bde7d3290648107f9364adefa"
+generated_digest: "sha256:cf2e04ef6dc0da9f7a096bb4e9a20cae7c95203f3801793e21d5f41b51f1b2fe"
 generated:
   name: VoucherRedeemError
   direction: outgoing
   domain: catalog
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_31731f65e145
-    - ev_6f00d5fa982b
+    - ev_6e77d6ae6904
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_6e77d6ae6904
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - string
     evidence: ev_6f00d5fa982b
   evidence:
+  - id: ev_6e77d6ae6904
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3476.as
+    symbol: _SafeCls_3476
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_439be59d70d7
     kind: client_parser
     authority: multi_implementation

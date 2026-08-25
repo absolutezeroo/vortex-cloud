@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:964f02c975dcad07dc5d03d3cf218a14e746301a464ded97149d9d2e715e5260"
+generated_digest: "sha256:9c3ed95f1f5e8232e4dd515115ef1bc1be6e4da21953dd865ecde42ed019037a"
 generated:
   feature: users.create_guild
   scenarios:
@@ -72,64 +72,6 @@ generated:
       - PurchaseOK
       - GuildCreated
       evidence: ev_2b31ac43a317
-  - scenario: users.create_guild.guard_10
-    title: "create guild: the guard 'failure is not null' holds"
-    given:
-      guard: failure is not null
-      guard_holds: "true"
-    when:
-      packet: CreateGuild
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of CreateGuild sent while 'failure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_d0cb8ee11644
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildEditFailed
-      - PurchaseError
-      - GuildEditFailed
-      - GuildEditFailed
-      - PurchaseOK
-      - GuildCreated
-      evidence: ev_2b31ac43a317
-  - scenario: users.create_guild.guard_11
-    title: "create guild: the guard 'snapshot is null' holds"
-    given:
-      guard: snapshot is null
-      guard_holds: "true"
-    when:
-      packet: CreateGuild
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of CreateGuild sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_432f3c2b73af
-    - origin: arcturus
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildEditFailed
-      - PurchaseError
-      - GuildEditFailed
-      - GuildEditFailed
-      - PurchaseOK
-      - GuildCreated
-      evidence: ev_2b31ac43a317
   - scenario: users.create_guild.guard_2
     title: "create guild: the guard 'preflightRoom is null || preflightRoom.PlayerEntityId != ...' holds"
     given:
@@ -147,7 +89,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -176,7 +118,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -205,7 +147,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -234,7 +176,7 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -263,7 +205,7 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -292,7 +234,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -305,23 +247,23 @@ generated:
       - GuildCreated
       evidence: ev_2b31ac43a317
   - scenario: users.create_guild.guard_8
-    title: "create guild: the guard '!debitResult.Succeeded' holds"
+    title: "create guild: the guard 'credits <= 0 || _state.ClubLevel == 0' holds"
     given:
-      guard: "!debitResult.Succeeded"
+      guard: credits <= 0 || _state.ClubLevel == 0
       guard_holds: "true"
     when:
       packet: CreateGuild
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of CreateGuild sent while '!debitResult.Succeeded' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of CreateGuild sent while 'credits <= 0 || _state.ClubLevel == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_0b56492f6260
+      evidence: ev_1f83e61934ca
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -334,23 +276,23 @@ generated:
       - GuildCreated
       evidence: ev_2b31ac43a317
   - scenario: users.create_guild.guard_9
-    title: "create guild: the guard 'update.ChangedBy != request.Amount' holds"
+    title: "create guild: the guard '_registry is null' holds"
     given:
-      guard: update.ChangedBy != request.Amount
+      guard: _registry is null
       guard_holds: "true"
     when:
       packet: CreateGuild
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of CreateGuild sent while 'update.ChangedBy != request.Amount' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of CreateGuild sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
+      outcome: ignored
       emits: []
-      evidence: ev_d0cb8ee11644
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -378,12 +320,8 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CreditBalanceEvent
-      - EmeraldBalance
       - GuildCreated
-      - HabboActivityPointNotification
-      - SilverBalance
-      evidence: ev_0b56492f6260
+      evidence: ev_1f83e61934ca
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -404,27 +342,20 @@ generated:
     symbol: CreateGuildMessageEvent
     line: 23
     note: third-party server implementation; evidence, not authority
-  - id: ev_0b56492f6260
+  - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 44
-  - id: ev_432f3c2b73af
+    source: Vortex.Players/Grains/PlayerGrain.cs
+    symbol: PlayerGrain
+    line: 658
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 116
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_abaf62c0326b
     kind: emulator_flow
     authority: vortex_emulator
@@ -432,12 +363,12 @@ generated:
     source: Vortex.PacketHandlers/Users/CreateGuildMessageHandler.cs
     symbol: CreateGuildMessageHandler
     line: 22
-  - id: ev_d0cb8ee11644
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 137
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 115
 verified: {}
 manual: {}

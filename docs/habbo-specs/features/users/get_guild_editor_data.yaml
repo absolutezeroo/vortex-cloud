@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:418ae721972cd49e20366dd40c46c3b8723eefd39e0b11cea0c2d73fb9bc9ec2"
+generated_digest: "sha256:6bf615bc463c639594055b557805d9443d506a7b42a5083a860cd64fc377ed7e"
 generated:
   id: users.get_guild_editor_data
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupDirectoryGrain.GetEditorDataAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -54,13 +54,13 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildEditorDataMessageHandler.cs
     symbol: GetGuildEditorDataMessageHandler
     line: 23
-  - id: ev_678209870593
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 383
+    line: 382
   - id: ev_fb9de280c34e
     kind: emulator_handler
     authority: vortex_emulator

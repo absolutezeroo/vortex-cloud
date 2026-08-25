@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4e7af6d4455330260f12b34da86b011b68e9ffb5021561b6217d5fe66bb61768"
+generated_digest: "sha256:49f1ca693f88ed222e5baeb79d119c6bc2d22e2d8e5a30b61d57347e1f4b7446"
 generated:
   id: groups.get_forum_stats
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.GetForumAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -44,12 +44,12 @@ generated:
   - expression: group is null || group.ForumSettings is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   state_changes:
   - target: up
     value: up.SetProperty(s => s.ViewCount, s => s.ViewCount + 1)
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   outgoing:
     ordering: unknown
     packets:
@@ -66,11 +66,11 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetForumStatsMessageHandler.cs
     symbol: GetForumStatsMessageHandler
     line: 12
-  - id: ev_76106ea21309
+  - id: ev_da3ad2e8d895
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
+    source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
     line: 78
   - id: ev_e94df27f06cd

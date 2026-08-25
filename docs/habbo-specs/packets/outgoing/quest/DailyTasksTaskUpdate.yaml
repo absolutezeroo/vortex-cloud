@@ -10,43 +10,53 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3cfc8fbf7b951e551fcb1db87ede554afb26cf6546af56673b11fe584baaedd8"
+generated_digest: "sha256:e5beb7dfa2ce828ca36b7596ac9ddd0c146ee8b92859289fafbe7e285c482542"
 generated:
   name: DailyTasksTaskUpdate
   direction: outgoing
   domain: quest
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: task_id
     type: long
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3c120c789d08
+    - ev_f5d9b9a1984a
   - index: 1
     name: repeats
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3c120c789d08
+    - ev_f5d9b9a1984a
   - index: 2
     name: status
     type: byte
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3c120c789d08
+    - ev_f5d9b9a1984a
   - index: 3
     name: seconds_left
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3c120c789d08
+    - ev_f5d9b9a1984a
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - long
+    - int32
+    - byte
+    - int32
+    evidence: ev_f5d9b9a1984a
   - origin: vortex
     authority: vortex_emulator
     field_count: 4
@@ -58,6 +68,14 @@ generated:
     - int32
     evidence: ev_3c120c789d08
   evidence:
+  - id: ev_f5d9b9a1984a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2992/_SafeCls_3575.as
+    symbol: _SafeCls_3575
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3c120c789d08
     kind: emulator_serializer
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b3a9ee6037820ce69416ca5b99cc1e5c8fcd02d5ec6af3e14ed23f2306370c9d"
+generated_digest: "sha256:a918ce55fb5367e8f2e98c9f5f1eb239ba10969884b00c1e294bb523b49b4bd9"
 generated:
   feature: navigator.set_room_session_tags
   scenarios:
@@ -86,6 +86,24 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
+  - scenario: navigator.set_room_session_tags.guard_4
+    title: "set room session tags: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SetRoomSessionTags
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetRoomSessionTags sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: navigator.set_room_session_tags.success
     title: "set room session tags: the request is accepted"
     given:
@@ -117,6 +135,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 554
+    line: 614
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
 verified: {}
 manual: {}

@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:57816a003779fe8fc9903009426fd9287e38d2270142dd689c1648e627290326"
+generated_digest: "sha256:1f0723e3e5c1f041800dc95ef96da8a1e0ec78b3b11f7e926c6f20418e5e0ce4"
 generated:
   id: uk_31064e1893
   subject: "outgoing/BotInventory: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 0 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BotInventory
   known_evidence:
+  - id: ev_7dd2f7225ab1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3095/_SafeCls_3735.as
+    symbol: _SafeCls_3735
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0fe9cc81d066
     kind: reference_composer
     authority: reference_emulator

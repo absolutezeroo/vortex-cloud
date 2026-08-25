@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:06dc2fff3159626702963a5d57ca158e5ca49c20ef4b443b4be33fbc81d3eb20"
+generated_digest: "sha256:58498288b9e9d8e97106cb929f078ed5e675f5783a4f6f2b719d20b4c20821de"
 generated:
   id: uk_03a18840b6
   subject: "users.scr_get_kickback_info: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 393
+    line: 408
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator

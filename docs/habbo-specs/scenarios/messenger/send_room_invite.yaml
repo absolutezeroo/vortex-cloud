@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3a7b5eade7b2c6e52351553c47752edd9201249529642d9dc5fb54645df795c9"
+generated_digest: "sha256:2a99e1935be5ee6516e3a598a73aa8ab6eef553aa57607eaeaa4e1e2484cf8dd"
 generated:
   feature: messenger.send_room_invite
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_55e9c6b16f82
+      evidence: ev_8db29db3d5af
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -106,11 +106,11 @@ generated:
     source: Vortex.PacketHandlers/FriendList/SendRoomInviteMessageHandler.cs
     symbol: SendRoomInviteMessageHandler
     line: 29
-  - id: ev_55e9c6b16f82
+  - id: ev_8db29db3d5af
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Presence.cs
+    source: Vortex.Social/Grains/MessengerGrain.Presence.cs
     symbol: MessengerGrain
     line: 147
 verified: {}

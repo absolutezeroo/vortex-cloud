@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:65873cf53db402fae42c1a178f0d2f8091fd0b88eaabf7a418d80e81e6328a4b"
+generated_digest: "sha256:ed5f308b2e1c8cd1e2b5d2844eb626ba2793c1ca2998b87e1289043dc13c79e9"
 generated:
   name: RoomEventCancel
   direction: outgoing
@@ -26,6 +26,12 @@ generated:
     evidence:
     - ev_4c05c9dd80b8
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_24621bec6a86
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -46,6 +52,14 @@ generated:
     - int32
     evidence: ev_4c05c9dd80b8
   evidence:
+  - id: ev_24621bec6a86
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_4259.as
+    symbol: _SafeCls_4259
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_46674f9e8069
     kind: client_parser
     authority: multi_implementation

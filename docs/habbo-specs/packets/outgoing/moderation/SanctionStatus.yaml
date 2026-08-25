@@ -10,119 +10,60 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0c02c149e4e43e85ac1b847b0fc873abab359fe210699af51a1314c7500739f2"
+generated_digest: "sha256:c1feca835fcf9122ddc95569b534be8c2f738113c2ce35a10c96cb4d8d96bb38"
 generated:
   name: SanctionStatus
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
     name: unknown_0
-    type: boolean
+    type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_88f3293174c2
+    - ev_497e6cb818cc
   - index: 1
     name: unknown_1
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 2
-    name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_88f3293174c2
+    - ev_497e6cb818cc
+  - index: 2
+    name: unknown_2
+    type: boolean
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_497e6cb818cc
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_88f3293174c2
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 5
-    name: unknown_5
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 6
-    name: unknown_6
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 8
-    name: unknown_8
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 10
-    name: unknown_10
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 11
-    name: unknown_11
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
-  - index: 12
-    name: unknown_12
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_88f3293174c2
+    - ev_497e6cb818cc
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - boolean
+    - int32
+    evidence: ev_497e6cb818cc
   - origin: arcturus
     authority: reference_emulator
     field_count: 13
@@ -143,6 +84,14 @@ generated:
     - string
     evidence: ev_88f3293174c2
   evidence:
+  - id: ev_497e6cb818cc
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2056/_SafeCls_2564.as
+    symbol: _SafeCls_2564
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_88f3293174c2
     kind: reference_composer
     authority: reference_emulator
@@ -151,6 +100,8 @@ generated:
     symbol: SanctionStatusMessageComposer
     line: 26
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_10ab151d59
   unknowns:
   - uk_6a88910505
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2b3efcf6feb0bc2cc471d3b0d01b0e6b633f0dd739517fadd903e1cc0dcc044f"
+generated_digest: "sha256:55a25c4a399a9f2998663da2e1c35b0773bdd406da9e7998e94754f9b38144d7"
 generated:
   id: uk_0e945d0054
   subject: "users.reject_membership_request: what the server sends when it refuses"
@@ -33,11 +33,11 @@ generated:
     source: Vortex.PacketHandlers/Users/RejectMembershipRequestMessageHandler.cs
     symbol: RejectMembershipRequestMessageHandler
     line: 22
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 178
   - id: ev_e5502868685f

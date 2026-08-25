@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c68d8f7a311ee184cb7627fcb260a525753e6d75b175c4e9df6b215b6eac5a40"
+generated_digest: "sha256:bc8943996a1a13c47ddcd0d2fcd5cb342a8ee01a29a591086faf419f241f9c48"
 generated:
   id: groups.get_threads
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.GetThreadsAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - order: 2
     layer: domain
     symbol: GrainFactoryExtensions.GetServerConfigGrain
@@ -52,11 +52,11 @@ generated:
   - expression: group is null || group.ForumSettings is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: "!CanRead(group.ForumSettings, role)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   state_changes: []
   outgoing:
     ordering: unknown
@@ -81,13 +81,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/GetThreadsMessageHandler.cs
     symbol: GetThreadsMessageHandler
     line: 12
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 128
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,6 +88,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 128
   - id: ev_e7ca800ad2bd
     kind: emulator_flow
     authority: vortex_emulator

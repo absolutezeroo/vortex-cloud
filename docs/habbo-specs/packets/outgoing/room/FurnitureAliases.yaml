@@ -10,40 +10,50 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ba61e495bbf98f93138f5d3c6ddc389f5c133a1c9de9fefcae41cb812e66663a"
+generated_digest: "sha256:3222fa8fef7997c40e4089388ed947fbe062896869cfa5aa730ea251946e39d8"
 generated:
   name: FurnitureAliases
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: count
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    type_confidence: client_confirmed
     evidence:
+    - ev_41d1b9a38f93
     - ev_3f849cd703fe
   - index: 1
     name: alias
     type: string
     name_confidence: implementation_observed
-    type_confidence: multi_reference_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_3f849cd703fe
+    - ev_41d1b9a38f93
     - ev_589f143109d1
   - index: 2
     name: original
     type: string
     name_confidence: implementation_observed
-    type_confidence: multi_reference_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_3f849cd703fe
+    - ev_41d1b9a38f93
     - ev_589f143109d1
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    evidence: ev_41d1b9a38f93
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -70,6 +80,14 @@ generated:
     - string
     evidence: ev_589f143109d1
   evidence:
+  - id: ev_41d1b9a38f93
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2960.as
+    symbol: _SafeCls_2960
+    line: 48
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3f849cd703fe
     kind: client_parser
     authority: multi_implementation

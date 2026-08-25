@@ -10,57 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f88fa1478ad6e97a94b55c2cfe60b124ae2c269c60c1c6eef3422e1bf86acff6"
+generated_digest: "sha256:e5cdf2af59c22d511328b706212dd4dc307f91737ab32a9bb2b68afe30a9163b"
 generated:
   name: GroupMembershipRequested
   direction: outgoing
   domain: users
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: group_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_2d49acd768ca
-  - index: 1
-    name: role_type
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2d49acd768ca
-  - index: 2
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2d49acd768ca
-  - index: 3
-    name: user_name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2d49acd768ca
-  - index: 4
-    name: figure
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2d49acd768ca
-  - index: 5
-    name: member_since
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2d49acd768ca
+    - ev_40e3efdc6c9f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_40e3efdc6c9f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -80,6 +52,14 @@ generated:
     - string
     evidence: ev_2d49acd768ca
   evidence:
+  - id: ev_40e3efdc6c9f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2858.as
+    symbol: _SafeCls_2858
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8c1f96c3dea7
     kind: client_parser
     authority: multi_implementation
@@ -95,5 +75,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Users/GroupMembershipRequestedMessageComposerSerializer.cs
     symbol: GroupMembershipRequestedMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_af70140760
 verified: {}
 manual: {}

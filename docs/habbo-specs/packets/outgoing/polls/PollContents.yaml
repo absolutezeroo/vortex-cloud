@@ -10,55 +10,71 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67a4c05b42a8ecc47109e09c4d89f55da11b903c3a3c185378781bbd94edc933"
+generated_digest: "sha256:a10b089735ba8f91c6e172fd0b5ef2ae11e131a3506814f2b2f7de1a636e1c38"
 generated:
   name: PollContents
   direction: outgoing
   domain: polls
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_121e96246ba6
+    - ev_848081aabedf
   - index: 1
-    name: unknown_1
+    name: start_message
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_121e96246ba6
+    - ev_848081aabedf
   - index: 2
-    name: unknown_2
+    name: end_message
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_121e96246ba6
+    - ev_848081aabedf
   - index: 3
-    name: unknown_3
+    name: num_questions
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_121e96246ba6
+    - ev_848081aabedf
   - index: 4
     name: unknown_4
-    type: boolean
+    type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_121e96246ba6
+    - ev_848081aabedf
+  - index: 5
+    name: nps_poll
+    type: boolean
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_848081aabedf
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    evidence: ev_848081aabedf
   - origin: arcturus
     authority: reference_emulator
     field_count: 5
@@ -71,6 +87,14 @@ generated:
     - boolean
     evidence: ev_121e96246ba6
   evidence:
+  - id: ev_848081aabedf
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3396.as
+    symbol: _SafeCls_3396
+    line: 67
+    note: official client build WIN63-202607011411-782849652
   - id: ev_121e96246ba6
     kind: reference_composer
     authority: reference_emulator

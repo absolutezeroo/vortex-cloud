@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:da9a6457f5c5801d2c72d9a16e2b00f917e3fa59c751e25fe91ae8d759b049d5"
+generated_digest: "sha256:1b2bb6b0bfed42ff82fd4cc2abd0d9b4e8eb84ef5d0639aed3a28225afcb7e18"
 generated:
   id: uk_32c783e289
   subject: "catalog.set_targeted_offer_state: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/PlayerTargetedOfferGrain.cs
     symbol: PlayerTargetedOfferGrain
-    line: 146
+    line: 207
   - id: ev_164aaa724c27
     kind: emulator_flow
     authority: vortex_emulator

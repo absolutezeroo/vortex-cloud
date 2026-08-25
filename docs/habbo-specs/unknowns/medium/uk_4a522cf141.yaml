@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a2f60a8286e81f0ace691bb5e2d25c01988cecdc827b48039bb8314638141a87"
+generated_digest: "sha256:f6d7e9833b8637f4a952b30d52d8a19346929cf8e35f305f796e4fdb54fdeb00"
 generated:
   id: uk_4a522cf141
   subject: "users.block_user: what the server sends when it refuses"
@@ -33,13 +33,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_b9c3cebcd883
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
-    symbol: MessengerGrain
-    line: 472
   - id: ev_c8ef03527e7b
     kind: emulator_handler
     authority: vortex_emulator
@@ -54,5 +47,12 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 489
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:96f8ee9940f4893930deb930d0efd795f92556ba135c28ef0d654fa7d3c42104"
+generated_digest: "sha256:67c6b9758dbcf0477be9e20d81ed42a1576f69df8cc22537323691f99660a144"
 generated:
   name: EmailStatusResultEvent
   direction: outgoing
@@ -77,5 +77,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Users/EmailStatusResultEventMessageComposerSerializer.cs
     symbol: EmailStatusResultEventMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_529e2fd30b
 verified: {}
 manual: {}

@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:cc8aaeda0ee934ca3797efa47d4851073de1d64509708553b2c25927785fd553"
+generated_digest: "sha256:4bc4264aba966d5978bc6df3bc36f0937f0beb1d87bca5d9a95d518e353aebf8"
 generated:
   id: cf_f4fe6fc0ec
   kind: field_count
   subject: "outgoing/ScrSendUserInfo: field count"
   packet: ScrSendUserInfo
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "11 fields: string, int32, int32, int32, int32, boolean, boolean, int32, int32, int32, int32"
+    evidence: ev_35354f9e378d
   - origin: nitro
     authority: multi_implementation
-    claim: "11 fields: string, int32, int32, int32, int32, boolean, boolean, int32, int32, int32, int32"
+    claim: "1 fields: string, int32, int32, int32, int32, boolean, boolean, int32, int32, int32, int32"
     evidence: ev_fdfd63013daa
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "11 fields: string, int32, int32, int32, int32, boolean, boolean, int32, int32, int32, int32"
     evidence: ev_4822d4057bd5
   evidence:
+  - id: ev_35354f9e378d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_1956.as
+    symbol: _SafeCls_1956
+    line: 50
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fdfd63013daa
     kind: client_parser
     authority: multi_implementation

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d2825aacfc89a31818df824e740faf95996fd34cd965625110a2b20937603eb8"
+generated_digest: "sha256:a3600c0168cdb3d2989612b4109fd5dd866e5695fa28acfe9c9b022ccd747fbb"
 generated:
   id: uk_c801a7b6c8
   subject: "room.pick_up_pet_in_room: what the server sends when it refuses"
   severity: medium
-  question: room.pick_up_pet_in_room changes state and has 3 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.pick_up_pet_in_room changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.pick_up_pet_in_room
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/RemovePetFromFlatMessageHandler.cs
     symbol: RemovePetFromFlatMessageHandler
     line: 9
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -39,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 185
+    line: 193
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator

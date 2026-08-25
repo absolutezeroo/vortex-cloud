@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d424909ebd8b51e11bd12a332516e1615dea632637dba59bb20b2259cdd85f77"
+generated_digest: "sha256:2a147d1bf5de3c6c6864ba122d07b86b949b1a82da8ea1b0a2cf3bfe7c643480"
 generated:
   name: TraxSongInfo
   direction: outgoing
   domain: sound
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,58 +23,77 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 3
     name: unknown_3
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 4
     name: unknown_4
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 5
     name: unknown_5
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   - index: 6
     name: unknown_6
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_e953a06269f1
+    - ev_b909cb6a6ced
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 7
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - string
+    - string
+    - int32
+    - string
+    evidence: ev_b909cb6a6ced
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -95,6 +114,14 @@ generated:
     - string
     evidence: ev_e953a06269f1
   evidence:
+  - id: ev_b909cb6a6ced
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2899/_SafeCls_2898.as
+    symbol: _SafeCls_2898
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d0daca86e7c0
     kind: client_parser
     authority: multi_implementation
@@ -111,6 +138,8 @@ generated:
     symbol: TraxSongInfoMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_c8dc00582f
   unknowns:
   - uk_cfd7fc4c73
 verified: {}

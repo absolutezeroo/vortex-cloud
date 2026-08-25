@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b2cab25bd3f18c6f0971ae8d462c5b02d9ff054ccea31d94c50db04d454d4ff1"
+generated_digest: "sha256:b12c065adc57c73a58cf38bdc36c3f3ed14618cb4a660707ce0e0706c914aae3"
 generated:
   name: UserUnbannedFromRoom
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_593e86907b26
+    - ev_0bc2b4fbb500
   - index: 1
-    name: unknown_1
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_593e86907b26
+    - ev_0bc2b4fbb500
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_0bc2b4fbb500
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +50,14 @@ generated:
     - int32
     evidence: ev_593e86907b26
   evidence:
+  - id: ev_0bc2b4fbb500
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3788.as
+    symbol: _SafeCls_3788
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_593e86907b26
     kind: reference_composer
     authority: reference_emulator
@@ -52,7 +66,5 @@ generated:
     symbol: UserUnbannedFromRoomMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_ef03770b28
 verified: {}
 manual: {}

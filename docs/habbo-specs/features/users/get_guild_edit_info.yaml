@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5c7f88d6f5631e075ce2b87d078c1279cf936484d7526f2aa0d381222301c84c"
+generated_digest: "sha256:54b7cdb463f0c6383b73c49f4e24b99ad48651a69fa12bc94f929d5caa3d1028"
 generated:
   id: users.get_guild_edit_info
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.GetEditInfoAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -39,11 +39,11 @@ generated:
   - order: 3
     layer: domain
     symbol: GuildBadgeLibrary.ParseBadgeCode
-    evidence: ev_af29592801bf
+    evidence: ev_d448b3a3c6d0
   - order: 4
     layer: grain
     symbol: GroupDirectoryGrain.GetEditorDataAsync
-    evidence: ev_678209870593
+    evidence: ev_d53218d99bdd
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -56,11 +56,11 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - expression: "!await IsAdminAsync(dbCtx, group, actorId, ct).ConfigureAwait(true)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   state_changes: []
   outgoing:
     ordering: unknown
@@ -82,18 +82,11 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildEditInfoMessageHandler.cs
     symbol: GetGuildEditInfoMessageHandler
     line: 12
-  - id: ev_678209870593
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
-    symbol: GroupDirectoryGrain
-    line: 383
-  - id: ev_9b02814f1589
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 249
   - id: ev_9da2e97c6ed0
@@ -103,13 +96,20 @@ generated:
     source: Vortex.PacketHandlers/Users/GetGuildEditInfoMessageHandler.cs
     symbol: GetGuildEditInfoMessageHandler
     line: 23
-  - id: ev_af29592801bf
+  - id: ev_d448b3a3c6d0
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GuildBadgeLibrary.cs
+    source: Vortex.Social/Grains/GuildBadgeLibrary.cs
     symbol: GuildBadgeLibrary
     line: 50
+  - id: ev_d53218d99bdd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
+    symbol: GroupDirectoryGrain
+    line: 382
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

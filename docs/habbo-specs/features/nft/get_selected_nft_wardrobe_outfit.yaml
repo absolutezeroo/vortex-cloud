@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:044fadfc0c80d4264aac8fad4906850e3d066348e247ea60fbb226283ac95986"
+generated_digest: "sha256:106355be8437423543205248457dad5480e1ca10846e45587bcbba9aa92b880c"
 generated:
   id: nft.get_selected_nft_wardrobe_outfit
   domain: nft
@@ -70,7 +70,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
     symbol: PlayerNftWardrobeGrain
-    line: 83
+    line: 86
   scenarios:
   - nft.get_selected_nft_wardrobe_outfit.guard_0
   - nft.get_selected_nft_wardrobe_outfit.guard_1

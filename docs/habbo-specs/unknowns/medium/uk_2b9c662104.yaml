@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d566a6a0b473df83e787dcc43a2d1d51ac63f634f10244b4c1e842a68f3af74e"
+generated_digest: "sha256:a3d4497c4dfcb2052e103d1cb399afadcbf7caf190f67cc2109d9e7c809c3a5d"
 generated:
   id: uk_2b9c662104
   subject: "quest.claim_daily_task: what the server sends when it refuses"
   severity: medium
-  question: quest.claim_daily_task changes state and has 3 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: quest.claim_daily_task changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: quest.claim_daily_task
   known_evidence:
@@ -26,6 +26,20 @@ generated:
     source: Vortex.PacketHandlers/Quest/ClaimDailyTaskMessageHandler.cs
     symbol: ClaimDailyTaskMessageHandler
     line: 23
+  - id: ev_2abb3cf8a990
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
+    symbol: PlayerDailyTaskGrain
+    line: 157
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,12 +54,5 @@ generated:
     source: Vortex.PacketHandlers/Quest/ClaimDailyTaskMessageHandler.cs
     symbol: ClaimDailyTaskMessageHandler
     line: 14
-  - id: ev_d37c83ff4871
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDailyTaskGrain.cs
-    symbol: PlayerDailyTaskGrain
-    line: 154
 verified: {}
 manual: {}

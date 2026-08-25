@@ -10,22 +10,15 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4878e6a44e87e166db8616464bbb4b82260f1e34ffe721eaf03c9d82d04aa6ec"
+generated_digest: "sha256:776b378a5b141498bf7344d0d61ad1bfcafc2ed7f2e0193ab137a1f72b87b639"
 generated:
   id: uk_ace284a1b7
   subject: "room.rentable_space_rent: what the server sends when it refuses"
   severity: medium
-  question: room.rentable_space_rent changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.rentable_space_rent changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.rentable_space_rent
   known_evidence:
-  - id: ev_0b56492f6260
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Players/Wallet/WalletPurchaseExtensions.cs
-    symbol: WalletPurchaseExtensions
-    line: 31
   - id: ev_1dd7e39f6eb4
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,13 +40,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_373e76aa8a80
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
   - id: ev_3bfcf2d3587b
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,27 +47,13 @@ generated:
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
     line: 84
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 15
-  - id: ev_94ddaa174e6d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
-    symbol: PlayerPresenceGrain
-    line: 9
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 55
+    line: 381
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

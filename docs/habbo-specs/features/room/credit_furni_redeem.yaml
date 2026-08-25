@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:50fb06b335b9539c402981a8aeb2c1ae12e5c5d2e0519269441eba16d6742bec"
+generated_digest: "sha256:07ed87c3d9942041ce79bfa369cb76f7fc7003133307eda5261d1ac6ddbaf69d"
 generated:
   id: room.credit_furni_redeem
   domain: room
@@ -72,7 +72,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 387
+    line: 388
   - id: ev_95434ff15887
     kind: emulator_flow
     authority: vortex_emulator
@@ -86,7 +86,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 318
+    line: 381
   scenarios:
   - room.credit_furni_redeem.guard_0
   - room.credit_furni_redeem.guard_1

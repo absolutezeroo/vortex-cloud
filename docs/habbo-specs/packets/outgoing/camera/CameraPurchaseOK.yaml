@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8a8771021d1de12da9fb36f24f9276c7cdb43c94ef1aa1654b6a693519b89b26"
+generated_digest: "sha256:3ed6f3d36f29757962b7e02e47825e2c52f59eccddb020bc8af0792d781b45f5"
 generated:
   name: CameraPurchaseOK
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: true
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_00f62b271b9b
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -38,6 +44,14 @@ generated:
     types: []
     evidence: ev_8c0e1ca5fe72
   evidence:
+  - id: ev_00f62b271b9b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4018/_SafeCls_4386.as
+    symbol: _SafeCls_4386
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ec9ed7f46a81
     kind: client_parser
     authority: multi_implementation

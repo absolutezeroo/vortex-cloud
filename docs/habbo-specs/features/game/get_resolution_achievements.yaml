@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a5b363305357b292871d7d48b119771d02fd9f4e5f3c60579644ff2087997340"
+generated_digest: "sha256:d62234b009590a7a02f44b893bc01dfb469cf2118378e21ad622c02be0803ac2"
 generated:
   id: game.get_resolution_achievements
   domain: game
@@ -31,11 +31,11 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerAchievementResolutionGrain.OpenAsync
-    evidence: ev_9b89e1ffc2b5
+    evidence: ev_08de7d6ac017
   - order: 2
     layer: domain
     symbol: AchievementResolutionRules.IsInProgress
-    evidence: ev_9af83930dfb4
+    evidence: ev_9c3796aca5dc
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -44,13 +44,20 @@ generated:
   - expression: statue is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_9b89e1ffc2b5
+    evidence: ev_08de7d6ac017
   state_changes: []
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: false
   evidence:
+  - id: ev_08de7d6ac017
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerAchievementResolutionGrain.cs
+    symbol: PlayerAchievementResolutionGrain
+    line: 53
   - id: ev_3f015a72be01
     kind: emulator_flow
     authority: vortex_emulator
@@ -58,20 +65,13 @@ generated:
     source: Vortex.PacketHandlers/Game/Lobby/GetResolutionAchievementsMessageHandler.cs
     symbol: GetResolutionAchievementsMessageHandler
     line: 21
-  - id: ev_9af83930dfb4
+  - id: ev_9c3796aca5dc
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Achievements/AchievementResolutionRules.cs
+    source: Vortex.Progression/Achievements/AchievementResolutionRules.cs
     symbol: AchievementResolutionRules
     line: 66
-  - id: ev_9b89e1ffc2b5
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementResolutionGrain.cs
-    symbol: PlayerAchievementResolutionGrain
-    line: 51
   - id: ev_bc081b5b45f0
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,31 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:83900497af124303e22ed4d82929e3d713313bf53237c064736998b93f84b4da"
+generated_digest: "sha256:14998c0afa8987451a11ed9c84113d2939104634884f94c1dd11ecafcf221160"
 generated:
   name: FlatAccessDenied
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3688ae0b987a
+    - ev_d18cfa69cafe
   - index: 1
-    name: username
+    name: user_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_3688ae0b987a
+    - ev_d18cfa69cafe
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_d18cfa69cafe
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -59,6 +66,14 @@ generated:
     - string
     evidence: ev_1df3b7f651fd
   evidence:
+  - id: ev_d18cfa69cafe
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2583.as
+    symbol: _SafeCls_2583
+    line: 29
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3688ae0b987a
     kind: client_parser
     authority: multi_implementation

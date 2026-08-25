@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cc522f4bfc95af6c4b45c91a85260452b97b7ae0800269056b10a920d956fd2d"
+generated_digest: "sha256:2180a7cca96c7d12e26a20f0e7c25b9c5b26e73f97f8b91c49cda21cc04eb13d"
 generated:
   feature: game.get_resolution_achievements
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b89e1ffc2b5
+      evidence: ev_08de7d6ac017
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -78,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_3f015a72be01
+      evidence: ev_08de7d6ac017
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -94,6 +94,13 @@ generated:
     symbol: GetResolutionAchievementsMessageEvent
     line: 8
     note: third-party server implementation; evidence, not authority
+  - id: ev_08de7d6ac017
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerAchievementResolutionGrain.cs
+    symbol: PlayerAchievementResolutionGrain
+    line: 64
   - id: ev_3f015a72be01
     kind: emulator_flow
     authority: vortex_emulator
@@ -101,12 +108,5 @@ generated:
     source: Vortex.PacketHandlers/Game/Lobby/GetResolutionAchievementsMessageHandler.cs
     symbol: GetResolutionAchievementsMessageHandler
     line: 21
-  - id: ev_9b89e1ffc2b5
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerAchievementResolutionGrain.cs
-    symbol: PlayerAchievementResolutionGrain
-    line: 62
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:042751114255de8bcad8839b8c501e7be8100628466d604e533628d3bd032057"
+generated_digest: "sha256:3c3b36c6dca8826a7898cb5f3a6f7f6d5e623e756841ba905e3eb02347025294"
 generated:
   feature: room.place_pet_in_room
   scenarios:
@@ -159,6 +159,35 @@ generated:
       - PetFigureUpdate
       - PetRemovedFromInventory
       evidence: ev_a7c18a98429c
+  - scenario: room.place_pet_in_room.guard_5
+    title: "place pet in room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: PlacePet
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PlacePet sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PetPlacingError
+      - PetPlacingError
+      - PetPlacingError
+      - PetPlacingError
+      - PetFigureUpdate
+      - PetRemovedFromInventory
+      evidence: ev_a7c18a98429c
   - scenario: room.place_pet_in_room.success
     title: "place pet in room: the request is accepted"
     given:
@@ -203,6 +232,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/PlacePetMessageHandler.cs
     symbol: PlacePetMessageHandler
     line: 20
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -216,6 +252,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 41
+    line: 42
 verified: {}
 manual: {}

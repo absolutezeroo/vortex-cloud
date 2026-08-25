@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:db3b533dc671cd6460455114cd5e67159f941aa45d6f835f333cf0db4e493bf8"
+generated_digest: "sha256:c5be197a6e4e0dbab106c952ef66bb13e234ed1264ffff4e03541e84c1396a04"
 generated:
   name: TradeSilverFee
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: silver_fee
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8d0adf89e097
+    - ev_04a2a456fff3
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_04a2a456fff3
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +47,14 @@ generated:
     - int32
     evidence: ev_8d0adf89e097
   evidence:
+  - id: ev_04a2a456fff3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2546/_SafeCls_4291.as
+    symbol: _SafeCls_4291
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_4e07a89d10a9
     kind: client_parser
     authority: multi_implementation

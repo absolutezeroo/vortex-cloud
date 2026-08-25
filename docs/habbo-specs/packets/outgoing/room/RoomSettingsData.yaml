@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b99494aa7dad8670a27c2cf47033a33298a8af07365c12cfe4e92c07af2d4efe"
+generated_digest: "sha256:bab1e0f7a03dd3af0fa25387455b02a98b1d62f7640acd81a8db089dc96e2c2b"
 generated:
   name: RoomSettingsData
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -23,210 +23,225 @@ generated:
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 1
     name: unknown_1
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 2
     name: unknown_2
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 3
     name: unknown_3
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 4
     name: unknown_4
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 5
     name: unknown_5
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 6
     name: unknown_6
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 7
     name: unknown_7
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 8
     name: unknown_8
     type: string
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 9
     name: unknown_9
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 10
     name: unknown_10
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 11
     name: unknown_11
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 12
     name: unknown_12
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 13
     name: unknown_13
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 14
     name: unknown_14
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 15
     name: unknown_15
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 16
     name: unknown_16
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 17
     name: unknown_17
-    type: int32
+    type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 18
     name: unknown_18
-    type: int32
+    type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 19
     name: unknown_19
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 20
     name: unknown_20
-    type: int32
+    type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 21
     name: unknown_21
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 22
     name: unknown_22
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   - index: 23
     name: unknown_23
-    type: int32
+    type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_7a9d7794f699
-  - index: 24
-    name: unknown_24
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_7a9d7794f699
-  - index: 25
-    name: unknown_25
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_7a9d7794f699
+    - ev_eed23671ec9e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 24
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - int32
+    - boolean
+    - int32
+    - boolean
+    - boolean
+    evidence: ev_eed23671ec9e
   - origin: arcturus
     authority: reference_emulator
     field_count: 26
@@ -260,6 +275,14 @@ generated:
     - int32
     evidence: ev_7a9d7794f699
   evidence:
+  - id: ev_eed23671ec9e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_3719.as
+    symbol: _SafeCls_3719
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_7a9d7794f699
     kind: reference_composer
     authority: reference_emulator
@@ -268,6 +291,8 @@ generated:
     symbol: RoomSettingsDataMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_31aa3dd35d
   unknowns:
   - uk_1b8b993382
 verified: {}

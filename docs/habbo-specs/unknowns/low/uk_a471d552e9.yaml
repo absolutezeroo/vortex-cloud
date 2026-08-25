@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6e7fd96b071091983a69a7c09f9ee7d49d4c53633dbbac7675e084a530ef379f"
+generated_digest: "sha256:5c35fcefdc58373a40a0ba249d5b4378c6205b92f2767272eca115a10133eb5a"
 generated:
   id: uk_a471d552e9
   subject: "outgoing/QuestionAnswered: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
+  question: Fields 2, 3, 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: QuestionAnswered
   known_evidence:
+  - id: ev_10d5056ef7a9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3020.as
+    symbol: _SafeCls_3020
+    line: 45
+    note: official client build WIN63-202607011411-782849652
   - id: ev_cb592dbe9e80
     kind: reference_composer
     authority: reference_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:edadc239c2f04b6dfca79c4961e278b7b0da72cafe2be829f928e99e36b67778"
+generated_digest: "sha256:8f4921af31d414fba09e1182ca5b01649bf7a9c9856274d6c401b3f7b2a0c966"
 generated:
   id: uk_fa420809d8
   subject: "moderation.chat_review_guide_decides_on_offer: who receives ChatReviewSessionStarted"
@@ -19,11 +19,11 @@ generated:
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room
   feature: moderation.chat_review_guide_decides_on_offer
   known_evidence:
-  - id: ev_478447d36dd0
+  - id: ev_81344840deda
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/ChatReviewDispatch.cs
+    source: Vortex.Social/Grains/ChatReviewDispatch.cs
     symbol: ChatReviewDispatch
     line: 100
 verified: {}

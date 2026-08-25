@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bf3f8a6292872d62981aad37e35e237cd780bd9a63c1f4161520ef7331ca3239"
+generated_digest: "sha256:43f297ec6e3638dc4efdf772bf1a6b199bb6d4d68a94fe1d575107de9eee26dd"
 generated:
   name: TargetedOfferNotFound
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_20ce91c695a5
   - origin: arcturus
     authority: reference_emulator
     field_count: 0
@@ -26,6 +32,14 @@ generated:
     types: []
     evidence: ev_b65918385c66
   evidence:
+  - id: ev_20ce91c695a5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_4151.as
+    symbol: _SafeCls_4151
+    line: 20
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b65918385c66
     kind: reference_composer
     authority: reference_emulator

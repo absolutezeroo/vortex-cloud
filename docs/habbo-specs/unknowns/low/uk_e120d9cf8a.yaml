@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5d0cf01a990d52f21a198de8c444c1c2a5249132505ea5df23edd8ef9be6a75a"
+generated_digest: "sha256:6b90447746c8b06fa512cbf198ab899f859d354ed7677150bd3af9f2698be7de"
 generated:
   id: uk_e120d9cf8a
   subject: "outgoing/BotSkillListUpdate: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BotSkillListUpdate
   known_evidence:
+  - id: ev_208b65d57932
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_3342.as
+    symbol: _SafeCls_3342
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dffc2446d38f
     kind: client_parser
     authority: client_code
@@ -35,13 +43,5 @@ generated:
     symbol: BotSkillListUpdateMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_70b65a1c2456
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/unknown/BotSkillListUpdateMessageComposer.java
-    symbol: BotSkillListUpdateMessageComposer
-    line: 19
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

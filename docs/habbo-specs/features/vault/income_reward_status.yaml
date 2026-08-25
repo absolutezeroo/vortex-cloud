@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ce49150f8703ae86aa9374ae1058630b73ca9c5346f684126bd224f84a57d75f"
+generated_digest: "sha256:dd6fd6791a00187edd9d9b7f9d44e2d3feb10f07f55957adabf5b7c11b4d565a"
 generated:
   id: vault.income_reward_status
   domain: vault
@@ -52,7 +52,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
-    line: 32
+    line: 35
   - id: ev_c8c346973435
     kind: emulator_handler
     authority: vortex_emulator

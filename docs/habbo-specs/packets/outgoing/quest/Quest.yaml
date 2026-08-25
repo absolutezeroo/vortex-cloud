@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a455ede271f34716c735be999176a96e9fccbc9c5804f602d80ceccd580de9ea"
+generated_digest: "sha256:2441eb3451bdf3bbdbc41717323ac335abc59443e773ebaa384fe15d438a5118"
 generated:
   name: Quest
   direction: outgoing
@@ -25,6 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_7f976f5d777b
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_cf2ab6739acf
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -52,6 +58,14 @@ generated:
     symbol: QuestParser
     line: 18
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_cf2ab6739acf
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_3984.as
+    symbol: _SafeCls_3984
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ca36d0345310
     kind: client_parser
     authority: multi_implementation

@@ -10,66 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4264411ecd80efce85c27e01fae8b4624afa33c0074b7a171f44574aba115581"
+generated_digest: "sha256:35180fa16d75ff12c6dd05cc36fcfc3d215424a1c0fc90df4d88bff0285521ef"
 generated:
   name: UserNftWardrobe
   direction: outgoing
   domain: nft
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: length
+    name: unknown_0
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_281293fe63dc
-  - index: 1
-    name: avatars
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_281293fe63dc
-    fields:
-    - index: 0
-      name: copy_id
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_281293fe63dc
-    - index: 1
-      name: figure
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_281293fe63dc
-    - index: 2
-      name: gender
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_281293fe63dc
-    - index: 3
-      name: token_id
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_281293fe63dc
-    - index: 4
-      name: contract_key
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_281293fe63dc
+    - ev_efffc55128b3
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_efffc55128b3
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -85,6 +49,14 @@ generated:
     - array
     evidence: ev_281293fe63dc
   evidence:
+  - id: ev_efffc55128b3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3525/_SafeCls_4284.as
+    symbol: _SafeCls_4284
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3eb4dabead59
     kind: client_parser
     authority: multi_implementation
@@ -100,5 +72,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Nft/UserNftWardrobeMessageComposerSerializer.cs
     symbol: UserNftWardrobeMessageComposerSerializer
     line: 8
+  conflicts:
+  - cf_77f4acfea3
+  unknowns:
+  - uk_fc762285fc
 verified: {}
 manual: {}

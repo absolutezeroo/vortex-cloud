@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5b495cb611f1b5a8ac1a68d1714844aa753bb7a3791df36d1cc2c44aa9dbdf4b"
+generated_digest: "sha256:52e4f24247ccae602bf841eb9624d3c2b8bfdcde44e18815bd339219da011a6b"
 generated:
   id: uk_1591c23858
   subject: "room.place_pet_in_room: what the server sends when it refuses"
   severity: medium
-  question: room.place_pet_in_room changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.place_pet_in_room changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.place_pet_in_room
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/PlacePetMessageHandler.cs
     symbol: PlacePetMessageHandler
     line: 20
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -39,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 32
+    line: 33
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator

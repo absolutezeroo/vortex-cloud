@@ -10,31 +10,38 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6ba290dbba7d013239c080f40f43ff8d2b3e7a2ff3a13e55b3cc2cb6c68e53d9"
+generated_digest: "sha256:28bd5e343ba3c879bdfe17183fbd53649d38d1e8563257f4d50cd0d8a7258294"
 generated:
   name: ClubGiftSelected
   direction: outgoing
   domain: users
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: product_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_235c6831eae7
+    - ev_5f2e6cb8a735
   - index: 1
     name: unknown_1
     type: int32
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_235c6831eae7
+    - ev_5f2e6cb8a735
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - int32
+    evidence: ev_5f2e6cb8a735
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -44,6 +51,14 @@ generated:
     - int32
     evidence: ev_235c6831eae7
   evidence:
+  - id: ev_5f2e6cb8a735
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_3028.as
+    symbol: _SafeCls_3028
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_235c6831eae7
     kind: reference_composer
     authority: reference_emulator

@@ -10,31 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4a3279834a25cedba06ab2c0b3f07270aba89935d0970d8ecb997d88d2c86226"
+generated_digest: "sha256:fc50c22e4ee54a2a8b6237d870f9755391e379bde55b557c3a12ba49f510f31f"
 generated:
   name: RoomInvite
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: sender_id
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_ffcf0274a199
     - ev_89851d6edc0c
   - index: 1
     name: message
     type: string
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_ffcf0274a199
     - ev_89851d6edc0c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_ffcf0274a199
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +68,14 @@ generated:
     - string
     evidence: ev_bb1a6c4b2d4b
   evidence:
+  - id: ev_ffcf0274a199
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_1765.as
+    symbol: _SafeCls_1765
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_89851d6edc0c
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +99,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/FriendList/RoomInviteMessageSerializer.cs
     symbol: RoomInviteMessageSerializer
     line: 6
+  conflicts:
+  - cf_6438a67516
 verified: {}
 manual: {}

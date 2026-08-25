@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:94c736cfddbe20a1fe14b1b1579fbe4e5a133b74bdfedf11df16ed279a844e64"
+generated_digest: "sha256:89ad90e4a1a4ebd34dc9b4426b9ce3d68620d684af145c4eb29ab7fae5a34f8e"
 generated:
   id: uk_35b7d4dcbd
   subject: "users.remove_admin_rights_from_member: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: users.remove_admin_rights_from_member
   known_evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 26
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -33,11 +26,18 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_c4e53aab9ae9
+  - id: ev_40034f33a6de
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 26
+  - id: ev_b1c46fe16e7f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 387
   - id: ev_c7a116d6502e

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6dfc49cce6cee180631e614003923d1db817495a1e2070c994b492a1adcf23ef"
+generated_digest: "sha256:695a9d918623167c7e5e8e1647a95a17827717f16813a3f14a88759976929e19"
 generated:
   name: SecondsUntil
   direction: outgoing
   domain: competition
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: time_str
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_939963c9c69f
+    - ev_901d7a618465
   - index: 1
-    name: unknown_1
+    name: seconds_until
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_939963c9c69f
+    - ev_901d7a618465
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - int32
+    evidence: ev_901d7a618465
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -50,6 +56,14 @@ generated:
     - int32
     evidence: ev_939963c9c69f
   evidence:
+  - id: ev_901d7a618465
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3314/_SafeCls_4069.as
+    symbol: _SafeCls_4069
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_6f89aceca88f
     kind: client_parser
     authority: multi_implementation
@@ -66,7 +80,5 @@ generated:
     symbol: SecondsUntilMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_de9b155558
 verified: {}
 manual: {}

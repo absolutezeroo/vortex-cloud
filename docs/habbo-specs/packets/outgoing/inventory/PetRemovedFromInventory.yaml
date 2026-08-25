@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:159a851c057a7d9c5fccfdae149cd60750bfab2f4d5153ed799547dceed7cb62"
+generated_digest: "sha256:5a4afacb0cc503f323a68650f786c086b5341bac33514c0910a14f371926b370"
 generated:
   name: PetRemovedFromInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_73c3bdf66ec0
+    - ev_d82634610729
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_d82634610729
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_73c3bdf66ec0
   evidence:
+  - id: ev_d82634610729
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3370.as
+    symbol: _SafeCls_3370
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_73c3bdf66ec0
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: PetRemovedFromInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_4279a2c6e4
 verified: {}
 manual: {}

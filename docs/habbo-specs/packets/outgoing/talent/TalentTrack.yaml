@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:80d3fee01b6cec1baf13875d5298f17dfa321df4b011386c6748c2f42e5671da"
+generated_digest: "sha256:043465d283191382121c5e3d4851e0795a8286238d9c02f33d5c2a3c6f595098"
 generated:
   name: TalentTrack
   direction: outgoing
@@ -243,6 +243,12 @@ generated:
     evidence:
     - ev_2c284ec6b3ed
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_2fbd997f6c06
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -284,6 +290,14 @@ generated:
     - int32
     evidence: ev_2c284ec6b3ed
   evidence:
+  - id: ev_2fbd997f6c06
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2740/_SafeCls_4217.as
+    symbol: _SafeCls_4217
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_48c09499e2ad
     kind: client_parser
     authority: multi_implementation

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:44cc4c00415c2bb7920efe6cdae242e9d3722885e545d6b01819fa17279e101a"
+generated_digest: "sha256:d146f610cd1baa564136ec72e00d2e6c000caa6a5f74bb1dd4a4858d0462a209"
 generated:
   name: FlatCreated
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ab7401957138
+    - ev_67e41c6ba64e
   - index: 1
-    name: name
+    name: flat_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ab7401957138
+    - ev_67e41c6ba64e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_67e41c6ba64e
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - string
     evidence: ev_8134f2900bb2
   evidence:
+  - id: ev_67e41c6ba64e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_2282.as
+    symbol: _SafeCls_2282
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ab7401957138
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/FlatCreatedMessageComposerSerializer.cs
     symbol: FlatCreatedMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_b0a3746026
 verified: {}
 manual: {}

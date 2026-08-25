@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:77ee5c299fce5fe93540cf94931ece97cc6e76b79a5d5e20f891f673890a4075"
+generated_digest: "sha256:62a78be7e1a82a66781391e26dd1481f42a9675cfb44dcc4f022a4bbd6b79531"
 generated:
   id: marketplace.cancel_marketplace_offer
   domain: marketplace
@@ -33,17 +33,9 @@ generated:
     symbol: MarketplacePurchaseGrain.CancelOrRedeemOfferAsync
     evidence: ev_db53958cdf3b
   - order: 2
-    layer: grain
-    symbol: InventoryGrain.GrantFurnitureDefinitionAsync
-    evidence: ev_c6396662000a
-  - order: 3
-    layer: domain
-    symbol: FurnitureDefinitionProvider.TryGetDefinition
-    evidence: ev_2ec03446aa2a
-  - order: 4
-    layer: domain
-    symbol: StuffDataFactory.CreateStuffDataFromJson
-    evidence: ev_7a660921f135
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -57,10 +49,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_db53958cdf3b
-  - expression: "!string.IsNullOrEmpty(jsonData)"
+  - expression: _registry is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_7a660921f135
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: offer.State
     value: MarketplaceOfferState.Cancelled
@@ -75,20 +67,13 @@ generated:
       evidence: ev_d5cd2720508e
   reaches_persistence: true
   evidence:
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 42
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_9e1e3b48bed7
     kind: emulator_handler
     authority: vortex_emulator
@@ -96,13 +81,6 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/CancelMarketplaceOfferMessageHandler.cs
     symbol: CancelMarketplaceOfferMessageHandler
     line: 11
-  - id: ev_c6396662000a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
-    symbol: InventoryGrain
-    line: 586
   - id: ev_d5cd2720508e
     kind: emulator_flow
     authority: vortex_emulator
@@ -116,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 104
+    line: 175
   scenarios:
   - marketplace.cancel_marketplace_offer.guard_0
   - marketplace.cancel_marketplace_offer.guard_1

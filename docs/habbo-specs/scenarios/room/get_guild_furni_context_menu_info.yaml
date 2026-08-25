@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e5b56eb0daf56cc57b37ab014f690f217de502cc83a90768e8e8a721b47d5f9f"
+generated_digest: "sha256:64ad957100d027ba246d49ad161a3fa747cddbe152e5ca4a5d2b120f058a4079"
 generated:
   feature: room.get_guild_furni_context_menu_info
   scenarios:
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -126,11 +126,11 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/GetGuildFurniContextMenuInfoMessageHandler.cs
     symbol: GetGuildFurniContextMenuInfoMessageHandler
     line: 17
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 38
   - id: ev_ca92d06cb268

@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:386340bd3eae0b5e9d4c622b7b503a768288de1f67fa0edfc2ab83ecbbec9861"
+generated_digest: "sha256:0947401cca70dc1918711629c99b0bced41c6c4b4744a40b8fafd8621d507c93"
 generated:
   name: IssueCloseNotification
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: close_reason
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9d714a9133c5
-    - ev_b75b9a2f3d1e
+    - ev_1c60172dbb1f
   - index: 1
     name: message_text
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9d714a9133c5
-    - ev_b75b9a2f3d1e
+    - ev_1c60172dbb1f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_1c60172dbb1f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - string
     evidence: ev_b75b9a2f3d1e
   evidence:
+  - id: ev_1c60172dbb1f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_3750.as
+    symbol: _SafeCls_3750
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_02dad79b2cba
     kind: client_parser
     authority: multi_implementation

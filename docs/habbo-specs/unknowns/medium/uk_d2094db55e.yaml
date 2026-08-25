@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:305a9b31abcf049aafff7d21dcd1de00798c10b2be82399b0ad60de0c41a20c0"
+generated_digest: "sha256:3e1d15df9d508c602a644fbe600631ae61f5cb2e48f0f601512217835a117d42"
 generated:
   id: uk_d2094db55e
   subject: "room.set_mannequin_name: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 79
+    line: 80
   - id: ev_6e501c56661b
     kind: emulator_flow
     authority: vortex_emulator

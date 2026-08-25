@@ -10,87 +10,90 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b0385fd9a15a8602dbf6281b7c15df26933cede05f932b0c09e39f0f38fa7f08"
+generated_digest: "sha256:3b9cfcde1b5889915c29ac77fde2f88a94013d7b82bed2a04ee83732924294b3"
 generated:
   name: AvatarEffects
   direction: outgoing
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 1
-    name: unknown_1
+    name: type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 2
-    name: unknown_2
+    name: sub_type
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 3
-    name: unknown_3
+    name: duration
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 4
-    name: unknown_4
+    name: inactive_effects_in_inventory
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 5
-    name: unknown_5
+    name: seconds_left_if_active
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_03745a072899
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
-    evidence:
-    - ev_03745a072899
-  - index: 8
-    name: unknown_8
+    name: is_permanent
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_03745a072899
+    - ev_46656d24be8f
+    - ev_80a6f5cbff2e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 7
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - boolean
+    evidence: ev_46656d24be8f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -121,6 +124,14 @@ generated:
     - array
     evidence: ev_80a6f5cbff2e
   evidence:
+  - id: ev_46656d24be8f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2975/_SafeCls_3879.as
+    symbol: _SafeCls_3879
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_bdc991dfe607
     kind: client_parser
     authority: multi_implementation
@@ -146,7 +157,5 @@ generated:
     line: 8
   conflicts:
   - cf_fa2608d22c
-  unknowns:
-  - uk_2a824345bd
 verified: {}
 manual: {}

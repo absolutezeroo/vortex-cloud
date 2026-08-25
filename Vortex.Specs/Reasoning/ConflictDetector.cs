@@ -39,6 +39,56 @@ public sealed class ConflictDetector
         ];
     }
 
+    /// <summary>The marker both client analyzers put on a field read inside a loop.</summary>
+    private const string REPEATED_BLOCK = "inside a repeated block";
+
+    /// <summary>
+    /// The field count with each repeated block counted once.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two sources describe the same bytes in two shapes. A client parser is a flat method, so a
+    /// dimmer packet reads as <c>count, selected, int, int, string, int, bool, int</c> — the four in
+    /// the middle being one pass of a <c>while</c>. An emulator serializer writes the same bytes as
+    /// <c>count, selected, array, bool, int</c>. Compared raw, those are 8 against 5 and the packet is
+    /// reported as a disagreement forever.
+    /// </para>
+    /// <para>
+    /// That is where the baselined "wire conflicts" came from, and every one examined by hand turned
+    /// out to be this and not a bug. Both analyzers already mark a field read inside a loop; nothing
+    /// was reading the mark. Collapsing each run of them to one makes the two shapes comparable, and
+    /// what survives is a genuine disagreement about how many values cross the wire.
+    /// </para>
+    /// <para>
+    /// Runs, not a total: a packet with two loops has a count between them, which is not repeated and
+    /// therefore ends the run — so <c>n, [a b], m, [c d]</c> normalises to four and not to two.
+    /// </para>
+    /// </remarks>
+    private static int RepeatNormalisedCount(PacketLayoutObservation observation)
+    {
+        int count = 0;
+        bool inBlock = false;
+
+        foreach (PacketFieldSpec field in observation.Fields)
+        {
+            if (field.Note?.Contains(REPEATED_BLOCK, StringComparison.Ordinal) == true)
+            {
+                if (!inBlock)
+                {
+                    count++;
+                    inBlock = true;
+                }
+
+                continue;
+            }
+
+            inBlock = false;
+            count++;
+        }
+
+        return count;
+    }
+
     private static IEnumerable<ConflictSpec> FieldCountConflicts(IReadOnlyList<PacketSpec> packets)
     {
         foreach (PacketSpec packet in packets)
@@ -51,7 +101,7 @@ public sealed class ConflictDetector
                 .. packet.Observations.Where(o => !o.IsPartial && o.Fields.Count > 0),
             ];
 
-            if (complete.Select(o => o.Fields.Count).Distinct().Count() < 2)
+            if (complete.Select(RepeatNormalisedCount).Distinct().Count() < 2)
             {
                 continue;
             }
@@ -74,7 +124,7 @@ public sealed class ConflictDetector
                             Claim = string.Format(
                                 CultureInfo.InvariantCulture,
                                 "{0} fields: {1}",
-                                o.Fields.Count,
+                                RepeatNormalisedCount(o),
                                 string.Join(", ", o.Fields.Select(f => f.Type.Wire()))
                             ),
                             Evidence = o.Evidence,

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0e20cb0b742a5bc8285e814c13c50ed52356086d58736b7915d0192f17c3fa6e"
+generated_digest: "sha256:ec814bd46f7e9420887d2df67f44228cc14ed87ace2aed88bd1f1cf6ff6148f1"
 generated:
   name: IsFirstLoginOfDay
   direction: outgoing
   domain: handshake
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: is_first_login_of_day
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_af44cb7a95b1
+    - ev_1eceef97dcad
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_1eceef97dcad
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - boolean
     evidence: ev_878398168b5f
   evidence:
+  - id: ev_1eceef97dcad
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1820/_SafeCls_3803.as
+    symbol: _SafeCls_3803
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_af44cb7a95b1
     kind: client_parser
     authority: multi_implementation

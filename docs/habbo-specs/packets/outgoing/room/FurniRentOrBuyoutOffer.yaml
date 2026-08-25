@@ -10,63 +10,69 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:babd61f39f8fbe0ea4337186ba19e8517b1dc3e0445a4bbea45312bb416d8c8a"
+generated_digest: "sha256:85f49c244d7dcec0614a46be6159517f896ec79484aea1275b1e2ceafb373208"
 generated:
   name: FurniRentOrBuyoutOffer
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: is_wall_item
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   - index: 1
     name: furni_type_name
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   - index: 2
     name: buyout
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   - index: 3
     name: price_in_credits
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   - index: 4
     name: price_in_activity_points
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   - index: 5
     name: activity_point_type
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3fc55b211108
+    - ev_f10addfcaa83
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - boolean
+    - string
+    - boolean
+    - int32
+    - int32
+    - int32
+    evidence: ev_f10addfcaa83
   - origin: nitro
     authority: multi_implementation
     field_count: 6
@@ -104,6 +110,14 @@ generated:
     - int32
     evidence: ev_8ab99fd39030
   evidence:
+  - id: ev_f10addfcaa83
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2942/_SafeCls_3704.as
+    symbol: _SafeCls_3704
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3fc55b211108
     kind: client_parser
     authority: multi_implementation
@@ -127,5 +141,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Furniture/FurniRentOrBuyoutOfferMessageComposerSerializer.cs
     symbol: FurniRentOrBuyoutOfferMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_883434f729
 verified: {}
 manual: {}

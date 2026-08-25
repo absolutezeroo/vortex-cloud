@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:933c9ad11cdf8403d9479187288dce33dcff9081b40fdc2fa514b6dee1e61417"
+generated_digest: "sha256:44da26186902c218c68efda9bf2d7491c4b2ee2348f69f43e26b687d6e989220"
 generated:
   id: groups.post_message
   domain: groups
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupForumGrain.PostAsync
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - order: 2
     layer: domain
     symbol: WiredChestStore.FindAsync
@@ -52,35 +52,35 @@ generated:
   - expression: string.IsNullOrWhiteSpace(message)
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: group is null || group.ForumSettings is null || !group.ForumSettings.Enabled
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: actorEntity is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: threadId == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: "!Allows(group.ForumSettings.ThreadPermission, role)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: "!Allows(group.ForumSettings.PostPermission, role)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: thread is null || thread.State == GroupForumThreadState.Hidden
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: thread.State == GroupForumThreadState.Locked && !Allows(group.ForumSettings.ModPermission, role)
     on_fail: return
     observed_in: vortex
-    evidence: ev_76106ea21309
+    evidence: ev_da3ad2e8d895
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -113,13 +113,6 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/PostMessageMessageHandler.cs
     symbol: PostMessageMessageHandler
     line: 12
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 267
   - id: ev_8e9c8b217c58
     kind: emulator_flow
     authority: vortex_emulator
@@ -134,6 +127,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 267
   scenarios:
   - groups.post_message.guard_0
   - groups.post_message.guard_1

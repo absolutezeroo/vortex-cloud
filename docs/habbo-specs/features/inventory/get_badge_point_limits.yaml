@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6ddb371e67c6bc2879bb638e4d3ee9d275f8fadb67bccdd2d7ef97be270cc619"
+generated_digest: "sha256:c4cb5e401217764c1e5319a3ff50b217d3cefe33323de6ab56d0f7f3f61882b2"
 generated:
   id: inventory.get_badge_point_limits
   domain: inventory
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: AchievementManagerGrain.GetDefinitionsAsync
-    evidence: ev_13211df92481
+    evidence: ev_6a825bb2f759
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -51,13 +51,6 @@ generated:
       evidence: ev_18c3506bd65f
   reaches_persistence: false
   evidence:
-  - id: ev_13211df92481
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/AchievementManagerGrain.cs
-    symbol: AchievementManagerGrain
-    line: 45
   - id: ev_18c3506bd65f
     kind: emulator_flow
     authority: vortex_emulator
@@ -65,6 +58,13 @@ generated:
     source: Vortex.PacketHandlers/Inventory/Badges/GetBadgePointLimitsMessageHandler.cs
     symbol: GetBadgePointLimitsMessageHandler
     line: 29
+  - id: ev_6a825bb2f759
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/AchievementManagerGrain.cs
+    symbol: AchievementManagerGrain
+    line: 45
   - id: ev_b60df28d7b56
     kind: emulator_handler
     authority: vortex_emulator

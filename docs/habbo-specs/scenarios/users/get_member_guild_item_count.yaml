@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3804183f9bed40939bfb829dd1a8feea8d233def462f41f15ce89e489d6b7936"
+generated_digest: "sha256:8ab3d71c530e6fb395425fc0522aea2711e432c71b4cb542e51145cbd6ab9ee8"
 generated:
   feature: users.get_member_guild_item_count
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_9b02814f1589
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       outcome: success
       emits:
       - GuildMemberFurniCountInHQ
-      evidence: ev_3915c68132fb
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -95,18 +95,11 @@ generated:
     symbol: GetMemberGuildItemCountMessageEvent
     line: 14
     note: third-party server implementation; evidence, not authority
-  - id: ev_3915c68132fb
-    kind: emulator_handler
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.PacketHandlers/Users/GetMemberGuildItemCountMessageHandler.cs
-    symbol: GetMemberGuildItemCountMessageHandler
-    line: 11
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 318
   - id: ev_baf4718732af

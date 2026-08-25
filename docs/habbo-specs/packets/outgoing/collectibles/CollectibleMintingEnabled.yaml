@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:080014ce6831afd01cfa4ed633e77aef8b544d8983b6aab216c171b1f1029e97"
+generated_digest: "sha256:577065dda0b0964a0e95c99b3fc47c0739e6581dd2826de2b6959c148c0c4e16"
 generated:
   name: CollectibleMintingEnabled
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: enabled
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_195f2240288c
+    - ev_28d37a4a51db
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_28d37a4a51db
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -40,6 +47,14 @@ generated:
     - boolean
     evidence: ev_195f2240288c
   evidence:
+  - id: ev_28d37a4a51db
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4436.as
+    symbol: _SafeCls_4436
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_2ccf9d879b42
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dbe13ccf061af1804e2d654653bef55fdee0c4a78d24b5b75fae8d97eb6b9454"
+generated_digest: "sha256:2d7b125a6d79f09cb0784a50e6e7fbce1e35961bd832d096c2b04de2460bdc2d"
 generated:
   feature: moderation.guide_session_invite_requester
   scenarios:
@@ -100,7 +100,7 @@ generated:
       outcome: success
       emits:
       - GuideSessionInvitedToGuideRoom
-      evidence: ev_736e606bd239
+      evidence: ev_5ea072b947f5
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -115,13 +115,13 @@ generated:
     symbol: GuideSessionInviteRequesterMessageEvent
     line: 11
     note: third-party server implementation; evidence, not authority
-  - id: ev_736e606bd239
-    kind: emulator_handler
+  - id: ev_5ea072b947f5
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/Help/GuideSessionInviteRequesterMessageHandler.cs
-    symbol: GuideSessionInviteRequesterMessageHandler
-    line: 22
+    source: Vortex.Social/Grains/GuideDirectoryGrain.cs
+    symbol: GuideDirectoryGrain
+    line: 222
   - id: ev_f3d085b91d9e
     kind: emulator_flow
     authority: vortex_emulator

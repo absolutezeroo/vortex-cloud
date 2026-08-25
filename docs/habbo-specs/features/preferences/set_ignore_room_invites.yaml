@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:19a58a0d4d8b8446110ea63c6a5f9241adcf80a432132109d331c481361666ed"
+generated_digest: "sha256:c147874905320199698287c3beb89cd756aade3c744cd42af3e40e1f5417881e"
 generated:
   id: preferences.set_ignore_room_invites
   domain: preferences
@@ -64,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 61
+    line: 63
   - id: ev_beb9139d59bf
     kind: emulator_handler
     authority: vortex_emulator

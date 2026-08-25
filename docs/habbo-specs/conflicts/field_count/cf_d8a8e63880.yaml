@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:fdf441ab42f6edeef9a98b82045e562d03fb4d9112c737b9891120c088c6e4f5"
+generated_digest: "sha256:7146994b5750940a71586cb31f196b27deb014ec255ef6fb32da93278a32399f"
 generated:
   id: cf_d8a8e63880
   kind: field_count
   subject: "outgoing/GuildMemberships: field count"
   packet: GuildMemberships
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "1 fields: int32"
+    evidence: ev_822cad26f104
   - origin: arcturus
     authority: reference_emulator
     claim: "9 fields: int32, int32, string, string, string, string, boolean, int32, boolean"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: int32, array"
     evidence: ev_e3c517692f84
   evidence:
+  - id: ev_822cad26f104
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2525.as
+    symbol: _SafeCls_2525
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b2f84ef9c4cb
     kind: reference_composer
     authority: reference_emulator

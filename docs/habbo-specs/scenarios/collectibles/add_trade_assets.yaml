@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0e6a2159c2ee1782037ae696e52e93347b286b243f15e5cd2ea0455b6ef9da6a"
+generated_digest: "sha256:9c532cb15f471d5817c84c28e028c1ccd5720778c91a90ad7023c6ed561e4d85"
 generated:
   feature: collectibles.add_trade_assets
   scenarios:
@@ -149,7 +149,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 303
+    line: 334
   - id: ev_a8707f5e7b6c
     kind: emulator_flow
     authority: vortex_emulator

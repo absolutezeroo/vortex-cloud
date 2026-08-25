@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:114efe0567b81f36bae54b31c4ddac271e9d70ba0fd53752cada98c2a9a64569"
+generated_digest: "sha256:4c41c4e37746194d98da5ac3f77f53a8e6b4a43514f53c1d4e445040e299a6a9"
 generated:
   id: uk_f1f56d6d64
   subject: "outgoing/FigureSetIds: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: FigureSetIdsMessageParser
     line: 21
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ccbbdedfce88
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4141/_SafeCls_4269.as
+    symbol: _SafeCls_4269
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_173283d3f918
     kind: client_parser
     authority: multi_implementation
@@ -35,13 +43,5 @@ generated:
     symbol: FigureSetIdsMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c86b43398a79
-    kind: reference_composer
-    authority: reference_emulator
-    origin: arcturus
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/users/FigureSetIdsMessageComposer.java
-    symbol: FigureSetIdsMessageComposer
-    line: 48
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

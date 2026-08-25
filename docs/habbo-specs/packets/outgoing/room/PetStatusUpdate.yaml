@@ -10,62 +10,62 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:239bd8375cc7434f9bfbb072df6c80f491f98ee76f932d8dc2cadd7a5e43043b"
+generated_digest: "sha256:e0be05c8fea6f2283fdc4d2d500439e261cf491f36a8ab5f85805466117d926d"
 generated:
   name: PetStatusUpdate
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: room_index
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   - index: 1
     name: pet_id
     type: int32
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   - index: 2
     name: can_breed
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   - index: 3
     name: can_harvest
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   - index: 4
     name: can_revive
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   - index: 5
     name: has_breeding_permission
     type: boolean
-    name_confidence: implementation_observed
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_91d687771bd1
-    - ev_18824af74a9e
+    - ev_2c2965d4ac3f
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -79,6 +79,18 @@ generated:
     - boolean
     - boolean
     evidence: ev_91d687771bd1
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - boolean
+    - boolean
+    - boolean
+    - boolean
+    evidence: ev_2c2965d4ac3f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -110,6 +122,14 @@ generated:
     - boolean
     evidence: ev_18824af74a9e
   evidence:
+  - id: ev_2c2965d4ac3f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_3738.as
+    symbol: _SafeCls_3738
+    line: 62
+    note: official client build WIN63-202607011411-782849652
   - id: ev_91d687771bd1
     kind: client_parser
     authority: client_code

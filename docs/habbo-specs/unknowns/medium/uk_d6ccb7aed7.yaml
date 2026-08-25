@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ccf1367f0ba5bbd5ffd823ac881aea91b1c924a10817cad7bf1f008ca4bba105"
+generated_digest: "sha256:a74fcf46357878282df2075353f58099d07ae9dfdb37cddeb3e87d7d092064b7"
 generated:
   id: uk_d6ccb7aed7
   subject: "room.close_room_for_player: what the server sends when it refuses"
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 274
+    line: 277
   - id: ev_7db64e908d04
     kind: emulator_flow
     authority: vortex_emulator

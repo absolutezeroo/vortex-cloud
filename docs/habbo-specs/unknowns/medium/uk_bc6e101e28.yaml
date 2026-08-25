@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f2af56ddea7733e5c6dad312c095376217e386f91795bfdf76d900c88bdb6e8f"
+generated_digest: "sha256:8d6cda18f4bf1703554effa57b5ba946837660fdeaa4126ad13ffd7ad01a4055"
 generated:
   id: uk_bc6e101e28
   subject: "register.update_figure_data: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
     symbol: PlayerNftWardrobeGrain
-    line: 178
+    line: 185
   - id: ev_c1a848c3d73c
     kind: emulator_flow
     authority: vortex_emulator

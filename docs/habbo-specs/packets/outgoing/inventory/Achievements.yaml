@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d7a837397ecd29a5d95b1a888a9e51f456e9a60f5a03d561c4277e86c6786650"
+generated_digest: "sha256:af51ca720bcbb4c95660770f68efea1e047007d266ad0af71c551bb4584beff5"
 generated:
   name: Achievements
   direction: outgoing
   domain: inventory
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -27,13 +27,13 @@ generated:
     evidence:
     - ev_dca48513c4e1
   - index: 1
-    name: unknown_1
+    name: default_category
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_dca48513c4e1
+    - ev_c8dbd634e2f1
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - int32
     - string
     evidence: ev_dca48513c4e1
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_c8dbd634e2f1
   - origin: arcturus
     authority: reference_emulator
     field_count: 15
@@ -65,6 +73,14 @@ generated:
     - string
     evidence: ev_aff65edeb5bd
   evidence:
+  - id: ev_c8dbd634e2f1
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_2979.as
+    symbol: _SafeCls_2979
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dca48513c4e1
     kind: client_parser
     authority: client_code

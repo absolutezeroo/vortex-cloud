@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2fab29ea4dffc00bcd706eae071f733fcc6868bc4c32325428a0302dec627091"
+generated_digest: "sha256:e5672d7a222136330c54ea8bcbc56818ac30958dce1281ae0360dce754a18818"
 generated:
   name: MiniMailUnreadCount
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unread_count
+    name: unread_message_count
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_ee1a49ef76a6
+    - ev_3f0b83f3ad34
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_3f0b83f3ad34
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - int32
     evidence: ev_d7cd078ccfda
   evidence:
+  - id: ev_3f0b83f3ad34
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2075.as
+    symbol: _SafeCls_2075
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ee1a49ef76a6
     kind: client_parser
     authority: multi_implementation

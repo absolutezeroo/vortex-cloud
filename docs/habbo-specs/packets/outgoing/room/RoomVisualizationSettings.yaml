@@ -10,39 +10,47 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67e6296aee4904b85b0f5b8ee91eb7b880025576e8d49b7b8c02560058de023f"
+generated_digest: "sha256:b5210484aa065f5d8ad8106da8699826c3c1926f97e97e21d2778ed4e8c4cd4c"
 generated:
   name: RoomVisualizationSettings
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: walls_hidden
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_47b517892ed4
+    - ev_18ea3fb989bb
   - index: 1
     name: wall_thickness
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_18ea3fb989bb
     - ev_47b517892ed4
   - index: 2
     name: floor_thickness
     type: int32
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_18ea3fb989bb
     - ev_47b517892ed4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    evidence: ev_18ea3fb989bb
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -71,6 +79,14 @@ generated:
     - int32
     evidence: ev_02f44e3bc77c
   evidence:
+  - id: ev_18ea3fb989bb
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_3437.as
+    symbol: _SafeCls_3437
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_47b517892ed4
     kind: client_parser
     authority: multi_implementation
@@ -94,5 +110,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/RoomVisualizationSettingsMessageComposerSerializer.cs
     symbol: RoomVisualizationSettingsMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_59dac87bf5
 verified: {}
 manual: {}

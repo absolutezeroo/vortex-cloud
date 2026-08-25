@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1d43324d93f7ce899244b7281a7fddf4453e84cf0dcb4c85d79562532a9d9eb1"
+generated_digest: "sha256:c0d042a7333205c9d73fa96d5dd5a334d61e02405d1f3f2714d760fb75ea8393"
 generated:
   name: RoomPollResult
   direction: outgoing
@@ -111,6 +111,8 @@ generated:
     symbol: RoomPollResultMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_b6cafddddc
   unknowns:
   - uk_58b7f4bed9
 verified: {}

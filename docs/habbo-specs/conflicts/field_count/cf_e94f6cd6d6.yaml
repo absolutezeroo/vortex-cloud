@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:72e17e50c66de55624599b18571eb17fa8604a4b9df3efe50e2f95a34d324059"
+generated_digest: "sha256:a2661fcbba3524bd75da8441e13d762fbbf8c378e715ecbc95076d050bb07532"
 generated:
   id: cf_e94f6cd6d6
   kind: field_count
   subject: "outgoing/RoomOccupiedTiles: field count"
   packet: RoomOccupiedTiles
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32, int32"
+    evidence: ev_596234f6f9b9
   - origin: arcturus
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
@@ -26,6 +30,14 @@ generated:
     claim: "2 fields: int32, array"
     evidence: ev_2284272b5e56
   evidence:
+  - id: ev_596234f6f9b9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2875/_SafeCls_4415.as
+    symbol: _SafeCls_4415
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_0ae73659da00
     kind: reference_composer
     authority: reference_emulator

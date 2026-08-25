@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bbbba539bae1f308936a8c0f2b3bce28951f1158855a3784f3a36eb40f71698c"
+generated_digest: "sha256:bdd2c3fa6ba50013f588cf4b146f7c33aacaf28c4b77aab7ee8436533de937f9"
 generated:
   feature: users.get_extended_profile
   scenarios:
@@ -56,7 +56,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -81,7 +81,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5e99184ee3a3
+      evidence: ev_35934eb1b8df
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -129,7 +129,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 286
+    line: 301
+  - id: ev_35934eb1b8df
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Providers/GroupBadgePartProvider.cs
+    symbol: GroupBadgePartProvider
+    line: 43
   - id: ev_5d35d771248e
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,19 +144,12 @@ generated:
     source: Vortex.PacketHandlers/Users/GetExtendedProfileMessageHandler.cs
     symbol: GetExtendedProfileMessageHandler
     line: 32
-  - id: ev_5e99184ee3a3
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Providers/GroupBadgePartProvider.cs
-    symbol: GroupBadgePartProvider
-    line: 43
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 314
+    line: 313
 verified: {}
 manual: {}

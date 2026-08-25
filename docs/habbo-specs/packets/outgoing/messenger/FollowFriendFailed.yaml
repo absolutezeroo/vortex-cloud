@@ -10,23 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6654a099a37f35ea266457d42cb677b8e4705a4833b5cc91a8d28d386a35eb1a"
+generated_digest: "sha256:e189857532832bcfe503d3ae6fbf4c239a748ec180254f0c6b4f385576211926"
 generated:
   name: FollowFriendFailed
   direction: outgoing
   domain: messenger
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_67e3cfb354d2
+    - ev_bdf72c614256
     - ev_d0e54c156088
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_bdf72c614256
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +55,14 @@ generated:
     - int32
     evidence: ev_d0e54c156088
   evidence:
+  - id: ev_bdf72c614256
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2314.as
+    symbol: _SafeCls_2314
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d14ce611c6e1
     kind: client_parser
     authority: multi_implementation

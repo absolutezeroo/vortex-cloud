@@ -10,39 +10,47 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7665b144312cb80a8db1840320ba876525188a45636d77faa0025cb294af237d"
+generated_digest: "sha256:7f0cc800e7a503876034fb76713d5f3c023fa6452714245506d1e79376820413"
 generated:
   name: QuizData
   direction: outgoing
   domain: moderation
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: quiz_code
     type: string
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_374c496fd253
-    - ev_57c6feb7ed09
+    - ev_a7ffcd9e98da
   - index: 1
     name: length
     type: int32
     name_confidence: implementation_observed
-    type_confidence: reference_observed
+    type_confidence: client_confirmed
     evidence:
-    - ev_374c496fd253
+    - ev_a7ffcd9e98da
     - ev_57c6feb7ed09
   - index: 2
-    name: question_id
+    name: question_ids
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    note: inside a repeated block
     evidence:
-    - ev_374c496fd253
-    - ev_57c6feb7ed09
+    - ev_a7ffcd9e98da
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    evidence: ev_a7ffcd9e98da
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -68,6 +76,14 @@ generated:
     - array
     evidence: ev_57c6feb7ed09
   evidence:
+  - id: ev_a7ffcd9e98da
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2728.as
+    symbol: _SafeCls_2728
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_864e809102e6
     kind: client_parser
     authority: multi_implementation

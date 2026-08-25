@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:14bcc93c2f0905bb65d43ae8b906f909af7623fa7b22e42d9f445fc75b023796"
+generated_digest: "sha256:a31842ed519dc2da7a8bf8ef3b78ba9322e699a8db140e3aab3177ea8a353637"
 generated:
   name: BotSkillListUpdate
   direction: outgoing
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: bot_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_dffc2446d38f
+    - ev_208b65d57932
   - index: 1
     name: unknown_1
     type: int32
@@ -43,6 +43,14 @@ generated:
     - int32
     - int32
     evidence: ev_dffc2446d38f
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_208b65d57932
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -69,6 +77,14 @@ generated:
     - array
     evidence: ev_66f4fabfaf4f
   evidence:
+  - id: ev_208b65d57932
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2401/_SafeCls_3342.as
+    symbol: _SafeCls_3342
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dffc2446d38f
     kind: client_parser
     authority: client_code

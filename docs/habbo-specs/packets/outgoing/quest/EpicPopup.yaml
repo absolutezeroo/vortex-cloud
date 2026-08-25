@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c55017730922d73bd48d564275dd91b3cd41550aace3a88e99baeb01ae0b9f62"
+generated_digest: "sha256:f40c2d1bddb79aefde01458ed3a218f2127c8232e5dfb13ff03ca0466804ab2c"
 generated:
   name: EpicPopup
   direction: outgoing
   domain: quest
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: image_uri
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_b38c63f44815
+    - ev_83ccf5ac6017
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - string
     evidence: ev_b38c63f44815
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_83ccf5ac6017
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -54,6 +61,14 @@ generated:
     types: []
     evidence: ev_df8e44f3ed63
   evidence:
+  - id: ev_83ccf5ac6017
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/quest/_SafeCls_4423.as
+    symbol: _SafeCls_4423
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b38c63f44815
     kind: client_parser
     authority: client_code
@@ -85,7 +100,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Quest/EpicPopupMessageComposerSerializer.cs
     symbol: EpicPopupMessageComposerSerializer
     line: 6
-  unknowns:
-  - uk_67e2ea0520
 verified: {}
 manual: {}

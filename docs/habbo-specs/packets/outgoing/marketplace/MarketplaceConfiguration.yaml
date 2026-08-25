@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a633ef02747f1225bcb85efa448d92feefbd70458d42c2c2e0bdb0cbbc6eddbb"
+generated_digest: "sha256:a968edc7ad927d16a5ae0da8c2fbd7718a5ca7c0c616cfb80910e72a48ed66ae"
 generated:
   name: MarketplaceConfiguration
   direction: outgoing
@@ -97,6 +97,23 @@ generated:
     - int32
     - int32
     evidence: ev_c49697ea7f95
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 11
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_21b81594e0dd
   - origin: arcturus
     authority: reference_emulator
     field_count: 8
@@ -112,6 +129,14 @@ generated:
     - int32
     evidence: ev_0590c7c6af94
   evidence:
+  - id: ev_21b81594e0dd
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_1990.as
+    symbol: _SafeCls_1990
+    line: 102
+    note: official client build WIN63-202607011411-782849652
   - id: ev_c49697ea7f95
     kind: client_parser
     authority: client_code
@@ -128,6 +153,8 @@ generated:
     symbol: MarketplaceConfigurationMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
+  conflicts:
+  - cf_dfd8ef8cfe
   unknowns:
   - uk_df387b1069
 verified: {}

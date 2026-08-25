@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4b3efa0dfa3e8bb9d553ebbddb4c78c8b2e37bbd19159bebf7ecf40d998acbb6"
+generated_digest: "sha256:3c3369bded1dddde3465495adcf9041b2d79bffced1b543079b80921c0edd76d"
 generated:
   id: cf_c7a20749a8
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_32e21d9223f1
   - origin: vortex
     authority: vortex_emulator
-    claim: PresentOpened then BotAddedToInventoryEvent then BadgeReceivedEvent then PetAddedToInventoryEvent then AvatarEffectAdded
+    claim: PresentOpened then BadgeReceivedEvent
     evidence: ev_d0f936c872c4
   evidence:
   - id: ev_32e21d9223f1

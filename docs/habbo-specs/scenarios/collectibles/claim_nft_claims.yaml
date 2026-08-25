@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:78875d13d42dc2f6d67862209cf1e6e49ce5a6e56bab4322d6edb83732bc7760"
+generated_digest: "sha256:6b50e93a3659c0ec9ac82c74b465e51899393f16652f4030daef103a66cf1bae"
 generated:
   feature: collectibles.claim_nft_claims
   scenarios:
@@ -51,23 +51,23 @@ generated:
       emits: []
       evidence: ev_d72434a4527c
   - scenario: collectibles.claim_nft_claims.guard_2
-    title: "claim nft claims: the guard '!string.IsNullOrEmpty(jsonData)' holds"
+    title: "claim nft claims: the guard '_registry is null' holds"
     given:
-      guard: "!string.IsNullOrEmpty(jsonData)"
+      guard: _registry is null
       guard_holds: "true"
     when:
       packet: ClaimNftClaims
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of ClaimNftClaims sent while '!string.IsNullOrEmpty(jsonData)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of ClaimNftClaims sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7a660921f135
+      evidence: ev_34bf3ac088e2
   - scenario: collectibles.claim_nft_claims.success
     title: "claim nft claims: the request is accepted"
     given:
@@ -85,22 +85,15 @@ generated:
       outcome: success
       emits:
       - NftClaimResult
-      evidence: ev_2ec03446aa2a
+      evidence: ev_34bf3ac088e2
   evidence:
-  - id: ev_2ec03446aa2a
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
-    symbol: FurnitureDefinitionProvider
-    line: 41
-  - id: ev_7a660921f135
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/Providers/StuffDataFactory.cs
-    symbol: StuffDataFactory
-    line: 46
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_b5ea56e36399
     kind: emulator_flow
     authority: vortex_emulator
@@ -114,6 +107,6 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
     symbol: PlayerNftClaimsGrain
-    line: 77
+    line: 80
 verified: {}
 manual: {}

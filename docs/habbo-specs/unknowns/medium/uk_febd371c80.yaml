@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ccb61e0c98aabeb8a9078386f40e34cddaeff815d1ebaa1d2cee7c637f17bad5"
+generated_digest: "sha256:1202a522ce52ed321c3d52143f12b9289690ea0f666c795d3ac3ff8492027428"
 generated:
   id: uk_febd371c80
   subject: "users.approve_all_membership_requests: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: users.approve_all_membership_requests
   known_evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 51
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,6 +33,13 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveAllMembershipRequestsMessageHandler.cs
     symbol: ApproveAllMembershipRequestsMessageHandler
     line: 13
+  - id: ev_40034f33a6de
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 51
   - id: ev_4bca94047361
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,11 +47,11 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveAllMembershipRequestsMessageHandler.cs
     symbol: ApproveAllMembershipRequestsMessageHandler
     line: 24
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 215
 verified: {}

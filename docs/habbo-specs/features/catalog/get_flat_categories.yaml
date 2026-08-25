@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7c97d64e9bded422a3fe4221a5ba088412b7b2d818f1405b5cfd257cb8cd13b6"
+generated_digest: "sha256:a2c2cd95248a60ba7e09cd19f259336fd0c8933c3e2e2ec0aaccca5882c2e8d3"
 generated:
   id: catalog.get_flat_categories
   domain: catalog
@@ -202,7 +202,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomAdvertisementService.cs
     symbol: RoomAdvertisementService
-    line: 107
+    line: 135
   - id: ev_bca43a79b6c9
     kind: emulator_flow
     authority: vortex_emulator

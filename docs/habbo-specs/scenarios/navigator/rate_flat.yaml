@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1d41ad067f559e8740389ee2c380aaef4e65090fc5301101fc343b6bf13b1eaf"
+generated_digest: "sha256:e31202d618074dbaccc75b27b25eec522fb587efd522917c81494453129ab87c"
 generated:
   feature: navigator.rate_flat
   scenarios:
@@ -106,6 +106,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_83c34ca6af81
+  - scenario: navigator.rate_flat.guard_4
+    title: "rate flat: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RateFlat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RateFlat sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_83c34ca6af81
   - scenario: navigator.rate_flat.success
     title: "rate flat: the request is accepted"
     given:
@@ -143,7 +166,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 609
+    line: 681
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_87f8b30763fe
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0e0aefad9b0032a23fc5076af8a842bb84455324178e225d21da6bacea64c7a0"
+generated_digest: "sha256:b8063aa8bc47cd99376b5126b544fe56e95c0b340ddcd8a081355a0fb2dec37c"
 generated:
   name: MarketplaceMakeOfferResult
   direction: outgoing
   domain: marketplace
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_f13b9568311f
-    - ev_f5a6059d8889
+    - ev_aa0d53defe1f
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_aa0d53defe1f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_f5a6059d8889
   evidence:
+  - id: ev_aa0d53defe1f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1932/_SafeCls_2073.as
+    symbol: _SafeCls_2073
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_b3f01100a442
     kind: client_parser
     authority: multi_implementation

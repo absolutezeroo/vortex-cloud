@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:43233de968b66cbe08ced46f72108f7d427bbf8431ae794b9714b3480fa70ef6"
+generated_digest: "sha256:7e7835a8c923ce4c1be2c3f1c7e0ee8cd64bfbef933f91d58452560a66d1bee5"
 generated:
   id: uk_d438b38071
   subject: "outgoing/HabboAchievementNotification: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: HabboAchievementNotification
   known_evidence:
+  - id: ev_895f77515b83
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_1809.as
+    symbol: _SafeCls_1809
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_edc073f17cd2
     kind: client_parser
     authority: multi_implementation
@@ -35,12 +43,5 @@ generated:
     symbol: HabboAchievementNotificationMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
-  - id: ev_01bf7116060e
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Notifications/HabboAchievementNotificationMessageComposerSerializer.cs
-    symbol: HabboAchievementNotificationMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8b0b87e14cccf86387f4e2e3971cd1be94f30378770d868934fd762a431b604b"
+generated_digest: "sha256:fca71c3b593e12cd4296b1ebfce680bbe81d10626d31080e09552f6ec12f65f6"
 generated:
   id: cf_78e2d1d3ae
   kind: field_type
   subject: "outgoing/ChatReviewSessionVotingStatus: type of field 1"
   packet: ChatReviewSessionVotingStatus
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "status: int32"
+    evidence: ev_66de1871bf06
   - origin: arcturus
     authority: reference_emulator
     claim: "unknown_1: int32"
@@ -26,6 +30,14 @@ generated:
     claim: "statuses: array"
     evidence: ev_77be7a48d5b1
   evidence:
+  - id: ev_66de1871bf06
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_4242.as
+    symbol: _SafeCls_4242
+    line: 35
+    note: official client build WIN63-202607011411-782849652
   - id: ev_29a30b11ad54
     kind: reference_composer
     authority: reference_emulator

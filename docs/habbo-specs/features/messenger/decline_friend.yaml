@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:86504bc88b505ea7908e911690b38eb1ca3813315b7c96636dbfb8c4e4573097"
+generated_digest: "sha256:64369654ad60a74f0682de4fa9159d7c8d602d7e2c2f67f6e2e7f8f5eddb4d15"
 generated:
   id: messenger.decline_friend
   domain: messenger
@@ -30,7 +30,11 @@ generated:
   - order: 1
     layer: grain
     symbol: MessengerGrain.DeclineFriendRequestsAsync
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
+  - order: 2
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -39,17 +43,28 @@ generated:
   - expression: all
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
   - expression: removedRequesterIds.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_b9c3cebcd883
+    evidence: ev_e805723a88fe
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: true
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_69ee7dc73043
     kind: emulator_handler
     authority: vortex_emulator
@@ -64,17 +79,18 @@ generated:
     source: Vortex.PacketHandlers/FriendList/DeclineFriendMessageHandler.cs
     symbol: DeclineFriendMessageHandler
     line: 22
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 343
+    line: 347
   scenarios:
   - messenger.decline_friend.guard_0
   - messenger.decline_friend.guard_1
   - messenger.decline_friend.guard_2
+  - messenger.decline_friend.guard_3
   - messenger.decline_friend.success
   conflicts:
   - cf_929cddf3a3

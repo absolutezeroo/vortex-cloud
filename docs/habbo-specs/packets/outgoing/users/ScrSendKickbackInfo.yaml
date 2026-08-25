@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c1e200ef0faf5fb93f1618c1ff1d3299be3825f37738b90894b216b10b99153e"
+generated_digest: "sha256:6aee4bbbeb91de835fb1b13b0e745fe0cc8de409efa5b48673e005342a2f41d8"
 generated:
   name: ScrSendKickbackInfo
   direction: outgoing
@@ -91,6 +91,12 @@ generated:
     - ev_bedf41a61930
     - ev_a379c814f96b
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_df88fa0e9e86
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -128,6 +134,14 @@ generated:
     - int32
     evidence: ev_a379c814f96b
   evidence:
+  - id: ev_df88fa0e9e86
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2645.as
+    symbol: _SafeCls_2645
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_1ae86dfcb050
     kind: client_parser
     authority: multi_implementation

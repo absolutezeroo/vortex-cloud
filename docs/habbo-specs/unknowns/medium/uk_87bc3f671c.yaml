@@ -10,15 +10,22 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:012bda798d0d0f08b69ac9b91414d0da6d6693fdbbb8b1a5565b7af2c6acda2a"
+generated_digest: "sha256:767b87b030fee87a056c7e6c968864335f20241235fabcc3d1be433f8f3cf952"
 generated:
   id: uk_87bc3f671c
   subject: "quest.activate_quest: what the server sends when it refuses"
   severity: medium
-  question: quest.activate_quest changes state and has 3 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: quest.activate_quest changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: quest.activate_quest
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -26,6 +33,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_3e19f38401db
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Progression/Grains/PlayerQuestGrain.cs
+    symbol: PlayerQuestGrain
+    line: 244
   - id: ev_56c775d65c26
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,12 +54,5 @@ generated:
     source: Vortex.PacketHandlers/Quest/ActivateQuestMessageHandler.cs
     symbol: ActivateQuestMessageHandler
     line: 10
-  - id: ev_f7df1e322a73
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerQuestGrain.cs
-    symbol: PlayerQuestGrain
-    line: 241
 verified: {}
 manual: {}

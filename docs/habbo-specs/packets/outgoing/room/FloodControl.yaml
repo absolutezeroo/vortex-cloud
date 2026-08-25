@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e08b7eeb188af5ba8c46ece3daf0dad53ecfe14a5d49591c02436b6f3f78e8fa"
+generated_digest: "sha256:9d8d831ac269ccf280591987950bac093ee96b0884ffa78b493eed70cd71def1"
 generated:
   name: FloodControl
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: seconds
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_e4d222ddeb2d
-    - ev_6c14e8c47574
+    - ev_b88c6364dd15
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_b88c6364dd15
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +54,14 @@ generated:
     - int32
     evidence: ev_6c14e8c47574
   evidence:
+  - id: ev_b88c6364dd15
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2918/_SafeCls_3568.as
+    symbol: _SafeCls_3568
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_3eb5165d2fad
     kind: client_parser
     authority: multi_implementation

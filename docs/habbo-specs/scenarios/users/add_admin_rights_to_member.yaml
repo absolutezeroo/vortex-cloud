@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:70c4a2e4a353016ca89dc78e4971c76877aeaa1445baca18406fba1da1119665"
+generated_digest: "sha256:1bcf10bf634834c395574f2a66067b1a55beffab4eb9ad7fbcd3659b87ab6915"
 generated:
   feature: users.add_admin_rights_to_member
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -79,7 +79,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c4e53aab9ae9
+      evidence: ev_b1c46fe16e7f
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -128,7 +128,7 @@ generated:
       emits:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
-      evidence: ev_12ce06c785f7
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -144,13 +144,6 @@ generated:
     symbol: AddAdminRightsToMemberMessageEvent
     line: 20
     note: third-party server implementation; evidence, not authority
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 26
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -158,11 +151,11 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 401
   - id: ev_f96a6171650d

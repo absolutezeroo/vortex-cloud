@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7dab28985b2b338c88c56822c74b7479167a60157570abd1e0ddebb35566707a"
+generated_digest: "sha256:4d268eae9acf28c06feb6a50a5cbbef428dc96dad224bce8a058aca49dfa1f61"
 generated:
   feature: room.pick_up_pet_in_room
   scenarios:
@@ -62,6 +62,30 @@ generated:
       emits:
       - PetAddedToInventory
       evidence: ev_f78f1b432d0d
+  - scenario: room.pick_up_pet_in_room.guard_2
+    title: "pick up pet in room: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: RemovePetFromFlat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RemovePetFromFlat sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PetAddedToInventory
+      evidence: ev_f78f1b432d0d
   - scenario: room.pick_up_pet_in_room.success
     title: "pick up pet in room: the request is accepted"
     given:
@@ -102,6 +126,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/RemovePetFromFlatMessageHandler.cs
     symbol: RemovePetFromFlatMessageHandler
     line: 9
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_5d4c75baab22
     kind: emulator_flow
     authority: vortex_emulator
@@ -115,6 +146,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 197
+    line: 205
 verified: {}
 manual: {}

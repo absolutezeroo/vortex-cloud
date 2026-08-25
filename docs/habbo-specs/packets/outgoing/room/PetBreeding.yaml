@@ -10,39 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:da03039edce5e0a207a765933edf9626d2f29ef8891c17614baacb3a0cfcd876"
+generated_digest: "sha256:a76d089d307637c8acd9393b7267e1ccec19fe4ddfb27aa8515d8a5cd10d0009"
 generated:
   name: PetBreeding
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: state
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8ffa55b2e622
+    - ev_12a5a49ac7ca
   - index: 1
-    name: unknown_1
+    name: own_pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8ffa55b2e622
+    - ev_12a5a49ac7ca
   - index: 2
-    name: unknown_2
+    name: other_pet_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_8ffa55b2e622
+    - ev_12a5a49ac7ca
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_12a5a49ac7ca
   - origin: arcturus
     authority: reference_emulator
     field_count: 3
@@ -53,6 +59,14 @@ generated:
     - int32
     evidence: ev_8ffa55b2e622
   evidence:
+  - id: ev_12a5a49ac7ca
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3802.as
+    symbol: _SafeCls_3802
+    line: 32
+    note: official client build WIN63-202607011411-782849652
   - id: ev_8ffa55b2e622
     kind: reference_composer
     authority: reference_emulator
@@ -61,7 +75,5 @@ generated:
     symbol: PetBreedingMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_c097c9992f
 verified: {}
 manual: {}

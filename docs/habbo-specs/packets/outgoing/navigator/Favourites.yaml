@@ -10,23 +10,47 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c18ee2149b4bcb7ff90670077d46a6b9d94973feb76981b157b39b4196f9dd0e"
+generated_digest: "sha256:8b1800bffb950e7908f1179780593ddb6fbf2c364f0e669d77428954a28b5a2f"
 generated:
   name: Favourites
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: limit
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_040b79bcdf5d
+  - index: 1
+    name: length
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_040b79bcdf5d
+    - ev_2bc7894964fb
+  - index: 2
+    name: favourite_room_ids
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_80ce8ac99d66
+    - ev_040b79bcdf5d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    evidence: ev_040b79bcdf5d
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -53,6 +77,14 @@ generated:
     - array
     evidence: ev_2bc7894964fb
   evidence:
+  - id: ev_040b79bcdf5d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3614.as
+    symbol: _SafeCls_3614
+    line: 25
+    note: official client build WIN63-202607011411-782849652
   - id: ev_80ce8ac99d66
     kind: client_parser
     authority: multi_implementation

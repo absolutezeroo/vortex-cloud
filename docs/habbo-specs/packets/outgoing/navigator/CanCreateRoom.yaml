@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:487a028911c3d7b59867908ef114bf861de24396c0732e26be3905df9071c080"
+generated_digest: "sha256:3803d7141550038ba2c8eedd4bdf0aa4c3f5eedccdaedfd43f90fd4ae1ce8fe2"
 generated:
   name: CanCreateRoom
   direction: outgoing
   domain: navigator
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: result_code
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d7f8443a46e2
+    - ev_93adb798e9ba
   - index: 1
     name: room_limit
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d7f8443a46e2
+    - ev_93adb798e9ba
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_93adb798e9ba
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +66,14 @@ generated:
     - int32
     evidence: ev_ad8005126f04
   evidence:
+  - id: ev_93adb798e9ba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3181.as
+    symbol: _SafeCls_3181
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d7f8443a46e2
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +97,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Navigator/CanCreateRoomMessageComposerSerializer.cs
     symbol: CanCreateRoomMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_ae0db1dbfb
 verified: {}
 manual: {}

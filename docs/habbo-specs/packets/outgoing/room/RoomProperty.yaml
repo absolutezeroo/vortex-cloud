@@ -10,31 +10,39 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:dee907cf7cf377af8dcaf86d9ddde9412618e05cba37ec7a9739a65516b7b9f2"
+generated_digest: "sha256:35105a4a7329b27e382fbd1e7defdc44d5900a1b5df6fbad2517fe80612ab95a"
 generated:
   name: RoomProperty
   direction: outgoing
   domain: room
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: key
     type: string
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_b940b699fc7b
     - ev_ea90037ec8f7
   - index: 1
     name: value
     type: string
     name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    type_confidence: client_confirmed
     evidence:
+    - ev_b940b699fc7b
     - ev_ea90037ec8f7
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - string
+    - string
+    evidence: ev_b940b699fc7b
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -60,6 +68,14 @@ generated:
     - string
     evidence: ev_18da5e5a99dc
   evidence:
+  - id: ev_b940b699fc7b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2778.as
+    symbol: _SafeCls_2778
+    line: 52
+    note: official client build WIN63-202607011411-782849652
   - id: ev_ea90037ec8f7
     kind: client_parser
     authority: multi_implementation
@@ -83,5 +99,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/RoomPropertyMessageComposerSerializer.cs
     symbol: RoomPropertyMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_ea2e552d01
 verified: {}
 manual: {}

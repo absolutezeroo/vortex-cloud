@@ -10,15 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6bf7a8e8f0e8b1fa18de19beb5e247c5feb1262da3f8c2124267da581535d6f8"
+generated_digest: "sha256:60efa7b4a79e33e7ac8188f63722a869a82dce6f05caa20f437bbdc28c7c33dd"
 generated:
   name: HotLooks
   direction: outgoing
   domain: hotlooks
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_8d02189ddcb4
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_8d02189ddcb4
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +41,14 @@ generated:
     types: []
     evidence: ev_9631cd448121
   evidence:
+  - id: ev_8d02189ddcb4
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4181/_SafeCls_4180.as
+    symbol: _SafeCls_4180
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9631cd448121
     kind: client_parser
     authority: multi_implementation
@@ -34,5 +57,7 @@ generated:
     symbol: HotLooksMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  unknowns:
+  - uk_9b723fd4ca
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:312a05cd1ff4ad57dbd6875cdcd123941d6f9642896cad8f56a6d53aab3cb164"
+generated_digest: "sha256:555e233a802570d1c73df6f1a4066961268cd5af6cf49db899b8cc1c119fd3b9"
 generated:
   name: PetBreedingResult
   direction: outgoing
@@ -25,6 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_9ac6dff3b9b6
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_ac24c4e2ef52
   evidence:
   - id: ev_9ac6dff3b9b6
     kind: client_parser
@@ -34,5 +40,13 @@ generated:
     symbol: PetBreedingResultParser
     line: 40
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_ac24c4e2ef52
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_2708.as
+    symbol: _SafeCls_2708
+    line: 47
+    note: official client build WIN63-202607011411-782849652
 verified: {}
 manual: {}

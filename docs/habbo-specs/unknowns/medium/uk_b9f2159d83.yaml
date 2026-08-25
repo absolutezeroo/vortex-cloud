@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3eba3e10c81e2e19d849581fcbebaeb88a64e4afef72ccdb0c7d0e70df37298a"
+generated_digest: "sha256:23fa493cca27c36b8c13d9a88b526a8711cb5834c1b7c447e9dd9f577358a40c"
 generated:
   id: uk_b9f2159d83
   subject: "messenger.accept_friend: what the server sends when it refuses"
@@ -47,13 +47,6 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 107
-  - id: ev_55e9c6b16f82
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Presence.cs
-    symbol: MessengerGrain
-    line: 82
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,13 +61,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
-  - id: ev_b9c3cebcd883
+  - id: ev_8db29db3d5af
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Presence.cs
     symbol: MessengerGrain
-    line: 195
+    line: 82
   - id: ev_bc65e4b1ddef
     kind: emulator_handler
     authority: vortex_emulator
@@ -89,6 +82,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
     line: 80
+  - id: ev_e805723a88fe
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
+    symbol: MessengerGrain
+    line: 199
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

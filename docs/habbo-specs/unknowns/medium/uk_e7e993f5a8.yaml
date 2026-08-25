@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1ece81ca777c47e30464acbc767a80e2193c5066b2508518c88edf585de5669b"
+generated_digest: "sha256:4721d74069bad82a16f788e3463a0c480d925928f956e9183ec83b0d09e630a0"
 generated:
   id: uk_e7e993f5a8
   subject: "navigator.set_room_session_tags: what the server sends when it refuses"
   severity: medium
-  question: navigator.set_room_session_tags changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.set_room_session_tags changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.set_room_session_tags
   known_evidence:
@@ -32,7 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 547
+    line: 607
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_37e2f0d6a658
     kind: emulator_flow
     authority: vortex_emulator

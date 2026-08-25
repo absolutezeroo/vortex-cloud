@@ -10,39 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f6f0c53a7cc44b851c46137812c077a46095ddd18e6864252c66a294b492e066"
+generated_digest: "sha256:0ba26cfc796348f5453c353bc41e5c9b4cb8891dae1e155f533dcea53366554c"
 generated:
   name: AvailabilityStatus
   direction: outgoing
   domain: availability
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: is_open
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_44f289dc426c
+    - ev_a758dd52a90d
   - index: 1
     name: on_shut_down
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_44f289dc426c
+    - ev_a758dd52a90d
   - index: 2
     name: is_authentic_habbo
     type: boolean
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_44f289dc426c
+    - ev_a758dd52a90d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - boolean
+    - boolean
+    - boolean
+    evidence: ev_a758dd52a90d
   - origin: nitro
     authority: multi_implementation
     field_count: 3
@@ -71,6 +78,14 @@ generated:
     - boolean
     evidence: ev_889c49b50bd2
   evidence:
+  - id: ev_a758dd52a90d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2152/_SafeCls_2151.as
+    symbol: _SafeCls_2151
+    line: 44
+    note: official client build WIN63-202607011411-782849652
   - id: ev_44f289dc426c
     kind: client_parser
     authority: multi_implementation
@@ -94,5 +109,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Availability/AvailabilityStatusMessageComposerSerializer.cs
     symbol: AvailabilityStatusMessageComposerSerializer
     line: 6
+  conflicts:
+  - cf_730220625a
 verified: {}
 manual: {}

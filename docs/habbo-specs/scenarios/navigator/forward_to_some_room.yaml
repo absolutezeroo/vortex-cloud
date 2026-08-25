@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee027f7198d312dfe44d6b80dd05faedca2ca0bf40f556f4bb2233b8b82dc255"
+generated_digest: "sha256:0fba551f6f96f0a4651a4d1eddf6a7a690d80ca47a6e98245855032ddd66081d"
 generated:
   feature: navigator.forward_to_some_room
   scenarios:
@@ -110,7 +110,7 @@ generated:
       emits:
       - GetGuestRoomResult
       - unresolved
-      evidence: ev_74aa24a9a756
+      evidence: ev_25e7df53e794
     - origin: arcturus
       authority: reference_emulator
       outcome: success
@@ -128,13 +128,13 @@ generated:
     symbol: ForwardToSomeRoomMessageEvent
     line: 14
     note: third-party server implementation; evidence, not authority
-  - id: ev_74aa24a9a756
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
-    symbol: RoomDirectoryGrain
-    line: 109
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
+    symbol: GroupGrain
+    line: 118
   - id: ev_9ad422e8891e
     kind: emulator_flow
     authority: vortex_emulator

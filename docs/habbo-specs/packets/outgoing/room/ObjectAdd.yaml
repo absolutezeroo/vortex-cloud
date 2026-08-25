@@ -10,316 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a75c08d74b4cc88153ad45e4db609a0a55d21085e45bd41900756186e31508a3"
+generated_digest: "sha256:bb64ae395321f753bf945592310e7a130672b44dae1580741f9c6d02b3decd0f"
 generated:
   name: ObjectAdd
   direction: outgoing
   domain: room
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: floor_item
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_b220c7c88af7
-    fields:
-    - index: 0
-      name: object_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 1
-      name: sprite_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 2
-      name: x
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 3
-      name: y
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 4
-      name: rotation
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 5
-      name: z
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 6
-      name: stack_height
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 7
-      name: extra
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 8
-      name: stuff_data
-      type: block
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-      fields:
-      - index: 0
-        name: stuff_bitmask
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 1
-        name: data
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 2
-        name: score_type
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 3
-        name: clear_type
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 4
-        name: count
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 5
-        name: scores
-        type: array
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        note: "source comment: repeated block; the element count is the int written immediately before it"
-        evidence:
-        - ev_b220c7c88af7
-        fields:
-        - index: 0
-          name: key
-          type: int32
-          name_confidence: implementation_observed
-          type_confidence: implementation_observed
-          evidence:
-          - ev_b220c7c88af7
-        - index: 1
-          name: length
-          type: int32
-          name_confidence: implementation_observed
-          type_confidence: implementation_observed
-          evidence:
-          - ev_b220c7c88af7
-        - index: 2
-          name: value
-          type: array
-          name_confidence: implementation_observed
-          type_confidence: implementation_observed
-          note: "source comment: repeated block; the element count is the int written immediately before it"
-          evidence:
-          - ev_b220c7c88af7
-          fields:
-          - index: 0
-            name: name
-            type: string
-            name_confidence: implementation_observed
-            type_confidence: implementation_observed
-            evidence:
-            - ev_b220c7c88af7
-      - index: 6
-        name: data
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 7
-        name: hits
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 8
-        name: target
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 9
-        name: data
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 10
-        name: count
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 11
-        name: key
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 12
-        name: value
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 13
-        name: length
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 14
-        name: data
-        type: array
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        note: "source comment: repeated block; the element count is the int written immediately before it"
-        evidence:
-        - ev_b220c7c88af7
-        fields:
-        - index: 0
-          name: value
-          type: int32
-          name_confidence: implementation_observed
-          type_confidence: implementation_observed
-          evidence:
-          - ev_b220c7c88af7
-      - index: 15
-        name: length
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 16
-        name: data
-        type: array
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        note: "source comment: repeated block; the element count is the int written immediately before it"
-        evidence:
-        - ev_b220c7c88af7
-        fields:
-        - index: 0
-          name: value
-          type: string
-          name_confidence: implementation_observed
-          type_confidence: implementation_observed
-          evidence:
-          - ev_b220c7c88af7
-      - index: 17
-        name: data
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 18
-        name: result
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_b220c7c88af7
-      - index: 19
-        name: unique_number
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
-        evidence:
-        - ev_b220c7c88af7
-      - index: 20
-        name: unique_series
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        note: only when (item.StuffBitmask & (int)StuffDataFlags.Unique) != 0
-        evidence:
-        - ev_b220c7c88af7
-    - index: 9
-      name: unknown_9
-      type: int32
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      note: "written as the constant -1; source comment: expiration"
-      evidence:
-      - ev_b220c7c88af7
-    - index: 10
-      name: usage_policy
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-    - index: 11
-      name: owner_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_b220c7c88af7
-  - index: 1
-    name: owner_name
+    name: unknown_0
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
     evidence:
-    - ev_b220c7c88af7
+    - ev_064e117af934
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - string
+    evidence: ev_064e117af934
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -348,6 +62,14 @@ generated:
     - string
     evidence: ev_b220c7c88af7
   evidence:
+  - id: ev_064e117af934
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2444.as
+    symbol: _SafeCls_2444
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a22d432dcd46
     kind: client_parser
     authority: multi_implementation
@@ -371,5 +93,9 @@ generated:
     source: Vortex.Revisions/Revision20260701/Serializers/Room/Engine/ObjectAddMessageComposerSerializer.cs
     symbol: ObjectAddMessageComposerSerializer
     line: 7
+  conflicts:
+  - cf_cad9150a50
+  unknowns:
+  - uk_a56385a4aa
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7494e5854ec210d1484affa0d121049a814eee05618293ae02cbdea439a1d3f9"
+generated_digest: "sha256:0519d441dc1ce5caee38f6be3621721216f781e42293323bac12a24ff2c63137"
 generated:
   id: room.give_supplement_to_pet
   domain: room
@@ -72,7 +72,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Care.cs
     symbol: RoomPetSystem
-    line: 150
+    line: 151
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator

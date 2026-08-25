@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b2c91f4f09d7adbe41fc274face3d203268b4fc9cae7e2ceccff48bbfc573ea3"
+generated_digest: "sha256:0223932cf44342c157c3a102db1df1ee04000234d1a7a583cb30a4a7b04aad54"
 generated:
   id: room.delete_room
   domain: room
@@ -96,6 +96,10 @@ generated:
     layer: grain
     symbol: RoomDirectoryGrain.RemoveActiveRoomAsync
     evidence: ev_74aa24a9a756
+  - order: 18
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.RoomId <= 0
     on_fail: return
@@ -141,6 +145,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_9f45a8c43da8
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: AvatarModule
     value: AvatarModule .RemoveAvatarFromPlayerAsync(actorCtx, playerId, ct)
@@ -242,7 +250,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 173
+    line: 186
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_4c36667ce9b9
     kind: emulator_flow
     authority: vortex_emulator
@@ -352,6 +367,7 @@ generated:
   - room.delete_room.guard_0
   - room.delete_room.guard_1
   - room.delete_room.guard_10
+  - room.delete_room.guard_11
   - room.delete_room.guard_2
   - room.delete_room.guard_3
   - room.delete_room.guard_4

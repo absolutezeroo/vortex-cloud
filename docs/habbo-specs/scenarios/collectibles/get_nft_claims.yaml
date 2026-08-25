@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d6c5954598ff20b38dd2f0f56b753c2d5ac9880de433d01a9deb8d8e56c1febf"
+generated_digest: "sha256:b5070661eb46558743e93526205017d81bd35b4fb7db637947ab7be017213ecb"
 generated:
   feature: collectibles.get_nft_claims
   scenarios:
@@ -82,6 +82,6 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
     symbol: PlayerNftClaimsGrain
-    line: 50
+    line: 53
 verified: {}
 manual: {}

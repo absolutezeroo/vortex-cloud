@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4c6d521f78056d89629312fd7c6c9f99b0478342c12658dc8337349761410e9b"
+generated_digest: "sha256:1c8318e734a2dda3c8a63018b1b7601a917f841af80c2972131f1b5180518134"
 generated:
   id: uk_58bdb21740
   subject: "outgoing/RoomEvent: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomEvent
   known_evidence:
+  - id: ev_f88af2e6efba
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3636.as
+    symbol: _SafeCls_3636
+    line: 23
+    note: official client build WIN63-202607011411-782849652
   - id: ev_5ad47a35a160
     kind: client_parser
     authority: multi_implementation

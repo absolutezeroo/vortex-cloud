@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:eccc4eca5eeb31f856ada5e570e56323cff55dbe193307e1bcd4fdf0efc17be6"
+generated_digest: "sha256:65515576ea4dab185d523304e13e2f1f3069b94bf1cc6fde751145f6be234d34"
 generated:
   feature: users.update_guild_badge
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_678209870593
+      evidence: ev_d53218d99bdd
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -78,7 +78,7 @@ generated:
       emits:
       - GroupDetailsChanged
       - GuildEditFailed
-      evidence: ev_257d20d10bb7
+      evidence: ev_2adb91a04bcb
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -93,20 +93,20 @@ generated:
     symbol: UpdateGuildBadgeMessageEvent
     line: 12
     note: third-party server implementation; evidence, not authority
-  - id: ev_257d20d10bb7
+  - id: ev_2adb91a04bcb
+    kind: emulator_handler
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Users/UpdateGuildBadgeMessageHandler.cs
+    symbol: UpdateGuildBadgeMessageHandler
+    line: 11
+  - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Settings.cs
-    symbol: GroupGrain
-    line: 82
-  - id: ev_678209870593
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupDirectoryGrain.cs
+    source: Vortex.Social/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 764
+    line: 763
   - id: ev_d5f673c3c822
     kind: emulator_flow
     authority: vortex_emulator

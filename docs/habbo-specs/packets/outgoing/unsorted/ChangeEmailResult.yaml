@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:423e4b99100e6690ecb00924c318f0e74dbfed6e32a87cdd451f754cdb8136ff"
+generated_digest: "sha256:066c4b979450d3a6faffa951200245c2018ee5a19d503792ba5fdd802ad95c7d"
 generated:
   name: ChangeEmailResult
   direction: outgoing
   domain: unsorted
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: result
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_384d56ee0342
+    - ev_0f36428d2477
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_0f36428d2477
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -35,6 +41,14 @@ generated:
     - int32
     evidence: ev_384d56ee0342
   evidence:
+  - id: ev_0f36428d2477
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_4028.as
+    symbol: _SafeCls_4028
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_384d56ee0342
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +57,5 @@ generated:
     symbol: ChangeEmailResultMessageComposer
     line: 15
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_a9fa2d4db8
 verified: {}
 manual: {}

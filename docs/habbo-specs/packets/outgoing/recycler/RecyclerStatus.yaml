@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4e32afefec644178b158b6d2f11c4756ae3e7f465d17e7f0ac1514cebe6ac31f"
+generated_digest: "sha256:06277841bedb0bb92675fa45c4ba59de40638838cde00d282945bba1c5313cd0"
 generated:
   name: RecyclerStatus
   direction: outgoing
   domain: recycler
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: recycler_status
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_fe7f4c2199b1
+    - ev_5717ee66dc02
   - index: 1
-    name: unknown_1
+    name: recycler_timeout_seconds
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_fe7f4c2199b1
+    - ev_5717ee66dc02
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - int32
     - int32
     evidence: ev_fe7f4c2199b1
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_5717ee66dc02
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -52,6 +60,14 @@ generated:
     - int32
     evidence: ev_46efc6dfdef0
   evidence:
+  - id: ev_5717ee66dc02
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2166/_SafeCls_2165.as
+    symbol: _SafeCls_2165
+    line: 36
+    note: official client build WIN63-202607011411-782849652
   - id: ev_fe7f4c2199b1
     kind: client_parser
     authority: client_code
@@ -68,7 +84,5 @@ generated:
     symbol: RecyclerStatusMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_22acf9e497
 verified: {}
 manual: {}

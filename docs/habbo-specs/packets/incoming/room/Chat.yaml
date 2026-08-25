@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e61f729cc4370f77a0b36bc7f171346475e1f52c281eae8146b7953a643720a"
+generated_digest: "sha256:a524235597f7c2baed23f00bb61fb261db68877752f0b60461c4dc928ac1d1bb"
 generated:
   name: Chat
   direction: incoming
@@ -105,5 +105,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Room/Chat/ChatMessageParser.cs
     symbol: ChatMessageParser
     line: 7
+  conflicts:
+  - cf_3cd42900cc
 verified: {}
 manual: {}

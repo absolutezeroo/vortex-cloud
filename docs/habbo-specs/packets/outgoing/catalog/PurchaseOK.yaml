@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ba2dd9eb35360a4badd9c20d8ad3d738485e8565b47a344473dad2d6d8a14ea8"
+generated_digest: "sha256:471996bdbbb7f6180bd888f31e6cfde6fdf98331dc765f601cbb3d27f1d406ee"
 generated:
   name: PurchaseOK
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: true
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_594e82115846
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -53,6 +59,14 @@ generated:
     types: []
     evidence: ev_4d73713de604
   evidence:
+  - id: ev_594e82115846
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1714/_SafeCls_2169.as
+    symbol: _SafeCls_2169
+    line: 28
+    note: official client build WIN63-202607011411-782849652
   - id: ev_edb02545518c
     kind: client_parser
     authority: multi_implementation

@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:b8d13a887332ea5c9b6b18bb73da4404891dddb0e666179e6164c3f04deb539d"
+generated_digest: "sha256:61e490cbe3d783614170f4a22698bad16ff88292260bb791a55fe532da043a86"
 generated:
   id: cf_02dbf283ad
   kind: field_count
   subject: "outgoing/MessengerInit: field count"
   packet: MessengerInit
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "4 fields: int32, int32, int32, int32"
+    evidence: ev_5aacafab5197
   - origin: nitro
     authority: multi_implementation
-    claim: "3 fields: int32, int32, int32"
+    claim: "1 fields: int32, int32, int32"
     evidence: ev_d9d5ec99f2bf
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "5 fields: int32, int32, int32, int32, array"
     evidence: ev_6784826430a5
   evidence:
+  - id: ev_5aacafab5197
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_2032.as
+    symbol: _SafeCls_2032
+    line: 30
+    note: official client build WIN63-202607011411-782849652
   - id: ev_d9d5ec99f2bf
     kind: client_parser
     authority: multi_implementation

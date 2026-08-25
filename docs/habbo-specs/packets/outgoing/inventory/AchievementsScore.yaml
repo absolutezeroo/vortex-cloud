@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:acef3e71a553d1b5d9b9a3ff13d37a1de4b9a3563310359e0befb3783fa675d8"
+generated_digest: "sha256:2ae123fdad6d84b2b6610e1f9ad5ea5426754c831d80486bb9c11b0f94ab4930"
 generated:
   name: AchievementsScore
   direction: outgoing
   domain: inventory
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
-    name: unknown_0
+    name: score
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
     - ev_286b0b332402
+    - ev_a49b84f89d55
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -34,6 +34,13 @@ generated:
     types:
     - int32
     evidence: ev_286b0b332402
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_a49b84f89d55
   - origin: arcturus
     authority: reference_emulator
     field_count: 1
@@ -50,6 +57,14 @@ generated:
     symbol: AchievementsScoreParser
     line: 16
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a49b84f89d55
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_2637.as
+    symbol: _SafeCls_2637
+    line: 22
+    note: official client build WIN63-202607011411-782849652
   - id: ev_a22a4c70d182
     kind: reference_composer
     authority: reference_emulator
@@ -58,7 +73,5 @@ generated:
     symbol: AchievementsScoreMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_d106aa03f6
 verified: {}
 manual: {}

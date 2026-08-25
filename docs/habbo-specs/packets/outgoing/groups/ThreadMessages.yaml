@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f7aafdd946808bdfe38df7ebafa8623ddaad568f30962b7db9c3f6befb2b2915"
+generated_digest: "sha256:deca111b1f48ec6d3585bd00b80d481018b9452920f3d65915aff1a6745ca770"
 generated:
   name: ThreadMessages
   direction: outgoing
@@ -140,6 +140,16 @@ generated:
       evidence:
       - ev_ee59a9489251
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 4
+    partial: true
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_26e99a6cbcd5
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -168,6 +178,14 @@ generated:
     - array
     evidence: ev_ee59a9489251
   evidence:
+  - id: ev_26e99a6cbcd5
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2470/_SafeCls_2469.as
+    symbol: _SafeCls_2469
+    line: 60
+    note: official client build WIN63-202607011411-782849652
   - id: ev_452dc715adf2
     kind: client_parser
     authority: multi_implementation

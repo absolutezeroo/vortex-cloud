@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:58370ae22f98a50caca565d35357b6c86ae652c18c11a560fe839e205257616e"
+generated_digest: "sha256:16ff4792b711791c3797d6f46d2f01285a01b9425f43f33d6ec77d850317c1bb"
 generated:
   id: users.approve_membership_request
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.ApproveMembershipAsync
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: domain
     symbol: GroupMemberMapper.NewMember
-    evidence: ev_12ce06c785f7
+    evidence: ev_40034f33a6de
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -48,11 +48,11 @@ generated:
   - expression: group is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: request is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -71,13 +71,6 @@ generated:
       evidence: ev_98c0c69e5c73
   reaches_persistence: true
   evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 51
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -85,6 +78,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_40034f33a6de
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 51
   - id: ev_98c0c69e5c73
     kind: emulator_flow
     authority: vortex_emulator
@@ -92,11 +92,11 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveMembershipRequestMessageHandler.cs
     symbol: ApproveMembershipRequestMessageHandler
     line: 23
-  - id: ev_c4e53aab9ae9
+  - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 125
   - id: ev_c8f11b0849a4

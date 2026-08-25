@@ -10,16 +10,20 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e50b41c45c3b46c78a2d692ec87f921bbb3d574872c42812256d37d169b36063"
+generated_digest: "sha256:067443ebdb45e67ac363f19295baeefd2a1b9aad3e633db5f45cf506dc2f6847"
 generated:
   id: cf_b1b222b83c
   kind: field_count
   subject: "outgoing/YouAreController: field count"
   packet: YouAreController
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32"
+    evidence: ev_1c060b7aed2f
   - origin: nitro
     authority: multi_implementation
-    claim: "2 fields: int32, int32"
+    claim: "1 fields: int32, int32"
     evidence: ev_20c8de2831b3
   - origin: arcturus
     authority: reference_emulator
@@ -30,6 +34,14 @@ generated:
     claim: "2 fields: int32, int32"
     evidence: ev_3a9db763111d
   evidence:
+  - id: ev_1c060b7aed2f
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3212/_SafeCls_3211.as
+    symbol: _SafeCls_3211
+    line: 24
+    note: official client build WIN63-202607011411-782849652
   - id: ev_20c8de2831b3
     kind: client_parser
     authority: multi_implementation

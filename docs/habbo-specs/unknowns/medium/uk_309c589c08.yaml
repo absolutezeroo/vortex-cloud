@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:610a9b5d0c9ca64f0af7aec569bb300c72b4b3fa71a9f5c44f1f560cf71cb527"
+generated_digest: "sha256:45bb7c3e2e3cb9098ca7325747ab3e8ba7c031131a394a736031092705aa0228"
 generated:
   id: uk_309c589c08
   subject: "groups.moderate_message: what the server sends when it refuses"
@@ -26,13 +26,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_76106ea21309
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/GroupForumGrain.cs
-    symbol: GroupForumGrain
-    line: 519
   - id: ev_948071c08d09
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,5 +40,12 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/ModerateMessageMessageHandler.cs
     symbol: ModerateMessageMessageHandler
     line: 12
+  - id: ev_da3ad2e8d895
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupForumGrain.cs
+    symbol: GroupForumGrain
+    line: 519
 verified: {}
 manual: {}

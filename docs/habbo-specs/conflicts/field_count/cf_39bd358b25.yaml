@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d931489918fe05bc33d2808b64137662d6293ca6a52a1b950f14fd66cc98153e"
+generated_digest: "sha256:98571f035682d7160907ff244962ea430e2114e418b7f803ef2278483d23fd67"
 generated:
   id: cf_39bd358b25
   kind: field_count
@@ -21,11 +21,23 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32"
     evidence: ev_9311611d67ad
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "2 fields: int32, int32"
+    evidence: ev_282177c66c59
   - origin: vortex
     authority: vortex_emulator
     claim: "3 fields: int32, int32, block"
     evidence: ev_b3237da822c7
   evidence:
+  - id: ev_282177c66c59
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2377.as
+    symbol: _SafeCls_2377
+    line: 39
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9311611d67ad
     kind: client_parser
     authority: client_code

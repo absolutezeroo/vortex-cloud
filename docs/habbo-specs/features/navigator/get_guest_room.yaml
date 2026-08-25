@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e04246561497a9f1af221f79a0bae9de55979a9107dc2aa4cdb1bd8d2edd806b"
+generated_digest: "sha256:78029cf3c49eedc80285a8c65f13624672462262725c1ef27502cc354fe15a0a"
 generated:
   id: navigator.get_guest_room
   domain: navigator
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: grain
     symbol: GroupGrain.GetMemberRankAsync
-    evidence: ev_9b02814f1589
+    evidence: ev_25e7df53e794
   - order: 4
     layer: domain
     symbol: WiredActionBranch.Select
@@ -64,11 +64,11 @@ generated:
       evidence: ev_f4c4c4ae6ace
   reaches_persistence: false
   evidence:
-  - id: ev_9b02814f1589
+  - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Read.cs
+    source: Vortex.Social/Grains/GroupGrain.Read.cs
     symbol: GroupGrain
     line: 118
   - id: ev_b46938ec853d

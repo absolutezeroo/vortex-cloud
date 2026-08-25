@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bddcc30060aa3e2df3b615a4a26376cc039b4355769ba8419f8ee07c39044785"
+generated_digest: "sha256:3f509310958dc4cf8560ffdd1a6edf25e30113eb234ef44fe4b0e038c3601f75"
 generated:
   id: room.answer_doorbell
   domain: room
@@ -69,14 +69,18 @@ generated:
     symbol: RoomGrain.GetPresentRightsHoldersAsync
     evidence: ev_425e4398d423
   - order: 11
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
+  - order: 12
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 12
+  - order: 13
     layer: grain
     symbol: PlayerPresenceGrain.SetPendingRoomAsync
     evidence: ev_b44ef304d36a
-  - order: 13
+  - order: 14
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -157,6 +161,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7f41f2bdde62
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: _state.PendingRoomApproved
     value: approved
@@ -196,6 +204,13 @@ generated:
       evidence: ev_93b2d0946619
   reaches_persistence: false
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -244,7 +259,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Doorbell.cs
     symbol: RoomService
-    line: 20
+    line: 21
   - id: ev_a1cfcc1f8f41
     kind: emulator_flow
     authority: vortex_emulator

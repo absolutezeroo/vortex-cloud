@@ -10,13 +10,17 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1f3adccd764993ab36d9de079a71b85d1cd2ad289168e99ff078f4db3102ee20"
+generated_digest: "sha256:493de4a82cb4fec9c4cf8e908760c93ea01b1d72de901b361d6f5acf6b5a2d17"
 generated:
   id: cf_336a409bd8
   kind: field_count
   subject: "outgoing/GuideReportingStatus: field count"
   packet: GuideReportingStatus
   positions:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    claim: "1 fields: int32"
+    evidence: ev_fbfff98925ec
   - origin: arcturus
     authority: reference_emulator
     claim: "8 fields: int32, int32, int32, boolean, string, string, string, string"
@@ -26,6 +30,14 @@ generated:
     claim: "12 fields: int32, int32, int32, boolean, string, string, string, string, string, string, string, string"
     evidence: ev_defb59cfe4d0
   evidence:
+  - id: ev_fbfff98925ec
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/help/_SafeCls_2138.as
+    symbol: _SafeCls_2138
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_00ae510d4cfd
     kind: reference_composer
     authority: reference_emulator

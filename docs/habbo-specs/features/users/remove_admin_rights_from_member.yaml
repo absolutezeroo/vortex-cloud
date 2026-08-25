@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:613255efb7c547e70f1e81ce714da33a126857f966ca9cc2ec955581abaa37a5"
+generated_digest: "sha256:fbcf29ed61801815b3a1ca576c460b5cb6d03fa897ba8353af9b5f2d3a76b95c"
 generated:
   id: users.remove_admin_rights_from_member
   domain: users
@@ -31,7 +31,7 @@ generated:
   - order: 1
     layer: grain
     symbol: GroupGrain.SetAdminRightsAsync
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - order: 2
     layer: module
     symbol: EventSystem.PublishAsync
@@ -39,7 +39,7 @@ generated:
   - order: 3
     layer: domain
     symbol: GroupMemberMapper.FromMember
-    evidence: ev_12ce06c785f7
+    evidence: ev_40034f33a6de
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -48,11 +48,11 @@ generated:
   - expression: group is null || group.OwnerPlayerEntityId != actor.Value || targetPlayerId == actor.Value
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: member is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -65,7 +65,7 @@ generated:
   - target: member.Rank
     value: "isAdmin ? GroupMemberRank.Admin : GroupMemberRank.Member"
     observed_in: vortex
-    evidence: ev_c4e53aab9ae9
+    evidence: ev_b1c46fe16e7f
   outgoing:
     ordering: unknown
     packets:
@@ -79,13 +79,6 @@ generated:
       evidence: ev_e5873eac4210
   reaches_persistence: true
   evidence:
-  - id: ev_12ce06c785f7
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 26
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -93,11 +86,18 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_c4e53aab9ae9
+  - id: ev_40034f33a6de
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/GroupGrain.Membership.cs
+    source: Vortex.Social/Groups/GroupMemberMapper.cs
+    symbol: GroupMemberMapper
+    line: 26
+  - id: ev_b1c46fe16e7f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 387
   - id: ev_c7a116d6502e

@@ -10,22 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:741c0bf01f216987cf822f982253676c22078932ddc177a8201d47821c396aa8"
+generated_digest: "sha256:d690b6e2fcac323861d4e566380c653f9a5efe9ecc0320e442630af4e6152fc8"
 generated:
   name: YouAreNotController
   direction: outgoing
   domain: room
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
-    name: room_id
+    name: flat_id
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_3ebacf00be0b
+    - ev_9ee86f6e256c
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_9ee86f6e256c
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -46,6 +53,14 @@ generated:
     - int32
     evidence: ev_3ebacf00be0b
   evidence:
+  - id: ev_9ee86f6e256c
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_3212/_SafeCls_3267.as
+    symbol: _SafeCls_3267
+    line: 27
+    note: official client build WIN63-202607011411-782849652
   - id: ev_dd427904bb80
     kind: client_parser
     authority: multi_implementation

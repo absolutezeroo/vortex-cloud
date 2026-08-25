@@ -10,31 +10,37 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:29a63bc22a0efc6cd4c6a8f5aaede790a7ac244cd5f7183272bdb6a8d7eb1acc"
+generated_digest: "sha256:fa3688c3d976dbcb7234acc6c2adf7d5a83fac839e224f6b7730dfd0f0b16270"
 generated:
   name: PetRespectFailed
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: required_days
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d32f12a12814
-    - ev_098d764bd8d5
+    - ev_5b0ad634711d
   - index: 1
     name: avatar_age_in_days
     type: int32
-    name_confidence: implementation_observed
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_d32f12a12814
-    - ev_098d764bd8d5
+    - ev_5b0ad634711d
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_5b0ad634711d
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -58,6 +64,14 @@ generated:
     - int32
     evidence: ev_098d764bd8d5
   evidence:
+  - id: ev_5b0ad634711d
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2524/_SafeCls_3013.as
+    symbol: _SafeCls_3013
+    line: 34
+    note: official client build WIN63-202607011411-782849652
   - id: ev_79b9cf1095e7
     kind: client_parser
     authority: multi_implementation

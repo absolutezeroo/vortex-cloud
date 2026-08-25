@@ -10,31 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e2d29646ca27a649d56a571110f550a4a92c268472ba85732d04b3fa3e586831"
+generated_digest: "sha256:9e7d54360551c1ad76cd0cfbf997d64ddae67433d9326bfa755ca7d47c759cc0"
 generated:
   name: FriendNotification
   direction: outgoing
   domain: messenger
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: avatar_id
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9166438b4ae1
+    - ev_be71a6ca9c1e
   - index: 1
+    name: type_code
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_be71a6ca9c1e
+  - index: 2
     name: message
     type: string
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_9166438b4ae1
+    - ev_be71a6ca9c1e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - int32
+    - string
+    evidence: ev_be71a6ca9c1e
   - origin: nitro
     authority: multi_implementation
     field_count: 2
@@ -62,6 +76,14 @@ generated:
     - string
     evidence: ev_bb5888533e41
   evidence:
+  - id: ev_be71a6ca9c1e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1755/_SafeCls_3059.as
+    symbol: _SafeCls_3059
+    line: 41
+    note: official client build WIN63-202607011411-782849652
   - id: ev_9166438b4ae1
     kind: client_parser
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f15e746a55ae37bb657051a2cfa2f2293922bb0cacaa332ba5423135f4a36f1d"
+generated_digest: "sha256:8f39c5dda94176895630447277aff454d8075e83dee7ad539dea742f45cd5d74"
 generated:
   feature: users.unblock_user
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b9c3cebcd883
+      evidence: ev_e805723a88fe
   - scenario: users.unblock_user.guard_2
     title: "unblock user: the guard '_registry is null' holds"
     given:
@@ -101,12 +101,12 @@ generated:
     source: Vortex.PacketHandlers/Users/UnblockUserMessageHandler.cs
     symbol: UnblockUserMessageHandler
     line: 24
-  - id: ev_b9c3cebcd883
+  - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/MessengerGrain.Friends.cs
+    source: Vortex.Social/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
-    line: 510
+    line: 527
 verified: {}
 manual: {}

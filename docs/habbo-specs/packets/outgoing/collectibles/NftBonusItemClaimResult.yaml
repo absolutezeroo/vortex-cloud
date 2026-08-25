@@ -10,36 +10,45 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3806d8f3258d6e60a5af03c6d4af429eec29a29a61fe9cad0bce1fc6a57ee470"
+generated_digest: "sha256:a4c2fa47597f689be1a73c1465f9bb7edd6ae74efb2d4bb0e5c42297089e8cbf"
 generated:
   name: NftBonusItemClaimResult
   direction: outgoing
   domain: collectibles
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: collection_id
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a37250f76007
+    - ev_a826601177a9
   - index: 1
     name: wallet_address
     type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a37250f76007
+    - ev_a826601177a9
   - index: 2
     name: success
     type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_a37250f76007
+    - ev_a826601177a9
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 3
+    partial: false
+    types:
+    - string
+    - string
+    - boolean
+    evidence: ev_a826601177a9
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -56,6 +65,14 @@ generated:
     - boolean
     evidence: ev_a37250f76007
   evidence:
+  - id: ev_a826601177a9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/communication/messages/parser/collectibles/_SafeCls_4342.as
+    symbol: _SafeCls_4342
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_02b8d865a4a4
     kind: client_parser
     authority: multi_implementation

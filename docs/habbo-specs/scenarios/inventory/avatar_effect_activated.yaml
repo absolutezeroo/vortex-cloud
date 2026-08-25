@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:79b083b86ab67612a5bd55ec7026224bebf9bb9bd1e6d9cc0dd6f13d8a47f3ec"
+generated_digest: "sha256:440d62b76bd6f971b3cecfc87289fee79de864b1e598d42e2a35247a735a73c0"
 generated:
   feature: inventory.avatar_effect_activated
   scenarios:
@@ -83,6 +83,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4447d2f88f24
+  - scenario: inventory.avatar_effect_activated.guard_3
+    title: "avatar effect activated: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: AvatarEffectActivated
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of AvatarEffectActivated sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: arcturus
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4447d2f88f24
   - scenario: inventory.avatar_effect_activated.success
     title: "avatar effect activated: the request is accepted"
     given:
@@ -101,7 +124,7 @@ generated:
       emits:
       - AvatarEffectActivated
       - AvatarEffectExpired
-      evidence: ev_373e76aa8a80
+      evidence: ev_34bf3ac088e2
     - origin: arcturus
       authority: reference_emulator
       outcome: ignored
@@ -116,20 +139,20 @@ generated:
     symbol: AvatarEffectActivatedEvent
     line: 7
     note: third-party server implementation; evidence, not authority
-  - id: ev_373e76aa8a80
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_7ef4c91324dc
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
-    line: 132
+    line: 135
   - id: ev_ddf2a13e2ebd
     kind: emulator_flow
     authority: vortex_emulator

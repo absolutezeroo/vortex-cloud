@@ -10,15 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b04d4775c6a1ecbd602e51aebb9fde1fdd4a07d3c705505a7d662396a3d707aa"
+generated_digest: "sha256:3f0ec17dee145b0e01c4eca053c7647c573fcf729374ae5c7b3bfb5bb9d1b555"
 generated:
   id: uk_1210d5ece2
   subject: "outgoing/ConfirmBreedingRequest: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ConfirmBreedingRequest
   known_evidence:
+  - id: ev_15eed85d2cab
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3500.as
+    symbol: _SafeCls_3500
+    line: 48
+    note: official client build WIN63-202607011411-782849652
   - id: ev_e70417d5b845
     kind: reference_composer
     authority: reference_emulator

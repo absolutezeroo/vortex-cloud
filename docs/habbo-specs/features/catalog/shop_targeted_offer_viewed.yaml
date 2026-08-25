@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:05c7a451a0b426bdd9b68790a34bf9d6bfd30273c5fe77eee9e0ce715276f37f"
+generated_digest: "sha256:54b25f6fec88c02a0fde44ebb50dbfe21b7256ac37534a79606abbaa9a9cb868"
 generated:
   id: catalog.shop_targeted_offer_viewed
   domain: catalog
@@ -63,7 +63,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/PlayerTargetedOfferGrain.cs
     symbol: PlayerTargetedOfferGrain
-    line: 146
+    line: 207
   - id: ev_9b2f9a0d02cd
     kind: emulator_flow
     authority: vortex_emulator

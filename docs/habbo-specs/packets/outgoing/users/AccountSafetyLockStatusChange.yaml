@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a34a6d5e16de2850c9b89b5fcb0075b638494a2696e644ef017af3952a38b51f"
+generated_digest: "sha256:417cb15b335e930a3e86ba94dfec77abe1a6a04971a57a20b77853ec3085204e"
 generated:
   name: AccountSafetyLockStatusChange
   direction: outgoing
   domain: users
-  structure_confidence: multi_reference_confirmed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   fields:
   - index: 0
     name: status
     type: int32
-    name_confidence: multi_reference_confirmed
-    type_confidence: multi_reference_confirmed
-    note: inside a repeated block
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_bf1524df6c41
+    - ev_a62ae70d7866
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_a62ae70d7866
   - origin: nitro
     authority: multi_implementation
     field_count: 1
@@ -49,6 +55,14 @@ generated:
     - int32
     evidence: ev_26ed2fb38703
   evidence:
+  - id: ev_a62ae70d7866
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1891/_SafeCls_2001.as
+    symbol: _SafeCls_2001
+    line: 26
+    note: official client build WIN63-202607011411-782849652
   - id: ev_bf1524df6c41
     kind: client_parser
     authority: multi_implementation

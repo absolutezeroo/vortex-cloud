@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0f87b6c5f7f80360a269218ed74e8b83802b5bfefa7a1c965ab65ecb0ecc8747"
+generated_digest: "sha256:479b72b07b18dfcb23f040885426cbf2037d950d7d1f5029804b9d06e8fe17ba"
 generated:
   feature: quest.get_community_goal_progress
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_4875f459ad01
+      evidence: ev_faf5e938e0d5
   - scenario: quest.get_community_goal_progress.success
     title: "get community goal progress: the request is accepted"
     given:
@@ -76,11 +76,11 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetCommunityGoalProgressMessageHandler.cs
     symbol: GetCommunityGoalProgressMessageHandler
     line: 23
-  - id: ev_4875f459ad01
+  - id: ev_faf5e938e0d5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/CommunityGoalGrain.cs
+    source: Vortex.Progression/Grains/CommunityGoalGrain.cs
     symbol: CommunityGoalGrain
     line: 50
 verified: {}
