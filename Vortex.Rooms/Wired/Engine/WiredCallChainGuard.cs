@@ -28,8 +28,24 @@ internal sealed class WiredCallChainGuard(IWiredDiagnostics diagnostics, Func<in
     // Tiles whose pile is somewhere in the chain currently running.
     private readonly HashSet<int> _tiles = [];
 
+    // The ids of the chain steps currently open, outermost first. Room-scoped and monotonic rather
+    // than a guid: the wired log is read one room at a time and indexed by room, so a small number
+    // is enough to tell two interleaved chains apart and costs nothing to write on every line.
+    private readonly List<int> _executions = [];
+    private int _nextExecutionId;
+
     /// <summary>How many piles deep the chain currently is.</summary>
     public int Depth => _tiles.Count;
+
+    /// <summary>
+    /// The chain step currently running, or 0 when nothing is. Stamped on every room-log line so the
+    /// log stops being a flat list and becomes a chronology somebody can follow: which line belongs
+    /// to which chain, and which chain called it.
+    /// </summary>
+    public int CurrentExecutionId => _executions.Count > 0 ? _executions[^1] : 0;
+
+    /// <summary>The step that called the current one, or 0 when the current one started the chain.</summary>
+    public int ParentExecutionId => _executions.Count > 1 ? _executions[^2] : 0;
 
     /// <summary>
     /// Whether the chain has room to go one level deeper. Counts a <c>depth</c> stop when it does
@@ -65,6 +81,8 @@ internal sealed class WiredCallChainGuard(IWiredDiagnostics diagnostics, Func<in
 
         if (_tiles.Add(tileIdx))
         {
+            _executions.Add(++_nextExecutionId);
+
             return new Hold(this, tileIdx, held: true, isCycle: false);
         }
 
@@ -73,7 +91,15 @@ internal sealed class WiredCallChainGuard(IWiredDiagnostics diagnostics, Func<in
         return new Hold(this, tileIdx, held: false, isCycle: true);
     }
 
-    private void Release(int tileIdx) => _tiles.Remove(tileIdx);
+    private void Release(int tileIdx)
+    {
+        _tiles.Remove(tileIdx);
+
+        if (_executions.Count > 0)
+        {
+            _executions.RemoveAt(_executions.Count - 1);
+        }
+    }
 
     /// <summary>
     /// One tile held for the length of a chain step. Disposing releases it — including when the step

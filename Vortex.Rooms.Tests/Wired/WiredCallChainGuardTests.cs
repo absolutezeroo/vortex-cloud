@@ -127,6 +127,71 @@ public sealed class WiredCallChainGuardTests
             .BeTrue("the new limit applies without rebuilding anything");
     }
 
+    /// <summary>
+    /// Each step of a chain gets its own id, and knows the one that called it. Stamped on every
+    /// room-log line, that is what turns a flat list into a chronology: two piles firing in the same
+    /// tick used to produce one interleaved log nobody could separate.
+    /// </summary>
+    [Fact]
+    public void EachStepOfAChainKnowsItselfAndItsCaller()
+    {
+        WiredCallChainGuard guard = Build();
+
+        guard.CurrentExecutionId.Should().Be(0, "nothing is running yet");
+
+        using WiredCallChainGuard.Hold outer = guard.Enter(1);
+
+        int outerId = guard.CurrentExecutionId;
+        outerId.Should().BeGreaterThan(0);
+        guard.ParentExecutionId.Should().Be(0, "the outermost step started the chain");
+
+        using (WiredCallChainGuard.Hold inner = guard.Enter(2))
+        {
+            guard.CurrentExecutionId.Should().NotBe(outerId);
+            guard.ParentExecutionId.Should().Be(outerId);
+        }
+
+        guard.CurrentExecutionId.Should().Be(outerId, "the inner step is done");
+    }
+
+    /// <summary>
+    /// Two chains that run one after the other are told apart, not conflated. Reusing an id would
+    /// merge two unrelated chains into one when the log is read back.
+    /// </summary>
+    [Fact]
+    public void TwoChainsInARowGetDifferentIds()
+    {
+        WiredCallChainGuard guard = Build();
+
+        int first;
+        using (WiredCallChainGuard.Hold _ = guard.Enter(1))
+        {
+            first = guard.CurrentExecutionId;
+        }
+
+        using WiredCallChainGuard.Hold second = guard.Enter(1);
+
+        guard.CurrentExecutionId.Should().NotBe(first);
+    }
+
+    /// <summary>
+    /// A refused entry -- a cycle -- takes no id. It is not a step of the chain; it is a step that
+    /// did not happen, and giving it one would leave a number in the log with nothing under it.
+    /// </summary>
+    [Fact]
+    public void ARefusedEntryDoesNotConsumeAnId()
+    {
+        WiredCallChainGuard guard = Build();
+
+        using WiredCallChainGuard.Hold held = guard.Enter(5);
+        int id = guard.CurrentExecutionId;
+
+        using WiredCallChainGuard.Hold refused = guard.Enter(5);
+
+        refused.IsCycle.Should().BeTrue();
+        guard.CurrentExecutionId.Should().Be(id, "the refused step is not on the chain");
+    }
+
     private static WiredCallChainGuard Build(FakeWiredRoomHost? room = null)
     {
         FakeWiredRoomHost host = room ?? new FakeWiredRoomHost();

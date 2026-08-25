@@ -23,6 +23,17 @@ public class RoomWiredLogEntity : VortexEntity
     [MaxLength(500)]
     public required string Message { get; set; }
 
+    /// <summary>
+    /// The execute-stacks chain step that wrote the line, or 0 for a line written outside one.
+    /// Not indexed: the table is already indexed by room and time, and a chain is read by filtering
+    /// a room's recent lines rather than by looking one up.
+    /// </summary>
+    [Column("execution_id")]
+    public int ExecutionId { get; set; }
+
+    [Column("parent_execution_id")]
+    public int ParentExecutionId { get; set; }
+
     [ForeignKey(nameof(RoomEntityId))]
     public RoomEntity? RoomEntity { get; set; }
 }

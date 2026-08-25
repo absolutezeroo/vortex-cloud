@@ -34,10 +34,14 @@ prose, when something moves.
 | Events counted: ignored / processed / dropped | `Vortex.wired.event{outcome}` + `chain.stopped{queue-drop}`; `WiredEngineOnAFakeRoomTests` | ✅ |
 | Index rebuilds counted | `Vortex.wired.index.rebuilt`; `TheIndexIsRebuiltOnceAndThenLeftAlone` | ✅ |
 | A delayed effect that lost its pile is visible | `REVALIDATION` + a room-log line; asserted in `WiredParityTests` | ✅ |
-| `ExecutionId` / `ParentExecutionId` on execute-stacks, room-scoped opt-in trace | — | ❌ |
+| `ExecutionId` / `ParentExecutionId` on execute-stacks | `WiredCallChainGuardTests`; stamped on every `room_wired_logs` row | ✅ |
+| Room-scoped opt-in trace: selections by source, condition and policy results, effects chosen/skipped with order and deadline | — | ❌ |
 
-> The last row is the one wired item left. The room's own wired log gives the in-room chronology; what
-> the note asks for is the same thing hotel-wide and correlatable. Nothing depends on it.
+> The identity half is what makes the existing log a chronology: two piles firing in the same tick
+> used to produce one interleaved list nobody could separate, and a reader can now filter to one
+> chain and walk up to the one that called it. The exhaustive half is still open, and is opt-in in
+> the note for a reason — a line per selection per condition per effect would be a log nobody reads
+> and a table that grows faster than the room it describes.
 
 ## Furniture (§6.9, §10)
 

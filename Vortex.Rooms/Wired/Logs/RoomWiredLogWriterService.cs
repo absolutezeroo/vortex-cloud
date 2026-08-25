@@ -84,6 +84,8 @@ public sealed class RoomWiredLogWriterService(
                         LogLevel = entry.LogLevel,
                         LogSource = entry.LogSource,
                         Message = entry.Message,
+                        ExecutionId = entry.ExecutionId,
+                        ParentExecutionId = entry.ParentExecutionId,
                     }
                 );
             }

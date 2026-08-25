@@ -707,6 +707,11 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 LogLevel = level,
                 LogSource = source,
                 Message = message,
+                // Zero when the line was not written from inside an execute-stacks chain, which is
+                // most of them. A reader filtering on a non-zero id gets one chain's chronology out
+                // of a log that otherwise interleaves every pile in the room.
+                ExecutionId = _callChain.CurrentExecutionId,
+                ParentExecutionId = _callChain.ParentExecutionId,
             }
         );
     }

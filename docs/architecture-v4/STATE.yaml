@@ -109,6 +109,7 @@ completed:
   - PR-Z1b # the wired and furni walkthroughs, and the acceptance matrix (5 requirements unmet)
   - PR-Z1c # three of the five closed: StuffData round-trip, the facade wall, reference provenance
   - PR-S2  # one strategy per ProductType; the planner composes instead of switching
+  - PR-Z1d # ExecutionId/ParentExecutionId on execute-stacks, stamped on the room's wired log
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
