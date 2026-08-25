@@ -798,7 +798,11 @@
                 $t('navigatorConfig.addBlock'),
                 $t('navigatorConfig.addBlockSummary', {
                   code: quickLinkForms[addingContext].searchCode,
-                  tab: context.searchCode,
+                  // The creator form lives outside the {#each ... as context} loop, so it has the
+                  // id the button stored and not the row it came from. Reading `context` here was
+                  // an undefined identifier: `npm run build` compiles it to a global lookup and
+                  // ships a confirmation dialog that throws when an operator opens it.
+                  tab: (data.contexts || []).find((c) => c.id === addingContext)?.searchCode ?? '',
                 })
               );
             }}

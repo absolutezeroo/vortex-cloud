@@ -17,12 +17,12 @@ baseline:
   # The V4 document was written against afc485be. Every structurant claim it makes (A1-A6, A15) was
   # re-read line by line at the sha below and still holds; the commits in between are dashboard and
   # forensics work that does not touch the commerce topology.
-  commit: 7402bb9059b230a11badcc4399d25f2800d115a5
+  commit: a7ef5feeee9f2e3b22545a9febe92a8009ef9c3b
   document: docs/architecture/architecture-workflow.md
 
 references_verified: 2026-08-25
 
-phase: wired
+phase: wired   # W1 landed; W2-W4 need the actions half of the host (see plans/SLICE-W1.md)
 
 active_slices: []
 
@@ -43,7 +43,7 @@ open_questions:
 
 audits:
   commerce:
-    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
+    vortex_sha: a7ef5feeee9f2e3b22545a9febe92a8009ef9c3b
     watched_paths:
       - Vortex.Catalog/**
       - Vortex.Marketplace/**
@@ -56,13 +56,13 @@ audits:
       - Vortex.Events/**
     status: valid
   wired:
-    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
+    vortex_sha: a7ef5feeee9f2e3b22545a9febe92a8009ef9c3b
     watched_paths:
       - Vortex.Rooms/**
       - Vortex.Primitives/Rooms/**
     status: valid
   furniture:
-    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
+    vortex_sha: a7ef5feeee9f2e3b22545a9febe92a8009ef9c3b
     watched_paths:
       - Vortex.Rooms/Providers/**
       - Vortex.Rooms/Object/**
@@ -90,3 +90,29 @@ completed:
   - PR-C4  # the single-commit local grant (ADR-001) - catalog, gift, targeted
   - PR-C5  # marketplace: four flows reordered or made replayable (ADR-002)
   - PR-C6  # critical events relayed from the journal, consumers deduplicated
+  - PR-W1  # the wired engine reads the room through IWiredRoomHost
+  - PR-F1  # a logic name claimed twice is a collision (ADR-000, D-V4-9)
+  - PR-Q1  # both furniture definition indexes published as one version
+  - PR-S1  # CatalogFulfillmentPlanner: what an offer promises, worked out purely
+
+# What the roadmap still has, and what each one is waiting on.
+remaining:
+  - id: PR-W2..W4
+    what: extract TriggerIndex/StackResolver/Scheduler/Policy/SelectionEngine/CallChainGuard
+    blocked_on: >
+      the actions half of IWiredRoomHost. It is the contract 171 box classes implement against, so
+      moving it is a semantic slice rather than a mechanical one.
+  - id: PR-S2
+    what: strategies per ProductType contributing to the plan
+    note: >
+      the planner already isolates every rule and is fully tested; splitting it into one strategy per
+      type is structure, not correctness, and earns itself when a third caller needs one.
+  - id: PR-Q2
+    what: protocol baseline resorption, persistence loss-window doc, full wired StopReason coverage
+  - id: PR-Z1
+    what: closing benchmarks against the P0-C baseline, docs, ADR review
+  - id: dashboard
+    what: docs/architecture/dashboard-api-security.md
+    blocked_on: >
+      another session is editing Vortex.Dashboard.API and Vortex.Dashboard.Web in this working tree.
+      That chantier is FROZEN and separate by its own rule; starting it here would collide.
