@@ -58,6 +58,12 @@ internal sealed class FakeWiredRoomHost
     /// engine is supposed to bump rather than on a log line.</summary>
     public List<string> StopReasons { get; } = [];
 
+    /// <summary>What became of each room event, in order.</summary>
+    public List<string> EventOutcomes { get; } = [];
+
+    /// <summary>How many times the trigger index was rebuilt.</summary>
+    public int IndexRebuilds { get; private set; }
+
     public List<RoomWiredLogEntry> RoomLog { get; } = [];
 
     public List<(string ErrorName, string Category)> Errors { get; } = [];
@@ -123,6 +129,10 @@ internal sealed class FakeWiredRoomHost
     public ILogger Logger => NullLogger.Instance;
 
     public void ChainStopped(string reason) => StopReasons.Add(reason);
+
+    public void EventOutcome(string outcome) => EventOutcomes.Add(outcome);
+
+    public void IndexRebuilt() => IndexRebuilds++;
 
     public void WriteRoomLog(RoomWiredLogEntry entry) => RoomLog.Add(entry);
 

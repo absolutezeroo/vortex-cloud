@@ -102,6 +102,7 @@ completed:
   - PR-D1  # dashboard control-plane observability (dashboard-api-security §17)
   - PR-D2  # step-up MFA on the critical capabilities (§7), server + dialog
   - PR-D3  # one correlation id per request, and no raw EF message on an operator's screen (§10)
+  - PR-Q2a # wired observability completed; the loss window measured, documented and narrowed
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -111,7 +112,15 @@ remaining:
       the planner already isolates every rule and is fully tested; splitting it into one strategy per
       type is structure, not correctness, and earns itself when a third caller needs one.
   - id: PR-Q2
-    what: protocol baseline resorption, persistence loss-window doc, full wired StopReason coverage
+    what: protocol baseline resorption (the last third of Q2)
+    note: >
+      the other two thirds landed as PR-Q2a. Wired observability: REVALIDATION added to StopReason --
+      a delayed effect that lost its pile used to be refused in total silence, which is the report
+      that arrives as "my wired stopped working" -- plus event outcomes and index rebuilds. Loss
+      window: docs/architecture-v4/persistence-loss-window.md, measured off the code, and two
+      defects fixed on the way (a failed flush dropped its batch permanently; deactivation wrote one
+      batch and abandoned the rest). What is left is the baselines themselves: 23 known wire
+      conflicts and 3 unreachable headers, entry by entry, each needing a client re-read.
   - id: PR-Z1
     what: closing benchmarks against the P0-C baseline, docs, ADR review
   - id: dashboard

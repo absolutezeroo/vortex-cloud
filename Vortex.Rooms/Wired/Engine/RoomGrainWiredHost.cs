@@ -136,6 +136,10 @@ internal sealed class RoomGrainWiredHost(RoomGrain roomGrain)
 
     public void ChainStopped(string reason) => _roomGrain._metrics.WiredChainStopped(reason);
 
+    public void EventOutcome(string outcome) => _roomGrain._metrics.WiredEventOutcome(outcome);
+
+    public void IndexRebuilt() => _roomGrain._metrics.WiredIndexRebuilt();
+
     public void WriteRoomLog(RoomWiredLogEntry entry) =>
         _roomGrain._wiredLogChannel.TryWrite(entry);
 

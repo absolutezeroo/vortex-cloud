@@ -7,6 +7,7 @@ using Orleans;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -122,6 +123,61 @@ public sealed class WiredEngineOnAFakeRoomTests
 
         // Nothing fired — the trigger's pile has no actions — but nothing refused anything either.
         room.StopReasons.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// An event no trigger listens for is counted as ignored, not silently returned. The ratio of
+    /// ignored to processed is what says whether the index short-circuit is doing its job — a room
+    /// where nothing is ever ignored has an index that is permanently dirty.
+    /// </summary>
+    [Fact]
+    public async Task AnEventNothingListensForIsCountedAsIgnored()
+    {
+        FakeWiredRoomHost room = new();
+        // A trigger that listens for something else, so the index is clean and has an opinion.
+        room.With(Trigger(1, [typeof(PlayerEnterEvent)]), tileIdx: 0);
+
+        RoomWiredSystem engine = new(room);
+
+        await engine.ProcessWiredAsync(1_000, CancellationToken.None);
+        await engine.OnRoomEventAsync(PlayerLeft(room), CancellationToken.None);
+
+        room.EventOutcomes.Should().Equal([WiredEventOutcome.IGNORED]);
+    }
+
+    /// <summary>An event a trigger does listen for reaches it, and is counted as processed.</summary>
+    [Fact]
+    public async Task AnEventWithAListenerIsCountedAsProcessed()
+    {
+        FakeWiredRoomHost room = new();
+        room.With(Trigger(1, [typeof(PlayerLeftEvent)]), tileIdx: 0);
+
+        RoomWiredSystem engine = new(room);
+
+        await engine.ProcessWiredAsync(1_000, CancellationToken.None);
+        await engine.OnRoomEventAsync(PlayerLeft(room), CancellationToken.None);
+        await engine.ProcessWiredAsync(1_050, CancellationToken.None);
+
+        room.EventOutcomes.Should().Equal([WiredEventOutcome.PROCESSED]);
+    }
+
+    /// <summary>
+    /// The index is rebuilt when it is dirty and not otherwise. A room that rebuilt on every tick
+    /// would pay for its whole trigger set sixteen times a second, and nothing else would report it.
+    /// </summary>
+    [Fact]
+    public async Task TheIndexIsRebuiltOnceAndThenLeftAlone()
+    {
+        FakeWiredRoomHost room = new();
+        room.With(Trigger(1, [typeof(PlayerLeftEvent)]), tileIdx: 0);
+
+        RoomWiredSystem engine = new(room);
+
+        await engine.ProcessWiredAsync(1_000, CancellationToken.None);
+        await engine.ProcessWiredAsync(1_050, CancellationToken.None);
+        await engine.ProcessWiredAsync(1_100, CancellationToken.None);
+
+        room.IndexRebuilds.Should().Be(1);
     }
 
     private static PlayerLeftEvent PlayerLeft(FakeWiredRoomHost room) =>

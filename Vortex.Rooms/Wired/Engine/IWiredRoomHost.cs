@@ -121,6 +121,12 @@ internal interface IWiredDiagnostics
     /// <summary>Counts a chain that stopped short, by one of the <c>WiredStopReason</c> values.</summary>
     void ChainStopped(string reason);
 
+    /// <summary>Counts a room event's fate, by one of the <c>WiredEventOutcome</c> values.</summary>
+    void EventOutcome(string outcome);
+
+    /// <summary>Counts a rebuild of this room's trigger index.</summary>
+    void IndexRebuilt();
+
     /// <summary>Writes to the room's own wired log — the in-game debugging channel.</summary>
     void WriteRoomLog(RoomWiredLogEntry entry);
 

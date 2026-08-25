@@ -77,7 +77,25 @@ public sealed class RoomPersistenceGrain(
 
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
     {
-        await FlushDirtyItemsAsync(ct);
+        // Drain rather than flush once. A flush writes at most MaxDirtyItemsPerFlush, which is the
+        // right bound for a timer -- it stops one busy room from holding a database connection for a
+        // whole build session -- and the wrong one here: a room deactivating with 300 moved items
+        // wrote 100 of them and dropped the rest on the floor.
+        //
+        // Bounded by progress, not by a count: the loop stops the moment a pass fails to shrink the
+        // queue, so a database that is refusing writes costs one extra attempt instead of spinning
+        // through deactivation.
+        while (_dirtyItems.Count > 0)
+        {
+            int before = _dirtyItems.Count;
+
+            await FlushDirtyItemsAsync(ct);
+
+            if (_dirtyItems.Count >= before)
+            {
+                break;
+            }
+        }
     }
 
     private async Task FlushDirtyItemsAsync(CancellationToken ct)
@@ -92,11 +110,12 @@ public sealed class RoomPersistenceGrain(
             .Select(x => x.Value)
             .ToArray();
 
-        foreach (RoomItemSnapshot item in batch)
-        {
-            _dirtyItems.Remove(item.ObjectId);
-        }
-
+        // Removed after the save, not before it. Taken off the queue up front, a batch that then
+        // failed to save was gone: the catch below logged it and the positions were lost until
+        // somebody moved the furniture again. One connection blip cost a room its layout, quietly.
+        //
+        // The grain is not reentrant, so nothing can enqueue during the await -- the queue this
+        // returns to is the one it left.
         try
         {
             using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
@@ -138,8 +157,6 @@ public sealed class RoomPersistenceGrain(
                     dbEntity.RoomEntityId = null;
 
                     e.Property(x => x.RoomEntityId).IsModified = true;
-
-                    _removedItemIds.Remove(item.ObjectId);
                 }
                 else
                 {
@@ -150,6 +167,12 @@ public sealed class RoomPersistenceGrain(
             }
 
             await dbCtx.SaveChangesAsync(ct);
+
+            foreach (RoomItemSnapshot item in batch)
+            {
+                _dirtyItems.Remove(item.ObjectId);
+                _removedItemIds.Remove(item.ObjectId);
+            }
         }
         catch (Exception ex)
         {

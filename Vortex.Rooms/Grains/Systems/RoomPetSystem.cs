@@ -358,14 +358,21 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             entity.Y = snapshot.Y;
             entity.Z = snapshot.Z;
             entity.Direction = (int)snapshot.Direction;
+        }
 
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        // Cleared after the save, not before it. Cleared first, a throw from SaveChanges left the
+        // pets marked clean while their stats were still only in memory: an hour of feeding and
+        // levelling gone, and not for the sixty seconds the flush interval promises but until
+        // something happened to dirty each pet again.
+        foreach (PetEntity entity in entities)
+        {
             if (_motionByPetId.TryGetValue(entity.Id, out PetMotionState? motion))
             {
                 motion.IsStatsDirty = false;
             }
         }
-
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
     private PetMotionState GetMotionState(PetSnapshot pet, long now)

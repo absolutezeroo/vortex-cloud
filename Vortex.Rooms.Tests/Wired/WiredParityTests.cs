@@ -131,6 +131,11 @@ public sealed class WiredParityTests
         await h.TickAsync(now: 1_500);
 
         h.Ran.Should().BeEmpty("the action is no longer on the tile the trigger fired from");
+
+        // And it says so. Not firing is correct; not firing silently is the report that arrives as
+        // "my wired stopped working" with nothing anywhere to read.
+        h.Room.StopReasons.Should().Equal([WiredStopReason.REVALIDATION]);
+        h.Room.RoomLog.Should().ContainSingle(entry => entry.Message.Contains("did not run"));
     }
 
     /// <summary>
@@ -166,6 +171,7 @@ public sealed class WiredParityTests
         await h.TickAsync(now: 1_500);
 
         h.Ran.Should().BeEmpty();
+        h.Room.StopReasons.Should().Equal([WiredStopReason.REVALIDATION]);
     }
 
     /// <summary>

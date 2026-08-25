@@ -140,6 +140,8 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
         // index means membership is unknown until the next tick's rebuild — enqueue conservatively.
         if (!_triggers.IsDirty && !_triggers.Listens(evt.GetType()))
         {
+            Diagnostics.EventOutcome(WiredEventOutcome.IGNORED);
+
             return;
         }
 
@@ -192,6 +194,8 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
 
         if (_triggers.IsDirty)
         {
+            Diagnostics.IndexRebuilt();
+
             await _triggers.RebuildAsync(ct);
         }
 
@@ -201,7 +205,14 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
         if (_triggers.IsEmpty)
         {
             // No wired triggers in the room: nothing can consume queued room events, so drop them
-            // rather than let the queue grow unbounded.
+            // rather than let the queue grow unbounded. These were accepted while the index was
+            // dirty -- membership is unknown until a rebuild -- so they are ignored rather than
+            // dropped: nothing refused them, there was simply never anything to hand them to.
+            for (int i = _eventQueue.Count; i > 0; i--)
+            {
+                Diagnostics.EventOutcome(WiredEventOutcome.IGNORED);
+            }
+
             _eventQueue.Clear();
 
             return;
@@ -214,6 +225,8 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
         while (budget-- > 0 && _eventQueue.Count > 0)
         {
             RoomEvent evt = _eventQueue.Dequeue();
+
+            Diagnostics.EventOutcome(WiredEventOutcome.PROCESSED);
 
             await ProcessRoomEventAsync(evt, now, ct);
         }
@@ -519,6 +532,18 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 && (!Room.HasItem(actionBox.ObjectId) || !IsOnTile(actionBox.ObjectId, key.StackId))
             )
             {
+                // Said out loud, in both channels. This is the one refusal that used to happen in
+                // complete silence, and it is the one whose report reads "my wired stopped working":
+                // the box is still in the room, still configured, still stacked with something -- it
+                // simply is not stacked with the trigger any more.
+                Diagnostics.ChainStopped(WiredStopReason.REVALIDATION);
+
+                WriteWiredRoomLog(
+                    WiredLogLevel.Warning,
+                    WiredLogSource.Action,
+                    $"Action {actionBox.ObjectId.Value} did not run: it left the trigger's tile during its delay."
+                );
+
                 pending.NextActionIndex = i + 1;
 
                 continue;
