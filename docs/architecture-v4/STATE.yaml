@@ -103,6 +103,7 @@ completed:
   - PR-D2  # step-up MFA on the critical capabilities (§7), server + dialog
   - PR-D3  # one correlation id per request, and no raw EF message on an operator's screen (§10)
   - PR-Q2a # wired observability completed; the loss window measured, documented and narrowed
+  - PR-Z1a # the wired baseline that PR-G1 promised, plus the commerce walkthrough
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -122,7 +123,22 @@ remaining:
       batch and abandoned the rest). What is left is the baselines themselves: 23 known wire
       conflicts and 3 unreachable headers, entry by entry, each needing a client re-read.
   - id: PR-Z1
-    what: closing benchmarks against the P0-C baseline, docs, ADR review
+    what: the two remaining walkthroughs, and the acceptance matrix
+    note: >
+      the baseline PR-G1 was supposed to leave behind never existed, so PR-Z1a created it rather than
+      comparing against nothing: docs/architecture-v4/benchmarks/wired-engine.md, regenerated with
+      VORTEX_BENCH=1. The "no-trigger O(1)" claim is not in there -- it is a claim about which calls
+      the engine makes, not about milliseconds, so it lives in WiredEngineCostTests and runs in the
+      gate on every machine. A wall-clock assertion in the gate is a flake with a schedule.
+      Left: walkthroughs for adding a furni and a wired box.
+    deliberate_gaps:
+      - id: walkthrough - add a furni / add a wired box
+        why: >
+          both have a hundred-plus worked examples in the tree already, and add-a-feature.md carries
+          the placement rules. add-a-commerce-flow.md was written first because it is the opposite
+          case: a brand-new contract, no example to copy, and getting it wrong loses money rather
+          than time. The wired one has a genuine new thing to say (a box is now testable on a fake
+          room) and is worth writing next.
   - id: dashboard
     what: docs/architecture/dashboard-api-security.md, the parts §17 and §7 do not cover
     note: >

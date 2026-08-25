@@ -103,13 +103,41 @@ internal sealed class FakeWiredRoomHost
 
     public bool HasItem(RoomObjectId objectId) => _items.ContainsKey(objectId);
 
-    public IReadOnlyList<IRoomItem> AllItems() => [.. _items.Values];
+    /// <summary>
+    /// How many times the engine has asked for a whole collection rather than one item.
+    /// </summary>
+    /// <remarks>
+    /// The interesting number for cost, and the one wall-clock cannot answer on a laptop. These are
+    /// the only members whose cost scales with the size of the room, so a per-tick count that does
+    /// not move when the room grows is what "the empty-ish tick is O(1) in the item count" actually
+    /// means. Reset with <see cref="ResetScans"/> between the warm-up tick and the measured ones.
+    /// </remarks>
+    public int Scans { get; private set; }
 
-    public IReadOnlyList<int> AllItemIds() => [.. _items.Keys.Select(k => k.Value)];
+    public void ResetScans() => Scans = 0;
+
+    public IReadOnlyList<IRoomItem> AllItems()
+    {
+        Scans++;
+
+        return [.. _items.Values];
+    }
+
+    public IReadOnlyList<int> AllItemIds()
+    {
+        Scans++;
+
+        return [.. _items.Keys.Select(k => k.Value)];
+    }
 
     public List<int> AvatarPlayerIds { get; } = [];
 
-    public IReadOnlyList<int> AllAvatarPlayerIds() => AvatarPlayerIds;
+    public IReadOnlyList<int> AllAvatarPlayerIds()
+    {
+        Scans++;
+
+        return AvatarPlayerIds;
+    }
 
     public IReadOnlyList<IRoomFloorItem> EnumerateTileFloorStack(int tileIdx) =>
         tileIdx >= 0 && _tiles.TryGetValue(tileIdx, out List<IRoomFloorItem>? stack)
