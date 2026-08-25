@@ -106,6 +106,7 @@ completed:
   - PR-Z1a # the wired baseline that PR-G1 promised, plus the commerce walkthrough
   - PR-Q2b # the client scanner reads parsers; outgoing evidence 17 -> 514; one live header bug
   - PR-Q2c # both sides follow their delegations; the queue 64 -> 46, 17 of them read
+  - PR-Z1b # the wired and furni walkthroughs, and the acceptance matrix (5 requirements unmet)
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -158,14 +159,20 @@ remaining:
       batch and abandoned the rest). What is left is the baselines themselves: 23 known wire
       conflicts and 3 unreachable headers, entry by entry, each needing a client re-read.
   - id: PR-Z1
-    what: the two remaining walkthroughs, and the acceptance matrix
+    what: the five requirements the acceptance matrix says are unmet
     note: >
       the baseline PR-G1 was supposed to leave behind never existed, so PR-Z1a created it rather than
       comparing against nothing: docs/architecture-v4/benchmarks/wired-engine.md, regenerated with
       VORTEX_BENCH=1. The "no-trigger O(1)" claim is not in there -- it is a claim about which calls
       the engine makes, not about milliseconds, so it lives in WiredEngineCostTests and runs in the
       gate on every machine. A wall-clock assertion in the gate is a flake with a schedule.
-      Left: walkthroughs for adding a furni and a wired box.
+      PR-Z1b closed the documentation half: add-a-wired-box.md, add-a-furni.md, and
+      acceptance-matrix.md, which is the point of the exercise -- it names five requirements that are
+      NOT met rather than declaring the refactor finished. In order of what is worth doing:
+      StuffData round-trip per type (eight encodings, no test, and the failure looks like an
+      unimplemented furni); Daybreak/Arcturus provenance; the partials rule, the last of §12.3 still
+      living in prose; wired ExecutionId and the room-scoped trace; the hydration benchmark, which
+      waits on OQ-7 rather than on effort.
     deliberate_gaps:
       - id: walkthrough - add a furni / add a wired box
         why: >
