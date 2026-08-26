@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b99bebeefda351e661b780705eab39eb6e574ede986a8bcc27d2b3a4696bdaa6"
+generated_digest: "sha256:880ce4890a1595da48351e27c5ec034a12742c780080d1837e39e6aaa8bd35e7"
 generated:
   id: uk_b8a1383a6f
   subject: "wired.wired_trade_update_items: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_3819e935e77f
     kind: emulator_flow
     authority: vortex_emulator

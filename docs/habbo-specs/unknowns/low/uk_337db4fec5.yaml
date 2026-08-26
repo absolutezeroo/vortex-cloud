@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:393ee6a8a1afffc7d9653c529a892fdaa97c0fa7b2589390f5e802c006d1faac"
+generated_digest: "sha256:47810a246ac33cffd2a0970e43a770756785204d41ebd6d61b072d83b41bc036"
 generated:
   id: uk_337db4fec5
   subject: "outgoing/MyCfhReportStatus: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 carry no name from any source. What are they?
+  question: Fields 8, 10, 11 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: MyCfhReportStatus
   known_evidence:
@@ -27,5 +27,12 @@ generated:
     symbol: _SafeCls_3848
     line: 23
     note: official client build WIN63-202607011411-782849652
+  - id: ev_52a7c18465aa
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/CallForHelp/MyCfhReportStatusMessageComposerSerializer.cs
+    symbol: MyCfhReportStatusMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

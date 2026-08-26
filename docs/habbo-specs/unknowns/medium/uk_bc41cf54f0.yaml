@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e5f4cf10ef567b7ad2ab82cbc08f135cd429ae7e20505dc1c0ff51f39458d1ba"
+generated_digest: "sha256:54bf5e702fb8a3b175dc600f0a33417d1f5f1f36ecd172d8bafed001d636e9b9"
 generated:
   id: uk_bc41cf54f0
   subject: "moderation.publish: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 256
+    line: 258
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator

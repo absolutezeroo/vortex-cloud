@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:dab13a49bc74d33ed51979b5bb466ab998c204e09f558a8149db05f5d68ecacf"
+generated_digest: "sha256:66930887234ea04d41a9c7feddc4f40e0245b714e85fd83508402720ab55683d"
 generated:
   id: uk_741d4420f7
   subject: "room.try_get_definition: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/FurnitureAdminService.cs
     symbol: FurnitureAdminService
-    line: 84
+    line: 85
   - id: ev_2abf117cdb1a
     kind: emulator_handler
     authority: vortex_emulator
@@ -60,7 +60,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator

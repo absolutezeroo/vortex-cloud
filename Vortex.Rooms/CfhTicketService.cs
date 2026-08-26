@@ -24,6 +24,8 @@ internal sealed class CfhTicketService(
     IEventPublisher events
 ) : ICfhTicketService
 {
+    private const int ReportHistoryLimit = 100;
+
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly IEventPublisher _events = events;
 
@@ -523,6 +525,58 @@ internal sealed class CfhTicketService(
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
         return pending.Select(t => t.Id).ToImmutableArray();
+    }
+
+    public async Task<ImmutableArray<CfhReportStatusSnapshot>> GetReportHistoryForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    )
+    {
+        if (reporterPlayerId <= 0)
+        {
+            return [];
+        }
+
+        await using VortexDbContext dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        var rows = await dbCtx
+            .CfhTickets.AsNoTracking()
+            .Where(t => t.ReporterPlayerEntityId == reporterPlayerId && t.DeletedAt == null)
+            .OrderByDescending(t => t.CreatedAt)
+            // The window is a flat table with no paging, and the client re-sorts the whole vector
+            // on arrival. A player who has filed hundreds of reports gets their most recent ones.
+            .Take(ReportHistoryLimit)
+            .Select(t => new
+            {
+                t.Id,
+                t.CreatedAt,
+                t.Message,
+                t.CfhTopicEntityId,
+                ReportedName = t.ReportedPlayerEntity != null ? t.ReportedPlayerEntity.Name : null,
+                t.ClosedAt,
+                t.Sanctioned,
+            })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return rows.Select(r => new CfhReportStatusSnapshot
+            {
+                Id = r.Id,
+                CreationTime = new DateTimeOffset(
+                    r.CreatedAt,
+                    TimeSpan.Zero
+                ).ToUnixTimeMilliseconds(),
+                Message = r.Message ?? string.Empty,
+                TopicId = r.CfhTopicEntityId,
+                ReportedAccountName = r.ReportedName ?? string.Empty,
+                CloseTime = r.ClosedAt is { } closed
+                    ? new DateTimeOffset(closed, TimeSpan.Zero).ToUnixTimeMilliseconds()
+                    : -1,
+                Sanctioned = r.Sanctioned,
+            })
+            .ToImmutableArray();
     }
 
     public async Task<ImmutableArray<PlayerSanctionSnapshot>> GetSanctionHistoryAsync(

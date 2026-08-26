@@ -10,13 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3ade694b3766ba9e2a3223ea6929ddaa17766512d955650624145bbe32a022b9"
+generated_digest: "sha256:141fd08ac492805add36e65fdc434afd484e16e61e21c71d010dba33da091a83"
 generated:
   name: GetMyCfhReportStatus
   direction: incoming
-  domain: unsorted
+  domain: moderation
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
+  vortex_handler: GetMyCfhReportStatusMessageHandler
   fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -25,6 +26,12 @@ generated:
     partial: false
     types: []
     evidence: ev_648530b03683
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_f4336487e7bd
   evidence:
   - id: ev_648530b03683
     kind: client_call_site
@@ -34,5 +41,12 @@ generated:
     symbol: _SafeCls_2121
     line: 14
     note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/help/HabboHelp.as:941 with 0 argument(s)"
+  - id: ev_f4336487e7bd
+    kind: emulator_parser
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Parsers/Help/GetMyCfhReportStatusMessageParser.cs
+    symbol: GetMyCfhReportStatusMessageParser
+    line: 7
 verified: {}
 manual: {}

@@ -100,6 +100,16 @@ public interface ICfhTicketService
     );
 
     /// <summary>
+    /// Every report this player filed, newest first — what their client shows under "my reports",
+    /// which is a history and not a work list: closed reports are the interesting ones there, since
+    /// they are the only ones carrying an outcome.
+    /// </summary>
+    Task<ImmutableArray<CfhReportStatusSnapshot>> GetReportHistoryForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    );
+
+    /// <summary>
     /// This player's own sanction history, newest first — what their client shows under "my
     /// sanctions". Bans that have already expired are included: it is a record, not a list of what
     /// is currently in force, and a player looking at an empty screen after serving one would read

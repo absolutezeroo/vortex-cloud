@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b3e2b72fc4c0ca9ab6d49fb6105cc7c8519fdb8f596e948b3dfc7d01da8dca65"
+generated_digest: "sha256:2d66c9c62f7cc324cc020386c9d87b5eef12730689187bcaba4439faf25b2483"
 generated:
   id: catalog.builders_club_place_wall_item
   domain: catalog
@@ -416,7 +416,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

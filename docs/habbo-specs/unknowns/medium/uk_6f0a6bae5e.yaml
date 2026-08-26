@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0595621115ef0978dbf124bf2adbd37d893aaaeb4cbba64e5f8eef43a9ecce44"
+generated_digest: "sha256:350b18a2c40dab94d0b78de4870592bf8d162b84031ed2681a4f715f9ec89556"
 generated:
   id: uk_6f0a6bae5e
   subject: "catalog.find_by_product_code: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

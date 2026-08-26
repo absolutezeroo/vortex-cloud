@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2ceb58ad94728aee8f477f75835e6c5c44ed8c0cea67106e9a09e40467298e23"
+generated_digest: "sha256:097052fff29d8b5442b6ba0f1ec73e29958cd22476db716a3c06d977c9823024"
 generated:
   id: room.try_get_definition
   domain: room
@@ -239,6 +239,10 @@ generated:
     value: spec.UsagePolicy
     observed_in: vortex
     evidence: ev_268932f3993d
+  - target: entity.VendingIds
+    value: spec.VendingIds
+    observed_in: vortex
+    evidence: ev_268932f3993d
   - target: entity.Width
     value: spec.Width
     observed_in: vortex
@@ -295,7 +299,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/FurnitureAdminService.cs
     symbol: FurnitureAdminService
-    line: 84
+    line: 85
   - id: ev_2abf117cdb1a
     kind: emulator_handler
     authority: vortex_emulator
@@ -309,7 +313,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator

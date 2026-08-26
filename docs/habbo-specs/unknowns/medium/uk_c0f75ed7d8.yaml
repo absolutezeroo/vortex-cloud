@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5d3aba999a359b97e383ecb2c9d6acd3c1e1e1f0e7ae0d9cfcee309ff3c64975"
+generated_digest: "sha256:d8da857b079630c1b65fc40f0a73198e7787f0cb7b9551f586db3df0c6b5bd34"
 generated:
   id: uk_c0f75ed7d8
   subject: "moderation.delete_pending_calls_for_help: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 486
+    line: 488
   - id: ev_8b3e6c144aa2
     kind: emulator_handler
     authority: vortex_emulator

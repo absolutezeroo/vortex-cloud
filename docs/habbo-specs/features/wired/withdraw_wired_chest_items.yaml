@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a3a7542fbd2c5a2a8b3143dbdf2ab2a3123ab48fc70019445c7afc0149f75bd1"
+generated_digest: "sha256:6ada88c68ba317927f2b808efd83ca03b7e0097dbdfaa1137afbccfbdfa812ca"
 generated:
   id: wired.withdraw_wired_chest_items
   domain: wired
@@ -271,7 +271,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator

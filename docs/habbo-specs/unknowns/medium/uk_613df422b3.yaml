@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5bb6f8d7baebd8168bef55026e82fe1ee26e38fd0d1109cb12897e76f9e4cee3"
+generated_digest: "sha256:ac7368d9f27c5a1c3d663c1b613e250d7fe9dbf2b1c291d929a240e4cb9e024f"
 generated:
   id: uk_613df422b3
   subject: "room.present_open: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

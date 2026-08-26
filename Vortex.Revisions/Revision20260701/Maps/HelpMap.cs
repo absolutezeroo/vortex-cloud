@@ -67,6 +67,10 @@ internal sealed class HelpMap : IRevisionMap
             MessageEvent.GetPendingCallsForHelpMessageEvent,
             new GetPendingCallsForHelpMessageParser()
         );
+        builder.MapParser(
+            MessageEvent.GetMyCfhReportStatusMessageEvent,
+            new GetMyCfhReportStatusMessageParser()
+        );
         builder.MapParser(MessageEvent.GetQuizQuestionsEvent, new GetQuizQuestionsMessageParser());
         builder.MapParser(
             MessageEvent.GuideSessionCreateMessageEvent,

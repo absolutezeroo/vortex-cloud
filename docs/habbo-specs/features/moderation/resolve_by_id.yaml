@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:16e1ba7545bcf6b0590705d045bb59827edeb6543b76b5f1cc8ed80d9a399b87"
+generated_digest: "sha256:b58ad6872d12877697fc604b7e31bc9b7a19db5b40cf1b91fc53cec8827b4a0e"
 generated:
   id: moderation.resolve_by_id
   domain: moderation
@@ -77,7 +77,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 315
+    line: 317
   - id: ev_084c9e56bee3
     kind: emulator_flow
     authority: vortex_emulator

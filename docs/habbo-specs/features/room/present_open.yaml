@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:16a8f5c63a0af9d7a73d64017c3a9e3e4b563e37c2c8d0ae3ef7ee152bac5a52"
+generated_digest: "sha256:6a16c515b2eaaa5ff74c1eb53448e0ca0827e3795b9b686c4ddcd40eaa775a91"
 generated:
   id: room.present_open
   domain: room
@@ -203,7 +203,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

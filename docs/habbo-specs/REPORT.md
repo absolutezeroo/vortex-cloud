@@ -22,8 +22,8 @@ actually produced against the trees listed under Sources.
 
 | | Count |
 |---|---:|
-| Features | 496 |
-| Scenarios | 1873 |
+| Features | 497 |
+| Scenarios | 1876 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -45,7 +45,7 @@ actually produced against the trees listed under Sources.
 | Conflicts | 365 |
 | Critical unknowns | 134 |
 | Unknowns in total | 715 |
-| Fields with no attested name | 1893 of 6018 |
+| Fields with no attested name | 1884 of 6018 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,8 +54,8 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 8
-- unchanged: 3513
+- written: 43
+- unchanged: 3480
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded

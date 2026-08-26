@@ -17,6 +17,12 @@ internal sealed class CallForHelpMap : IRevisionMap
             new CfhTopicsInitMessageComposerSerializer(MessageComposer.CfhTopicsInitMessageComposer)
         );
         builder.MapSerializer(
+            typeof(MyCfhReportStatusMessageComposer),
+            new MyCfhReportStatusMessageComposerSerializer(
+                MessageComposer.MyCfhReportStatusMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(SanctionStatusEventMessageComposer),
             new SanctionStatusEventMessageComposerSerializer(MessageComposer.SanctionStatusComposer)
         );

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7755fd6939e933bcc2690c9f4bc5d0e051bd9104350e02c6d9ae6c832252370a"
+generated_digest: "sha256:a7a0b3bdace7a9c9b39a80de1b7099e63bee654ff80dcb6d300d6d3a382ab76b"
 generated:
   id: uk_b851f48f39
   subject: "inventory.redeem_purchasable_clothing: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:53a543db75819b67236048b989abbe60ca84d25d4fbdb9def938c43fd63cb3cf"
+generated_digest: "sha256:7a48db44da3740572093c20b9226c609e41b3008a593c2f25776699f94949e43"
 generated:
   feature: wired.wired_trade_update_items
   scenarios:
@@ -201,7 +201,7 @@ generated:
     origin: vortex
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
-    line: 71
+    line: 72
   - id: ev_3819e935e77f
     kind: emulator_flow
     authority: vortex_emulator

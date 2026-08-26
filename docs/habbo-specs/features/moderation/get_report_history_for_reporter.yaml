@@ -10,27 +10,26 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6e548ef6e240c1f60eb54061026cc213c65203a06127b5d076e11d706467c4f9"
+generated_digest: "sha256:cba8ba7ea3156aff21ae1d4cec233a54d92343226d1a4f1a9c07f19f592992d1"
 generated:
-  id: moderation.get_pending_for_reporter
+  id: moderation.get_report_history_for_reporter
   domain: moderation
-  title: get pending for reporter
+  title: get report history for reporter
   trigger_packets:
-  - GetPendingCallsForHelp
+  - GetMyCfhReportStatus
   observed_in:
     vortex: true
-    references:
-    - habbo-arcturus-daybreak
+    references: []
   official_behavior:
     status: unknown
   flow:
   - order: 0
     layer: handler
-    symbol: GetPendingCallsForHelpMessageHandler.HandleAsync
-    evidence: ev_55baf5750111
+    symbol: GetMyCfhReportStatusMessageHandler.HandleAsync
+    evidence: ev_04f42761fcfe
   - order: 1
     layer: service
-    symbol: CfhTicketService.GetPendingForReporterAsync
+    symbol: CfhTicketService.GetReportHistoryForReporterAsync
     evidence: ev_055f4068589c
   - order: 2
     layer: domain
@@ -40,7 +39,7 @@ generated:
   - expression: ctx.PlayerId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_d452905700d2
+    evidence: ev_d1513041a51c
   - expression: reporterPlayerId <= 0
     on_fail: return
     observed_in: vortex
@@ -49,33 +48,33 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CallForHelpPendingCalls
+    - packet: MyCfhReportStatus
       recipient: actor
       recipient_confidence: implementation_observed
-      evidence: ev_d452905700d2
+      evidence: ev_d1513041a51c
   reaches_persistence: false
   evidence:
+  - id: ev_04f42761fcfe
+    kind: emulator_handler
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Help/GetMyCfhReportStatusMessageHandler.cs
+    symbol: GetMyCfhReportStatusMessageHandler
+    line: 19
   - id: ev_055f4068589c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/CfhTicketService.cs
     symbol: CfhTicketService
-    line: 446
-  - id: ev_55baf5750111
-    kind: emulator_handler
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.PacketHandlers/Help/GetPendingCallsForHelpMessageHandler.cs
-    symbol: GetPendingCallsForHelpMessageHandler
-    line: 20
-  - id: ev_d452905700d2
+    line: 530
+  - id: ev_d1513041a51c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/Help/GetPendingCallsForHelpMessageHandler.cs
-    symbol: GetPendingCallsForHelpMessageHandler
-    line: 29
+    source: Vortex.PacketHandlers/Help/GetMyCfhReportStatusMessageHandler.cs
+    symbol: GetMyCfhReportStatusMessageHandler
+    line: 28
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator
@@ -84,8 +83,8 @@ generated:
     symbol: WiredActionBranch
     line: 23
   scenarios:
-  - moderation.get_pending_for_reporter.guard_0
-  - moderation.get_pending_for_reporter.guard_1
-  - moderation.get_pending_for_reporter.success
+  - moderation.get_report_history_for_reporter.guard_0
+  - moderation.get_report_history_for_reporter.guard_1
+  - moderation.get_report_history_for_reporter.success
 verified: {}
 manual: {}
