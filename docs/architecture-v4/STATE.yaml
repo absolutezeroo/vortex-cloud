@@ -116,11 +116,23 @@ completed:
   - PR-Z1d # ExecutionId/ParentExecutionId on execute-stacks, stamped on the room's wired log
   - PR-Z1e # the hydration benchmark, which answers OQ-7: leave the reflection alone
   - PR-D4  # ActorSecurityContext (§5): the server's view of the caller, ambient for one request
+  - PR-Q2d # all 45 wire disagreements read against the AS3; RentableSpaceStatus had a field too many
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
   - id: PR-Q2
-    what: the 29 wire disagreements nobody has read yet
+    what: nothing; kept only to record what the reading found
+    note: >
+      PR-Q2d read the last 29 against the WIN63 AS3, so all 45 baselined entries have now been read.
+      Every one is an artifact of a counting shape or a composer that writes nothing. The baseline is
+      a ratchet rather than a queue now: an entry appearing in it is news.
+      Two real findings, both fixed: AcceptFriendResult on 3407 (WIN63 hands that id to its
+      self-donation handler; it is 3707), and RentableSpaceStatus writing a trailing CurrencyName
+      that the client, Arcturus and Nitro all stop before.
+      One feature gap, not a wire bug: HanditemConfiguration's client reads four flags --
+      isHanditemControlBlocked, chooserDisabled, freeFurniMovementsEnabled, invisibleFurni -- and this
+      emulator has only the first. The client guards the other three with `bytesAvailable > 0`, so
+      sending one is legal; they are features nobody has built.
     note: >
       PR-Q2b did the enabling half rather than 23 hand verdicts. The client scanner bound headers only
       to composers, so 17 of 805 outgoing packets carried evidence from WIN63-202607011411 -- the

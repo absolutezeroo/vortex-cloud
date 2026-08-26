@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a1d32cc59e1949e17ca528e4101d2c468784b43ba2c7b0499ba37df7c82c045c"
+generated_digest: "sha256:54c5d5aa3195726f7923173af45c5cf27431b51bb43c2ead8a95e8b4110df777"
 generated:
   name: RentableSpaceStatus
   direction: outgoing
@@ -98,7 +98,7 @@ generated:
     evidence: ev_44186c4aa7d4
   - origin: vortex
     authority: vortex_emulator
-    field_count: 7
+    field_count: 6
     partial: false
     types:
     - boolean
@@ -107,7 +107,6 @@ generated:
     - string
     - int32
     - int32
-    - string
     evidence: ev_52c70c59511f
   evidence:
   - id: ev_9fceccc01179

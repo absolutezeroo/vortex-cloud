@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7f9a57b4ca8da772aabf899630d5359ff1628b0f21bb488e5ddd422e1cc1f527"
+generated_digest: "sha256:1e84e16aaf5bc94a32714a4187bf7530c88f7fe8971e63d9603da173769d7040"
 generated:
   id: catalog.find_by_product_code
   domain: catalog
@@ -66,21 +66,25 @@ generated:
     evidence: ev_0c987f4ea07c
   - order: 10
     layer: domain
+    symbol: FulfillmentPlanBuilder.Build
+    evidence: ev_ab8e0342129a
+  - order: 11
+    layer: domain
     symbol: FurnitureDefinitionProvider.TryGetDefinition
     evidence: ev_2ec03446aa2a
-  - order: 11
+  - order: 12
     layer: domain
     symbol: StuffDataFactory.CreateStuffData
     evidence: ev_7a660921f135
-  - order: 12
+  - order: 13
     layer: grain
     symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
     evidence: ev_3a5a694b9376
-  - order: 13
+  - order: 14
     layer: module
     symbol: PlayerInventoryModule.OnBadgeGrantedAsync
     evidence: ev_d720d639bd09
-  - order: 14
+  - order: 15
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
@@ -161,7 +165,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
     symbol: CatalogFulfillmentPlanner
-    line: 53
+    line: 89
   - id: ev_1f83e61934ca
     kind: emulator_flow
     authority: vortex_emulator
@@ -225,6 +229,13 @@ generated:
     source: Vortex.Catalog/Providers/CatalogClubGiftProvider.cs
     symbol: CatalogClubGiftProvider
     line: 35
+  - id: ev_ab8e0342129a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/Strategies/IFulfillmentStrategy.cs
+    symbol: FulfillmentPlanBuilder
+    line: 79
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator

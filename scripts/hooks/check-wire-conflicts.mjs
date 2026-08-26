@@ -17,10 +17,13 @@
 //   2. A parser that delegates -- `new SomeEntry(wrapper)` inside the loop -- hides those reads.
 //      As3ClientAnalyzer follows one level of that now, and WireLayoutExtractor follows any call
 //      that hands our packet to another method (the test is the packet, not the method's name).
-//      What NEITHER side follows is delegation through a method on an existing object:
-//      `entry.parse(wrapper)` in the client, which is what ModeratorInit and HabboClubExtendOffer
-//      do. That undercounts the CLIENT, so an entry where the client's number looks too small for
-//      the message is probably this and not a bug.
+//      What NEITHER side follows is delegation through a *method*: `entry.parse(wrapper)` on an
+//      object, or `Helper.parseObjectData(wrapper)` on a class. That undercounts the CLIENT, so an
+//      entry where the client's number looks too small for the message is probably this. It is the
+//      single commonest shape left -- the whole ObjectAdd/ItemAdd/Objects/Items family is it.
+//   3. The client guards optional trailing reads with `bytesAvailable > 0`. Sending fewer fields than
+//      it can read is then legal and intended, not a truncation: HanditemConfiguration reads four
+//      booleans that way and we send one.
 //
 // History, so nobody re-derives it. Until 2026-08-25 the client scanner bound headers only to
 // composers, so 17 of 805 outgoing packets had any evidence from the build this emulator targets --
@@ -29,14 +32,20 @@
 // evidence to 514; the list went 23 -> 64 (disagreements with the RIGHT client, for the first time),
 // then to 46 once loops and constructor delegation were understood on both sides.
 //
-// One entry in all of that was a real bug: AcceptFriendResult was sent on 3407, which WIN63 hands to
-// its self-donation handler. It is 3707.
+// **All 45 that stand have now been read against the WIN63 AS3.** Every one is an artifact of the
+// three shapes above, or a composer that writes nothing and is tracked as such elsewhere. The list is
+// therefore a ratchet and not a queue: it exists so a NEW disagreement fails the gate on the commit
+// that introduces it, and an entry appearing in it is news.
 //
-// Of the 46 that stand, 17 have been read against the AS3 and are artifacts or empty composers: the
-// six incoming ones, and FloorHeightMap, RoomDimmerPresets, ModeratorInit, NewFriendRequest,
-// QuestCompleted, HabboClubOffers, WiredUserPermanentVariables, AreaHide, BundleDiscountRuleset,
-// CategoriesWithVisitorCount, CompetitionRoomsData. The other 28 are UNREAD. Start there when a
-// dialog does not open.
+// Two real findings came out of the reading, both fixed:
+//   - AcceptFriendResult was sent on 3407, which WIN63 hands to its self-donation handler. It is 3707.
+//   - RentableSpaceStatus wrote a trailing CurrencyName that the client, Arcturus and Nitro all stop
+//     before. Removed.
+//
+// And one that is not a wire bug but is worth knowing: HanditemConfiguration's client reads four
+// flags -- isHanditemControlBlocked, chooserDisabled, freeFurniMovementsEnabled, invisibleFurni --
+// and this emulator has only the first. The other three are features nobody has built, not fields
+// anybody forgot.
 //
 // This does not demand the existing disagreements be fixed. It fixes their LIST, so a new one
 // fails the gate on the commit that introduces it instead of surfacing in a running client.

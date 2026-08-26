@@ -36,7 +36,6 @@
     "outgoing/QuestCompleted",
     "outgoing/QuestDaily",
     "outgoing/RedeemNftLootBoxState",
-    "outgoing/RentableSpaceStatus",
     "outgoing/RoomDimmerPresets",
     "outgoing/RoomInviteError",
     "outgoing/SlideObjectBundle",

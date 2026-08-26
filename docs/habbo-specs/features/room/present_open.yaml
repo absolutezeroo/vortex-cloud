@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e2aa44c71bdf308dcd46bfa21c77d6dceb5649b5e14dc40f58ae7072dfcf8d43"
+generated_digest: "sha256:16a8f5c63a0af9d7a73d64017c3a9e3e4b563e37c2c8d0ae3ef7ee152bac5a52"
 generated:
   id: room.present_open
   domain: room
@@ -74,21 +74,25 @@ generated:
     evidence: ev_0c987f4ea07c
   - order: 12
     layer: domain
+    symbol: FulfillmentPlanBuilder.Build
+    evidence: ev_ab8e0342129a
+  - order: 13
+    layer: domain
     symbol: FurnitureDefinitionProvider.TryGetDefinition
     evidence: ev_2ec03446aa2a
-  - order: 13
+  - order: 14
     layer: domain
     symbol: StuffDataFactory.CreateStuffData
     evidence: ev_7a660921f135
-  - order: 14
+  - order: 15
     layer: grain
     symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
     evidence: ev_3a5a694b9376
-  - order: 15
+  - order: 16
     layer: module
     symbol: PlayerInventoryModule.OnBadgeGrantedAsync
     evidence: ev_d720d639bd09
-  - order: 16
+  - order: 17
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
@@ -185,7 +189,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Fulfillment/CatalogFulfillmentPlanner.cs
     symbol: CatalogFulfillmentPlanner
-    line: 53
+    line: 89
   - id: ev_0f9ffda870b1
     kind: emulator_flow
     authority: vortex_emulator
@@ -256,6 +260,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Furniture/PresentOpenMessageHandler.cs
     symbol: PresentOpenMessageHandler
     line: 28
+  - id: ev_ab8e0342129a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Fulfillment/Strategies/IFulfillmentStrategy.cs
+    symbol: FulfillmentPlanBuilder
+    line: 79
   - id: ev_b43e4f79cdaa
     kind: emulator_flow
     authority: vortex_emulator
