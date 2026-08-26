@@ -38,7 +38,11 @@ open_questions:
   - OQ-4
   - OQ-5
   - OQ-6
-  - OQ-7
+  # OQ-7 resolved by measurement (PR-Z1e): ActivatorUtilities costs 0.88 ms more than a compiled
+  # factory over a 2,000-item room -- 0.69 us per item against 0.25. Room entry already costs a
+  # database read of the items themselves, so the saving is below anything a player can perceive and
+  # the reflection stays: it is the version with no cache to invalidate when a plugin unloads.
+  # Numbers in docs/architecture-v4/benchmarks/room-hydration.md, regenerate with VORTEX_BENCH=1.
   - OQ-8
 
 audits:
@@ -110,6 +114,7 @@ completed:
   - PR-Z1c # three of the five closed: StuffData round-trip, the facade wall, reference provenance
   - PR-S2  # one strategy per ProductType; the planner composes instead of switching
   - PR-Z1d # ExecutionId/ParentExecutionId on execute-stacks, stamped on the room's wired log
+  - PR-Z1e # the hydration benchmark, which answers OQ-7: leave the reflection alone
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:

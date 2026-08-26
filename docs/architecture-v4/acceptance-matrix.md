@@ -115,11 +115,14 @@ prose, when something moves.
 |---|---|:--:|
 | Empty room, loaded room, event storm, chain firing | `docs/architecture-v4/benchmarks/wired-engine.md`, `VORTEX_BENCH=1` | ✅ |
 | No-trigger ≈ O(1) | `WiredEngineCostTests` — asserted as a scan count, not a duration, so it holds on any machine | ✅ |
-| Massive hydration (OQ-7) | — | ❌ |
+| Massive hydration (OQ-7) | `RoomObjectHydrationBenchmark` → `benchmarks/room-hydration.md` | ✅ |
 | A significant regression is refused without justification | the baseline exists and is committed; the refusal is a human reading it in review | ⚠️ |
 
-> Hydration was never benchmarked because OQ-7 is still open: what the target is depends on a decision
-> nobody has taken. Measuring it now would produce a number with nothing to compare it to.
+> And it answered OQ-7, which the note asked to settle by measurement rather than by argument.
+> `ActivatorUtilities.CreateInstance` builds a logic per object at hydration; a compiled factory is
+> 2.7× faster and saves **0.88 ms** over a full 2,000-item room. Room entry already costs a database
+> read of the items themselves, so that saving is below anything a player perceives — and the
+> reflection is the version with no cache to invalidate when a plugin unloads. It stays.
 
 ## Documentation (PR-Z1)
 
@@ -135,11 +138,15 @@ prose, when something moves.
 
 ## What is not met
 
-Two, plus one implemented-but-unproven:
+One, plus two that are written and cannot be exercised here:
 
-1. **Wired `ExecutionId` / room-scoped trace** — the in-room log already answers this inside one room.
-2. **Hydration benchmark** — waiting on OQ-7 rather than on effort.
-3. ⚠️ **Provenance SHA** — written, and inert until a reference tree arrives as a git checkout.
+1. **The exhaustive wired trace** — a line per selection, per condition, per effect chosen or
+   skipped. Opt-in in the note, and left open deliberately: it would be a log nobody reads and a
+   table that grows faster than the room it describes. The identity half is done, which is what makes
+   the existing log followable.
+2. ⚠️ **Provenance SHA** — written, and inert until a reference tree arrives as a git checkout.
+3. ⚠️ **Refusing a benchmark regression** — a person reading the baseline in review. Not a script,
+   and saying so is better than pretending.
 
 And one that is not a test at all: refusing a benchmark regression is a person reading the baseline in
 review. Writing that down is the honest version; pretending a script does it would be worse than the
