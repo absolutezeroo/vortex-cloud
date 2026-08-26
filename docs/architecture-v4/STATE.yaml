@@ -163,7 +163,14 @@ remaining:
       batch and abandoned the rest). What is left is the baselines themselves: 23 known wire
       conflicts and 3 unreachable headers, entry by entry, each needing a client re-read.
   - id: PR-Z1
-    what: the two requirements the acceptance matrix still says are unmet
+    what: the exhaustive wired trace, the one requirement the matrix still calls unmet
+    note: >
+      opt-in in the note, and left open on purpose: a line per selection, per condition, per effect
+      chosen or skipped would be a log nobody reads and a table growing faster than the room it
+      describes. The identity half landed (PR-Z1d) and is what makes the existing log followable.
+      Two more rows sit at warning rather than tick and cannot be closed here: the provenance SHA is
+      written and inert until a reference tree arrives as a git checkout, and refusing a benchmark
+      regression is a person reading the baseline in review rather than a script.
     note: >
       the baseline PR-G1 was supposed to leave behind never existed, so PR-Z1a created it rather than
       comparing against nothing: docs/architecture-v4/benchmarks/wired-engine.md, regenerated with
@@ -186,7 +193,7 @@ remaining:
           than time. The wired one has a genuine new thing to say (a box is now testable on a fake
           room) and is worth writing next.
   - id: dashboard
-    what: docs/architecture/dashboard-api-security.md, the parts §17 and §7 do not cover
+    what: nothing of substance; kept for the two deliberate gaps recorded below
     note: >
       unblocked: the other session's dashboard work landed at ce04752b and the tree is clean.
       §17 done (PR-D1). §7 done (PR-D2): the critical set is named by capability rather than by
