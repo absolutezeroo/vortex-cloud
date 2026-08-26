@@ -586,6 +586,7 @@ internal static class MessageEvent
     public const int ShoutMessageEvent = 1763;
     public const int StartTypingMessageEvent = 2106;
     public const int WhisperMessageEvent = 1697;
+    public const int WiredClickUserMessageEvent = 1953; // AS3-verified (registry + sender): _composers[1953] = _SafeCls_2111(int objectId), sent by HabboUserDefinedRoomEvents::userSelected() and only while hasClickUserWired() is true -- i.e. only once WiredEnvironmentMessageComposer has said the room has a click-user box.
     public const int WiredClearErrorLogsMessageEvent = 2386; // AS3-verified (old-revision trace): _SafeCls_2945 -> onClearButtonClicked() still exists in current revision at 2386
     public const int WiredGetAllVariableHoldersMessageEvent = 113; // AS3-verified (old-revision trace): _SafeCls_3771 -> selectedVariableId() still exists in current revision at 113
     public const int WiredGetAllVariablesDiffsMessageEvent = 797; // AS3-verified (direct read, both revisions): WiredVariablesSynchronizer::onAllVariablesHash() hash-mismatch branch -> connection.send(new _SafeCls_2882(variableIdToHash)) @797 (old _SafeCls_3609@1509; slot freed by correcting WiredGetAllVariablesHashMessageEvent above)
@@ -595,6 +596,7 @@ internal static class MessageEvent
     public const int WiredGetRoomStatsMessageEvent = 427; // AS3-verified (direct read, both revisions): WiredMenuMonitorTab::requestData() -> connection.send(new _SafeCls_3423()) @427 (old _SafeCls_3425@3031)
     public const int WiredGetVariablesForObjectMessageEvent = 3466; // AS3-verified (ghost fix): WiredMenuInspectionTab::requestVariablesForObject()
     public const int WiredSetObjectVariableValueMessageEvent = 625; // AS3-verified (direct read, both revisions): VariableManagementDetailView set/create/delete variable calls -> connection.send(new _SafeCls_2426(entityType,entityId,variableId,value,mode)) @625 (old _SafeCls_2572@2981)
+    public const int WiredSetObjectVariableValueFromInspectorMessageEvent = 689; // AS3-verified (registry + sender): _composers[689] = _SafeCls_3855(entityType,entityId,variableId,value,mode) -- byte-for-byte the same message as 625, sent from WiredMenuInspectionTab::onCellEdit (mode 0) and ::onDeleteVariableClicked (mode 2). A second surface on its own id, not a duplicate constant: binding only 625 leaves the Inspection tab's edits falling on the floor.
     public const int WiredSetPreferencesMessageEvent = 3124; // AS3-verified (old-revision trace): _SafeCls_3307 -> sendPreferences() still exists in current revision at 3124
     public const int WiredSetRoomSettingsMessageEvent = 2553; // AS3-verified (old-revision trace): still exists in current revision at 2553
     public const int AcceptFriendMessageEvent = 1772;
@@ -731,7 +733,8 @@ internal static class MessageComposer
     public const int RecyclerFinishedMessageComposer = 3617; // AS3-verified (registry): _SafeCls_2046[3617] = _SafeCls_2078 (parser _SafeCls_2299 -> recyclerFinishedStatus:int, prizeId:int). Was 281, an id with no registry entry at all.
     public const int RecyclerPrizesMessageComposer = 3367; // AS3-verified (registry): _SafeCls_2046[3367] = _SafeCls_2027 (parser _SafeCls_2243 -> prizeLevels:Vector.<PrizeLevelMessageData>). Was 3783, an id with no registry entry at all.
     public const int RecyclerStatusMessageComposer = 2166; // AS3-verified (registry): _SafeCls_2046[2166] = _SafeCls_2004 (parser _SafeCls_2165 -> recyclerStatus:int, recyclerTimeoutSeconds:int). Was 1919, an id with no registry entry at all.
-    public const int WiredEnvironmentMessageComposer = 2827; // AS3-verified (direct read): _SafeCls_3319 (parser _SafeCls_3496) -> hasClickUserWired:bool, enabledAchievements:Vector.<String>; room-wide push on entry/config-change, no request/response pair. Corrects a collision (was 1186). Not yet wired to a sender - flagged in the plan as a loose end, not built this pass.
+    public const int WiredEnvironmentMessageComposer = 2827; // AS3-verified (direct read): _SafeCls_3319 (parser _SafeCls_3496) -> hasClickUserWired:bool, then optionally count:int + count x String enabledAchievements; room-wide push, sent here on room entry. Corrects a collision (was 1186).
+    public const int WiredClickUserResponseMessageComposer = 309; // AS3-verified (registry + parser): _SafeCls_2046 events[309] = _SafeCls_3728 (parser _SafeCls_3523) -> index:int, openMenu:bool. Answers WiredClickUserMessageEvent; index is the object id the client sent, echoed so AvatarInfoWidget.setupMenuView matches its pending click.
     #region Outgoing
 
     public const int CantConnectMessageComposer = 2430;

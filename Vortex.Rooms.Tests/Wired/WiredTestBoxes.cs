@@ -46,12 +46,18 @@ internal static class WiredTestBoxes
     /// <paramref name="objectId"/>. A logic reads its own id and tile from its context rather than
     /// from the item that carries it, so the two have to agree here the same way they do in a room.
     /// </summary>
-    public static IRoomFloorItemContext Context(int objectId = 0, int tileIdx = 0)
+    public static IRoomFloorItemContext Context(
+        int objectId = 0,
+        int tileIdx = 0,
+        ExtraData? extraData = null
+    )
     {
         // RoomObject is typed as the floor item itself on a floor context, not as the plain
-        // IRoomObject the name suggests.
+        // IRoomObject the name suggests. A box whose configuration matters to the test supplies its
+        // own extra data, so hydration reads it the way it reads a real box's.
+        ExtraData carried = extraData ?? new ExtraData(null);
         IRoomFloorItem roomObject = FakeProxy.Create<IRoomFloorItem>(call =>
-            call.Method.Name == "get_ExtraData" ? new ExtraData(null) : null
+            call.Method.Name == "get_ExtraData" ? carried : null
         );
 
         // Nothing under test calls into these, but a wired box lights itself up when it fires -
@@ -67,10 +73,32 @@ internal static class WiredTestBoxes
                 "get_Definition" => Definition,
                 "get_RoomObject" => roomObject,
                 "get_Furni" => furni,
+                "get_WiredLimits" => Limits,
                 _ => call.Method.ReturnType == typeof(Task) ? Task.CompletedTask : null,
             }
         );
     }
+
+    /// <summary>
+    /// The tuning knobs a box reads while hydrating.
+    /// </summary>
+    /// <remarks>
+    /// Answering these is what lets a suite put a <em>real</em> wired logic in a fake room. Without
+    /// them <c>RepairIntParams</c> dereferences a null on the way through hydration, the trigger
+    /// index catches it and skips the box — so the room comes back with no triggers and the test
+    /// passes or fails for a reason that has nothing to do with what it is about.
+    /// </remarks>
+    private static readonly IWiredLimits Limits = FakeProxy.Create<IWiredLimits>(call =>
+        call.Method.Name switch
+        {
+            "get_WiredSelectorMaxAreaSize" => 64,
+            "get_WiredSelectedItemsLimit" => 32,
+            "get_WiredNeighborhoodRadius" => 3,
+            "get_WiredMaxIntParams" => 16,
+            "get_WiredAllowWallFurni" => true,
+            _ => null,
+        }
+    );
 
     /// <summary>A plain legacy-key floor definition. Nothing under test reads any field but the
     /// stuff-data type, which the logic base class needs to build its stuff data.</summary>

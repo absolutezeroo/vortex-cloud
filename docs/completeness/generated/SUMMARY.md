@@ -16,8 +16,8 @@ reproduced from the target client and the current code on the next run.
 
 | axis | value |
 |---|---|
-| protocol mapping | 520 / 578 (90.0%) |
-| implementation | 400 / 578 (69.2%) |
+| protocol mapping | 522 / 578 (90.3%) |
+| implementation | 403 / 578 (69.7%) |
 | verified complete | 0 / 578 (0.0%) |
 
 `protocol mapping` counts obligations Vortex can receive at all. `implementation`
@@ -28,9 +28,9 @@ checked against the protocol and wrote the evidence down.
 
 | status | count |
 |---|---|
-| missing | 58 |
-| partial | 120 |
-| implemented | 400 |
+| missing | 56 |
+| partial | 119 |
+| implemented | 403 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -40,7 +40,7 @@ checked against the protocol and wrote the evidence down.
 | domain | obligations | missing | partial | implemented | complete | unknown | not_applicable |
 |---|---|---|---|---|---|---|---|
 | advertisement | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
-| avatar | 5 | 0 | 1 | 4 | 0 | 0 | 0 |
+| avatar | 5 | 0 | 0 | 5 | 0 | 0 | 0 |
 | camera | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
 | campaign | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
 | catalog | 33 | 2 | 3 | 28 | 0 | 0 | 0 |
@@ -72,10 +72,10 @@ checked against the protocol and wrote the evidence down.
 | tracking | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
 | unsorted | 45 | 45 | 0 | 0 | 0 | 0 | 0 |
 | user_classification | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
-| userdefinedroomevents | 3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| userdefinedroomevents | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | users | 42 | 0 | 3 | 39 | 0 | 0 | 0 |
 | vault | 4 | 0 | 2 | 2 | 0 | 0 | 0 |
-| wired | 41 | 0 | 1 | 40 | 0 | 0 | 0 |
+| wired | 43 | 0 | 1 | 42 | 0 | 0 | 0 |
 
 ## Problems
 

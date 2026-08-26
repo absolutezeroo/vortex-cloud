@@ -20,6 +20,10 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
     public void RegisterInto(IRevisionMapBuilder builder)
     {
         builder.MapParser(MessageEvent.ApplySnapshotMessageEvent, new ApplySnapshotMessageParser());
+        builder.MapParser(
+            MessageEvent.WiredClickUserMessageEvent,
+            new WiredClickUserMessageParser()
+        );
         builder.MapParser(MessageEvent.OpenMessageEvent, new OpenMessageParser());
         builder.MapParser(MessageEvent.UpdateActionMessageEvent, new UpdateActionMessageParser());
         builder.MapParser(MessageEvent.UpdateAddonMessageEvent, new UpdateAddonMessageParser());
@@ -81,6 +85,13 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         );
         builder.MapParser(
             MessageEvent.WiredSetObjectVariableValueMessageEvent,
+            new WiredSetObjectVariableValueMessageParser()
+        );
+        // The same message from the Inspection tab, which the client sends on its own header id.
+        // One parser, two doors: binding only the Variables Management one silently drops every
+        // edit made from the other tab.
+        builder.MapParser(
+            MessageEvent.WiredSetObjectVariableValueFromInspectorMessageEvent,
             new WiredSetObjectVariableValueMessageParser()
         );
         builder.MapParser(
@@ -161,6 +172,18 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         builder.MapSerializer(
             typeof(OpenEventMessageComposer),
             new OpenEventMessageComposerSerializer(MessageComposer.OpenComposer)
+        );
+        builder.MapSerializer(
+            typeof(WiredEnvironmentMessageComposer),
+            new WiredEnvironmentMessageComposerSerializer(
+                MessageComposer.WiredEnvironmentMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredClickUserResponseMessageComposer),
+            new WiredClickUserResponseMessageComposerSerializer(
+                MessageComposer.WiredClickUserResponseMessageComposer
+            )
         );
         builder.MapSerializer(
             typeof(WiredFurniActionEventMessageComposer),

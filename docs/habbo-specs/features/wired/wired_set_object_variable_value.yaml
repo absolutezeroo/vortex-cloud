@@ -10,13 +10,14 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7fda70d3655d079ae739f1bad143d94bcfbff211a311135ab031cf7524d51bd4"
+generated_digest: "sha256:236a1ac63496a4fa3dc9b849519d8a709748d683b2abcf0cde6f266e8f844621"
 generated:
   id: wired.wired_set_object_variable_value
   domain: wired
   title: wired set object variable value
   trigger_packets:
   - WiredSetObjectVariableValue
+  - WiredSetObjectVariableValueFromInspector
   observed_in:
     vortex: true
     references: []

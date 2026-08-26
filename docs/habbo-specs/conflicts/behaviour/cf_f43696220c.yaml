@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:baa259bc0416d41af78495062ce5f7ba018ed709d4762642fd4038152db44c33"
+generated_digest: "sha256:b0dceb18a832a425d42319cd247b72df62f2acc9c474ae5b28d258988f1f7cd6"
 generated:
   id: cf_f43696220c
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_fd4c50c7f66d
   - origin: vortex
     authority: vortex_emulator
-    claim: Dance then AvatarEffect then CarryObject then Objects then Items then Users then UserUpdate then YouAreController then WiredPermissionsEvent then YouAreOwner then unresolved then Users
+    claim: Dance then AvatarEffect then CarryObject then Objects then Items then Users then UserUpdate then YouAreController then WiredPermissionsEvent then WiredEnvironment then YouAreOwner then unresolved then Users
     evidence: ev_c4740d577b5c
   evidence:
   - id: ev_fd4c50c7f66d
@@ -40,7 +40,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 26
+    line: 28
   official:
     status: unknown
 verified: {}

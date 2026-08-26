@@ -10,13 +10,14 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cbbf794865a5db91df7a4fb4cee36f665bf9466710daec1c4ecfda12b0abed2b"
+generated_digest: "sha256:d77a349071e916cbae8a13a6e4af4b1bdfd2305410bd575e8df0e91529af4847"
 generated:
   id: avatar.change_user_name
   domain: avatar
   title: change user name
   trigger_packets:
   - ChangeUserName
+  - ClaimNewUserName
   observed_in:
     vortex: true
     references:

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a53640f71d1106f17856114d5953842bb97e4cc38ba80b2441e02885c7b8ee85"
+generated_digest: "sha256:c9833adfdf32c7c2fc95e8c535e4eff36d6f96b4f813cc9a211b625904324fd5"
 generated:
   id: room.get_room_entry_data
   domain: room
@@ -98,117 +98,141 @@ generated:
     evidence: ev_9d8421b6228f
   - order: 18
     layer: grain
+    symbol: RoomGrain.GetClickUserStateAsync
+    evidence: ev_058d83af74c8
+  - order: 19
+    layer: module
+    symbol: RoomWiredSystem.GetClickUserStateAsync
+    evidence: ev_366dfafaae9a
+  - order: 20
+    layer: domain
+    symbol: WiredTriggerIndex.RebuildAsync
+    evidence: ev_c0eb47470642
+  - order: 21
+    layer: domain
+    symbol: RoomGrainWiredHost.AllItems
+    evidence: ev_633652ca6548
+  - order: 22
+    layer: domain
+    symbol: FurnitureWiredLogic.LoadWiredAsync
+    evidence: ev_6fb0fe66500b
+  - order: 23
+    layer: domain
+    symbol: WiredTriggerIndex.Listening
+    evidence: ev_c0eb47470642
+  - order: 24
+    layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 19
+  - order: 25
     layer: grain
     symbol: PlayerPresenceGrain.SetActiveRoomAsync
     evidence: ev_b44ef304d36a
-  - order: 20
+  - order: 26
     layer: grain
     symbol: RoomDirectoryGrain.AddPlayerToRoomAsync
     evidence: ev_74aa24a9a756
-  - order: 21
+  - order: 27
     layer: domain
     symbol: AccountSessionStore.Create
     evidence: ev_680fc4a69aa8
-  - order: 22
+  - order: 28
     layer: domain
     symbol: WiredVariableId.ToHexString
     evidence: ev_7c8de830bc47
-  - order: 23
+  - order: 29
     layer: grain
     symbol: PlayerGrain.GetSummaryAsync
     evidence: ev_1f83e61934ca
-  - order: 24
+  - order: 30
     layer: grain
     symbol: RoomGrain.CreateAvatarFromPlayerAsync
     evidence: ev_ac641f7283b9
-  - order: 25
+  - order: 31
     layer: module
     symbol: RoomAvatarModule.CreateAvatarFromPlayerAsync
     evidence: ev_e6fef545a42a
-  - order: 26
+  - order: 32
     layer: module
     symbol: RoomMapModule.InBounds
     evidence: ev_c26714967e6b
-  - order: 27
+  - order: 33
     layer: module
     symbol: RoomMapModule.FindFallbackSpawnTile
     evidence: ev_c26714967e6b
-  - order: 28
+  - order: 34
     layer: domain
     symbol: RoomAvatarProvider.CreateAvatarFromPlayerSnapshot
     evidence: ev_8e58361a3afa
-  - order: 29
+  - order: 35
     layer: domain
     symbol: RoomPlayerAvatar.UpdateWithPlayer
     evidence: ev_7fd0730f7cca
-  - order: 30
+  - order: 36
     layer: module
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
-  - order: 31
+  - order: 37
     layer: module
     symbol: RoomObjectModule.AttatchObjectAsync
     evidence: ev_761b76967e2f
-  - order: 32
+  - order: 38
     layer: grain
     symbol: PlayerDirectoryGrain.GetPlayerNameAsync
     evidence: ev_7f41f2bdde62
-  - order: 33
+  - order: 39
     layer: domain
     symbol: RoomItem.SetOwnerName
     evidence: ev_b4a557a65d81
-  - order: 34
+  - order: 40
     layer: module
     symbol: RoomMapModule.AddItem
     evidence: ev_c26714967e6b
-  - order: 35
+  - order: 41
     layer: module
     symbol: RoomAvatarModule.ProcessNextAvatarStepAsync
     evidence: ev_e6fef545a42a
-  - order: 36
+  - order: 42
     layer: module
     symbol: RoomMapModule.GetTileXY
     evidence: ev_c26714967e6b
-  - order: 37
+  - order: 43
     layer: module
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
-  - order: 38
+  - order: 44
     layer: module
     symbol: RoomMapModule.AddAvatar
     evidence: ev_db615f36b20b
-  - order: 39
+  - order: 45
     layer: module
     symbol: RoomMapModule.UpdateHeightForAvatar
     evidence: ev_db615f36b20b
-  - order: 40
+  - order: 46
     layer: domain
     symbol: FurnitureFloorLogic.GetPostureOffset
     evidence: ev_a2be027c2714
-  - order: 41
+  - order: 47
     layer: domain
     symbol: RoomAvatar.SetHeight
     evidence: ev_9f45a8c43da8
-  - order: 42
+  - order: 48
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
-  - order: 43
+  - order: 49
     layer: module
     symbol: RoomGameSystem.OnPlayerEnteredAsync
     evidence: ev_7db64e908d04
-  - order: 44
+  - order: 50
     layer: grain
     symbol: PlayerEffectGrain.GetSelectedEffectAsync
     evidence: ev_7ef4c91324dc
-  - order: 45
+  - order: 51
     layer: domain
     symbol: RoomAvatar.SetEffect
     evidence: ev_9f45a8c43da8
-  - order: 46
+  - order: 52
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -421,6 +445,10 @@ generated:
       recipient: room_users
       recipient_confidence: implementation_observed
       evidence: ev_761b76967e2f
+    - packet: WiredEnvironment
+      recipient: target_user
+      recipient_confidence: inferred
+      evidence: ev_873d3938edba
     - packet: WiredPermissionsEvent
       recipient: target_user
       recipient_confidence: inferred
@@ -447,6 +475,13 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
     line: 130
+  - id: ev_058d83af74c8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Wired.ClickUser.cs
+    symbol: RoomGrain
+    line: 9
   - id: ev_07b1995558b2
     kind: emulator_flow
     authority: vortex_emulator
@@ -475,6 +510,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_366dfafaae9a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomWiredSystem.ClickUser.cs
+    symbol: RoomWiredSystem
+    line: 22
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -489,6 +531,13 @@ generated:
     source: Vortex.Primitives/Permissions/PermissionSet.cs
     symbol: PermissionSet
     line: 33
+  - id: ev_633652ca6548
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/Engine/RoomGrainWiredHost.cs
+    symbol: RoomGrainWiredHost
+    line: 91
   - id: ev_680fc4a69aa8
     kind: emulator_flow
     authority: vortex_emulator
@@ -496,6 +545,13 @@ generated:
     source: Vortex.Primitives/Authentication/AccountSessionStore.cs
     symbol: AccountSessionStore
     line: 58
+  - id: ev_6fb0fe66500b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs
+    symbol: FurnitureWiredLogic
+    line: 62
   - id: ev_7327c7799f5f
     kind: emulator_flow
     authority: vortex_emulator
@@ -572,7 +628,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 37
+    line: 39
   - id: ev_8e58361a3afa
     kind: emulator_flow
     authority: vortex_emulator
@@ -629,6 +685,13 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItem.cs
     symbol: RoomItem
     line: 58
+  - id: ev_c0eb47470642
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/Engine/WiredTriggerIndex.cs
+    symbol: WiredTriggerIndex
+    line: 79
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -642,7 +705,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 26
+    line: 28
   - id: ev_db02cb0a1e67
     kind: emulator_flow
     authority: vortex_emulator

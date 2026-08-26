@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3c87e5b5708e700c95833f907a5d7af85b9b20d2f75ece1b30447e8d1bee5b36"
+generated_digest: "sha256:1729566e4f9371848f8da402afb207af14bac8dda6cf164da9413e9e2a2d5a1c"
 generated:
   id: uk_9629b9da77
   subject: "room.get_room_entry_data: what the server sends when it refuses"
@@ -26,6 +26,13 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
     line: 130
+  - id: ev_058d83af74c8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Wired.ClickUser.cs
+    symbol: RoomGrain
+    line: 9
   - id: ev_07b1995558b2
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,6 +61,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_366dfafaae9a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomWiredSystem.ClickUser.cs
+    symbol: RoomWiredSystem
+    line: 22
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,6 +82,13 @@ generated:
     source: Vortex.Primitives/Permissions/PermissionSet.cs
     symbol: PermissionSet
     line: 33
+  - id: ev_633652ca6548
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/Engine/RoomGrainWiredHost.cs
+    symbol: RoomGrainWiredHost
+    line: 91
   - id: ev_680fc4a69aa8
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,6 +96,13 @@ generated:
     source: Vortex.Primitives/Authentication/AccountSessionStore.cs
     symbol: AccountSessionStore
     line: 58
+  - id: ev_6fb0fe66500b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs
+    symbol: FurnitureWiredLogic
+    line: 62
   - id: ev_7327c7799f5f
     kind: emulator_flow
     authority: vortex_emulator
@@ -151,7 +179,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 37
+    line: 39
   - id: ev_8e58361a3afa
     kind: emulator_flow
     authority: vortex_emulator
@@ -208,6 +236,13 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItem.cs
     symbol: RoomItem
     line: 58
+  - id: ev_c0eb47470642
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/Engine/WiredTriggerIndex.cs
+    symbol: WiredTriggerIndex
+    line: 79
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -221,7 +256,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 26
+    line: 28
   - id: ev_db02cb0a1e67
     kind: emulator_flow
     authority: vortex_emulator

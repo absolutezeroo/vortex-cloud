@@ -9,19 +9,16 @@ Target client: `WIN63-202607011411-782849652`
 |---|---|
 | obligations | 5 |
 | missing | 0 |
-| partial | 1 |
-| implemented | 4 |
+| partial | 0 |
+| implemented | 5 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
-
-## partial
-
-- `ClaimNewUserName` (879) — ChangeUserNameMessageHandler receives it; no flow past the handler was observed
 
 ## implemented
 
 - `ChangeUserName` (1703) — avatar.change_user_name reaches a domain operation from ChangeUserNameMessageHandler
 - `CheckUserName` (413) — avatar.check_user_name reaches a domain operation from CheckUserNameMessageHandler
+- `ClaimNewUserName` (879) — avatar.change_user_name reaches a domain operation from ChangeUserNameMessageHandler
 - `GetWardrobe` (2210) — avatar.get_wardrobe reaches a domain operation from GetWardrobeMessageHandler
 - `SaveWardrobeOutfit` (116) — avatar.save_wardrobe_outfit reaches a domain operation from SaveWardrobeOutfitMessageHandler

@@ -51,6 +51,30 @@ tile — is therefore enforced by construction, not by cache invalidation.
 type, and past `WiredMaxQueuedEvents` (512) it **refuses the newcomer** rather than evicting — which
 is what preserves ordering for what was already accepted. Refusals count `QUEUE_DROP`.
 
+### The click-user round trip
+
+`wf_trg_click_user` is the one trigger whose behaviour the client has to be told about, because the
+client changes what it sends and what it draws depending on the answer.
+
+```text
+room entry   WiredEnvironment{HasClickUserWired}      <- IRoomWired.GetClickUserStateAsync
+             (false: the client opens the avatar menu itself and stops here)
+
+click        WiredClickUser{ObjectId}    1953
+             ClickCharacter{ObjectId}    3244  -> PlayerClickedPlayerEvent -> the trigger fires
+             WiredClickUserResponse{Index = ObjectId, OpenMenu = !BlocksMenu}   309
+```
+
+Both messages arrive for the same click. **`WiredClickUser` deliberately raises no event** — the
+trigger is already driven by `ClickCharacter`, and publishing on both would fire every click-user
+box twice. It is a query: it decides the menu (`intParams[0]`, `blockMenuOpen`) and answers.
+`intParams[1]` (`doNotRotate`) belongs to the look-at the client suppresses on its own side and is
+still not honoured here. What Habbo's own server does with the two messages is not known.
+
+`GetClickUserStateAsync` rebuilds the trigger registry when it is dirty rather than waiting for a
+tick: it is asked on room entry and on a click, and a room whose box was never indexed would answer
+"absent" — which the client caches for the whole visit.
+
 ## The tick
 
 Only past `NextWiredBoundaryMs` (period `WiredTickMs` = 50 ms):
@@ -172,6 +196,20 @@ box stuck lit.
 
 5  reply  WiredSaveSuccessEventMessageComposer
 ```
+
+### One message, two header ids
+
+`WiredSetObjectVariableValue{EntityType, EntityId, VariableId, Value, Action}` is sent by the client
+from **two** Wired-menu surfaces on **two** ids, byte for byte identical:
+
+| id | client surface | modes used |
+|---|---|---|
+| `625` | `VariableManagementDetailView` | 0 set · 1 create · 2 delete |
+| `689` | `WiredMenuInspectionTab` | 0 set · 2 delete |
+
+Both are mapped to the same parser and land on `WiredSetObjectVariableValueMessageHandler`. Binding
+only `625` — which was the state until 2026-08-26 — leaves every edit made from the Inspection tab
+falling on the floor with no error anywhere.
 
 ## Limits
 

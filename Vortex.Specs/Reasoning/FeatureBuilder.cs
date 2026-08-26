@@ -69,13 +69,19 @@ public sealed class FeatureBuilder
         IReadOnlyDictionary<string, EmulatorIncoming> incomingByMessage
     )
     {
+        // Every packet that produces this message, not the first one found. A client can send the
+        // same message from two surfaces on two header ids — the wired variable write does — and
+        // naming only one of them leaves the other looking like a packet whose handler goes nowhere.
         List<string> triggers =
         [
             .. flows
-                .Select(f =>
-                    incomingByMessage.TryGetValue(f.MessageType, out EmulatorIncoming? incoming)
-                        ? incoming.Canonical
-                        : PacketNaming.Canonical(f.MessageType)
+                .SelectMany(f =>
+                    world
+                        .Emulator.Incoming.Where(i =>
+                            string.Equals(i.MessageType, f.MessageType, StringComparison.Ordinal)
+                        )
+                        .Select(i => i.Canonical)
+                        .DefaultIfEmpty(PacketNaming.Canonical(f.MessageType))
                 )
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(t => t, StringComparer.Ordinal),

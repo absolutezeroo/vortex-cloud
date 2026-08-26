@@ -15,10 +15,12 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Protocol.Messages.Incoming.Room.Engine;
 using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 namespace Vortex.PacketHandlers.Room.Engine;
@@ -77,6 +79,14 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
         ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await roomAvatars
             .GetAllAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        // Until this is sent the client assumes no click-user box exists: it opens the context menu
+        // itself and never sends WiredClickUser. So a room whose entry payload omits this has a
+        // click-user trigger that can be built and can never be reached from the info stand.
+        WiredClickUserSnapshot clickUser = await _grainFactory
+            .GetRoomWired(roomId)
+            .GetClickUserStateAsync(ct)
             .ConfigureAwait(false);
 
         // Bots dance too, and their dance is as absent from the Users payload as a player's, so
@@ -149,7 +159,8 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
                 {
                     CanModify = hasRights,
                     CanRead = hasRights,
-                }
+                },
+                new WiredEnvironmentMessageComposer { HasClickUserWired = clickUser.Present }
             )
             .ConfigureAwait(false);
 

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:03dbd38845748ebf02f14f8850d9aced131e5d8715482b1bf5c0a29d44136082"
+generated_digest: "sha256:6a661656ffe4c9058e06c96a26fc121200913d7d341e19d66879aee9a9f47fac"
 generated:
   feature: room.get_room_entry_data
   scenarios:
@@ -337,6 +337,7 @@ generated:
       - Objects
       - UserUpdate
       - Users
+      - WiredEnvironment
       - WiredPermissionsEvent
       - YouAreController
       - YouAreOwner
@@ -385,7 +386,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetRoomEntryDataMessageHandler.cs
     symbol: GetRoomEntryDataMessageHandler
-    line: 37
+    line: 39
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

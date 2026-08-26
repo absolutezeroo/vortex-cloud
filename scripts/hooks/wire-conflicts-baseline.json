@@ -42,6 +42,7 @@
     "outgoing/TradeNftAssets",
     "outgoing/UserChange",
     "outgoing/UserObject",
+    "outgoing/WiredEnvironment",
     "outgoing/WiredMovements",
     "outgoing/WiredTradeItemsUpdate",
     "outgoing/WiredUserPermanentVariables"

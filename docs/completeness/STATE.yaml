@@ -19,22 +19,22 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-1
-active_slice: FC-2
+phase: FC-3
+active_slice: null
 
 # Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
 # The denominator is the same-revision official client's incoming surface, never FeatureSpec.Count.
 coverage:
   denominator: 578
   unresolved_surface: 2
-  protocol_mapping: 520
-  implementation: 400
+  protocol_mapping: 522
+  implementation: 403
   verified_complete: 0
-  missing: 58
-  partial: 120
+  missing: 56
+  partial: 119
   unknown: 0
   not_applicable: 0
-  measured_at_commit: e9dee22c1d79453687fdbc35c3cc9a4785cb4e33
+  measured_at_commit: 97568f6e410c8f6f27873490c5f281bd1c84313b
   note: "implementation means Vortex has a meaningful path, never that Habbo behaviour was verified"
 
 sources:
@@ -65,8 +65,13 @@ invariants:
   - no_architecture_refactor_for_score
   - generated_matrix_is_never_hand_edited
 
+slices:
+  FC-1: "completeness CLI; denominator from the target client (e9dee22c -> 97568f6e)"
+  FC-3: "wired click-user round trip + the Inspection tab's variable write; docs/completeness/reviews/FC-3-wired-click-user.md"
+
 next:
-  - FC-2
+  - FC-F1
+  - FC-W1
   - FC-F1
   - FC-W1
   - FC-RC

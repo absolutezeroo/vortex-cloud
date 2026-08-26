@@ -7,10 +7,10 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 41 |
+| obligations | 43 |
 | missing | 0 |
 | partial | 1 |
-| implemented | 40 |
+| implemented | 42 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -42,6 +42,7 @@ Target client: `WIN63-202607011411-782849652`
 - `UpdateVariable` (2475) — wired.update_variable reaches a domain operation from UpdateVariableMessageHandler
 - `UpgradeWiredChest` (3407) — wired.upgrade_wired_chest reaches a domain operation from UpgradeWiredChestMessageHandler
 - `WiredClearErrorLogs` (2386) — wired.wired_clear_error_logs reaches a domain operation from WiredClearErrorLogsMessageHandler
+- `WiredClickUser` (1953) — wired.wired_click_user reaches a domain operation from WiredClickUserMessageHandler
 - `WiredGetAllVariableHolders` (113) — wired.wired_get_all_variable_holders reaches a domain operation from WiredGetAllVariableHoldersMessageHandler
 - `WiredGetAllVariablesDiffs` (797) — wired.wired_get_all_variables_diffs reaches a domain operation from WiredGetAllVariablesDiffsMessageHandler
 - `WiredGetAllVariablesHash` (984) — wired.wired_get_all_variables_hash reaches a domain operation from WiredGetAllVariablesHashMessageHandler
@@ -53,6 +54,7 @@ Target client: `WIN63-202607011411-782849652`
 - `WiredGetVariableOwnersPage` (2221) — wired.wired_get_variable_owners_page reaches a domain operation from WiredGetVariableOwnersPageMessageHandler
 - `WiredGetVariablesForObject` (3466) — wired.wired_get_variables_for_object reaches a domain operation from WiredGetVariablesForObjectMessageHandler
 - `WiredSetObjectVariableValue` (625) — wired.wired_set_object_variable_value reaches a domain operation from WiredSetObjectVariableValueMessageHandler
+- `WiredSetObjectVariableValueFromInspector` (689) — wired.wired_set_object_variable_value reaches a domain operation from WiredSetObjectVariableValueMessageHandler
 - `WiredSetPreferences` (3124) — wired.wired_set_preferences reaches a domain operation from WiredSetPreferencesMessageHandler
 - `WiredSetRoomSettings` (2553) — wired.wired_set_room_settings reaches a domain operation from WiredSetRoomSettingsMessageHandler
 - `WiredTradeAccept` (2818) — wired.wired_trade_accept reaches a domain operation from WiredTradeAcceptMessageHandler

@@ -11,7 +11,7 @@ reproduced from the target client and the current code on the next run.
 | partial | advertisement | InterstitialShown | 1408 | InterstitialShownMessageHandler | advertisement.interstitial_shown | advertisement.interstitial_shown exists but the handler reaches no domain operation |
 | implemented | avatar | ChangeUserName | 1703 | ChangeUserNameMessageHandler | avatar.change_user_name | avatar.change_user_name reaches a domain operation from ChangeUserNameMessageHandler |
 | implemented | avatar | CheckUserName | 413 | CheckUserNameMessageHandler | avatar.check_user_name | avatar.check_user_name reaches a domain operation from CheckUserNameMessageHandler |
-| partial | avatar | ClaimNewUserName | 879 | ChangeUserNameMessageHandler | - | ChangeUserNameMessageHandler receives it; no flow past the handler was observed |
+| implemented | avatar | ClaimNewUserName | 879 | ChangeUserNameMessageHandler | avatar.change_user_name | avatar.change_user_name reaches a domain operation from ChangeUserNameMessageHandler |
 | implemented | avatar | GetWardrobe | 2210 | GetWardrobeMessageHandler | avatar.get_wardrobe | avatar.get_wardrobe reaches a domain operation from GetWardrobeMessageHandler |
 | implemented | avatar | SaveWardrobeOutfit | 116 | SaveWardrobeOutfitMessageHandler | avatar.save_wardrobe_outfit | avatar.save_wardrobe_outfit reaches a domain operation from SaveWardrobeOutfitMessageHandler |
 | partial | camera | PhotoCompetition | 2707 | PhotoCompetitionMessageHandler | camera.photo_competition | camera.photo_competition exists but the handler reaches no domain operation |
@@ -495,9 +495,7 @@ reproduced from the target client and the current code on the next run.
 | missing | unsorted | header:983 | 983 | - | - | the client sends header 983 and nothing in this repository is bound to it |
 | implemented | user_classification | PeerUsersClassification | 628 | PeerUsersClassificationMessageHandler | user_classification.peer_users_classification | user_classification.peer_users_classification reaches a domain operation from PeerUsersClassificationMessageHandler |
 | implemented | user_classification | RoomUsersClassification | 157 | RoomUsersClassificationMessageHandler | user_classification.room_users_classification | user_classification.room_users_classification reaches a domain operation from RoomUsersClassificationMessageHandler |
-| missing | userdefinedroomevents | header:1953 | 1953 | - | - | the client sends header 1953 and nothing in this repository is bound to it |
 | missing | userdefinedroomevents | header:501 | 501 | - | - | the client sends header 501 and nothing in this repository is bound to it |
-| missing | userdefinedroomevents | header:689 | 689 | - | - | the client sends header 689 and nothing in this repository is bound to it |
 | implemented | users | AddAdminRightsToMember | 2152 | AddAdminRightsToMemberMessageHandler | users.add_admin_rights_to_member | users.add_admin_rights_to_member reaches a domain operation from AddAdminRightsToMemberMessageHandler |
 | implemented | users | ApproveAllMembershipRequests | 1621 | ApproveAllMembershipRequestsMessageHandler | users.approve_all_membership_requests | users.approve_all_membership_requests reaches a domain operation from ApproveAllMembershipRequestsMessageHandler |
 | implemented | users | ApproveMembershipRequest | 3505 | ApproveMembershipRequestMessageHandler | users.approve_membership_request | users.approve_membership_request reaches a domain operation from ApproveMembershipRequestMessageHandler |
@@ -566,6 +564,7 @@ reproduced from the target client and the current code on the next run.
 | implemented | wired | UpdateVariable | 2475 | UpdateVariableMessageHandler | wired.update_variable | wired.update_variable reaches a domain operation from UpdateVariableMessageHandler |
 | implemented | wired | UpgradeWiredChest | 3407 | UpgradeWiredChestMessageHandler | wired.upgrade_wired_chest | wired.upgrade_wired_chest reaches a domain operation from UpgradeWiredChestMessageHandler |
 | implemented | wired | WiredClearErrorLogs | 2386 | WiredClearErrorLogsMessageHandler | wired.wired_clear_error_logs | wired.wired_clear_error_logs reaches a domain operation from WiredClearErrorLogsMessageHandler |
+| implemented | wired | WiredClickUser | 1953 | WiredClickUserMessageHandler | wired.wired_click_user | wired.wired_click_user reaches a domain operation from WiredClickUserMessageHandler |
 | implemented | wired | WiredGetAllVariableHolders | 113 | WiredGetAllVariableHoldersMessageHandler | wired.wired_get_all_variable_holders | wired.wired_get_all_variable_holders reaches a domain operation from WiredGetAllVariableHoldersMessageHandler |
 | implemented | wired | WiredGetAllVariablesDiffs | 797 | WiredGetAllVariablesDiffsMessageHandler | wired.wired_get_all_variables_diffs | wired.wired_get_all_variables_diffs reaches a domain operation from WiredGetAllVariablesDiffsMessageHandler |
 | implemented | wired | WiredGetAllVariablesHash | 984 | WiredGetAllVariablesHashMessageHandler | wired.wired_get_all_variables_hash | wired.wired_get_all_variables_hash reaches a domain operation from WiredGetAllVariablesHashMessageHandler |
@@ -577,6 +576,7 @@ reproduced from the target client and the current code on the next run.
 | implemented | wired | WiredGetVariableOwnersPage | 2221 | WiredGetVariableOwnersPageMessageHandler | wired.wired_get_variable_owners_page | wired.wired_get_variable_owners_page reaches a domain operation from WiredGetVariableOwnersPageMessageHandler |
 | implemented | wired | WiredGetVariablesForObject | 3466 | WiredGetVariablesForObjectMessageHandler | wired.wired_get_variables_for_object | wired.wired_get_variables_for_object reaches a domain operation from WiredGetVariablesForObjectMessageHandler |
 | implemented | wired | WiredSetObjectVariableValue | 625 | WiredSetObjectVariableValueMessageHandler | wired.wired_set_object_variable_value | wired.wired_set_object_variable_value reaches a domain operation from WiredSetObjectVariableValueMessageHandler |
+| implemented | wired | WiredSetObjectVariableValueFromInspector | 689 | WiredSetObjectVariableValueMessageHandler | wired.wired_set_object_variable_value | wired.wired_set_object_variable_value reaches a domain operation from WiredSetObjectVariableValueMessageHandler |
 | implemented | wired | WiredSetPreferences | 3124 | WiredSetPreferencesMessageHandler | wired.wired_set_preferences | wired.wired_set_preferences reaches a domain operation from WiredSetPreferencesMessageHandler |
 | implemented | wired | WiredSetRoomSettings | 2553 | WiredSetRoomSettingsMessageHandler | wired.wired_set_room_settings | wired.wired_set_room_settings reaches a domain operation from WiredSetRoomSettingsMessageHandler |
 | implemented | wired | WiredTradeAccept | 2818 | WiredTradeAcceptMessageHandler | wired.wired_trade_accept | wired.wired_trade_accept reaches a domain operation from WiredTradeAcceptMessageHandler |

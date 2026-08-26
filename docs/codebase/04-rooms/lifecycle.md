@@ -130,9 +130,16 @@ wired `wf_trg_enter_room` trigger.
 ## The second entry path
 
 `GetRoomEntryDataMessageHandler` re-sends `Objects` / `Items` / `Users` / `UserUpdate` /
-`YouAreController` / `WiredPermissions` (plus `YouAreOwner`, dances, **effects** and **hand items**)
-and calls `SetActiveRoomAsync`. It reads `GetPendingRoomAsync()` and returns when the pending id is
-`<= 0`, so it only does work while pending is still set.
+`YouAreController` / `WiredPermissions` / `WiredEnvironment` (plus `YouAreOwner`, dances, **effects**
+and **hand items**) and calls `SetActiveRoomAsync`. It reads `GetPendingRoomAsync()` and returns when
+the pending id is `<= 0`, so it only does work while pending is still set.
+
+`WiredEnvironmentMessageComposer{HasClickUserWired}` comes from
+`IRoomWired.GetClickUserStateAsync`, which reads the live trigger registry (rebuilding it if the
+room has not ticked yet). It is the switch for the whole click-user path: until the client receives
+it, it opens the avatar context menu itself and never sends `WiredClickUser`. **Sent on this path
+only** — a click-user box built while people are already in the room takes effect on their next
+entry, which is a known limitation, not the client's behaviour.
 
 > **The two paths are not identical.** `CompleteRoomEntryAsync` replays dances only;
 > `GetRoomEntryDataMessageHandler` also replays `AvatarEffectMessageComposer` and

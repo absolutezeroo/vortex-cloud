@@ -42,6 +42,12 @@
 //   - RentableSpaceStatus wrote a trailing CurrencyName that the client, Arcturus and Nitro all stop
 //     before. Removed.
 //
+// 2026-08-26, entry 46 -- WiredEnvironment (2827), client 2 / vortex 3. Not a disagreement: the
+// client reads a boolean, then guards `bytesAvailable > 0` around a count and a `readString()` in a
+// while loop. Neither scanner follows a read inside a loop inside a guard, so the client is counted
+// at bool+int and this emulator at bool+int+string for the same bytes. The real order is pinned by
+// Vortex.Revisions.Tests/UserDefinedRoomEvents/WiredClickUserWireTests, read off _SafeCls_3496.
+//
 // And one that is not a wire bug but is worth knowing: HanditemConfiguration's client reads four
 // flags -- isHanditemControlBlocked, chooserDisabled, freeFurniMovementsEnabled, invisibleFurni --
 // and this emulator has only the first. The other three are features nobody has built, not fields

@@ -7,8 +7,8 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 3 |
-| missing | 3 |
+| obligations | 1 |
+| missing | 1 |
 | partial | 0 |
 | implemented | 0 |
 | complete | 0 |
@@ -17,6 +17,4 @@ Target client: `WIN63-202607011411-782849652`
 
 ## missing
 
-- `header:1953` (1953) — the client sends header 1953 and nothing in this repository is bound to it
 - `header:501` (501) — the client sends header 501 and nothing in this repository is bound to it
-- `header:689` (689) — the client sends header 689 and nothing in this repository is bound to it

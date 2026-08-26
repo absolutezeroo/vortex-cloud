@@ -15,15 +15,15 @@ actually produced against the trees listed under Sources.
 
 | Direction | Count |
 |---|---:|
-| Incoming (client to server) | 601 |
-| Outgoing (server to client) | 839 |
+| Incoming (client to server) | 603 |
+| Outgoing (server to client) | 840 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
-| Features | 497 |
-| Scenarios | 1876 |
+| Features | 498 |
+| Scenarios | 1878 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -32,20 +32,20 @@ actually produced against the trees listed under Sources.
 | Level | Packets | Share |
 |---|---:|---:|
 | confirmed | 51 | 3.5% |
-| client_confirmed | 606 | 42.1% |
+| client_confirmed | 607 | 42.1% |
 | multi_reference_confirmed | 87 | 6% |
 | reference_observed | 242 | 16.8% |
-| implementation_observed | 303 | 21% |
+| implementation_observed | 305 | 21.1% |
 | unknown | 151 | 10.5% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 365 |
+| Conflicts | 367 |
 | Critical unknowns | 129 |
-| Unknowns in total | 710 |
-| Fields with no attested name | 1884 of 6018 |
+| Unknowns in total | 709 |
+| Fields with no attested name | 1882 of 6026 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -55,13 +55,13 @@ actually produced against the trees listed under Sources.
 ## Files
 
 - written: 0
-- unchanged: 3518
+- unchanged: 3524
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 123 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- as3:WIN63-202607011411-782849652: 120 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.get_flat_categories: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks

@@ -5,12 +5,12 @@ version: 1
 target_revision: WIN63-202607011411-782849652
 target_origin: "as3:WIN63-202607011411-782849652"
 obligation_count: 578
-mapped: 520
+mapped: 522
 unresolved_surface_count: 2
 counts:
-  missing: 58
-  partial: 120
-  implemented: 400
+  missing: 56
+  partial: 119
+  implemented: 403
   complete: 0
   unknown: 0
   not_applicable: 0
@@ -62,12 +62,13 @@ obligations:
 - id: incoming/ClaimNewUserName
   name: ClaimNewUserName
   domain: avatar
-  status: partial
+  status: implemented
   client_class: _SafeCls_3401
   header_id: 879
   mapped_in_vortex: true
   vortex_handler: ChangeUserNameMessageHandler
-  reason: ChangeUserNameMessageHandler receives it; no flow past the handler was observed
+  feature: avatar.change_user_name
+  reason: avatar.change_user_name reaches a domain operation from ChangeUserNameMessageHandler
 - id: incoming/GetWardrobe
   name: GetWardrobe
   domain: avatar
@@ -5096,14 +5097,6 @@ obligations:
   vortex_handler: RoomUsersClassificationMessageHandler
   feature: user_classification.room_users_classification
   reason: user_classification.room_users_classification reaches a domain operation from RoomUsersClassificationMessageHandler
-- id: "incoming/header:1953"
-  name: "header:1953"
-  domain: userdefinedroomevents
-  status: missing
-  client_class: _SafeCls_2111
-  header_id: 1953
-  mapped_in_vortex: false
-  reason: the client sends header 1953 and nothing in this repository is bound to it
 - id: "incoming/header:501"
   name: "header:501"
   domain: userdefinedroomevents
@@ -5112,14 +5105,6 @@ obligations:
   header_id: 501
   mapped_in_vortex: false
   reason: the client sends header 501 and nothing in this repository is bound to it
-- id: "incoming/header:689"
-  name: "header:689"
-  domain: userdefinedroomevents
-  status: missing
-  client_class: _SafeCls_3855
-  header_id: 689
-  mapped_in_vortex: false
-  reason: the client sends header 689 and nothing in this repository is bound to it
 - id: incoming/AddAdminRightsToMember
   name: AddAdminRightsToMember
   domain: users
@@ -5851,6 +5836,16 @@ obligations:
   vortex_handler: WiredClearErrorLogsMessageHandler
   feature: wired.wired_clear_error_logs
   reason: wired.wired_clear_error_logs reaches a domain operation from WiredClearErrorLogsMessageHandler
+- id: incoming/WiredClickUser
+  name: WiredClickUser
+  domain: wired
+  status: implemented
+  client_class: _SafeCls_2111
+  header_id: 1953
+  mapped_in_vortex: true
+  vortex_handler: WiredClickUserMessageHandler
+  feature: wired.wired_click_user
+  reason: wired.wired_click_user reaches a domain operation from WiredClickUserMessageHandler
 - id: incoming/WiredGetAllVariableHolders
   name: WiredGetAllVariableHolders
   domain: wired
@@ -5959,6 +5954,16 @@ obligations:
   status: implemented
   client_class: _SafeCls_2426
   header_id: 625
+  mapped_in_vortex: true
+  vortex_handler: WiredSetObjectVariableValueMessageHandler
+  feature: wired.wired_set_object_variable_value
+  reason: wired.wired_set_object_variable_value reaches a domain operation from WiredSetObjectVariableValueMessageHandler
+- id: incoming/WiredSetObjectVariableValueFromInspector
+  name: WiredSetObjectVariableValueFromInspector
+  domain: wired
+  status: implemented
+  client_class: _SafeCls_3855
+  header_id: 689
   mapped_in_vortex: true
   vortex_handler: WiredSetObjectVariableValueMessageHandler
   feature: wired.wired_set_object_variable_value
