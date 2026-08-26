@@ -115,6 +115,7 @@ completed:
   - PR-S2  # one strategy per ProductType; the planner composes instead of switching
   - PR-Z1d # ExecutionId/ParentExecutionId on execute-stacks, stamped on the room's wired log
   - PR-Z1e # the hydration benchmark, which answers OQ-7: leave the reflection alone
+  - PR-D4  # ActorSecurityContext (§5): the server's view of the caller, ambient for one request
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -195,15 +196,14 @@ remaining:
       adopted — the note makes it optional ("le shape exact peut suivre ProblemDetails") and
       `{ error }` already is the stable code, read by the SPA at lib/api.js. Nothing of substance is
       left in this document.
-    partial:
-      - id: §5 ActorSecurityContext
-        state: >
-          half. The security *decisions* moved off the string: step-up is decided at the HTTP
-          boundary from the session and the principal, and no request field can assert it. What
-          remains is that DashboardOperationsService still takes `string actor`, which is now purely
-          audit attribution rather than "the unique security context" the note forbids. Folding the
-          principal into that signature is ~95 mechanical call sites and buys nothing until an
-          operation needs to make its own security decision.
+      §5 done (PR-D4): ActorSecurityContext is ambient for the length of a request and carries the
+      server's own view of the caller -- account, session, resolved capabilities, when that session
+      last proved a second factor, correlation id. Ambient rather than threaded through ninety-five
+      signatures for the same reason the correlation id is: the value belongs to the request, and a
+      parameter every method forwards untouched is one somebody eventually forgets to forward.
+      `string actor` stays as what it always was, the name on the audit row, and the audit now
+      records the account behind the session next to it plus an `actorMismatch` flag -- a row where
+      the two disagree is a bug in a call site or somebody writing under a name that is not theirs.
     deliberate_gaps:
       - id: dashboard.mfa.recovery
         why: >

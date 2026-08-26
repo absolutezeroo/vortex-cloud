@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Dashboard.API.Security;
 using Vortex.Database.Auditing;
 using Vortex.Database.Backup;
 using Vortex.Observability.Diagnostics;
@@ -289,6 +290,28 @@ internal sealed partial class DashboardOperationsService(
             Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds
         );
 
+    /// <summary>
+    ///     Whether the name an operation was given differs from the operator the request arrived as.
+    /// </summary>
+    /// <remarks>
+    ///     Null outside a request — a console command or a background sweep has no session to compare
+    ///     against, and "no opinion" is the honest value there rather than false. Null too when they
+    ///     agree, so the field only appears in the rows worth looking at.
+    /// </remarks>
+    private static bool? Mismatched(string actor)
+    {
+        ActorSecurityContext? current = ActorSecurityContext.Current;
+
+        if (current is null)
+        {
+            return null;
+        }
+
+        return string.Equals(actor, current.Email, StringComparison.OrdinalIgnoreCase)
+            ? null
+            : true;
+    }
+
     private void Emit(
         string action,
         AuditResult result,
@@ -318,6 +341,15 @@ internal sealed partial class DashboardOperationsService(
                         actor,
                         reason,
                         detail,
+                        // The server's own view of who asked, next to the name the caller passed.
+                        // `actor` is an argument -- every operation forwards one and nothing checks
+                        // it -- so an audit trail built on it alone records what it was told. This
+                        // records the account behind the session the request actually arrived on,
+                        // and `actorMismatch` is the case worth finding: a row where the two
+                        // disagree is either a bug in a call site or somebody writing under a name
+                        // that is not theirs.
+                        actorAccountId = ActorSecurityContext.Current?.AccountId,
+                        actorMismatch = Mismatched(actor),
                         // Omitted rather than written as an empty array: most operations touch no
                         // tracked row (they call a grain, or use a bulk statement), and a `changes: []`
                         // on every one of those would read as "nothing changed" instead of "not

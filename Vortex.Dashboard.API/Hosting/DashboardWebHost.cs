@@ -601,6 +601,48 @@ internal sealed class DashboardWebHost(
         app.UseAuthorization();
         app.UseRateLimiter();
 
+        // Below authentication, because the principal it publishes does not exist above it, and above
+        // the endpoints so anything they call can read it. This is the §5 boundary: an operation that
+        // needs to make a security decision of its own reads the server's own view of the caller --
+        // account, session, resolved capabilities, when that session last proved a second factor --
+        // rather than the actor string a caller passed it.
+        DashboardSessionStore actorSessions =
+            app.Services.GetRequiredService<DashboardSessionStore>();
+
+        app.Use(
+            async (ctx, next) =>
+            {
+                DashboardPrincipal? principal = ctx.GetDashboardPrincipal();
+
+                if (principal is null)
+                {
+                    // No live session. Anonymous requests, the login route, and the SPA's own assets
+                    // all land here, and none of them has a security context to publish.
+                    await next().ConfigureAwait(false);
+
+                    return;
+                }
+
+                string? sessionId = ctx.Request.Cookies[
+                    DashboardAuthenticationHandler.SessionCookieName
+                ];
+
+                using IDisposable scope = ActorSecurityContext.Enter(
+                    new ActorSecurityContext
+                    {
+                        AccountId = principal.AccountId,
+                        Email = principal.Email,
+                        SessionId = sessionId,
+                        Permissions = principal.Permissions,
+                        SteppedUpAtUtc = actorSessions.SteppedUpAtUtc(sessionId),
+                        CorrelationId = context.Current?.CorrelationId ?? CorrelationId.New(),
+                    }
+                );
+
+                await next().ConfigureAwait(false);
+            }
+        );
+
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
         // DashboardOperationsService (with correlation id), so for operation routes only failures are
         // logged here to avoid duplicate records.
