@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bc00cb7f071a84db4165702d6cd9ff45b0232debbffffe0fdabc99074cbe2bb7"
+generated_digest: "sha256:ba1551e6537c6d5cfa26550d355cf11951de81453c6b5b2bcdad972356bc2904"
 generated:
   id: game.reset_resolution_achievement
   domain: game
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - ResetResolutionAchievement
   observed_in:
-    vortex: false
+    vortex: true
     references: []
   official_behavior:
     status: unknown
@@ -60,7 +60,6 @@ generated:
   - game.reset_resolution_achievement.guard_0
   - game.reset_resolution_achievement.success
   unknowns:
-  - uk_0edfdeb06d
   - uk_4629ea4776
 verified: {}
 manual: {}

@@ -36,6 +36,7 @@ public static class Program
                 "scan-references" => ScanCommand.References(workspace),
                 "import-capture" => CaptureCommand.Import(workspace, command),
                 "analyze" => AnalyzeCommand.Run(workspace, command),
+                "completeness" => CompletenessCommand.Run(workspace, command),
                 "validate" => ReviewCommand.Validate(workspace),
                 "conflicts" => ReviewCommand.Conflicts(workspace, command),
                 "unknowns" => ReviewCommand.Unknowns(workspace, command),
@@ -69,6 +70,8 @@ public static class Program
               import-capture <file>  read a capture and print the observations it yields
               analyze <feature|packet>
                                      everything known about one feature or packet, and what is not
+              completeness           what the target client can ask for versus what Vortex does
+                                     about it; --write regenerates docs/completeness/generated
               validate               check the spec tree for unbacked claims and broken links
               conflicts              disagreements between sources that nobody has settled
               unknowns               questions the sources do not answer, worst first
@@ -82,6 +85,10 @@ public static class Program
               --limit <n>            cap list output
               --severity <level>     unknowns: critical | medium | low
               --kind <kind>          conflicts: field_count | field_type | header_id | behaviour
+              --domain <name>        completeness: one domain only
+              --status <status>      completeness: missing | partial | implemented | complete
+              --write                completeness: regenerate docs/completeness/generated
+              --fail-on <status>     completeness: exit non-zero while any obligation is that status
               --verbose              show progress while scanning
 
             Nothing this tool prints is authority. Emulator behaviour is evidence, reference emulator

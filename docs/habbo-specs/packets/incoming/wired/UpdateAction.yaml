@@ -10,13 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2af8247409bf889a2551bfc781c8922f316a48b4d9057ebfc177af65e40d5001"
+generated_digest: "sha256:a16bca4331c0aec76ba88e6bd7b8bd8912c4905728d7aeb0439b4e20c6969867"
 generated:
   name: UpdateAction
   direction: incoming
   domain: wired
   structure_confidence: reference_observed
   mapped_in_vortex: true
+  vortex_handler: UpdateActionMessageHandler
   fields:
   - index: 0
     name: item_id

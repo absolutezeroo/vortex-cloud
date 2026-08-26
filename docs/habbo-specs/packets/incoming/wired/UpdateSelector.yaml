@@ -10,13 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bb2a51b673171119cb8bea16a58d93500e05a3b93451d108796561bacad05825"
+generated_digest: "sha256:fb153369582fd8da5f68b4e3c1b779a9406edcc68928d16ee7babd5f35f1d762"
 generated:
   name: UpdateSelector
   direction: incoming
   domain: wired
   structure_confidence: unknown
   mapped_in_vortex: true
+  vortex_handler: UpdateSelectorMessageHandler
   fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"

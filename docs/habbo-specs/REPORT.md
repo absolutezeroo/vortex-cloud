@@ -43,8 +43,8 @@ actually produced against the trees listed under Sources.
 | | Count |
 |---|---:|
 | Conflicts | 365 |
-| Critical unknowns | 134 |
-| Unknowns in total | 715 |
+| Critical unknowns | 129 |
+| Unknowns in total | 710 |
 | Fields with no attested name | 1884 of 6018 |
 
 > No captures were available to this run. Every behavioural question in this tree is
@@ -54,8 +54,8 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 43
-- unchanged: 3480
+- written: 0
+- unchanged: 3518
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded

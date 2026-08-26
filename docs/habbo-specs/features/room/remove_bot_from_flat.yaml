@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d76596c20015506ef15c78bd5386f02a6b7c4d9b9f9694ca370c7f7d3e5eae37"
+generated_digest: "sha256:3bb6faf4e1f701cba51d4fedb045ae2f8d316c64ddbeec2a12124817a0ea780b"
 generated:
   id: room.remove_bot_from_flat
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - RemoveBotFromFlat
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -61,7 +61,6 @@ generated:
   - room.remove_bot_from_flat.guard_0
   - room.remove_bot_from_flat.success
   unknowns:
-  - uk_1459cd52be
   - uk_2663521d43
 verified: {}
 manual: {}

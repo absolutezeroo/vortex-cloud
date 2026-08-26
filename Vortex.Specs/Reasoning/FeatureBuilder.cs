@@ -100,6 +100,15 @@ public sealed class FeatureBuilder
                 .OrderBy(o => o.Packet, StringComparer.Ordinal),
         ];
 
+        List<FeatureMutation> mutations =
+        [
+            .. flows
+                .SelectMany(f => f.Mutations)
+                .GroupBy(m => $"{m.Target}={m.Expression}", StringComparer.Ordinal)
+                .Select(g => g.First())
+                .OrderBy(m => m.Target, StringComparer.Ordinal),
+        ];
+
         List<string> references =
         [
             .. world
@@ -150,18 +159,19 @@ public sealed class FeatureBuilder
                     .GroupBy(c => c.Expression, StringComparer.Ordinal)
                     .Select(g => g.First()),
             ],
-            Mutations =
-            [
-                .. flows
-                    .SelectMany(f => f.Mutations)
-                    .GroupBy(m => $"{m.Target}={m.Expression}", StringComparer.Ordinal)
-                    .Select(g => g.First())
-                    .OrderBy(m => m.Target, StringComparer.Ordinal),
-            ],
+            Mutations = mutations,
             Outgoing = outgoing,
             OutgoingOrdering = ordering,
             ReachesPersistence = flows.Any(f => f.ReachesPersistence),
-            ObservedInVortex = steps.Count > 1 || outgoing.Count > 0,
+            // Four ways a handler can be shown to do something, because the walker records them in
+            // four places. A handler whose whole body is one grain call comes back with a single
+            // step and one mutation, and counting only the steps calls it a stub — which is how a
+            // fully implemented feature ends up on a list of things nobody built.
+            ObservedInVortex =
+                steps.Count > 1
+                || outgoing.Count > 0
+                || mutations.Count > 0
+                || flows.Any(f => f.ReachesPersistence),
             ObservedInReferences = references,
             // Only a capture can speak for the official server. Everything else in this record is
             // evidence about implementations, however many of them agree.

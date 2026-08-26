@@ -4,7 +4,7 @@ status: started
 
 repository:
   name: absolutezeroo/vortex-cloud
-  observed_head: a1c4b74794b916dbff8087b44d3bc18312736d31
+  observed_head: e9dee22c1d79453687fdbc35c3cc9a4785cb4e33
 
 codebase_documentation:
   state_file: docs/codebase/.documentation-state.json
@@ -19,14 +19,23 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-0
-active_slice: FC-1
+phase: FC-1
+active_slice: FC-2
 
+# Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
+# The denominator is the same-revision official client's incoming surface, never FeatureSpec.Count.
 coverage:
-  protocol_mapping: null
-  implementation: null
-  verified_complete: null
-  reason: "FC-1 not yet executed; FeatureSpec count is not a valid denominator."
+  denominator: 578
+  unresolved_surface: 2
+  protocol_mapping: 520
+  implementation: 400
+  verified_complete: 0
+  missing: 58
+  partial: 120
+  unknown: 0
+  not_applicable: 0
+  measured_at_commit: e9dee22c1d79453687fdbc35c3cc9a4785cb4e33
+  note: "implementation means Vortex has a meaningful path, never that Habbo behaviour was verified"
 
 sources:
   current_implementation:
@@ -57,7 +66,6 @@ invariants:
   - generated_matrix_is_never_hand_edited
 
 next:
-  - FC-1
   - FC-2
   - FC-F1
   - FC-W1

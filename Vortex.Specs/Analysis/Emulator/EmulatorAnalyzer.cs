@@ -334,7 +334,16 @@ public sealed class EmulatorAnalyzer(SpecWorkspace workspace, CSharpSourceIndex 
         }
     }
 
-    /// <summary>The message record a parser constructs — the type handlers are registered against.</summary>
+    /// <summary>
+    /// The message record a parser produces — the type handlers are registered against.
+    /// </summary>
+    /// <remarks>
+    /// Two shapes, because the revision tree uses two. Most parsers construct the record themselves.
+    /// The wired family instead derives from a shared base that constructs it, and names the record
+    /// in a <c>typeof</c> the base reads — so reading only constructions loses the message type for
+    /// every one of them, and with it the handler join, which reports a fully implemented packet as
+    /// having nothing behind it.
+    /// </remarks>
     private static string? MessageTypeOf(IndexedType parser)
     {
         foreach (
@@ -344,6 +353,20 @@ public sealed class EmulatorAnalyzer(SpecWorkspace workspace, CSharpSourceIndex 
         )
         {
             string name = creation.Type.ToString();
+
+            if (name.EndsWith("Message", StringComparison.Ordinal))
+            {
+                return name;
+            }
+        }
+
+        foreach (
+            TypeOfExpressionSyntax declared in parser
+                .Declaration.DescendantNodes()
+                .OfType<TypeOfExpressionSyntax>()
+        )
+        {
+            string name = declared.Type.ToString();
 
             if (name.EndsWith("Message", StringComparison.Ordinal))
             {

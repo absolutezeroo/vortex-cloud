@@ -2,6 +2,19 @@ version: 1
 
 # Explicit reachability/exclusion decisions only.
 # This file may not be used to hide missing implementation.
+#
+# Keyed by obligation id, exactly as `habbo-spec completeness` prints it:
+#
+#   obligations:
+#     incoming/ChangeQueue:
+#       reachability: not_applicable
+#       reason: "the target client exits before this interaction becomes reachable"
+#       evidence:
+#         - "client:WIN63-202607011411-782849652:_SafeCls_2117"
+#       decided_by: "ADR-FC-001"
+#
+# reason is one line: the reader supports block mappings, block sequences and single-line scalars.
+# An entry missing reason, evidence or decided_by fails the command instead of excluding anything.
 obligations: {}
 
 rules:

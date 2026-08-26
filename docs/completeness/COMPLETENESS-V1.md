@@ -350,12 +350,14 @@ version: 1
 obligations:
   incoming/ChangeQueue:
     reachability: not_applicable
-    reason: >
-      The target client exits before this interaction becomes reachable.
+    reason: "The target client exits before this interaction becomes reachable."
     evidence:
       - client:WIN63:<symbol>
     decided_by: ADR-FC-001
 ```
+
+`reason` is one line. The spec YAML reader supports block mappings, block sequences and single-line
+scalars; a `>` or `|` block scalar throws with a line number rather than being half-understood.
 
 A later capture or client proof can invalidate the decision.
 

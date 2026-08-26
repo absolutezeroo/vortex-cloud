@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:fecb056404828f8830880cc65b42e46fe04e80967047b21f728941a65098802b"
+generated_digest: "sha256:a0eaf0ebe91a6fd92336080896cd8ba6021df09ee6f457777658f3f738c69447"
 generated:
   id: room.place_bot
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - PlaceBot
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -62,6 +62,5 @@ generated:
   - room.place_bot.success
   unknowns:
   - uk_bca5df33b3
-  - uk_ed59de3b66
 verified: {}
 manual: {}

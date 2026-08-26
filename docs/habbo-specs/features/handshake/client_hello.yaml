@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c593a2ed656a7973c4e42ec7c3e331f4c2103a62345dec59871b0ddbf4958a33"
+generated_digest: "sha256:0c28dcfe48fee3941e3195c44279e11ec226700a1849fd7ff94319bb06a524cb"
 generated:
   id: handshake.client_hello
   domain: handshake
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - ClientHello
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -63,7 +63,6 @@ generated:
   conflicts:
   - cf_7e12fa4fd5
   unknowns:
-  - uk_9b46b12e01
   - uk_ac603570f8
 verified: {}
 manual: {}

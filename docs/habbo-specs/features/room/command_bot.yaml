@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:eda18e9540cdd9a257b4b372e3fdf1897d43c57b431c7b14ea2a6921deb9204e"
+generated_digest: "sha256:04e9067a5803e940dc2d3b6b1dba7d3a918f11a7b50e646d63fb8e6d89acbd99"
 generated:
   id: room.command_bot
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - CommandBot
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -64,6 +64,5 @@ generated:
   - cf_4826788e32
   unknowns:
   - uk_6ac19b643a
-  - uk_d306785cd7
 verified: {}
 manual: {}
