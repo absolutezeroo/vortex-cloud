@@ -1,0 +1,14 @@
+version: 1
+
+# Evidence-backed promotions from IMPLEMENTED toward COMPLETE.
+# Do not record entries until the implementation exists.
+obligations: {}
+
+rules:
+  required_fields:
+    - verified_at_commit
+    - tests
+    - protocol
+  cannot_override:
+    - MISSING
+    - UNRESOLVED_SURFACE

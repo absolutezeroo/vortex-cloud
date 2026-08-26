@@ -1,0 +1,64 @@
+workflow_version: 2
+program: functional-completeness
+status: started
+
+repository:
+  name: absolutezeroo/vortex-cloud
+  observed_head: a1c4b74794b916dbff8087b44d3bc18312736d31
+
+codebase_documentation:
+  state_file: docs/codebase/.documentation-state.json
+  documented_commit: e57f0be79a96bc3cfbb49aead533b0d73a8f4ecb
+  generator: document-vortex-v1
+  freshness_rule: "Update only when relevant implementation changes after documented_commit."
+
+target_client:
+  revision: WIN63-202607011411-782849652
+  authority: client_code
+  packets_read: 1168
+  incoming: 580
+  outgoing: 588
+
+phase: FC-0
+active_slice: FC-1
+
+coverage:
+  protocol_mapping: null
+  implementation: null
+  verified_complete: null
+  reason: "FC-1 not yet executed; FeatureSpec count is not a valid denominator."
+
+sources:
+  current_implementation:
+    - docs/codebase/**
+    - current source code
+  protocol:
+    - docs/habbo-specs/**
+    - target official client source
+  constraints:
+    - AGENTS.md
+    - CONTEXT.md
+    - CLAUDE.md
+    - docs/architecture-v4/**
+  completeness:
+    - docs/completeness/**
+
+invariants:
+  - target_official_client_defines_primary_packet_surface
+  - codebase_docs_are_consumed_not_duplicated
+  - habbo_specs_are_consumed_not_reimplemented
+  - feature_builder_count_is_not_the_denominator
+  - missing_vortex_code_remains_visible
+  - not_applicable_requires_reason_and_evidence
+  - implemented_is_not_complete
+  - old_client_revision_is_not_scored
+  - reference_emulator_is_never_official_authority
+  - no_architecture_refactor_for_score
+  - generated_matrix_is_never_hand_edited
+
+next:
+  - FC-1
+  - FC-2
+  - FC-F1
+  - FC-W1
+  - FC-RC

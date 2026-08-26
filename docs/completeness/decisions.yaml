@@ -1,0 +1,13 @@
+version: 1
+
+# Explicit reachability/exclusion decisions only.
+# This file may not be used to hide missing implementation.
+obligations: {}
+
+rules:
+  not_applicable_requires:
+    - reason
+    - evidence
+    - decided_by
+  capture_or_client_mandated_evidence_can_invalidate_not_applicable: true
+  missing_cannot_be_overridden_to_complete: true
