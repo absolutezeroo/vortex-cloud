@@ -326,8 +326,8 @@ reproduced from the target client and the current code on the next run.
 | implemented | quest | OpenQuestTracker | 588 | OpenQuestTrackerMessageHandler | quest.open_quest_tracker | quest.open_quest_tracker reaches a domain operation from OpenQuestTrackerMessageHandler |
 | partial | quest | RejectQuest | 20 | RejectQuestMessageHandler | quest.reject_quest | quest.reject_quest exists but the handler reaches no domain operation |
 | implemented | quest | StartCampaign | 3969 | StartCampaignMessageHandler | quest.start_campaign | quest.start_campaign reaches a domain operation from StartCampaignMessageHandler |
-| missing | quest | header:1576 | 1576 | - | - | the client sends header 1576 and nothing in this repository is bound to it |
-| missing | quest | header:1810 | 1810 | - | - | the client sends header 1810 and nothing in this repository is bound to it |
+| not_applicable | quest | header:1576 | 1576 | - | - | _SafeCls_2766 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature |
+| not_applicable | quest | header:1810 | 1810 | - | - | _SafeCls_3014 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature |
 | implemented | register | UpdateFigureData | 3339 | UpdateFigureDataMessageHandler | register.update_figure_data | register.update_figure_data reaches a domain operation from UpdateFigureDataMessageHandler |
 | implemented | room | AddSpamWallPostIt | 2684 | AddSpamWallPostItMessageHandler | room.add_spam_wall_post_it | room.add_spam_wall_post_it reaches a domain operation from AddSpamWallPostItMessageHandler |
 | partial | room | AmbassadorAlert | 3361 | AmbassadorAlertMessageHandler | room.ambassador_alert | room.ambassador_alert exists but the handler reaches no domain operation |
@@ -453,46 +453,46 @@ reproduced from the target client and the current code on the next run.
 | missing | unsorted | GetSnowWarGameTokensOffer | 2447 | - | - | the packet is described but no revision map binds it, so it cannot arrive |
 | missing | unsorted | PurchaseSnowWarGameTokensOffer | 3243 | - | - | the packet is described but no revision map binds it, so it cannot arrive |
 | missing | unsorted | ReplenishRespect | 426 | - | - | the packet is described but no revision map binds it, so it cannot arrive |
-| missing | unsorted | header:1016 | 1016 | - | - | the client sends header 1016 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:1016 | 1016 | - | - | _SafeCls_2544 is registered at 1016 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1119 | 1119 | - | - | the client sends header 1119 and nothing in this repository is bound to it |
 | missing | unsorted | header:1163 | 1163 | - | - | the client sends header 1163 and nothing in this repository is bound to it |
 | missing | unsorted | header:1176 | 1176 | - | - | the client sends header 1176 and nothing in this repository is bound to it |
 | missing | unsorted | header:1225 | 1225 | - | - | the client sends header 1225 and nothing in this repository is bound to it |
 | missing | unsorted | header:1242 | 1242 | - | - | the client sends header 1242 and nothing in this repository is bound to it |
-| missing | unsorted | header:1277 | 1277 | - | - | the client sends header 1277 and nothing in this repository is bound to it |
-| missing | unsorted | header:129 | 129 | - | - | the client sends header 129 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:1277 | 1277 | - | - | _SafeCls_2673 is registered at 1277 and referenced nowhere in the client but the registry: no call site constructs it |
+| not_applicable | unsorted | header:129 | 129 | - | - | _SafeCls_2570 is registered at 129 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1295 | 1295 | - | - | the client sends header 1295 and nothing in this repository is bound to it |
-| missing | unsorted | header:1339 | 1339 | - | - | the client sends header 1339 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:1339 | 1339 | - | - | _SafeCls_3427 is registered at 1339 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1376 | 1376 | - | - | the client sends header 1376 and nothing in this repository is bound to it |
 | missing | unsorted | header:145 | 145 | - | - | the client sends header 145 and nothing in this repository is bound to it |
 | missing | unsorted | header:1494 | 1494 | - | - | the client sends header 1494 and nothing in this repository is bound to it |
-| missing | unsorted | header:1762 | 1762 | - | - | the client sends header 1762 and nothing in this repository is bound to it |
-| missing | unsorted | header:1768 | 1768 | - | - | the client sends header 1768 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:1762 | 1762 | - | - | _SafeCls_3214 is registered at 1762 and referenced nowhere in the client but the registry: no call site constructs it |
+| not_applicable | unsorted | header:1768 | 1768 | - | - | _SafeCls_2807 is registered at 1768 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1789 | 1789 | - | - | the client sends header 1789 and nothing in this repository is bound to it |
 | missing | unsorted | header:1808 | 1808 | - | - | the client sends header 1808 and nothing in this repository is bound to it |
-| missing | unsorted | header:2020 | 2020 | - | - | the client sends header 2020 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:2020 | 2020 | - | - | _SafeCls_3655 is registered at 2020 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:2304 | 2304 | - | - | the client sends header 2304 and nothing in this repository is bound to it |
-| missing | unsorted | header:2397 | 2397 | - | - | the client sends header 2397 and nothing in this repository is bound to it |
-| missing | unsorted | header:245 | 245 | - | - | the client sends header 245 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:2397 | 2397 | - | - | _SafeCls_3153 is registered at 2397 and referenced nowhere in the client but the registry: no call site constructs it |
+| not_applicable | unsorted | header:245 | 245 | - | - | _SafeCls_2716 is registered at 245 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:2668 | 2668 | - | - | the client sends header 2668 and nothing in this repository is bound to it |
-| missing | unsorted | header:2708 | 2708 | - | - | the client sends header 2708 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:2708 | 2708 | - | - | _SafeCls_3532 is registered at 2708 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:272 | 272 | - | - | the client sends header 272 and nothing in this repository is bound to it |
 | missing | unsorted | header:2883 | 2883 | - | - | the client sends header 2883 and nothing in this repository is bound to it |
 | missing | unsorted | header:293 | 293 | - | - | the client sends header 293 and nothing in this repository is bound to it |
 | missing | unsorted | header:3036 | 3036 | - | - | the client sends header 3036 and nothing in this repository is bound to it |
 | missing | unsorted | header:3159 | 3159 | - | - | the client sends header 3159 and nothing in this repository is bound to it |
 | missing | unsorted | header:3315 | 3315 | - | - | the client sends header 3315 and nothing in this repository is bound to it |
-| missing | unsorted | header:3349 | 3349 | - | - | the client sends header 3349 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:3349 | 3349 | - | - | _SafeCls_3900 is registered at 3349 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:3422 | 3422 | - | - | the client sends header 3422 and nothing in this repository is bound to it |
-| missing | unsorted | header:3517 | 3517 | - | - | the client sends header 3517 and nothing in this repository is bound to it |
-| missing | unsorted | header:3569 | 3569 | - | - | the client sends header 3569 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:3517 | 3517 | - | - | _SafeCls_2558 is registered at 3517 and referenced nowhere in the client but the registry: no call site constructs it |
+| not_applicable | unsorted | header:3569 | 3569 | - | - | _SafeCls_3458 is registered at 3569 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:3608 | 3608 | - | - | the client sends header 3608 and nothing in this repository is bound to it |
 | missing | unsorted | header:3980 | 3980 | - | - | the client sends header 3980 and nothing in this repository is bound to it |
 | missing | unsorted | header:521 | 521 | - | - | the client sends header 521 and nothing in this repository is bound to it |
 | missing | unsorted | header:662 | 662 | - | - | the client sends header 662 and nothing in this repository is bound to it |
 | missing | unsorted | header:75 | 75 | - | - | the client sends header 75 and nothing in this repository is bound to it |
 | missing | unsorted | header:831 | 831 | - | - | the client sends header 831 and nothing in this repository is bound to it |
-| missing | unsorted | header:983 | 983 | - | - | the client sends header 983 and nothing in this repository is bound to it |
+| not_applicable | unsorted | header:983 | 983 | - | - | _SafeCls_3221 is registered at 983 and referenced nowhere in the client but the registry: no call site constructs it |
 | implemented | user_classification | PeerUsersClassification | 628 | PeerUsersClassificationMessageHandler | user_classification.peer_users_classification | user_classification.peer_users_classification reaches a domain operation from PeerUsersClassificationMessageHandler |
 | implemented | user_classification | RoomUsersClassification | 157 | RoomUsersClassificationMessageHandler | user_classification.room_users_classification | user_classification.room_users_classification reaches a domain operation from RoomUsersClassificationMessageHandler |
 | missing | userdefinedroomevents | header:501 | 501 | - | - | the client sends header 501 and nothing in this repository is bound to it |

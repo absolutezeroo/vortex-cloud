@@ -119,6 +119,14 @@ public static class CompletenessWriter
             "\n`protocol mapping` counts obligations Vortex can receive at all. `implementation`\n"
                 + "counts a meaningful path behind them. `verified complete` counts the ones somebody\n"
                 + "checked against the protocol and wrote the evidence down.\n"
+                + "\n> `protocol mapping` is **not** independent of the status table: an obligation Vortex\n"
+                + "> cannot receive is exactly what `missing` means, so this number is the denominator\n"
+                + "> less `missing` and less `not_applicable`, restated. Do not read the two as two\n"
+                + "> pieces of evidence. `implementation` and `verified complete` are the axes that\n"
+                + "> carry their own information.\n"
+                + "\n> `unknown: 0` means no obligation currently hits a case the classifier refuses to\n"
+                + "> judge. It does not mean everything here is understood — `verified complete` is the\n"
+                + "> number that measures that, and it is the one to read first.\n"
         );
 
         text.Append("\n## Status\n\n");

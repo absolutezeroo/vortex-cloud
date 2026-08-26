@@ -4,7 +4,7 @@ status: started
 
 repository:
   name: absolutezeroo/vortex-cloud
-  observed_head: 57b888fc8f24f7894b9a7134adba0aa86b7b2c35
+  observed_head: 1fdfbb82e7a6c03f9d6557ad6483897ef87ab707
 
 codebase_documentation:
   state_file: docs/codebase/.documentation-state.json
@@ -19,7 +19,7 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-3
+phase: FC-2
 active_slice: null
 
 # Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
@@ -30,12 +30,15 @@ coverage:
   protocol_mapping: 522
   implementation: 403
   verified_complete: 0
-  missing: 56
+  missing: 40
   partial: 119
   unknown: 0
-  not_applicable: 0
-  measured_at_commit: 57b888fc8f24f7894b9a7134adba0aa86b7b2c35
+  not_applicable: 16
+  measured_at_commit: 1fdfbb82e7a6c03f9d6557ad6483897ef87ab707
   note: "implementation means Vortex has a meaningful path, never that Habbo behaviour was verified"
+  # protocol_mapping is the denominator less missing and not_applicable, restated. It is not a
+  # second axis; implementation and verified_complete are.
+  # unknown: 0 means nothing hits a case the classifier refuses to judge, not that all is understood.
 
 sources:
   current_implementation:
@@ -68,6 +71,7 @@ invariants:
 slices:
   FC-1: "completeness CLI; denominator from the target client (e9dee22c -> 97568f6e)"
   FC-3: "wired click-user round trip + the Inspection tab's variable write; docs/completeness/reviews/FC-3-wired-click-user.md"
+  FC-2: "the 43 anonymous headers named; 16 proven unreachable in this build (ADR-FC-002); docs/completeness/reviews/FC-2-triage.md"
 
 next:
   - FC-F1

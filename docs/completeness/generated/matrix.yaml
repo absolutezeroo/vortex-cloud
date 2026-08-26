@@ -8,12 +8,12 @@ obligation_count: 578
 mapped: 522
 unresolved_surface_count: 2
 counts:
-  missing: 56
+  missing: 40
   partial: 119
   implemented: 403
   complete: 0
   unknown: 0
-  not_applicable: 0
+  not_applicable: 16
 obligations:
 - id: incoming/GetInterstitial
   name: GetInterstitial
@@ -3413,19 +3413,21 @@ obligations:
 - id: "incoming/header:1576"
   name: "header:1576"
   domain: quest
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2766
   header_id: 1576
   mapped_in_vortex: false
-  reason: the client sends header 1576 and nothing in this repository is bound to it
+  reason: "_SafeCls_2766 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature"
+  decision: ADR-FC-002
 - id: "incoming/header:1810"
   name: "header:1810"
   domain: quest
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3014
   header_id: 1810
   mapped_in_vortex: false
-  reason: the client sends header 1810 and nothing in this repository is bound to it
+  reason: "_SafeCls_3014 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature"
+  decision: ADR-FC-002
 - id: incoming/UpdateFigureData
   name: UpdateFigureData
   domain: register
@@ -4760,11 +4762,12 @@ obligations:
 - id: "incoming/header:1016"
   name: "header:1016"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2544
   header_id: 1016
   mapped_in_vortex: false
-  reason: the client sends header 1016 and nothing in this repository is bound to it
+  reason: "_SafeCls_2544 is registered at 1016 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:1119"
   name: "header:1119"
   domain: unsorted
@@ -4808,19 +4811,21 @@ obligations:
 - id: "incoming/header:1277"
   name: "header:1277"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2673
   header_id: 1277
   mapped_in_vortex: false
-  reason: the client sends header 1277 and nothing in this repository is bound to it
+  reason: "_SafeCls_2673 is registered at 1277 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:129"
   name: "header:129"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2570
   header_id: 129
   mapped_in_vortex: false
-  reason: the client sends header 129 and nothing in this repository is bound to it
+  reason: "_SafeCls_2570 is registered at 129 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:1295"
   name: "header:1295"
   domain: unsorted
@@ -4832,11 +4837,12 @@ obligations:
 - id: "incoming/header:1339"
   name: "header:1339"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3427
   header_id: 1339
   mapped_in_vortex: false
-  reason: the client sends header 1339 and nothing in this repository is bound to it
+  reason: "_SafeCls_3427 is registered at 1339 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:1376"
   name: "header:1376"
   domain: unsorted
@@ -4864,19 +4870,21 @@ obligations:
 - id: "incoming/header:1762"
   name: "header:1762"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3214
   header_id: 1762
   mapped_in_vortex: false
-  reason: the client sends header 1762 and nothing in this repository is bound to it
+  reason: "_SafeCls_3214 is registered at 1762 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:1768"
   name: "header:1768"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2807
   header_id: 1768
   mapped_in_vortex: false
-  reason: the client sends header 1768 and nothing in this repository is bound to it
+  reason: "_SafeCls_2807 is registered at 1768 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:1789"
   name: "header:1789"
   domain: unsorted
@@ -4896,11 +4904,12 @@ obligations:
 - id: "incoming/header:2020"
   name: "header:2020"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3655
   header_id: 2020
   mapped_in_vortex: false
-  reason: the client sends header 2020 and nothing in this repository is bound to it
+  reason: "_SafeCls_3655 is registered at 2020 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:2304"
   name: "header:2304"
   domain: unsorted
@@ -4912,19 +4921,21 @@ obligations:
 - id: "incoming/header:2397"
   name: "header:2397"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3153
   header_id: 2397
   mapped_in_vortex: false
-  reason: the client sends header 2397 and nothing in this repository is bound to it
+  reason: "_SafeCls_3153 is registered at 2397 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:245"
   name: "header:245"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2716
   header_id: 245
   mapped_in_vortex: false
-  reason: the client sends header 245 and nothing in this repository is bound to it
+  reason: "_SafeCls_2716 is registered at 245 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:2668"
   name: "header:2668"
   domain: unsorted
@@ -4936,11 +4947,12 @@ obligations:
 - id: "incoming/header:2708"
   name: "header:2708"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3532
   header_id: 2708
   mapped_in_vortex: false
-  reason: the client sends header 2708 and nothing in this repository is bound to it
+  reason: "_SafeCls_3532 is registered at 2708 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:272"
   name: "header:272"
   domain: unsorted
@@ -4992,11 +5004,12 @@ obligations:
 - id: "incoming/header:3349"
   name: "header:3349"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3900
   header_id: 3349
   mapped_in_vortex: false
-  reason: the client sends header 3349 and nothing in this repository is bound to it
+  reason: "_SafeCls_3900 is registered at 3349 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:3422"
   name: "header:3422"
   domain: unsorted
@@ -5008,19 +5021,21 @@ obligations:
 - id: "incoming/header:3517"
   name: "header:3517"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_2558
   header_id: 3517
   mapped_in_vortex: false
-  reason: the client sends header 3517 and nothing in this repository is bound to it
+  reason: "_SafeCls_2558 is registered at 3517 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:3569"
   name: "header:3569"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3458
   header_id: 3569
   mapped_in_vortex: false
-  reason: the client sends header 3569 and nothing in this repository is bound to it
+  reason: "_SafeCls_3458 is registered at 3569 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: "incoming/header:3608"
   name: "header:3608"
   domain: unsorted
@@ -5072,11 +5087,12 @@ obligations:
 - id: "incoming/header:983"
   name: "header:983"
   domain: unsorted
-  status: missing
+  status: not_applicable
   client_class: _SafeCls_3221
   header_id: 983
   mapped_in_vortex: false
-  reason: the client sends header 983 and nothing in this repository is bound to it
+  reason: "_SafeCls_3221 is registered at 983 and referenced nowhere in the client but the registry: no call site constructs it"
+  decision: ADR-FC-002
 - id: incoming/PeerUsersClassification
   name: PeerUsersClassification
   domain: user_classification

@@ -104,7 +104,11 @@ public static class CompletenessCommand
             ("source", report.TargetOrigin ?? "-"),
             ("incoming obligations", Number(report.Obligations.Count)),
             ("unresolved surface", Number(report.UnresolvedSurface.Count)),
-            ("protocol mapping", report.Share(report.Mapped)),
+            // Labelled for what it is: an obligation this emulator cannot receive is exactly what
+            // `missing` means, so this is the denominator less missing and n/a, restated. It carries
+            // nothing the status table below does not already carry, and reading the two as two
+            // pieces of evidence is the mistake the label exists to prevent.
+            ("protocol mapping (= not missing)", report.Share(report.Mapped)),
             ("implementation", report.Share(report.Implemented)),
             ("verified complete", report.Share(report.Count(ObligationStatus.Complete))),
         ]);

@@ -8,17 +8,12 @@ Target client: `WIN63-202607011411-782849652`
 | status | count |
 |---|---|
 | obligations | 18 |
-| missing | 2 |
+| missing | 0 |
 | partial | 4 |
 | implemented | 12 |
 | complete | 0 |
 | unknown | 0 |
-| not_applicable | 0 |
-
-## missing
-
-- `header:1576` (1576) — the client sends header 1576 and nothing in this repository is bound to it
-- `header:1810` (1810) — the client sends header 1810 and nothing in this repository is bound to it
+| not_applicable | 2 |
 
 ## partial
 
@@ -41,3 +36,8 @@ Target client: `WIN63-202607011411-782849652`
 - `GetSeasonalQuestsOnly` (1236) — quest.get_seasonal_quests_only reaches a domain operation from GetSeasonalQuestsOnlyMessageHandler
 - `OpenQuestTracker` (588) — quest.open_quest_tracker reaches a domain operation from OpenQuestTrackerMessageHandler
 - `StartCampaign` (3969) — quest.start_campaign reaches a domain operation from StartCampaignMessageHandler
+
+## not_applicable
+
+- `header:1576` (1576) — _SafeCls_2766 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature
+- `header:1810` (1810) — _SafeCls_3014 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature

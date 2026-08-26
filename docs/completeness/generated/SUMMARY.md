@@ -24,16 +24,26 @@ reproduced from the target client and the current code on the next run.
 counts a meaningful path behind them. `verified complete` counts the ones somebody
 checked against the protocol and wrote the evidence down.
 
+> `protocol mapping` is **not** independent of the status table: an obligation Vortex
+> cannot receive is exactly what `missing` means, so this number is the denominator
+> less `missing` and less `not_applicable`, restated. Do not read the two as two
+> pieces of evidence. `implementation` and `verified complete` are the axes that
+> carry their own information.
+
+> `unknown: 0` means no obligation currently hits a case the classifier refuses to
+> judge. It does not mean everything here is understood — `verified complete` is the
+> number that measures that, and it is the one to read first.
+
 ## Status
 
 | status | count |
 |---|---|
-| missing | 56 |
+| missing | 40 |
 | partial | 119 |
 | implemented | 403 |
 | complete | 0 |
 | unknown | 0 |
-| not_applicable | 0 |
+| not_applicable | 16 |
 
 ## Domains
 
@@ -64,13 +74,13 @@ checked against the protocol and wrote the evidence down.
 | nux | 3 | 0 | 2 | 1 | 0 | 0 | 0 |
 | poll | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
 | preferences | 10 | 0 | 0 | 10 | 0 | 0 | 0 |
-| quest | 18 | 2 | 4 | 12 | 0 | 0 | 0 |
+| quest | 18 | 0 | 4 | 12 | 0 | 0 | 2 |
 | register | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | room | 102 | 0 | 19 | 83 | 0 | 0 | 0 |
 | sound | 9 | 0 | 8 | 1 | 0 | 0 | 0 |
 | talent | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
 | tracking | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
-| unsorted | 45 | 45 | 0 | 0 | 0 | 0 | 0 |
+| unsorted | 45 | 31 | 0 | 0 | 0 | 0 | 14 |
 | user_classification | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
 | userdefinedroomevents | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | users | 42 | 0 | 3 | 39 | 0 | 0 | 0 |
