@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Furniture.Configuration;
+using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Hosting;
@@ -113,6 +114,7 @@ public sealed class FurnitureDefinitionProvider(
                     UsagePolicy = x.UsagePolicy,
                     ExtraData = x.ExtraData,
                     StuffDataType = x.StuffDataType,
+                    VendingIds = VendingIdParser.Parse(x.VendingIds),
                 })
                 .ToList();
 

@@ -80,6 +80,10 @@ internal sealed partial class DashboardApiService
                         f.ExtraData,
                         stuffDataType = (int)f.StuffDataType,
                         stuffDataTypeLabel = f.StuffDataType.ToString(),
+                        // Read back so the admin page can show which vending machines are still
+                        // waiting for their hand items. Every one of them is, until somebody decides:
+                        // no source anywhere says which drink a given machine gives.
+                        vendingIds = f.VendingIds,
                     })
                     .ToListAsync(ct)
                     .ConfigureAwait(false);

@@ -33,5 +33,11 @@ public sealed record FurnitureDefinitionUpsertSpec(
     bool CanSell,
     FurnitureUsageType UsagePolicy,
     string? ExtraData,
-    StuffDataType StuffDataType
+    StuffDataType StuffDataType,
+    /// <summary>
+    /// Hand items a vending machine may dispense, comma-separated. Optional, and empty for
+    /// everything that is not one — which is why it is last and defaulted: no existing caller has to
+    /// learn about it.
+    /// </summary>
+    string? VendingIds = null
 );

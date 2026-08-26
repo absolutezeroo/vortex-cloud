@@ -68,6 +68,9 @@ export const LOGIC_GROUPS = [
       { value: 'petdrink', label: 'petdrink' },
       { value: 'roller', label: 'roller - Roller (conveyor belt)' },
       { value: 'room_invisible_click_tile', label: 'room_invisible_click_tile - Invisible click tile' },
+      { value: 'vending', label: 'vending' },
+      { value: 'vendingmachine', label: 'vendingmachine' },
+      { value: 'vendingmachine_no_sides', label: 'vendingmachine_no_sides' },
     ],
   },
   {

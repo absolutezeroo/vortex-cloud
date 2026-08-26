@@ -246,7 +246,12 @@ public sealed record CreateFurnitureDefinitionRequest(
     FurnitureUsageType UsagePolicy,
     string? ExtraData,
     StuffDataType StuffDataType,
-    string Reason
+    string Reason,
+    /// <summary>
+    /// Hand items a vending machine dispenses, comma-separated. Last and defaulted so the SPA's
+    /// existing furniture form keeps working while it does not send the field.
+    /// </summary>
+    string? VendingIds = null
 ) : IReasonedRequest;
 
 public sealed record UpdateFurnitureDefinitionRequest(
@@ -271,7 +276,12 @@ public sealed record UpdateFurnitureDefinitionRequest(
     FurnitureUsageType UsagePolicy,
     string? ExtraData,
     StuffDataType StuffDataType,
-    string Reason
+    string Reason,
+    /// <summary>
+    /// Hand items a vending machine dispenses, comma-separated. Last and defaulted so the SPA's
+    /// existing furniture form keeps working while it does not send the field.
+    /// </summary>
+    string? VendingIds = null
 ) : IReasonedRequest;
 
 /// <summary>Blocked server-side if the definition is still referenced by placed/owned furniture

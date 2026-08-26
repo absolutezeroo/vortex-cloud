@@ -66,7 +66,8 @@ internal sealed partial class DashboardOperationsService
                             request.CanSell,
                             request.UsagePolicy,
                             request.ExtraData,
-                            request.StuffDataType
+                            request.StuffDataType,
+                            request.VendingIds
                         ),
                         c
                     )
@@ -124,7 +125,8 @@ internal sealed partial class DashboardOperationsService
                             request.CanSell,
                             request.UsagePolicy,
                             request.ExtraData,
-                            request.StuffDataType
+                            request.StuffDataType,
+                            request.VendingIds
                         ),
                         c
                     )

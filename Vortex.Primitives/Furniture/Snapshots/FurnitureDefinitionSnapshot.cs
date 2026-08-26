@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
@@ -71,4 +72,13 @@ public sealed record FurnitureDefinitionSnapshot
 
     [Id(20)]
     public required StuffDataType StuffDataType { get; init; }
+
+    /// <summary>
+    /// The hand items a vending machine may dispense, already parsed. Empty for everything that is
+    /// not one — and for a machine an operator has not configured yet, which is every one of them
+    /// until somebody does: nothing in the client, the furnidata or any capture says which drink a
+    /// given machine hands out.
+    /// </summary>
+    [Id(21)]
+    public IReadOnlyList<int> VendingIds { get; init; } = [];
 }

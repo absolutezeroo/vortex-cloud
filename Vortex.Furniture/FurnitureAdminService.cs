@@ -72,6 +72,7 @@ internal sealed class FurnitureAdminService(
             UsagePolicy = spec.UsagePolicy,
             ExtraData = spec.ExtraData,
             StuffDataType = spec.StuffDataType,
+            VendingIds = spec.VendingIds,
         };
 
         db.FurnitureDefinitions.Add(entity);
@@ -137,6 +138,7 @@ internal sealed class FurnitureAdminService(
         entity.UsagePolicy = spec.UsagePolicy;
         entity.ExtraData = spec.ExtraData;
         entity.StuffDataType = spec.StuffDataType;
+        entity.VendingIds = spec.VendingIds;
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         await ReloadAsync(ct).ConfigureAwait(false);

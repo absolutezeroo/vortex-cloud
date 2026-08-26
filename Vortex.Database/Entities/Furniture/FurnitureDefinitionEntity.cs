@@ -95,5 +95,25 @@ public class FurnitureDefinitionEntity : VortexEntity
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public StuffDataType StuffDataType { get; set; }
 
+    /// <summary>
+    /// The hand items a vending machine may dispense, comma-separated. Empty for everything that is
+    /// not one, which is almost everything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Which drink a given machine hands out is hotel configuration, not protocol: nothing in the
+    /// official client, the furnidata or any capture says that a sunflower gives a sunflower. So it
+    /// is a column an operator fills in rather than a table seeded from a guess — and a machine
+    /// nobody has configured hands out nothing, visibly, instead of appearing to work.
+    /// </para>
+    /// <para>
+    /// A list rather than one id because a bar dispenses a different drink each time. The machine
+    /// picks one at random per use, which is what every implementation of this does.
+    /// </para>
+    /// </remarks>
+    [Column("vending_ids")]
+    [MaxLength(512)]
+    public string? VendingIds { get; set; }
+
     public List<FurnitureEntity>? Furnitures { get; set; }
 }
