@@ -247,9 +247,12 @@ internal sealed class DashboardWebHost(
         services.AddSingleton(options);
 
         // Not in ForwardedServiceTypes: that list is the set of types an endpoint delegate may take
-        // as a parameter, and DashboardEndpointServiceTests reads it as precisely that. This one is
-        // resolved by the middleware below, never by an endpoint signature.
+        // as a parameter, and DashboardEndpointServiceTests reads it as precisely that. These two are
+        // resolved by the pipeline below, never by an endpoint signature — and forwarding them is not
+        // optional, because the web app has its own container and ConfigurePipeline asks it directly.
+        // Missing one is not a degraded feature: the dashboard fails to start.
         services.AddSingleton(rootServices.GetRequiredService<IVortexMetrics>());
+        services.AddSingleton(rootServices.GetRequiredService<IVortexContextAccessor>());
     }
 
     private static void ConfigureAuth(IServiceCollection services)
