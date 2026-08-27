@@ -47,13 +47,18 @@ public static class CompletenessCommand
             return 2;
         }
 
-        Print(report, command);
+        // The box surface, scored against the same build. Always computed: it is the number the
+        // packet matrix cannot see, and leaving it behind a flag is how it stops being read.
+        WiredSurfaceReport wired = WiredSurfaceAnalyzer.Analyze(workspace, world.Emulator.Revision);
+
+        Print(report, wired, command);
 
         if (command.Has("write"))
         {
             IReadOnlyList<string> written = CompletenessWriter.Write(
                 Path.Combine(root, "generated"),
-                report
+                report,
+                wired
             );
 
             Program.Heading($"Wrote {written.Count} files");
@@ -97,7 +102,11 @@ public static class CompletenessCommand
         return 1;
     }
 
-    private static void Print(CompletenessReport report, CommandLine command)
+    private static void Print(
+        CompletenessReport report,
+        WiredSurfaceReport wired,
+        CommandLine command
+    )
     {
         Program.Heading($"Completeness against {report.TargetRevision}");
         Program.Rows([
@@ -117,6 +126,27 @@ public static class CompletenessCommand
         Program.Rows([
             .. ObligationStatusNames.Scored.Select(s => (s.Wire(), Number(report.Count(s)))),
         ]);
+
+        // Printed next to the packet numbers on purpose. "wired: 42/43" and "wired boxes: 142/184"
+        // describe the same subsystem and disagree by twenty points, because one counts the messages
+        // that configure a box and the other counts the boxes.
+        Program.Heading("Wired boxes (a second surface)");
+        Program.Rows([
+            ("configurable boxes", Number(wired.Boxes.Count)),
+            ("bound to a logic", wired.Share),
+            ("bound here, absent from the client", Number(wired.UnreachableInVortex.Count)),
+            .. wired.ByFamily.Select(g =>
+                (
+                    g.Key.ToString().ToLowerInvariant(),
+                    $"{g.Count(b => b.Implemented)} / {g.Count()}"
+                )
+            ),
+        ]);
+
+        foreach (string problem in wired.Problems)
+        {
+            Console.WriteLine($"  {problem}");
+        }
 
         Program.Heading("By domain");
 

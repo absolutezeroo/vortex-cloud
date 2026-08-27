@@ -19,7 +19,7 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-4
+phase: FC-W1
 active_slice: null
 
 # Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
@@ -36,6 +36,16 @@ coverage:
   not_applicable: 16
   measured_at_commit: 1fdfbb82e7a6c03f9d6557ad6483897ef87ab707
   note: "implementation means Vortex has a meaningful path, never that Habbo behaviour was verified"
+
+# A SECOND surface, and not comparable with the packet one. The packet matrix scores the wired
+# domain at 42/43 on the messages that configure a box; this scores the boxes those messages
+# configure. Reproduce with the same command; written to generated/WIRED-BOXES.md.
+wired_box_surface:
+  denominator: 184
+  implemented: 154
+  missing: 30
+  by_family: "trigger 26/26, action 44/58, condition 41/45, selector 20/20, addon 16/26, variable 7/9"
+  note: "an enum member is not a box: WiredActionType declares 47, only 44 have a logic"
   # protocol_mapping is the denominator less missing and not_applicable, restated. It is not a
   # second axis; implementation and verified_complete are.
   # unknown: 0 means nothing hits a case the classifier refuses to judge, not that all is understood.
@@ -73,10 +83,8 @@ slices:
   FC-3: "wired click-user round trip + the Inspection tab's variable write; docs/completeness/reviews/FC-3-wired-click-user.md"
   FC-2: "the 43 anonymous headers named; 16 proven unreachable in this build (ADR-FC-002); docs/completeness/reviews/FC-2-triage.md"
   FC-4: "RemoveNftFromTrade@521 — a Relic could be put on the trade table and never taken off; docs/completeness/reviews/FC-4-remove-nft-from-trade.md"
+  FC-W1: "the wired box surface, 154/184, generated beside the packet matrix; docs/completeness/reviews/FC-W1-wired-box-surface.md"
 
 next:
   - FC-F1
-  - FC-W1
-  - FC-F1
-  - FC-W1
   - FC-RC
