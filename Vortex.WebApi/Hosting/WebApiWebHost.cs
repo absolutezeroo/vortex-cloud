@@ -168,6 +168,10 @@ internal sealed class WebApiWebHost(
         WebApiAppConfigurator.ConfigurePipeline(app, _config);
         WebApiEndpoints.Map(app);
 
+        // After the API routes: the site's catch-all must never shadow /api, and the share URL is a
+        // page, not an endpoint.
+        WebApiSiteHosting.Map(app, _config);
+
         return app;
     }
 
@@ -255,6 +259,7 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<WebApiSessionStore>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiAuthService>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiPlayerService>());
+        services.AddSingleton(rootServices.GetRequiredService<IWebApiArticleService>());
         services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
         services.AddSingleton(rootServices.GetRequiredService<IAccountPasswordService>());
         services.AddSingleton(

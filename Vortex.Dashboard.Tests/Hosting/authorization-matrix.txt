@@ -3,6 +3,10 @@ GET /api/v1/achievements -> dashboard.achievements.read
 GET /api/v1/achievements/resolutions -> dashboard.achievements.read
 GET /api/v1/achievements/stats -> dashboard.achievements.read
 GET /api/v1/achievements/{achievementId:int} -> dashboard.achievements.read
+GET /api/v1/articles -> dashboard.articles.read
+GET /api/v1/articles/images -> dashboard.articles.read
+GET /api/v1/articles/meta -> dashboard.articles.read
+GET /api/v1/articles/{articleId:int} -> dashboard.articles.read
 GET /api/v1/benchmark -> dashboard.benchmark.read
 GET /api/v1/benchmark/runs/{file} -> dashboard.benchmark.read
 GET /api/v1/bots -> dashboard.bots.read
@@ -85,6 +89,13 @@ POST /api/v1/account/mfa/disable -> AUTHENTICATED
 POST /api/v1/account/mfa/enable -> AUTHENTICATED
 POST /api/v1/account/mfa/step-up -> AUTHENTICATED
 POST /api/v1/account/password -> AUTHENTICATED
+POST /api/v1/operations/articles -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/category -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/category/delete -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/delete -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/language -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/language/delete -> dashboard.ops.articles.manage
+POST /api/v1/operations/articles/translation/delete -> dashboard.ops.articles.manage
 POST /api/v1/operations/benchmark/start -> dashboard.ops.benchmark.run
 POST /api/v1/operations/benchmark/stop -> dashboard.ops.benchmark.run
 POST /api/v1/operations/catalog/offers -> dashboard.ops.catalog.manage

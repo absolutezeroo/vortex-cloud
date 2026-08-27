@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Vortex.Primitives.Hosting;
@@ -106,6 +107,20 @@ public sealed class WebApiConfigValidator(IHostEnvironment environment)
                 $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.MetricsToken)}' must be at least "
                     + $"{MinimumMetricsTokenLength} characters, or empty to restrict the metrics "
                     + "endpoint to loopback callers."
+            );
+        }
+
+        // A site root that does not exist would start cleanly and then answer 404 for every page,
+        // which reads as "the site is broken" rather than "the path is wrong". Fail loudly instead.
+        if (
+            options.SiteRoot.Length > 0
+            && !Directory.Exists(Environment.ExpandEnvironmentVariables(options.SiteRoot))
+        )
+        {
+            failures.Add(
+                $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.SiteRoot)}' points at "
+                    + $"'{options.SiteRoot}', which does not exist. Build the site first (its "
+                    + "dist/ folder), or clear the setting to serve the API alone."
             );
         }
 

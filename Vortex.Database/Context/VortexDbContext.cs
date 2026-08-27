@@ -22,6 +22,7 @@ using Vortex.Database.Entities.Quests;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
 using Vortex.Database.Entities.Server;
+using Vortex.Database.Entities.Web;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Catalog;
 
@@ -330,6 +331,16 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<PlayerPrizeClaimEntity> PlayerPrizeClaims { get; init; } = null!;
 
     public DbSet<PlayerMysteryBoxKeyEntity> PlayerMysteryBoxKeys { get; init; } = null!;
+
+    // The hotel's website (Vortex.WebApi serves the public read, the dashboard the editing). None of
+    // this is game state: no grain owns it, and nothing on the game socket reads it.
+    public DbSet<WebLanguageEntity> WebLanguages { get; init; } = null!;
+
+    public DbSet<WebArticleCategoryEntity> WebArticleCategories { get; init; } = null!;
+
+    public DbSet<WebArticleEntity> WebArticles { get; init; } = null!;
+
+    public DbSet<WebArticleTranslationEntity> WebArticleTranslations { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
     {

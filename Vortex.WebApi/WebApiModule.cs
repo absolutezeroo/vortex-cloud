@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Content;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 using Vortex.WebApi.Configuration;
@@ -41,6 +42,12 @@ public sealed class WebApiModule : IHostPluginModule
         );
         services.TryAddSingleton<IWebApiAuthService, WebApiAuthService>();
         services.TryAddSingleton<IWebApiPlayerService, WebApiPlayerService>();
+        services.TryAddSingleton<IWebApiArticleService, WebApiArticleService>();
+
+        // The website's write half. Registered here rather than in the dashboard module because the
+        // rules it enforces (the block vocabulary, the allowed link schemes) belong to the site, and
+        // the dashboard is only one screen calling them.
+        services.TryAddSingleton<IWebArticleAdminService, WebArticleAdminService>();
 
         services.AddHostedService<WebApiWebHost>();
     }

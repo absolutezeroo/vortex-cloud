@@ -171,6 +171,17 @@ public static class Capabilities
         /// and hand items, player grants, the economy's smaller tables, and NFT collections.</summary>
         public const string OpsContentManage = "dashboard.ops.content.manage";
 
+        /// <summary>Read the website's news: articles and their translations, the categories they are
+        /// filed under, and the languages the site publishes in.</summary>
+        public const string ArticlesRead = "dashboard.articles.read";
+
+        /// <summary>
+        /// Write the website's news. Held apart from <see cref="OpsContentManage"/> on purpose: the
+        /// person who writes the hotel's announcements is rarely the person who should be able to
+        /// edit achievement ladders or grant currency, and one capability for both would force that.
+        /// </summary>
+        public const string OpsArticlesManage = "dashboard.ops.articles.manage";
+
         /// <summary>Read what a load run measured. Separate from running one: the numbers are worth
         /// showing to anyone tuning the hotel, and reading them costs nothing.</summary>
         public const string BenchmarkRead = "dashboard.benchmark.read";
@@ -263,6 +274,8 @@ public static class Capabilities
             CollectiblesRead,
             OpsStaffManage,
             OpsContentManage,
+            ArticlesRead,
+            OpsArticlesManage,
             BenchmarkRead,
             OpsBenchmarkRun,
             ServerConsoleRead,

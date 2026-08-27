@@ -97,6 +97,34 @@ public sealed class WebApiConfig
     /// <summary>Emits HSTS headers (implies clients should only ever reach the API over HTTPS).</summary>
     public bool HstsEnabled { get; set; } = false;
 
+    /// <summary>
+    /// Absolute path to the website's built <c>dist/</c> folder. Set it and this listener also serves
+    /// the site: static files, an <c>index.html</c> fallback for the SPA's routes, and the share URL
+    /// <c>/article/{slug}</c> that carries the Open Graph tags. Empty (the default) serves the API
+    /// only.
+    /// </summary>
+    /// <remarks>
+    /// Serving the site from here rather than from a separate web server is what keeps it on the same
+    /// origin as <c>/api</c>. The session is an HttpOnly cookie, and a cross-origin fetch would not
+    /// carry it — the site's own dev server proxies <c>/api</c> for exactly that reason.
+    /// </remarks>
+    public string SiteRoot { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Absolute base URL of the asset host serving <c>c_images</c> (e.g.
+    /// <c>http://vortex-assets.local</c>). Used for one thing: turning an article's stored relative
+    /// picture path into the absolute URL an Open Graph tag requires. Empty means shared links carry
+    /// no preview image — a link with a title and no picture, not a broken one.
+    /// </summary>
+    public string AssetBaseUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The hotel's name as a shared link should announce it ("Vortex Hotel"). Fills
+    /// <c>og:site_name</c>, which is the line a preview card prints above the title. Empty means the
+    /// tag is omitted — the card then shows the bare domain, which is a worse card, not a broken one.
+    /// </summary>
+    public string SiteName { get; set; } = string.Empty;
+
     /// <summary>Fixed-window rate limit applied to <c>POST /api/public/authentication/login</c>.</summary>
     public RateLimitOptions LoginRateLimit { get; set; } =
         new RateLimitOptions

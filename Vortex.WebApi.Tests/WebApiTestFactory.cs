@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
@@ -69,12 +70,20 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IOptions<WebApiConfig>>(Options.Create(config));
         builder.Services.AddSingleton<IAccountPasswordService>(new FakePasswordService());
         builder.Services.AddSingleton<RequiredServiceGuard>();
-        builder.Services.AddSingleton<IDbContextFactory<VortexDbContext>>(
-            new TestDbContextFactory(
-                new DbContextOptionsBuilder<VortexDbContext>()
-                    .UseInMemoryDatabase($"webapi-health-{Guid.NewGuid():N}")
-                    .Options
-            )
+
+        DbContexts = new TestDbContextFactory(
+            new DbContextOptionsBuilder<VortexDbContext>()
+                .UseInMemoryDatabase($"webapi-health-{Guid.NewGuid():N}")
+                .Options
+        );
+
+        builder.Services.AddSingleton<IDbContextFactory<VortexDbContext>>(DbContexts);
+
+        // The real service, not a fake: the article reads ARE the query — the status filter, the
+        // publish date, the language fallback — so a fake would test the endpoint's plumbing and
+        // none of the behaviour worth testing.
+        builder.Services.AddSingleton<IWebApiArticleService>(
+            new WebApiArticleService(DbContexts, NullLogger<WebApiArticleService>.Instance)
         );
 
         WebApiAppConfigurator.ConfigureServices(builder.Services, config);
@@ -94,12 +103,20 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         WebApiAppConfigurator.ConfigurePipeline(_app, config);
         WebApiEndpoints.Map(_app);
 
+        // Same call and same ordering as WebApiWebHost: after the API routes, so the site's
+        // catch-all never shadows /api. It no-ops unless a test sets SiteRoot, which is why the share
+        // URL had no test — the route was simply not mapped under the test server.
+        WebApiSiteHosting.Map(_app, config);
+
         _app.Start();
 
         Client = _app.GetTestClient();
     }
 
     public WebApiSessionStore Sessions { get; }
+
+    /// <summary>The in-memory database behind the app, so a test can seed the rows it is about.</summary>
+    public IDbContextFactory<VortexDbContext> DbContexts { get; }
 
     public HttpClient Client { get; }
 

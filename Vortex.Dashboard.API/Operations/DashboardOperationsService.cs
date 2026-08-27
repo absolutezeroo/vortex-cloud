@@ -58,6 +58,7 @@ internal sealed partial class DashboardOperationsService(
     IStaffAdminService staffAdmin,
     IAccountMfaService accountMfa,
     IContentAdminService contentAdmin,
+    IWebArticleAdminService webArticleAdmin,
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
@@ -92,6 +93,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IStaffAdminService _staffAdmin = staffAdmin;
     private readonly IAccountMfaService _accountMfa = accountMfa;
     private readonly IContentAdminService _contentAdmin = contentAdmin;
+    private readonly IWebArticleAdminService _webArticleAdmin = webArticleAdmin;
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;

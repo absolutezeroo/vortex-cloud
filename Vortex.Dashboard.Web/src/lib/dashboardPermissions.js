@@ -46,6 +46,8 @@ export const CAPABILITIES = {
   collectiblesRead: 'dashboard.collectibles.read',
   opsStaffManage: 'dashboard.ops.staff.manage',
   opsContentManage: 'dashboard.ops.content.manage',
+  articlesRead: 'dashboard.articles.read',
+  opsArticlesManage: 'dashboard.ops.articles.manage',
   benchmarkRead: 'dashboard.benchmark.read',
   opsBenchmarkRun: 'dashboard.ops.benchmark.run',
   serverConsoleRead: 'dashboard.server.console.read',
@@ -100,6 +102,9 @@ export const ROUTE_PERMISSIONS = {
   social: [CAPABILITIES.socialRead],
   staff: [CAPABILITIES.staffRead],
   collectibles: [CAPABILITIES.collectiblesRead],
+  // The write capability is listed too: a hotel's editor is often granted only that, and being
+  // unable to open the page they write on would be an odd way to hold it.
+  articles: [CAPABILITIES.articlesRead, CAPABILITIES.opsArticlesManage],
   benchmark: [CAPABILITIES.benchmarkRead],
   console: [CAPABILITIES.serverConsoleRead, CAPABILITIES.opsServerConsole],
   playerRewards: [CAPABILITIES.playersRead],

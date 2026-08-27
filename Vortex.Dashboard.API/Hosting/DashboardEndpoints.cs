@@ -185,6 +185,7 @@ internal static partial class DashboardEndpoints
         MapAchievementReads(app);
         MapBotReads(app);
         MapNavigatorReads(app);
+        MapArticleReads(app);
         MapInsightReads(app);
         MapBenchmarkReads(app);
         MapBenchmarkRunReads(app);
@@ -211,6 +212,7 @@ internal static partial class DashboardEndpoints
         MapNavigatorOperations(app);
         MapStaffOperations(app);
         MapContentOperations(app);
+        MapArticleOperations(app);
         MapConsoleOperations(app);
     }
 
@@ -335,6 +337,8 @@ internal static partial class DashboardEndpoints
             )
             .AllowAnonymous()
             .ExcludeFromDescription();
+
+        MapHotelAssets(app);
 
         // SPA client-side routing: any non-API navigation returns the shell; the client gates views
         // from /api/me. Unknown /api routes still 404 as JSON.

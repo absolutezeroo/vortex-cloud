@@ -24,6 +24,18 @@ internal static class WebApiHttpContextExtensions
     public static int? AccountId(this HttpContext ctx, WebApiSessionStore sessions) =>
         sessions.GetAccountId(ctx.SessionId());
 
+    /// <summary>
+    /// The raw <c>Accept-Language</c> header, used as the language of last resort when the caller did
+    /// not ask for one explicitly. Returned unparsed: the article service already splits a tag list
+    /// and strips region subtags, and a second parser here would be a second thing to keep in step.
+    /// </summary>
+    public static string? AcceptedLanguages(this HttpContext ctx)
+    {
+        string value = ctx.Request.Headers.AcceptLanguage.ToString();
+
+        return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
     /// <summary>The caller's remote IP, defaulting to loopback when it cannot be resolved.</summary>
     public static string RemoteIp(this HttpContext ctx) =>
         ctx.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";

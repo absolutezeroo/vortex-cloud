@@ -30,6 +30,7 @@ internal static class WebApiEndpoints
     private const string TagAuth = "Authentication";
     private const string TagUser = "User";
     private const string TagNewUser = "NewUser";
+    private const string TagContent = "Content";
 
     public static void Map(WebApplication app)
     {
@@ -37,6 +38,74 @@ internal static class WebApiEndpoints
         MapAuthentication(app);
         MapUser(app);
         MapNewUser(app);
+        MapContent(app);
+    }
+
+    /// <summary>
+    /// The website's editorial reads — the news feed, an article, and the languages the hotel
+    /// publishes in. Anonymous by design: this is what a visitor sees before signing in, and the
+    /// front page must render with no session at all.
+    /// </summary>
+    private static void MapContent(WebApplication app)
+    {
+        app.MapGet(
+                "/api/public/languages",
+                async (IWebApiArticleService articles, CancellationToken ct) =>
+                    Results.Json(await articles.GetLanguagesAsync(ct).ConfigureAwait(false))
+            )
+            .WithName("Languages")
+            .WithSummary("The enabled site languages and which one is the fallback.")
+            .WithTags(TagContent);
+
+        app.MapGet(
+                "/api/public/articles",
+                async (
+                    HttpContext ctx,
+                    IWebApiArticleService articles,
+                    CancellationToken ct,
+                    string? category = null,
+                    string? lang = null,
+                    int page = 1,
+                    int pageSize = 0
+                ) =>
+                    Results.Json(
+                        await articles
+                            .GetFeedAsync(
+                                category,
+                                lang ?? ctx.AcceptedLanguages(),
+                                page,
+                                pageSize,
+                                ct
+                            )
+                            .ConfigureAwait(false)
+                    )
+            )
+            .WithName("Articles")
+            .WithSummary("A page of the news feed, newest first, pinned articles ahead of it.")
+            .WithTags(TagContent);
+
+        app.MapGet(
+                "/api/public/articles/{slug}",
+                async (
+                    HttpContext ctx,
+                    string slug,
+                    IWebApiArticleService articles,
+                    CancellationToken ct,
+                    string? lang = null
+                ) =>
+                {
+                    ArticleDetail? article = await articles
+                        .GetArticleAsync(slug, lang ?? ctx.AcceptedLanguages(), ct)
+                        .ConfigureAwait(false);
+
+                    return article is null
+                        ? Error(StatusCodes.Status404NotFound, "article_not_found")
+                        : Results.Json(article);
+                }
+            )
+            .WithName("Article")
+            .WithSummary("One article with its body blocks and its read-also list.")
+            .WithTags(TagContent);
     }
 
     private static void MapPublic(WebApplication app)

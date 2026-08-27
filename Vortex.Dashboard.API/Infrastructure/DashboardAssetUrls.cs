@@ -146,6 +146,33 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             : _config.TargetedOfferImageUrlTemplate;
 
     /// <summary>
+    /// Where the hotel's asset pack sits on this machine, for the routes that serve it. Empty when
+    /// unconfigured, which those routes read as "there is nothing to serve".
+    /// </summary>
+    public string LocalRoot => _config.AssetsLocalRoot;
+
+    /// <summary>
+    /// The asset host's <c>c_images</c> root, for the article editor's picture previews.
+    /// </summary>
+    /// <remarks>
+    /// Derived from the targeted-offer template rather than configured separately, for two reasons:
+    /// there is only ever one asset host, and a second key would be a second thing to get wrong; and
+    /// deriving it means the origin is already in <see cref="ImgSrcOrigins"/>, so the CSP allows the
+    /// previews without another edit. Null when no template is configured — the editor then takes a
+    /// typed path and shows no preview.
+    /// </remarks>
+    public string? ArticleImageBase
+    {
+        get
+        {
+            string? template = TargetedOfferImageTemplate;
+            int marker = template?.IndexOf("/c_images/", StringComparison.OrdinalIgnoreCase) ?? -1;
+
+            return marker < 0 ? null : template![..(marker + "/c_images".Length)];
+        }
+    }
+
+    /// <summary>
     /// Distinct http(s) host origins of every configured template, for the dashboard CSP
     /// <c>img-src</c>. Without this the browser would block cross-origin asset images.
     /// </summary>
