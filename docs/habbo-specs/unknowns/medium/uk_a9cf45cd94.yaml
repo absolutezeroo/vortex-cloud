@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2fd88691953f5f5da4c73c56b2a21b1dfc4dc63cc022ddce7af278a53d66b1d6"
+generated_digest: "sha256:5f70f0b10c96d42aed9fafbd05300cebc7c61fd109c33bd3b0c06441bfcf6304"
 generated:
   id: uk_a9cf45cd94
   subject: "inventory.confirm_trade: what the server sends when it refuses"
@@ -25,14 +25,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomTradingSystem.cs
     symbol: RoomTradingSystem
-    line: 297
+    line: 328
   - id: ev_6938df432a77
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Trading.cs
     symbol: RoomGrain
-    line: 31
+    line: 34
   - id: ev_88abd3008361
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,6 +60,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Trading.cs
     symbol: RoomService
-    line: 87
+    line: 100
 verified: {}
 manual: {}

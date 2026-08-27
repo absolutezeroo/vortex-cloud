@@ -13,9 +13,8 @@ namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 /// with the confirmation flow both sides already know.
 /// </para>
 /// <para>
-/// Additive, and there is no counterpart that takes one back out — the client has no such message,
-/// it re-derives which of its Relics are locked from the list the server sends back. So an offered
-/// Relic stays offered until the trade ends.
+/// Additive. <see cref="RemoveNftFromTradeMessage"/> is the counterpart, on its own header — the
+/// same row click that removes furniture, taken past the end of the furniture list.
 /// </para>
 /// </remarks>
 public record AddNftToTradeMessage : IMessageEvent

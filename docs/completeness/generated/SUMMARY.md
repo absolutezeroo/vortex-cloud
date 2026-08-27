@@ -16,8 +16,8 @@ reproduced from the target client and the current code on the next run.
 
 | axis | value |
 |---|---|
-| protocol mapping | 522 / 578 (90.3%) |
-| implementation | 403 / 578 (69.7%) |
+| protocol mapping | 523 / 578 (90.5%) |
+| implementation | 404 / 578 (69.9%) |
 | verified complete | 0 / 578 (0.0%) |
 
 `protocol mapping` counts obligations Vortex can receive at all. `implementation`
@@ -38,9 +38,9 @@ checked against the protocol and wrote the evidence down.
 
 | status | count |
 |---|---|
-| missing | 40 |
+| missing | 39 |
 | partial | 119 |
-| implemented | 403 |
+| implemented | 404 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 16 |
@@ -54,7 +54,7 @@ checked against the protocol and wrote the evidence down.
 | camera | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
 | campaign | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
 | catalog | 33 | 2 | 3 | 28 | 0 | 0 | 0 |
-| collectibles | 19 | 0 | 0 | 19 | 0 | 0 | 0 |
+| collectibles | 20 | 0 | 0 | 20 | 0 | 0 | 0 |
 | competition | 9 | 0 | 8 | 1 | 0 | 0 | 0 |
 | crafting | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
 | game | 27 | 5 | 20 | 2 | 0 | 0 | 0 |
@@ -80,7 +80,7 @@ checked against the protocol and wrote the evidence down.
 | sound | 9 | 0 | 8 | 1 | 0 | 0 | 0 |
 | talent | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
 | tracking | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
-| unsorted | 45 | 31 | 0 | 0 | 0 | 0 | 14 |
+| unsorted | 44 | 30 | 0 | 0 | 0 | 0 | 14 |
 | user_classification | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
 | userdefinedroomevents | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | users | 42 | 0 | 3 | 39 | 0 | 0 | 0 |

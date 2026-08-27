@@ -72,6 +72,7 @@ reproduced from the target client and the current code on the next run.
 | implemented | collectibles | NftCollectiblesClaimRewardItem | 1166 | NftCollectiblesClaimRewardItemMessageHandler | collectibles.nft_collectibles_claim_reward_item | collectibles.nft_collectibles_claim_reward_item reaches a domain operation from NftCollectiblesClaimRewardItemMessageHandler |
 | implemented | collectibles | NftStorePurchase | 3196 | NftStorePurchaseMessageHandler | collectibles.nft_store_purchase | collectibles.nft_store_purchase reaches a domain operation from NftStorePurchaseMessageHandler |
 | implemented | collectibles | PurchaseMintToken | 67 | PurchaseMintTokenMessageHandler | collectibles.purchase_mint_token | collectibles.purchase_mint_token reaches a domain operation from PurchaseMintTokenMessageHandler |
+| implemented | collectibles | RemoveNftFromTrade | 521 | RemoveNftFromTradeMessageHandler | collectibles.remove_trade_asset | collectibles.remove_trade_asset reaches a domain operation from RemoveNftFromTradeMessageHandler |
 | implemented | collectibles | TransferNftAssets | 1749 | TransferNftAssetsMessageHandler | collectibles.transfer_nft_assets | collectibles.transfer_nft_assets reaches a domain operation from TransferNftAssetsMessageHandler |
 | partial | competition | ForwardToACompetitionRoom | 431 | ForwardToACompetitionRoomMessageHandler | competition.forward_to_a_competition_room | competition.forward_to_a_competition_room exists but the handler reaches no domain operation |
 | partial | competition | ForwardToASubmittableRoom | 1917 | ForwardToASubmittableRoomMessageHandler | competition.forward_to_a_submittable_room | competition.forward_to_a_submittable_room exists but the handler reaches no domain operation |
@@ -488,7 +489,6 @@ reproduced from the target client and the current code on the next run.
 | not_applicable | unsorted | header:3569 | 3569 | - | - | _SafeCls_3458 is registered at 3569 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:3608 | 3608 | - | - | the client sends header 3608 and nothing in this repository is bound to it |
 | missing | unsorted | header:3980 | 3980 | - | - | the client sends header 3980 and nothing in this repository is bound to it |
-| missing | unsorted | header:521 | 521 | - | - | the client sends header 521 and nothing in this repository is bound to it |
 | missing | unsorted | header:662 | 662 | - | - | the client sends header 662 and nothing in this repository is bound to it |
 | missing | unsorted | header:75 | 75 | - | - | the client sends header 75 and nothing in this repository is bound to it |
 | missing | unsorted | header:831 | 831 | - | - | the client sends header 831 and nothing in this repository is bound to it |

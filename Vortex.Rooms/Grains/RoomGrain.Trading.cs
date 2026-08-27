@@ -25,6 +25,9 @@ public sealed partial class RoomGrain
     public Task RemoveTradeItemAsync(PlayerId requesterId, int itemId, CancellationToken ct) =>
         TradingSystem.RemoveTradeItemAsync(requesterId, itemId, ct);
 
+    public Task RemoveTradeAssetAsync(PlayerId requesterId, int assetId, CancellationToken ct) =>
+        TradingSystem.RemoveTradeAssetAsync(requesterId, assetId, ct);
+
     public Task SetTradeAcceptAsync(PlayerId requesterId, bool accepted, CancellationToken ct) =>
         TradingSystem.SetTradeAcceptAsync(requesterId, accepted, ct);
 

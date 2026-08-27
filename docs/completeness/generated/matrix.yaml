@@ -5,12 +5,12 @@ version: 1
 target_revision: WIN63-202607011411-782849652
 target_origin: "as3:WIN63-202607011411-782849652"
 obligation_count: 578
-mapped: 522
+mapped: 523
 unresolved_surface_count: 2
 counts:
-  missing: 40
+  missing: 39
   partial: 119
-  implemented: 403
+  implemented: 404
   complete: 0
   unknown: 0
   not_applicable: 16
@@ -689,6 +689,16 @@ obligations:
   vortex_handler: PurchaseMintTokenMessageHandler
   feature: collectibles.purchase_mint_token
   reason: collectibles.purchase_mint_token reaches a domain operation from PurchaseMintTokenMessageHandler
+- id: incoming/RemoveNftFromTrade
+  name: RemoveNftFromTrade
+  domain: collectibles
+  status: implemented
+  client_class: _SafeCls_3173
+  header_id: 521
+  mapped_in_vortex: true
+  vortex_handler: RemoveNftFromTradeMessageHandler
+  feature: collectibles.remove_trade_asset
+  reason: collectibles.remove_trade_asset reaches a domain operation from RemoveNftFromTradeMessageHandler
 - id: incoming/TransferNftAssets
   name: TransferNftAssets
   domain: collectibles
@@ -5052,14 +5062,6 @@ obligations:
   header_id: 3980
   mapped_in_vortex: false
   reason: the client sends header 3980 and nothing in this repository is bound to it
-- id: "incoming/header:521"
-  name: "header:521"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3173
-  header_id: 521
-  mapped_in_vortex: false
-  reason: the client sends header 521 and nothing in this repository is bound to it
 - id: "incoming/header:662"
   name: "header:662"
   domain: unsorted

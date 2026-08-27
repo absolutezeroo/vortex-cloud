@@ -7,10 +7,10 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 19 |
+| obligations | 20 |
 | missing | 0 |
 | partial | 0 |
-| implemented | 19 |
+| implemented | 20 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -35,4 +35,5 @@ Target client: `WIN63-202607011411-782849652`
 - `NftCollectiblesClaimRewardItem` (1166) — collectibles.nft_collectibles_claim_reward_item reaches a domain operation from NftCollectiblesClaimRewardItemMessageHandler
 - `NftStorePurchase` (3196) — collectibles.nft_store_purchase reaches a domain operation from NftStorePurchaseMessageHandler
 - `PurchaseMintToken` (67) — collectibles.purchase_mint_token reaches a domain operation from PurchaseMintTokenMessageHandler
+- `RemoveNftFromTrade` (521) — collectibles.remove_trade_asset reaches a domain operation from RemoveNftFromTradeMessageHandler
 - `TransferNftAssets` (1749) — collectibles.transfer_nft_assets reaches a domain operation from TransferNftAssetsMessageHandler

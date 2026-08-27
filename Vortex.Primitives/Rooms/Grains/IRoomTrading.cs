@@ -25,8 +25,7 @@ public interface IRoomTrading : IGrainWithIntegerKey
     );
 
     /// <summary>Adds Relics to the requester's side of the offer. Ids the requester does not hold
-    /// are skipped. There is no counterpart that removes one: this client has no such message, so an
-    /// offered Relic stays offered until the trade ends.</summary>
+    /// are skipped.</summary>
     public Task AddTradeAssetsAsync(
         PlayerId requesterId,
         IReadOnlyList<int> assetIds,
@@ -35,6 +34,11 @@ public interface IRoomTrading : IGrainWithIntegerKey
 
     /// <summary>Removes an item the requester previously offered. Resets both sides' acceptance.</summary>
     public Task RemoveTradeItemAsync(PlayerId requesterId, int itemId, CancellationToken ct);
+
+    /// <summary>Removes a Relic the requester previously offered. Resets both sides' acceptance.
+    /// Split from <see cref="RemoveTradeItemAsync"/> because the client sends it on its own header
+    /// and an asset id is not a furniture id — the two lists are keyed independently.</summary>
+    public Task RemoveTradeAssetAsync(PlayerId requesterId, int assetId, CancellationToken ct);
 
     /// <summary>Sets the requester's acceptance in the building phase. When both accept, the trade
     /// advances to the confirmation phase.</summary>

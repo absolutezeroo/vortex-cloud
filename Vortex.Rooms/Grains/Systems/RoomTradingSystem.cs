@@ -183,9 +183,9 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
     /// one address, where this moves chosen Relics to a chosen player, through the confirmation both
     /// sides already understand.
     /// <para>
-    /// There is no counterpart that removes one. The client has no such message — it re-derives which
-    /// of its Relics are locked from the list sent back — so an offered Relic stays offered until the
-    /// trade ends, and adding still resets both acceptances.
+    /// <see cref="RemoveTradeAssetAsync"/> is the counterpart. It arrives on its own header because
+    /// the client splits one row click by what the row holds, not because the two are different
+    /// gestures.
     /// </para>
     /// </remarks>
     public async Task AddTradeAssetsAsync(
@@ -259,6 +259,37 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
 
         session.ResetAgreement();
         await BroadcastItemListAsync(session, ct).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Takes one Relic back off the requester's side of the offer.
+    /// </summary>
+    /// <remarks>
+    /// Mirrors <see cref="RemoveTradeItemAsync"/> on the asset list, and the acceptance reset is the
+    /// part that matters: without it a player could pull a Relic after the other side had already
+    /// accepted, and the confirmation both parties think they are agreeing to would not be the one
+    /// that settles.
+    /// </remarks>
+    public async Task RemoveTradeAssetAsync(PlayerId requesterId, int assetId, CancellationToken ct)
+    {
+        if (!TryGetSession(requesterId, out RoomTradeSession? session))
+        {
+            return;
+        }
+
+        if (session.Phase != TradePhase.Building)
+        {
+            return;
+        }
+
+        // AssetsOf is keyed by the requester, so this can only ever touch their own side.
+        if (!session.AssetsOf(requesterId).Remove(assetId))
+        {
+            return;
+        }
+
+        session.ResetAgreement();
+        await BroadcastAssetListAsync(session, ct).ConfigureAwait(true);
     }
 
     public async Task SetTradeAcceptAsync(PlayerId requesterId, bool accepted, CancellationToken ct)

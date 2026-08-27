@@ -68,12 +68,18 @@ internal static class MessageEvent
     public const int UnblockUserMessageEvent = 2512; // AS3-verified (direct read): BlockedUsersManager.as:99 -> send(new _SafeCls_2552(userId)) @2512; was 1231, which the WIN63 registry uses on the *incoming* side only (no composer at 1231)
     public const int AddNftToTradeEvent = 2481; // AS3-verified (direct read): TradingModel::requestAddNftsToTrading() -> send(new _SafeCls_2741(Vector.<int>)) @2481; was 1543, which has no entry in the WIN63 registry at all
 
-    // GetNftTradeInventoryEvent and RemoveNftFromTradeEvent used to sit here on invented ids (9015,
-    // 9014) above the client's highest real header, so nothing could ever reach them. Both are gone
-    // rather than renumbered: the first is this same request under another name -- the client's only
-    // NFT-inventory call is CollectiblesModel::requestNftAssets(), which is
-    // GetNftAssetInventoryMessageEvent@1646 -- and the second has no composer anywhere in the 701
-    // client, whose TradingModel can add NFTs to a trade but never remove them individually.
+    public const int RemoveNftFromTradeEvent = 521; // AS3-verified (registry + sender): _composers[521] = _SafeCls_3173(int) <- TradingModel::requestRemoveItemFromTrading(), the branch past ownUserItems.length. The int is an asset id, not a row: _SafeCls_1951::parseNftTradeMap groups Relics by productCode over a Vector.<Number> of assetId, and pop(1) returns one of those.
+
+    // GetNftTradeInventoryEvent used to sit here on an invented id (9015) above the client's highest
+    // real header, so nothing could ever reach it. It is gone rather than renumbered: it is this same
+    // request under another name -- the client's only NFT-inventory call is
+    // CollectiblesModel::requestNftAssets(), which is GetNftAssetInventoryMessageEvent@1646.
+    //
+    // RemoveNftFromTradeEvent was deleted in the same pass on the same evidence, and that second half
+    // was wrong. Its id (9014) was indeed fabricated, but the note went on to claim the client "has no
+    // composer anywhere in the 701 client" for it -- turning "I could not find it" into "it does not
+    // exist". It is at 521, restored above, and until 2026-08-27 an offered Relic could not be taken
+    // back off the trade table.
     public const int WiredGetUserPermanentVariablesEvent = 3777; // AS3-verified (direct read): VariableManagementDetailView fetch call -> connection.send(new _SafeCls_2724(entityType,entityId)) @3777; corrects a wrong guess (was 2127, no AS3 backing)
     public const int WiredGetVariableOwnersPageEvent = 2221;
     public const int ClaimDailyTaskEvent = 4101;

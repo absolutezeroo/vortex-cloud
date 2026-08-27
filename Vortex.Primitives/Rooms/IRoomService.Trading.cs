@@ -19,6 +19,7 @@ public partial interface IRoomService
         CancellationToken ct
     );
     public Task RemoveTradeItemAsync(ActionContext ctx, int itemId, CancellationToken ct);
+    public Task RemoveTradeAssetAsync(ActionContext ctx, int assetId, CancellationToken ct);
     public Task SetTradeAcceptAsync(ActionContext ctx, bool accepted, CancellationToken ct);
     public Task ConfirmTradeAsync(ActionContext ctx, bool confirm, CancellationToken ct);
     public Task CloseTradeAsync(ActionContext ctx, CancellationToken ct);

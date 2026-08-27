@@ -19,7 +19,7 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-2
+phase: FC-4
 active_slice: null
 
 # Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
@@ -27,10 +27,10 @@ active_slice: null
 coverage:
   denominator: 578
   unresolved_surface: 2
-  protocol_mapping: 522
-  implementation: 403
+  protocol_mapping: 523
+  implementation: 404
   verified_complete: 0
-  missing: 40
+  missing: 39
   partial: 119
   unknown: 0
   not_applicable: 16
@@ -72,6 +72,7 @@ slices:
   FC-1: "completeness CLI; denominator from the target client (e9dee22c -> 97568f6e)"
   FC-3: "wired click-user round trip + the Inspection tab's variable write; docs/completeness/reviews/FC-3-wired-click-user.md"
   FC-2: "the 43 anonymous headers named; 16 proven unreachable in this build (ADR-FC-002); docs/completeness/reviews/FC-2-triage.md"
+  FC-4: "RemoveNftFromTrade@521 — a Relic could be put on the trade table and never taken off; docs/completeness/reviews/FC-4-remove-nft-from-trade.md"
 
 next:
   - FC-F1

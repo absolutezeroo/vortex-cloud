@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0866fedd928817f46eddcf4beaae38ea0b38d894ec3acd6ea59b2003608d342c"
+generated_digest: "sha256:22fc778064f8b8e64963d8069dda96dff68fb3ec5da1fa2c66ac1c48f93f6894"
 generated:
   id: inventory.close_trade
   domain: inventory
@@ -61,14 +61,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomTradingSystem.cs
     symbol: RoomTradingSystem
-    line: 331
+    line: 362
   - id: ev_6938df432a77
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Trading.cs
     symbol: RoomGrain
-    line: 34
+    line: 37
   - id: ev_9310fc1028b5
     kind: emulator_handler
     authority: vortex_emulator
@@ -82,7 +82,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Trading.cs
     symbol: RoomService
-    line: 100
+    line: 113
   scenarios:
   - inventory.close_trade.guard_0
   - inventory.close_trade.guard_1

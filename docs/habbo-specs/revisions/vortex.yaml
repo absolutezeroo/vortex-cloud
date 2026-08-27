@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:4ee15972c517cf66a9a0ff9aa1343c40ca1461487584f9a5e804372ed1ca3624"
+generated_digest: "sha256:f7164f01e2ec56f965b220cd54aedf77f7ba689022bb8c8663e53d32cea5dde6"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -417,6 +417,7 @@ generated:
     RemoveItem: 141
     RemoveItemFromTrade: 573
     RemoveJukeboxDisk: 2003
+    RemoveNftFromTrade: 521
     RemoveOwnRoomRightsRoom: 260
     RemovePetFromFlat: 1640
     RemoveRights: 3444

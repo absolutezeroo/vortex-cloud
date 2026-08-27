@@ -7,8 +7,8 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 45 |
-| missing | 31 |
+| obligations | 44 |
+| missing | 30 |
 | partial | 0 |
 | implemented | 0 |
 | complete | 0 |
@@ -44,7 +44,6 @@ Target client: `WIN63-202607011411-782849652`
 - `header:3422` (3422) — the client sends header 3422 and nothing in this repository is bound to it
 - `header:3608` (3608) — the client sends header 3608 and nothing in this repository is bound to it
 - `header:3980` (3980) — the client sends header 3980 and nothing in this repository is bound to it
-- `header:521` (521) — the client sends header 521 and nothing in this repository is bound to it
 - `header:662` (662) — the client sends header 662 and nothing in this repository is bound to it
 - `header:75` (75) — the client sends header 75 and nothing in this repository is bound to it
 - `header:831` (831) — the client sends header 831 and nothing in this repository is bound to it

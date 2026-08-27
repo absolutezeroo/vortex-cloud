@@ -27,6 +27,28 @@ public sealed class RelicTradeWireTests
     /// <summary>Repeated rather than referenced: the header table is internal to the revision.</summary>
     private const int AddNftToTradeEvent = 2481;
 
+    /// <summary>_composers[521] = _SafeCls_3173(int), TradingModel::requestRemoveItemFromTrading.</summary>
+    private const int RemoveNftFromTradeEvent = 521;
+
+    /// <summary>
+    ///     Taking one back off the table. This header was once deleted as fabricated — its old value
+    ///     really was invented — and the note left behind claimed the client had no such message at
+    ///     all. It does, at 521, and this test is what stops that conclusion being reached twice.
+    /// </summary>
+    [Fact]
+    public void TheRemoval_IsOneAssetId()
+    {
+        ServerPacket request = new(RemoveNftFromTradeEvent);
+        request.WriteInteger(41);
+
+        RemoveNftFromTradeMessage parsed = (RemoveNftFromTradeMessage)
+            Revision
+                .Parsers[RemoveNftFromTradeEvent]
+                .Parse(new ClientPacket(RemoveNftFromTradeEvent, request.ToArray()));
+
+        parsed.AssetId.Should().Be(41);
+    }
+
     [Fact]
     public void TheRequest_IsACountThenThatManyAssetIds()
     {

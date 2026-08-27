@@ -25,6 +25,10 @@ internal sealed class CollectiblesMap : IRevisionMap
             MessageEvent.AddNftToTradeEvent,
             new AddNftToTradeMessageParser(_protocolLimits.MaxTradeItems)
         );
+        builder.MapParser(
+            MessageEvent.RemoveNftFromTradeEvent,
+            new RemoveNftFromTradeMessageParser()
+        );
         builder.MapSerializer(
             typeof(TradeNftAssetsMessageComposer),
             new TradeNftAssetsMessageComposerSerializer(
