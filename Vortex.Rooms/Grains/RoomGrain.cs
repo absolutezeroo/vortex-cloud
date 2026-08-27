@@ -15,6 +15,7 @@ using Orleans.Streams;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Room;
+using Vortex.Events.Registry;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Events;
@@ -53,6 +54,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IFurnitureDefinitionProvider _definitionProvider;
     internal readonly IStuffDataFactory _stuffDataFactory;
     internal readonly IEventPublisher _events;
+    internal readonly ICancellableEventPublisher _cancellableEvents;
     internal readonly IGrainFactory _grainFactory;
     internal readonly IRoomItemsProvider _itemsLoader;
     internal readonly ILogger<IRoomGrain> _logger;
@@ -69,6 +71,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly RoomLiveState _state;
     internal readonly RoomWiredLogChannel _wiredLogChannel;
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
+    internal readonly IRoomEventListenerProvider _eventListenerProvider;
     public readonly RoomActionModule ActionModule;
     public readonly RoomAvatarModule AvatarModule;
     public readonly RoomHandItemModule HandItemModule;
@@ -111,8 +114,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IRoomObjectLogicProvider logicProvider,
         IRoomAvatarProvider avatarProvider,
         IRoomWiredVariablesProvider wiredVariablesProvider,
+        IRoomEventListenerProvider eventListenerProvider,
         IGrainFactory grainFactory,
         IEventPublisher events,
+        ICancellableEventPublisher cancellableEvents,
         IPermissionService permissionService,
         IVortexMetrics metrics,
         IRoomModerationStore moderationStore,
@@ -132,8 +137,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _logicProvider = logicProvider;
         _avatarProvider = avatarProvider;
         _wiredVariablesProvider = wiredVariablesProvider;
+        _eventListenerProvider = eventListenerProvider;
         _grainFactory = grainFactory;
         _events = events;
+        _cancellableEvents = cancellableEvents;
         _permissionService = permissionService;
         _metrics = metrics;
         _moderationStore = moderationStore;
@@ -275,6 +282,16 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         await HydrateRoomStateAsync(ct);
         await HydrateModerationStateAsync(ct);
+
+        // Contributed listeners are attached here rather than in the constructor: they come from
+        // scanned assemblies, and handing a half-built grain to outside code is how a plugin ends up
+        // reading state that does not exist yet. They go after the roller/wired/scoreboard systems,
+        // so an outside listener can slow a room down but never pre-empt what the room does with its
+        // own events.
+        foreach (IRoomEventListener listener in _eventListenerProvider.BuildListenersForRoom(this))
+        {
+            EventModule.Register(listener);
+        }
 
         using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.UpsertActiveRoomAsync)))
         {

@@ -67,11 +67,16 @@ rebuilt while loaded. Anything not in that dictionary goes through `AssemblyDepe
 - **No permission boundary.** `HostServices.GetRequiredService<T>()` forwards to the **full host
   `IServiceProvider`** with no allow-list. A plugin can resolve `VortexDbContext`, `IRevisionManager`,
   anything.
-- **Type identity is shared only by omission.** `ByteLoadingAlc.Load` byte-loads any DLL sitting in
-  the plugin folder — **including `Vortex.Primitives.dll` if it ships there**, which would give the
-  plugin its *own* `IVortexPlugin` type and make `AssemblyExplorer.FindType` find nothing. This is a
-  packaging rule, not an enforced one: `PluginActivationFailureTests.CopyTestPluginToTempFolder`
-  copies **only** the plugin DLL for exactly this reason.
+- **Type identity is now enforced, not assumed.** `ByteLoadingAlc.Load` used to byte-load any DLL
+  sitting in the plugin folder — including `Vortex.Primitives.dll` if it shipped there, which gave
+  the plugin its *own* `IVortexPlugin`, its own `IEventHandler<>` and its own event records. Handlers
+  registered against types the host never publishes, and nothing said so. `IsHostContractAssembly`
+  now delegates any `Vortex.*` assembly the **default context can already resolve** back to the
+  host, so a mis-packaged plugin works instead of failing silently. The names it skipped come back
+  on `LoadedAssembly.ShadowedContractAssemblies` and `PluginManager` logs them once per load.
+  The name test alone is not enough — a plugin split over `Vortex.MyPlugin` and
+  `Vortex.MyPlugin.Core` must still load its own halves, so what makes an assembly shared is that
+  the host has it. Covered by `PluginContractAssemblySharingTests`.
 - **Unload is best-effort with a ceiling.** `UnloadAndWaitAsync(alc, 5000, ct)` loops `GC.Collect()` /
   `WaitForPendingFinalizers` for up to 5 s against a `WeakReference`; on timeout the caller logs
   *"Possible memory leak from retained type references"*.
@@ -141,9 +146,9 @@ unload are refused while dependents are live; `ReloadAsync` refuses if a depende
 
 A per-plugin failure is contained — `LoadAllAsync` logs and `continue`s.
 
-## The four extension points
+## The five extension points
 
-A scanned assembly is examined for exactly four things. There are exactly four
+A scanned assembly is examined for exactly five things. There are exactly five
 `IAssemblyFeatureProcessor` implementations, and this is the whole surface:
 
 | Processor | Scans for |
@@ -152,14 +157,33 @@ A scanned assembly is examined for exactly four things. There are exactly four
 | `EventFeatureProcessor` | `IEventHandler<>` / `IEventBehavior<>` |
 | `RoomObjectLogicFeatureProcessor` | `[RoomObjectLogic]` furniture logic |
 | `WiredVariableFeatureProcessor` | wired variables |
+| `RoomEventListenerFeatureProcessor` | `[RoomEventListener]` in-room event listeners |
 
 **Nothing scans for `IRevision`** → [Protocol revision plugins](protocol-revision-plugins.md).
 
 Every registration returns an `IDisposable`, and **the disposable is the deregistration** — which is
 what makes unload clean.
 
-> **Trap:** `AssemblyExplorer.FindClosedImplementations` skips anything not `public`. An `internal` or
-> nested handler compiles, ships, and is silently never registered.
+> **Trap:** `AssemblyExplorer` registers `public` types only. An `internal` or nested handler
+> compiles, ships, and is never registered — but no longer silently: every processor passes an
+> `onNonPublicSkipped` callback and logs a warning naming the type.
+
+### The in-room event stream
+
+`RoomEvent` (chat, clicks, an avatar stepping onto a furni, a wired stack firing, the periodic tick)
+is dispatched by `RoomEventModule` to `IRoomEventListener`s. Three of those are the room's own
+systems, attached by `RoomGrain`'s constructor in an order it depends on: roller, wired, scoreboard.
+Everything else comes from `IRoomEventListenerProvider`, filled by the processor above and built
+**per room** in `RoomGrain.OnActivateAsync` — after hydration, so a listener is never handed a
+half-built grain.
+
+The attribute, not the interface, is what the scan keys on: the three in-tree systems implement
+`IRoomEventListener` too, and scanning the interface alone would build a second copy of each of them
+into every room.
+
+Dispatch is sequential and now **guarded per listener**: a listener that throws is logged and the
+rest still run. Before contributed listeners existed, a throw abandoned every listener after it and
+surfaced inside whatever gameplay path raised the event.
 
 ## Exports
 
@@ -212,6 +236,7 @@ Both are instances of the same `EnvelopeHost` machinery. Keeping them distinct m
 | Envelope | `IEvent` (empty marker) | `IMessageEvent` |
 | Context | `EventContext` — `Cancel`, `CancelReason`, `CorrelationId`, `Items` | `MessageContext(session, playerId, roomId)` |
 | Short-circuit | `ctx => ctx.Cancel` — **cancellable** | none |
+| Cancellable publishes | 5 gates (below); every other event is a notification | n/a |
 | Entry | `EventSystem.PublishAsync` / `PublishCancellableAsync` | driven from the socket |
 | Missing handler | silent | logs a warning |
 
@@ -221,6 +246,24 @@ Both use parallel handlers, `[Order]`-sorted behaviours, and inheritance dispatc
 134 `IEventPublisher` references, 17 event families, 162 `IEventHandler<>` implementations — **19 of
 the 26 handler files live in `Vortex.Observability/Events/`**. Audit and forensics is the dominant
 consumer of the event bus.
+
+### The cancellable gates
+
+Almost every event on the bus is a notification: a behaviour can set `ctx.Cancel`, but the publisher
+never reads the context back, so the game action happens anyway. Five publishes do read it, and each
+unwinds through a refusal path the code already had:
+
+| Event | Raised at | A cancel means |
+|---|---|---|
+| `GroupCreatingEvent` | `GroupDirectoryGrain` | group creation returns null, nothing charged |
+| `PlayerEnteringRoomEvent` | `RoomService.CompleteRoomEntryAsync` | `CantConnect(NoEntry)`, pending room cleared — covers the doorbell path too |
+| `PlayerChattingEvent` | `RoomChatSystem`, after mute and flood control | the line is dropped before anyone, sender included, sees it |
+| `CatalogPurchasingEvent` | `CatalogPurchaseGrain`, before the wallet and the journal | `CatalogPurchaseException(PurchaseFailed)` |
+| `TradeCompletingEvent` | `RoomTradingSystem.CommitTradeAsync`, before re-validation | `AbortCommitAsync` — both sides get their items back |
+
+The publisher is `ICancellableEventPublisher`, not `IEventPublisher`. A domain module that needs it
+references `Vortex.Events` directly, as `Vortex.Social`, `Vortex.Players`, `Vortex.Rooms` and
+`Vortex.Catalog` do.
 
 ## Configuration
 
@@ -249,6 +292,12 @@ consumer of the event bus.
 - `Vortex.Plugins/Extensions/ServiceCollectionExtensions.cs`
 - `Vortex.Primitives/Plugins/{IVortexPlugin,IHostPluginModule,IHostPlugin,IHostServices,IPluginCatalog,IPluginDbModule,PluginManifest}.cs`
 - `Vortex.Runtime/AssemblyProcessing/{ByteLoadingAlc,AssemblyMemoryLoader,AssemblyProcessor,AssemblyExplorer,IAssemblyFeatureProcessor}.cs`
-- `Vortex.Events/**`, `Vortex.Pipeline/EnvelopeHost.cs`
+- `Vortex.Events/**`, `Vortex.Pipeline/{EnvelopeHost,EnvelopeFeatureProcessor}.cs`
+- `Vortex.Primitives/Rooms/{IRoomEventListener,RoomEventListenerAttribute}.cs`,
+  `Vortex.Primitives/Rooms/Providers/IRoomEventListenerProvider.cs`
+- `Vortex.Rooms/Events/RoomEventListenerFeatureProcessor.cs`,
+  `Vortex.Rooms/Providers/RoomEventListenerProvider.cs`,
+  `Vortex.Rooms/Grains/Modules/RoomEventModule.cs`
 - `Vortex.Plugins.TestPlugin/{TestPlugin,FailurePoint}.cs`
-- `Vortex.Plugins.Tests/{PluginActivationFailureTests,ActivationRollbackTests,ExportRollbackTests}.cs`
+- `Vortex.Plugins.Tests/{PluginActivationFailureTests,PluginContractAssemblySharingTests,ActivationRollbackTests,ExportRollbackTests}.cs`
+- `Vortex.Rooms.Tests/Events/{RoomEventListenerExtensionTests,CancellablePreEventTests}.cs`

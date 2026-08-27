@@ -24,6 +24,7 @@ using Vortex.Primitives.Rooms.Object.Logic.Furniture;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
+using Vortex.Rooms.Tests.Support;
 using Vortex.Rooms.Wired.Logs;
 using Vortex.Tests.Support;
 using Xunit;
@@ -188,8 +189,10 @@ public sealed class RoomGrainMysteryBoxAbandonTests
                 FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
                 FakeProxy.Create<IRoomAvatarProvider>(_ => null),
                 FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
+                RoomGrainStubs.NoListeners(),
                 BuildGrainFactory(),
                 FakeProxy.Create<IEventPublisher>(_ => null),
+                RoomGrainStubs.NeverCancels(),
                 FakeProxy.Create<IPermissionService>(_ => null),
                 // Reports Enabled = false (the proxy's default for a bool), so the grain's timing is
                 // switched off here rather than measured against a stub.

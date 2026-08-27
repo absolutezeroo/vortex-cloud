@@ -13,6 +13,7 @@ using Vortex.Database.Entities.Pets;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
@@ -372,6 +373,18 @@ public sealed partial class RoomPetSystem
 
         await _roomGrain
             .ObjectModule.RemoveObjectAsync(ctx, seedItem, ct, ownerId)
+            .ConfigureAwait(false);
+
+        await _roomGrain
+            ._events.PublishAsync(
+                new ItemDeletedEvent(
+                    seedItemId.Value,
+                    ownerId.Value,
+                    ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
+                    ItemDeletionReason.MonsterplantSeedPlanted
+                ),
+                ct
+            )
             .ConfigureAwait(false);
 
         return snapshot;

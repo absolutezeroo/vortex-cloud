@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Prizes;
@@ -85,7 +86,11 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
 
         // Consume first: if the grant then fails the room is out one crackable, but the reverse order
         // would let a repeated click on a furniture that is still there mint prizes.
-        if (!await _roomGrain.ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true))
+        if (
+            !await _roomGrain
+                .ConsumeItemAsync(ctx, item, ItemDeletionReason.Cracked, ct)
+                .ConfigureAwait(true)
+        )
         {
             return;
         }

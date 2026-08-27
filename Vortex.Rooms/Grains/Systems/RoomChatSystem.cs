@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
@@ -76,6 +78,21 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 )
                 .ConfigureAwait(false);
 
+            return;
+        }
+
+        // After mute and flood control, before anyone sees the line: those two already refuse with a
+        // composer of their own, and a line dropped here is dropped for everybody including the
+        // speaker, so it must not have been sent yet.
+        EventContext chatting = await _roomGrain
+            ._cancellableEvents.PublishCancellableAsync(
+                new PlayerChattingEvent(playerId, _roomGrain.RoomId.Value, text, targetPlayerId),
+                CancellationToken.None
+            )
+            .ConfigureAwait(false);
+
+        if (chatting.Cancel)
+        {
             return;
         }
 

@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Pets;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
@@ -1014,5 +1015,19 @@ public sealed partial class RoomPetSystem
         item.SetAction(null);
         _roomGrain._state.ItemsById.Remove(foodItemId);
         _roomGrain._state.ItemIndex.OnItemDetached(item);
+
+        // The row was marked deleted inside the feed transaction, not here — but this is where the
+        // last use is spent, so this is where the deletion is announced.
+        await _roomGrain
+            ._events.PublishAsync(
+                new ItemDeletedEvent(
+                    foodItemId.Value,
+                    item.OwnerId.Value,
+                    ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
+                    ItemDeletionReason.PetFoodUsedUp
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

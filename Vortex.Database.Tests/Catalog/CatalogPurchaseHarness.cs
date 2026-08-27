@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Orleans.Runtime;
 using Vortex.Catalog.Grains;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
@@ -87,6 +88,11 @@ internal sealed class CatalogPurchaseHarness
 
     public bool AdvertisementThrows { get; set; }
 
+    /// <summary>Stands in for the behaviours a plugin would register on
+    /// <see cref="Vortex.Primitives.Events.CatalogPurchasingEvent" />: set before buying and the
+    /// grain sees its pre-purchase publish come back cancelled.</summary>
+    public bool CancelPurchase { get; set; }
+
     public int CreditBackCalls { get; private set; }
 
     private int _lastInventoryKey;
@@ -97,6 +103,14 @@ internal sealed class CatalogPurchaseHarness
             BuildGrainFactory(),
             new StubCatalogService(Offer, Product),
             new RecordingEventPublisher(Events),
+            FakeProxy.Create<ICancellableEventPublisher>(call =>
+            {
+                Events.Add((IEvent)call.Args![0]!);
+
+                return Task.FromResult(
+                    new EventContext { CorrelationId = string.Empty, Cancel = CancelPurchase }
+                );
+            }),
             FakeProxy.Create<IRoomAdvertisementService>(call =>
             {
                 if (call.Method.Name != nameof(IRoomAdvertisementService.CreateAsync))

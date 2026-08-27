@@ -26,6 +26,7 @@ namespace Vortex.Plugins.Tests;
 /// what the rollback actually stopped and disposed.
 /// </para>
 /// </summary>
+[Collection(TestPluginCollection.NAME)]
 public sealed class PluginActivationFailureTests : IDisposable
 {
     private const string PLUGIN_KEY = "vortex-test-plugin";

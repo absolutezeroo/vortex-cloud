@@ -18,10 +18,12 @@ public static class AssemblyMemoryLoader
         }
 
         string baseDir = Path.GetDirectoryName(mainDllPath)!;
+        string entryName = Path.GetFileNameWithoutExtension(mainDllPath);
         Dictionary<string, (byte[] asm, byte[]? pdb)> managed = new Dictionary<
             string,
             (byte[] asm, byte[]? pdb)
         >(StringComparer.OrdinalIgnoreCase);
+        List<string> shadowed = [];
 
         static byte[] ReadAll(string path) => File.ReadAllBytes(path);
 
@@ -34,6 +36,21 @@ public static class AssemblyMemoryLoader
                 continue;
             }
 
+            // A contract assembly copied into the plugin folder used to be byte-loaded here, giving
+            // the plugin its own IVortexPlugin, its own IEventHandler<> and its own event records —
+            // none of which the host would ever match, and nothing said so. Packaging was expected
+            // to avoid it and nothing enforced it. Now it resolves from the default context like
+            // every other shared type, so a mis-packaged plugin works instead of failing silently.
+            if (
+                !string.Equals(name, entryName, StringComparison.OrdinalIgnoreCase)
+                && ByteLoadingAlc.IsHostContractAssembly(name)
+            )
+            {
+                shadowed.Add(name);
+
+                continue;
+            }
+
             byte[] asmBytes = ReadAll(dll);
             string pdbPath = Path.ChangeExtension(dll, ".pdb");
             byte[]? pdbBytes = File.Exists(pdbPath) ? ReadAll(pdbPath) : null;
@@ -41,11 +58,10 @@ public static class AssemblyMemoryLoader
             managed[name] = (asmBytes, pdbBytes);
         }
 
-        ByteLoadingAlc alc = new ByteLoadingAlc(baseDir, managed);
-        string entryName = Path.GetFileNameWithoutExtension(mainDllPath);
+        ByteLoadingAlc alc = new ByteLoadingAlc(baseDir, managed, entryName);
         Assembly asm = alc.LoadFromAssemblyName(new AssemblyName(entryName));
 
-        return new LoadedAssembly(asm, alc, baseDir);
+        return new LoadedAssembly(asm, alc, baseDir, shadowed);
     }
 
     public static async Task<bool> UnloadAndWaitAsync(

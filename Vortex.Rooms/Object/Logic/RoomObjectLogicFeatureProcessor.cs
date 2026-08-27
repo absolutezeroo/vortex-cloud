@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Runtime;
@@ -10,10 +11,13 @@ using Vortex.Runtime.AssemblyProcessing;
 
 namespace Vortex.Rooms.Object.Logic;
 
-internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObjectLogicFactory)
-    : IAssemblyFeatureProcessor
+internal class RoomObjectLogicFeatureProcessor(
+    IRoomObjectLogicProvider roomObjectLogicFactory,
+    ILogger<RoomObjectLogicFeatureProcessor> logger
+) : IAssemblyFeatureProcessor
 {
     private readonly IRoomObjectLogicProvider _roomObjectLogicFactory = roomObjectLogicFactory;
+    private readonly ILogger _logger = logger;
 
     public Task<IDisposable> ProcessAsync(
         Assembly asm,
@@ -23,7 +27,13 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
     {
         CompositeDisposable batch = new CompositeDisposable();
 
-        foreach (Type? concrete in AssemblyExplorer.FindAssignees(asm, typeof(IRoomObjectLogic)))
+        foreach (
+            Type? concrete in AssemblyExplorer.FindAssignees(
+                asm,
+                typeof(IRoomObjectLogic),
+                WarnNonPublic
+            )
+        )
         {
             if (concrete is null)
             {
@@ -51,5 +61,19 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
         }
 
         return Task.FromResult<IDisposable>(batch);
+    }
+
+    private void WarnNonPublic(Type concrete)
+    {
+        if (concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false) is null)
+        {
+            return;
+        }
+
+        _logger.LogWarning(
+            "{Type} is marked [RoomObjectLogic] but is not public, so it was not registered and no "
+                + "furniture will ever bind to it. Make the type public.",
+            concrete.FullName
+        );
     }
 }

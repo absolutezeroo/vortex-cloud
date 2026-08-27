@@ -12,6 +12,19 @@ public sealed record CurrencyChangedEvent(
     long BalanceAfter
 ) : IEvent;
 
+/// <summary>
+/// Raised before anything durable happens in a catalog purchase — before the wallet is touched and
+/// before the commerce journal opens — and published cancellably: a behaviour that sets
+/// <c>Cancel</c> refuses the purchase the same way an unknown offer does.
+/// </summary>
+public sealed record CatalogPurchasingEvent(
+    int PlayerId,
+    string CatalogType,
+    int OfferId,
+    int Quantity,
+    int CreditCost
+) : IEvent;
+
 /// <summary>A player completed a catalog purchase.</summary>
 public sealed record CatalogPurchasedEvent(
     int PlayerId,

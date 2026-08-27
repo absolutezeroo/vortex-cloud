@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Events;
 
@@ -28,7 +30,23 @@ public sealed class RoomEventModule(RoomGrain roomGrain)
     {
         foreach (IRoomEventListener listener in _listeners)
         {
-            await listener.OnRoomEventAsync(evt, ct);
+            // Per-listener, because the list is no longer only the room's own systems: assemblies
+            // scanned at startup contribute listeners too, and a throw used to abandon every
+            // listener after it and surface inside whatever gameplay path raised the event.
+            try
+            {
+                await listener.OnRoomEventAsync(evt, ct);
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Room event listener {Listener} failed on {Event} in room {RoomId}",
+                    listener.GetType().FullName,
+                    evt.GetType().Name,
+                    _roomGrain.RoomId.Value
+                );
+            }
         }
     }
 }

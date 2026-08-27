@@ -9,6 +9,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -178,10 +179,16 @@ public sealed partial class RoomGrain
     /// Removes furniture that has been used up — a cracked egg, an opened present — from the room
     /// and the database. Returns false when the delete did not happen, so the caller can avoid
     /// handing out what it was about to.
+    /// <para>
+    /// This is the one place a furniture row is marked deleted, so it is also the one place
+    /// <see cref="ItemDeletedEvent" /> is published. <paramref name="reason" /> is what tells the
+    /// forensics record a cracked egg from a binned sticky, since the row itself no longer can.
+    /// </para>
     /// </summary>
     internal async Task<bool> ConsumeItemAsync(
         ActionContext ctx,
         IRoomItem item,
+        ItemDeletionReason reason,
         CancellationToken ct
     )
     {
@@ -211,6 +218,18 @@ public sealed partial class RoomGrain
         }
 
         await ObjectModule.RemoveObjectAsync(ctx, item, ct, item.OwnerId).ConfigureAwait(true);
+
+        await _events
+            .PublishAsync(
+                new ItemDeletedEvent(
+                    item.ObjectId.Value,
+                    item.OwnerId.Value,
+                    ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
+                    reason
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -279,7 +298,8 @@ public sealed partial class RoomGrain
             return false;
         }
 
-        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true);
+        return await ConsumeItemAsync(ctx, item, ItemDeletionReason.Binned, ct)
+            .ConfigureAwait(true);
     }
 
     public async Task<bool> EnterOneWayDoorAsync(
@@ -416,7 +436,10 @@ public sealed partial class RoomGrain
 
         // Consumed before the credits exist, for the reason the crackable is: the reverse order
         // turns one coin still standing on the floor into as many payouts as it can be clicked.
-        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true) ? credits : 0;
+        return await ConsumeItemAsync(ctx, item, ItemDeletionReason.CreditRedeemed, ct)
+            .ConfigureAwait(true)
+            ? credits
+            : 0;
     }
 
     public async Task<PresentContentsSnapshot?> OpenPresentAsync(
@@ -454,7 +477,10 @@ public sealed partial class RoomGrain
             return null;
         }
 
-        if (!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true))
+        if (
+            !await ConsumeItemAsync(ctx, item, ItemDeletionReason.PresentOpened, ct)
+                .ConfigureAwait(true)
+        )
         {
             return null;
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Catalog.Exceptions;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Grains;
@@ -27,6 +28,7 @@ public sealed partial class CatalogPurchaseGrain(
     IGrainFactory grainFactory,
     ICatalogService catalogService,
     IEventPublisher events,
+    ICancellableEventPublisher cancellableEvents,
     IRoomAdvertisementService roomAdvertisements,
     ICommerceJournal journal,
     ILogger<CatalogPurchaseGrain> logger
@@ -35,6 +37,7 @@ public sealed partial class CatalogPurchaseGrain(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogService _catalogService = catalogService;
     private readonly IEventPublisher _events = events;
+    private readonly ICancellableEventPublisher _cancellableEvents = cancellableEvents;
     private readonly IRoomAdvertisementService _roomAdvertisements = roomAdvertisements;
     private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<CatalogPurchaseGrain> _logger = logger;
@@ -80,6 +83,34 @@ public sealed partial class CatalogPurchaseGrain(
         int creditCost = debitRequests
             .Where(r => r.CurrencyKind.CurrencyType == CurrencyType.Credits)
             .Sum(r => r.Amount);
+
+        // The last point at which refusing costs nothing: the price is known, and neither the wallet
+        // nor the commerce journal has been touched. A cancel is reported as a plain purchase
+        // failure, which is the one outcome the client already knows how to show.
+        EventContext purchasing = await _cancellableEvents
+            .PublishCancellableAsync(
+                new CatalogPurchasingEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    catalogType.ToString(),
+                    offerId,
+                    quantity,
+                    creditCost
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (purchasing.Cancel)
+        {
+            _logger.LogInformation(
+                "Catalog purchase of offer {OfferId} by player {PlayerId} was cancelled: {Reason}",
+                offerId,
+                (int)this.GetPrimaryKeyLong(),
+                purchasing.CancelReason ?? string.Empty
+            );
+
+            throw new CatalogPurchaseException(CatalogPurchaseErrorType.PurchaseFailed);
+        }
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(
             (int)this.GetPrimaryKeyLong()

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
+    <ProjectReference Include="..\Vortex.Events\Vortex.Events.csproj" />
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />

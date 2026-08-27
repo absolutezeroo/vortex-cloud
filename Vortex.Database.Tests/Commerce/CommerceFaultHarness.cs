@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Catalog.Grains;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
@@ -84,6 +85,7 @@ internal sealed class CommerceFaultHarness : IDisposable
             BuildPurchaseGrainFactory(),
             new StubCatalogService(Offer),
             FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
+            NeverCancels(),
             FakeProxy.Create<IRoomAdvertisementService>(_ => Task.CompletedTask),
             new NullCommerceJournal(),
             NullLogger<CatalogPurchaseGrain>.Instance
@@ -93,6 +95,13 @@ internal sealed class CommerceFaultHarness : IDisposable
 
         return grain;
     }
+
+    /// <summary>A cancellable publisher with no behaviours behind it: every publish comes back with
+    /// <c>Cancel</c> false, which is what the purchase path sees in production too.</summary>
+    internal static ICancellableEventPublisher NeverCancels() =>
+        FakeProxy.Create<ICancellableEventPublisher>(_ =>
+            Task.FromResult(new EventContext { CorrelationId = string.Empty })
+        );
 
     private IGrainFactory BuildPurchaseGrainFactory()
     {

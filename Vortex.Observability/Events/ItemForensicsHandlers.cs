@@ -143,9 +143,7 @@ public sealed class ItemDeletedForensicsHandler(IItemForensics forensics)
                 EventType = ItemEventType.Deleted,
                 ActorPlayerId = e.ActorPlayerId,
                 FromOwnerId = e.OwnerId,
-                Data = e.Reason is null
-                    ? null
-                    : JsonSerializer.Serialize(new { reason = e.Reason }),
+                Data = JsonSerializer.Serialize(new { reason = e.Reason.ToString() }),
             }
         );
 

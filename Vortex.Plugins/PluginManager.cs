@@ -149,6 +149,17 @@ public sealed class PluginManager(
                 try
                 {
                     asm = GetLoadedPluginAssembly(m, folder);
+
+                    if (asm.ShadowedContractAssemblies.Count > 0)
+                    {
+                        _logger.LogWarning(
+                            "Plugin {Key} ships host contract assemblies ({Assemblies}); they were "
+                                + "ignored in favour of the host's own copies. Reference them with "
+                                + "Private=false so the package stops carrying dead files.",
+                            m.Key,
+                            string.Join(", ", asm.ShadowedContractAssemblies)
+                        );
+                    }
                 }
                 catch (Exception ex)
                 {

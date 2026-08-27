@@ -228,7 +228,11 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
 
         // Consume first: if the grant then fails the player is out a mystery trophy, but the reverse
         // order would let a repeated click mint trophies from one furniture.
-        if (!await ConsumeMysteryFurnitureAsync(ctx, trophy, ct).ConfigureAwait(true))
+        if (
+            !await _roomGrain
+                .ConsumeItemAsync(ctx, trophy, ItemDeletionReason.MysteryTrophyOpened, ct)
+                .ConfigureAwait(true)
+        )
         {
             return;
         }
@@ -429,7 +433,11 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
 
         // The box goes next, for the same reason the key did: while it still exists a second pairing
         // could claim it. If this fails the key is already gone, so refund it rather than eating it.
-        if (!await ConsumeMysteryFurnitureAsync(ctx, box, ct).ConfigureAwait(true))
+        if (
+            !await _roomGrain
+                .ConsumeItemAsync(ctx, box, ItemDeletionReason.MysteryBoxOpened, ct)
+                .ConfigureAwait(true)
+        )
         {
             await keyHolderGrain
                 .GrantKeyAsync(session.Color, "refund:box-open-failed", ct)
@@ -511,46 +519,6 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
                 }
             )
             .ConfigureAwait(true);
-    }
-
-    /// <summary>Removes a mystery furniture from the room and the database. Returns false when the
-    /// delete did not happen, so the caller can avoid handing out a prize for it.</summary>
-    private async Task<bool> ConsumeMysteryFurnitureAsync(
-        ActionContext ctx,
-        IRoomItem item,
-        CancellationToken ct
-    )
-    {
-        try
-        {
-            await using VortexDbContext dbCtx = await _roomGrain
-                ._dbCtxFactory.CreateDbContextAsync(ct)
-                .ConfigureAwait(true);
-
-            FurnitureEntity entity = new() { Id = item.ObjectId.Value };
-            dbCtx.Attach(entity);
-            entity.DeletedAt = DateTime.UtcNow;
-            dbCtx.Entry(entity).Property(f => f.DeletedAt).IsModified = true;
-
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            _roomGrain._logger.LogError(
-                ex,
-                "Failed to delete mystery furniture {ObjectId} in room {RoomId}",
-                item.ObjectId.Value,
-                _roomGrain._state.RoomId.Value
-            );
-
-            return false;
-        }
-
-        await _roomGrain
-            .ObjectModule.RemoveObjectAsync(ctx, item, ct, item.OwnerId)
-            .ConfigureAwait(true);
-
-        return true;
     }
 
     /// <summary>Repaints a box, tolerating the item having already left the room.</summary>

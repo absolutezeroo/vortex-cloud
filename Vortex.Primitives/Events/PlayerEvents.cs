@@ -15,9 +15,32 @@ public sealed record PlayerDisconnectedEvent(
     long SessionDurationSeconds
 ) : IEvent;
 
+/// <summary>
+/// Raised before a player is let into a room, and published cancellably: a behaviour that sets
+/// <c>Cancel</c> refuses the entry, and the client is told the same way a locked door tells it.
+/// Every other check the room does — ban, capacity, password, doorbell — has already passed.
+/// </summary>
+public sealed record PlayerEnteringRoomEvent(PlayerId PlayerId, int RoomId) : IEvent;
+
 /// <summary>Player entered a room for a tracked user journey.</summary>
 public sealed record PlayerEnteredRoomEvent(PlayerId PlayerId, int RoomId, DateTime EnteredAtUtc)
     : IEvent;
+
+/// <summary>
+/// Raised before a chat line reaches anyone, and published cancellably: cancelling drops the line
+/// silently. It carries the text but cannot rewrite it — the publisher reads only <c>Cancel</c>, so
+/// a behaviour that edits the message would be changing something nobody reads back.
+/// <para>
+/// Covers whispers too (<paramref name="TargetPlayerId" /> is set for those), unlike the room-local
+/// <c>PlayerChatEvent</c> the wired keyword trigger listens on, which is public chat only.
+/// </para>
+/// </summary>
+public sealed record PlayerChattingEvent(
+    PlayerId PlayerId,
+    int RoomId,
+    string Message,
+    PlayerId? TargetPlayerId
+) : IEvent;
 
 /// <summary>Player left a room for a tracked user journey.</summary>
 public sealed record PlayerLeftRoomEvent(

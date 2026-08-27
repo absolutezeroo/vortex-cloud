@@ -24,6 +24,7 @@ using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
 using Vortex.Rooms.Object.Avatars.Player;
+using Vortex.Rooms.Tests.Support;
 using Vortex.Rooms.Wired.Logs;
 using Vortex.Tests.Support;
 using Xunit;
@@ -130,8 +131,10 @@ public sealed class ChatFloodTests
             FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
             FakeProxy.Create<IRoomAvatarProvider>(_ => null),
             FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
+            RoomGrainStubs.NoListeners(),
             FakeProxy.Create<IGrainFactory>(_ => null),
             FakeProxy.Create<IEventPublisher>(_ => null),
+            RoomGrainStubs.NeverCancels(),
             FakeProxy.Create<IPermissionService>(_ => null),
             FakeProxy.Create<IVortexMetrics>(_ => null),
             FakeProxy.Create<IRoomModerationStore>(_ => null),

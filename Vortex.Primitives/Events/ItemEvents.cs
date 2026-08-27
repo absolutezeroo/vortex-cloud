@@ -11,6 +11,19 @@ public sealed record ItemCreatedEvent(int ItemId, int OwnerId, string? Data) : I
 /// and fraud review; individual item moves are recorded separately as <see cref="ItemTradedEvent"/>.</summary>
 public sealed record TradeStartedEvent(int PlayerOneId, int PlayerTwoId, int RoomId) : IEvent;
 
+/// <summary>
+/// Raised when both sides have confirmed but before ownership is re-validated and swapped, and
+/// published cancellably: a behaviour that sets <c>Cancel</c> aborts the commit exactly as a failed
+/// ownership re-validation does, and both participants get the trade back rather than a broken one.
+/// </summary>
+public sealed record TradeCompletingEvent(
+    int PlayerOneId,
+    int PlayerTwoId,
+    IReadOnlyList<int> PlayerOneItemIds,
+    IReadOnlyList<int> PlayerTwoItemIds,
+    int RoomId
+) : IEvent;
+
 /// <summary>Two players completed a trade and items changed hands atomically.</summary>
 public sealed record TradeCompletedEvent(
     int PlayerOneId,
@@ -77,11 +90,31 @@ public sealed record ItemPickedUpEvent(
 ) : IEvent;
 
 /// <summary>
-/// A furniture item was permanently destroyed (recycler/ecotron, staff deletion, consumed, ...).
-/// No destruction flow exists in the core yet; this event is the ready extension point for one.
+/// Why a furniture row stopped existing. Once <c>DeletedAt</c> is stamped the row keeps no trace of
+/// what spent it, so this is the only thing that tells a cracked egg from a binned sticky in the
+/// forensics trail.
 /// </summary>
-public sealed record ItemDeletedEvent(int ItemId, int OwnerId, int? ActorPlayerId, string? Reason)
-    : IEvent;
+public enum ItemDeletionReason
+{
+    Binned,
+    CreditRedeemed,
+    PresentOpened,
+    Cracked,
+    MysteryBoxOpened,
+    MysteryTrophyOpened,
+    PetFoodUsedUp,
+    MonsterplantSeedPlanted,
+}
+
+/// <summary>
+/// A furniture item was permanently destroyed (consumed by the room, cracked, opened, ...).
+/// </summary>
+public sealed record ItemDeletedEvent(
+    int ItemId,
+    int OwnerId,
+    int? ActorPlayerId,
+    ItemDeletionReason Reason
+) : IEvent;
 
 /// <summary>
 /// A wrapped present was opened. The parcel is consumed and the contents land in the opener's

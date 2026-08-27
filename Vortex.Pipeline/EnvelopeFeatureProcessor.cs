@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Vortex.Pipeline.Attributes;
 using Vortex.Pipeline.Delegates;
 using Vortex.Runtime;
@@ -13,13 +14,15 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
     EnvelopeHost<TEnvelope, TMeta, TContext> registry,
     EnvelopeInvokerFactory<TContext> invokerFactory,
     Type openHandlerInterface,
-    Type openBehaviorInterface
+    Type openBehaviorInterface,
+    ILogger logger
 ) : IAssemblyFeatureProcessor
 {
     private readonly EnvelopeHost<TEnvelope, TMeta, TContext> _registry = registry;
     private readonly EnvelopeInvokerFactory<TContext> _invokerFactory = invokerFactory;
     private readonly Type _openHandlerInterface = openHandlerInterface;
     private readonly Type _openBehaviorInterface = openBehaviorInterface;
+    private readonly ILogger _logger = logger;
 
     public Task<IDisposable> ProcessAsync(
         Assembly asm,
@@ -34,7 +37,11 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
                 Type concrete,
                 Type closedIface,
                 Type[] args
-            ) in AssemblyExplorer.FindClosedImplementations(asm, _openHandlerInterface)
+            ) in AssemblyExplorer.FindClosedImplementations(
+                asm,
+                _openHandlerInterface,
+                WarnNonPublic
+            )
         )
         {
             Type envType = args[0];
@@ -57,7 +64,11 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
                 Type concrete,
                 Type closedIface,
                 Type[] args
-            ) in AssemblyExplorer.FindClosedImplementations(asm, _openBehaviorInterface)
+            ) in AssemblyExplorer.FindClosedImplementations(
+                asm,
+                _openBehaviorInterface,
+                WarnNonPublic
+            )
         )
         {
             Type envType = args[0];
@@ -76,4 +87,16 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
 
         return Task.FromResult<IDisposable>(batch);
     }
+
+    /// <summary>
+    /// A non-public handler or behaviour compiles, ships, and is never registered — the scan takes
+    /// public types only. Silence there is indistinguishable from "my handler never runs", so it is
+    /// reported instead of dropped.
+    /// </summary>
+    private void WarnNonPublic(Type concrete) =>
+        _logger.LogWarning(
+            "{Type} implements a scanned pipeline interface but is not public, so it was not "
+                + "registered and will never run. Make the type public.",
+            concrete.FullName
+        );
 }

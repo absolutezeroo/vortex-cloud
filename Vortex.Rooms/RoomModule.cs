@@ -6,6 +6,7 @@ using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Rooms.Configuration;
+using Vortex.Rooms.Events;
 using Vortex.Rooms.Object.Logic;
 using Vortex.Rooms.Providers;
 using Vortex.Rooms.Wired.Logs;
@@ -30,9 +31,11 @@ public sealed class RoomModule : IHostPluginModule
         );
         services.AddSingleton<IRoomObjectLogicProvider, RoomObjectLogicProvider>();
         services.AddSingleton<IRoomWiredVariablesProvider, RoomWiredVariablesProvider>();
+        services.AddSingleton<IRoomEventListenerProvider, RoomEventListenerProvider>();
 
         services.AddSingleton<IAssemblyFeatureProcessor, RoomObjectLogicFeatureProcessor>();
         services.AddSingleton<IAssemblyFeatureProcessor, WiredVariableFeatureProcessor>();
+        services.AddSingleton<IAssemblyFeatureProcessor, RoomEventListenerFeatureProcessor>();
 
         services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<IRoomModerationStore, RoomModerationStore>();

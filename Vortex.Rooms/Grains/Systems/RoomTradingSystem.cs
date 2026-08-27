@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
@@ -402,6 +403,36 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
     private async Task CommitTradeAsync(RoomTradeSession session, CancellationToken ct)
     {
         bool swapped = false;
+
+        // Before the re-validation, so a refusal costs nothing and unwinds through the path that
+        // already exists for "the offer no longer holds": both sides get their items back.
+        EventContext completing = await _roomGrain
+            ._cancellableEvents.PublishCancellableAsync(
+                new TradeCompletingEvent(
+                    session.UserOneId.Value,
+                    session.UserTwoId.Value,
+                    [.. session.UserOneItemIds],
+                    [.. session.UserTwoItemIds],
+                    _roomGrain._state.RoomId.Value
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (completing.Cancel)
+        {
+            _roomGrain._logger.LogInformation(
+                "Trade between {UserOne} and {UserTwo} in room {RoomId} was cancelled: {Reason}",
+                session.UserOneId,
+                session.UserTwoId,
+                _roomGrain._state.RoomId,
+                completing.CancelReason ?? string.Empty
+            );
+
+            await AbortCommitAsync(session, ct).ConfigureAwait(true);
+
+            return;
+        }
 
         try
         {

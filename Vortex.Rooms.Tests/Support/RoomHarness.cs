@@ -11,6 +11,7 @@ using Orleans;
 using Orleans.Streams;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
+using Vortex.Events.Registry;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
@@ -94,8 +95,31 @@ internal sealed class RoomHarness
             FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
             FakeProxy.Create<IRoomAvatarProvider>(_ => null),
             FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
+            FakeProxy.Create<IRoomEventListenerProvider>(_ => Array.Empty<IRoomEventListener>()),
             BuildGrainFactory(),
-            FakeProxy.Create<IEventPublisher>(_ => null),
+            FakeProxy.Create<IEventPublisher>(call =>
+            {
+                if (call.Method.Name == nameof(IEventPublisher.PublishAsync))
+                {
+                    PublishedEvents.Add((IEvent)call.Args![0]!);
+                }
+
+                return null;
+            }),
+            FakeProxy.Create<ICancellableEventPublisher>(call =>
+            {
+                IEvent published = (IEvent)call.Args![0]!;
+
+                PublishedEvents.Add(published);
+
+                return Task.FromResult(
+                    new EventContext
+                    {
+                        CorrelationId = string.Empty,
+                        Cancel = CancelWhen(published),
+                    }
+                );
+            }),
             BuildPermissionService(),
             FakeProxy.Create<IVortexMetrics>(_ => null),
             FakeProxy.Create<IRoomModerationStore>(_ => null),
@@ -215,6 +239,13 @@ internal sealed class RoomHarness
     /// see that something fired without standing the whole wired engine up.
     /// </summary>
     public List<RoomEvent> RoomEvents { get; } = [];
+
+    /// <summary>Everything the room put on the global event bus, in order.</summary>
+    public List<IEvent> PublishedEvents { get; } = [];
+
+    /// <summary>Stands in for the behaviours a plugin would register: return true for an event and
+    /// the room sees that publish come back cancelled.</summary>
+    public Func<IEvent, bool> CancelWhen { get; set; } = _ => false;
 
     /// <summary>
     /// Which Relics each player holds. A test that wants one on the trade table puts it here first,

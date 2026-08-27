@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Events.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
@@ -41,7 +42,8 @@ internal sealed partial class RoomService(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbContextFactory,
     IRoomModerationStore roomModerationStore,
-    IEventPublisher events
+    IEventPublisher events,
+    ICancellableEventPublisher cancellableEvents
 ) : IRoomService
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
@@ -51,6 +53,7 @@ internal sealed partial class RoomService(
     private readonly IRoomModerationStore _roomModerationStore = roomModerationStore;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IEventPublisher _events = events;
+    private readonly ICancellableEventPublisher _cancellableEvents = cancellableEvents;
 
     public async Task OpenRoomForPlayerIdAsync(
         ActionContext ctx,
@@ -152,6 +155,34 @@ internal sealed partial class RoomService(
     )
     {
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+
+        // The last gate, and the only one outside code can add. Placed here rather than in
+        // OpenRoomForPlayerIdAsync so it also covers the doorbell path: a player let in by an owner
+        // arrives through this method and nowhere else. Nothing has been sent to the client yet, so
+        // a refusal here looks exactly like a locked door refusing.
+        EventContext entering = await _cancellableEvents
+            .PublishCancellableAsync(new PlayerEnteringRoomEvent(playerId, roomId.Value), ct)
+            .ConfigureAwait(false);
+
+        if (entering.Cancel)
+        {
+            _logger.LogInformation(
+                "Room entry of player {PlayerId} into room {RoomId} was cancelled: {Reason}",
+                playerId.Value,
+                roomId.Value,
+                entering.CancelReason ?? string.Empty
+            );
+
+            await playerPresence
+                .SendComposerAsync(
+                    new CantConnectMessageComposer { ErrorType = RoomConnectionErrorType.NoEntry }
+                )
+                .ConfigureAwait(false);
+            await playerPresence.SetPendingRoomAsync(RoomId.Invalid, false).ConfigureAwait(false);
+
+            return;
+        }
+
         // Builds the whole entry payload -- core, security, avatars, map and furni. Deliberately
         // the aggregate; see EnterRoomAsync above.
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
