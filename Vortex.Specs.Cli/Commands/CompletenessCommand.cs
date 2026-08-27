@@ -50,15 +50,19 @@ public static class CompletenessCommand
         // The box surface, scored against the same build. Always computed: it is the number the
         // packet matrix cannot see, and leaving it behind a flag is how it stops being read.
         WiredSurfaceReport wired = WiredSurfaceAnalyzer.Analyze(workspace, world.Emulator.Revision);
+        FurnitureSurfaceReport furniture = FurnitureSurfaceAnalyzer.Analyze(
+            workspace.RepositoryRoot
+        );
 
-        Print(report, wired, command);
+        Print(report, wired, furniture, command);
 
         if (command.Has("write"))
         {
             IReadOnlyList<string> written = CompletenessWriter.Write(
                 Path.Combine(root, "generated"),
                 report,
-                wired
+                wired,
+                furniture
             );
 
             Program.Heading($"Wrote {written.Count} files");
@@ -105,6 +109,7 @@ public static class CompletenessCommand
     private static void Print(
         CompletenessReport report,
         WiredSurfaceReport wired,
+        FurnitureSurfaceReport furniture,
         CommandLine command
     )
     {
@@ -144,6 +149,37 @@ public static class CompletenessCommand
         ]);
 
         foreach (string problem in wired.Problems)
+        {
+            Console.WriteLine($"  {problem}");
+        }
+
+        // The widest blast radius per gap of the three surfaces: one unbound name strands every
+        // definition carrying it, and the furni just sits there.
+        Program.Heading("Furniture logic (a third surface)");
+        Program.Rows([
+            ("logic names in the pass", Number(furniture.Logics.Count)),
+            ("definitions covered", Number(furniture.Definitions)),
+            ("answered by a logic", furniture.Share),
+            ("stranded", Number(furniture.Stranded)),
+        ]);
+
+        foreach (
+            FurnitureLogicObligation logic in furniture
+                .Logics.Where(l => !l.Registered)
+                .Take(command.ValueOrDefault("limit", 10))
+        )
+        {
+            Console.WriteLine(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "  {0,8} definitions   {1}",
+                    logic.Definitions,
+                    logic.Logic
+                )
+            );
+        }
+
+        foreach (string problem in furniture.Problems)
         {
             Console.WriteLine($"  {problem}");
         }

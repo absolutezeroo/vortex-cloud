@@ -27,7 +27,8 @@ public static class CompletenessWriter
 
     public static IReadOnlyList<GeneratedFile> Render(
         CompletenessReport report,
-        WiredSurfaceReport? wired = null
+        WiredSurfaceReport? wired = null,
+        FurnitureSurfaceReport? furniture = null
     )
     {
         List<GeneratedFile> files =
@@ -40,6 +41,11 @@ public static class CompletenessWriter
         if (wired is not null)
         {
             files.Add(new GeneratedFile("WIRED-BOXES.md", WiredBoxes(wired)));
+        }
+
+        if (furniture is not null)
+        {
+            files.Add(new GeneratedFile("FURNITURE-LOGIC.md", FurnitureLogic(furniture)));
         }
 
         files.AddRange(
@@ -56,10 +62,11 @@ public static class CompletenessWriter
     public static IReadOnlyList<string> Write(
         string generatedRoot,
         CompletenessReport report,
-        WiredSurfaceReport? wired = null
+        WiredSurfaceReport? wired = null,
+        FurnitureSurfaceReport? furniture = null
     )
     {
-        IReadOnlyList<GeneratedFile> files = Render(report, wired);
+        IReadOnlyList<GeneratedFile> files = Render(report, wired, furniture);
         string domains = Path.Combine(generatedRoot, "domains");
 
         Directory.CreateDirectory(domains);
@@ -364,6 +371,82 @@ public static class CompletenessWriter
         }
 
         AppendLines(text, "\n## Problems", wired.Problems);
+
+        return text.ToString();
+    }
+
+    private static string FurnitureLogic(FurnitureSurfaceReport furniture)
+    {
+        StringBuilder text = new();
+
+        text.Append("# Furniture logic\n\n").Append(Preamble).Append('\n');
+
+        if (!furniture.HasSource)
+        {
+            text.Append("No asset-derived binding pass to read.\n");
+            AppendLines(text, "\n## Problems", furniture.Problems);
+
+            return text.ToString();
+        }
+
+        text.Append(
+            "A **third** denominator, and the one with the widest blast radius per gap. A missing\n"
+                + "packet costs one interaction. A logic name nothing binds costs **every definition\n"
+                + "carrying it**, silently — the furni resolves to its family default, places, sits\n"
+                + "there and does nothing. No error, nothing a player can report but \"it doesn't work\".\n\n"
+                + $"Denominator: `{furniture.SourceFile}`, the committed asset-derived binding pass.\n"
+                + "Definitions that already carried a registered Vortex logic are absent from it by\n"
+                + "design — those were never at risk.\n\n"
+        );
+
+        AppendTable(
+            text,
+            ["measure", "value"],
+            [
+                ["logic names in the pass", Number(furniture.Logics.Count)],
+                ["definitions covered", Number(furniture.Definitions)],
+                ["answered by a logic", furniture.Share],
+                ["stranded on an unregistered name", Number(furniture.Stranded)],
+            ]
+        );
+
+        List<FurnitureLogicObligation> stranded = [.. furniture.Logics.Where(l => !l.Registered)];
+
+        if (stranded.Count > 0)
+        {
+            text.Append("\n## Unregistered, worst first\n\n")
+                .Append(
+                    "Ranked by definitions impacted, because that is the only thing separating an\n"
+                        + "intentional fallback from an accident.\n\n"
+                );
+
+            AppendTable(
+                text,
+                ["definitions", "logic"],
+                [.. stranded.Select(l => new[] { Number(l.Definitions), l.Logic })]
+            );
+        }
+
+        text.Append("\n## Answered\n\n");
+        AppendTable(
+            text,
+            ["definitions", "logic", "registered by"],
+            [
+                .. furniture
+                    .Logics.Where(l => l.Registered)
+                    .Select(l =>
+                        new[] { Number(l.Definitions), l.Logic, string.Join(", ", l.RegisteredBy) }
+                    ),
+            ]
+        );
+
+        text.Append(
+            "\n> Name-level, not family-level. The provider keys a logic by name **and** family, so a\n"
+                + "> name registered for floor furniture only still leaves a wall definition carrying it\n"
+                + "> on the family default. This report does not yet see that.\n"
+        );
+
+        AppendLines(text, "\n## Problems", furniture.Problems);
 
         return text.ToString();
     }

@@ -19,7 +19,7 @@ target_client:
   incoming: 580
   outgoing: 588
 
-phase: FC-W1
+phase: FC-F1
 active_slice: null
 
 # Reproduce with: dotnet run --project Vortex.Specs.Cli -- completeness
@@ -46,6 +46,17 @@ wired_box_surface:
   missing: 30
   by_family: "trigger 26/26, action 44/58, condition 41/45, selector 20/20, addon 16/26, variable 7/9"
   note: "an enum member is not a box: WiredActionType declares 47, only 44 have a logic"
+
+# A THIRD surface. Widest blast radius per gap: one unbound name strands every definition carrying
+# it, silently. Denominator = Vortex.Database/Seeds/furni_logic_bindings.sql, the committed
+# asset-derived pass. Written to generated/FURNITURE-LOGIC.md.
+furniture_logic_surface:
+  logic_names: 73
+  definitions_covered: 42059
+  answered: 38112
+  stranded: 3947
+  worst: "furniture_purchasable_clothing 2862, furniture_soundblock 418, furniture_credit 135"
+  limit: "name-level, not family-level: the provider keys by name AND family, so 90.6% is an upper bound"
   # protocol_mapping is the denominator less missing and not_applicable, restated. It is not a
   # second axis; implementation and verified_complete are.
   # unknown: 0 means nothing hits a case the classifier refuses to judge, not that all is understood.
@@ -84,7 +95,7 @@ slices:
   FC-2: "the 43 anonymous headers named; 16 proven unreachable in this build (ADR-FC-002); docs/completeness/reviews/FC-2-triage.md"
   FC-4: "RemoveNftFromTrade@521 — a Relic could be put on the trade table and never taken off; docs/completeness/reviews/FC-4-remove-nft-from-trade.md"
   FC-W1: "the wired box surface, 154/184, generated beside the packet matrix; docs/completeness/reviews/FC-W1-wired-box-surface.md"
+  FC-F1: "the furniture logic surface, 3947 definitions stranded; docs/completeness/reviews/FC-F1-furniture-logic-surface.md"
 
 next:
-  - FC-F1
   - FC-RC
