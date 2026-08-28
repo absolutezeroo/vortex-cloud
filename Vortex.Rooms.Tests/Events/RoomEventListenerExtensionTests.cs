@@ -30,7 +30,7 @@ public sealed class RoomEventListenerExtensionTests
     {
         RoomEventListenerProvider provider = NewProvider();
 
-        await Process(provider).ConfigureAwait(true);
+        await ProcessAsync(provider).ConfigureAwait(true);
 
         IRoomGrain roomOne = FakeProxy.Create<IRoomGrain>(_ => null);
         IRoomGrain roomTwo = FakeProxy.Create<IRoomGrain>(_ => null);
@@ -54,7 +54,7 @@ public sealed class RoomEventListenerExtensionTests
         // would build a second copy of each of them into every room.
         RoomEventListenerProvider provider = NewProvider();
 
-        await Process(provider).ConfigureAwait(true);
+        await ProcessAsync(provider).ConfigureAwait(true);
 
         provider
             .BuildListenersForRoom(FakeProxy.Create<IRoomGrain>(_ => null))
@@ -69,7 +69,7 @@ public sealed class RoomEventListenerExtensionTests
         // unload clean rather than leaving dead factories behind.
         RoomEventListenerProvider provider = NewProvider();
 
-        using (await Process(provider).ConfigureAwait(true)) { }
+        using (await ProcessAsync(provider).ConfigureAwait(true)) { }
 
         provider.BuildListenersForRoom(FakeProxy.Create<IRoomGrain>(_ => null)).Should().BeEmpty();
     }
@@ -99,7 +99,7 @@ public sealed class RoomEventListenerExtensionTests
     private static RoomEventListenerProvider NewProvider() =>
         new(new ServiceCollection().BuildServiceProvider());
 
-    private static Task<IDisposable> Process(IRoomEventListenerProvider provider) =>
+    private static Task<IDisposable> ProcessAsync(IRoomEventListenerProvider provider) =>
         new RoomEventListenerFeatureProcessor(
             provider,
             NullLogger<RoomEventListenerFeatureProcessor>.Instance
