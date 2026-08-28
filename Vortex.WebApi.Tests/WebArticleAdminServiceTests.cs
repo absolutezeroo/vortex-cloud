@@ -124,6 +124,87 @@ public sealed class WebArticleAdminServiceTests
     }
 
     [Fact]
+    public async Task Accepts_FormattedRunsAndLists()
+    {
+        // What the dashboard's writing surface produces. Bold and a link are flags on a run, not
+        // markup, so this is still a body with no HTML in it.
+        (WebArticleAdminService service, int articleId) = await SeededAsync();
+
+        WebArticleAdminResult result = await SaveBodyAsync(
+            service,
+            articleId,
+            """
+            [{"type":"p","text":[{"t":"avant "},{"t":"gras","b":true,"i":true},
+                                 {"t":"lien","href":"https://habbo.fr"}]},
+             {"type":"list","ordered":true,"items":["un",[{"t":"deux","s":true}]]}]
+            """
+        );
+
+        result.Success.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Refuses_AJavascriptHrefInsideARun()
+    {
+        // The new surface the editor opened. A button's href was already checked; a link applied to
+        // three words in the middle of a paragraph reaches the reader as the same anchor, and
+        // checking only the button would have left the interesting half open.
+        (WebArticleAdminService service, int articleId) = await SeededAsync();
+
+        WebArticleAdminResult result = await SaveBodyAsync(
+            service,
+            articleId,
+            """[{"type":"p","text":[{"t":"clique","href":"javascript:alert(1)"}]}]"""
+        );
+
+        result.Error.Should().Be(WebArticleBody.ErrorHref);
+    }
+
+    [Fact]
+    public async Task Refuses_ARunWithoutText()
+    {
+        (WebArticleAdminService service, int articleId) = await SeededAsync();
+
+        WebArticleAdminResult result = await SaveBodyAsync(
+            service,
+            articleId,
+            """[{"type":"p","text":[{"b":true}]}]"""
+        );
+
+        result.Error.Should().Be(WebArticleBody.ErrorBody);
+    }
+
+    [Fact]
+    public async Task Refuses_AParagraphOfRunsWithNothingInThem()
+    {
+        // An empty paragraph is refused whichever shape it arrives in. The plain-string rule has
+        // always said so; runs must not be the way around it.
+        (WebArticleAdminService service, int articleId) = await SeededAsync();
+
+        WebArticleAdminResult result = await SaveBodyAsync(
+            service,
+            articleId,
+            """[{"type":"p","text":[{"t":"   "},{"t":""}]}]"""
+        );
+
+        result.Error.Should().Be(WebArticleBody.ErrorBody);
+    }
+
+    [Fact]
+    public async Task Refuses_AnEmptyList()
+    {
+        (WebArticleAdminService service, int articleId) = await SeededAsync();
+
+        WebArticleAdminResult result = await SaveBodyAsync(
+            service,
+            articleId,
+            """[{"type":"list","items":[]}]"""
+        );
+
+        result.Error.Should().Be(WebArticleBody.ErrorBody);
+    }
+
+    [Fact]
     public async Task Refuses_ASecondArticleWithTheSameSlug()
     {
         (WebArticleAdminService service, _) = await SeededAsync();

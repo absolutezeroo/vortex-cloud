@@ -92,6 +92,15 @@
       Command="npm run lint"
       WorkingDirectory="$(MSBuildThisFileDirectory)Vortex.Dashboard.Web"
     />
+    <!--
+      The front-end logic that has no C# equivalent to test it: the article body's round trip
+      between the stored block array and the editor's document. A lost mark still renders as a
+      correct paragraph, so nothing about it is visible in a build log or on screen.
+    -->
+    <Exec
+      Command="npm run test"
+      WorkingDirectory="$(MSBuildThisFileDirectory)Vortex.Dashboard.Web"
+    />
     <!-- The hooks themselves: exit 0 allows, exit 2 blocks. A broken hook fails open, silently. -->
     <Exec
       Command="node scripts/hooks/__test/run.mjs"

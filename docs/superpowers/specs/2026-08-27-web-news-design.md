@@ -38,7 +38,8 @@ construit ensuite contre `/api/admin/…` sans que le serveur bouge.
 | Décision | Choix | Raison |
 | --- | --- | --- |
 | Étendue | Noyau éditorial | Brouillon/programmé/épinglé/catégories/archive. L'engagement (j'aime, commentaires) et les campagnes (récompenses réclamables) sont des tranches ultérieures : ni les mêmes risques, ni les mêmes surfaces. |
-| Corps d'article | Blocs JSON typés | Zéro dépendance nouvelle, zéro assainisseur, XSS impossible par construction. Markdown aurait ajouté Markdig + un sanitizer, et c'est le sanitizer qui serait devenu la frontière de sécurité du site public. |
+| Corps d'article | Blocs JSON typés | Zéro assainisseur, XSS impossible par construction. Markdown aurait ajouté Markdig + un sanitizer, et c'est le sanitizer qui serait devenu la frontière de sécurité du site public. |
+| Écran de rédaction | TipTap, schéma restreint aux blocs | La pile de textareas n'était pas une surface d'écriture. TipTap est *headless* : son document est mappé vers les mêmes blocs (`articleBlocks.js`), donc le rédacteur gagne l'éditeur et la base ne gagne pas de HTML. CKEditor ne sait produire que du HTML, ce qui aurait ramené l'assainisseur que la ligne au-dessus refuse. |
 | Multilingue | Site entier, langue au choix du visiteur | Une URL par article, langue résolue côté API. Pas d'URL par langue : le SEO multilingue (hreflang, canonical, sitemap, routeur en mode history) est un chantier à lui seul. |
 | Service en prod | `Vortex.WebApi` sert le `dist/` | Même origine que `/api`, donc le cookie de session marche sans reverse proxy ; aucune infra en plus ; aucun couplage de build entre les deux dépôts ; et ça débloque la route OG. |
 | Emplacement de la logique | Service EF, pas un grain | Un article est du contenu, pas de l'état de jeu vivant. `IWebApiArticleService` sur `IDbContextFactory<VortexDbContext>`, comme `WebApiPlayerService`. |
@@ -214,7 +215,7 @@ Slug inconnu, article en brouillon, programmé pour plus tard, ou supprimé → 
 `related` : jusqu'à 3 articles publiés de la même catégorie, le plus récent d'abord, l'article courant
 exclu ; complété par les plus récents toutes catégories si la catégorie n'en fournit pas assez.
 
-### Les cinq types de blocs
+### Les six types de blocs
 
 Contrat fermé. Un type inconnu doit être **ignoré** par le front, jamais rendu brut.
 
@@ -222,11 +223,32 @@ Contrat fermé. Un type inconnu doit être **ignoré** par le front, jamais rend
 | --- | --- | --- |
 | `p` | `text` | un paragraphe |
 | `h` | `text` | un sous-titre dans l'article |
+| `list` | `items` (≥ 1 `text`), `ordered` optionnel | une liste à puces ou numérotée |
 | `img` | `src` (relatif sous `c_images`), `caption` optionnelle | l'image pleine largeur, légende dessous |
 | `btn` | `label`, `href` | un bouton ; `href` interne (`#/…`) ou externe |
 | `hr` | — | un séparateur |
 
-Aucun champ ne contient de HTML.
+### `text` : chaîne ou suite de fragments
+
+Un `text` est **soit** une chaîne nue, **soit** un tableau de fragments quand le rédacteur a mis quelque
+chose en forme :
+
+```json
+{"type":"p","text":[{"t":"avant "},{"t":"gras","b":true},{"t":"ici","href":"#/hotel"}]}
+```
+
+| Clé | Sens |
+| --- | --- |
+| `t` | le texte du fragment ; un `\n` est un saut de ligne |
+| `b` `i` `u` `s` | gras, italique, souligné, barré — des booléens, absents sinon |
+| `href` | le fragment est un lien ; **mêmes règles que `btn.href`** |
+
+Aucun champ ne contient de HTML : la mise en forme est de la donnée, que le lecteur transforme en
+éléments. C'est ce qui permet à la dashboard d'offrir un vrai éditeur (TipTap, `ArticleBodyEditor.svelte`)
+sans qu'un assainisseur redevienne la frontière de sécurité du site.
+
+Le lecteur doit rendre le texte en `white-space: pre-wrap`, et **ignorer** une clé qu'il ne connaît pas.
+Un `text` dont aucun fragment ne porte de caractère non blanc est refusé, comme une chaîne vide l'est.
 
 ## Écriture — `Vortex.WebApi`
 

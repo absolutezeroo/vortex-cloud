@@ -23,6 +23,7 @@
   import { t } from '../lib/i18n.js';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import ArticleBodyEditor from '../components/ArticleBodyEditor.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -39,12 +40,7 @@
     Languages,
     CalendarClock,
     Image,
-    ArrowUp,
-    ArrowDown,
-    X,
   } from '@lucide/svelte';
-
-  const BLOCK_TYPES = ['p', 'h', 'img', 'btn', 'hr'];
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsArticlesManage));
 
@@ -256,40 +252,11 @@
       .slice(0, 128);
   }
 
-  // --- blocks --------------------------------------------------------------------------------
-
-  function newBlock(type) {
-    if (type === 'img') return { type, src: '', caption: '' };
-    if (type === 'btn') return { type, label: '', href: '#/hotel' };
-    if (type === 'hr') return { type };
-    return { type, text: '' };
-  }
-
-  function addBlock(type) {
-    patchDraft({ body: [...draft.body, newBlock(type)] });
-  }
-
-  function patchBlock(index, patch) {
-    patchDraft({ body: draft.body.map((block, i) => (i === index ? { ...block, ...patch } : block)) });
-  }
-
-  function removeBlock(index) {
-    patchDraft({ body: draft.body.filter((_, i) => i !== index) });
-  }
-
-  function moveBlock(index, delta) {
-    const target = index + delta;
-    if (target < 0 || target >= draft.body.length) return;
-
-    const body = [...draft.body];
-    [body[index], body[target]] = [body[target], body[index]];
-    patchDraft({ body });
-  }
-
   // --- image picker --------------------------------------------------------------------------
 
-  // Which field the picker will write into when an image is chosen: 'header', 'thumbnail', or a
-  // block index. One modal for all of them — three near-identical pickers is how they drift.
+  // What the picker will do with the path it is given: 'header', 'thumbnail', or — from inside the
+  // body editor, which owns its own blocks — the function that puts it there. One modal for all of
+  // them; three near-identical pickers is how they drift.
   let picking = $state(null);
   let pickerDir = $state('web_promo');
   let pickerSearch = $state('');
@@ -315,7 +282,7 @@
   function choose(path) {
     if (picking === 'header') patchDraft({ headerImage: path });
     else if (picking === 'thumbnail') patchDraft({ thumbnail: path });
-    else if (typeof picking === 'number') patchBlock(picking, { src: path });
+    else if (typeof picking === 'function') picking(path);
 
     picking = null;
   }
@@ -763,68 +730,19 @@
         <h3 class="drawer-section">{$t('articles.body')}</h3>
         <p class="muted">{$t('articles.bodyHelp')}</p>
 
-        {#each draft.body as block, index (index)}
-          <div class="block">
-            <div class="block-head">
-              <span class="chip">{$t(`articles.block${block.type}`)}</span>
-              <div class="block-actions">
-                <button type="button" class="ghost-button" onclick={() => moveBlock(index, -1)} disabled={index === 0} aria-label={$t('articles.moveUp')}>
-                  <ArrowUp size={14} strokeWidth={2} aria-hidden="true" />
-                </button>
-                <button type="button" class="ghost-button" onclick={() => moveBlock(index, 1)} disabled={index === draft.body.length - 1} aria-label={$t('articles.moveDown')}>
-                  <ArrowDown size={14} strokeWidth={2} aria-hidden="true" />
-                </button>
-                <button type="button" class="ghost-button danger" onclick={() => removeBlock(index)} aria-label={$t('common.delete')}>
-                  <X size={14} strokeWidth={2} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-
-            {#if block.type === 'p' || block.type === 'h'}
-              <textarea rows={block.type === 'p' ? 4 : 1} value={block.text ?? ''} oninput={(e) => patchBlock(index, { text: e.target.value })}></textarea>
-            {:else if block.type === 'img'}
-              <div>
-                <div class="op-field">
-                  <label for="block-src-{index}">{$t('articles.blockImageSrc')}</label>
-                  <div class="image-row">
-                    <input autocomplete="off" spellcheck="false" id="block-src-{index}" value={block.src ?? ''} oninput={(e) => patchBlock(index, { src: e.target.value })} placeholder="/web_promo/…" />
-                    <button type="button" class="ghost-button" onclick={() => openPicker(index)} aria-label={$t('articles.browseImages')}>
-                      <Image size={14} strokeWidth={2} aria-hidden="true" />
-                      {$t('articles.browse')}
-                    </button>
-                    {#if previewUrl(block.src)}
-                      <AssetImage src={previewUrl(block.src)} alt="" size={36} />
-                    {/if}
-                  </div>
-                </div>
-                <div class="op-field">
-                  <label for="block-caption-{index}">{$t('articles.blockCaption')}</label>
-                  <input autocomplete="off" id="block-caption-{index}" value={block.caption ?? ''} oninput={(e) => patchBlock(index, { caption: e.target.value })} />
-                </div>
-              </div>
-            {:else if block.type === 'btn'}
-              <div>
-                <div class="op-field">
-                  <label for="block-label-{index}">{$t('articles.blockLabel')}</label>
-                  <input autocomplete="off" id="block-label-{index}" value={block.label ?? ''} oninput={(e) => patchBlock(index, { label: e.target.value })} />
-                </div>
-                <div class="op-field">
-                  <label for="block-href-{index}">{$t('articles.blockHref')}</label>
-                  <input autocomplete="off" spellcheck="false" id="block-href-{index}" value={block.href ?? ''} oninput={(e) => patchBlock(index, { href: e.target.value })} placeholder="#/hotel" />
-                  <small class="muted">{$t('articles.blockHrefHelp')}</small>
-                </div>
-              </div>
-            {/if}
-          </div>
-        {/each}
-
-        <div class="op-actions">
-          {#each BLOCK_TYPES as type (type)}
-            <button type="button" class="ghost-button" onclick={() => addBlock(type)}>
-              + {$t(`articles.block${type}`)}
-            </button>
-          {/each}
-        </div>
+        <!--
+          Keyed on the article AND the language: the editor is uncontrolled, so this is what makes
+          it re-read the body when the writer switches to another language or opens another article.
+          Without the key the German text would be typed over the French document.
+        -->
+        {#key `${editing.id ?? 'new'}:${activeLang}`}
+          <ArticleBodyEditor
+            value={draft.body}
+            resolveUrl={previewUrl}
+            onpickimage={openPicker}
+            onchange={(body) => patchDraft({ body })}
+          />
+        {/key}
 
         {#if editing.id && translationsBefore[activeLang]}
           <!-- Away from Save, and ghost rather than solid: removing a language is a rare act, and
