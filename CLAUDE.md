@@ -30,13 +30,16 @@ hook fires for one tool and for the files it happens to touch, which is not the 
 
 | Automation | Fires on | Catches |
 |---|---|---|
-| `scripts/hooks/post-edit.mjs` (PostToolUse) | any `Edit`/`Write` | dashboard capability/route/locale parity; header ids the client's registry does not contain; `eslint` on touched `.svelte`/front-end `.js` (`npm run build` misses an undefined identifier in markup) |
+| `scripts/hooks/post-edit.mjs` (PostToolUse) | any `Edit`/`Write` | dashboard capability/route/locale parity; header ids the client's registry does not contain; `eslint` on touched `.svelte`/front-end `.js` (`npm run build` misses an undefined identifier in markup); `csharpier` on the touched `.cs` — it **reformats** the file, so re-read it before the next `Edit` |
 | `scripts/hooks/guard-emulator.mjs` (PreToolUse) | `Bash`/`PowerShell` | a command that would kill the running `Vortex.Main` |
+| `scripts/hooks/guard-commit.mjs` (PreToolUse) | `Bash`/`PowerShell` | a `git commit` that names nothing (no `-o`/`--only`/`-- <paths>`) or a `git add` that sweeps the tree — the index is shared with the user and with any other session |
 | `scripts/hooks/check-header-registry.mjs` | FastCheck, hook | a mapped header id absent from the client's message registry — it registers cleanly and can never fire; 14 known, baselined |
 | `scripts/hooks/check-wire-conflicts.mjs` | QualityGate | a NEW field-count disagreement with the official client; the 23 known ones are baselined. Needs the client sources beside the repo, and says so instead of passing quietly |
 | `.claude/agents/wire-truth-auditor.md` | on request | serializer-vs-AS3-client drift, fabricated header ids |
 | `.claude/agents/grain-rules-reviewer.md` | on request | the Orleans rules in `AGENTS.md` that no analyzer enforces |
 | `/new-dashboard-page`, `/sql-fix`, `/habbo-spec` | user-invoked | the checklists that get half-remembered |
+| `dashboard-render` skill | after any visual dashboard edit | shipping a redesign without once looking at it — the CSS an operator sees is embedded in the assembly, so a green build proves nothing |
+| `mysql` MCP (`.mcp.json`) | on request | read-only queries against the `turbo` DB; writes stay in reviewed `scripts/sql/` scripts |
 | `Vortex.Specs.Cli` | on request | what is actually known about a packet or feature, and what is only assumed |
 
 `node scripts/hooks/__test/run.mjs` asserts the hooks still behave (exit 0 allow / exit 2 block); it

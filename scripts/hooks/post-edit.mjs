@@ -62,6 +62,32 @@ if (/^Vortex\.Dashboard\.Web\/src\/.*\.(svelte|js)$/.test(rel)) {
   // node_modules absent -> skip silently rather than block every front-end edit.
 }
 
+// --- csharpier on touched C# files ----------------------------------------------------------------
+// `dotnet csharpier check .` runs repo-wide and only inside VortexCloudFastCheck, i.e. the ~2 minute
+// pre-commit hook. So a one-file formatting deviation is discovered two minutes into a commit that
+// then fails. Per file it costs ~1.2s, and the gate never sees it.
+//
+// The file is FORMATTED, not just checked -- but that means what is on disk no longer matches what
+// was just written, which would make the next Edit's old_string miss. Say so, loudly, when it
+// happens; stay silent when the file was already clean (the common case).
+if (/\.cs$/.test(rel) && !/(\.g|\.Designer)\.cs$/.test(rel) && fs.existsSync(file)) {
+  const absolute = path.resolve(file);
+  const before = fs.readFileSync(absolute, 'utf8');
+  const r = spawnSync('dotnet', ['csharpier', 'format', absolute], {
+    cwd: root,
+    encoding: 'utf8',
+    shell: process.platform === 'win32',
+  });
+  if (r.status !== 0) {
+    failures.push(`csharpier failed on ${rel}:\n${(r.stderr || r.stdout || '').trim()}`);
+  } else if (fs.readFileSync(absolute, 'utf8') !== before) {
+    failures.push(
+      `csharpier reformatted ${rel}. It is now correctly formatted and the gate will pass -- but the\n` +
+        `file on disk no longer matches what you just wrote. Re-read it before your next Edit on it.`,
+    );
+  }
+}
+
 if (failures.length) {
   console.error(failures.join('\n\n'));
   process.exit(2);

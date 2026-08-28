@@ -10,6 +10,17 @@ const root = process.cwd();
 const probe = path.join(root, 'Vortex.Dashboard.Web', 'src', 'pages', '__HookProbe.svelte');
 fs.writeFileSync(probe, '<script>\n  let count = 0;\n</script>\n<p>{undefinedThing}</p>\n');
 
+// Sonde csharpier : du C# valide mais mal formate. Le hook doit le reformater ET le dire, parce que
+// le fichier sur disque ne correspond alors plus a ce qui vient d'etre ecrit. La seconde sonde est
+// deja propre : elle prouve que le cas courant reste silencieux.
+const csProbe = path.join(root, 'Vortex.Primitives', '__HookProbeFormat.cs');
+const csProbeClean = path.join(root, 'Vortex.Primitives', '__HookProbeClean.cs');
+fs.writeFileSync(csProbe, 'namespace Vortex.Primitives;public class HookProbeFormat{public int X{get;set;}}\n');
+fs.writeFileSync(
+  csProbeClean,
+  'namespace Vortex.Primitives;\n\npublic class HookProbeClean\n{\n    public int X { get; set; }\n}\n',
+);
+
 const run = (script, payload) =>
   spawnSync(process.execPath, [path.join('scripts', 'hooks', script)], {
     input: JSON.stringify(payload),
@@ -41,6 +52,29 @@ const cases = [
   // ... mais un vrai kill enchaine derriere une autre commande doit toujours passer a la trappe.
   ['guard-emulator.mjs', cmd('dotnet build || taskkill /F /IM Vortex.Main.exe'), 2, 'kill enchaine apres ||'],
   ['post-edit.mjs', edit(path.join('Vortex.Revisions', 'Revision20260701', 'Headers.cs')), 0, 'headers connus du client'],
+  // csharpier par fichier : sans ca, l'ecart de format n'apparait qu'au bout des ~2 min du pre-commit.
+  ['post-edit.mjs', edit(path.join('Vortex.Primitives', '__HookProbeFormat.cs')), 2, 'C# mal formate : reformate et signale'],
+  ['post-edit.mjs', edit(path.join('Vortex.Primitives', '__HookProbeClean.cs')), 0, 'C# deja propre : silencieux'],
+  // Garde commit : l'index est partage avec l'user et avec toute autre session sur le meme tree.
+  ['guard-commit.mjs', cmd('git commit -o Vortex.Main/Program.cs -m "x"'), 0, 'commit scope par -o'],
+  ['guard-commit.mjs', cmd('git commit --only Vortex.Main/Program.cs -m "x"'), 0, 'commit scope par --only'],
+  ['guard-commit.mjs', cmd('git commit -- Vortex.Main/Program.cs'), 0, 'commit scope par -- pathspec'],
+  ['guard-commit.mjs', cmd('git commit -m "x"'), 2, 'commit nu'],
+  ['guard-commit.mjs', cmd('git commit -am "x"'), 2, 'commit -am'],
+  ['guard-commit.mjs', cmd('git add -A'), 2, 'add qui ratisse tout'],
+  ['guard-commit.mjs', cmd('git add .'), 2, 'add . qui ratisse tout'],
+  ['guard-commit.mjs', cmd('git add Vortex.Main/Program.cs'), 0, 'add scope'],
+  ['guard-commit.mjs', cmd('git add -A -- Vortex.Main'), 0, 'add -A limite a un pathspec'],
+  ['guard-commit.mjs', cmd('git status --short'), 0, 'status sans rapport'],
+  // Meme piege que guard-emulator : le verbe doit etre en position de commande, pas cite.
+  ['guard-commit.mjs', cmd('grep -rn "git commit -m" scripts/'), 0, 'grep qui mentionne le verbe'],
+  [
+    'guard-commit.mjs',
+    cmd("git commit -o scripts/hooks/guard-commit.mjs -F - <<'EOF'\nrefuses a bare `git add -A`\nEOF"),
+    0,
+    'corps de heredoc qui mentionne le verbe',
+  ],
+  ['guard-commit.mjs', cmd('dotnet build && git commit -m "x"'), 2, 'commit nu enchaine apres &&'],
 ];
 
 // Scripts autonomes : pas de payload sur stdin. Le second cas pointe le check sur une baseline vide
@@ -98,6 +132,8 @@ for (const [script, argv, want, label, env] of direct) {
 }
 
 fs.rmSync(probe, { force: true });
+fs.rmSync(csProbe, { force: true });
+fs.rmSync(csProbeClean, { force: true });
 fs.rmSync(emptyBaseline, { force: true });
 fs.rmSync(wallProbe, { force: true });
 fs.writeFileSync(freeProject, freeProjectOriginal);

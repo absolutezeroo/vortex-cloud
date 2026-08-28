@@ -42,6 +42,13 @@
             "args": ["scripts/hooks/guard-emulator.mjs"],
             "statusMessage": "Garde emulateur",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["scripts/hooks/guard-commit.mjs"],
+            "statusMessage": "Garde commit",
+            "timeout": 15
           }
         ]
       }

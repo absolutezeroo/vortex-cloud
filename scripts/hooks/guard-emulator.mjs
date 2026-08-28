@@ -14,6 +14,7 @@
 // message describing this very guard, which is exactly how this bug was found. Heredoc bodies are
 // input data rather than commands, and are skipped for the same reason.
 import fs from 'node:fs';
+import { statements } from './lib/command-lines.mjs';
 
 let payload = {};
 try {
@@ -25,30 +26,14 @@ try {
 const command = payload.tool_input?.command ?? '';
 if (!command) process.exit(0);
 
-// Drop heredoc bodies: everything between a `<< MARKER` line and its terminator is data.
-function commandLines(src) {
-  const out = [];
-  let terminator = null;
-  for (const line of src.split(/\r?\n/)) {
-    if (terminator !== null) {
-      if (line.trim() === terminator) terminator = null;
-      continue;
-    }
-    out.push(line);
-    const here = line.match(/<<-?\s*['"]?([A-Za-z_][A-Za-z0-9_]*)['"]?/);
-    if (here) terminator = here[1];
-  }
-  return out;
-}
-
 // The verb only counts at the start of a statement, after optional sudo/env/assignment prefixes.
 const VERB_AT_START =
   /^\s*(?:sudo\s+|env\s+|[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*(taskkill|Stop-Process|pkill|killall|kill)\b/i;
 const TARGET = /Vortex[.\s]*Main/i;
 
-const offending = commandLines(command)
-  .flatMap((line) => line.split(/(?:\|\||&&|[;|&])/))
-  .find((segment) => VERB_AT_START.test(segment) && TARGET.test(segment));
+const offending = statements(command).find(
+  (segment) => VERB_AT_START.test(segment) && TARGET.test(segment),
+);
 
 if (offending) {
   console.error(
