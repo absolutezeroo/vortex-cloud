@@ -2330,6 +2330,12 @@ form > .op-actions,
    "declares its own look" from "is not a button"; only a list can. Add to it when a
    new row/link/tile button appears.
 
+   .ae-tool is the article editor's formatting toolbar. Left out of the list, its
+   thirteen 30x28 icon buttons each took the blue key -- uppercase, 2px border, drop --
+   and the icon vanished into the fill, so the toolbar read as thirteen blank blue
+   squares. Only this theme did it, which is exactly why the component's own rule
+   looked sufficient when it was written.
+
    .ghost-button/.btn/.icon-btn are in the list for a different reason: they ARE keys,
    they just are not the BLUE one. `button:not(...)` scores (0,3,1) against the neutral
    rule's (0,3,0), so without them listed the primary fill won and every secondary
@@ -2337,7 +2343,7 @@ form > .op-actions,
    the rule below, which names them directly. */
 /* --- The key: one geometry, four fills ------------------------------------- */
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn),
 :root[data-theme='dark'] .ghost-button,
 :root[data-theme='dark'] .btn,
 :root[data-theme='dark'] .icon-btn {
@@ -2353,7 +2359,7 @@ form > .op-actions,
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn):active:not(:disabled),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
 :root[data-theme='dark'] .ghost-button:active:not(:disabled),
 :root[data-theme='dark'] .btn:active:not(:disabled),
 :root[data-theme='dark'] .icon-btn:active:not(:disabled) {
@@ -2370,14 +2376,14 @@ form > .op-actions,
 
 /* Blue. The bare button inside a panel/toolbar IS the primary in this app; .btn-primary
    is the same key reached through the shared component. */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
 :root[data-theme='dark'] .btn-primary {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   color: var(--button-ink);
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
 :root[data-theme='dark'] .btn-primary:hover:not(:disabled) {
   background-color: var(--button-bg-hover);
   border-color: var(--button-border-hover);
@@ -2385,7 +2391,7 @@ form > .op-actions,
   filter: none;
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
 :root[data-theme='dark'] .btn-primary:active:not(:disabled) {
   background-color: var(--button-bg-active);
   border-color: var(--button-border-active);
@@ -2586,7 +2592,7 @@ form > .op-actions,
    action was a different height depending on which page wrote it. Pinned to the field's
    39px so a toolbar reads as one row of controls. .btn-sm stays deliberately smaller;
    it is the one that means "smaller". */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .btn-sm),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .btn-sm),
 :root[data-theme='dark'] .ghost-button:not(.btn-sm),
 :root[data-theme='dark'] .btn:not(.btn-sm) {
   padding: 8px 12px;
@@ -2807,7 +2813,7 @@ td.row-actions {
    "Filter" the width of a 160px column, and .catalog-list -- a single-column grid -- gave
    "+ New offer" and "Delete offer" the entire width of the panel. A button is as wide as
    what it says. Fields are exempt: a picker inside a <label> IS the column. */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button),
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool),
 :root[data-theme='dark'] .ghost-button,
 :root[data-theme='dark'] .btn {
   justify-self: start;
