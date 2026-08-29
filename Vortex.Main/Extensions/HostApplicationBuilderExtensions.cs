@@ -144,7 +144,23 @@ public static class HostApplicationBuilderExtensions
                     }
 
                     silo.AddMemoryStreams(OrleansStreamProviders.DEFAULT_STREAM_PROVIDER)
-                        .AddMemoryStreams(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
+                        .AddMemoryStreams(
+                            OrleansStreamProviders.ROOM_STREAM_PROVIDER,
+                            streams =>
+                                streams.ConfigurePullingAgent(ob =>
+                                    ob.Configure(options =>
+                                    {
+                                        // Memory streams are pull-based. Room packets are published
+                                        // far apart (an avatar update every 500ms), so the agent is
+                                        // always idle when one arrives and every packet paid a
+                                        // random slice of the default 100ms poll -- straight into
+                                        // the walk cadence the client renders.
+                                        options.GetQueueMsgsTimerPeriod = TimeSpan.FromMilliseconds(
+                                            10
+                                        );
+                                    })
+                                )
+                        );
                 }
             )
         );

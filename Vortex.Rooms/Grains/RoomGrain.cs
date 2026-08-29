@@ -49,6 +49,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     /// <summary>Consecutive failure count per tick step, cleared as soon as the step succeeds.</summary>
     private readonly Dictionary<string, int> _tickStepFailures = [];
 
+    /// <summary>The room clock. One-shot, re-armed to the next boundary at the end of every tick.</summary>
+    private IGrainTimer? _roomTimer;
+
     internal readonly IRoomAvatarProvider _avatarProvider;
     internal readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
     internal readonly IFurnitureDefinitionProvider _definitionProvider;
@@ -309,54 +312,74 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         _roomOutbound = provider.GetStream<RoomOutbound>(streamId);
 
-        this.RegisterGrainTimer<object?>(
+        // One-shot, re-armed at the end of every tick to the next epoch-aligned RoomTickMs
+        // boundary. A *periodic* grain timer measures its period from the end of the previous
+        // callback, so the phase drifted by the tick body's own duration each cycle and the
+        // avatar/wired/roller boundaries -- all multiples of RoomTickMs from EpochMs -- were
+        // crossed late by a varying amount. What a client sees of that is choppy walking.
+        _roomTimer = this.RegisterGrainTimer<object?>(
             async (state, ct) =>
             {
-                // Read once: at 20 ticks a second per room, a disabled metrics stack must cost this
-                // boolean and nothing else -- no timestamps taken, no elapsed time computed.
-                bool measured = _metrics.Enabled;
-                long tickStartedAt = measured ? Stopwatch.GetTimestamp() : 0L;
-
-                long now = NowMs();
-
-                // Each step is isolated. Run bare, one throw -- a single malformed wired item, one
-                // pet with a broken path -- aborted the whole tick, and since the two flushes are
-                // last, the room also stopped persisting furniture and tile changes for as long as
-                // the fault lasted.
-                await RunTickStepAsync(
-                    "avatars",
-                    () => AvatarTickSystem.ProcessAvatarsAsync(now, ct)
-                );
-                await RunTickStepAsync("pets", () => PetSystem.ProcessPetsAsync(now, ct));
-                await RunTickStepAsync("bots", () => BotSystem.ProcessBotsAsync(now, ct));
-                await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
-                await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
-                await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
-
-                foreach (IRoomMinigame minigame in GameSystem.Minigames)
+                try
                 {
-                    await RunTickStepAsync(minigame.Name, () => minigame.TickAsync(now, ct));
+                    await RunRoomTickAsync(ct);
                 }
-
-                await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
-                await RunTickStepAsync(
-                    "mystery-box",
-                    () => ProcessMysteryBoxTimeoutsAsync(now, ct)
-                );
-                await RunTickStepAsync("flush-tiles", () => FlushDirtyTilesAsync(ct));
-                await RunTickStepAsync("flush-items", () => FlushDirtyItemsAsync(ct));
-
-                if (measured)
+                finally
                 {
-                    _metrics.RoomTickCompleted(
-                        Stopwatch.GetElapsedTime(tickStartedAt).TotalMilliseconds
-                    );
+                    // In a finally: a tick that throws must not stop the room's clock for good.
+                    RearmRoomTimer();
                 }
             },
             null,
             TimeSpan.FromMilliseconds(_roomConfig.RoomTickMs),
-            TimeSpan.FromMilliseconds(_roomConfig.RoomTickMs)
+            Timeout.InfiniteTimeSpan
         );
+    }
+
+    private void RearmRoomTimer()
+    {
+        long now = NowMs();
+
+        _roomTimer?.Change(
+            TimeSpan.FromMilliseconds(AdvanceBoundaryPast(now, _roomConfig.RoomTickMs) - now),
+            Timeout.InfiniteTimeSpan
+        );
+    }
+
+    private async Task RunRoomTickAsync(CancellationToken ct)
+    {
+        // Read once: at 20 ticks a second per room, a disabled metrics stack must cost this
+        // boolean and nothing else -- no timestamps taken, no elapsed time computed.
+        bool measured = _metrics.Enabled;
+        long tickStartedAt = measured ? Stopwatch.GetTimestamp() : 0L;
+
+        long now = NowMs();
+
+        // Each step is isolated. Run bare, one throw -- a single malformed wired item, one
+        // pet with a broken path -- aborted the whole tick, and since the two flushes are
+        // last, the room also stopped persisting furniture and tile changes for as long as
+        // the fault lasted.
+        await RunTickStepAsync("avatars", () => AvatarTickSystem.ProcessAvatarsAsync(now, ct));
+        await RunTickStepAsync("pets", () => PetSystem.ProcessPetsAsync(now, ct));
+        await RunTickStepAsync("bots", () => BotSystem.ProcessBotsAsync(now, ct));
+        await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
+        await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
+        await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
+
+        foreach (IRoomMinigame minigame in GameSystem.Minigames)
+        {
+            await RunTickStepAsync(minigame.Name, () => minigame.TickAsync(now, ct));
+        }
+
+        await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
+        await RunTickStepAsync("mystery-box", () => ProcessMysteryBoxTimeoutsAsync(now, ct));
+        await RunTickStepAsync("flush-tiles", () => FlushDirtyTilesAsync(ct));
+        await RunTickStepAsync("flush-items", () => FlushDirtyItemsAsync(ct));
+
+        if (measured)
+        {
+            _metrics.RoomTickCompleted(Stopwatch.GetElapsedTime(tickStartedAt).TotalMilliseconds);
+        }
     }
 
     /// <summary>
