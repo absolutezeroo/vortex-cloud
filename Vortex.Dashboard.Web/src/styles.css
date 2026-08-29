@@ -2359,6 +2359,15 @@ form > .op-actions,
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 
+/* A key whose label is not a verb but a NAME somebody chose -- a room, a player, a class name. It
+   keeps the geometry, the fill and the drop; it just stops shouting the name back. Uppercasing a
+   label is fine for "SAVE" and wrong for a room called qsgqsg, which read as "QSGQSG".
+   Add `verbatim` to any button whose text comes from data rather than from the interface. */
+:root[data-theme='dark'] .verbatim,
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.verbatim {
+  text-transform: none;
+}
+
 :root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
 :root[data-theme='dark'] .ghost-button:active:not(:disabled),
 :root[data-theme='dark'] .btn:active:not(:disabled),

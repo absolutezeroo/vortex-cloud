@@ -127,38 +127,15 @@
     <h2>{$t('roomsTimeline.title')}</h2>
     <div class="head-actions">
       <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
-      <button type="button" class="ghost-button" onclick={() => (picking = true)}>
+      <!-- `verbatim` keeps the ghost button exactly as it looks everywhere else and only stops the
+           dark theme uppercasing the label, because this label is DATA — a room's name. It shouted
+           "QSGQSG" at an operator who had named their room qsgqsg. -->
+      <button type="button" class="ghost-button verbatim" onclick={() => (picking = true)}>
         {roomName || (roomId ? `#${roomId}` : $t('roomsTimeline.inspect'))}
       </button>
     </div>
   </div>
   <p class="muted">{$t('roomsTimeline.description')}</p>
-
-  <!-- Replay. Left empty this is the plain "last 120 events" view; give it a moment and the request
-       asks the server for the window around it instead, which is the only way to reach an incident
-       older than the tail of the timeline. -->
-  <div class="timeline-filters">
-    <label>
-      {$t('roomsTimeline.replayAt')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={replayAt} />
-    </label>
-    <label>
-      {$t('roomsTimeline.replayWindow')}
-      <select bind:value={replayMinutes}>
-        <option value="5">± 5 min</option>
-        <option value="15">± 15 min</option>
-        <option value="60">± 60 min</option>
-      </select>
-    </label>
-    <button type="button" onclick={load} disabled={!roomId.trim()}>
-      {replayAt ? $t('roomsTimeline.replayRun') : $t('common.refresh')}
-    </button>
-    {#if replayAt}
-      <button type="button" class="ghost-button" onclick={() => { replayAt = ''; load(); }}>
-        {$t('roomsTimeline.replayClear')}
-      </button>
-    {/if}
-  </div>
 </section>
 
 <!-- Nothing chosen yet means nothing to say about a room: the panel only exists once it has a
@@ -183,29 +160,64 @@
   </section>
 {/if}
 
-{#if allRows.length}
+<!-- Every filter for this timeline, in one block above the table. They used to sit in two panels
+     with a page of content between them — the replay window in the header, the kind/date narrowing
+     down here — so an operator had to know which half of the screen held the control they wanted.
+     The refresh lives here too: it is the button that applies what this block holds, and the second
+     copy in the header was refreshing the same thing from a place that showed none of it. -->
+{#if roomId.trim()}
   <section class="panel">
     <div class="timeline-filters">
+      <!-- Replay. Left empty this is the plain "last 120 events" view; give it a moment and the
+           request asks the server for the window around it instead, which is the only way to reach
+           an incident older than the tail of the timeline. -->
       <label>
-        {$t('investigation.filterKind')}
-        <select bind:value={kindFilter} onchange={narrowed}>
-          <option value="">{$t('investigation.filterKindAll')}</option>
-          {#each kinds as kind}
-            <option value={kind}>{kind}</option>
-          {/each}
+        {$t('roomsTimeline.replayAt')}
+        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={replayAt} />
+      </label>
+      <label>
+        {$t('roomsTimeline.replayWindow')}
+        <select bind:value={replayMinutes}>
+          <option value="5">± 5 min</option>
+          <option value="15">± 15 min</option>
+          <option value="60">± 60 min</option>
         </select>
       </label>
-      <label>
-        {$t('common.since')}
-        <input autocomplete="off" spellcheck="false" type="date" bind:value={fromFilter} onchange={narrowed} />
-      </label>
-      <label>
-        {$t('common.until')}
-        <input autocomplete="off" spellcheck="false" type="date" bind:value={toFilter} onchange={narrowed} />
-      </label>
+
+      {#if allRows.length}
+        <label>
+          {$t('investigation.filterKind')}
+          <select bind:value={kindFilter} onchange={narrowed}>
+            <option value="">{$t('investigation.filterKindAll')}</option>
+            {#each kinds as kind}
+              <option value={kind}>{kind}</option>
+            {/each}
+          </select>
+        </label>
+        <label>
+          {$t('common.since')}
+          <input autocomplete="off" spellcheck="false" type="date" bind:value={fromFilter} onchange={narrowed} />
+        </label>
+        <label>
+          {$t('common.until')}
+          <input autocomplete="off" spellcheck="false" type="date" bind:value={toFilter} onchange={narrowed} />
+        </label>
+      {/if}
+
+      <!-- Only once a moment has been entered, and then it says Replay. Refreshing is the header's
+           job and it is always on screen; a second button doing the same thing under a different
+           name is just two places to wonder about. -->
+      {#if replayAt}
+        <button type="button" onclick={load}>{$t('roomsTimeline.replayRun')}</button>
+        <button type="button" class="ghost-button" onclick={() => { replayAt = ''; load(); }}>
+          {$t('roomsTimeline.replayClear')}
+        </button>
+      {/if}
     </div>
 
-    <TableFilter bind:query={textFilter} shown={visibleRows.length} total={allRows.length} />
+    {#if allRows.length}
+      <TableFilter bind:query={textFilter} shown={visibleRows.length} total={allRows.length} />
+    {/if}
   </section>
 {/if}
 
