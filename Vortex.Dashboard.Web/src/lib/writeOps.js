@@ -160,7 +160,15 @@ export function createWriteOps(onSuccess) {
           busyKeys: { ...s.busyKeys, [key]: false },
           results: { ...s.results, [key]: result },
         }));
-        await (onOpSuccess ?? onSuccess)?.();
+        // BOTH, never one or the other. These are different jobs: the per-operation callback is
+        // page-local state (close the drawer, clear the form), the page-level one re-reads the data.
+        // `??` made the second silently replace the first, so every form that wanted to close itself
+        // stopped refreshing its own list -- 16 call sites across 8 pages, each looking like "the
+        // dashboard needs a reload to show what I just added".
+        // The result is handed to the per-operation callback: ArticlesPage asks for the new id so it
+        // can open what was just created, and had been receiving undefined every time.
+        await onOpSuccess?.(result);
+        await onSuccess?.();
         return true;
       }
 
