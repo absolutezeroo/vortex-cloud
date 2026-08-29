@@ -19,6 +19,7 @@ using Vortex.Database.Entities.Wired;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
+using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -1455,6 +1456,42 @@ internal sealed partial class DashboardApiService
         };
 
     private string? BuildFurniIconUrl(string name) => _assetUrls.FurniIcon(name);
+
+    /// <summary>
+    /// The picture of a catalog product, whatever kind of thing it is.
+    /// </summary>
+    /// <remarks>
+    /// A catalog product is not always furniture, and only furniture has a furni icon. Badges are the
+    /// case that matters here: on this hotel they are ~25 000 of the ~105 000 products, half of them
+    /// with no furniture definition at all, so building the icon from the definition name left every
+    /// one of them blank — an operator picking a badge to sell had nothing to look at. Their code
+    /// lives in <c>ExtraParam</c>, and 98% of the codes in this database have an asset on disk.
+    /// <para>
+    /// Effects are resolved the same way for the same reason. Pets are left alone deliberately: their
+    /// <c>ExtraParam</c> is a pet type id, and there is no per-type image in the asset pack to point
+    /// at — a URL that 404s is worse than an honest fallback icon.
+    /// </para>
+    /// </remarks>
+    private string? BuildProductImageUrl(int productType, string? furnitureName, string? extraParam)
+    {
+        if (productType == (int)ProductType.Badge)
+        {
+            return string.IsNullOrWhiteSpace(extraParam) || extraParam == "0"
+                ? null
+                : _assetUrls.BadgeImage(extraParam);
+        }
+
+        if (
+            productType == (int)ProductType.Effect
+            && int.TryParse(extraParam, out int effectId)
+            && effectId > 0
+        )
+        {
+            return _assetUrls.EffectImage(effectId);
+        }
+
+        return furnitureName is null ? null : _assetUrls.FurniIcon(furnitureName);
+    }
 
     private sealed record PlayerRow(int Id, string Name, string Figure);
 }

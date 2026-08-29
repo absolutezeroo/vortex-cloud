@@ -160,6 +160,7 @@ internal sealed partial class DashboardApiService
                                 furnitureName = p.FurnitureDefinition != null
                                     ? p.FurnitureDefinition.Name
                                     : null,
+                                p.ExtraParam,
                                 p.Quantity,
                                 p.UniqueSize,
                                 p.UniqueRemaining,
@@ -178,9 +179,11 @@ internal sealed partial class DashboardApiService
                                 p.productType,
                                 p.productTypeLabel,
                                 p.furnitureName,
-                                furnitureIconUrl = p.furnitureName is null
-                                    ? null
-                                    : BuildFurniIconUrl(p.furnitureName),
+                                furnitureIconUrl = BuildProductImageUrl(
+                                    p.productType,
+                                    p.furnitureName,
+                                    p.ExtraParam
+                                ),
                                 p.Quantity,
                                 p.UniqueSize,
                                 p.UniqueRemaining,
@@ -308,9 +311,11 @@ internal sealed partial class DashboardApiService
                         p.FurnitureDefinitionEntityId,
                         p.furnitureName,
                         p.furnitureSpriteId,
-                        furnitureIconUrl = p.furnitureName is null
-                            ? null
-                            : BuildFurniIconUrl(p.furnitureName),
+                        furnitureIconUrl = BuildProductImageUrl(
+                            p.productType,
+                            p.furnitureName,
+                            p.ExtraParam
+                        ),
                         p.ExtraParam,
                         p.Quantity,
                         p.UniqueSize,
