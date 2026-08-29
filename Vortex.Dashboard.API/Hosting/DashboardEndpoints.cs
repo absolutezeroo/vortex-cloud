@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
+using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Permissions;
 
@@ -28,6 +30,15 @@ namespace Vortex.Dashboard.API.Hosting;
 internal static partial class DashboardEndpoints
 {
     public const string LoginRateLimitPolicy = "dashboard-login";
+
+    /// <summary>
+    /// Guards the routes that accept a second-factor code from an already-authenticated caller
+    /// (<c>/mfa/enable</c>, <c>/mfa/disable</c>, <c>/mfa/step-up</c>). Login's limiter does not cover
+    /// them, and unthrottled they turn a six-digit code — three of which are valid at any instant,
+    /// since TotpCodes allows a step either side — into something a held session can simply grind at
+    /// until the step-up gate on currency, staff roles, the console and backups opens.
+    /// </summary>
+    public const string MfaRateLimitPolicy = "dashboard-mfa";
 
     private const string TagAuth = "Auth";
     private const string TagMonitoring = "Monitoring";
@@ -186,6 +197,7 @@ internal static partial class DashboardEndpoints
         MapBotReads(app);
         MapNavigatorReads(app);
         MapArticleReads(app);
+        MapGamedataReads(app);
         MapInsightReads(app);
         MapBenchmarkReads(app);
         MapBenchmarkRunReads(app);
@@ -213,6 +225,7 @@ internal static partial class DashboardEndpoints
         MapStaffOperations(app);
         MapContentOperations(app);
         MapArticleOperations(app);
+        MapGamedataOperations(app);
         MapConsoleOperations(app);
     }
 
@@ -362,13 +375,23 @@ internal static partial class DashboardEndpoints
     {
         DashboardSessionStore sessions =
             ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
+
+        // Unconditional, not ctx.Request.IsHttps: behind the TLS-terminating proxy this listener is
+        // meant to sit behind, Kestrel sees plain http and the scheme test would drop Secure from the
+        // operator's session cookie. The only opt-out is the explicit cleartext opt-in the operator
+        // already had to set to bind this listener off-box at all. See the same reasoning in
+        // WebApiHttpContextExtensions.IssueSessionCookie.
+        bool allowInsecure = ctx
+            .RequestServices.GetRequiredService<IOptions<ObservabilityConfig>>()
+            .Value.DashboardAllowInsecureRemoteHttp;
+
         ctx.Response.Cookies.Append(
             DashboardAuthenticationHandler.SessionCookieName,
             result.SessionId!,
             new CookieOptions
             {
                 HttpOnly = true,
-                Secure = ctx.Request.IsHttps,
+                Secure = !allowInsecure,
                 SameSite = SameSiteMode.Strict,
                 Path = "/",
                 IsEssential = true,

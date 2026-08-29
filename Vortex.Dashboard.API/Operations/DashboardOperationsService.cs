@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Security;
 using Vortex.Database.Auditing;
 using Vortex.Database.Backup;
@@ -62,6 +63,7 @@ internal sealed partial class DashboardOperationsService(
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
+    GamedataDocumentStore gamedata,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
     IBenchmarkService benchmark,
@@ -97,6 +99,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
+    private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
     private readonly IBenchmarkService _benchmark = benchmark;

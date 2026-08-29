@@ -76,6 +76,7 @@ export const NAV = [
   { path: '/collectibles', labelKey: 'nav.collectibles', shortKey: 'nav.collectiblesShort', group: 'Content', caps: ROUTE_PERMISSIONS.collectibles, load: () => import('../pages/CollectiblesPage.svelte'), writes: true },
   { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Content', caps: ROUTE_PERMISSIONS.furnitureDefinitions, load: () => import('../pages/FurnitureDefinitionsPage.svelte'), writes: true },
   { path: '/articles', labelKey: 'nav.articles', shortKey: 'nav.articlesShort', group: 'Content', caps: ROUTE_PERMISSIONS.articles, load: () => import('../pages/ArticlesPage.svelte'), writes: true },
+  { path: '/gamedata', labelKey: 'nav.gamedata', shortKey: 'nav.gamedataShort', group: 'Content', caps: ROUTE_PERMISSIONS.gamedata, load: () => import('../pages/GamedataPage.svelte'), writes: true },
 
   { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Social', caps: ROUTE_PERMISSIONS.groupsStats, load: () => import('../pages/GroupsStatsPage.svelte') },
   { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Social', caps: ROUTE_PERMISSIONS.social, load: () => import('../pages/SocialPage.svelte'), writes: true },

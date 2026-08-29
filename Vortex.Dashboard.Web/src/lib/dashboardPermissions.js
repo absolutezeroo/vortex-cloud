@@ -48,6 +48,7 @@ export const CAPABILITIES = {
   opsContentManage: 'dashboard.ops.content.manage',
   articlesRead: 'dashboard.articles.read',
   opsArticlesManage: 'dashboard.ops.articles.manage',
+  opsGamedataManage: 'dashboard.ops.gamedata.manage',
   benchmarkRead: 'dashboard.benchmark.read',
   opsBenchmarkRun: 'dashboard.ops.benchmark.run',
   serverConsoleRead: 'dashboard.server.console.read',
@@ -105,6 +106,8 @@ export const ROUTE_PERMISSIONS = {
   // The write capability is listed too: a hotel's editor is often granted only that, and being
   // unable to open the page they write on would be an odd way to hold it.
   articles: [CAPABILITIES.articlesRead, CAPABILITIES.opsArticlesManage],
+  // One capability, not a read/write pair: the page shows nothing but the raw client values.
+  gamedata: [CAPABILITIES.opsGamedataManage],
   benchmark: [CAPABILITIES.benchmarkRead],
   console: [CAPABILITIES.serverConsoleRead, CAPABILITIES.opsServerConsole],
   playerRewards: [CAPABILITIES.playersRead],

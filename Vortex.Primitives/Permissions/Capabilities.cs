@@ -182,6 +182,15 @@ public static class Capabilities
         /// </summary>
         public const string OpsArticlesManage = "dashboard.ops.articles.manage";
 
+        /// <summary>
+        /// Edit the gamedata files the game client downloads — variables, texts, furnidata,
+        /// productdata. One capability rather than the usual read/write pair: there is nothing to
+        /// look at on that page except the raw client values, so anyone trusted to read them is the
+        /// person who edits them. Held well apart from the rest: a bad save here is not a wrong row,
+        /// it is a client that will not boot.
+        /// </summary>
+        public const string OpsGamedataManage = "dashboard.ops.gamedata.manage";
+
         /// <summary>Read what a load run measured. Separate from running one: the numbers are worth
         /// showing to anyone tuning the hotel, and reading them costs nothing.</summary>
         public const string BenchmarkRead = "dashboard.benchmark.read";
@@ -276,6 +285,7 @@ public static class Capabilities
             OpsContentManage,
             ArticlesRead,
             OpsArticlesManage,
+            OpsGamedataManage,
             BenchmarkRead,
             OpsBenchmarkRun,
             ServerConsoleRead,

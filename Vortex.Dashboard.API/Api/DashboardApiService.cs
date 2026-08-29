@@ -34,6 +34,7 @@ internal sealed partial class DashboardApiService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     DashboardAssetUrls assetUrls,
+    GamedataDocumentStore gamedata,
     RoomPerformanceAggregator roomPerformance,
     IBenchmarkService benchmark,
     IOptions<ObservabilityConfig> options
@@ -42,6 +43,7 @@ internal sealed partial class DashboardApiService(
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IBenchmarkService _benchmark = benchmark;

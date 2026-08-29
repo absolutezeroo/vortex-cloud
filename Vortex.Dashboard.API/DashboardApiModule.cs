@@ -54,6 +54,9 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<DashboardAuthService>();
         services.TryAddSingleton<DashboardAssetStore>();
         services.TryAddSingleton<DashboardAssetUrls>();
+        // Singleton because it caches a 38 MB parsed furnidata; a per-request instance would parse it
+        // again on every keystroke of a search.
+        services.TryAddSingleton<GamedataDocumentStore>();
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardMonitoringReads>();

@@ -42,6 +42,9 @@ GET /api/v1/economy/trends -> dashboard.economy.read
 GET /api/v1/forensics/audit -> dashboard.audit.read
 GET /api/v1/forensics/moderation/stats -> dashboard.audit.read
 GET /api/v1/furniture/definitions -> dashboard.furniture.read
+GET /api/v1/gamedata -> dashboard.ops.gamedata.manage
+GET /api/v1/gamedata/entries -> dashboard.ops.gamedata.manage
+GET /api/v1/gamedata/languages -> dashboard.ops.gamedata.manage
 GET /api/v1/groups/stats -> dashboard.groups.read
 GET /api/v1/hand-items -> dashboard.bots.read
 GET /api/v1/meta/endpoints -> dashboard.overview.read
@@ -159,6 +162,11 @@ POST /api/v1/operations/database/backup -> dashboard.ops.database.backup
 POST /api/v1/operations/furniture/definitions -> dashboard.ops.furniture.manage
 POST /api/v1/operations/furniture/definitions/delete -> dashboard.ops.furniture.manage
 POST /api/v1/operations/furniture/definitions/update -> dashboard.ops.furniture.manage
+POST /api/v1/operations/gamedata/entry -> dashboard.ops.gamedata.manage
+POST /api/v1/operations/gamedata/entry/delete -> dashboard.ops.gamedata.manage
+POST /api/v1/operations/gamedata/furni -> dashboard.ops.gamedata.manage
+POST /api/v1/operations/gamedata/language -> dashboard.ops.gamedata.manage
+POST /api/v1/operations/gamedata/language/delete -> dashboard.ops.gamedata.manage
 POST /api/v1/operations/items/grant -> dashboard.ops.item.grant
 POST /api/v1/operations/mystery-box/boxes -> dashboard.ops.mystery_box.manage
 POST /api/v1/operations/mystery-box/keys -> dashboard.ops.mystery_box.manage

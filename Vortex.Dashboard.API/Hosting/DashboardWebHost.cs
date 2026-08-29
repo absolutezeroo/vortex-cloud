@@ -220,6 +220,7 @@ internal sealed class DashboardWebHost(
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),
         typeof(DashboardAssetUrls),
+        typeof(GamedataDocumentStore),
         typeof(DashboardAuditEmitter),
         typeof(IDatabaseBackupService),
         // The console stream endpoint injects this directly rather than going through an operations
@@ -375,6 +376,30 @@ internal sealed class DashboardWebHost(
                 httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = limit.PermitLimit,
+                            Window = TimeSpan.FromSeconds(limit.WindowSeconds),
+                            QueueLimit = limit.QueueLimit,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            AutoReplenishment = true,
+                        }
+                    )
+            );
+
+            // Same budget as login, different partition. These callers are already authenticated, so
+            // the remote IP is the wrong key twice over: one attacker holding one stolen session can
+            // rotate addresses, and an office behind a single NAT would lock each other out. The
+            // account is what is under attack, so the account is what is counted. UseRateLimiter runs
+            // after UseAuthentication, so the principal is there to read; the IP is only the fallback
+            // for a request that never authenticated and is about to be rejected anyway.
+            options.AddPolicy(
+                DashboardEndpoints.MfaRateLimitPolicy,
+                httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.GetDashboardPrincipal()?.AccountId is int accountId
+                            ? $"account:{accountId}"
+                            : $"ip:{httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown"}",
                         _ => new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = limit.PermitLimit,
