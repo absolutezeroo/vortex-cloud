@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Session;
 
 namespace Vortex.WebApi.Hosting;
@@ -40,7 +43,24 @@ internal static class WebApiHttpContextExtensions
     public static string RemoteIp(this HttpContext ctx) =>
         ctx.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
 
-    /// <summary>Issues the session cookie using the same attributes the listener emitted (HttpOnly, Lax).</summary>
+    /// <summary>
+    /// Issues the session cookie (HttpOnly, Lax, Secure).
+    ///
+    /// <para>
+    /// <c>Secure</c> is unconditional rather than derived from <c>ctx.Request.IsHttps</c>. The
+    /// deployment <see cref="Vortex.Primitives.Hosting.ListenerSecurity" /> itself recommends
+    /// terminates TLS upstream and forwards to Kestrel over plain http, so the scheme test came out
+    /// false in exactly the deployment it was meant to protect — and stripped the flag off the one
+    /// credential guarding every authenticated route. Loopback needs no exception: browsers treat
+    /// <c>http://localhost</c> as a secure context and keep the cookie.
+    /// </para>
+    ///
+    /// <para>
+    /// The single opt-out is the operator's own <c>Vortex:WebApi:AllowInsecureRemoteHttp</c>, which
+    /// already says "I am serving credentials in cleartext on purpose". Anyone who has not set it
+    /// and is not on TLS finds that login does not stick, which is the correct failure.
+    /// </para>
+    /// </summary>
     public static void IssueSessionCookie(this HttpContext ctx, string sessionId) =>
         ctx.Response.Cookies.Append(
             SessionCookieName,
@@ -51,7 +71,9 @@ internal static class WebApiHttpContextExtensions
                 SameSite = SameSiteMode.Lax,
                 Path = "/",
                 IsEssential = true,
-                Secure = ctx.Request.IsHttps,
+                Secure = !ctx
+                    .RequestServices.GetRequiredService<IOptions<WebApiConfig>>()
+                    .Value.AllowInsecureRemoteHttp,
             }
         );
 

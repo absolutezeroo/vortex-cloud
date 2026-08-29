@@ -30,6 +30,13 @@ public interface IAccountMfaService
     /// Stores <paramref name="secret" /> as the account's second factor, but only if
     /// <paramref name="code" /> proves an authenticator already holds it. False means the code did
     /// not verify and nothing was written.
+    ///
+    /// <para>
+    /// Enrolment only: an account that already has a factor is refused (also false). The code proves
+    /// possession of the secret the caller just supplied, which says nothing about who is asking, so
+    /// letting it overwrite would let a stolen session install its own factor. Replacing a factor
+    /// means <see cref="DisableAsync" /> first, which demands a code from the one already stored.
+    /// </para>
     /// </summary>
     Task<bool> ConfirmEnrolmentAsync(
         int accountId,

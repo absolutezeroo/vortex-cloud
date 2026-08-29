@@ -13,6 +13,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.WebApi.Configuration;
+using Vortex.WebApi.Http;
 
 namespace Vortex.WebApi.Services;
 
@@ -65,6 +66,15 @@ public sealed class WebApiPlayerService(
         if (string.IsNullOrWhiteSpace(name))
         {
             name = $"New user {Guid.NewGuid():N}"[..24];
+        }
+        else if (!NameShape.IsWellFormed(name))
+        {
+            // Only a name the caller actually supplied is checked: the placeholder above is
+            // deliberately outside the policy (it has a space and is 24 long) precisely so it cannot
+            // collide with anything a player is allowed to pick, and the onboarding rename replaces
+            // it through SetNameAsync, which does enforce the policy.
+            _logger.LogWarning("Avatar creation refused: name '{Name}' is not well formed", name);
+            return (false, 0, "pocket.auth.name_not_valid");
         }
 
         int count = await db
@@ -125,6 +135,16 @@ public sealed class WebApiPlayerService(
 
     public async Task<bool> SetNameAsync(int playerId, string name, CancellationToken ct)
     {
+        // The in-game rename runs this same check (ChangeUserNameMessageHandler); this route reaches
+        // the identical grain call, so without it the HTTP path is a second door onto the same sink
+        // with no lock on it. A name is public identity — whisper, gifting, friend requests and
+        // LetUserIn all resolve by exact string — so one that the client's own dialog would refuse
+        // is a working impersonation.
+        if (!NameShape.IsWellFormed(name))
+        {
+            return false;
+        }
+
         await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         bool taken = await db

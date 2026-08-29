@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Vortex.Dashboard.API.Security;
 using Vortex.Primitives.Authentication;
 
@@ -95,6 +96,7 @@ internal static partial class DashboardEndpoints
                 }
             )
             .RequireAuthorization()
+            .RequireRateLimiting(MfaRateLimitPolicy)
             .WithName("EnableAccountMfa")
             .WithSummary("Confirm a TOTP secret with a code and store it as the second factor.")
             .WithTags(TagAccount);
@@ -131,6 +133,7 @@ internal static partial class DashboardEndpoints
                 }
             )
             .RequireAuthorization()
+            .RequireRateLimiting(MfaRateLimitPolicy)
             .WithName("DisableAccountMfa")
             .WithSummary("Remove the current operator's second factor, proving a current code.")
             .WithTags(TagAccount);
@@ -180,6 +183,7 @@ internal static partial class DashboardEndpoints
                 }
             )
             .RequireAuthorization()
+            .RequireRateLimiting(MfaRateLimitPolicy)
             .WithName("StepUpAccountMfa")
             .WithSummary(
                 "Prove a current second-factor code, unlocking critical operations for a while."

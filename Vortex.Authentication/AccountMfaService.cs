@@ -71,6 +71,20 @@ public sealed class AccountMfaService(
             return false;
         }
 
+        // Enrolment, never replacement. The code proves an authenticator holds the *supplied*
+        // secret -- which the caller generated -- so on its own it proves nothing about who is
+        // asking. Without this, a stolen session could post a secret of its own and silently become
+        // the account's second factor: the step-up gate on currency, staff roles and the console
+        // would then be held by the attacker, and the real operator, whose login now demands a code
+        // they cannot compute, would be locked out.
+        //
+        // Replacing a factor goes through DisableAsync first, which requires a code from the factor
+        // already on the account. That is the proof this call cannot supply.
+        if (await ReadSecretAsync(accountId, ct).ConfigureAwait(false) is not null)
+        {
+            return false;
+        }
+
         return await WriteSecretAsync(accountId, secret, ct).ConfigureAwait(false);
     }
 

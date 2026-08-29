@@ -15,6 +15,17 @@ namespace Vortex.Primitives.Players;
 public static class NameChangePolicy
 {
     /// <summary>
+    /// The bounds to use where no configured ones are at hand. They match the defaults the packet
+    /// handlers read from <c>Vortex:Players:NameMinLength</c> / <c>NameMaxLength</c>, and exist so a
+    /// caller outside the handler pipeline — the web API's HTTP naming routes — enforces the same
+    /// shape instead of open-coding two numbers that then drift.
+    /// </summary>
+    public const int DEFAULT_MIN_LENGTH = 3;
+
+    /// <inheritdoc cref="DEFAULT_MIN_LENGTH" />
+    public const int DEFAULT_MAX_LENGTH = 15;
+
+    /// <summary>
     /// Letters, digits, and the three separators Habbo names have always allowed.
     /// </summary>
     private static bool IsAllowedCharacter(char value) =>

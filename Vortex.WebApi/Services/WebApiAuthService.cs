@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BCrypt.Net;
@@ -22,6 +23,9 @@ public sealed class WebApiAuthService(
     ILogger<WebApiAuthService> logger
 ) : IWebApiAuthService
 {
+    /// <summary>Where BCrypt stops reading. Anything past this byte is not part of the secret.</summary>
+    private const int BCRYPT_MAX_PASSWORD_BYTES = 72;
+
     private readonly IDbContextFactory<VortexDbContext> _db = dbCtxFactory;
     private readonly IAccountAuthenticator _authenticator = authenticator;
     private readonly WebApiSessionStore _sessions = sessions;
@@ -73,6 +77,25 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
+        // The rule the column already has everywhere else: AccountPasswordService refuses anything
+        // under MINIMUM_LENGTH on change and on reset, so registration was the one writer that let a
+        // one-character password onto an account -- and that account opens the web session, the
+        // password-change route and, through /api/ssotoken, a game login.
+        if (password.Length < PasswordChangeResult.MINIMUM_LENGTH)
+        {
+            _logger.LogWarning("Registration refused: password too short");
+            return (false, 0, "pocket.auth.password_too_short");
+        }
+
+        // BCrypt hashes the first 72 bytes and silently ignores the rest, so a longer secret is not
+        // the stronger one the user thinks they chose. Refused rather than truncated: quietly
+        // storing something other than what was typed is worse than saying no.
+        if (Encoding.UTF8.GetByteCount(password) > BCRYPT_MAX_PASSWORD_BYTES)
+        {
+            _logger.LogWarning("Registration refused: password too long");
+            return (false, 0, "pocket.auth.password_too_long");
+        }
+
         await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         string normalizedEmail = email.ToLowerInvariant();

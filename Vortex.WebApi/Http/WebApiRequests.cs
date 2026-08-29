@@ -1,3 +1,6 @@
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Enums;
+
 namespace Vortex.WebApi.Http;
 
 /// <summary>
@@ -42,7 +45,11 @@ public sealed record RegisterRequest(string? Email, string? Password, string? Pa
 /// </remarks>
 public sealed record CreateAvatarRequest(string? Name, string? Figure, string? Gender)
 {
-    public bool IsValid => true;
+    // Blank stays valid — that is the registration path, which wants the placeholder. A name that IS
+    // supplied has to be one the player could have picked in-game; WebApiPlayerService refuses it
+    // again at the sink, this is only so the caller gets a 400 rather than a 409 about a name clash
+    // that is not what went wrong.
+    public bool IsValid => string.IsNullOrWhiteSpace(Name) || NameShape.IsWellFormed(Name);
 }
 
 public sealed record SelectAvatarRequest(string? UniqueId)
@@ -57,7 +64,21 @@ public sealed record NameRequest(string? Name)
 
 public sealed record NameSelectRequest(string? Name, int PlayerId)
 {
-    public bool IsValid => !string.IsNullOrWhiteSpace(Name) && PlayerId > 0;
+    public bool IsValid => NameShape.IsWellFormed(Name) && PlayerId > 0;
+}
+
+/// <summary>
+/// The player-name shape rule, borrowed from the one place that owns it so the HTTP routes and the
+/// in-game rename cannot drift apart. Uniqueness is still storage's call, not this.
+/// </summary>
+internal static class NameShape
+{
+    public static bool IsWellFormed(string? name) =>
+        NameChangePolicy.Validate(
+            name,
+            NameChangePolicy.DEFAULT_MIN_LENGTH,
+            NameChangePolicy.DEFAULT_MAX_LENGTH
+        ) == NameChangeResultCode.Ok;
 }
 
 public sealed record SaveFigureRequest(string? FigureString, string? Gender, int PlayerId)
