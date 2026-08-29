@@ -63,8 +63,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 ._grainFactory.GetPlayerPresenceGrain(playerId)
                 .SendComposerAsync(
                     new RemainingMutePeriodMessageComposer { SecondsRemaining = secondsRemaining }
-                )
-                .ConfigureAwait(false);
+                );
 
             return;
         }
@@ -75,8 +74,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 ._grainFactory.GetPlayerPresenceGrain(playerId)
                 .SendComposerAsync(
                     new FloodControlMessageComposer { Seconds = floodSecondsRemaining }
-                )
-                .ConfigureAwait(false);
+                );
 
             return;
         }
@@ -84,12 +82,10 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         // After mute and flood control, before anyone sees the line: those two already refuse with a
         // composer of their own, and a line dropped here is dropped for everybody including the
         // speaker, so it must not have been sent yet.
-        EventContext chatting = await _roomGrain
-            ._cancellableEvents.PublishCancellableAsync(
-                new PlayerChattingEvent(playerId, _roomGrain.RoomId.Value, text, targetPlayerId),
-                CancellationToken.None
-            )
-            .ConfigureAwait(false);
+        EventContext chatting = await _roomGrain._cancellableEvents.PublishCancellableAsync(
+            new PlayerChattingEvent(playerId, _roomGrain.RoomId.Value, text, targetPlayerId),
+            CancellationToken.None
+        );
 
         if (chatting.Cancel)
         {
@@ -106,38 +102,35 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         }
 
         await SendChatAsync(
-                avatar.ObjectId,
-                playerId,
-                text,
-                gesture,
-                styleId,
-                links,
-                trackingId,
-                targetPlayerId
-            )
-            .ConfigureAwait(false);
+            avatar.ObjectId,
+            playerId,
+            text,
+            gesture,
+            styleId,
+            links,
+            trackingId,
+            targetPlayerId
+        );
 
         // A public line may also be an order to one of the speaker's pets.
         if (targetPlayerId is null)
         {
-            await TryIssuePetCommandFromChatAsync(playerId, text).ConfigureAwait(false);
+            await TryIssuePetCommandFromChatAsync(playerId, text);
         }
 
         // Public chat (not whispers) feeds the wired "avatar says (keyword)" trigger.
         if (targetPlayerId is null && !string.IsNullOrWhiteSpace(text))
         {
-            await _roomGrain
-                .PublishRoomEventAsync(
-                    new PlayerChatEvent
-                    {
-                        RoomId = _roomGrain.RoomId,
-                        CausedBy = ActionContext.CreateForPlayer(playerId, _roomGrain.RoomId),
-                        PlayerId = playerId,
-                        Message = text,
-                    },
-                    CancellationToken.None
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.PublishRoomEventAsync(
+                new PlayerChatEvent
+                {
+                    RoomId = _roomGrain.RoomId,
+                    CausedBy = ActionContext.CreateForPlayer(playerId, _roomGrain.RoomId),
+                    PlayerId = playerId,
+                    Message = text,
+                },
+                CancellationToken.None
+            );
         }
     }
 
@@ -195,14 +188,12 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 return;
             }
 
-            await _roomGrain
-                .PetSystem.IssueCommandAsync(
-                    ActionContext.CreateForPlayer(playerId, _roomGrain.RoomId),
-                    pet.PetId,
-                    commandId.Value,
-                    CancellationToken.None
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.PetSystem.IssueCommandAsync(
+                ActionContext.CreateForPlayer(playerId, _roomGrain.RoomId),
+                pet.PetId,
+                commandId.Value,
+                CancellationToken.None
+            );
 
             return;
         }
@@ -226,19 +217,17 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
 
         if (targetPlayerId is null)
         {
-            await _roomGrain
-                .SendComposerToRoomAsync(
-                    new ChatMessageComposer
-                    {
-                        ObjectId = objectId,
-                        Text = text,
-                        Gesture = gesture,
-                        StyleId = styleId,
-                        Links = links,
-                        TrackingId = trackingId,
-                    }
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(
+                new ChatMessageComposer
+                {
+                    ObjectId = objectId,
+                    Text = text,
+                    Gesture = gesture,
+                    StyleId = styleId,
+                    Links = links,
+                    TrackingId = trackingId,
+                }
+            );
         }
         else
         {
@@ -253,26 +242,24 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             };
 
             await Task.WhenAll(
-                    _roomGrain
-                        ._grainFactory.GetPlayerPresenceGrain(playerId)
-                        .SendComposerAsync(whisperComposer),
-                    _roomGrain
-                        ._grainFactory.GetPlayerPresenceGrain(targetPlayerId.Value)
-                        .SendComposerAsync(whisperComposer)
-                )
-                .ConfigureAwait(false);
+                _roomGrain
+                    ._grainFactory.GetPlayerPresenceGrain(playerId)
+                    .SendComposerAsync(whisperComposer),
+                _roomGrain
+                    ._grainFactory.GetPlayerPresenceGrain(targetPlayerId.Value)
+                    .SendComposerAsync(whisperComposer)
+            );
         }
 
-        await PersistChatAsync(playerId, targetPlayerId, text).ConfigureAwait(false);
+        await PersistChatAsync(playerId, targetPlayerId, text);
     }
 
     private async Task PersistChatAsync(PlayerId playerId, PlayerId? targetPlayerId, string text)
     {
         try
         {
-            await using VortexDbContext dbCtx = await _roomGrain
-                ._dbCtxFactory.CreateDbContextAsync()
-                .ConfigureAwait(false);
+            await using VortexDbContext dbCtx =
+                await _roomGrain._dbCtxFactory.CreateDbContextAsync();
 
             dbCtx.Chatlogs.Add(
                 new RoomChatlogEntity
@@ -285,7 +272,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 }
             );
 
-            await dbCtx.SaveChangesAsync().ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync();
         }
         catch (Exception ex)
         {

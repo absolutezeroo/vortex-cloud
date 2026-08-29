@@ -44,38 +44,30 @@ public sealed partial class RoomPetSystem
             && _roomGrain._state.RoomSnapshot.OwnerId != ctx.PlayerId
         )
         {
-            await SendPetPlacingErrorAsync(ctx, PetPlacementForbiddenInFlatError)
-                .ConfigureAwait(false);
+            await SendPetPlacingErrorAsync(ctx, PetPlacementForbiddenInFlatError);
             return null;
         }
 
-        await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
+        await EnsureRoomReadyForPetPlacementAsync(ct);
 
         // (0, 0) from the client means "I dropped this from the inventory, put it somewhere",
         // not the corner tile.
         if (!TryResolvePetPlacementTile(x, y, out x, out y))
         {
-            await SendPetPlacingErrorAsync(ctx, PetPlacementSelectedTileNotFreeError)
-                .ConfigureAwait(false);
+            await SendPetPlacingErrorAsync(ctx, PetPlacementSelectedTileNotFreeError);
 
             return null;
         }
 
         double z = GetTileHeightForPet(x, y);
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
-        PetEntity? pet = await dbCtx
-            .Pets.SingleOrDefaultAsync(
-                p =>
-                    p.Id == petId
-                    && p.OwnerPlayerEntityId == ctx.PlayerId.Value
-                    && p.DeletedAt == null,
-                ct
-            )
-            .ConfigureAwait(false);
+        PetEntity? pet = await dbCtx.Pets.SingleOrDefaultAsync(
+            p =>
+                p.Id == petId && p.OwnerPlayerEntityId == ctx.PlayerId.Value && p.DeletedAt == null,
+            ct
+        );
 
         if (pet is null)
         {
@@ -110,24 +102,22 @@ public sealed partial class RoomPetSystem
         pet.Z = z;
         pet.Direction = (int)direction;
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         PetSnapshot snapshot = RoomPetRuntime.ToSnapshot(pet);
         _roomGrain._state.PetsById[pet.Id] = snapshot;
 
         if (wasInInventory)
         {
-            await SendPetRemovedFromInventoryAsync(snapshot).ConfigureAwait(false);
+            await SendPetRemovedFromInventoryAsync(snapshot);
         }
 
-        await SendPetAddedAsync(snapshot, ct).ConfigureAwait(false);
+        await SendPetAddedAsync(snapshot, ct);
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new PetPlacedEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new PetPlacedEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
+            ct
+        );
 
         return snapshot;
     }
@@ -141,15 +131,13 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
+        await EnsureRoomReadyForPetPlacementAsync(ct);
 
         double z = GetTileHeightForPet(x, y);
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
-        PetEntity? pet = await LoadPlacedPetAsync(dbCtx, petId, ct).ConfigureAwait(false);
+        PetEntity? pet = await LoadPlacedPetAsync(dbCtx, petId, ct);
 
         if (pet is null)
         {
@@ -185,7 +173,7 @@ public sealed partial class RoomPetSystem
         GetMotionState(snapshot, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).IsStatsDirty =
             true;
 
-        await SendPetUpdatedAsync(snapshot, ct).ConfigureAwait(false);
+        await SendPetUpdatedAsync(snapshot, ct);
 
         return snapshot;
     }
@@ -196,11 +184,9 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
-        PetEntity? pet = await LoadPlacedPetAsync(dbCtx, petId, ct).ConfigureAwait(false);
+        PetEntity? pet = await LoadPlacedPetAsync(dbCtx, petId, ct);
 
         if (pet is null)
         {
@@ -221,34 +207,30 @@ public sealed partial class RoomPetSystem
 
         pet.RoomEntityId = null;
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         _roomGrain._state.PetsById.Remove(pet.Id);
         _motionByPetId.Remove(petId);
 
         PetSnapshot snapshot = RoomPetRuntime.ToSnapshot(pet);
 
-        await _roomGrain
-            .SendComposerToRoomAsync(
-                new UserRemoveMessageComposer { ObjectId = RoomPetRuntime.ToRoomObjectId(pet.Id) }
-            )
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new UserRemoveMessageComposer { ObjectId = RoomPetRuntime.ToRoomObjectId(pet.Id) }
+        );
 
-        await SendPetAddedToInventoryAsync(snapshot, ct).ConfigureAwait(false);
+        await SendPetAddedToInventoryAsync(snapshot, ct);
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new PetPickedUpEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new PetPickedUpEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
+            ct
+        );
 
         return snapshot;
     }
 
     public async Task<PetSnapshot?> GetPlacedPetSnapshotAsync(int petId, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         return _roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? snapshot)
             ? snapshot
@@ -257,7 +239,7 @@ public sealed partial class RoomPetSystem
 
     public async Task<ImmutableArray<PetSnapshot>> GetPlacedPetSnapshotsAsync(CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         return _roomGrain._state.PetsById.Values.OrderBy(p => p.PetId).ToImmutableArray();
     }
@@ -266,13 +248,13 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         List<RoomAvatarSnapshot> snapshots = new(_roomGrain._state.PetsById.Count);
 
         foreach (PetSnapshot pet in _roomGrain._state.PetsById.Values.OrderBy(p => p.PetId))
         {
-            snapshots.Add(await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false));
+            snapshots.Add(await ToAvatarSnapshotAsync(pet, ct));
         }
 
         return snapshots.ToImmutableArray();

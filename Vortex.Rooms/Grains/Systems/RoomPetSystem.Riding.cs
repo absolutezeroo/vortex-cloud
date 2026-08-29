@@ -20,7 +20,7 @@ public sealed partial class RoomPetSystem
     /// <summary>Gets on or off a pet. The client sends one message for both.</summary>
     public async Task MountPetAsync(ActionContext ctx, int petId, bool mount, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -41,7 +41,7 @@ public sealed partial class RoomPetSystem
                 return;
             }
 
-            await ApplyRidingStateAsync(pet, pet.HasSaddle, ctx.PlayerId, ct).ConfigureAwait(false);
+            await ApplyRidingStateAsync(pet, pet.HasSaddle, ctx.PlayerId, ct);
 
             return;
         }
@@ -52,13 +52,13 @@ public sealed partial class RoomPetSystem
             return;
         }
 
-        await ApplyRidingStateAsync(pet, pet.HasSaddle, rider: null, ct).ConfigureAwait(false);
+        await ApplyRidingStateAsync(pet, pet.HasSaddle, rider: null, ct);
     }
 
     /// <summary>Takes the saddle off, which also throws whoever is riding.</summary>
     public async Task RemoveSaddleFromPetAsync(ActionContext ctx, int petId, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet)
@@ -68,7 +68,7 @@ public sealed partial class RoomPetSystem
             return;
         }
 
-        await ApplyRidingStateAsync(pet, hasSaddle: false, rider: null, ct).ConfigureAwait(false);
+        await ApplyRidingStateAsync(pet, hasSaddle: false, rider: null, ct);
     }
 
     /// <summary>Flips whether players other than the owner may ride.</summary>
@@ -78,7 +78,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet)
@@ -91,8 +91,8 @@ public sealed partial class RoomPetSystem
         PetSnapshot updated = pet with { RidingPermission = !pet.RidingPermission };
         _roomGrain._state.PetsById[petId] = updated;
 
-        await PersistRidingAsync(updated, ct).ConfigureAwait(false);
-        await SendPetStatusAsync(updated).ConfigureAwait(false);
+        await PersistRidingAsync(updated, ct);
+        await SendPetStatusAsync(updated);
     }
 
     /// <summary>
@@ -135,19 +135,17 @@ public sealed partial class RoomPetSystem
         PetSnapshot updated = pet with { HasSaddle = hasSaddle, RiderId = rider };
         _roomGrain._state.PetsById[pet.PetId] = updated;
 
-        await PersistRidingAsync(updated, ct).ConfigureAwait(false);
-        await SendPetFigureAsync(updated).ConfigureAwait(false);
-        await SendPetStatusAsync(updated).ConfigureAwait(false);
+        await PersistRidingAsync(updated, ct);
+        await SendPetFigureAsync(updated);
+        await SendPetStatusAsync(updated);
     }
 
     /// <summary>The saddle and the permission survive a restart; the rider does not.</summary>
     private async Task PersistRidingAsync(PetSnapshot pet, CancellationToken ct)
     {
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
-        PetEntity? entity = await LoadPlacedPetAsync(dbCtx, pet.PetId, ct).ConfigureAwait(false);
+        PetEntity? entity = await LoadPlacedPetAsync(dbCtx, pet.PetId, ct);
 
         if (entity is null)
         {
@@ -157,6 +155,6 @@ public sealed partial class RoomPetSystem
         entity.HasSaddle = pet.HasSaddle;
         entity.RidingPermission = pet.RidingPermission;
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
     }
 }

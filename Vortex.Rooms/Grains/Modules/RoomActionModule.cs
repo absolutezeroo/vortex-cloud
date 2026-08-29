@@ -59,18 +59,16 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 
         await inventory.AddFurnitureFromRoomItemSnapshotAsync(snapshot, ct);
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new ItemPickedUpEvent(
-                    itemId.Value,
-                    ctx.PlayerId.Value,
-                    previousOwnerId.Value,
-                    pickerId.Value,
-                    _roomGrain.RoomId.Value
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new ItemPickedUpEvent(
+                itemId.Value,
+                ctx.PlayerId.Value,
+                previousOwnerId.Value,
+                pickerId.Value,
+                _roomGrain.RoomId.Value
+            ),
+            ct
+        );
 
         return true;
     }

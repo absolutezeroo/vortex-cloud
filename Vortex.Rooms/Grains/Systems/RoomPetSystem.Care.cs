@@ -38,7 +38,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -50,7 +50,7 @@ public sealed partial class RoomPetSystem
         // and none of the respect rules below (daily cap, account age) apply to it.
         if (RoomPetRuntime.IsPlant(pet))
         {
-            return await TreatPlantAsync(ctx, petId, ct).ConfigureAwait(false);
+            return await TreatPlantAsync(ctx, petId, ct);
         }
 
         int minimumAgeDays = _roomGrain._roomConfig.Pet.RespectMinimumAccountAgeDays;
@@ -59,8 +59,7 @@ public sealed partial class RoomPetSystem
         {
             PlayerSummarySnapshot summary = await _roomGrain
                 ._grainFactory.GetPlayerGrain(ctx.PlayerId)
-                .GetSummaryAsync(ct)
-                .ConfigureAwait(false);
+                .GetSummaryAsync(ct);
 
             int ageDays = (int)(DateTime.UtcNow - summary.CreatedAt).TotalDays;
 
@@ -76,8 +75,7 @@ public sealed partial class RoomPetSystem
                             RequiredDays = minimumAgeDays,
                             AvatarAgeInDays = ageDays,
                         }
-                    )
-                    .ConfigureAwait(false);
+                    );
 
                 return pet;
             }
@@ -99,8 +97,7 @@ public sealed partial class RoomPetSystem
         }
 
         int respectXp = _roomGrain._roomConfig.Pet.RespectXpReward;
-        PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, respectXp, ct)
-            .ConfigureAwait(false);
+        PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, respectXp, ct);
         updated = updated with
         {
             Respect = updated.Respect + 1,
@@ -114,8 +111,8 @@ public sealed partial class RoomPetSystem
             motion.IsStatsDirty = true;
         }
 
-        await SendPetUpdatedAsync(updated, ct).ConfigureAwait(false);
-        await BroadcastPetRespectNotificationAsync(updated).ConfigureAwait(false);
+        await SendPetUpdatedAsync(updated, ct);
+        await BroadcastPetRespectNotificationAsync(updated);
 
         return updated;
     }
@@ -126,7 +123,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -134,8 +131,7 @@ public sealed partial class RoomPetSystem
         }
 
         int commandXp = _roomGrain._roomConfig.Pet.CommandXpReward;
-        PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, commandXp, ct)
-            .ConfigureAwait(false);
+        PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, commandXp, ct);
         _roomGrain._state.PetsById[petId] = updated;
 
         if (_motionByPetId.TryGetValue(petId, out PetMotionState? motion))
@@ -143,7 +139,7 @@ public sealed partial class RoomPetSystem
             motion.IsStatsDirty = true;
         }
 
-        await SendPetUpdatedAsync(updated, ct).ConfigureAwait(false);
+        await SendPetUpdatedAsync(updated, ct);
 
         return updated;
     }
@@ -154,7 +150,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -171,8 +167,7 @@ public sealed partial class RoomPetSystem
         PetSnapshot withEnergy = pet with { Energy = newEnergy };
         _roomGrain._state.PetsById[petId] = withEnergy;
 
-        PetSnapshot updated = await GrantXpAndLevelUpAsync(withEnergy, supplementXp, ct)
-            .ConfigureAwait(false);
+        PetSnapshot updated = await GrantXpAndLevelUpAsync(withEnergy, supplementXp, ct);
         _roomGrain._state.PetsById[petId] = updated;
 
         bool petWokeUp = false;
@@ -188,11 +183,11 @@ public sealed partial class RoomPetSystem
             }
         }
 
-        await SendPetUpdatedAsync(updated, ct).ConfigureAwait(false);
+        await SendPetUpdatedAsync(updated, ct);
 
         if (petWokeUp)
         {
-            await BroadcastPetVocalAsync(updated, "GENERIC_HAPPY").ConfigureAwait(false);
+            await BroadcastPetVocalAsync(updated, "GENERIC_HAPPY");
         }
 
         return updated;
@@ -285,7 +280,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -306,19 +301,19 @@ public sealed partial class RoomPetSystem
 
         if (pet.Level < cmd.LevelRequired)
         {
-            await BroadcastPetVocalAsync(pet, "UNKNOWN_COMMAND").ConfigureAwait(false);
+            await BroadcastPetVocalAsync(pet, "UNKNOWN_COMMAND");
             return null;
         }
 
         if (_motionByPetId.TryGetValue(petId, out PetMotionState? motion) && motion.IsSleeping)
         {
-            await BroadcastPetVocalAsync(pet, "SLEEPING").ConfigureAwait(false);
+            await BroadcastPetVocalAsync(pet, "SLEEPING");
             return null;
         }
 
         if (pet.Energy < cmd.EnergyCost)
         {
-            await BroadcastPetVocalAsync(pet, "TIRED").ConfigureAwait(false);
+            await BroadcastPetVocalAsync(pet, "TIRED");
             return null;
         }
 
@@ -333,8 +328,7 @@ public sealed partial class RoomPetSystem
         PetSnapshot withEnergy = pet with { Energy = newEnergy, Happiness = newHappiness };
         _roomGrain._state.PetsById[petId] = withEnergy;
 
-        PetSnapshot updated = await GrantXpAndLevelUpAsync(withEnergy, cmd.XpReward, ct)
-            .ConfigureAwait(false);
+        PetSnapshot updated = await GrantXpAndLevelUpAsync(withEnergy, cmd.XpReward, ct);
         _roomGrain._state.PetsById[petId] = updated;
 
         if (motion is not null)
@@ -367,22 +361,19 @@ public sealed partial class RoomPetSystem
         {
             // With the height, or the client drops the segment and the trick is never seen.
             RoomPetAvatarSnapshot postureSnapshot = await ToAvatarSnapshotAsync(
-                    updated,
-                    RoomPetRuntime.StatusWithHeight(cmd.Posture, updated.Z),
-                    cmd.Posture,
-                    ct
-                )
-                .ConfigureAwait(false);
+                updated,
+                RoomPetRuntime.StatusWithHeight(cmd.Posture, updated.Z),
+                cmd.Posture,
+                ct
+            );
 
-            await _roomGrain
-                .SendComposerToRoomAsync(
-                    new UserUpdateMessageComposer { Avatars = [postureSnapshot] }
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [postureSnapshot] }
+            );
         }
         else
         {
-            await SendPetUpdatedAsync(updated, ct).ConfigureAwait(false);
+            await SendPetUpdatedAsync(updated, ct);
         }
 
         return updated;
@@ -404,47 +395,39 @@ public sealed partial class RoomPetSystem
 
         // Only the floating "+N" over the pet. The totals and thresholds this used to broadcast
         // belong to PetInfo, which the client asks for when the pet's dialog is opened.
-        await _roomGrain
-            .SendComposerToRoomAsync(
-                new PetExperienceMessageComposer
-                {
-                    PetId = updated.PetId,
-                    PetRoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
-                    GainedExperience = xp,
-                }
-            )
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new PetExperienceMessageComposer
+            {
+                PetId = updated.PetId,
+                PetRoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
+                GainedExperience = xp,
+            }
+        );
 
         if (leveledUp)
         {
-            await _roomGrain
-                ._events.PublishAsync(
-                    new PetLeveledUpEvent(updated.PetId, _roomGrain.RoomId.Value, updated.Level),
-                    ct
-                )
-                .ConfigureAwait(false);
+            await _roomGrain._events.PublishAsync(
+                new PetLeveledUpEvent(updated.PetId, _roomGrain.RoomId.Value, updated.Level),
+                ct
+            );
 
-            await _roomGrain
-                .SendComposerToRoomAsync(
-                    new PetLevelUpdateMessageComposer
-                    {
-                        RoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
-                        PetId = updated.PetId,
-                        Level = updated.Level,
-                    }
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(
+                new PetLevelUpdateMessageComposer
+                {
+                    RoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
+                    PetId = updated.PetId,
+                    Level = updated.Level,
+                }
+            );
 
-            await _roomGrain
-                .SendComposerToRoomAsync(
-                    new UserUpdateMessageComposer
-                    {
-                        Avatars = [await ToAvatarSnapshotAsync(updated, ct).ConfigureAwait(false)],
-                    }
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(
+                new UserUpdateMessageComposer
+                {
+                    Avatars = [await ToAvatarSnapshotAsync(updated, ct)],
+                }
+            );
 
-            await BroadcastPetVocalAsync(updated, "LEVEL_UP").ConfigureAwait(false);
+            await BroadcastPetVocalAsync(updated, "LEVEL_UP");
 
             try
             {
@@ -458,8 +441,7 @@ public sealed partial class RoomPetSystem
                             PetName = updated.Name,
                             Pet = updated,
                         }
-                    )
-                    .ConfigureAwait(false);
+                    );
             }
             catch (Exception ex)
             {

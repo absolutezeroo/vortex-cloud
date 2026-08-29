@@ -38,26 +38,22 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         // Sync live in-memory stats into this context so the feed operates on the correct base
-        await SyncLiveStatsToPetEntityAsync(dbCtx, petId, ct).ConfigureAwait(false);
+        await SyncLiveStatsToPetEntityAsync(dbCtx, petId, ct);
 
-        PetFeedResult result = await RoomPetRuntime
-            .FeedAsync(
-                dbCtx,
-                _roomGrain.RoomId.Value,
-                ctx.PlayerId.Value,
-                petId,
-                foodItemId,
-                _roomGrain._state.RoomSnapshot.AllowPetsEat,
-                _roomGrain._roomConfig.Pet.NutritionCap,
-                _roomGrain._roomConfig.Pet.EnergyCap,
-                ct
-            )
-            .ConfigureAwait(false);
+        PetFeedResult result = await RoomPetRuntime.FeedAsync(
+            dbCtx,
+            _roomGrain.RoomId.Value,
+            ctx.PlayerId.Value,
+            petId,
+            foodItemId,
+            _roomGrain._state.RoomSnapshot.AllowPetsEat,
+            _roomGrain._roomConfig.Pet.NutritionCap,
+            _roomGrain._roomConfig.Pet.EnergyCap,
+            ct
+        );
 
         if (!result.Success || result.Pet is null)
         {
@@ -71,15 +67,14 @@ public sealed partial class RoomPetSystem
             feedMotion.IsStatsDirty = false;
         }
 
-        await SendPetUpdatedAsync(result.Pet, ct).ConfigureAwait(false);
+        await SendPetUpdatedAsync(result.Pet, ct);
         await UpdateFoodItemInLiveStateAsync(
-                ctx,
-                foodItemId,
-                result.UsesRemaining,
-                result.FoodState,
-                ct
-            )
-            .ConfigureAwait(false);
+            ctx,
+            foodItemId,
+            result.UsesRemaining,
+            result.FoodState,
+            ct
+        );
 
         return result;
     }
@@ -104,7 +99,7 @@ public sealed partial class RoomPetSystem
             if (motion.FeedTargetId is RoomObjectId feedId)
             {
                 motion.FeedTargetId = null;
-                bool ate = await AutoFeedPetAtBowlAsync(pet, feedId, ct).ConfigureAwait(false);
+                bool ate = await AutoFeedPetAtBowlAsync(pet, feedId, ct);
                 PetSnapshot petAfterFeed = _roomGrain._state.PetsById.TryGetValue(
                     pet.PetId,
                     out PetSnapshot? fed
@@ -115,15 +110,14 @@ public sealed partial class RoomPetSystem
                 if (ate)
                 {
                     return await ToAvatarSnapshotAsync(
-                            petAfterFeed,
-                            RoomPetRuntime.EatStatus(petAfterFeed.Z),
-                            RoomPetRuntime.EatPosture,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                        petAfterFeed,
+                        RoomPetRuntime.EatStatus(petAfterFeed.Z),
+                        RoomPetRuntime.EatPosture,
+                        ct
+                    );
                 }
 
-                return await ToAvatarSnapshotAsync(petAfterFeed, ct).ConfigureAwait(false);
+                return await ToAvatarSnapshotAsync(petAfterFeed, ct);
             }
 
             if (motion.IsHeadingToNest)
@@ -141,8 +135,7 @@ public sealed partial class RoomPetSystem
             {
                 motion.IsHeadingToToy = false;
 
-                RoomPetAvatarSnapshot? played = await StartToyPlayAsync(pet, motion, now, ct)
-                    .ConfigureAwait(false);
+                RoomPetAvatarSnapshot? played = await StartToyPlayAsync(pet, motion, now, ct);
 
                 if (played is not null)
                 {
@@ -150,7 +143,7 @@ public sealed partial class RoomPetSystem
                 }
             }
 
-            return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+            return await ToAvatarSnapshotAsync(pet, ct);
         }
 
         if (motion.TilePath.Count == 0 && now >= motion.NextWanderAtMs)
@@ -195,12 +188,12 @@ public sealed partial class RoomPetSystem
             motion.ClearMovement();
             motion.NextWanderAtMs = ScheduleNextWanderAt(now);
 
-            return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+            return await ToAvatarSnapshotAsync(pet, ct);
         }
 
         _roomGrain._state.PetsById[pet.PetId] = facingPet;
 
-        return await ToAvatarSnapshotAsync(facingPet, status, ct).ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(facingPet, status, ct);
     }
 
     private PetSnapshot ApplyPendingPetStep(PetSnapshot pet, PetMotionState motion)
@@ -587,9 +580,10 @@ public sealed partial class RoomPetSystem
             return;
         }
 
-        PetEntity? entity = await dbCtx
-            .Pets.SingleOrDefaultAsync(p => p.Id == petId && p.DeletedAt == null, ct)
-            .ConfigureAwait(false);
+        PetEntity? entity = await dbCtx.Pets.SingleOrDefaultAsync(
+            p => p.Id == petId && p.DeletedAt == null,
+            ct
+        );
 
         if (entity is null)
         {
@@ -805,16 +799,15 @@ public sealed partial class RoomPetSystem
         motion.NextToyPlayAtMs = motion.ToyPlayEndsAtMs + Tuning.ToyPlayCooldownMs;
         motion.NextWanderAtMs = motion.ToyPlayEndsAtMs;
 
-        await SetToyInUseAsync(toy, inUse: true).ConfigureAwait(false);
-        await BroadcastPetVocalAsync(updated, "PLAYFUL").ConfigureAwait(false);
+        await SetToyInUseAsync(toy, inUse: true);
+        await BroadcastPetVocalAsync(updated, "PLAYFUL");
 
         return await ToAvatarSnapshotAsync(
-                updated,
-                RoomPetRuntime.PlayStatus(updated.Z),
-                RoomPetRuntime.PlayPosture,
-                ct
-            )
-            .ConfigureAwait(false);
+            updated,
+            RoomPetRuntime.PlayStatus(updated.Z),
+            RoomPetRuntime.PlayPosture,
+            ct
+        );
     }
 
     /// <summary>Ends the bout: the toy goes back to its resting frame and the pet gets up.</summary>
@@ -835,9 +828,9 @@ public sealed partial class RoomPetSystem
         }
 
         motion.PlayingWithToyId = null;
-        await SetToyInUseAsync(toy, inUse: false).ConfigureAwait(false);
+        await SetToyInUseAsync(toy, inUse: false);
 
-        return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(pet, ct);
     }
 
     /// <summary>
@@ -960,8 +953,7 @@ public sealed partial class RoomPetSystem
         bool isDrink = item.Logic is FurniturePetDrinkLogic;
 
         ActionContext ctx = ActionContext.CreateForPlayer(pet.OwnerId, _roomGrain.RoomId);
-        PetFeedResult result = await FeedPetAsync(ctx, pet.PetId, feedItemId, ct)
-            .ConfigureAwait(false);
+        PetFeedResult result = await FeedPetAsync(ctx, pet.PetId, feedItemId, ct);
 
         if (!result.Success)
         {
@@ -973,7 +965,7 @@ public sealed partial class RoomPetSystem
             // The vocal still tells food from water even though the posture cannot: a pet has one
             // animation for both.
             string eatVocal = isDrink ? "DRINKING" : "EATING";
-            await BroadcastPetVocalAsync(updated, eatVocal).ConfigureAwait(false);
+            await BroadcastPetVocalAsync(updated, eatVocal);
         }
 
         return true;
@@ -996,9 +988,7 @@ public sealed partial class RoomPetSystem
         {
             item.Logic.StuffData.SetState(foodState.ToString());
             item.SetExtraData(foodState.ToString());
-            await _roomGrain
-                .SendComposerToRoomAsync(item.GetRefreshStuffDataComposer())
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(item.GetRefreshStuffDataComposer());
             return;
         }
 
@@ -1007,27 +997,23 @@ public sealed partial class RoomPetSystem
             return;
         }
 
-        await _roomGrain
-            .SendComposerToRoomAsync(item.GetRemoveComposer(ctx.PlayerId, true))
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(item.GetRemoveComposer(ctx.PlayerId, true));
 
-        await item.Logic.OnDetachAsync(ct).ConfigureAwait(false);
+        await item.Logic.OnDetachAsync(ct);
         item.SetAction(null);
         _roomGrain._state.ItemsById.Remove(foodItemId);
         _roomGrain._state.ItemIndex.OnItemDetached(item);
 
         // The row was marked deleted inside the feed transaction, not here — but this is where the
         // last use is spent, so this is where the deletion is announced.
-        await _roomGrain
-            ._events.PublishAsync(
-                new ItemDeletedEvent(
-                    foodItemId.Value,
-                    item.OwnerId.Value,
-                    ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
-                    ItemDeletionReason.PetFoodUsedUp
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new ItemDeletedEvent(
+                foodItemId.Value,
+                item.OwnerId.Value,
+                ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
+                ItemDeletionReason.PetFoodUsedUp
+            ),
+            ct
+        );
     }
 }

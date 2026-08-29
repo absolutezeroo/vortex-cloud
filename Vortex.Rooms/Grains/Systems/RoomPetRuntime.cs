@@ -390,24 +390,20 @@ internal static class RoomPetRuntime
             return PetFeedResult.Failed(foodItemId);
         }
 
-        PetEntity? pet = await dbCtx
-            .Pets.SingleOrDefaultAsync(
-                p => p.Id == petId && p.RoomEntityId == roomId && p.DeletedAt == null,
-                ct
-            )
-            .ConfigureAwait(false);
+        PetEntity? pet = await dbCtx.Pets.SingleOrDefaultAsync(
+            p => p.Id == petId && p.RoomEntityId == roomId && p.DeletedAt == null,
+            ct
+        );
 
         if (pet is null || pet.OwnerPlayerEntityId != actorPlayerId)
         {
             return PetFeedResult.Failed(foodItemId);
         }
 
-        FurnitureEntity? food = await dbCtx
-            .Furnitures.SingleOrDefaultAsync(
-                f => f.Id == foodItemId.Value && f.RoomEntityId == roomId && f.DeletedAt == null,
-                ct
-            )
-            .ConfigureAwait(false);
+        FurnitureEntity? food = await dbCtx.Furnitures.SingleOrDefaultAsync(
+            f => f.Id == foodItemId.Value && f.RoomEntityId == roomId && f.DeletedAt == null,
+            ct
+        );
 
         if (food is null)
         {
@@ -422,8 +418,7 @@ internal static class RoomPetRuntime
                     && f.PetType == pet.Type
                     && f.DeletedAt == null,
                 ct
-            )
-            .ConfigureAwait(false);
+            );
 
         if (
             petFood is null
@@ -458,7 +453,7 @@ internal static class RoomPetRuntime
             food.ExtraData = usesRemaining.ToString();
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         return new PetFeedResult
         {

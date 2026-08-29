@@ -1,10 +1,11 @@
 ﻿#!/usr/bin/env node
 // The boundaries CONTEXT.md states in prose, made executable.
 //
-// Six rules that no compiler, test or grep enforces today, all of them currently respected --
-// which is exactly why encoding them is cheap: there is nothing to clean up first, only a state to
-// hold. A rule that lives in a document is a rule that erodes on the first busy afternoon; the
-// stale project references this repository carried for months are the proof.
+// Seven rules that no compiler, test or grep enforces today, all of them currently respected --
+// which is what makes encoding them cheap: only a state to hold. A rule that lives in a document is
+// a rule that erodes on the first busy afternoon; the stale project references this repository
+// carried for months are the proof, and wall 7 was already breached in 205 places when it was
+// written, silently, for as long as the pet system has existed.
 //
 //   node scripts/hooks/check-architecture-walls.mjs
 //   node scripts/hooks/check-architecture-walls.mjs --update   # re-baseline leaks and the
@@ -210,6 +211,37 @@ if (regressed.length > 0) {
   ]);
 }
 
+// ---------------------------------------------------------------------------------------------
+// Wall 7 -- grain code stays on its own scheduler.
+//
+// AGENTS.md says grain state needs no locks because Orleans runs one turn at a time per activation.
+// `ConfigureAwait(false)` is an explicit opt-out of the current TaskScheduler, so in grain code the
+// continuation resumes on the thread pool and everything after that await runs outside the turn --
+// concurrently with the next one. RoomPetSystem had 184 of them, several with a `_state` mutation
+// on the very next line.
+//
+// Nothing else sees this. CA2007 is off in .editorconfig, and ORLEANS0014 only looks at classes
+// that implement IGrain -- the Modules and Systems here are plain helpers holding a RoomGrain, so
+// the analyser reports zero while the escape is real. Outside grain code ConfigureAwait(false) is
+// correct and there are ~3,200 of them; this wall covers only what runs on an activation.
+// ---------------------------------------------------------------------------------------------
+const grainDirs = fs
+  .readdirSync(root, { withFileTypes: true })
+  .filter((e) => e.isDirectory() && e.name.startsWith('Vortex.') && !e.name.endsWith('.Tests'))
+  .map((e) => `${e.name}/Grains`)
+  .filter((d) => fs.existsSync(path.join(root, d)));
+
+const schedulerEscapes = grainDirs.flatMap((d) =>
+  hits(d, /\.ConfigureAwait\s*\(\s*false\s*\)/)
+);
+if (schedulerEscapes.length > 0) {
+  failures.push([
+    'Grain code opts out of its own scheduler. Drop the ConfigureAwait(false): the continuation '
+      + 'would resume off the activation and void the one-turn-at-a-time guarantee the state relies on.',
+    schedulerEscapes,
+  ]);
+}
+
 if (update) {
   const free = fs
     .readdirSync(root, { withFileTypes: true })
@@ -243,7 +275,7 @@ if (newLeak.length > 0) {
 if (failures.length === 0) {
   const healed = baseline.filter((f) => !leakFiles.includes(f));
   const note = healed.length > 0 ? ` (${healed.length} baselined leak(s) now gone -- --update)` : '';
-  console.log(`Architecture walls hold: 6 checked, ${leakFiles.length} baselined leak(s)${note}.`);
+  console.log(`Architecture walls hold: 7 checked, ${leakFiles.length} baselined leak(s)${note}.`);
   process.exit(0);
 }
 

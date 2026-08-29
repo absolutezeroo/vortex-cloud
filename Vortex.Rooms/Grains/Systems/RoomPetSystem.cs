@@ -68,12 +68,10 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
         try
         {
-            _tuning = await PetTuning
-                .LoadAsync(
-                    _roomGrain._grainFactory.GetServerConfigGrain(),
-                    _roomGrain._roomConfig.Pet
-                )
-                .ConfigureAwait(false);
+            _tuning = await PetTuning.LoadAsync(
+                _roomGrain._grainFactory.GetServerConfigGrain(),
+                _roomGrain._roomConfig.Pet
+            );
         }
         catch (Exception ex)
         {
@@ -94,15 +92,12 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             return;
         }
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         PetEntity[] pets = await dbCtx
             .Pets.AsNoTracking()
             .Where(p => p.RoomEntityId == _roomGrain.RoomId.Value && p.DeletedAt == null)
-            .ToArrayAsync(ct)
-            .ConfigureAwait(false);
+            .ToArrayAsync(ct);
 
         _roomGrain._state.PetsById.Clear();
 
@@ -129,15 +124,15 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             _roomGrain._roomConfig.Pet.TickMs
         );
 
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (_roomGrain._state.PetsById.Count == 0)
         {
             return;
         }
 
-        await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
-        await RefreshTuningAsync(now).ConfigureAwait(false);
+        await EnsureRoomReadyForPetPlacementAsync(ct);
+        await RefreshTuningAsync(now);
 
         List<RoomAvatarSnapshot> dirtySnapshots = [];
 
@@ -156,11 +151,10 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                     // see RoomPetSystem.Plants.cs. Skipping it entirely is what left it an immortal
                     // level-1 decoration.
                     RoomPetAvatarSnapshot? plantUpdate = await ProcessPlantTickAsync(
-                            current,
-                            motion,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                        current,
+                        motion,
+                        ct
+                    );
 
                     if (plantUpdate is not null)
                     {
@@ -176,14 +170,14 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 {
                     motion.PendingSleepVocal = false;
                     motion.NextVocalAtMs = ScheduleNextVocalAt(now);
-                    await BroadcastPetVocalAsync(current, "SLEEPING").ConfigureAwait(false);
+                    await BroadcastPetVocalAsync(current, "SLEEPING");
                 }
                 else if (motion.PendingWakeVocal)
                 {
                     motion.PendingWakeVocal = false;
                     motion.NextVocalAtMs = ScheduleNextVocalAt(now);
-                    await SendPetSleepAsync(current, sleeping: false).ConfigureAwait(false);
-                    await BroadcastPetVocalAsync(current, "GENERIC_HAPPY").ConfigureAwait(false);
+                    await SendPetSleepAsync(current, sleeping: false);
+                    await BroadcastPetVocalAsync(current, "GENERIC_HAPPY");
                 }
                 else if (motion.NextVocalAtMs < 0)
                 {
@@ -192,8 +186,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 else if (now >= motion.NextVocalAtMs)
                 {
                     motion.NextVocalAtMs = ScheduleNextVocalAt(now);
-                    await BroadcastPetVocalAsync(current, SelectVocalForState(current, motion))
-                        .ConfigureAwait(false);
+                    await BroadcastPetVocalAsync(current, SelectVocalForState(current, motion));
                 }
 
                 // A bout of play holds the pet where it is until it is over, then puts the toy back
@@ -203,11 +196,10 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                     if (now >= motion.ToyPlayEndsAtMs)
                     {
                         RoomPetAvatarSnapshot? finished = await FinishToyPlayAsync(
-                                current,
-                                motion,
-                                ct
-                            )
-                            .ConfigureAwait(false);
+                            current,
+                            motion,
+                            ct
+                        );
 
                         if (finished is not null)
                         {
@@ -223,12 +215,11 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 if (!motion.IsSleeping)
                 {
                     RoomPetAvatarSnapshot? started = await StartToyPlayAsync(
-                            current,
-                            motion,
-                            now,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                        current,
+                        motion,
+                        now,
+                        ct
+                    );
 
                     if (started is not null)
                     {
@@ -242,24 +233,22 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 {
                     motion.SleepPostureSent = true;
                     RoomPetAvatarSnapshot sleepSnapshot = await ToAvatarSnapshotAsync(
-                            current,
-                            RoomPetRuntime.LayStatus(current.Z),
-                            RoomPetRuntime.LayPosture,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                        current,
+                        RoomPetRuntime.LayStatus(current.Z),
+                        RoomPetRuntime.LayPosture,
+                        ct
+                    );
                     dirtySnapshots.Add(sleepSnapshot);
-                    await SendPetSleepAsync(current, sleeping: true).ConfigureAwait(false);
+                    await SendPetSleepAsync(current, sleeping: true);
                 }
                 else if (!motion.IsSleeping)
                 {
                     RoomPetAvatarSnapshot? update = await ProcessPetMotionAsync(
-                            current,
-                            motion,
-                            now,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                        current,
+                        motion,
+                        now,
+                        ct
+                    );
 
                     if (update is not null)
                     {
@@ -280,11 +269,9 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
         if (dirtySnapshots.Count > 0)
         {
-            await _roomGrain
-                .SendComposerToRoomAsync(
-                    new UserUpdateMessageComposer { Avatars = dirtySnapshots.ToImmutableArray() }
-                )
-                .ConfigureAwait(false);
+            await _roomGrain.SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = dirtySnapshots.ToImmutableArray() }
+            );
         }
 
         if (_nextPetFlushAtMs < 0)
@@ -297,7 +284,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
             try
             {
-                await FlushDirtyPetsAsync(ct).ConfigureAwait(false);
+                await FlushDirtyPetsAsync(ct);
             }
             catch (Exception ex)
             {
@@ -327,14 +314,11 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             return;
         }
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         PetEntity[] entities = await dbCtx
             .Pets.Where(p => dirtyIds.Contains(p.Id) && p.DeletedAt == null)
-            .ToArrayAsync(ct)
-            .ConfigureAwait(false);
+            .ToArrayAsync(ct);
 
         foreach (PetEntity entity in entities)
         {
@@ -360,7 +344,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             entity.Direction = (int)snapshot.Direction;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         // Cleared after the save, not before it. Cleared first, a throw from SaveChanges left the
         // pets marked clean while their stats were still only in memory: an hour of feeding and
@@ -465,17 +449,15 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
     private async Task EnsureRoomReadyForPetPlacementAsync(CancellationToken ct)
     {
-        await _roomGrain.MapModule.EnsureMapBuiltAsync(ct).ConfigureAwait(false);
-        await _roomGrain.FurniModule.EnsureFurniLoadedAsync(ct).ConfigureAwait(false);
+        await _roomGrain.MapModule.EnsureMapBuiltAsync(ct);
+        await _roomGrain.FurniModule.EnsureFurniLoadedAsync(ct);
     }
 
     private async Task SendPetAddedAsync(PetSnapshot pet, CancellationToken ct)
     {
-        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(pet, ct);
 
-        await _roomGrain
-            .SendComposerToRoomAsync(new UsersMessageComposer { Avatars = [snapshot] })
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(new UsersMessageComposer { Avatars = [snapshot] });
     }
 
     /// <summary>
@@ -497,17 +479,17 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
     private async Task SendPetUpdatedAsync(PetSnapshot pet, CancellationToken ct)
     {
-        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(pet, ct);
 
-        await _roomGrain
-            .SendComposerToRoomAsync(new UserUpdateMessageComposer { Avatars = [snapshot] })
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new UserUpdateMessageComposer { Avatars = [snapshot] }
+        );
 
         // The avatar update redraws the pet but says nothing about what can be done with it. Every
         // caller here has just changed a stat or a permission that the answer depends on -- a
         // monsterplant hitting full growth becomes harvestable, one running out of energy becomes
         // revivable -- so the status goes out alongside.
-        await SendPetStatusAsync(pet).ConfigureAwait(false);
+        await SendPetStatusAsync(pet);
     }
 
     private async Task SendPetRemovedFromInventoryAsync(PetSnapshot pet)
@@ -518,8 +500,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 ._grainFactory.GetPlayerPresenceGrain(pet.OwnerId)
                 .SendComposerAsync(
                     new PetRemovedFromInventoryEventMessageComposer { PetId = pet.PetId }
-                )
-                .ConfigureAwait(false);
+                );
         }
         catch (Exception ex)
         {
@@ -538,8 +519,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         {
             await _roomGrain
                 ._grainFactory.GetPlayerPresenceGrain(ctx.PlayerId)
-                .SendComposerAsync(new PetPlacingErrorMessageComposer { ErrorCode = errorCode })
-                .ConfigureAwait(false);
+                .SendComposerAsync(new PetPlacingErrorMessageComposer { ErrorCode = errorCode });
         }
         catch (Exception ex)
         {
@@ -558,8 +538,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         {
             await _roomGrain
                 ._grainFactory.GetPlayerPresenceGrain(pet.OwnerId)
-                .OnPetAddedToInventoryAsync(pet, ct)
-                .ConfigureAwait(false);
+                .OnPetAddedToInventoryAsync(pet, ct);
         }
         catch (Exception ex)
         {
@@ -577,8 +556,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        return await ToAvatarSnapshotAsync(pet, string.Empty, RoomPetRuntime.StandPosture, ct)
-            .ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(pet, string.Empty, RoomPetRuntime.StandPosture, ct);
     }
 
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(
@@ -587,8 +565,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        return await ToAvatarSnapshotAsync(pet, status, RoomPetRuntime.StandPosture, ct)
-            .ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(pet, status, RoomPetRuntime.StandPosture, ct);
     }
 
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(
@@ -598,7 +575,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        string ownerName = await GetOwnerNameAsync(pet.OwnerId, ct).ConfigureAwait(false);
+        string ownerName = await GetOwnerNameAsync(pet.OwnerId, ct);
 
         return RoomPetRuntime.ToAvatarSnapshot(pet, ownerName, status, posture);
     }
@@ -612,8 +589,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
         ownerName = await _roomGrain
             ._grainFactory.GetPlayerDirectoryGrain()
-            .GetPlayerNameAsync(ownerId, ct)
-            .ConfigureAwait(false);
+            .GetPlayerNameAsync(ownerId, ct);
 
         _roomGrain._state.OwnerNamesById[ownerId] = ownerName;
 
@@ -626,15 +602,10 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        return await dbCtx
-            .Pets.SingleOrDefaultAsync(
-                p =>
-                    p.Id == petId
-                    && p.RoomEntityId == _roomGrain.RoomId.Value
-                    && p.DeletedAt == null,
-                ct
-            )
-            .ConfigureAwait(false);
+        return await dbCtx.Pets.SingleOrDefaultAsync(
+            p => p.Id == petId && p.RoomEntityId == _roomGrain.RoomId.Value && p.DeletedAt == null,
+            ct
+        );
     }
 
     private static void EnsurePetOwner(ActionContext ctx, PetEntity pet)

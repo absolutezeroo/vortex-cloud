@@ -24,7 +24,7 @@ public sealed partial class RoomPetSystem
     /// </summary>
     public async Task<bool> ConsumeHandItemAsync(ActionContext ctx, int petId, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         int handItemId = _roomGrain.HandItemModule.HeldBy(ctx.PlayerId);
 
@@ -38,14 +38,11 @@ public sealed partial class RoomPetSystem
             return false;
         }
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         HandItemEntity? handItem = await dbCtx
             .HandItems.AsNoTracking()
-            .SingleOrDefaultAsync(h => h.HandItemId == handItemId && h.DeletedAt == null, ct)
-            .ConfigureAwait(false);
+            .SingleOrDefaultAsync(h => h.HandItemId == handItemId && h.DeletedAt == null, ct);
 
         if (handItem is null || (handItem.Nutrition <= 0 && handItem.Thirst <= 0))
         {
@@ -76,8 +73,8 @@ public sealed partial class RoomPetSystem
         // The hand empties whether or not the pet needed it: it has been eaten either way.
         _ = _roomGrain.HandItemModule.Drop(ctx.PlayerId);
 
-        await SendPetUpdatedAsync(fed, ct).ConfigureAwait(false);
-        await BroadcastPetVocalAsync(fed, "GENERIC_HAPPY").ConfigureAwait(false);
+        await SendPetUpdatedAsync(fed, ct);
+        await BroadcastPetVocalAsync(fed, "GENERIC_HAPPY");
 
         return true;
     }

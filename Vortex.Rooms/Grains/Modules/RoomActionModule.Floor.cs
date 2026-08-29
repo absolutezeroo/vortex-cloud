@@ -122,26 +122,24 @@ public sealed partial class RoomActionModule
             }
         }
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new ItemPlacedEvent(
-                    item.ObjectId.Value,
-                    ctx.PlayerId.Value,
-                    item.OwnerId.Value,
-                    _roomGrain.RoomId.Value,
-                    JsonSerializer.Serialize(
-                        new
-                        {
-                            x,
-                            y,
-                            rotation = rot.ToString(),
-                        }
-                    ),
-                    snapshot.Definition.Id
+        await _roomGrain._events.PublishAsync(
+            new ItemPlacedEvent(
+                item.ObjectId.Value,
+                ctx.PlayerId.Value,
+                item.OwnerId.Value,
+                _roomGrain.RoomId.Value,
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        x,
+                        y,
+                        rotation = rot.ToString(),
+                    }
                 ),
-                ct
-            )
-            .ConfigureAwait(false);
+                snapshot.Definition.Id
+            ),
+            ct
+        );
 
         return true;
     }
@@ -200,24 +198,22 @@ public sealed partial class RoomActionModule
             return false;
         }
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new ItemMovedEvent(
-                    itemId.Value,
-                    ctx.PlayerId.Value,
-                    _roomGrain.RoomId.Value,
-                    JsonSerializer.Serialize(
-                        new
-                        {
-                            x,
-                            y,
-                            rotation = rot.ToString(),
-                        }
-                    )
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new ItemMovedEvent(
+                itemId.Value,
+                ctx.PlayerId.Value,
+                _roomGrain.RoomId.Value,
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        x,
+                        y,
+                        rotation = rot.ToString(),
+                    }
+                )
+            ),
+            ct
+        );
 
         return true;
     }

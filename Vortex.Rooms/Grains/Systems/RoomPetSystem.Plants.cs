@@ -123,7 +123,7 @@ public sealed partial class RoomPetSystem
             );
         }
 
-        return await ToAvatarSnapshotAsync(updated, ct).ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(updated, ct);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? plant)
@@ -153,7 +153,7 @@ public sealed partial class RoomPetSystem
             return null;
         }
 
-        return await WaterPlantAsync(plant, levelsToAdd: 0, ct).ConfigureAwait(false);
+        return await WaterPlantAsync(plant, levelsToAdd: 0, ct);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public sealed partial class RoomPetSystem
     /// </summary>
     public async Task<bool> HarvestPlantAsync(ActionContext ctx, int petId, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? plant)
@@ -177,7 +177,7 @@ public sealed partial class RoomPetSystem
             return false;
         }
 
-        int? seedDefinitionId = await ResolveSeedDefinitionIdAsync(ct).ConfigureAwait(false);
+        int? seedDefinitionId = await ResolveSeedDefinitionIdAsync(ct);
 
         if (seedDefinitionId is null)
         {
@@ -200,12 +200,11 @@ public sealed partial class RoomPetSystem
         };
         _roomGrain._state.PetsById[petId] = spent;
         GetMotionState(spent, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).IsStatsDirty = true;
-        await FlushDirtyPetsAsync(ct).ConfigureAwait(false);
+        await FlushDirtyPetsAsync(ct);
 
         await _roomGrain
             ._grainFactory.GetInventoryGrain(plant.OwnerId.Value)
-            .GrantFurnitureDefinitionAsync(seedDefinitionId.Value, null, ct)
-            .ConfigureAwait(false);
+            .GrantFurnitureDefinitionAsync(seedDefinitionId.Value, null, ct);
 
         return true;
     }
@@ -216,7 +215,7 @@ public sealed partial class RoomPetSystem
     /// </summary>
     public async Task<bool> CompostPlantAsync(ActionContext ctx, int petId, CancellationToken ct)
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? plant)
@@ -234,13 +233,12 @@ public sealed partial class RoomPetSystem
             return false;
         }
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
-        PetEntity? entity = await dbCtx
-            .Pets.FirstOrDefaultAsync(p => p.Id == petId && p.DeletedAt == null, ct)
-            .ConfigureAwait(false);
+        PetEntity? entity = await dbCtx.Pets.FirstOrDefaultAsync(
+            p => p.Id == petId && p.DeletedAt == null,
+            ct
+        );
 
         if (entity is null)
         {
@@ -249,16 +247,14 @@ public sealed partial class RoomPetSystem
 
         entity.RoomEntityId = null;
         entity.DeletedAt = DateTime.UtcNow;
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         _roomGrain._state.PetsById.Remove(petId);
         _motionByPetId.Remove(petId);
 
-        await _roomGrain
-            .SendComposerToRoomAsync(
-                new UserRemoveMessageComposer { ObjectId = RoomPetRuntime.ToRoomObjectId(petId) }
-            )
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new UserRemoveMessageComposer { ObjectId = RoomPetRuntime.ToRoomObjectId(petId) }
+        );
 
         return true;
     }
@@ -289,13 +285,12 @@ public sealed partial class RoomPetSystem
                 or FurnitureCategory.MonsterplantFertilize
         )
         {
-            return await UsePlantProductAsync(ctx, petId, productItemId, category, ct)
-                .ConfigureAwait(false);
+            return await UsePlantProductAsync(ctx, petId, productItemId, category, ct);
         }
 
         // Anything else keeps the old meaning: a bowl of food, which the feed path validates against
         // pet_food for this pet's type.
-        await FeedPetAsync(ctx, petId, productItemId, ct).ConfigureAwait(false);
+        await FeedPetAsync(ctx, petId, productItemId, ct);
 
         return true;
     }
@@ -314,7 +309,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? plant)
@@ -348,23 +343,20 @@ public sealed partial class RoomPetSystem
 
         // Consume first for the same reason the mystery box does: a failed grant costs the player
         // one potion, while the other order lets a repeated click apply one potion twice.
-        await _roomGrain
-            .ObjectModule.RemoveObjectAsync(ctx, product, ct, product.OwnerId)
-            .ConfigureAwait(false);
+        await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, product, ct, product.OwnerId);
 
         switch (category)
         {
             case FurnitureCategory.MonsterplantRevival:
-                await WaterPlantAsync(plant, levelsToAdd: 0, ct).ConfigureAwait(false);
+                await WaterPlantAsync(plant, levelsToAdd: 0, ct);
                 break;
 
             case FurnitureCategory.MonsterplantRebreed:
-                await SetSeedChargeAsync(plant, ct).ConfigureAwait(false);
+                await SetSeedChargeAsync(plant, ct);
                 break;
 
             case FurnitureCategory.MonsterplantFertilize:
-                await WaterPlantAsync(plant, Math.Max(1, Tuning.PlantFertilizerLevels), ct)
-                    .ConfigureAwait(false);
+                await WaterPlantAsync(plant, Math.Max(1, Tuning.PlantFertilizerLevels), ct);
                 break;
         }
 
@@ -412,8 +404,8 @@ public sealed partial class RoomPetSystem
 
         // Straight to the database: watering is a player action with a visible countdown, and the
         // next stat flush could be a minute away.
-        await FlushDirtyPetsAsync(ct).ConfigureAwait(false);
-        await BroadcastPlantAsync(updated, ct).ConfigureAwait(false);
+        await FlushDirtyPetsAsync(ct);
+        await BroadcastPlantAsync(updated, ct);
 
         return updated;
     }
@@ -424,17 +416,16 @@ public sealed partial class RoomPetSystem
         _roomGrain._state.PetsById[plant.PetId] = updated;
         GetMotionState(updated, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).IsStatsDirty = true;
 
-        await FlushDirtyPetsAsync(ct).ConfigureAwait(false);
+        await FlushDirtyPetsAsync(ct);
     }
 
     private async Task BroadcastPlantAsync(PetSnapshot plant, CancellationToken ct)
     {
-        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(plant, ct)
-            .ConfigureAwait(false);
+        RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(plant, ct);
 
-        await _roomGrain
-            .SendComposerToRoomAsync(new UserUpdateMessageComposer { Avatars = [snapshot] })
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new UserUpdateMessageComposer { Avatars = [snapshot] }
+        );
     }
 
     /// <summary>
@@ -453,16 +444,13 @@ public sealed partial class RoomPetSystem
     /// </summary>
     private async Task<int?> ResolveSeedDefinitionIdAsync(CancellationToken ct)
     {
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         return await dbCtx
             .FurnitureDefinitions.AsNoTracking()
             .Where(d => d.FurniCategory == FurnitureCategory.MonsterplantSeed)
             .OrderBy(d => d.Id)
             .Select(d => (int?)d.Id)
-            .FirstOrDefaultAsync(ct)
-            .ConfigureAwait(false);
+            .FirstOrDefaultAsync(ct);
     }
 }

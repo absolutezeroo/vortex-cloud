@@ -49,7 +49,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
@@ -77,26 +77,26 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
+        await EnsurePetsLoadedAsync(ct);
 
         if (
             !_roomGrain._state.PetsById.TryGetValue(petOneId, out PetSnapshot? petOne)
             || !_roomGrain._state.PetsById.TryGetValue(petTwoId, out PetSnapshot? petTwo)
         )
         {
-            await SendBreedingFailureAsync(ctx.PlayerId, 3, ct).ConfigureAwait(false);
+            await SendBreedingFailureAsync(ctx.PlayerId, 3, ct);
             return false;
         }
 
         if (petOne.Type != petTwo.Type)
         {
-            await SendBreedingFailureAsync(ctx.PlayerId, 1, ct).ConfigureAwait(false);
+            await SendBreedingFailureAsync(ctx.PlayerId, 1, ct);
             return false;
         }
 
         if (!petTwo.CanBreed)
         {
-            await SendBreedingFailureAsync(ctx.PlayerId, 2, ct).ConfigureAwait(false);
+            await SendBreedingFailureAsync(ctx.PlayerId, 2, ct);
             return false;
         }
 
@@ -128,20 +128,18 @@ public sealed partial class RoomPetSystem
         ConfirmBreedingRequestEventMessageComposer targetMsg = new()
         {
             NestId = UnknownBreedingNestId,
-            PetOne = await DescribeBreedingParentAsync(petOne, ct).ConfigureAwait(false),
-            PetTwo = await DescribeBreedingParentAsync(petTwo, ct).ConfigureAwait(false),
+            PetOne = await DescribeBreedingParentAsync(petOne, ct),
+            PetTwo = await DescribeBreedingParentAsync(petTwo, ct),
             ResultPetType = proposedRace,
         };
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(petOne.OwnerId)
-            .SendComposerAsync(requesterMsg)
-            .ConfigureAwait(false);
+            .SendComposerAsync(requesterMsg);
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(petTwo.OwnerId)
-            .SendComposerAsync(targetMsg)
-            .ConfigureAwait(false);
+            .SendComposerAsync(targetMsg);
 
         return true;
     }
@@ -163,9 +161,7 @@ public sealed partial class RoomPetSystem
 
         _breedingByPetOneId.Remove(session.PetOneId);
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         PetEntity baby = new()
         {
@@ -193,7 +189,7 @@ public sealed partial class RoomPetSystem
         };
 
         dbCtx.Pets.Add(baby);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         // The client keys the outcome to the nest it was started from, and reads a result code
         // rather than a flag: 1 is the success it acts on.
@@ -205,30 +201,25 @@ public sealed partial class RoomPetSystem
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(session.OwnerOneId)
-            .SendComposerAsync(resultMsg)
-            .ConfigureAwait(false);
+            .SendComposerAsync(resultMsg);
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(session.OwnerTwoId)
-            .SendComposerAsync(resultMsg)
-            .ConfigureAwait(false);
+            .SendComposerAsync(resultMsg);
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(session.OwnerOneId)
-            .SendComposerAsync(new NestBreedingSuccessEventMessageComposer { NewPetId = baby.Id })
-            .ConfigureAwait(false);
+            .SendComposerAsync(new NestBreedingSuccessEventMessageComposer { NewPetId = baby.Id });
 
-        await _roomGrain
-            .SendComposerToRoomAsync(
-                new PetBreedingResultEventMessageComposer
-                {
-                    // The dialog shows one block per parent. Breeding here yields a single pet with
-                    // no rarity or mutation, so those stay neutral instead of being invented.
-                    Result = DescribeParent(session.PetOneId, session.OwnerOneId),
-                    OtherResult = DescribeParent(session.PetTwoId, session.OwnerTwoId),
-                }
-            )
-            .ConfigureAwait(false);
+        await _roomGrain.SendComposerToRoomAsync(
+            new PetBreedingResultEventMessageComposer
+            {
+                // The dialog shows one block per parent. Breeding here yields a single pet with
+                // no rarity or mutation, so those stay neutral instead of being invented.
+                Result = DescribeParent(session.PetOneId, session.OwnerOneId),
+                OtherResult = DescribeParent(session.PetTwoId, session.OwnerTwoId),
+            }
+        );
 
         return true;
     }
@@ -248,7 +239,7 @@ public sealed partial class RoomPetSystem
                 CultureInfo.InvariantCulture,
                 $"{pet.Type} {pet.Race} {pet.Color}"
             ),
-            Owner = await GetOwnerNameAsync(pet.OwnerId, ct).ConfigureAwait(false),
+            Owner = await GetOwnerNameAsync(pet.OwnerId, ct),
         };
 
     /// <summary>One side of the breeding outcome dialog, built from a parent pet.</summary>
@@ -308,8 +299,7 @@ public sealed partial class RoomPetSystem
     {
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(playerId)
-            .SendComposerAsync(new GoToBreedingNestFailureEventMessageComposer { Reason = reason })
-            .ConfigureAwait(false);
+            .SendComposerAsync(new GoToBreedingNestFailureEventMessageComposer { Reason = reason });
     }
 
     public async Task<PetSnapshot?> PlantMonsterplantSeedAsync(
@@ -318,7 +308,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
+        await EnsureRoomReadyForPetPlacementAsync(ct);
 
         if (!_roomGrain._state.ItemsById.TryGetValue(seedItemId, out IRoomItem? seedItem))
         {
@@ -330,9 +320,7 @@ public sealed partial class RoomPetSystem
         double z = seedItem.Z;
         PlayerId ownerId = seedItem.OwnerId;
 
-        await using VortexDbContext dbCtx = await _roomGrain
-            ._dbCtxFactory.CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         PetEntity plant = new()
         {
@@ -364,28 +352,24 @@ public sealed partial class RoomPetSystem
         seedEntity.DeletedAt = DateTime.UtcNow;
         dbCtx.Entry(seedEntity).Property(f => f.DeletedAt).IsModified = true;
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct);
 
         PetSnapshot snapshot = RoomPetRuntime.ToSnapshot(plant);
         _roomGrain._state.PetsById[plant.Id] = snapshot;
 
-        await SendPetAddedAsync(snapshot, ct).ConfigureAwait(false);
+        await SendPetAddedAsync(snapshot, ct);
 
-        await _roomGrain
-            .ObjectModule.RemoveObjectAsync(ctx, seedItem, ct, ownerId)
-            .ConfigureAwait(false);
+        await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, seedItem, ct, ownerId);
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new ItemDeletedEvent(
-                    seedItemId.Value,
-                    ownerId.Value,
-                    ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
-                    ItemDeletionReason.MonsterplantSeedPlanted
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
+        await _roomGrain._events.PublishAsync(
+            new ItemDeletedEvent(
+                seedItemId.Value,
+                ownerId.Value,
+                ctx.PlayerId == PlayerId.Invalid ? null : ctx.PlayerId.Value,
+                ItemDeletionReason.MonsterplantSeedPlanted
+            ),
+            ct
+        );
 
         return snapshot;
     }

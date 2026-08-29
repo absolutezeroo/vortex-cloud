@@ -45,14 +45,13 @@ internal static class ChatReviewDispatch
         foreach (int guardianId in outcome.OfferedTo)
         {
             await SendAsync(
-                    grainFactory,
-                    guardianId,
-                    new ChatReviewSessionOfferedToGuideMessageComposer
-                    {
-                        AcceptanceTimeoutSeconds = AcceptanceTimeoutSeconds,
-                    }
-                )
-                .ConfigureAwait(false);
+                grainFactory,
+                guardianId,
+                new ChatReviewSessionOfferedToGuideMessageComposer
+                {
+                    AcceptanceTimeoutSeconds = AcceptanceTimeoutSeconds,
+                }
+            );
         }
 
         if (outcome.Result is ChatReviewResultSnapshot result)
@@ -60,16 +59,15 @@ internal static class ChatReviewDispatch
             foreach ((int guardianId, int ownVote) in result.VotesByGuardian)
             {
                 await SendAsync(
-                        grainFactory,
-                        guardianId,
-                        new ChatReviewSessionResultsMessageComposer
-                        {
-                            WinningVote = result.WinningVote,
-                            OwnVote = ownVote,
-                            FinalStatuses = result.Votes,
-                        }
-                    )
-                    .ConfigureAwait(false);
+                    grainFactory,
+                    guardianId,
+                    new ChatReviewSessionResultsMessageComposer
+                    {
+                        WinningVote = result.WinningVote,
+                        OwnVote = ownVote,
+                        FinalStatuses = result.Votes,
+                    }
+                );
             }
 
             return;
@@ -80,11 +78,10 @@ internal static class ChatReviewDispatch
         foreach (int guardianId in outcome.Participants)
         {
             await SendAsync(
-                    grainFactory,
-                    guardianId,
-                    new ChatReviewSessionVotingStatusMessageComposer { Statuses = statuses }
-                )
-                .ConfigureAwait(false);
+                grainFactory,
+                guardianId,
+                new ChatReviewSessionVotingStatusMessageComposer { Statuses = statuses }
+            );
         }
     }
 
