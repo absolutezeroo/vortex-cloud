@@ -658,6 +658,15 @@ internal static class MessageEvent
     public const int VortexApplyFurniEditMessageEvent = 8003;
     public const int VortexGetFurniDefinitionMessageEvent = 8005;
     public const int VortexApplyFurniDefinitionMessageEvent = 8007;
+
+    // Fishing takes 8100-8199 of the same band, leaving the furni editor room to grow. Odd for
+    // events (client->server), even for composers, so a request and its reply sit next to each
+    // other. The client sends three things and decides none of them: it names a sighting the server
+    // issued, a record the server wrote, or a derby the server scheduled.
+    // See the client's docs/vortex-original/fishing.md, sections 3 to 5.
+    public const int VortexFishingCastMessageEvent = 8101;
+    public const int VortexFishingMountCatchMessageEvent = 8103;
+    public const int VortexFishingJoinDerbyMessageEvent = 8105;
     #endregion
 }
 
@@ -1293,5 +1302,23 @@ internal static class MessageComposer
     public const int VortexFurniEditorDataMessageComposer = 8002;
     public const int VortexFurniEditorRightsMessageComposer = 8004;
     public const int VortexFurniDefinitionMessageComposer = 8006;
+
+    // Fishing takes 8100-8199 of the same band, leaving the furni editor room to grow. Even for
+    // composers (server->client), odd for events, so a request and its reply sit next to each other.
+    // 8102 is re-sendable: it is broadcast again on every definitions reload, not only at login.
+    // See the client's docs/vortex-original/fishing.md, sections 3 and 6.
+    public const int VortexFishingDefinitionsMessageComposer = 8102;
+    public const int VortexFishingPlayerStateMessageComposer = 8104;
+
+    // Deliberately species-agnostic: naming the species here would let a client ignore the common
+    // ones and only ever cast on the rare.
+    public const int VortexFishSightedMessageComposer = 8106;
+    public const int VortexFishingCatchResultMessageComposer = 8108;
+    public const int VortexFishingCatchFailedMessageComposer = 8110;
+    public const int VortexFishingDerbyStandingMessageComposer = 8112;
+    public const int VortexFishingErrorMessageComposer = 8114;
+
+    // Only the species actually caught; the client greys out the rest from the definitions.
+    public const int VortexFishingRecordsMessageComposer = 8116;
     #endregion
 }
