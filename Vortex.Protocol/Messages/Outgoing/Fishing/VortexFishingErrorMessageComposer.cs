@@ -20,4 +20,20 @@ public sealed record VortexFishingErrorMessageComposer : IComposer
     /// <summary>A <c>FishingErrorCode</c>, sent raw so an older client still parses an unknown one.</summary>
     [Id(0)]
     public required int Code { get; init; }
+
+    /// <summary>
+    /// The one number the code needs to be actionable, or zero when it needs none.
+    /// </summary>
+    /// <remarks>
+    /// Its meaning is the code's: for <c>LevelTooLow</c> it is the zone's required level, which is
+    /// the whole difference between "your level is too low" and a message a player can act on. The
+    /// client cannot work it out — it is refused before it ever learns which zone the spot is in —
+    /// and this is the exact moment the server compared the two.
+    ///
+    /// <para>One shared field rather than a per-code payload: every code that has ever wanted
+    /// context has wanted a single integer, and a union would cost a length prefix on every
+    /// refusal that wants nothing.</para>
+    /// </remarks>
+    [Id(1)]
+    public int Detail { get; init; }
 }

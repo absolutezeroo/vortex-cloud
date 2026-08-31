@@ -13,5 +13,9 @@ internal class VortexFishingErrorMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         VortexFishingErrorMessageComposer message
-    ) => packet.WriteInteger(message.Code);
+    )
+    {
+        packet.WriteInteger(message.Code);
+        packet.WriteInteger(message.Detail);
+    }
 }

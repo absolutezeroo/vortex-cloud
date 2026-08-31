@@ -122,7 +122,10 @@ internal sealed class FishingSessionGrain(
 
         if (state.FishingLevel < zone.RequiredLevel)
         {
-            await SendErrorAsync(FishingErrorCode.LevelTooLow, ct).ConfigureAwait(true);
+            // The level the zone wants, so the client can name it. It has no way of working this
+            // out for itself: the refusal is what stops it ever learning which zone the spot is in.
+            await SendErrorAsync(FishingErrorCode.LevelTooLow, ct, zone.RequiredLevel)
+                .ConfigureAwait(true);
 
             return;
         }
@@ -936,8 +939,15 @@ internal sealed class FishingSessionGrain(
     private static int Scale(int value, int multiplierThousandths) =>
         (int)((long)value * multiplierThousandths / 1000);
 
-    private async Task SendErrorAsync(FishingErrorCode code, CancellationToken ct) =>
-        await SendAsync(new VortexFishingErrorMessageComposer { Code = (int)code }, ct)
+    private async Task SendErrorAsync(
+        FishingErrorCode code,
+        CancellationToken ct,
+        int detail = 0
+    ) =>
+        await SendAsync(
+                new VortexFishingErrorMessageComposer { Code = (int)code, Detail = detail },
+                ct
+            )
             .ConfigureAwait(true);
 
     private async Task SendAsync(
