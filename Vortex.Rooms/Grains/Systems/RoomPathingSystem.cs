@@ -33,26 +33,24 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         (int X, int Y) goal
     )
     {
+        // The avatar's own altitude, not the tile's highest surface. Reading the top instead told
+        // the search that somebody standing *under* a platform was standing *on* it, so every
+        // neighbouring floor tile was three units below the foot it thought it had, no step was
+        // within reach, and the walk came back empty: you could get under a piece of furniture and
+        // then not get out again.
         return FindPath(
             start,
             goal,
-            _roomGrain.MapModule.GetTopSection(_roomGrain.MapModule.ToIdx(start.X, start.Y)).Height,
+            avatar.Z,
             tileIdx => _roomGrain.MapModule.CanAvatarWalk(avatar, tileIdx),
-            (int currentTileId, int nextTileId, Altitude fromZ, bool isGoal, out Altitude nextZ) =>
-            {
-                bool canWalk = _roomGrain.MapModule.CanAvatarWalkBetween(
+            (currentTileId, nextTileId, fromZ, isGoal) =>
+                _roomGrain.MapModule.GetWalkableSectionsBetween(
                     avatar,
                     currentTileId,
                     nextTileId,
                     fromZ,
-                    out RoomTileSection section,
                     isGoal
-                );
-
-                nextZ = section.Height;
-
-                return canWalk;
-            }
+                )
         );
     }
 
@@ -77,22 +75,20 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             goal,
             _roomGrain.MapModule.GetTopSection(_roomGrain.MapModule.ToIdx(start.X, start.Y)).Height,
             canOccupyTile,
-            (int currentTileId, int nextTileId, Altitude _, bool isGoal, out Altitude nextZ) =>
-            {
-                nextZ = _roomGrain.MapModule.GetTopSection(nextTileId).Height;
-
-                return canMoveBetween(currentTileId, nextTileId, isGoal);
-            }
+            (currentTileId, nextTileId, _, isGoal) =>
+                canMoveBetween(currentTileId, nextTileId, isGoal)
+                    ? [_roomGrain.MapModule.GetTopSection(nextTileId)]
+                    : []
         );
     }
 
-    /// <summary>Answers whether a step is walkable and, when it is, at what altitude it lands.</summary>
-    internal delegate bool CanMoveBetween(
+    /// <summary>Every surface a step onto the next tile could land on; empty when the step cannot
+    /// be taken at all.</summary>
+    internal delegate List<RoomTileSection> StepsBetween(
         int currentTileId,
         int nextTileId,
         Altitude fromZ,
-        bool isGoal,
-        out Altitude nextZ
+        bool isGoal
     );
 
     internal IReadOnlyList<(int X, int Y)> FindPath(
@@ -100,7 +96,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         (int X, int Y) goal,
         Altitude startZ,
         Func<int, bool> canOccupyTile,
-        CanMoveBetween canMoveBetween
+        StepsBetween stepsBetween
     )
     {
         try
@@ -110,50 +106,67 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             int currentTileId = _roomGrain.MapModule.ToIdx(start.X, start.Y);
             int goalTileId = _roomGrain.MapModule.ToIdx(goal.X, goal.Y);
 
-            if (
-                currentTileId == goalTileId
-                || !canOccupyTile(currentTileId)
-                || !canOccupyTile(goalTileId)
-            )
+            if (!canOccupyTile(currentTileId) || !canOccupyTile(goalTileId))
             {
                 return [];
             }
 
-            PriorityQueue<Node, int> open = new();
-            Dictionary<(int, int), Node> allNodes = new(256);
+            // Walking to the tile you are on is a real request now: its other surface. Standing
+            // still is not an answer to it, so the start's own height is barred as an arrival and
+            // the search has to leave and come back at a different one.
+            int? barredArrivalZ = currentTileId == goalTileId ? ZKeyOf(startZ) : null;
 
-            Node GetOrCreateNode(int x, int y)
+            PriorityQueue<Node, int> open = new();
+            Dictionary<(int, int, int), Node> allNodes = new(256);
+
+            // A tile is not one place any more. Standing under a platform and standing on it are
+            // different nodes of the same (x, y), reached by different routes and at different
+            // costs, so the altitude is part of the key -- quantised to hundredths, which is the
+            // resolution altitudes are authored and sent at, because a double is no kind of
+            // dictionary key.
+            //
+            // Keying by (x, y) alone is what made clicking a raised item from below walk you to the
+            // floor underneath it instead: the tile was reached at floor level first, closed at
+            // that height, and the approach along the stairs then found it already visited.
+            static int ZKey(Altitude z) => ZKeyOf(z);
+
+            Node GetOrCreateNode(int x, int y, Altitude z)
             {
-                (int x, int y) key = (x, y);
+                (int x, int y, int) key = (x, y, ZKey(z));
 
                 if (allNodes.TryGetValue(key, out Node? n))
                 {
                     return n;
                 }
 
-                n = new Node { X = x, Y = y };
+                n = new Node
+                {
+                    X = x,
+                    Y = y,
+                    Z = z,
+                };
                 allNodes[key] = n;
 
                 return n;
             }
 
-            Node startNode = GetOrCreateNode(startX, startY);
+            Node startNode = GetOrCreateNode(startX, startY, startZ);
 
             startNode.G = 0;
             startNode.H = Heuristic(startX, startY, goalX, goalY);
             startNode.Parent = null;
-            startNode.Z = startZ;
 
             open.Enqueue(startNode, startNode.F);
 
-            HashSet<(int, int)> closed = new();
+            HashSet<(int, int, int)> closed = new();
+            Node? best = null;
 
             while (open.Count > 0 && allNodes.Count <= _roomGrain._roomConfig.MaxPathNodes)
             {
                 try
                 {
                     Node current = open.Dequeue();
-                    (int X, int Y) cKey = (current.X, current.Y);
+                    (int X, int Y, int Z) cKey = (current.X, current.Y, ZKey(current.Z));
                     int cTileId = _roomGrain.MapModule.ToIdx(current.X, current.Y);
 
                     if (!closed.Add(cKey))
@@ -161,9 +174,36 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                         continue;
                     }
 
-                    if (current.X == goalX && current.Y == goalY)
+                    if (
+                        current.X == goalX
+                        && current.Y == goalY
+                        && ZKey(current.Z) != barredArrivalZ
+                    )
                     {
-                        return ReconstructPath(current);
+                        // Not "first arrival wins" any more, because a tile now has more than one
+                        // place to arrive at and the cheapest of them is the wrong one: clicking a
+                        // raised item from the floor would walk you into the crawlspace underneath
+                        // it, which is nearer than its top and is not what anyone means by clicking
+                        // a thing. A click means the highest surface that can be reached.
+                        //
+                        // A* still stops early -- on the first arrival that cannot be beaten. Every
+                        // node still queued costs at least the F at the head, so once that passes
+                        // the best arrival's cost nothing better can turn up and the search ends
+                        // there rather than walking the whole room.
+                        if (best is null || current.Z > best.Z)
+                        {
+                            best = current;
+                        }
+
+                        if (open.Count == 0 || open.Peek().F > best.F)
+                        {
+                            return ReconstructPath(best);
+                        }
+
+                        // No `continue`: a goal node is expanded like any other. It has to be, for
+                        // the barred case above -- the avatar starts *on* the goal tile, at the one
+                        // height that is not an answer, and if reaching it ended the node's turn the
+                        // search would never leave the tile it is trying to leave.
                     }
 
                     for (int i = 0; i < DIRECTIONS.Length; i++)
@@ -184,48 +224,51 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                                 continue;
                             }
 
-                            if (closed.Contains((nx, ny)))
-                            {
-                                continue;
-                            }
-
                             int nTileId = _roomGrain.MapModule.ToIdx(nx, ny);
 
-                            if (
-                                !canMoveBetween(
+                            int tentativeG = current.G + moveCost;
+
+                            // One neighbour, several nodes: a tile with two surfaces is two places
+                            // to arrive at, reached at different costs and leading on to different
+                            // steps. Offering only the best of them is what made the walk one-way
+                            // -- always able to climb onto a platform, never able to step back down
+                            // off it, because the higher surface was the only one ever proposed.
+                            foreach (
+                                RoomTileSection landing in stepsBetween(
                                     cTileId,
                                     nTileId,
                                     current.Z,
-                                    nx == goalX && ny == goalY,
-                                    out Altitude nextZ
+                                    nx == goalX && ny == goalY
                                 )
                             )
                             {
-                                continue;
-                            }
+                                if (closed.Contains((nx, ny, ZKey(landing.Height))))
+                                {
+                                    continue;
+                                }
 
-                            int tentativeG = current.G + moveCost;
-                            Node neighbor = GetOrCreateNode(nx, ny);
+                                // The start *node*, not the start tile. Those stopped being the
+                                // same thing when the key gained an altitude: coming back to the
+                                // tile you set off from at a different height is a real step, and
+                                // the only way to reach the other surface of the tile you are on.
+                                Node neighbor = GetOrCreateNode(nx, ny, landing.Height);
 
-                            // ponytail: a node is still keyed by (x, y) alone, so the first
-                            // altitude a tile is reached at is the one it keeps. That is enough to
-                            // walk under a platform and round to its stairs; it is not enough to
-                            // route over a platform and back under it in a single walk, which would
-                            // need the key to carry Z as well. Widen it if a room ever needs that.
-                            if (neighbor.Parent == null && !(nx == startX && ny == startY))
-                            {
-                                neighbor.Parent = current;
-                                neighbor.G = tentativeG;
-                                neighbor.H = Heuristic(nx, ny, goalX, goalY);
-                                neighbor.Z = nextZ;
-                                open.Enqueue(neighbor, neighbor.F);
-                            }
-                            else if (tentativeG < neighbor.G)
-                            {
-                                neighbor.Parent = current;
-                                neighbor.G = tentativeG;
-                                neighbor.Z = nextZ;
-                                open.Enqueue(neighbor, neighbor.F);
+                                if (
+                                    neighbor.Parent == null
+                                    && !ReferenceEquals(neighbor, startNode)
+                                )
+                                {
+                                    neighbor.Parent = current;
+                                    neighbor.G = tentativeG;
+                                    neighbor.H = Heuristic(nx, ny, goalX, goalY);
+                                    open.Enqueue(neighbor, neighbor.F);
+                                }
+                                else if (tentativeG < neighbor.G)
+                                {
+                                    neighbor.Parent = current;
+                                    neighbor.G = tentativeG;
+                                    open.Enqueue(neighbor, neighbor.F);
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -254,6 +297,12 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                     );
                 }
             }
+
+            // Exhausted, or out of node budget. An arrival found along the way is still the answer.
+            if (best is not null)
+            {
+                return ReconstructPath(best);
+            }
         }
         catch (Exception ex)
         {
@@ -270,6 +319,11 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
         return [];
     }
+
+    /// <summary>An altitude as a dictionary key: hundredths, the resolution altitudes are
+    /// authored and sent at. A double is no kind of key.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int ZKeyOf(Altitude z) => (int)Math.Round(z * 100);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int Heuristic(int x, int y, int goalX, int goalY)

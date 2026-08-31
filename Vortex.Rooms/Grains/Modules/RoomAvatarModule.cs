@@ -14,6 +14,7 @@ using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
@@ -197,6 +198,25 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         }
     }
 
+    /// <summary>
+    /// Whether this tile has somewhere to stand other than <paramref name="standingAt" />.
+    ///
+    /// The question only exists because a click carries no height: it is how "the tile I am on" is
+    /// told apart from "the other level of the tile I am on". Asked with an unbounded step, because
+    /// what is being decided is whether a second surface exists at all -- whether it can be reached
+    /// is the search's business, and it may well need the stairs to get there.
+    /// </summary>
+    private bool HasAnotherSurface(int tileId, Altitude standingAt)
+    {
+        RoomTileSection? highest = _roomGrain.MapModule.FindSection(
+            tileId,
+            standingAt,
+            Altitude.FromValue(double.MaxValue)
+        );
+
+        return highest is not null && highest.Value.Height != standingAt;
+    }
+
     public async Task<bool> WalkAvatarToAsync(
         ActionContext ctx,
         int targetX,
@@ -264,8 +284,36 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
                     : _roomGrain.MapModule.ToIdx(avatar.X, avatar.Y);
             (int currentX, int currentY) = _roomGrain.MapModule.GetTileXY(currentTileId);
 
-            if ((goalTileId == currentTileId) || !avatar.SetGoalTileId(goalTileId))
+            // Clicking the tile you are already standing on is normally nothing to do -- and used
+            // to be exactly that. It stopped being so the moment a tile could hold two surfaces:
+            // the floor under a platform and the top of that platform are the *same* (x, y), and
+            // the wire carries no height, so "walk up onto the thing above me" and "walk down under
+            // the thing below me" both arrive here as the tile the avatar is already on.
+            //
+            // So a same-tile target is refused only when the tile really has nowhere else to stand.
+            // When it has, the walk goes ahead: no step joins two surfaces of one tile directly, so
+            // the search leaves by a neighbour and comes back at the other height -- round by the
+            // stairs, which is what a player means and what they would do on foot.
+            bool sameTile = goalTileId == currentTileId;
+
+            if (sameTile && !HasAnotherSurface(currentTileId, avatar.Z))
             {
+                return false;
+            }
+
+            if (!avatar.SetGoalTileId(goalTileId))
+            {
+                _roomGrain._logger.LogWarning(
+                    "Walk refused before pathfinding for avatar {ObjectId} in room {RoomId}: "
+                        + "({CurrentX},{CurrentY}) -> ({TargetX},{TargetY})",
+                    avatar.ObjectId,
+                    _roomGrain.RoomId,
+                    currentX,
+                    currentY,
+                    targetX,
+                    targetY
+                );
+
                 return false;
 
                 //throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
@@ -279,6 +327,33 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
             if (path.Count == 0)
             {
+                // A refused walk used to be indistinguishable from a walk nobody asked for: the
+                // client sends a tile, the server returns false, and the avatar simply does not
+                // move. With a tile now having several surfaces there are two quite different
+                // reasons for that -- the goal is not somewhere this avatar may stand at any of its
+                // heights, or it is but no route reaches it -- and the two want opposite fixes.
+                _roomGrain._logger.LogWarning(
+                    "No path for avatar {ObjectId} in room {RoomId}: ({CurrentX},{CurrentY}) z={FromZ} "
+                        + "-> ({TargetX},{TargetY}). goalOccupiable={GoalOccupiable}, "
+                        + "goalTopHeight={GoalTop}, goalSectionFromHere={GoalSection}",
+                    avatar.ObjectId,
+                    _roomGrain.RoomId,
+                    currentX,
+                    currentY,
+                    avatar.Z,
+                    targetX,
+                    targetY,
+                    _roomGrain.MapModule.CanAvatarWalk(avatar, goalTileId),
+                    _roomGrain.MapModule.GetTopSection(goalTileId).Height,
+                    _roomGrain
+                        .MapModule.FindSection(
+                            goalTileId,
+                            avatar.Z,
+                            Math.Abs(_roomGrain._roomConfig.MaxStepHeight)
+                        )
+                        ?.Height
+                );
+
                 return false;
 
                 // throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);

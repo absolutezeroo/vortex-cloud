@@ -516,6 +516,26 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     }
 
     /// <summary>
+    /// Every surface of the tile an avatar at <paramref name="fromZ" /> could step onto, not just
+    /// the best one.
+    ///
+    /// The pathfinder needs all of them. Offered only the highest, a walk can climb onto a platform
+    /// and never step down off it — the low surface is never proposed while a high one is also
+    /// within a step, so going up worked and coming down did not.
+    /// </summary>
+    public List<RoomTileSection> FindSections(int tileId, Altitude fromZ, Altitude maxStep)
+    {
+        if (!InBounds(tileId))
+        {
+            return [];
+        }
+
+        Altitude floorHeight = _roomGrain._state.Model?.BaseHeights[tileId] ?? Altitude.Zero;
+
+        return RoomTileSectionFinder.FindAll(floorHeight, CollectOccupants(tileId), fromZ, maxStep);
+    }
+
+    /// <summary>
     /// Flattens the tile's floor stack into the vertical slabs the finder reasons about.
     ///
     /// Every item, not the highest one: that is the entire difference between this and

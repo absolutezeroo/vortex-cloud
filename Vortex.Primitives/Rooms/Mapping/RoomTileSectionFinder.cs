@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 
@@ -54,11 +55,39 @@ public static class RoomTileSectionFinder
     {
         RoomTileSection? best = null;
 
+        foreach (RoomTileSection section in FindAll(floorHeight, occupants, fromZ, maxStep))
+        {
+            if (best is null || section.Height > best.Value.Height)
+            {
+                best = section;
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// *Every* surface of the tile within reach, not the best of them.
+    ///
+    /// The distinction is what makes the walk symmetrical. <see cref="Find" /> answers the highest,
+    /// which is right for "click that thing" and wrong for everything else: with one answer per
+    /// tile you can always climb onto a platform and never step back down off it, because the
+    /// higher surface is the only one ever offered. A search handed both can go either way.
+    /// </summary>
+    public static List<RoomTileSection> FindAll(
+        Altitude floorHeight,
+        ReadOnlySpan<RoomTileOccupant> occupants,
+        Altitude fromZ,
+        Altitude maxStep
+    )
+    {
+        List<RoomTileSection> found = [];
+
         if (
             TryBuild(floorHeight, occupants, floorHeight, fromZ, maxStep, out RoomTileSection floor)
         )
         {
-            best = floor;
+            found.Add(floor);
         }
 
         foreach (RoomTileOccupant occupant in occupants)
@@ -77,13 +106,14 @@ public static class RoomTileSectionFinder
                 continue;
             }
 
-            if (best is null || section.Height > best.Value.Height)
+            // Two items can share a top; that is one surface, and it belongs in the list once.
+            if (!found.Exists(existing => existing.Height == section.Height))
             {
-                best = section;
+                found.Add(section);
             }
         }
 
-        return best;
+        return found;
     }
 
     /// <summary>

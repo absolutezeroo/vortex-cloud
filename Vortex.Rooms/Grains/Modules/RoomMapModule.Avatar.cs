@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Logging;
 using Vortex.Primitives;
+using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
@@ -128,13 +130,31 @@ public sealed partial class RoomMapModule
                 return true;
             }
 
-            // ponytail: occupancy is still per tile, not per section, so two avatars on two levels
-            // of the same tile block each other. Splitting TileAvatarStacks by surface is the next
-            // thing to do if standing under a platform ever needs to be shared.
-            if (isGoal || _roomGrain._state.RoomSnapshot.AllowBlocking)
+            // RoomSnapshot.AllowBlocking is misnamed, and the name is what made this wrong: the
+            // column is `allow_blocking` but what is stored in it is the client's *allowWalkThrough*
+            // -- SaveRoomSettingsMessageHandler assigns message.AllowWalkThrough straight into it
+            // and the outgoing serializer writes it straight back out, so the round trip is
+            // consistent and only the reading of it was not. Tested as though it meant "blocking",
+            // it did the exact opposite of the setting: a room with walk-through switched off, the
+            // default, let everyone walk through everyone.
+            //
+            // ponytail: occupancy is per tile, not per section, so two avatars on two levels of the
+            // same tile block each other. Splitting TileAvatarStacks by surface is the next thing to
+            // do if standing under a platform ever needs to be shared.
+            if (isGoal || !_roomGrain._state.RoomSnapshot.AllowBlocking)
             {
                 return false;
             }
+        }
+
+        // Pets stand on tiles too, and nothing said so: they live in PetsById as plain snapshots
+        // and never enter TileAvatarStacks, so no flag was ever raised for them and avatars walked
+        // straight through. They block on the same terms as a person -- you never stop on one, and
+        // whether you may cross one follows the room's walk-through setting. Same rule rather than
+        // a second one: a pet is an obstacle for the same reason a player is.
+        if (IsPetOn(tileIdx) && (isGoal || !_roomGrain._state.RoomSnapshot.AllowBlocking))
+        {
+            return false;
         }
 
         if (tileFlags.Has(RoomTileFlags.FurnitureOccupied))
@@ -176,6 +196,84 @@ public sealed partial class RoomMapModule
     /// The step-height limit lives inside that search rather than as a separate test: a surface out
     /// of reach is simply not returned, so a path that is planned is a path that can be walked.
     /// </summary>
+    /// <summary>
+    /// Every surface of the next tile this avatar may step onto from <paramref name="fromZ" />.
+    ///
+    /// The plural of <see cref="CanAvatarWalkBetween" />, and what the pathfinder asks: a tile is
+    /// not one destination any more, and offering only its best one makes the walk one-way.
+    /// </summary>
+    public List<RoomTileSection> GetWalkableSectionsBetween(
+        IRoomAvatar avatar,
+        int pTileIdx,
+        int nTileIdx,
+        Altitude fromZ,
+        bool isGoal = true
+    )
+    {
+        List<RoomTileSection> sections = FindSections(
+            nTileIdx,
+            fromZ,
+            Math.Abs(_roomGrain._roomConfig.MaxStepHeight)
+        );
+
+        sections.RemoveAll(section => !CanAvatarOccupy(avatar, nTileIdx, section, isGoal, false));
+
+        if (sections.Count == 0 || !CornersAllowDiagonal(avatar, pTileIdx, nTileIdx))
+        {
+            return [];
+        }
+
+        return sections;
+    }
+
+    /// <summary>
+    /// A diagonal step is refused when both tiles it cuts the corner of are blocked. Height plays
+    /// no part in it, so it is asked once per step rather than once per surface.
+    /// </summary>
+    private bool CornersAllowDiagonal(IRoomAvatar avatar, int pTileIdx, int nTileIdx)
+    {
+        if (!_roomGrain._roomConfig.EnableDiagonalChecking || !IsDiagonal(pTileIdx, nTileIdx))
+        {
+            return true;
+        }
+
+        (int fromX, int fromY) = GetTileXY(pTileIdx);
+        (int toX, int toY) = GetTileXY(nTileIdx);
+
+        return CanAvatarWalk(avatar, ToIdx(toX, fromY), true, true)
+            || CanAvatarWalk(avatar, ToIdx(fromX, toY), true, true);
+    }
+
+    /// <summary>
+    /// Whether a pet is standing on this tile.
+    ///
+    /// Scanned rather than indexed. A pet's position is written from a dozen places -- motion,
+    /// breeding, care -- each replacing an immutable snapshot in the dictionary, so a per-tile set
+    /// would have to be hooked at every one of them and would be wrong the first time somebody
+    /// added a thirteenth. A room holds a handful of pets, so the scan is a handful of comparisons.
+    ///
+    /// ponytail: linear in the room's pet count, inside the pathfinder's inner loop. If a room ever
+    /// holds enough pets for that to show, give the map a per-tile pet set and maintain it where
+    /// PetsById is written.
+    /// </summary>
+    private bool IsPetOn(int tileIdx)
+    {
+        if (_roomGrain._state.PetsById.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (PetSnapshot pet in _roomGrain._state.PetsById.Values)
+        {
+            if (ToIdx(pet.X, pet.Y) == tileIdx)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public bool CanAvatarWalkBetween(
         IRoomAvatar avatar,
         int pTileIdx,

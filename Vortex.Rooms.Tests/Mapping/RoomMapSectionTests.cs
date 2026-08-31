@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Vortex.Primitives.Rooms.Mapping;
@@ -5,6 +6,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic.Furniture;
+using Vortex.Rooms.Object.Avatars.Player;
 using Vortex.Rooms.Tests.Support;
 using Vortex.Tests.Support;
 using Xunit;
@@ -63,6 +65,12 @@ public sealed class RoomMapSectionTests
         harness.Grain._state.ItemsById[platform.ObjectId] = platform;
         harness.Grain._state.TileFloorStacks[tileId].Add(platform.ObjectId);
 
+        // Not optional, and not decoration: this is what makes TileHeights hold the platform's top
+        // rather than the model's floor. Without it GetTopSection() answers zero, the tile looks
+        // bare to anything reading the flat arrays, and a test meant to prove the search no longer
+        // reads the top would pass whether it did or not.
+        harness.Grain.MapModule.ComputeTile(tileId);
+
         return (harness, tileId);
     }
 
@@ -115,6 +123,113 @@ public sealed class RoomMapSectionTests
             .Grain.MapModule.FindSection(tileId, Altitude.Zero, Altitude.FromValue(0))
             .Should()
             .BeNull();
+    }
+
+    /// <summary>
+    /// Under a platform and still able to leave.
+    ///
+    /// The search starts from the avatar's own altitude, not the tile's highest surface. Reading
+    /// the top told it that somebody standing *under* a platform was standing *on* it, so every
+    /// neighbouring floor tile was three units below the foot it thought it had, nothing was within
+    /// a step, and the walk came back empty — you could get under a piece of furniture and then not
+    /// get out again.
+    /// </summary>
+    [Fact]
+    public async Task StandingUnderAPlatform_CanStillWalkOutFromUnderIt()
+    {
+        (RoomHarness harness, int tileId) = await RoomWithPlatformAsync(bottom: 2, top: 3)
+            .ConfigureAwait(true);
+
+        RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(1, Tile, Tile);
+        avatar.SetHeight(Altitude.Zero);
+
+        harness.Grain.MapModule.AddAvatar(avatar, false);
+
+        IReadOnlyList<(int X, int Y)> out_ = harness.Grain.PathingSystem.FindPath(
+            avatar,
+            (Tile, Tile),
+            (Tile + 2, Tile)
+        );
+
+        out_.Should().NotBeEmpty("the floor around the platform is at the same height as under it");
+        out_[^1].X.Should().Be(Tile + 2);
+        out_[^1].Y.Should().Be(Tile);
+
+        // And the tile is genuinely the one with the platform on it, so the walk really did start
+        // underneath rather than from somewhere the platform does not cover.
+        harness.Grain._state.TileFloorStacks[tileId].Should().NotBeEmpty();
+    }
+
+    /// <summary>
+    /// Clicking the platform above your head, while standing under it.
+    ///
+    /// The click carries no height — the floor under a platform and the top of that platform are
+    /// the same (x, y) — so the request arrives as the tile the avatar is already standing on, and
+    /// was refused as "you are already there". It is a real request: the other surface. No step
+    /// joins two surfaces of one tile directly, so the answer is a route that leaves by a
+    /// neighbour and comes back at the other height.
+    /// </summary>
+    [Fact]
+    public async Task ClickingTheTileYouAreOn_MeansItsOtherSurface()
+    {
+        (RoomHarness harness, int tileId) = await RoomWithPlatformAsync(bottom: 1, top: 1)
+            .ConfigureAwait(true);
+
+        RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(1, Tile, Tile);
+        avatar.SetHeight(Altitude.Zero);
+
+        harness.Grain.MapModule.AddAvatar(avatar, false);
+
+        IReadOnlyList<(int X, int Y)> path = harness.Grain.PathingSystem.FindPath(
+            avatar,
+            (Tile, Tile),
+            (Tile, Tile)
+        );
+
+        path.Should().NotBeEmpty("the tile has a second surface, so this is not standing still");
+        path[^1].X.Should().Be(Tile);
+        path[^1].Y.Should().Be(Tile);
+        path.Count.Should().BeGreaterThan(2, "leaving and returning cannot be done in one step");
+
+        _ = tileId;
+    }
+
+    /// <summary>
+    /// Clicking a raised item takes you onto it, not into the gap beneath it.
+    ///
+    /// The crawlspace is the cheaper arrival of the two, so "first arrival wins" chose it. A click
+    /// means the thing clicked, so the goal is the highest surface that can be reached.
+    /// </summary>
+    [Fact]
+    public async Task WalkingToARaisedItem_ArrivesOnTopOfItRatherThanUnderneath()
+    {
+        (RoomHarness harness, int tileId) = await RoomWithPlatformAsync(bottom: 1, top: 1)
+            .ConfigureAwait(true);
+
+        RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(1, 0, 0);
+        avatar.SetHeight(Altitude.Zero);
+
+        harness.Grain.MapModule.AddAvatar(avatar, false);
+
+        IReadOnlyList<(int X, int Y)> path = harness.Grain.PathingSystem.FindPath(
+            avatar,
+            (0, 0),
+            (Tile, Tile)
+        );
+
+        path.Should().NotBeEmpty();
+        path[^1].X.Should().Be(Tile);
+        path[^1].Y.Should().Be(Tile);
+
+        RoomTileSection? arrival = harness.Grain.MapModule.FindSection(
+            tileId,
+            Altitude.Zero,
+            Altitude.FromValue(2)
+        );
+
+        arrival.Should().NotBeNull();
+        arrival!.Value.Height.Should().Be(Altitude.FromValue(1), "the item's top, not the floor");
+        arrival.Value.ItemId.Value.Should().Be(1);
     }
 
     /// <summary>
