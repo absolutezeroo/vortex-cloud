@@ -83,6 +83,34 @@ public sealed class RoomModelProvider(
         }
     }
 
+    public RoomModelSnapshot CompileCustomModel(
+        int modelId,
+        string name,
+        string model,
+        int doorX,
+        int doorY,
+        Rotation doorRotation
+    )
+    {
+        string modelData = CleanModelString(model);
+        CompiledRoomModelSnapshot compiled = CompileModelFromString(modelData);
+
+        return new RoomModelSnapshot
+        {
+            Id = modelId,
+            Name = name,
+            Model = modelData,
+            DoorX = doorX,
+            DoorY = doorY,
+            DoorRotation = doorRotation,
+            Width = compiled.Width,
+            Height = compiled.Height,
+            Size = compiled.Width * compiled.Height,
+            BaseHeights = compiled.Heights,
+            BaseFlags = compiled.Flags,
+        };
+    }
+
     private static string CleanModelString(string model)
     {
         return model.Trim().ToLower().Replace("\r\n", "\r").Replace("\n", "\r");

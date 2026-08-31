@@ -153,6 +153,24 @@ public sealed partial class RoomMapModule
             return false;
         }
 
+        // The step has to be climbable, and this is the only place that says so.
+        //
+        // It used to live in RoomAvatarTickSystem.ValidateAvatarStepAsync() alone, which walks the
+        // path one tile at a time -- so the pathfinder, which asks only this method, would happily
+        // route straight up a cliff and the walk was then aborted at the first tile it could not
+        // climb. The avatar stopped wherever the doomed path had got to, which reads as "I clicked
+        // over there and it took me somewhere else": a room with a raised platform sent you along
+        // the shortest line to the platform's edge instead of round by its stairs.
+        //
+        // Both callers now share the rule, so a path that is planned is a path that can be walked.
+        if (
+            Math.Abs(GetTileHeightForAvatar(nTileIdx) - GetTileHeightForAvatar(pTileIdx))
+            > Math.Abs(_roomGrain._roomConfig.MaxStepHeight)
+        )
+        {
+            return false;
+        }
+
         (int fromX, int fromY) = GetTileXY(pTileIdx);
         (int toX, int toY) = GetTileXY(nTileIdx);
 

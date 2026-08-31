@@ -161,14 +161,13 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             bool isGoal = avatar.TilePath.Count == 0;
             int prevTileId = _roomGrain.MapModule.ToIdx(avatar.X, avatar.Y);
             (int nextX, int nextY) = _roomGrain.MapModule.GetTileXY(nextTileId);
-            Altitude prevHeight = _roomGrain.MapModule.GetTileHeightForAvatar(prevTileId);
             Altitude nextHeight = _roomGrain.MapModule.GetTileHeightForAvatar(nextTileId);
 
-            if (Math.Abs(nextHeight - prevHeight) > Math.Abs(_roomGrain._roomConfig.MaxStepHeight))
-            {
-                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
-            }
-
+            // The step-height rule used to be repeated here, above the call, and *only* here --
+            // which meant it was enforced during the walk but not while the path was being planned.
+            // It now lives in CanAvatarWalkBetween(), so the check below covers it and a step that
+            // cannot be climbed re-routes through the branch underneath rather than throwing: a
+            // raised platform is walked to by its stairs instead of the walk dying at its edge.
             if (!_roomGrain.MapModule.CanAvatarWalkBetween(avatar, prevTileId, nextTileId, isGoal))
             {
                 if (!isGoal)

@@ -21,6 +21,15 @@ public interface IRoomSettings : IGrainWithIntegerKey
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Applies a floor-plan editor save: a new model for the room, and the door, thickness and wall
+    /// height that came with it.
+    ///
+    /// Unlike every other setting this one changes the room's *dimensions*, so it rebuilds the tile
+    /// map, re-seats the furniture on it and re-broadcasts the height map to everyone inside.
+    /// </summary>
+    Task<bool> UpdateFloorPlanAsync(PlayerId actor, FloorPlanUpdate update, CancellationToken ct);
+
     Task<bool> DeleteRoomAsync(PlayerId actor, CancellationToken ct);
 
     Task<ImmutableArray<RoomControllerSnapshot>> GetControllersAsync(CancellationToken ct);

@@ -19,6 +19,7 @@ using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Protocol.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 
 namespace Vortex.Rooms.Grains;
@@ -159,6 +160,22 @@ public sealed partial class RoomGrain
             // inside only once they left and came back.
             await SendComposerToRoomAsync(
                     new RoomChatSettingsMessageComposer { FloodSensitivity = entity.ChatFloodType }
+                )
+                .ConfigureAwait(true);
+
+            // Same reasoning, and the same bug one row over: hiding the walls or changing either
+            // thickness only ever reached a client on room entry, because this was the one place
+            // that changes them and it never said so. The client has handled a mid-session update
+            // all along -- RoomMessageHandler.onRoomVisualizationSettings() calls
+            // updateObjectRoomVisibilities() and updateObjectRoomPlaneThicknesses() straight away --
+            // so the walls came down for whoever saved only after they left and came back.
+            await SendComposerToRoomAsync(
+                    new RoomVisualizationSettingsMessageComposer
+                    {
+                        WallsHidden = entity.HideWalls,
+                        WallThickness = entity.ThicknessWall,
+                        FloorThickness = entity.ThicknessFloor,
+                    }
                 )
                 .ConfigureAwait(true);
 
