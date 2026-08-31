@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -115,24 +116,25 @@ public sealed partial class RoomMapModule
 
         if (tileFlags.Has(RoomTileFlags.FurnitureOccupied))
         {
-            if (
-                (tileFlags.Has(RoomTileFlags.Sittable) || tileFlags.Has(RoomTileFlags.Layable))
-                && (isDiagonalCheck || !isGoal)
-            )
+            // Walkable, Sittable and Layable describe the *surface*, not the column, so they are
+            // read off the section rather than off the tile. Identical today — the tile has one
+            // section and its flags are the same bits — and the point of asking this way is that a
+            // tile with two of them can answer differently per surface: the top of a platform
+            // walkable, the seat beneath it not.
+            RoomTileSection section = GetTopSection(tileIdx);
+            bool isSeat = section.IsSittable || section.IsLayable;
+
+            if (isSeat && (isDiagonalCheck || !isGoal))
             {
                 return false;
             }
 
-            if (
-                (tileFlags.Has(RoomTileFlags.Sittable) || tileFlags.Has(RoomTileFlags.Layable))
-                && !isDiagonalCheck
-                && isGoal
-            )
+            if (isSeat && !isDiagonalCheck && isGoal)
             {
                 return true;
             }
 
-            if (!tileFlags.Has(RoomTileFlags.Walkable))
+            if (!section.IsWalkable)
             {
                 return false;
             }
@@ -283,12 +285,21 @@ public sealed partial class RoomMapModule
         }
     }
 
+    /// <summary>
+    /// How high an avatar stands on a tile: the surface, less whatever the item under it sinks the
+    /// pose by (a chair seats you below its own top).
+    ///
+    /// Asked of the tile's section rather than of the flat arrays. One section today, so the same
+    /// answer; when a tile has several this becomes "which surface", and every caller already
+    /// passes a tile it means rather than a height it guessed.
+    /// </summary>
     public Altitude GetTileHeightForAvatar(int tileId)
     {
         try
         {
-            Altitude height = _roomGrain._state.TileHeights[tileId];
-            RoomObjectId highestItemId = _roomGrain._state.TileHighestFloorItems[tileId];
+            RoomTileSection section = GetTopSection(tileId);
+            Altitude height = section.Height;
+            RoomObjectId highestItemId = section.ItemId;
             Altitude postureOffset = Altitude.Zero;
 
             if (highestItemId > 0)

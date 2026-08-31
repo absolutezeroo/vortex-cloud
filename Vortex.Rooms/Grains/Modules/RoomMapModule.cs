@@ -9,6 +9,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Events.Player;
+using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -453,6 +454,38 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         }
 
         return tiles.ToImmutable();
+    }
+
+    /// <summary>
+    /// The walkable surface of a tile, as a section.
+    ///
+    /// Derived rather than stored: the three flat arrays already hold this tile's one surface, and
+    /// building a section out of them costs nothing (it is a struct) while giving every caller an
+    /// API whose answer can grow to several. That is the whole of the first step — no behaviour
+    /// moves, and the storage can be replaced later without any of these callers changing again.
+    ///
+    /// Out of bounds answers a bare, unwalkable floor at zero rather than throwing, because both
+    /// callers today already checked InBounds() before asking and the ones that come next are
+    /// pathfinding probes, for which "nothing here" is the useful answer.
+    /// </summary>
+    public RoomTileSection GetTopSection(int tileId)
+    {
+        if (!InBounds(tileId))
+        {
+            return new RoomTileSection
+            {
+                Height = Altitude.Zero,
+                ItemId = -1,
+                Flags = RoomTileFlags.None,
+            };
+        }
+
+        return new RoomTileSection
+        {
+            Height = _roomGrain._state.TileHeights[tileId],
+            ItemId = _roomGrain._state.TileHighestFloorItems[tileId],
+            Flags = _roomGrain._state.TileFlags[tileId] & RoomTileSection.SectionFlags,
+        };
     }
 
     public RoomMapSnapshot GetMapSnapshot(CancellationToken ct)
