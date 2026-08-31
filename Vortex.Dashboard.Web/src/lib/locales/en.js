@@ -147,6 +147,9 @@ export default {
     copied: 'Copied',
     reason: 'Reason',
     reasonRequired: 'Reason *',
+    // For the forms whose summary already names the action, the target and the amount: what gets
+    // audited is generated from that sentence, and this box only appends a note to it.
+    reasonOptional: 'Reason (optional)',
     reasonPlaceholder: 'why this action?',
     reasonPlaceholderChange: 'why this change?',
     noteOptional: 'Note (optional)',

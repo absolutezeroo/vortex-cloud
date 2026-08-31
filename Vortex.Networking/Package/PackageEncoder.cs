@@ -59,6 +59,17 @@ public sealed class PackageEncoder(
             }
             else
             {
+                // Logged, not just counted, for the same reason the branch above is: a packet that
+                // vanishes with only a metric behind it is invisible to anyone reading the console,
+                // and "the composer is sent and never arrives" is then indistinguishable from "the
+                // composer was never sent".
+                _logger.LogWarning(
+                    "Revision {RevisionId} not found for {SessionKey}; dropping {ComposerType}",
+                    pack.Session.RevisionId,
+                    pack.Session.SessionKey,
+                    pack.Composer.GetType().Name
+                );
+
                 _metrics.PacketDropped("revision_not_found");
             }
         }

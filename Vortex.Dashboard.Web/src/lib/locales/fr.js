@@ -145,6 +145,9 @@ export default {
     copied: 'Copié',
     reason: 'Raison',
     reasonRequired: 'Raison *',
+    // Pour les formulaires dont le résumé nomme déjà l'action, la cible et le montant : ce qui est
+    // audité est généré depuis cette phrase, et ce champ ne fait qu'y ajouter une note.
+    reasonOptional: 'Raison (facultative)',
     reasonPlaceholder: 'pourquoi cette action ?',
     reasonPlaceholderChange: 'pourquoi ce changement ?',
     noteOptional: 'Note (optionnelle)',

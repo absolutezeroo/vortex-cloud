@@ -31,20 +31,6 @@ const update = process.argv.includes('--update');
 // Highest id in the registry of the client build this revision targets. Only used when the client
 // sources are absent; when they are present the registry itself is the answer.
 const CEILING = 4101;
-// Ids deliberately outside the official range: only a modified client speaks these.
-const EXTENSIONS = new Set([
-  'VortexGetFurniEditorDataMessageEvent',
-  'VortexFurniEditorDataMessageComposer',
-  'VortexApplyFurniEditMessageEvent',
-  'VortexFurniEditorRightsMessageComposer',
-  'VortexGetFurniDefinitionMessageEvent',
-  'VortexFurniDefinitionMessageComposer',
-  'VortexApplyFurniDefinitionMessageEvent',
-  'RentableSpaceGetConfigMessageEvent',
-  'RentableSpaceConfigMessageComposer',
-  'RentableSpaceConfigureMessageEvent',
-]);
-
 // ---- our side ------------------------------------------------------------------------------------
 const headers = {};
 let section = '';
@@ -65,6 +51,24 @@ for (const file of fs.readdirSync(mapsDir)) {
   for (const use of text.matchAll(/Message(?:Event|Composer)\.([A-Za-z0-9_]+)/g)) mapped.add(use[1]);
 }
 const ours = [...mapped].filter((name) => headers[name]);
+
+// Ids deliberately outside the official range: only a modified client speaks these. The AS3
+// registry this script reads is a Habbo build's, so a Vortex-invented message is absent from it by
+// construction -- being unreachable there is the definition of an extension, not a defect.
+const EXTENSIONS = new Set([
+  'RentableSpaceGetConfigMessageEvent',
+  'RentableSpaceConfigMessageComposer',
+  'RentableSpaceConfigureMessageEvent',
+]);
+// 8000-8999 is the Vortex-specific band (Headers.cs, "Vortex-specific (no AS3 backing)"), reserved
+// because it is empty in both registries. Naming each id here as well would mean editing this file
+// on every Vortex packet -- and forgetting to would report a working message as dead. The three
+// names above stay listed because they sit at 4600/4601, inside the official range.
+const EXTENSION_BAND_FIRST = 8000;
+const EXTENSION_BAND_LAST = 8999;
+const isExtension = (name) =>
+  EXTENSIONS.has(name) ||
+  (headers[name].id >= EXTENSION_BAND_FIRST && headers[name].id <= EXTENSION_BAND_LAST);
 
 // ---- the client's registry -----------------------------------------------------------------------
 function findClientTrees() {
@@ -156,7 +160,7 @@ if (trees.length > 0) {
 
 // ---- fallback: the ceiling, when there is no client to ask ----------------------------------------
 if (!known) {
-  const above = ours.filter((name) => headers[name].id > CEILING && !EXTENSIONS.has(name));
+  const above = ours.filter((name) => headers[name].id > CEILING && !isExtension(name));
   console.error(
     'check-header-registry: no client sources beside this repository -- falling back to the id ceiling.'
   );
@@ -172,7 +176,7 @@ if (!known) {
 
 // ---- compare -------------------------------------------------------------------------------------
 const unreachable = ours
-  .filter((name) => !EXTENSIONS.has(name) && !known[headers[name].section].has(headers[name].id))
+  .filter((name) => !isExtension(name) && !known[headers[name].section].has(headers[name].id))
   .map((name) => `${headers[name].section}/${name}=${headers[name].id}`)
   .sort();
 

@@ -127,7 +127,7 @@ internal static class Program
                 _ = Task.Run(() => client.ReceiveLoopAsync(ct), CancellationToken.None);
                 _ = Task.Run(() => DriveAsync(client, plan, index, ct), CancellationToken.None);
             }
-            catch (Exception) when (ct.IsCancellationRequested is false)
+            catch (Exception) when (!ct.IsCancellationRequested)
             {
                 client.Dispose();
             }

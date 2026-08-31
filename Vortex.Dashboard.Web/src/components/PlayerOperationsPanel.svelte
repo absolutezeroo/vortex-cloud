@@ -16,7 +16,7 @@
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { OPERATION_CAPABILITIES, MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk, positive, nonNegative } from '../lib/validation.js';
+  import { positive, nonNegative } from '../lib/validation.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -87,12 +87,21 @@
 
   let who = $derived(playerName || translate('operations.player'));
 
+  // The reason is generated, not demanded. `writeOps.confirm` builds what actually gets audited from
+  // the action itself -- every summary here already names the amount, the target and the id -- and
+  // treats the operator's text as a note appended to it. This panel used to gate on `reasonOk` before
+  // the modal even opened, so all eleven actions refused with "fill the fields" until a reason was
+  // typed, and the generated one was never reached.
+  //
+  // `|| undefined` is the switch between the two paths in `confirm`: a typed reason becomes the
+  // audited base, an empty one falls through to the summary. Either way the server's three-character
+  // floor is met by a real sentence rather than by whatever the operator could be bothered to type.
   const stage = (id, title, endpoint, valid, body, summary) =>
     ops.ask(endpoint, { playerId: Number(playerId), ...body }, title, summary, {
       key: id,
       valid: valid && positive(playerId),
       invalidMessage: translate('operations.fillFields'),
-      reason: body.reason,
+      reason: body.reason || undefined,
     });
 
   function stageCredits() {
@@ -102,7 +111,7 @@
       'credits',
       translate('operations.giveCredits'),
       '/api/v1/operations/currency/credits',
-      positive(credits.amount) && reasonOk(credits.reason),
+      positive(credits.amount),
       { amount: Number(credits.amount), reason: credits.reason.trim() },
       translate('operations.creditsSummary', { amount: credits.amount, name: who, id: playerId }),
     );
@@ -115,7 +124,7 @@
       'activity',
       translate('operations.giveActivityPoints'),
       '/api/v1/operations/currency/activity-points',
-      nonNegative(activity.type) && positive(activity.amount) && reasonOk(activity.reason),
+      nonNegative(activity.type) && positive(activity.amount),
       { type: Number(activity.type), amount: Number(activity.amount), reason: activity.reason.trim() },
       translate('operations.activitySummary', {
         amount: activity.amount,
@@ -135,7 +144,7 @@
       'collectibles',
       translate('operations.giveCollectiblesCurrency'),
       '/api/v1/operations/currency/collectibles',
-      positive(collectibles.amount) && reasonOk(collectibles.reason),
+      positive(collectibles.amount),
       {
         currency: collectibles.currency,
         amount: Number(collectibles.amount),
@@ -161,7 +170,7 @@
       'item',
       translate('operations.giveFurniture'),
       '/api/v1/operations/items/grant',
-      positive(item.definitionId) && reasonOk(item.reason),
+      positive(item.definitionId),
       {
         definitionId: Number(item.definitionId),
         extraData: item.extraData.trim() ? item.extraData.trim() : null,
@@ -183,7 +192,7 @@
       'kick',
       translate('operations.kickPlayer'),
       '/api/v1/operations/players/kick',
-      reasonOk(kick.reason),
+      true,
       { reason: kick.reason.trim() },
       translate('operations.kickSummary', { name: who, id: playerId }),
     );
@@ -197,7 +206,7 @@
       'forensicsPurge',
       translate('operations.purgeForensics'),
       '/api/v1/operations/players/forensics-purge',
-      reasonOk(forensicsPurge.reason),
+      true,
       { reason: forensicsPurge.reason.trim() },
       translate('operations.purgeForensicsSummary', { name: who, id: playerId }),
     );
@@ -210,7 +219,7 @@
       'ban',
       translate('moderationActions.banAccount'),
       '/api/v1/operations/players/ban',
-      (ban.permanent || positive(ban.durationSeconds)) && reasonOk(ban.reason),
+      ban.permanent || positive(ban.durationSeconds),
       {
         permanent: ban.permanent,
         durationSeconds: ban.permanent ? null : Number(ban.durationSeconds),
@@ -233,7 +242,7 @@
       'unban',
       translate('moderationActions.liftAccountBan'),
       '/api/v1/operations/players/unban',
-      reasonOk(unban.reason),
+      true,
       { reason: unban.reason.trim() },
       translate('moderationActions.liftBanSummary', { name: who, id: playerId }),
     );
@@ -246,7 +255,7 @@
       'mute',
       translate('moderationActions.mutePlayer'),
       '/api/v1/operations/players/mute',
-      positive(mute.durationSeconds) && reasonOk(mute.reason),
+      positive(mute.durationSeconds),
       { durationSeconds: Number(mute.durationSeconds), reason: mute.reason.trim() },
       translate('moderationActions.muteSummary', { name: who, id: playerId, seconds: mute.durationSeconds }),
     );
@@ -259,7 +268,7 @@
       'tradingLock',
       translate('moderationActions.lockTrading'),
       '/api/v1/operations/players/trading-lock',
-      (tradingLock.permanent || positive(tradingLock.durationSeconds)) && reasonOk(tradingLock.reason),
+      tradingLock.permanent || positive(tradingLock.durationSeconds),
       {
         permanent: tradingLock.permanent,
         durationSeconds: tradingLock.permanent ? null : Number(tradingLock.durationSeconds),
@@ -282,7 +291,7 @@
       'tradingUnlock',
       translate('moderationActions.liftTradingLock'),
       '/api/v1/operations/players/trading-unlock',
-      reasonOk(tradingUnlock.reason),
+      true,
       { reason: tradingUnlock.reason.trim() },
       translate('moderationActions.liftLockSummary', { name: who, id: playerId }),
     );
@@ -314,7 +323,7 @@
         />
       </div>
       <div class="op-field">
-        <label for="credits-reason">{$t('common.reasonRequired')}</label>
+        <label for="credits-reason">{$t('common.reasonOptional')}</label>
         <input
           id="credits-reason"
           autocomplete="off"
@@ -359,7 +368,7 @@
         />
       </div>
       <div class="op-field">
-        <label for="activity-reason">{$t('common.reasonRequired')}</label>
+        <label for="activity-reason">{$t('common.reasonOptional')}</label>
         <input
           id="activity-reason"
           autocomplete="off"
@@ -410,7 +419,7 @@
         />
       </div>
       <div class="op-field">
-        <label for="collectibles-reason">{$t('common.reasonRequired')}</label>
+        <label for="collectibles-reason">{$t('common.reasonOptional')}</label>
         <input
           id="collectibles-reason"
           autocomplete="off"
@@ -485,7 +494,7 @@
         />
       </div>
       <div class="op-field">
-        <label for="item-reason">{$t('common.reasonRequired')}</label>
+        <label for="item-reason">{$t('common.reasonOptional')}</label>
         <input
           id="item-reason"
           autocomplete="off"
@@ -514,7 +523,7 @@
       <AccessDeniedNotice message={$t('operations.kickAccessDenied')} />
     {:else}
       <div class="op-field">
-        <label for="kick-reason">{$t('common.reasonRequired')}</label>
+        <label for="kick-reason">{$t('common.reasonOptional')}</label>
         <input
           id="kick-reason"
           autocomplete="off"
@@ -546,7 +555,7 @@
            that destroys evidence, and the operator should read what survives before running it. -->
       <p class="muted">{$t('operations.purgeForensicsScope')}</p>
       <div class="op-field">
-        <label for="forensics-purge-reason">{$t('common.reasonRequired')}</label>
+        <label for="forensics-purge-reason">{$t('common.reasonOptional')}</label>
         <input
           id="forensics-purge-reason"
           autocomplete="off"
@@ -598,7 +607,7 @@
       </div>
       {/if}
       <div class="op-field">
-        <label for="ban-reason">{$t('common.reasonRequired')}</label>
+        <label for="ban-reason">{$t('common.reasonOptional')}</label>
         <input
           id="ban-reason"
           autocomplete="off"
@@ -624,7 +633,7 @@
     {:else}
 
       <div class="op-field">
-        <label for="unban-reason">{$t('common.reasonRequired')}</label>
+        <label for="unban-reason">{$t('common.reasonOptional')}</label>
         <input
           id="unban-reason"
           autocomplete="off"
@@ -662,7 +671,7 @@
         />
       </div>
       <div class="op-field">
-        <label for="mute-reason">{$t('common.reasonRequired')}</label>
+        <label for="mute-reason">{$t('common.reasonOptional')}</label>
         <input
           id="mute-reason"
           autocomplete="off"
@@ -705,7 +714,7 @@
       </div>
       {/if}
       <div class="op-field">
-        <label for="tradingLock-reason">{$t('common.reasonRequired')}</label>
+        <label for="tradingLock-reason">{$t('common.reasonOptional')}</label>
         <input
           id="tradingLock-reason"
           autocomplete="off"
@@ -731,7 +740,7 @@
     {:else}
 
       <div class="op-field">
-        <label for="tradingUnlock-reason">{$t('common.reasonRequired')}</label>
+        <label for="tradingUnlock-reason">{$t('common.reasonOptional')}</label>
         <input
           id="tradingUnlock-reason"
           autocomplete="off"

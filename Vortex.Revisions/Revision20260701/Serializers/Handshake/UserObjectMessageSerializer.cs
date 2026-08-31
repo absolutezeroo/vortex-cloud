@@ -1,3 +1,4 @@
+using System.Globalization;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Protocol.Messages.Outgoing.Handshake;
@@ -20,7 +21,7 @@ internal class UserObjectMessageSerializer(int header)
         packet.WriteInteger(0); // respect left
         packet.WriteInteger(0); // pet respect left
         packet.WriteBoolean(false); // stream publishing enabled
-        packet.WriteString(message.Player.CreatedAt.ToString()); // last online
+        packet.WriteString(message.Player.CreatedAt.ToString(CultureInfo.CurrentCulture)); // last online
         packet.WriteBoolean(false); // can name change
         packet.WriteBoolean(false); // account safety locked
     }

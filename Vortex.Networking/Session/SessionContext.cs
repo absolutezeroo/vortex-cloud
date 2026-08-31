@@ -86,7 +86,12 @@ public class SessionContext(
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(
+            // Warning, not debug. The benign case — the peer went away — is already returned on by
+            // the IsClosed check above, so reaching here means a composer the server believed it had
+            // sent never left the process. At debug that is invisible in a normal run, and "sent but
+            // never arrived" then looks identical to "never sent": the two are indistinguishable
+            // from the client side, and telling them apart is most of the work in any wire bug.
+            _logger.LogWarning(
                 ex,
                 "Failed to send composer {ComposerType} to session {SessionKey}",
                 composer?.GetType().Name ?? "<null>",
