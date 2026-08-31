@@ -488,6 +488,94 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         };
     }
 
+    /// <summary>
+    /// The surface an avatar standing at <paramref name="fromZ" /> could step onto on this tile.
+    ///
+    /// Unlike <see cref="GetTopSection" />, which reports the one surface the tile has always had,
+    /// this considers every item on it — so the floor *under* a raised platform is an answer, and a
+    /// tile is no longer walkable-or-not but walkable-at-some-height.
+    ///
+    /// Nothing calls it yet. It is the query the pathfinder will ask once its nodes carry a height,
+    /// and it is written now because the arithmetic behind it is the part worth getting wrong
+    /// alone, with tests, rather than inside an A* rewrite.
+    /// </summary>
+    public RoomTileSection? FindSection(int tileId, Altitude fromZ, Altitude maxStep)
+    {
+        if (!InBounds(tileId))
+        {
+            return null;
+        }
+
+        Altitude floorHeight = _roomGrain._state.Model?.BaseHeights[tileId] ?? Altitude.Zero;
+
+        return RoomTileSectionFinder.Find(floorHeight, CollectOccupants(tileId), fromZ, maxStep);
+    }
+
+    /// <summary>
+    /// Flattens the tile's floor stack into the vertical slabs the finder reasons about.
+    ///
+    /// Every item, not the highest one: that is the entire difference between this and
+    /// <c>ComputeTile()</c>, which reads the same stack and throws all but the top of it away.
+    /// </summary>
+    private RoomTileOccupant[] CollectOccupants(int tileId)
+    {
+        HashSet<RoomObjectId> stack = _roomGrain._state.TileFloorStacks[tileId];
+
+        if (stack.Count == 0)
+        {
+            return [];
+        }
+
+        List<RoomTileOccupant> occupants = new(stack.Count);
+
+        foreach (RoomObjectId itemId in stack)
+        {
+            if (
+                !_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+                || item is not IRoomFloorItem floorItem
+            )
+            {
+                continue;
+            }
+
+            RoomTileFlags flags = RoomTileFlags.None;
+
+            // The same four questions ComputeTile() asks of the topmost item, asked of each --
+            // which is what lets two surfaces of one tile disagree about what you may do on them.
+            if (!floorItem.Logic.CanStack())
+            {
+                flags = flags.Add(RoomTileFlags.StackBlocked);
+            }
+
+            if (floorItem.Logic.CanWalk())
+            {
+                flags = flags.Add(RoomTileFlags.Walkable);
+            }
+
+            if (floorItem.Logic.CanSit())
+            {
+                flags = flags.Add(RoomTileFlags.Sittable);
+            }
+
+            if (floorItem.Logic.CanLay())
+            {
+                flags = flags.Add(RoomTileFlags.Layable);
+            }
+
+            occupants.Add(
+                new RoomTileOccupant
+                {
+                    ItemId = floorItem.ObjectId,
+                    Bottom = floorItem.Z,
+                    Top = floorItem.Height,
+                    Flags = flags,
+                }
+            );
+        }
+
+        return [.. occupants];
+    }
+
     public RoomMapSnapshot GetMapSnapshot(CancellationToken ct)
     {
         if (_dirty || _mapSnapshot is null)
