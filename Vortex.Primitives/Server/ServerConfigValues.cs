@@ -20,6 +20,17 @@ public static class ServerConfigValues
             ? parsed
             : fallback;
 
+    /// <summary>
+    /// The raw value, or <paramref name="fallback"/> when the key is unset. A stored empty string is
+    /// returned as it is: clearing a key is how an operator switches off a feature keyed by a name,
+    /// and falling back there would turn it on again.
+    /// </summary>
+    public static string GetString(
+        IReadOnlyDictionary<string, string> values,
+        string key,
+        string fallback
+    ) => values.TryGetValue(key, out string? value) ? value : fallback;
+
     public static bool GetBool(
         IReadOnlyDictionary<string, string> values,
         string key,

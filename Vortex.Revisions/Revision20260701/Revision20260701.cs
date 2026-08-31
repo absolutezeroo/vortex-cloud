@@ -52,6 +52,9 @@ public sealed class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimi
             new AvailabilityMap(),
             new CallForHelpMap(),
             new PerkMap(),
+            // Vortex-specific: the fishing system. Ids come from the 8000-8999 band, which appears in
+            // no client registry — see Headers.cs and the client's docs/vortex-original/fishing.md.
+            new FishingMap(),
         }
     )
 {

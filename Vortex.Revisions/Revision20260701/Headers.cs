@@ -664,9 +664,16 @@ internal static class MessageEvent
     // other. The client sends three things and decides none of them: it names a sighting the server
     // issued, a record the server wrote, or a derby the server scheduled.
     // See the client's docs/vortex-original/fishing.md, sections 3 to 5.
-    public const int VortexFishingCastMessageEvent = 8101;
+    // Origins fishing is a SESSION, not a cast per fish: the client starts one and then only
+    // listens until the spot runs dry. 8101 was VortexFishingCastMessageEvent and modelled the wrong
+    // interaction.
+    public const int VortexStartFishingMessageEvent = 8101;
     public const int VortexFishingMountCatchMessageEvent = 8103;
     public const int VortexFishingJoinDerbyMessageEvent = 8105;
+    public const int VortexStopFishingMessageEvent = 8107;
+
+    // The player's whole Hook Havoc attempt, replayed server-side against the seed it was given.
+    public const int VortexHookHavocInputMessageEvent = 8109;
     #endregion
 }
 
@@ -1314,11 +1321,16 @@ internal static class MessageComposer
     // ones and only ever cast on the rare.
     public const int VortexFishSightedMessageComposer = 8106;
     public const int VortexFishingCatchResultMessageComposer = 8108;
-    public const int VortexFishingCatchFailedMessageComposer = 8110;
+
+    // 8110 was CatchFailed. Origins has no per-cast miss: catches keep coming until the spot runs
+    // dry, so the id carries the end of the session instead.
+    public const int VortexFishingSpotDepletedMessageComposer = 8110;
     public const int VortexFishingDerbyStandingMessageComposer = 8112;
     public const int VortexFishingErrorMessageComposer = 8114;
 
     // Only the species actually caught; the client greys out the rest from the definitions.
     public const int VortexFishingRecordsMessageComposer = 8116;
+    public const int VortexHookHavocStartedMessageComposer = 8118;
+    public const int VortexHookHavocResultMessageComposer = 8120;
     #endregion
 }

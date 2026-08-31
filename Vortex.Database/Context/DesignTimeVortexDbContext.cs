@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -31,7 +32,7 @@ namespace Vortex.Database.Context
                 : ServerVersion.Parse(versionConfig);
 
             optionsBuilder.UseMySql(
-                connectionString,
+                connectionString ?? throw new InvalidOperationException(),
                 serverVersion,
                 options =>
                 {

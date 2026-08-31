@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox.Snapshots;
@@ -25,6 +26,7 @@ using Vortex.Protocol.Messages.Outgoing.Availability;
 using Vortex.Protocol.Messages.Outgoing.Callforhelp;
 using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Protocol.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Fishing;
 using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
@@ -534,6 +536,8 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+
+            await SendFishingBootstrapAsync(ctx, playerId, ct).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -549,6 +553,69 @@ public class SSOTicketMessageHandler(
 
             await CloseSessionSafelyAsync(ctx).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// The fishing tables and where this player stands in them. Vortex-specific: no AS3 or Habbo
+    /// equivalent — see the client's <c>docs/vortex-original/fishing.md</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Sent here rather than answered on request because the client never asks: it holds no fishing
+    /// state of its own, and a spot panel opened before the tables arrived would have no zone name
+    /// and no level gate to show.
+    /// </para>
+    /// <para>
+    /// The player grain owns the state and records push, so a player who logs in and a player who
+    /// just landed a fish receive byte-identical messages.
+    /// </para>
+    /// <para>
+    /// <strong>Takes <paramref name="playerId"/> rather than reading <c>ctx.PlayerId</c>.</strong>
+    /// The context is built once when the packet is dispatched, and an SSO packet arrives on a
+    /// session that is not bound to a player yet — so <c>ctx.PlayerId</c> is <c>-1</c> for the whole
+    /// of this handler, even after <c>AddSessionToPlayerAsync</c>. Every other call in here already
+    /// uses the local id for that reason; this one did not, and it pushed a fishing state to grain
+    /// -1 while the real player received nothing. It left a <c>fishing_player_state</c> row for
+    /// player -1 behind, which is how it was caught.
+    /// </para>
+    /// </remarks>
+    private async Task SendFishingBootstrapAsync(
+        MessageContext ctx,
+        int playerId,
+        CancellationToken ct
+    )
+    {
+        // A session grain is keyed by player and outlives the connection, so anyone who dropped
+        // mid-cast still has one open and would be refused with "already fishing" on their way back
+        // in. Dropped here because logging in is the one moment the answer is certain.
+        await _grainFactory
+            .GetFishingSessionGrain(new PlayerId(playerId))
+            .AbandonAsync(ct)
+            .ConfigureAwait(false);
+
+        FishingDefinitionsSnapshot definitions = await _grainFactory
+            .GetFishingDefinitionsGrain()
+            .GetDefinitionsAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(
+                new VortexFishingDefinitionsMessageComposer
+                {
+                    Version = definitions.Version,
+                    Species = definitions.Species,
+                    RodLevels = definitions.RodTiers,
+                    FishingLevels = definitions.Levels,
+                    Zones = definitions.Zones,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
+
+        // Zero, not a session count: nobody is fishing at the moment they log in.
+        await _grainFactory
+            .GetFishingPlayerGrain(PlayerId.Parse(playerId))
+            .PushStateAsync(0, ct)
+            .ConfigureAwait(false);
     }
 
     /// <summary>Pushes the staff mod tool's bootstrap payload proactively at login, matching the

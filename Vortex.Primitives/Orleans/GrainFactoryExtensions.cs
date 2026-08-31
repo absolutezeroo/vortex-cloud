@@ -1,6 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Fishing.Grains;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Help.Grains;
@@ -345,4 +346,22 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerTargetedOfferGrain>(playerId);
+
+    public static IFishingDefinitionsGrain GetFishingDefinitionsGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IFishingDefinitionsGrain>(SingletonGrainId.GLOBAL);
+
+    public static IFishingDerbyGrain GetFishingDerbyGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IFishingDerbyGrain>(SingletonGrainId.GLOBAL);
+
+    public static IFishingPlayerGrain GetFishingPlayerGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IFishingPlayerGrain>(playerId.Value);
+
+    // The session grain is keyed by player, not by spot: one player fishes one spot at a time, and
+    // the timer and the rod multipliers belong to whoever is holding the rod.
+    public static IFishingSessionGrain GetFishingSessionGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IFishingSessionGrain>(playerId.Value);
 }

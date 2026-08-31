@@ -5,6 +5,7 @@ using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Errors;
+using Vortex.Database.Entities.Fishing;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Help;
@@ -232,6 +233,31 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<NftMintTokenOfferEntity> NftMintTokenOffers { get; init; } = null!;
 
     public DbSet<PlayerMintTokensEntity> PlayerMintTokens { get; init; } = null!;
+
+    // Fishing — reconstructed from Habbo Origins, which has no client dump. Every number in these
+    // four tables is an operator-editable guess rather than a recovered value; see the client's
+    // docs/vortex-original/fishing.md.
+    public DbSet<FishingSpeciesEntity> FishingSpecies { get; init; } = null!;
+
+    public DbSet<FishingZoneEntity> FishingZones { get; init; } = null!;
+
+    // Deliberately two tables: rod quality and fishing level are parallel progressions in Origins,
+    // and fusing them was the second-biggest error in this system's first design.
+    public DbSet<FishingRodTierEntity> FishingRodTiers { get; init; } = null!;
+
+    public DbSet<FishingLevelEntity> FishingLevels { get; init; } = null!;
+
+    // The two player-owned tables. Everything above is operator-authored and read-only at runtime;
+    // these two are the only fishing rows a session writes.
+    public DbSet<FishingPlayerStateEntity> FishingPlayerState { get; init; } = null!;
+
+    public DbSet<FishingRecordEntity> FishingRecords { get; init; } = null!;
+
+    // The derby is Vortex's own addition, not an Origins feature — Origins has the Fishing Frenzy,
+    // which is a schedule rather than a leaderboard and therefore needs no table.
+    public DbSet<FishingDerbyEntity> FishingDerbies { get; init; } = null!;
+
+    public DbSet<FishingDerbyEntryEntity> FishingDerbyEntries { get; init; } = null!;
 
     public DbSet<NftAssetEntity> NftAssets { get; init; } = null!;
 

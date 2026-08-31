@@ -64,6 +64,12 @@ public sealed class ConsoleCommandDispatcher(IServiceProvider services) : IConso
             "Reload mystery box definitions and prize pools.",
             Capabilities.Dashboard.OpsMysteryBoxManage
         ),
+        new(
+            "reload-fishing",
+            "reload-fishing",
+            "Reload fishing zones, species and rod tiers from the database.",
+            Capabilities.Dashboard.OpsConfigManage
+        ),
     ];
 
     public IReadOnlyList<ConsoleCommandDescriptor> Commands => CommandList;
@@ -305,6 +311,27 @@ public sealed class ConsoleCommandDispatcher(IServiceProvider services) : IConso
                     IGrainFactory grains = services.GetRequiredService<IGrainFactory>();
                     await grains.GetMysteryBoxManagerGrain().ReloadAsync(ct).ConfigureAwait(false);
                     write("Mystery box definitions and prize pools reloaded.");
+                }
+                catch (Exception ex)
+                {
+                    write($"Reload failed: {ex.Message}");
+                }
+
+                return true;
+
+            // Fishing's definitions are meant to be tuned live — the zones, the species table, their
+            // hours and weekdays and rates are all rows, deliberately, so that a wrong number is a
+            // query rather than a deploy. `FishingDefinitionsGrain.ReloadAsync` existed for that and
+            // had no caller at all, which made the whole design inert.
+            case "reload-fishing":
+                try
+                {
+                    IGrainFactory grains = services.GetRequiredService<IGrainFactory>();
+                    int species = await grains
+                        .GetFishingDefinitionsGrain()
+                        .ReloadAsync(ct)
+                        .ConfigureAwait(false);
+                    write($"Fishing definitions reloaded: {species} species.");
                 }
                 catch (Exception ex)
                 {
