@@ -464,13 +464,17 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     /// API whose answer can grow to several. That is the whole of the first step — no behaviour
     /// moves, and the storage can be replaced later without any of these callers changing again.
     ///
-    /// Out of bounds answers a bare, unwalkable floor at zero rather than throwing, because both
-    /// callers today already checked InBounds() before asking and the ones that come next are
-    /// pathfinding probes, for which "nothing here" is the useful answer.
+    /// Out of range answers a bare, unwalkable floor at zero rather than throwing: the callers that
+    /// come next are pathfinding probes, for which "nothing here" is the useful answer.
+    ///
+    /// The range is the *array's*, not <c>InBounds()</c>'s. Those two are not the same thing and the
+    /// difference is not theoretical: InBounds() asks the model's dimensions, while these arrays are
+    /// allocated by EnsureMapBuiltAsync(), so a room whose model is loaded and whose map is not yet
+    /// built passes the first test and throws on the second. Bots walk in exactly that window.
     /// </summary>
     public RoomTileSection GetTopSection(int tileId)
     {
-        if (!InBounds(tileId))
+        if ((uint)tileId >= (uint)_roomGrain._state.TileHeights.Length)
         {
             return new RoomTileSection
             {

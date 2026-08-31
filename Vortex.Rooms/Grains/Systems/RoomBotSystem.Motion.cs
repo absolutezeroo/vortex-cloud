@@ -348,6 +348,10 @@ public sealed partial class RoomBotSystem
             return false;
         }
 
+        // A bot walks flat: it has its own free-tile rule and never had a height test, so every
+        // step is allowed and lands where the tile's top surface is. Giving bots the avatars' 3D
+        // search is a separate question -- they would need somewhere to remember which surface they
+        // are on, which a bot currently has no field for.
         IReadOnlyList<(int X, int Y)> found = _roomGrain.PathingSystem.FindPath(
             (bot.X, bot.Y),
             (targetX, targetY),

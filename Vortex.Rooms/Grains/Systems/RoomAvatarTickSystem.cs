@@ -7,6 +7,7 @@ using Vortex.Logging;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -161,14 +162,28 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             bool isGoal = avatar.TilePath.Count == 0;
             int prevTileId = _roomGrain.MapModule.ToIdx(avatar.X, avatar.Y);
             (int nextX, int nextY) = _roomGrain.MapModule.GetTileXY(nextTileId);
-            Altitude nextHeight = _roomGrain.MapModule.GetTileHeightForAvatar(nextTileId);
 
-            // The step-height rule used to be repeated here, above the call, and *only* here --
-            // which meant it was enforced during the walk but not while the path was being planned.
-            // It now lives in CanAvatarWalkBetween(), so the check below covers it and a step that
-            // cannot be climbed re-routes through the branch underneath rather than throwing: a
-            // raised platform is walked to by its stairs instead of the walk dying at its edge.
-            if (!_roomGrain.MapModule.CanAvatarWalkBetween(avatar, prevTileId, nextTileId, isGoal))
+            // The step is measured from where the avatar's feet actually are, not from the tile's
+            // highest surface: that is what keeps somebody walking under a platform under it rather
+            // than snapping them onto its roof for a step, and it is why this passes avatar.Z.
+            //
+            // It is the altitude of the tile just left, because ProcessNextAvatarStepAsync() moves
+            // X and Y first and settles Z afterwards.
+            //
+            // The step-height rule is inside that search too. It used to be repeated here and only
+            // here -- enforced while walking but not while the path was planned -- so the
+            // pathfinder routed straight up a cliff and the walk was aborted at the first tile it
+            // could not climb, leaving the avatar wherever the doomed path had got to.
+            if (
+                !_roomGrain.MapModule.CanAvatarWalkBetween(
+                    avatar,
+                    prevTileId,
+                    nextTileId,
+                    avatar.Z,
+                    out RoomTileSection nextSection,
+                    isGoal
+                )
+            )
             {
                 if (!isGoal)
                 {
@@ -186,7 +201,9 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             }
 
             RoomObjectId prevHighestItemId = _roomGrain._state.TileHighestFloorItems[prevTileId];
-            RoomObjectId nextHighestItemId = _roomGrain._state.TileHighestFloorItems[nextTileId];
+            // The item walked *onto*, which on a tile with two surfaces is not the one on top: step
+            // under a platform and the walk-on trigger that fires is the floor's, not the roof's.
+            RoomObjectId nextHighestItemId = nextSection.ItemId;
 
             if (
                 prevHighestItemId > 0
@@ -218,6 +235,11 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                     ct
                 );
             }
+
+            // The height the client is told to walk to is the section's, less whatever the item
+            // under it sinks the pose by -- the same arithmetic GetTileHeightForAvatar() does, but
+            // about the surface this step chose rather than the tile's top.
+            Altitude nextHeight = _roomGrain.MapModule.GetHeightForAvatarOn(nextSection);
 
             avatar.RemoveStatus(AvatarStatusType.Lay, AvatarStatusType.Sit);
             avatar.AddStatus(AvatarStatusType.Move, $"{nextX},{nextY},{nextHeight}");

@@ -193,8 +193,25 @@ internal sealed class RoomHarness
             BaseFlags = [.. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize)],
         };
 
+        // All six per-tile arrays, not the two the map used to be read through. A real room gets
+        // them together from EnsureMapBuiltAsync(); a harness that allocates a subset models a room
+        // that cannot exist, and the first production read of a missing one throws an
+        // IndexOutOfRangeException from somewhere that looks unrelated to the test.
         Grain._state.TileHeights = [.. Enumerable.Repeat(Altitude.Zero, MapSize * MapSize)];
         Grain._state.TileFlags = [.. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize)];
+        Grain._state.TileEncodedHeights = new short[MapSize * MapSize];
+        Grain._state.TileHighestFloorItems =
+        [
+            .. Enumerable.Repeat((RoomObjectId)(-1), MapSize * MapSize),
+        ];
+        Grain._state.TileFloorStacks =
+        [
+            .. Enumerable.Range(0, MapSize * MapSize).Select(_ => new HashSet<RoomObjectId>()),
+        ];
+        Grain._state.TileAvatarStacks =
+        [
+            .. Enumerable.Range(0, MapSize * MapSize).Select(_ => new HashSet<RoomObjectId>()),
+        ];
 
         if (canManipulate)
         {

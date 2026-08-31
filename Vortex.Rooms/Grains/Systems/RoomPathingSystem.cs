@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Rooms.Mapping;
+using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 
 namespace Vortex.Rooms.Grains.Systems;
@@ -34,17 +36,71 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         return FindPath(
             start,
             goal,
+            _roomGrain.MapModule.GetTopSection(_roomGrain.MapModule.ToIdx(start.X, start.Y)).Height,
             tileIdx => _roomGrain.MapModule.CanAvatarWalk(avatar, tileIdx),
-            (currentTileId, nextTileId, isGoal) =>
-                _roomGrain.MapModule.CanAvatarWalkBetween(avatar, currentTileId, nextTileId, isGoal)
+            (int currentTileId, int nextTileId, Altitude fromZ, bool isGoal, out Altitude nextZ) =>
+            {
+                bool canWalk = _roomGrain.MapModule.CanAvatarWalkBetween(
+                    avatar,
+                    currentTileId,
+                    nextTileId,
+                    fromZ,
+                    out RoomTileSection section,
+                    isGoal
+                );
+
+                nextZ = section.Height;
+
+                return canWalk;
+            }
         );
     }
 
+    /// <summary>
+    /// The flat search, for callers that have no height model.
+    ///
+    /// Pets and bots take this. Each has its own rule about which tiles it may occupy and never had
+    /// a step-height test at all, and neither has anywhere to remember which surface it is standing
+    /// on — so giving them the avatars' three-dimensional search would change what they are, not
+    /// just how they move. Every step lands on the tile's top surface, which is exactly where they
+    /// landed before, and their own predicates are passed through untouched.
+    /// </summary>
     public IReadOnlyList<(int X, int Y)> FindPath(
         (int X, int Y) start,
         (int X, int Y) goal,
         Func<int, bool> canOccupyTile,
         Func<int, int, bool, bool> canMoveBetween
+    )
+    {
+        return FindPath(
+            start,
+            goal,
+            _roomGrain.MapModule.GetTopSection(_roomGrain.MapModule.ToIdx(start.X, start.Y)).Height,
+            canOccupyTile,
+            (int currentTileId, int nextTileId, Altitude _, bool isGoal, out Altitude nextZ) =>
+            {
+                nextZ = _roomGrain.MapModule.GetTopSection(nextTileId).Height;
+
+                return canMoveBetween(currentTileId, nextTileId, isGoal);
+            }
+        );
+    }
+
+    /// <summary>Answers whether a step is walkable and, when it is, at what altitude it lands.</summary>
+    internal delegate bool CanMoveBetween(
+        int currentTileId,
+        int nextTileId,
+        Altitude fromZ,
+        bool isGoal,
+        out Altitude nextZ
+    );
+
+    internal IReadOnlyList<(int X, int Y)> FindPath(
+        (int X, int Y) start,
+        (int X, int Y) goal,
+        Altitude startZ,
+        Func<int, bool> canOccupyTile,
+        CanMoveBetween canMoveBetween
     )
     {
         try
@@ -86,6 +142,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             startNode.G = 0;
             startNode.H = Heuristic(startX, startY, goalX, goalY);
             startNode.Parent = null;
+            startNode.Z = startZ;
 
             open.Enqueue(startNode, startNode.F);
 
@@ -134,7 +191,15 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
                             int nTileId = _roomGrain.MapModule.ToIdx(nx, ny);
 
-                            if (!canMoveBetween(cTileId, nTileId, nx == goalX && ny == goalY))
+                            if (
+                                !canMoveBetween(
+                                    cTileId,
+                                    nTileId,
+                                    current.Z,
+                                    nx == goalX && ny == goalY,
+                                    out Altitude nextZ
+                                )
+                            )
                             {
                                 continue;
                             }
@@ -142,17 +207,24 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                             int tentativeG = current.G + moveCost;
                             Node neighbor = GetOrCreateNode(nx, ny);
 
+                            // ponytail: a node is still keyed by (x, y) alone, so the first
+                            // altitude a tile is reached at is the one it keeps. That is enough to
+                            // walk under a platform and round to its stairs; it is not enough to
+                            // route over a platform and back under it in a single walk, which would
+                            // need the key to carry Z as well. Widen it if a room ever needs that.
                             if (neighbor.Parent == null && !(nx == startX && ny == startY))
                             {
                                 neighbor.Parent = current;
                                 neighbor.G = tentativeG;
                                 neighbor.H = Heuristic(nx, ny, goalX, goalY);
+                                neighbor.Z = nextZ;
                                 open.Enqueue(neighbor, neighbor.F);
                             }
                             else if (tentativeG < neighbor.G)
                             {
                                 neighbor.Parent = current;
                                 neighbor.G = tentativeG;
+                                neighbor.Z = nextZ;
                                 open.Enqueue(neighbor, neighbor.F);
                             }
                         }
@@ -233,6 +305,18 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         public Node? Parent;
         public int X;
         public int Y;
+
+        /// <summary>
+        /// The altitude the walk is at when it stands here — the surface it stepped onto, not the
+        /// tile's highest.
+        ///
+        /// It is what the next step is measured from, and it is why a route can pass under a raised
+        /// platform: the neighbour search asks the map which of that tile's surfaces is within a
+        /// step of *this* altitude, so the floor is offered to a walk along the floor and the roof
+        /// to a walk along the roof.
+        /// </summary>
+        public Altitude Z;
+
         public int F => G + H;
     }
 }

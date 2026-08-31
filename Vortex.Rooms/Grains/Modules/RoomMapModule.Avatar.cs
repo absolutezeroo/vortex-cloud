@@ -94,6 +94,26 @@ public sealed partial class RoomMapModule
             return false;
         }
 
+        return CanAvatarOccupy(avatar, tileIdx, GetTopSection(tileIdx), isGoal, isDiagonalCheck);
+    }
+
+    /// <summary>
+    /// The same question as <see cref="CanAvatarWalk" />, asked of a *named* surface rather than of
+    /// whichever one happens to be on top.
+    ///
+    /// Disabled, Closed and the two occupancy flags belong to the column and are read off the tile.
+    /// Walkable, Sittable and Layable belong to the surface and come from the section — which is
+    /// the entire reason for the split: on a tile with two of them the top of a platform can be
+    /// walkable while the seat beneath it is not.
+    /// </summary>
+    private bool CanAvatarOccupy(
+        IRoomAvatar avatar,
+        int tileIdx,
+        RoomTileSection section,
+        bool isGoal,
+        bool isDiagonalCheck
+    )
+    {
         RoomTileFlags tileFlags = _roomGrain._state.TileFlags[tileIdx];
 
         if (tileFlags.Has(RoomTileFlags.Disabled) || tileFlags.Has(RoomTileFlags.Closed))
@@ -108,6 +128,9 @@ public sealed partial class RoomMapModule
                 return true;
             }
 
+            // ponytail: occupancy is still per tile, not per section, so two avatars on two levels
+            // of the same tile block each other. Splitting TileAvatarStacks by surface is the next
+            // thing to do if standing under a platform ever needs to be shared.
             if (isGoal || _roomGrain._state.RoomSnapshot.AllowBlocking)
             {
                 return false;
@@ -116,12 +139,6 @@ public sealed partial class RoomMapModule
 
         if (tileFlags.Has(RoomTileFlags.FurnitureOccupied))
         {
-            // Walkable, Sittable and Layable describe the *surface*, not the column, so they are
-            // read off the section rather than off the tile. Identical today — the tile has one
-            // section and its flags are the same bits — and the point of asking this way is that a
-            // tile with two of them can answer differently per surface: the top of a platform
-            // walkable, the seat beneath it not.
-            RoomTileSection section = GetTopSection(tileIdx);
             bool isSeat = section.IsSittable || section.IsLayable;
 
             if (isSeat && (isDiagonalCheck || !isGoal))
@@ -134,7 +151,11 @@ public sealed partial class RoomMapModule
                 return true;
             }
 
-            if (!section.IsWalkable)
+            // A bare surface under a raised item is walkable by definition — there is nothing on it
+            // to refuse. Only a surface *formed* by furniture has to say it can be walked on, which
+            // is what the flag means; without this test the floor beneath every platform would be
+            // rejected for not being a walkable item.
+            if (!section.IsBareFloor && !section.IsWalkable)
             {
                 return false;
             }
@@ -143,32 +164,43 @@ public sealed partial class RoomMapModule
         return true;
     }
 
+    /// <summary>
+    /// Whether a step from one tile to the next is walkable, and onto which surface.
+    ///
+    /// <paramref name="fromZ" /> is where the foot is now, and it is what makes this three
+    /// dimensional: the destination is no longer "the tile" but whichever of the tile's surfaces is
+    /// within a step of that altitude with room to stand. On a tile with a raised platform, an
+    /// avatar walking along the floor is offered the floor and one walking along the platform is
+    /// offered the platform — the same tile, two answers.
+    ///
+    /// The step-height limit lives inside that search rather than as a separate test: a surface out
+    /// of reach is simply not returned, so a path that is planned is a path that can be walked.
+    /// </summary>
     public bool CanAvatarWalkBetween(
         IRoomAvatar avatar,
         int pTileIdx,
         int nTileIdx,
+        Altitude fromZ,
+        out RoomTileSection nextSection,
         bool isGoal = true
     )
     {
-        if (!CanAvatarWalk(avatar, nTileIdx, isGoal))
+        nextSection = default;
+
+        RoomTileSection? found = FindSection(
+            nTileIdx,
+            fromZ,
+            Math.Abs(_roomGrain._roomConfig.MaxStepHeight)
+        );
+
+        if (found is null)
         {
             return false;
         }
 
-        // The step has to be climbable, and this is the only place that says so.
-        //
-        // It used to live in RoomAvatarTickSystem.ValidateAvatarStepAsync() alone, which walks the
-        // path one tile at a time -- so the pathfinder, which asks only this method, would happily
-        // route straight up a cliff and the walk was then aborted at the first tile it could not
-        // climb. The avatar stopped wherever the doomed path had got to, which reads as "I clicked
-        // over there and it took me somewhere else": a room with a raised platform sent you along
-        // the shortest line to the platform's edge instead of round by its stairs.
-        //
-        // Both callers now share the rule, so a path that is planned is a path that can be walked.
-        if (
-            Math.Abs(GetTileHeightForAvatar(nTileIdx) - GetTileHeightForAvatar(pTileIdx))
-            > Math.Abs(_roomGrain._roomConfig.MaxStepHeight)
-        )
+        nextSection = found.Value;
+
+        if (!CanAvatarOccupy(avatar, nTileIdx, nextSection, isGoal, false))
         {
             return false;
         }
@@ -250,13 +282,24 @@ public sealed partial class RoomMapModule
         if (flush) { }
     }
 
+    /// <summary>
+    /// Settles the avatar onto the surface it just stepped onto.
+    ///
+    /// Called after <c>SetPosition()</c> and before <c>Z</c> has moved, so the avatar's own altitude
+    /// is still the one it walked *from* — which is exactly the reference the section search needs.
+    /// Snapping to the tile's top instead, as this did, is what would drop somebody walking under a
+    /// platform onto the roof of it.
+    /// </summary>
     public void UpdateHeightForAvatar(IRoomAvatar avatar)
     {
         try
         {
             int tileId = ToIdx(avatar.X, avatar.Y);
-            Altitude height = _roomGrain._state.TileHeights[tileId];
-            RoomObjectId highestItemId = _roomGrain._state.TileHighestFloorItems[tileId];
+            RoomTileSection section =
+                FindSection(tileId, avatar.Z, Math.Abs(_roomGrain._roomConfig.MaxStepHeight))
+                ?? GetTopSection(tileId);
+            Altitude height = section.Height;
+            RoomObjectId highestItemId = section.ItemId;
             Altitude postureOffset = Altitude.Zero;
 
             if (highestItemId > 0)
@@ -293,6 +336,27 @@ public sealed partial class RoomMapModule
     /// answer; when a tile has several this becomes "which surface", and every caller already
     /// passes a tile it means rather than a height it guessed.
     /// </summary>
+    /// <summary>
+    /// How high an avatar stands on a *given* surface: the surface itself, less whatever the item
+    /// forming it sinks the pose by — a chair seats you below its own top.
+    ///
+    /// The arithmetic <see cref="GetTileHeightForAvatar" /> has always done, about a section the
+    /// caller names rather than about whichever one is highest.
+    /// </summary>
+    public Altitude GetHeightForAvatarOn(RoomTileSection section)
+    {
+        if (
+            section.ItemId > 0
+            && _roomGrain._state.ItemsById.TryGetValue(section.ItemId, out IRoomItem? item)
+            && item is IRoomFloorItem floorItem
+        )
+        {
+            return section.Height - floorItem.Logic.GetPostureOffset();
+        }
+
+        return section.Height;
+    }
+
     public Altitude GetTileHeightForAvatar(int tileId)
     {
         try
