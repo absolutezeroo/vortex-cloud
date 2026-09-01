@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -29,9 +30,11 @@ internal sealed class PlayerDailyTaskGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<PlayerDailyTaskGrain> logger
+    ILogger<PlayerDailyTaskGrain> logger,
+    ICommerceJournal journal
 ) : Grain, IPlayerDailyTaskGrain
 {
+    private readonly ICommerceJournal _journal = journal;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
@@ -180,6 +183,23 @@ internal sealed class PlayerDailyTaskGrain(
             .ToListAsync(ct)
             .ConfigureAwait(true);
 
+        // Derived from the assignment rather than minted fresh: a player clicking claim twice, or a
+        // client retrying, is the same operation asking again and not a second payout.
+        CommerceOperationId operation = CommerceOperationId.Deterministic(
+            CommerceOperationKind.DailyTaskReward,
+            assignment.Id
+        );
+
+        await _journal
+            .OpenIfNewAsync(
+                operation,
+                CommerceOperationKind.DailyTaskReward,
+                (int)PlayerId,
+                $"daily task={assignment.DailyTaskEntityId} assignment={assignment.Id}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         assignment.Status = DailyTaskStatus.Claimed;
         assignment.ClaimedAt = DateTime.UtcNow;
 
@@ -187,10 +207,37 @@ internal sealed class PlayerDailyTaskGrain(
         // claimable twice.
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+        // THE PIVOT, and it is why this needed a journal at all. Committing the claim first is the
+        // right order -- a task that pays twice is worse than one that pays late -- but it means
+        // everything after this point is owed. A throw in the payout below used to end the story:
+        // the task read as claimed, nothing was paid, and the only trace was whatever exception
+        // happened to be logged upstream. Now the operation sits at Pivoted, and
+        // CommerceRelayService.EscalateAsync turns it into a critical naming the player and the
+        // step once it has been stuck past its deadline.
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.Pivoted,
+                CommerceStepKeys.REWARD_PAYOUT,
+                null,
+                ct
+            )
+            .ConfigureAwait(true);
+
         foreach (DailyTaskRewardEntity reward in rewards)
         {
             await GrantAsync(reward, ct).ConfigureAwait(true);
         }
+
+        await _journal
+            .TransitionAsync(
+                operation,
+                CommerceOperationState.Completed,
+                CommerceStepKeys.REWARD_PAYOUT,
+                null,
+                ct
+            )
+            .ConfigureAwait(true);
 
         await Presence
             .SendComposerAsync(

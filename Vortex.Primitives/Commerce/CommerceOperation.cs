@@ -102,6 +102,7 @@ public enum CommerceOperationKind
     ClubPurchase = 8,
     LtdRaffleEntry = 9,
     RoomAdPurchase = 10,
+    DailyTaskReward = 11,
 }
 
 /// <summary>
@@ -139,6 +140,9 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>Paying out what a completed task promised.</summary>
+    public const string REWARD_PAYOUT = "reward-payout";
 
     /// <summary>The advertisement row that puts a room in front of the navigator.</summary>
     public const string ROOM_AD = "room-ad";
