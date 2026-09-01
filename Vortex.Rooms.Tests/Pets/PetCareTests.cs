@@ -9,6 +9,7 @@ using Orleans;
 using Orleans.Streams;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Observability;
@@ -219,7 +220,8 @@ public sealed class PetCareTests
                 BuildPetLevelProvider(),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
+                new RoomWiredLogChannel(),
+                FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 
             // Every care path broadcasts; the stream is armed during activation, which never runs

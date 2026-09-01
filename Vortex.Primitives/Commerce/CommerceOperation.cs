@@ -104,6 +104,14 @@ public enum CommerceOperationKind
     RoomAdPurchase = 10,
     DailyTaskReward = 11,
     MintTokenPurchase = 12,
+
+    /// <summary>A contract settled against a wired chest: coins and furniture, both directions.</summary>
+    WiredChestContract = 13,
+
+    /// <summary>A prize handed out for a furniture that was destroyed to get it — a crackable, a
+    /// mystery trophy, a mystery box. The consumption is the pivot and it has already happened, so
+    /// these operations are opened past it: they complete or they are owed.</summary>
+    PrizeGrant = 14,
 }
 
 /// <summary>
@@ -163,6 +171,18 @@ public static class CommerceStepKeys
     /// <summary>Paying the space's owner what their tenant just paid. Strictly after the pivot: the
     /// tenant already holds the space, so a failure here is owed, never refunded.</summary>
     public const string RENTABLE_SPACE_OWNER_CREDIT = "rentable-space-owner-credit";
+
+    /// <summary>Moving the staked furniture into the chest and the reward furniture out of it. The
+    /// pivot of a chest contract: after it the goods have changed hands and the payment is no longer
+    /// owed back.</summary>
+    public const string CHEST_SWAP = "chest-swap";
+
+    /// <summary>Paying the contract's reward coins out of the chest. Undoes itself into the chest
+    /// when the wallet refuses, which is why the books are written after it and not before.</summary>
+    public const string CHEST_PAYOUT = "chest-payout";
+
+    /// <summary>Handing over what a destroyed furniture was destroyed for.</summary>
+    public const string PRIZE_GRANT = "prize-grant";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";

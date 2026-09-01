@@ -18,6 +18,7 @@ using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
 using Vortex.Logging;
 using Vortex.Primitives;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Groups.Enums;
@@ -73,6 +74,15 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomModelProvider _roomModelProvider;
 
     internal readonly RoomLiveState _state;
+
+    /// <summary>
+    /// Where a room's value-moving operations are recorded. One flow uses it — the wired chest
+    /// contract settlement, which debits a wallet, moves furniture between an inventory and a chest
+    /// and adjusts the chest's credits, and until now did all three with no operation an operator
+    /// could find afterwards (ECON-CHEST-015).
+    /// </summary>
+    internal readonly ICommerceJournal _commerceJournal;
+
     internal readonly RoomWiredLogChannel _wiredLogChannel;
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     internal readonly IRoomEventListenerProvider _eventListenerProvider;
@@ -128,7 +138,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IPetLevelProvider petLevelProvider,
         IPetCommandProvider petCommandProvider,
         IPetVocalProvider petVocalProvider,
-        RoomWiredLogChannel wiredLogChannel
+        RoomWiredLogChannel wiredLogChannel,
+        // Last on purpose: GrainActivationContext.CreateWithIntegerKey takes params object[], so a
+        // dependency inserted anywhere else compiles cleanly in every test that builds this grain
+        // and then fails at activation.
+        ICommerceJournal commerceJournal
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -152,6 +166,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _petCommandProvider = petCommandProvider;
         _petVocalProvider = petVocalProvider;
         _wiredLogChannel = wiredLogChannel;
+        _commerceJournal = commerceJournal;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new RoomPathingSystem(this);

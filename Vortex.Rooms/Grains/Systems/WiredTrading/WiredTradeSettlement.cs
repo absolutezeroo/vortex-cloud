@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
@@ -120,6 +121,16 @@ public sealed partial class WiredTradeSettlement(
         // Taken from the wallet before anything moves, so it has to go back if the move fails.
         int refundable = 0;
 
+        // Opened once the trade is actually going ahead, below. Declared here so the catch can say
+        // which operation died and in which half of it (ECON-CHEST-015): this flow debits a wallet,
+        // moves furniture in both directions and adjusts a chest's credits, and it did all three
+        // with nothing durable naming the operation. Its books -- wired_chest_transactions -- are
+        // written from what landed, which is a receipt for what happened and no record at all of
+        // what stopped halfway.
+        CommerceOperationId operation = CommerceOperationId.None;
+        bool pivoted = false;
+        bool settled = false;
+
         try
         {
             await using VortexDbContext dbCtx = await _roomGrain
@@ -176,16 +187,49 @@ public sealed partial class WiredTradeSettlement(
                     .ConfigureAwait(true);
             }
 
+            // Everything above this line is preflight: it reads, matches and refuses, and nothing
+            // it does has to be undone. From here value moves, so the operation exists from here.
+            operation = CommerceOperationId.New();
+
+            await _roomGrain
+                ._commerceJournal.OpenAsync(
+                    operation,
+                    CommerceOperationKind.WiredChestContract,
+                    (int)ctx.PlayerId,
+                    $"contract={session.ContractId} chest={session.ChestId} room={_roomGrain.RoomId.Value} "
+                        + $"pay={payment.Coins}c+{payment.ItemIds.Length}i "
+                        + $"get={reward.Coins}c+{reward.ItemIds.Length}i",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             if (
                 payment.Coins > 0
-                && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, ct).ConfigureAwait(true)
+                && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, operation, ct)
+                    .ConfigureAwait(true)
             )
             {
+                await TransitionAsync(
+                        operation,
+                        CommerceOperationState.FailedBeforePivot,
+                        CommerceStepKeys.DEBIT,
+                        "insufficient balance"
+                    )
+                    .ConfigureAwait(true);
+
                 return await SnapshotContractAsync(session, staked, completed: false, ct)
                     .ConfigureAwait(true);
             }
 
             refundable = payment.Coins;
+
+            await TransitionAsync(
+                    operation,
+                    CommerceOperationState.Debited,
+                    CommerceStepKeys.DEBIT,
+                    error: null
+                )
+                .ConfigureAwait(true);
 
             List<FurnitureEntity> paying =
             [
@@ -210,8 +254,18 @@ public sealed partial class WiredTradeSettlement(
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             // The goods have moved; the payment is part of a trade that happened and is no longer
-            // owed back.
+            // owed back. That is the pivot, and it is the one the journal exists to mark: past here
+            // a failure is owed to the player and never refunded.
             refundable = 0;
+            pivoted = true;
+
+            await TransitionAsync(
+                    operation,
+                    CommerceOperationState.Pivoted,
+                    CommerceStepKeys.CHEST_SWAP,
+                    error: null
+                )
+                .ConfigureAwait(true);
 
             // The one step that can still fail with the goods already moved, so it is the one step
             // that undoes itself — the chest keeps what it could not hand over.
@@ -245,6 +299,19 @@ public sealed partial class WiredTradeSettlement(
             );
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            // Everything that moves value is written. What follows -- the session, the notification,
+            // the inventory reload, the other people's screens -- is presentation, and a failure in
+            // it is not an operation an operator has to settle.
+            await TransitionAsync(
+                    operation,
+                    CommerceOperationState.Completed,
+                    CommerceStepKeys.CHEST_PAYOUT,
+                    error: null
+                )
+                .ConfigureAwait(true);
+
+            settled = true;
 
             // Closing the transaction is what forgets the session — one owner for it, so a
             // settlement cannot leave a screen behind by taking the wrong half down itself.
@@ -311,10 +378,37 @@ public sealed partial class WiredTradeSettlement(
                 _roomGrain.RoomId
             );
 
+            // The trade itself finished; what threw is the tail that tells people about it -- the
+            // session, the notification, the screens. Calling that an operation to intervene in
+            // would put completed trades on the operator's list, which is how a work list stops
+            // being read.
+            if (settled)
+            {
+                return null;
+            }
+
+            // Past the pivot there is no compensation to invent: the goods have moved and whatever
+            // is left is owed. It goes on the operator's work list instead, which is the whole
+            // reason the operation exists.
+            if (pivoted)
+            {
+                await TransitionAsync(
+                        operation,
+                        CommerceOperationState.NeedsIntervention,
+                        CommerceStepKeys.CHEST_PAYOUT,
+                        ex.Message
+                    )
+                    .ConfigureAwait(true);
+
+                return null;
+            }
+
             // The payment left the wallet before the goods could move, so it goes back: coins taken
             // for a trade that did not happen are coins stolen, and the screen is still open for a
             // second attempt that would charge again. Compensated on no token, because a cancelled
             // request is exactly the case that must not skip this.
+            bool compensated = refundable == 0;
+
             if (
                 refundable > 0
                 && !await GiveCreditsAsync(ctx.PlayerId, refundable, CancellationToken.None)
@@ -329,6 +423,23 @@ public sealed partial class WiredTradeSettlement(
                     _roomGrain.RoomId
                 );
             }
+            else
+            {
+                compensated = true;
+            }
+
+            // Only when it was actually put right. A refund that itself failed is left at Debited,
+            // because the player really is still out of pocket and that is exactly the operation an
+            // operator should find -- the same rule the shared purchase executor follows.
+            await TransitionAsync(
+                    operation,
+                    compensated
+                        ? CommerceOperationState.FailedBeforePivot
+                        : CommerceOperationState.Debited,
+                    compensated ? CommerceStepKeys.REFUND : CommerceStepKeys.DEBIT,
+                    ex.Message
+                )
+                .ConfigureAwait(true);
 
             return null;
         }
@@ -470,9 +581,13 @@ public sealed partial class WiredTradeSettlement(
     private async Task<bool> TryTakeCreditsAsync(
         PlayerId playerId,
         int amount,
+        CommerceOperationId operation,
         CancellationToken ct
     )
     {
+        // Under the operation, so the wallet's own receipt is written in the transaction that
+        // debits: a debit nobody can attribute afterwards is what made this flow impossible to
+        // settle by hand.
         WalletDebitResult result = await _roomGrain
             ._grainFactory.GetPlayerWalletGrain(playerId)
             .TryDebitAsync(
@@ -483,11 +598,56 @@ public sealed partial class WiredTradeSettlement(
                         Amount = amount,
                     },
                 ],
+                operation,
                 ct
             )
             .ConfigureAwait(true);
 
         return result.Succeeded;
+    }
+
+    /// <summary>
+    /// Moves the operation on, and never at the cost of the settlement it is describing.
+    /// </summary>
+    /// <remarks>
+    /// A journal write that throws must not become the exception the caller sees: on the success
+    /// path it would turn a completed trade into a failed one, and in the catch it would replace the
+    /// reason the trade actually failed with a reason about bookkeeping. Losing the note is the
+    /// lesser of the two, and it is logged.
+    /// </remarks>
+    private async Task TransitionAsync(
+        CommerceOperationId operation,
+        CommerceOperationState state,
+        string step,
+        string? error
+    )
+    {
+        if (operation.IsNone)
+        {
+            return;
+        }
+
+        try
+        {
+            await _roomGrain
+                ._commerceJournal.TransitionAsync(
+                    operation,
+                    state,
+                    step,
+                    error,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogError(
+                ex,
+                "Could not move contract operation {OperationId} to {State}.",
+                operation,
+                state
+            );
+        }
     }
 
     private Task<bool> GiveCreditsAsync(PlayerId playerId, int amount, CancellationToken ct) =>

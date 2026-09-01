@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
@@ -253,6 +254,117 @@ public sealed partial class RoomGrain
             .ConfigureAwait(true);
 
         return true;
+    }
+
+    /// <summary>
+    /// Runs the payout half of a consumed-furniture prize under a journal operation, so a prize that
+    /// was paid for with a furniture and never arrived is something an operator can find.
+    /// </summary>
+    /// <remarks>
+    /// Opened already past its pivot, and that is not a shortcut: the caller has destroyed the
+    /// furniture before calling this, on purpose — the reverse order lets a repeated click mint
+    /// prizes from one item — so by the time the grant runs there is nothing left to compensate.
+    /// The only two ends are "handed over" and "owed to a player", which is exactly what the two
+    /// terminal states mean (RSYS-PRIZE-050).
+    /// <para>
+    /// The grant's exception is rethrown, not swallowed: three callers behave a particular way when
+    /// a payout throws, and this exists to record what happened, not to change it.
+    /// </para>
+    /// </remarks>
+    internal async Task GrantConsumedPrizeAsync(
+        PlayerId beneficiary,
+        string detail,
+        Func<CancellationToken, Task> grantAsync,
+        CancellationToken ct
+    )
+    {
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        try
+        {
+            await _commerceJournal
+                .OpenAsync(
+                    operation,
+                    CommerceOperationKind.PrizeGrant,
+                    (int)beneficiary,
+                    detail,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            await _commerceJournal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.Pivoted,
+                    CommerceStepKeys.PRIZE_GRANT,
+                    null,
+                    ct
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            // The furniture is already gone; refusing to pay out because the bookkeeping failed
+            // would turn a lost note into a lost prize.
+            _logger.LogError(
+                ex,
+                "Could not open prize operation {OperationId} for player {PlayerId}; paying out anyway.",
+                operation,
+                beneficiary
+            );
+
+            await grantAsync(ct).ConfigureAwait(true);
+
+            return;
+        }
+
+        try
+        {
+            await grantAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            await RecordPrizeOutcomeAsync(
+                    operation,
+                    CommerceOperationState.NeedsIntervention,
+                    ex.Message
+                )
+                .ConfigureAwait(true);
+
+            throw;
+        }
+
+        await RecordPrizeOutcomeAsync(operation, CommerceOperationState.Completed, null)
+            .ConfigureAwait(true);
+    }
+
+    private async Task RecordPrizeOutcomeAsync(
+        CommerceOperationId operation,
+        CommerceOperationState state,
+        string? error
+    )
+    {
+        try
+        {
+            await _commerceJournal
+                .TransitionAsync(
+                    operation,
+                    state,
+                    CommerceStepKeys.PRIZE_GRANT,
+                    error,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Could not close prize operation {OperationId} as {State}.",
+                operation,
+                state
+            );
+        }
     }
 
     private void RecomputeFootprint(IRoomFloorItem floor)

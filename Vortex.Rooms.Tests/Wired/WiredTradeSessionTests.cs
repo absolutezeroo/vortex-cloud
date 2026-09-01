@@ -14,6 +14,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Wired;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -273,7 +274,8 @@ public sealed class WiredTradeSessionTests
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
+                new RoomWiredLogChannel(),
+                FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 
             Grain._state.ItemsById[CHEST_ID] = ChestItem();

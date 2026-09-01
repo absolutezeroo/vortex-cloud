@@ -17,6 +17,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Navigator.Enums;
@@ -130,7 +131,8 @@ internal sealed class RoomHarness
             BuildPetLevelProvider(),
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),
-            new RoomWiredLogChannel()
+            new RoomWiredLogChannel(),
+            BuildCommerceJournal()
         );
 
         // The security module reads the room's own snapshot to decide who owns the place, so a
@@ -495,6 +497,29 @@ internal sealed class RoomHarness
                 ? 100
                 : null
         );
+
+    /// <summary>Every state the room moved a commerce operation through, in order.</summary>
+    public List<CommerceOperationState> JournalStates { get; } = [];
+
+    /// <summary>Makes the journal itself fail, which a payout must survive: the furniture behind a
+    /// prize is already destroyed by the time it is written.</summary>
+    public bool JournalThrows { get; set; }
+
+    private ICommerceJournal BuildCommerceJournal() =>
+        FakeProxy.Create<ICommerceJournal>(call =>
+        {
+            if (JournalThrows)
+            {
+                throw new InvalidOperationException("journal unavailable");
+            }
+
+            if (call.Method.Name == nameof(ICommerceJournal.TransitionAsync))
+            {
+                JournalStates.Add((CommerceOperationState)call.Args![1]!);
+            }
+
+            return Task.CompletedTask;
+        });
 
     /// <summary>
     /// A staff-capability-free player, so the manipulate check falls through to the room's own

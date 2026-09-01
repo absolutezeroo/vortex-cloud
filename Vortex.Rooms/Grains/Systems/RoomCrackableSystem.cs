@@ -117,9 +117,18 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
         }
 
         // The prize goes to whoever landed the final hit, which is what the room watched happen.
+        // Under an operation, because the furniture is already destroyed: from here the prize is
+        // owed, and a payout that never lands has to be findable (RSYS-PRIZE-050).
         await _roomGrain
-            ._grainFactory.GetPlayerPrizeGrain(ctx.PlayerId)
-            .GrantAsync(prize, PrizeSources.Crackable, ct)
+            .GrantConsumedPrizeAsync(
+                ctx.PlayerId,
+                $"crackable={objectId.Value} pool={binding.PoolCode} prize={prize.Id} room={_roomGrain._state.RoomId.Value}",
+                innerCt =>
+                    _roomGrain
+                        ._grainFactory.GetPlayerPrizeGrain(ctx.PlayerId)
+                        .GrantAsync(prize, PrizeSources.Crackable, innerCt),
+                ct
+            )
             .ConfigureAwait(true);
     }
 
