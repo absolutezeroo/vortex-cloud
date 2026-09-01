@@ -76,6 +76,33 @@ public sealed class ItemDeletedEventTests
         harness.PublishedEvents.OfType<ItemDeletedEvent>().Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task ConsumingTheSameItemTwice_DeletesItOnce()
+    {
+        // The soft delete used to be an unconditional attach: consuming an already-consumed item
+        // stamped DeletedAt again, reported success, and let the caller hand out a second prize.
+        // The guard that was supposed to stop it -- the item leaving ItemsById -- lands twenty lines
+        // and two awaits after the write (RSYS-CONSUME-049).
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+
+        await SeedFurnitureRowAsync(harness).ConfigureAwait(true);
+
+        bool first = await ConsumeAsync(harness).ConfigureAwait(true);
+        bool second = await ConsumeAsync(harness).ConfigureAwait(true);
+
+        first.Should().BeTrue();
+        second.Should().BeFalse();
+        harness.PublishedEvents.OfType<ItemDeletedEvent>().Should().ContainSingle();
+    }
+
+    private static Task<bool> ConsumeAsync(RoomHarness harness) =>
+        harness.Grain.ConsumeItemAsync(
+            harness.ContextFor(RoomHarness.Stranger),
+            FakeItem(),
+            ItemDeletionReason.Cracked,
+            CancellationToken.None
+        );
+
     private static async Task SeedFurnitureRowAsync(RoomHarness harness)
     {
         await using VortexDbContext db = harness.NewDbContext();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
@@ -198,10 +199,30 @@ public sealed partial class RoomGrain
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
-            FurnitureEntity entity = new() { Id = item.ObjectId.Value };
-            dbCtx.Attach(entity);
+            // Loaded rather than attached blind, and the query is the guard: a row already marked
+            // deleted does not come back, so a second consumption of the same item writes nothing
+            // and reports false instead of stamping DeletedAt again and handing out a second prize.
+            // The guard that used to stand for this -- the item being taken out of ItemsById --
+            // lands twenty lines and two awaits after the write (RSYS-CONSUME-049).
+            FurnitureEntity? entity = await dbCtx
+                .Furnitures.FirstOrDefaultAsync(
+                    f => f.Id == item.ObjectId.Value && f.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                _logger.LogDebug(
+                    "Consumption of furniture {ObjectId} in room {RoomId} found nothing to delete.",
+                    item.ObjectId.Value,
+                    _state.RoomId.Value
+                );
+
+                return false;
+            }
+
             entity.DeletedAt = DateTime.UtcNow;
-            dbCtx.Entry(entity).Property(f => f.DeletedAt).IsModified = true;
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
