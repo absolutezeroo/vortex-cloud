@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Wired;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
@@ -81,6 +83,7 @@ public sealed partial class RoomGrain
     }
 
     public async Task<bool> SetPermanentVariableAsync(
+        ActionContext ctx,
         WiredVariableTargetType targetType,
         int targetId,
         string variableId,
@@ -89,6 +92,33 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
+        // Whoever may decorate the room may edit its wired variables -- the same bar the contract
+        // store applies. Without this the packet was open to any connected player: both client
+        // surfaces that send it (the variable manager and the inspection tab) live inside the wired
+        // menu, which the client only opens for someone holding rights, and that precondition was
+        // stated nowhere on the server.
+        RoomControllerType level = await SecurityModule
+            .GetControllerLevelAsync(ctx)
+            .ConfigureAwait(true);
+
+        if (level == RoomControllerType.None)
+        {
+            return false;
+        }
+
+        // ponytail: a Furni target is checked to be in this room -- the id is otherwise any object
+        // id in the hotel. A User target cannot be scoped the same way: wired_permanent_variables
+        // carries no room column by design (a permanent variable follows the player between rooms),
+        // so the rights check above is the whole guard for that case. Narrowing it further needs a
+        // policy decision on what a user variable is scoped to, which the specs do not answer.
+        if (
+            targetType == WiredVariableTargetType.Furni
+            && await GetFloorItemSnapshotByIdAsync(new RoomObjectId(targetId), ct) is null
+        )
+        {
+            return false;
+        }
+
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         WiredPermanentVariableEntity? existing =
