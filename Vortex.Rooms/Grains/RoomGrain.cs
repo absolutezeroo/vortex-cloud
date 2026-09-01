@@ -17,6 +17,7 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
 using Vortex.Logging;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives;
 using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
@@ -613,6 +614,40 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             _state.GroupMemberRanks[member.PlayerId] = member.Rank;
         }
     }
+
+    /// <summary>
+    /// Publishes an event without holding the room's turn open for its handlers.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>EventRegistry</c> runs handlers in parallel, but <c>PublishAsync</c> is awaited, so the
+    /// room waits for the slowest of them. On the furniture events that is a cross-grain call per
+    /// subscriber — quest progress, achievement progress, the daily task — and it happens on every
+    /// click of a build session: placing a sofa held the room, and everyone standing in it, until
+    /// the placer's own grains had answered (INFRA-EVENT-058).
+    /// </para>
+    /// <para>
+    /// Only for events that <b>no handler answers back into this room with</b>. The three furniture
+    /// ones qualify: their subscribers write forensics into an in-memory buffer and call the
+    /// <em>player's</em> grains, never the room's, so nothing detached here can re-enter the
+    /// activation it was published from. That is the question INFRA-AWAIT-059 leaves open in
+    /// general, and it has to be answered per event rather than assumed — which is why this is a
+    /// named method used at five sites, not the default for <c>_events</c>.
+    /// </para>
+    /// <para>
+    /// Published on no cancellation token: the caller's token belongs to a turn that is about to
+    /// end, and cancelling with it would drop the event exactly when the request completed normally.
+    /// </para>
+    /// </remarks>
+    internal void PublishDetached(IEvent evt) =>
+        _events
+            .PublishAsync(evt, CancellationToken.None)
+            .LogAndForget(
+                _logger,
+                "Detached publication of {EventType} from room {RoomId} failed.",
+                evt.GetType().Name,
+                _state.RoomId.Value
+            );
 
     internal long NowMs()
     {

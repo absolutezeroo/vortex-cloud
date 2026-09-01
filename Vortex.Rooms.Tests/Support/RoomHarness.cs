@@ -109,7 +109,7 @@ internal sealed class RoomHarness
                     PublishedEvents.Add((IEvent)call.Args![0]!);
                 }
 
-                return null;
+                return PublishResult;
             }),
             FakeProxy.Create<ICancellableEventPublisher>(call =>
             {
@@ -497,6 +497,12 @@ internal sealed class RoomHarness
                 ? 100
                 : null
         );
+
+    /// <summary>
+    /// What the event publisher hands back, so a test can make handlers slow or broken. Null (the
+    /// default) means the proxy's own completed task.
+    /// </summary>
+    public Task? PublishResult { get; set; }
 
     /// <summary>Every state the room moved a commerce operation through, in order.</summary>
     public List<CommerceOperationState> JournalStates { get; } = [];

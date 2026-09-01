@@ -122,7 +122,9 @@ public sealed partial class RoomActionModule
             }
         }
 
-        await _roomGrain._events.PublishAsync(
+        // Detached: the room is not waiting for the placer's quest, achievement and daily-task
+        // grains to answer before the next click can be served. See RoomGrain.PublishDetached.
+        _roomGrain.PublishDetached(
             new ItemPlacedEvent(
                 item.ObjectId.Value,
                 ctx.PlayerId.Value,
@@ -137,8 +139,7 @@ public sealed partial class RoomActionModule
                     }
                 ),
                 snapshot.Definition.Id
-            ),
-            ct
+            )
         );
 
         return true;
@@ -198,7 +199,8 @@ public sealed partial class RoomActionModule
             return false;
         }
 
-        await _roomGrain._events.PublishAsync(
+        // Detached, and this is the one that fires most: a drag across a room is a move per tile.
+        _roomGrain.PublishDetached(
             new ItemMovedEvent(
                 itemId.Value,
                 ctx.PlayerId.Value,
@@ -211,8 +213,7 @@ public sealed partial class RoomActionModule
                         rotation = rot.ToString(),
                     }
                 )
-            ),
-            ct
+            )
         );
 
         return true;
