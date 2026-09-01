@@ -202,19 +202,27 @@ internal sealed partial class PlayerPresenceGrain
 
         _isProcessingQueue = true;
 
-        await Task.Yield();
-
-        if (_sessionObserver is not null)
+        try
         {
-            while (_outgoingQueue.Count > 0)
-            {
-                IComposer payload = _outgoingQueue.Dequeue();
+            await Task.Yield();
 
-                await _sessionObserver.SendComposerAsync(payload);
+            if (_sessionObserver is not null)
+            {
+                while (_outgoingQueue.Count > 0)
+                {
+                    IComposer payload = _outgoingQueue.Dequeue();
+
+                    await _sessionObserver.SendComposerAsync(payload);
+                }
             }
         }
-
-        _isProcessingQueue = false;
+        finally
+        {
+            // A throwing send used to latch this flag for the rest of the activation: the player
+            // stayed connected and simulated while their client never received anything again --
+            // no disconnect, no error, just silence. The flag has to come back down either way.
+            _isProcessingQueue = false;
+        }
     }
 
     private void LogAndForget(Task task) =>
