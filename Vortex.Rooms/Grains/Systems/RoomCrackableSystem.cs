@@ -84,17 +84,11 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
             return;
         }
 
-        // Consume first: if the grant then fails the room is out one crackable, but the reverse order
-        // would let a repeated click on a furniture that is still there mint prizes.
-        if (
-            !await _roomGrain
-                .ConsumeItemAsync(ctx, item, ItemDeletionReason.Cracked, ct)
-                .ConfigureAwait(true)
-        )
-        {
-            return;
-        }
-
+        // Draw before consuming. PickAsync is a pure read -- it decrements no stock and reserves
+        // nothing -- so an empty or misconfigured pool costs the player nothing, where the old
+        // order destroyed the crackable and awarded nothing. What stops a repeated click on a
+        // furniture that is still there from minting prizes is the consume below still gating the
+        // grant, not the order of these two calls.
         PrizeEntrySnapshot? prize = await _roomGrain
             ._grainFactory.GetPrizePoolManagerGrain()
             .PickAsync(binding.PoolCode, string.Empty, ct)
@@ -103,13 +97,22 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
         if (prize is null)
         {
             _roomGrain._logger.LogWarning(
-                "Crackable {ObjectId} in room {RoomId} was cracked but pool '{PoolCode}' had nothing to award to player {PlayerId}.",
+                "Crackable {ObjectId} in room {RoomId} was cracked but pool '{PoolCode}' had nothing to award to player {PlayerId}; the furniture was left in place.",
                 objectId.Value,
                 _roomGrain._state.RoomId.Value,
                 binding.PoolCode,
                 ctx.PlayerId.Value
             );
 
+            return;
+        }
+
+        if (
+            !await _roomGrain
+                .ConsumeItemAsync(ctx, item, ItemDeletionReason.Cracked, ct)
+                .ConfigureAwait(true)
+        )
+        {
             return;
         }
 
