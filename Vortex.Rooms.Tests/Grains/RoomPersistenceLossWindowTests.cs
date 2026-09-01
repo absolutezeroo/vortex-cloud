@@ -99,6 +99,41 @@ public sealed class RoomPersistenceLossWindowTests
         h.RowsInRoom().Should().Be(0);
     }
 
+    /// <summary>
+    /// Two rooms, one row. Pick a sofa up in A and drop it in B inside <c>DirtyItemsTickMs</c>: B
+    /// claims the row at once, and A's flush was then writing <c>RoomEntityId = null</c> over the
+    /// claim, so the sofa vanished from B (ROOM-PER-005). A removal only applies while the row is
+    /// still this room's.
+    /// </summary>
+    [Fact]
+    public async Task ARemovalDoesNotUnseatARoomThatAlreadyClaimedTheItem()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueRemovalAsync(1);
+        h.ClaimByAnotherRoom(1, room: 99);
+
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be(99);
+    }
+
+    [Fact]
+    public async Task ARemovalOfAnItemStillInTheRoom_TakesItOut()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueAsync(1);
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be((int)ROOM);
+
+        await h.EnqueueRemovalAsync(1);
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().BeNull();
+    }
+
     private sealed class Harness
     {
         private readonly RoomPersistenceGrain _grain;
@@ -165,6 +200,31 @@ public sealed class RoomPersistenceLossWindowTests
         ///     fires outside a silo. It drains, so it exercises the timer's flush as well.
         /// </summary>
         public Task DeactivateAsync() => _grain.OnDeactivateAsync(Reason(), CancellationToken.None);
+
+        public Task EnqueueRemovalAsync(int objectId) =>
+            _grain.EnqueueDirtyItemAsync(
+                new RoomId((int)ROOM),
+                Snapshot(objectId),
+                CancellationToken.None,
+                remove: true
+            );
+
+        /// <summary>The other room getting there first, which is all "dropped in B" looks like from
+        /// here: one row, claimed.</summary>
+        public void ClaimByAnotherRoom(int objectId, int room)
+        {
+            using VortexDbContext db = new(_options);
+
+            db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId = room;
+            db.SaveChanges();
+        }
+
+        public int? RoomOf(int objectId)
+        {
+            using VortexDbContext db = new(_options);
+
+            return db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId;
+        }
 
         public int RowsInRoom()
         {

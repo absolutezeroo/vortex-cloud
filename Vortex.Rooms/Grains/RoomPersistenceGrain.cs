@@ -120,8 +120,62 @@ public sealed class RoomPersistenceGrain(
         {
             using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
+            int roomId = (int)this.GetPrimaryKeyLong();
+
+            // A removal says "this item left room A", and it is written up to DirtyItemsTickMs after
+            // the item did. Pick a sofa up in A and drop it in B inside that window and B claims the
+            // row first, then A's flush arrives and writes RoomEntityId = null over it: the sofa
+            // vanishes from B and reappears in the inventory, with two grains writing one row and no
+            // order between them (ROOM-PER-005).
+            //
+            // So a removal is conditional on the row still being ours. Loading the candidates rather
+            // than attaching them blind is the condition: the rows another room has already taken do
+            // not come back, so nothing is written for them.
+            //
+            // ponytail: read-then-write, not a conditional claim. It closes a two-second window down
+            // to one query, which is the whole of the reported bug; the last of it needs the
+            // per-item claim primitive (ECON-ITM-004).
+            HashSet<int> removing =
+            [
+                .. batch
+                    .Where(item => _removedItemIds.Contains(item.ObjectId))
+                    .Select(item => item.ObjectId.Value),
+            ];
+
+            Dictionary<int, FurnitureEntity> stillOurs =
+                removing.Count == 0
+                    ? []
+                    : await dbCtx
+                        .Furnitures.Where(f => removing.Contains(f.Id) && f.RoomEntityId == roomId)
+                        .ToDictionaryAsync(f => f.Id, ct);
+
             foreach (RoomItemSnapshot item in batch)
             {
+                if (removing.Contains(item.ObjectId.Value))
+                {
+                    // Gone from this room already, by another room's hand. Nothing to write, and the
+                    // queue drops it below like everything else in the batch.
+                    if (!stillOurs.TryGetValue(item.ObjectId.Value, out FurnitureEntity? leaving))
+                    {
+                        continue;
+                    }
+
+                    leaving.PlayerEntityId = item.OwnerId.Value;
+                    leaving.X = item.X;
+                    leaving.Y = item.Y;
+                    leaving.Z = item.Z;
+                    leaving.Rotation = item.Rotation;
+                    leaving.ExtraData = item.ExtraData;
+                    leaving.RoomEntityId = null;
+
+                    if (item is RoomWallItemSnapshot leavingWallItem)
+                    {
+                        leaving.WallOffset = leavingWallItem.WallOffset;
+                    }
+
+                    continue;
+                }
+
                 FurnitureEntity dbEntity = new()
                 {
                     Id = item.ObjectId.Value,
@@ -152,18 +206,7 @@ public sealed class RoomPersistenceGrain(
                     e.Property(x => x.WallOffset).IsModified = true;
                 }
 
-                if (_removedItemIds.Contains(item.ObjectId))
-                {
-                    dbEntity.RoomEntityId = null;
-
-                    e.Property(x => x.RoomEntityId).IsModified = true;
-                }
-                else
-                {
-                    dbEntity.RoomEntityId = (int)this.GetPrimaryKeyLong();
-
-                    e.Property(x => x.RoomEntityId).IsModified = true;
-                }
+                dbEntity.RoomEntityId = roomId;
             }
 
             await dbCtx.SaveChangesAsync(ct);
