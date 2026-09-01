@@ -98,6 +98,7 @@ public enum CommerceOperationKind
     MarketplaceCancel = 4,
     MarketplaceBuy = 5,
     MarketplaceRedeem = 6,
+    RentableSpaceRent = 7,
 }
 
 /// <summary>
@@ -135,6 +136,13 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>Writing the rental itself: who holds the space and until when.</summary>
+    public const string RENTABLE_SPACE_GRANT = "rentable-space-grant";
+
+    /// <summary>Paying the space's owner what their tenant just paid. Strictly after the pivot: the
+    /// tenant already holds the space, so a failure here is owed, never refunded.</summary>
+    public const string RENTABLE_SPACE_OWNER_CREDIT = "rentable-space-owner-credit";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";

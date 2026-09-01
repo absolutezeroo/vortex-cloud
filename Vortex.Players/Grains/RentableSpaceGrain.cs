@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums;
@@ -35,9 +36,12 @@ internal sealed class RentableSpaceGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
-    ILogger<RentableSpaceGrain> logger
+    ILogger<RentableSpaceGrain> logger,
+    ICommerceJournal journal
 ) : Grain, IRentableSpaceGrain
 {
+    private readonly ICommerceJournal _journal = journal;
+
     private IGrainTimer? _expiryTimer;
     private string _renterName = string.Empty;
 
@@ -159,6 +163,24 @@ internal sealed class RentableSpaceGrain(
 
         DateTime rentedUntil = now.AddSeconds(_terms.RentDurationSeconds);
 
+        // Under a named operation, like the catalogue and the marketplace. This flow moves value in
+        // two directions -- the tenant is debited and the owner is credited -- and it did neither
+        // under a journal: a crash between the two left the tenant paying an owner who was never
+        // paid, with no record that anything was owed and nothing to resume from. The debit's
+        // receipt also makes a retried rent idempotent, which a button the player can click twice
+        // needs.
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.RentableSpaceRent,
+                renterPlayerId,
+                $"space={FurnitureId} price={_terms.Price} until={rentedUntil:u}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         // Debit through the shared executor (it also writes the ledger entry via
         // CurrencyChangedEvent): everything below moves money or grants the rental, so a throw
         // anywhere in it has to put the renter's balance back rather than leave them paying for a
@@ -167,8 +189,19 @@ internal sealed class RentableSpaceGrain(
             .GetPlayerWalletGrain((long)renterPlayerId)
             .ExecutePurchaseAsync(
                 [new WalletDebitRequest { CurrencyKind = kind, Amount = _terms.Price }],
+                operation,
                 async innerCt =>
                 {
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     // Upsert state row (insert first time, update in-place thereafter).
                     if (_space is null)
                     {
@@ -201,6 +234,20 @@ internal sealed class RentableSpaceGrain(
                         _space.RentedUntil = rentedUntil;
                     }
 
+                    // THE PIVOT. The tenant holds the space from here: the row is written and the
+                    // client will be told. Nothing below may refund -- if paying the owner fails it
+                    // is a debt to chase, not a rental to unwind, because unwinding it would take a
+                    // space back off somebody who is already standing in it.
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Pivoted,
+                            CommerceStepKeys.RENTABLE_SPACE_GRANT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     // Credit the furniture owner (skip if renter == owner to avoid self-transfer).
                     if (furniEntity.PlayerEntityId != renterPlayerId)
                     {
@@ -225,6 +272,16 @@ internal sealed class RentableSpaceGrain(
                                 .ConfigureAwait(true);
                         }
                     }
+
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Completed,
+                            CommerceStepKeys.RENTABLE_SPACE_OWNER_CREDIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
 
                     return true;
                 },
