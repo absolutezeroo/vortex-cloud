@@ -236,12 +236,23 @@ public sealed partial class RoomWiredTradingSystem
         {
             try
             {
+                int capacity = _roomGrain._roomConfig.WiredChestCapacity;
+
                 foreach (
                     int id in await _store
                         .ReadDepositableIdsAsync(ctx, itemIds, ct)
                         .ConfigureAwait(true)
                 )
                 {
+                    // The staged list lives in the room's memory until the confirm and then becomes
+                    // an IN clause of its own size, so it stops where the chest does. The confirm
+                    // checks the chest's real remaining room; this only keeps the screen from
+                    // growing past anything that could ever fit.
+                    if (deposit.ItemIds.Count >= capacity)
+                    {
+                        break;
+                    }
+
                     deposit.ItemIds.Add(id);
                 }
             }
@@ -322,6 +333,35 @@ public sealed partial class RoomWiredTradingSystem
                 )
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
+
+            // What the chest already holds decides how much of this deposit fits. Trimmed rather
+            // than refused: a donation that half-lands is the donation the chest had room for, and
+            // the snapshot below reports exactly what moved, so the depositor's inventory keeps the
+            // rest. Every read of a chest materialises its whole content inside the room's turn --
+            // this is the ceiling on that cost.
+            int held = await dbCtx
+                .Furnitures.CountAsync(
+                    f => f.WiredChestEntityId == chest.Id && f.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            int free = Math.Max(0, _roomGrain._roomConfig.WiredChestCapacity - held);
+
+            if (moving.Count > free)
+            {
+                _roomGrain._logger.LogDebug(
+                    "Deposit into chest {ChestId} trimmed from {Offered} to {Free}: it already "
+                        + "holds {Held} of {Capacity}.",
+                    deposit.ChestId,
+                    moving.Count,
+                    free,
+                    held,
+                    _roomGrain._roomConfig.WiredChestCapacity
+                );
+
+                moving = [.. moving.Take(free)];
+            }
 
             foreach (FurnitureEntity entity in moving)
             {

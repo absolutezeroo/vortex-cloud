@@ -115,6 +115,18 @@ public class RoomConfig : IWiredLimits
     /// this is the per-side offer ceiling enforced by the trade session.</summary>
     public int MaxTradeItemsPerSide { get; init; } = 1500;
 
+    /// <summary>
+    /// How many items one wired chest may hold. There was no ceiling at all, and every chest
+    /// operation loads the whole content into the room's turn — listing it, settling a contract
+    /// against it, paying out of it — so the cost of touching a chest was whatever a player had
+    /// chosen to put in it.
+    /// <para>
+    /// Also the ceiling on one deposit screen, which is the same bound arriving earlier: the staged
+    /// list is held in the room's memory and turns into an <c>IN</c> clause of its own size.
+    /// </para>
+    /// </summary>
+    public int WiredChestCapacity { get; init; } = 1000;
+
     /// <summary>How long a half-open mystery box keeps waiting for its other half. The client's wait
     /// dialog has no timer of its own, so without this a player who walked away leaves the box
     /// permanently reserved against everyone else.</summary>
