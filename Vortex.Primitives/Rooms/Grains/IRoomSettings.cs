@@ -59,7 +59,8 @@ public interface IRoomSettings : IGrainWithIntegerKey
     /// cannot rate their own room. Returns false if the vote was rejected.</summary>
     Task<bool> RateRoomAsync(PlayerId actor, int points, CancellationToken ct);
 
-    /// <summary>Staff-only (Capabilities.Navigator.StaffPick) -- authorization is the caller's
-    /// responsibility, this just applies the flag.</summary>
-    Task SetStaffPickAsync(bool staffPick, CancellationToken ct);
+    /// <summary>Staff-only: the grain resolves <c>Capabilities.Navigator.StaffPick</c> for
+    /// <paramref name="actor"/> and does nothing without it. The handler checks too, to answer the
+    /// client without waking a room, but this is the check that decides.</summary>
+    Task SetStaffPickAsync(PlayerId actor, bool staffPick, CancellationToken ct);
 }

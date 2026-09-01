@@ -14,6 +14,7 @@ using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Orleans.Snapshots.Room.Settings;
+using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
@@ -760,8 +761,27 @@ public sealed partial class RoomGrain
         }
     }
 
-    public async Task SetStaffPickAsync(bool staffPick, CancellationToken ct)
+    public async Task SetStaffPickAsync(PlayerId actor, bool staffPick, CancellationToken ct)
     {
+        // Same shape as ApplyStaffRoomActionsAsync: a staff power with no in-room level behind it,
+        // checked until now only by the packet handler although the method is a member of a public
+        // grain interface (ROOMG-GATE-038). The actor is a parameter for exactly this reason.
+        if (
+            !await SecurityModule
+                .HasCapabilityAsync(actor, Capabilities.Navigator.StaffPick)
+                .ConfigureAwait(true)
+        )
+        {
+            _logger.LogWarning(
+                "Player {Actor} tried to set the staff pick on room {RoomId} without {Capability}.",
+                actor,
+                _state.RoomId,
+                Capabilities.Navigator.StaffPick
+            );
+
+            return;
+        }
+
         try
         {
             await using VortexDbContext dbCtx = await _dbCtxFactory

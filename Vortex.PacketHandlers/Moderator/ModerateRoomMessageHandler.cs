@@ -10,9 +10,10 @@ using Vortex.Protocol.Messages.Incoming.Moderator;
 namespace Vortex.PacketHandlers.Moderator;
 
 /// <summary>
-/// The room-tool checkboxes. The room grain applies them without consulting any in-room controller
-/// level, so this gate is the only thing standing between a player and someone else's room —
-/// <c>Capabilities.Room.ModerateAny</c>, not the per-room kick/ban settings.
+/// The room-tool checkboxes. No in-room controller level gates them, so what stands between a
+/// player and someone else's room is <c>Capabilities.Room.ModerateAny</c> — not the per-room
+/// kick/ban settings. The grain resolves it too, and that is the check that decides; this one is
+/// here to answer the client without waking a room.
 /// </summary>
 public class ModerateRoomMessageHandler(
     IGrainFactory grainFactory,

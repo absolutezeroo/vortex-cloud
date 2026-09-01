@@ -79,7 +79,11 @@ internal sealed class RoomHarness
 
     private long _now;
 
-    private RoomHarness(DbContextOptions<VortexDbContext> options, bool canManipulate)
+    private RoomHarness(
+        DbContextOptions<VortexDbContext> options,
+        bool canManipulate,
+        string[] capabilities
+    )
     {
         _options = options;
 
@@ -120,7 +124,7 @@ internal sealed class RoomHarness
                     }
                 );
             }),
-            BuildPermissionService(),
+            BuildPermissionService(capabilities),
             FakeProxy.Create<IVortexMetrics>(_ => null),
             FakeProxy.Create<IRoomModerationStore>(_ => null),
             BuildPetLevelProvider(),
@@ -289,9 +293,14 @@ internal sealed class RoomHarness
             ]
             : [];
 
+    /// <param name="capabilities">
+    /// The hotel-wide capabilities the permission service answers with, for the grain methods that
+    /// gate on a staff power rather than on an in-room controller level.
+    /// </param>
     public static async Task<RoomHarness> CreateAsync(
         int placedBotId = PlacedBotId,
-        bool canManipulate = true
+        bool canManipulate = true,
+        string[]? capabilities = null
     )
     {
         DbContextOptions<VortexDbContext> options = new DbContextOptionsBuilder<VortexDbContext>()
@@ -317,7 +326,7 @@ internal sealed class RoomHarness
             await seed.SaveChangesAsync().ConfigureAwait(true);
         }
 
-        return new RoomHarness(options, canManipulate);
+        return new RoomHarness(options, canManipulate, capabilities ?? []);
     }
 
     public VortexDbContext NewDbContext() => new(_options);
@@ -491,10 +500,10 @@ internal sealed class RoomHarness
     /// A staff-capability-free player, so the manipulate check falls through to the room's own
     /// rights list — which is what the tests vary.
     /// </summary>
-    private static IPermissionService BuildPermissionService() =>
+    private static IPermissionService BuildPermissionService(string[] capabilities) =>
         FakeProxy.Create<IPermissionService>(call =>
             call.Method.Name == nameof(IPermissionService.ResolveForPlayerAsync)
-                ? Task.FromResult(new PermissionSet([], []))
+                ? Task.FromResult(new PermissionSet([], capabilities))
                 : null
         );
 
