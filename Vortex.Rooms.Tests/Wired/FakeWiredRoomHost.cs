@@ -94,6 +94,8 @@ internal sealed class FakeWiredRoomHost
 
     public int MaxScheduledPerTick { get; set; } = 64;
 
+    public int MaxPendingExecutions { get; set; } = 512;
+
     public int FlashDurationMs { get; set; } = 500;
 
     public int TileCount { get; set; } = 100;

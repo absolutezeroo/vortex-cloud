@@ -79,6 +79,14 @@ public class RoomConfig : IWiredLimits
     /// reported once per tick in the room's wired log.</summary>
     public int WiredMaxQueuedEvents { get; init; } = 512;
 
+    /// <summary>Hard cap on the pending scheduled executions a room may hold. The same bound as
+    /// <see cref="WiredMaxQueuedEvents"/>, one layer further on: WiredMaxScheduledPerTick bounds
+    /// what a tick <em>runs</em>, and bounded no better than the event queue does what accumulates
+    /// when a room schedules faster than it drains. A pending execution is much heavier than an
+    /// event — it holds the pile, its actions, the selection and the processing context — so this
+    /// was the cheapest room in the hotel to exhaust memory from.</summary>
+    public int WiredMaxPendingExecutions { get; init; } = 512;
+
     /// <summary>How long a wired box stays lit after firing before the wired system reverts its
     /// visual state.</summary>
     public int WiredFlashDurationMs { get; init; } = 500;

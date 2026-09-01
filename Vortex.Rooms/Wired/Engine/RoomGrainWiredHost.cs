@@ -81,6 +81,8 @@ internal sealed class RoomGrainWiredHost(RoomGrain roomGrain)
 
     public int MaxScheduledPerTick => _roomGrain._roomConfig.WiredMaxScheduledPerTick;
 
+    public int MaxPendingExecutions => _roomGrain._roomConfig.WiredMaxPendingExecutions;
+
     public int FlashDurationMs => _roomGrain._roomConfig.WiredFlashDurationMs;
 
     public bool TryGetItem(RoomObjectId objectId, [NotNullWhen(true)] out IRoomItem? item) =>

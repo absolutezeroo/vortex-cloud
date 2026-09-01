@@ -36,6 +36,17 @@ internal sealed class WiredExecutionScheduler
     public int PendingCount => _pending.Count;
 
     /// <summary>
+    /// Whether the room is already holding all the future work it is allowed to, and further chains
+    /// must be refused.
+    /// </summary>
+    /// <remarks>
+    /// The arithmetic lives here rather than at the call site because this is what owns the set.
+    /// Refusing the newest keeps the chains already promised, which is the same choice the room's
+    /// event queue makes when it is full.
+    /// </remarks>
+    public bool IsFull(int maxPending) => _pending.Count >= maxPending;
+
+    /// <summary>
     /// Schedules a pile's chain of actions to run at <paramref name="dueAtMs"/>, and returns the key
     /// it was filed under.
     /// </summary>
