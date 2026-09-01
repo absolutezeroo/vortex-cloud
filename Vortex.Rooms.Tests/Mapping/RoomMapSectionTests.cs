@@ -289,18 +289,32 @@ public sealed class RoomMapSectionTests
         topKey.Should().NotBe(floorKey, "the fixture is a tile with two surfaces");
 
         bool ontoTheFloorItIsOn = await harness
-            .Grain.AvatarModule.WalkAvatarToAsync(avatar, Tile, Tile, CancellationToken.None, floorKey)
+            .Grain.AvatarModule.WalkAvatarToAsync(
+                avatar,
+                Tile,
+                Tile,
+                CancellationToken.None,
+                floorKey
+            )
             .ConfigureAwait(true);
 
         ontoTheFloorItIsOn
             .Should()
-            .BeFalse("the surface clicked is the one already stood on, so there is nothing to walk");
+            .BeFalse(
+                "the surface clicked is the one already stood on, so there is nothing to walk"
+            );
 
         // The other surface of the same tile still starts a walk: this is a real request, and it
         // is what makes the assertion above mean something -- without the height both calls take
         // this branch, so the refusal is the height's doing and nothing else's.
         bool ontoThePlatformAbove = await harness
-            .Grain.AvatarModule.WalkAvatarToAsync(avatar, Tile, Tile, CancellationToken.None, topKey)
+            .Grain.AvatarModule.WalkAvatarToAsync(
+                avatar,
+                Tile,
+                Tile,
+                CancellationToken.None,
+                topKey
+            )
             .ConfigureAwait(true);
 
         ontoThePlatformAbove

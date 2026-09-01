@@ -109,7 +109,11 @@ internal sealed class RoomHarness
                     PublishedEvents.Add((IEvent)call.Args![0]!);
                 }
 
+                // VSTHRD003: handing back a task the test made on purpose -- a slow or broken
+                // publisher is the whole point of PublishResult, and nothing here awaits it.
+#pragma warning disable VSTHRD003
                 return PublishResult;
+#pragma warning restore VSTHRD003
             }),
             FakeProxy.Create<ICancellableEventPublisher>(call =>
             {

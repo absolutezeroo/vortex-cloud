@@ -304,10 +304,9 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
                 // is a no-op exactly when the surface asked for is the one already stood on, and
                 // anything else is a real request to change height on this tile. Without a height
                 // it falls back to "is there anywhere else to stand here at all".
-                bool nothingToDo =
-                    targetZKey is not null
-                        ? targetZKey == (int)Math.Round(avatar.Z * 100)
-                        : !HasAnotherSurface(currentTileId, avatar.Z);
+                bool nothingToDo = targetZKey is not null
+                    ? targetZKey == (int)Math.Round(avatar.Z * 100)
+                    : !HasAnotherSurface(currentTileId, avatar.Z);
 
                 if (nothingToDo)
                 {
