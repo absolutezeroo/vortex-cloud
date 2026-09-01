@@ -103,6 +103,7 @@ public enum CommerceOperationKind
     LtdRaffleEntry = 9,
     RoomAdPurchase = 10,
     DailyTaskReward = 11,
+    MintTokenPurchase = 12,
 }
 
 /// <summary>
@@ -140,6 +141,9 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>Crediting the stamps a mint-token purchase bought.</summary>
+    public const string MINT_TOKENS = "mint-tokens";
 
     /// <summary>Paying out what a completed task promised.</summary>
     public const string REWARD_PAYOUT = "reward-payout";
