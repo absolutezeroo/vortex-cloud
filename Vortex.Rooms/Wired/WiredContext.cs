@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -182,7 +184,40 @@ internal abstract class WiredContext(IWiredRoomHost host) : IWiredContext
             }
         }
 
+        TrimPlayers(result);
+
         return result;
+    }
+
+    /// <summary>
+    /// Caps the players one action will act on. Every action and add-on takes its targets from this
+    /// method, so this is the one place the bound has to be: three of them — give furni from a
+    /// chest, give currency from a chest, offer a transaction — do a database round trip and a full
+    /// inventory reload <em>per player</em>, sequentially, inside the room's turn. The furni half of
+    /// a selection has been bounded since the beginning and the player half never was.
+    /// </summary>
+    /// <remarks>
+    /// Trims rather than refuses: an action that gave a hundred people an effect and now gives it to
+    /// the first hundred is the same action, while refusing outright would turn a busy room into a
+    /// silently dead one. Which players survive the trim is unordered, and deliberately so — the
+    /// limit sits above any room a hotel actually runs, so anything reaching it is a room built to
+    /// hurt, and there is no fair order in which to serve it.
+    /// </remarks>
+    private void TrimPlayers(WiredSelectionSet result)
+    {
+        int limit = _host.View.Limits.WiredSelectedPlayersLimit;
+
+        if (limit <= 0 || result.SelectedPlayerIds.Count <= limit)
+        {
+            return;
+        }
+
+        int[] kept = [.. result.SelectedPlayerIds.Take(limit)];
+
+        result.SelectedPlayerIds.Clear();
+        result.SelectedPlayerIds.UnionWith(kept);
+
+        _host.Diagnostics.ChainStopped(WiredStopReason.SELECTION_LIMIT);
     }
 
     public virtual WiredContextSnapshot GetSnapshot() =>

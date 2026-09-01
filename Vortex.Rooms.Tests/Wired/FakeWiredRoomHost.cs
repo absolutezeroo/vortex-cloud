@@ -297,6 +297,8 @@ internal sealed class FakeWiredRoomHost
 
     public int WiredSelectedItemsLimit { get; set; } = 20;
 
+    public int WiredSelectedPlayersLimit { get; set; } = 100;
+
     public int WiredNeighborhoodRadius { get; set; } = 5;
 
     public int WiredMaxIntParams { get; set; } = 16;

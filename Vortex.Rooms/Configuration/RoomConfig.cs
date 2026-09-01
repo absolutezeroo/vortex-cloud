@@ -70,6 +70,21 @@ public class RoomConfig : IWiredLimits
     public int WiredMaxEventsPerTick { get; init; } = 64;
     public int WiredSelectorMaxAreaSize { get; init; } = 100;
     public int WiredSelectedItemsLimit { get; init; } = 20;
+
+    /// <summary>
+    /// How many players one wired action may act on in a single execution. The furni side of a
+    /// selection has been bounded since the beginning — <see cref="WiredSelectorMaxAreaSize"/> and
+    /// <see cref="WiredSelectedItemsLimit"/> — and the player side never was, so "give furni to
+    /// everyone" ran one write, one full inventory reload and one client push per selected player,
+    /// sequentially, inside the room's turn. That is the only fan-out in the engine a player builds
+    /// rather than an operator configures.
+    /// <para>
+    /// Twice <see cref="MaxVisitorsLimit"/>, so no room a hotel actually runs reaches it and it only
+    /// bites the room built to hurt. Trims are counted as <c>selection-limit</c> on
+    /// <c>Vortex.wired.chain.stopped</c>.
+    /// </para>
+    /// </summary>
+    public int WiredSelectedPlayersLimit { get; init; } = 100;
     public bool WiredAllowWallFurni { get; init; } = true;
     public int WiredMaxIntParams { get; init; } = 16;
     public int WiredNeighborhoodRadius { get; init; } = 5;

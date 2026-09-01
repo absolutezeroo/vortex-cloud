@@ -34,6 +34,14 @@ public static class WiredStopReason
     public const string EXECUTION_LIMIT = "execution-limit";
 
     /// <summary>
+    /// An action's effective selection held more players than <c>WiredSelectedPlayersLimit</c> and
+    /// the rest were dropped. The only one of these a player can raise by walking into a room, which
+    /// is why it is a counter rather than a log line: a room hitting it repeatedly is either an
+    /// operator running a bigger hotel than the limit assumes, or the abuse the limit is there for.
+    /// </summary>
+    public const string SELECTION_LIMIT = "selection-limit";
+
+    /// <summary>
     /// A delayed effect lost its pile during the wait — dragged onto another tile, or picked up —
     /// and was refused at execution time. Habbo only lets a trigger drive the boxes stacked with it,
     /// and a delay is the one window in which that can stop being true after the pile was resolved.
