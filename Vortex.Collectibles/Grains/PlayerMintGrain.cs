@@ -271,12 +271,19 @@ internal sealed class PlayerMintGrain(
         // No room condition here, deliberately. A room detaches its furniture from the database in
         // a deferred batch, so a row keeps naming the room it just left for as long as that flush
         // takes -- and requiring room_id to be null refused every item that had been in a room
-        // moments earlier, silently. The real guard is the inventory snapshot read above: the
+        // moments earlier, silently. The inventory snapshot read above stands in for it: the
         // inventory only ever holds furniture that is not standing in a room.
+        //
+        // The chest condition is not in that position and is enforced here (NFT-MINT-029). An item
+        // staked in a wired chest keeps player_id and deleted_at exactly as a loose one does, so
+        // those two predicates alone would convert somebody's shop stock into a Relic on the
+        // strength of a cache entry; it is the one predicate the inventory loader has that this
+        // claim was missing.
         int deleted = await dbCtx
             .Furnitures.Where(furni =>
                 furni.Id == itemId
                 && furni.PlayerEntityId == PlayerId.Value
+                && furni.WiredChestEntityId == null
                 && furni.DeletedAt == null
             )
             .ExecuteUpdateAsync(
