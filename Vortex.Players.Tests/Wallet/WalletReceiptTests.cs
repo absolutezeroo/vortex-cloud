@@ -98,6 +98,57 @@ public sealed class WalletReceiptTests : IAsyncLifetime
         (await BalanceAsync()).Should().Be(STARTING - 100);
     }
 
+    /// <summary>
+    /// A debit the balance cannot cover takes nothing at all.
+    /// </summary>
+    /// <remarks>
+    /// The debit is a conditional UPDATE -- "amount = amount - cost WHERE amount >= cost" -- so the
+    /// database is what refuses it rather than a comparison in the grain, which is only sound while
+    /// this grain is the wallet's sole writer and nothing in the schema enforces that. Written to
+    /// fail loudly if that WHERE ever loses its balance test: without it the subtraction still runs
+    /// and the row goes negative.
+    /// <para>
+    /// Every other "insufficient balance" test in the repository asserts against a fake wallet that
+    /// was told to answer InsufficientBalance, so none of them would notice.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public async Task ADebitLargerThanTheBalance_TakesNothing()
+    {
+        IPlayerWalletGrain wallet = await BuildAsync();
+
+        (
+            await wallet.TryDebitAsync(
+                Credits(STARTING + 1),
+                CommerceOperationId.New(),
+                CancellationToken.None
+            )
+        )
+            .Succeeded.Should()
+            .BeFalse();
+
+        (await BalanceAsync()).Should().Be(STARTING, "and never goes negative");
+    }
+
+    /// <summary>The boundary the condition is written on: spending exactly what is there works.</summary>
+    [Fact]
+    public async Task ADebitOfTheWholeBalance_Succeeds()
+    {
+        IPlayerWalletGrain wallet = await BuildAsync();
+
+        (
+            await wallet.TryDebitAsync(
+                Credits(STARTING),
+                CommerceOperationId.New(),
+                CancellationToken.None
+            )
+        )
+            .Succeeded.Should()
+            .BeTrue();
+
+        (await BalanceAsync()).Should().Be(0);
+    }
+
     /// <summary>Two operations are two purchases, however identical their contents.</summary>
     [Fact]
     public async Task TwoOperationsBuyingTheSameThing_AreChargedSeparately()
