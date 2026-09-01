@@ -20,6 +20,7 @@ using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -580,15 +581,21 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             .FirstOrDefaultAsync(ct)
             .ConfigureAwait(true);
 
-        List<GroupMemberEntity> members = await dbCtx
+        // Two columns, not the row. The roster is read for one question -- what rank does this
+        // player hold here -- and a guild base for a large guild was pulling every column of every
+        // membership row, foreign keys and timestamps included, into the room's activation
+        // (PERS-HYD-014). It is still every member: trimming the list would quietly take a rank
+        // away from whoever fell off the end.
+        List<GroupMemberRankRow> members = await dbCtx
             .GroupMembers.AsNoTracking()
             .Where(m => m.GroupEntityId == id && m.DeletedAt == null)
+            .Select(m => new GroupMemberRankRow(m.PlayerEntityId, m.Rank))
             .ToListAsync(ct)
             .ConfigureAwait(true);
 
-        foreach (GroupMemberEntity member in members)
+        foreach (GroupMemberRankRow member in members)
         {
-            _state.GroupMemberRanks[member.PlayerEntityId] = member.Rank;
+            _state.GroupMemberRanks[member.PlayerId] = member.Rank;
         }
     }
 
@@ -625,6 +632,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         // the boundary it just fired, or the same tick runs again.
         return aligned == now ? now + tickMs : aligned;
     }
+
+    /// <summary>The two columns of a membership row the room actually reads.</summary>
+    private readonly record struct GroupMemberRankRow(int PlayerId, GroupMemberRank Rank);
 
     private async Task HydrateModerationStateAsync(CancellationToken ct)
     {
