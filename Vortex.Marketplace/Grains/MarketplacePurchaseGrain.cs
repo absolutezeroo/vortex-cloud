@@ -427,7 +427,8 @@ public sealed class MarketplacePurchaseGrain(
                         return true;
                     },
                     _logger,
-                    ct
+                    ct,
+                    _journal
                 )
                 .ConfigureAwait(true);
         }

@@ -99,6 +99,8 @@ public enum CommerceOperationKind
     MarketplaceBuy = 5,
     MarketplaceRedeem = 6,
     RentableSpaceRent = 7,
+    ClubPurchase = 8,
+    LtdRaffleEntry = 9,
 }
 
 /// <summary>
@@ -136,6 +138,12 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>The club months, their badges and the events that go with them.</summary>
+    public const string CLUB_MONTHS = "club-months";
+
+    /// <summary>The raffle entry row that makes a paid ticket a ticket.</summary>
+    public const string LTD_ENTRY = "ltd-entry";
 
     /// <summary>Writing the rental itself: who holds the space and until when.</summary>
     public const string RENTABLE_SPACE_GRANT = "rentable-space-grant";

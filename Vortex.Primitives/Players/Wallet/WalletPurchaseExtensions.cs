@@ -53,13 +53,20 @@ public static class WalletPurchaseExtensions
     /// what a flow does <em>after</em> its pivot belongs to the journal, not here, because there is no
     /// compensation past a pivot — only completion or an operator.
     /// </remarks>
+    /// <param name="journal">
+    /// Where the compensation is recorded when the grant throws. Optional only because the
+    /// no-operation overload above has nothing to record against; a flow that passes an operation id
+    /// and omits this leaves its compensated failures sitting at <c>Debited</c> forever, which reads
+    /// from the outside exactly like an operation that was never finished.
+    /// </param>
     public static async Task<WalletPurchaseResult<TReward>> ExecutePurchaseAsync<TReward>(
         this IPlayerWalletGrain wallet,
         List<WalletDebitRequest> debitRequests,
         CommerceOperationId operationId,
         Func<CancellationToken, Task<TReward>> grantAsync,
         ILogger logger,
-        CancellationToken ct
+        CancellationToken ct,
+        ICommerceJournal? journal = null
     )
     {
         WalletDebitResult debitResult =
@@ -80,6 +87,9 @@ public static class WalletPurchaseExtensions
         }
         catch (Exception ex)
         {
+            // Nothing was taken, so there is nothing to put back and nothing to say about it.
+            bool compensated = debitRequests.Count == 0;
+
             if (debitRequests.Count > 0)
             {
                 logger.LogError(
@@ -97,12 +107,46 @@ public static class WalletPurchaseExtensions
                     await wallet
                         .CreditBackAsync(debitRequests, operationId, CancellationToken.None)
                         .ConfigureAwait(false);
+
+                    compensated = true;
                 }
                 catch (Exception refundEx)
                 {
                     logger.LogCritical(
                         refundEx,
                         "REFUND FAILED after a failed grant - player may be permanently debited."
+                    );
+                }
+            }
+
+            // Say that it was put right, and only then. Without this the operation stays at Debited,
+            // which is the same thing the journal shows for a purchase still running and for one
+            // that died halfway -- so a compensated failure was indistinguishable from work somebody
+            // still has to finish, in every flow using this, the catalogue included. A refund that
+            // itself failed is deliberately left at Debited: the player really is still out of
+            // pocket, and that is exactly the operation an operator should find.
+            if (compensated && !operationId.IsNone && journal is not null)
+            {
+                try
+                {
+                    await journal
+                        .TransitionAsync(
+                            operationId,
+                            CommerceOperationState.FailedBeforePivot,
+                            CommerceStepKeys.REFUND,
+                            ex.Message,
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                }
+                catch (Exception journalEx)
+                {
+                    // The money is already back; losing the note is not worth replacing the
+                    // caller's exception with this one, which would hide why the grant failed.
+                    logger.LogError(
+                        journalEx,
+                        "Could not record the compensation of operation {OperationId}.",
+                        operationId
                     );
                 }
             }

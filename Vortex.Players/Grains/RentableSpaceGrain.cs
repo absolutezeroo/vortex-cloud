@@ -286,7 +286,8 @@ internal sealed class RentableSpaceGrain(
                     return true;
                 },
                 logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 

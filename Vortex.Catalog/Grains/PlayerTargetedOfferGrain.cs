@@ -148,7 +148,8 @@ internal sealed class PlayerTargetedOfferGrain(
                     return true;
                 },
                 _logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 

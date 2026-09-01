@@ -7,10 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Database.Commerce;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Players.Configuration;
 using Vortex.Players.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
@@ -47,6 +51,31 @@ public sealed class ClubPurchaseRefundTests
 
         harness.Wallet.DebitedAmounts.Should().Equal(COST);
         harness.Wallet.RefundedAmounts.Should().Equal(COST);
+    }
+
+    /// <summary>
+    /// A purchase that had to be unwound is not left claiming it went through.
+    /// </summary>
+    /// <remarks>
+    /// The club was the tenth flow moving value with no operation id -- one the audit did not list.
+    /// The state is what makes the journal useful: FailedBeforePivot says the credits went back,
+    /// where an operation stuck at Debited or Pivoted is one somebody has to chase.
+    /// </remarks>
+    [Fact]
+    public async Task ApplyingTheMonthsFails_RecordsTheOperationAsCompensated()
+    {
+        Harness harness = new Harness();
+
+        Func<Task> act = () =>
+            harness.Grain.PurchaseClubAsync(1, isVip: false, COST, CancellationToken.None);
+
+        await act.Should().ThrowAsync<Exception>().ConfigureAwait(true);
+
+        await using VortexDbContext db = harness.NewDbContext();
+        CommerceOperationEntity operation = await db.CommerceOperations.SingleAsync();
+
+        operation.Kind.Should().Be(CommerceOperationKind.ClubPurchase);
+        operation.State.Should().Be(CommerceOperationState.FailedBeforePivot);
     }
 
     [Fact]
@@ -94,11 +123,26 @@ public sealed class ClubPurchaseRefundTests
                 Options.Create(new ClubConfig()),
                 // The ladder is irrelevant to a club purchase; the floor level keeps the grain
                 // constructible without dragging reference data into this test.
-                FakeProxy.Create<IAccountLevelProvider>(_ => AccountLevelLadder.FloorLevel)
+                FakeProxy.Create<IAccountLevelProvider>(_ => AccountLevelLadder.FloorLevel),
+                // A real journal over the same database: whether the months were paid for is the
+                // question here, and that is now recorded rather than merely returned.
+                Journal = new CommerceJournal(
+                    new TestDbContextFactory(options),
+                    FakeProxy.Create<IVortexMetrics>(_ => null),
+                    NullLogger<CommerceJournal>.Instance
+                )
             );
+
+            DbOptions = options;
         }
 
         public PlayerGrain Grain { get; }
+
+        public CommerceJournal Journal { get; }
+
+        public DbContextOptions<VortexDbContext> DbOptions { get; }
+
+        public VortexDbContext NewDbContext() => new(DbOptions);
 
         public RecordingWallet Wallet { get; } = new();
 
