@@ -9,6 +9,7 @@ using Orleans.Runtime;
 using Vortex.Catalog.Exceptions;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -62,11 +63,37 @@ public sealed partial class CatalogPurchaseGrain
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(buyerId);
 
+        // Under an operation, like the purchase it is a variant of. CommerceOperationKind.Gift has
+        // existed since the journal was written; gifting simply never minted one, so the flow that
+        // moves a purchase between two players was the one with no record of having happened.
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.Gift,
+                buyerId,
+                $"gift catalog={catalogType} offer={offerId} to={receiverId}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<CatalogOfferSnapshot> result = await wallet
             .ExecutePurchaseAsync(
                 debitRequests,
+                operation,
                 async innerCt =>
                 {
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     // Ordered least-to-most reversible, and the notification events moved outside
                     // this compensated scope entirely (see SEC-06): a failure tracking a stat is
                     // harmless to compensate, but a failure *after* the inventory grant would leave
@@ -89,15 +116,38 @@ public sealed partial class CatalogPurchaseGrain
                         )
                         .ConfigureAwait(true);
 
+                    // The recipient has it. Refunding the buyer past here would be a gift paid for
+                    // by nobody.
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Completed,
+                            CommerceStepKeys.GIFT_WRAP,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     return offer;
                 },
                 _logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 
         if (!result.Succeeded)
         {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             throw CreateInsufficientBalanceException(result.Failure);
         }
 

@@ -101,6 +101,7 @@ public enum CommerceOperationKind
     RentableSpaceRent = 7,
     ClubPurchase = 8,
     LtdRaffleEntry = 9,
+    RoomAdPurchase = 10,
 }
 
 /// <summary>
@@ -138,6 +139,9 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>The advertisement row that puts a room in front of the navigator.</summary>
+    public const string ROOM_AD = "room-ad";
 
     /// <summary>The club months, their badges and the events that go with them.</summary>
     public const string CLUB_MONTHS = "club-months";
