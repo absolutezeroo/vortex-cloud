@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Observability.Configuration;
+using Vortex.Primitives.Commerce;
 
 namespace Vortex.Observability.Runtime;
 
@@ -44,6 +46,7 @@ public sealed class ForensicsRetentionService(
             && _config.ChatRetentionDays <= 0
             && _config.RoomVisitRetentionDays <= 0
             && _config.ItemEventRetentionDays <= 0
+            && _config.CommerceRetentionDays <= 0
         )
         {
             logger.LogInformation(
@@ -143,6 +146,92 @@ public sealed class ForensicsRetentionService(
                 ct
             )
             .ConfigureAwait(false);
+
+        await SweepCommerceAsync(dbCtx, now, batchSize, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Ages out finished commerce operations and the receipts that vouch for their steps.
+    /// </summary>
+    /// <remarks>
+    /// Its own method rather than another <see cref="DeleteOlderThanAsync"/> call, because age is
+    /// not the whole predicate. Three things keep an operation:
+    /// <list type="bullet">
+    /// <item>a state that is not terminal — it is in flight, or it is stuck, and a stuck operation
+    /// is exactly what an operator is meant to find;</item>
+    /// <item><c>NeedsIntervention</c>, which is the work list itself and is never swept;</item>
+    /// <item>a critical event still owed — the operation row <em>is</em> the outbox, so deleting one
+    /// before its relay has published loses the event.</item>
+    /// </list>
+    /// The receipts go with the operations they belong to, in the same pass and first: they carry no
+    /// foreign key, so an operation deleted without them leaves rows nothing will ever collect.
+    /// </remarks>
+    private async Task SweepCommerceAsync(
+        VortexDbContext dbCtx,
+        DateTime now,
+        int batchSize,
+        CancellationToken ct
+    )
+    {
+        if (_config.CommerceRetentionDays <= 0)
+        {
+            return;
+        }
+
+        DateTime cutoff = now.AddDays(-_config.CommerceRetentionDays);
+        int maxPerCycle = Math.Max(batchSize, _config.RetentionMaxRowsPerCycle);
+        int deleted = 0;
+
+        while (deleted < maxPerCycle && !ct.IsCancellationRequested)
+        {
+            List<Guid> expired = await dbCtx
+                .CommerceOperations.AsNoTracking()
+                .Where(o =>
+                    o.UpdatedAt < cutoff
+                    && (
+                        o.State == CommerceOperationState.Completed
+                        || o.State == CommerceOperationState.FailedBeforePivot
+                    )
+                    && (o.RelayType == null || o.RelayedAt != null)
+                )
+                .OrderBy(o => o.UpdatedAt)
+                .Select(o => o.Id)
+                .Take(batchSize)
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            if (expired.Count == 0)
+            {
+                break;
+            }
+
+            await dbCtx
+                .CommerceReceipts.Where(r => expired.Contains(r.OperationId))
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
+            int batch = await dbCtx
+                .CommerceOperations.Where(o => expired.Contains(o.Id))
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
+            deleted += batch;
+
+            if (expired.Count < batchSize)
+            {
+                break;
+            }
+        }
+
+        if (deleted > 0)
+        {
+            logger.LogInformation(
+                "Forensics retention: removed {Count} finished commerce operation(s) older than "
+                    + "{Cutoff:u}, with their receipts.",
+                deleted,
+                cutoff
+            );
+        }
     }
 
     /// <summary>
