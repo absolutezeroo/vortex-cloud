@@ -81,7 +81,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         (bool allowed, int givenToday, DateTime resetDate) = RespectBudget.TryConsume(
             _state.RespectGivenToday,
             _state.RespectResetDate,
-            DateTime.Now,
+            DateTime.UtcNow,
             dailyLimit
         );
 
@@ -1067,7 +1067,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 ct
             );
 
-        _state.LastUpdated = DateTime.Now;
+        _state.LastUpdated = DateTime.UtcNow;
     }
 
     private async Task GrantClubBadgesAsync(bool isVip, CancellationToken ct)

@@ -71,7 +71,7 @@ internal sealed class PlayerTargetedOfferGrain(
         int purchaseCount = stateByOffer.GetValueOrDefault(offerId)?.PurchaseCount ?? 0;
         int trackingState = stateByOffer.GetValueOrDefault(offerId)?.TrackingState ?? 0;
 
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow;
         // Expired / over the per-player limit: nothing to buy, echo the current (unbuyable) state.
         if (!TargetedOfferMapper.CanPurchase(definition, purchaseCount, now))
         {
@@ -169,7 +169,7 @@ internal sealed class PlayerTargetedOfferGrain(
                 definition,
                 purchaseCount,
                 trackingState,
-                DateTime.Now
+                DateTime.UtcNow
             );
         }
 
@@ -201,7 +201,7 @@ internal sealed class PlayerTargetedOfferGrain(
             )
             .ConfigureAwait(true);
 
-        return TargetedOfferMapper.ToWire(definition, newCount, trackingState, DateTime.Now);
+        return TargetedOfferMapper.ToWire(definition, newCount, trackingState, DateTime.UtcNow);
     }
 
     public async Task SetTrackingStateAsync(int offerId, int trackingState, CancellationToken ct)
@@ -265,7 +265,7 @@ internal sealed class PlayerTargetedOfferGrain(
 
         Dictionary<int, PlayerTargetedOfferEntity> stateByOffer = await LoadStateAsync(ct)
             .ConfigureAwait(true);
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow;
 
         // The offers are ordered; "next" starts scanning after the given id.
         foreach (TargetedOfferDefinitionSnapshot definition in definitions)

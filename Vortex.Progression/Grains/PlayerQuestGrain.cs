@@ -221,7 +221,7 @@ internal sealed class PlayerQuestGrain(
         QuestSnapshot? daily = DailyQuestSelector.Pick(
             dailyPool,
             PlayerId,
-            DateOnly.FromDateTime(DateTime.Now)
+            DateOnly.FromDateTime(DateTime.UtcNow)
         );
 
         return new DailyQuestSnapshot
@@ -288,14 +288,14 @@ internal sealed class PlayerQuestGrain(
                         PlayerEntityId = PlayerId,
                         QuestEntityId = questId,
                         Accepted = true,
-                        AcceptedAt = DateTime.Now,
+                        AcceptedAt = DateTime.UtcNow,
                     }
                 );
             }
             else
             {
                 row.Accepted = true;
-                row.AcceptedAt = DateTime.Now;
+                row.AcceptedAt = DateTime.UtcNow;
             }
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
@@ -523,7 +523,7 @@ internal sealed class PlayerQuestGrain(
                         PlayerEntityId = PlayerId,
                         QuestEntityId = did,
                         Accepted = true,
-                        AcceptedAt = DateTime.Now,
+                        AcceptedAt = DateTime.UtcNow,
                     };
                     dbCtx.PlayerQuests.Add(dailyRow);
                     toProcess.Add(dailyRow);
@@ -539,7 +539,7 @@ internal sealed class PlayerQuestGrain(
             // (a freshly-created row has a default date and still counts as its first time today).
             if (oncePerDay)
             {
-                DateTime today = DateTime.Now.Date;
+                DateTime today = DateTime.UtcNow.Date;
                 toProcess = [.. toProcess.Where(r => r.UpdatedAt.Date != today)];
             }
 
@@ -560,7 +560,7 @@ internal sealed class PlayerQuestGrain(
                 row.Completed = done;
                 if (done && row.CompletedAt is null)
                 {
-                    row.CompletedAt = DateTime.Now;
+                    row.CompletedAt = DateTime.UtcNow;
                 }
 
                 changed.Add((row.QuestEntityId, done));
@@ -659,7 +659,7 @@ internal sealed class PlayerQuestGrain(
         int index = DailyQuestSelector.PickIndex(
             dailyDefs.Count,
             PlayerId,
-            DateOnly.FromDateTime(DateTime.Now)
+            DateOnly.FromDateTime(DateTime.UtcNow)
         );
 
         if (index < 0)
@@ -879,7 +879,7 @@ internal sealed class PlayerQuestGrain(
                     progress?.Completed ?? false,
                     completedInCampaign,
                     questCountByCampaign.GetValueOrDefault(definition.CampaignCode),
-                    DateTime.Now
+                    DateTime.UtcNow
                 )
             );
         }

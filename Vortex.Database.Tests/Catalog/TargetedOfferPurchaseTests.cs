@@ -101,7 +101,7 @@ public sealed class TargetedOfferPurchaseTests
         Harness harness = Harness.Create(
             limit: 5,
             perOfferQuantity: 1,
-            expiresAt: DateTime.Now.AddMinutes(-1)
+            expiresAt: DateTime.UtcNow.AddMinutes(-1)
         );
 
         await harness.PurchaseAsync(units: 1);
@@ -204,7 +204,7 @@ public sealed class TargetedOfferPurchaseTests
                 PriceInActivityPoints = 0,
                 ActivityPointType = 0,
                 PurchaseLimit = limit,
-                ExpiresAt = expiresAt ?? DateTime.Now.AddDays(1),
+                ExpiresAt = expiresAt ?? DateTime.UtcNow.AddDays(1),
                 SortOrder = 0,
                 Products =
                 [

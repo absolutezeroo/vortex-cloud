@@ -144,7 +144,7 @@ public sealed class TargetedOfferWindowTests : IDisposable
             PriceInActivityPoints = 0,
             ActivityPointType = 0,
             PurchaseLimit = limit,
-            ExpiresAt = DateTime.Now.AddDays(1),
+            ExpiresAt = DateTime.UtcNow.AddDays(1),
             SortOrder = 0,
             Products =
             [

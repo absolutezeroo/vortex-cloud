@@ -192,7 +192,7 @@ internal sealed class PlayerAchievementGrain(
             _stateByAchievementId[definition.Id] = state;
         }
 
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow;
 
         // Daily achievements (e.g. Login) advance at most once per calendar day. Tracked in memory
         // and hydrated from the row's last-write date, because the row itself now lags behind by up
