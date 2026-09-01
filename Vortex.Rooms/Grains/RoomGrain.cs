@@ -242,17 +242,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         };
     }
 
-    public async Task<int> GetRoomPopulationAsync()
-    {
-        using (
-            _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetRoomPopulationAsync))
-        )
-        {
-            return await _grainFactory
-                .GetRoomDirectoryGrain()
-                .GetRoomPopulationAsync(_state.RoomId);
-        }
-    }
+    public Task<int> GetRoomPopulationAsync() => Task.FromResult(_state.AvatarsByPlayerId.Count);
 
     public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync() =>
         Task.FromResult(_state.RoomProperties.ToImmutableArray());
