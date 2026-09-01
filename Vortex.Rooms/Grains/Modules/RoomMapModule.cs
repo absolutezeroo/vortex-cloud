@@ -287,6 +287,15 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
     public Task ClickTileAsync(ActionContext ctx, int x, int y, CancellationToken ct)
     {
+        // These are raw ints off the wire, on the most-sent packet of the game. Bounds have to be
+        // checked on the coordinates, not on the flattened index -- see GetTileIdForSize below for
+        // the worked counter-example: x = Width folds onto the next row, which would let a player
+        // fire the click listener of a tile they never clicked, from anywhere in the room.
+        if (!InBounds(x, y))
+        {
+            return Task.CompletedTask;
+        }
+
         int idx = ToIdx(x, y);
         RoomTileFlags tile = _roomGrain._state.TileFlags[idx];
 
