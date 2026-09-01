@@ -15,6 +15,7 @@ using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans.Observers;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Room.Session;
 
 namespace Vortex.Players.Grains;
 
@@ -35,6 +36,10 @@ internal sealed partial class PlayerPresenceGrain
     internal readonly PlayerPresenceLiveState _state;
     private readonly PlayerWalletModule _walletModule;
     private bool _isProcessingQueue;
+
+    // Set once the outgoing queue has overflowed and the session has been told to close. Cleared
+    // when a new socket registers.
+    private bool _sessionOverflowed;
     private StreamSubscriptionHandle<RoomOutbound>? _roomOutboundSub;
 
     private ISessionContextObserver? _sessionObserver;
@@ -94,6 +99,12 @@ internal sealed partial class PlayerPresenceGrain
     {
         _sessionObserver = observer;
 
+        // A fresh socket is a fresh queue. The grain outlives the session it was serving, so the
+        // give-up flag has to be cleared here or the reconnect this player was just told to make
+        // would be answered with nothing at all.
+        _sessionOverflowed = false;
+        _outgoingQueue.Clear();
+
         return Task.CompletedTask;
     }
 
@@ -138,18 +149,41 @@ internal sealed partial class PlayerPresenceGrain
 
     private void EnqueueOutgoing(IComposer composer)
     {
-        _outgoingQueue.Enqueue(composer);
-
-        while (_outgoingQueue.Count > _config.MaxOutgoingQueueSize)
+        // Already given up on this session: everything after the close is noise the client will
+        // never read, and re-filling the queue behind it would only delay the close.
+        if (_sessionOverflowed)
         {
-            _outgoingQueue.Dequeue();
-
-            _logger.LogWarning(
-                "Outgoing composer queue for player {PlayerId} exceeded {MaxOutgoingQueueSize}; dropping oldest composer",
-                this.GetPrimaryKeyLong(),
-                _config.MaxOutgoingQueueSize
-            );
+            return;
         }
+
+        if (_outgoingQueue.Count < _config.MaxOutgoingQueueSize)
+        {
+            _outgoingQueue.Enqueue(composer);
+
+            return;
+        }
+
+        // The queue used to drop its OLDEST entry here and carry on. That cannot work: this
+        // protocol is ordered and cumulative, and the client builds its world out of the sequence.
+        // Drop the ObjectAdd and keep the ObjectUpdate that refers to it and the client is wrong
+        // about the room for as long as it stays in it -- no error, no disconnect, no way for it to
+        // notice, and every later packet layered on top of a state the server does not share.
+        //
+        // Overflowing is not a normal condition either: it means this session is not draining, and
+        // a session that is not draining is already gone in every way but the socket. So it is
+        // fatal. The queue is cleared and replaced by the one composer worth sending -- the client
+        // closes, reconnects, and rebuilds its world from a login, which is the only cheap way back
+        // to a state both ends agree on.
+        _outgoingQueue.Clear();
+        _outgoingQueue.Enqueue(new CloseConnectionMessageComposer());
+        _sessionOverflowed = true;
+
+        _logger.LogError(
+            "Outgoing composer queue for player {PlayerId} reached {MaxOutgoingQueueSize} and the "
+                + "session is not draining; closing it rather than desynchronising the client.",
+            this.GetPrimaryKeyLong(),
+            _config.MaxOutgoingQueueSize
+        );
     }
 
     public override Task OnActivateAsync(CancellationToken ct)
