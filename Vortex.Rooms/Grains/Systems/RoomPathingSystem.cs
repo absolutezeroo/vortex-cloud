@@ -10,6 +10,14 @@ namespace Vortex.Rooms.Grains.Systems;
 
 public sealed class RoomPathingSystem(RoomGrain roomGrain)
 {
+    /// <summary>
+    /// How many surfaces a tile is assumed to be able to present, for the purpose of never budgeting
+    /// a search below what its own room needs. Not a limit on anything — a tile with more of them
+    /// simply eats into the slack, and RoomConfig.MaxPathNodes is still the ceiling when it is
+    /// higher than this floor.
+    /// </summary>
+    private const int NodesPerTileFloor = 3;
+
     private static readonly int CARDINAL_COST = 10;
     private static readonly int DIAGONAL_COST = 14;
 
@@ -161,7 +169,18 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             HashSet<(int, int, int)> closed = new();
             Node? best = null;
 
-            while (open.Count > 0 && allNodes.Count <= _roomGrain._roomConfig.MaxPathNodes)
+            // Never below what the map itself needs. The configured value is a ceiling on a runaway
+            // search, and at its 4,096 default it was under the tile count of a large room (76x76 is
+            // 5,776) -- so the search ran out of budget before it had looked at the room once, and
+            // the walk simply did not happen. Nodes are now per *surface* rather than per tile, so
+            // the floor allows a few of them each: one tile can be a floor, the top of a platform,
+            // and the crawlspace between.
+            int maxNodes = Math.Max(
+                _roomGrain._roomConfig.MaxPathNodes,
+                _roomGrain.MapModule.Width * _roomGrain.MapModule.Height * NodesPerTileFloor
+            );
+
+            while (open.Count > 0 && allNodes.Count <= maxNodes)
             {
                 try
                 {
@@ -302,6 +321,24 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             if (best is not null)
             {
                 return ReconstructPath(best);
+            }
+
+            // Saturation and "there is genuinely no way there" both came back as an empty path, and
+            // an empty path is how a walk quietly does not happen. They are not the same problem and
+            // only one of them is a bug in this method, so say which.
+            if (allNodes.Count > maxNodes)
+            {
+                _roomGrain._logger.LogWarning(
+                    "Pathfinding from ({StartX},{StartY}) to ({GoalX},{GoalY}) in room {RoomId} ran "
+                        + "out of nodes at {MaxNodes}; no path was returned. The room may be larger "
+                        + "than RoomConfig.MaxPathNodes allows for.",
+                    start.X,
+                    start.Y,
+                    goal.X,
+                    goal.Y,
+                    _roomGrain.RoomId,
+                    maxNodes
+                );
             }
         }
         catch (Exception ex)
