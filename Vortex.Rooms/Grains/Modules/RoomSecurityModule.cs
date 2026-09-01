@@ -164,6 +164,14 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         ModerationAction action
     )
     {
+        // An unfilled context is nobody and moderates nothing. Everything else that is not a player
+        // -- system, wired, a bot, a plugin -- is the server acting on its own behalf and carries no
+        // capabilities to resolve.
+        if (ctx.Origin == ActionOrigin.None)
+        {
+            return false;
+        }
+
         if (ctx.Origin != ActionOrigin.Player)
         {
             return true;

@@ -22,6 +22,28 @@ public sealed class RoomSecurityPolicyTests
         level.Should().Be(RoomControllerType.Moderator);
     }
 
+    /// <summary>
+    /// ActionContext is a readonly record struct, so its default value crosses grain boundaries as
+    /// readily as a filled one — and the origin it carried was System, the one value that
+    /// short-circuits this method to moderator. Zero is None now, and None is refused
+    /// (ROOMM-ORIGIN-042).
+    /// </summary>
+    [Fact]
+    public void ADefaultContext_ResolvesNothing()
+    {
+        ActionContext unfilled = default;
+
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            unfilled.Origin,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: false
+        );
+
+        unfilled.Origin.Should().Be(ActionOrigin.None);
+        level.Should().Be(RoomControllerType.None);
+    }
+
     [Fact]
     public void WildcardSuperUser_ResolvesModerator()
     {
