@@ -51,6 +51,13 @@
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Marketplace\Vortex.Marketplace.csproj" />
     <ProjectReference Include="..\Vortex.Messages\Vortex.Messages.csproj" />
+    <!-- ARCH-MAIN-026 asks why a benchmark and a load generator are referenced by the production
+         host. Checked, and both are right as they stand. Benchmark is an operator feature, not a
+         harness: IBenchmarkService is a constructor dependency of two Dashboard API services, so
+         dropping it from a Release build takes the dashboard down at startup, and BenchmarkService
+         itself is inert behind the "benchmark.enabled" server-config key, false by default. LoadGen
+         is already not linked at all: ReferenceOutputAssembly is false and it is only copied beside
+         the host, because a load generator that shares the process it measures measures itself. -->
     <ProjectReference Include="..\Vortex.Benchmark\Vortex.Benchmark.csproj" />
     <ProjectReference Include="..\Vortex.LoadGen\Vortex.LoadGen.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
