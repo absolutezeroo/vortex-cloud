@@ -83,6 +83,9 @@ internal interface IWiredRoomView
 
     int MaxScheduledPerTick { get; }
 
+    /// <summary>How many pending scheduled executions a room may hold before new ones are refused.</summary>
+    int MaxPendingExecutions { get; }
+
     int FlashDurationMs { get; }
 
     bool TryGetItem(RoomObjectId objectId, [NotNullWhen(true)] out IRoomItem? item);

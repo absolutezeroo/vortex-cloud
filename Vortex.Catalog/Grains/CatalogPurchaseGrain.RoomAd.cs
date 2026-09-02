@@ -8,6 +8,7 @@ using Orleans.Runtime;
 using Vortex.Catalog.Exceptions;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
@@ -50,11 +51,34 @@ public sealed partial class CatalogPurchaseGrain
             (int)this.GetPrimaryKeyLong()
         );
 
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.RoomAdPurchase,
+                (int)this.GetPrimaryKeyLong(),
+                $"room ad room={roomId} offer={offerId} days={durationDays}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<CatalogOfferSnapshot> result = await wallet
             .ExecutePurchaseAsync(
                 debitRequests,
+                operation,
                 async innerCt =>
                 {
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     await _roomAdvertisements
                         .CreateAsync(
                             roomId,
@@ -67,15 +91,38 @@ public sealed partial class CatalogPurchaseGrain
                         )
                         .ConfigureAwait(true);
 
+                    // The advertisement is live and the navigator will show it. Refunding past here
+                    // would leave a room advertised for free until the row expires.
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Completed,
+                            CommerceStepKeys.ROOM_AD,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
                     return offer;
                 },
                 _logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 
         if (!result.Succeeded)
         {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
+                    ct
+                )
+                .ConfigureAwait(true);
+
             throw CreateInsufficientBalanceException(result.Failure);
         }
 

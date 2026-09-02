@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Vortex.Primitives.Rooms.Mapping;
@@ -255,5 +257,68 @@ public sealed class RoomMapSectionTests
             .Grain.MapModule.FindSection(tileId, Altitude.FromValue(4), Altitude.FromValue(2))
             .Should()
             .BeNull("neither the floor nor the platform is within two units of 4");
+    }
+
+    /// <summary>
+    /// The height on the wire is what tells "walk up onto the thing above me" apart from "you are
+    /// already standing here".
+    ///
+    /// Both arrive as the tile the avatar is on, so the server used to answer them the same way:
+    /// any tile with a second surface started a walk, including a click on the surface already
+    /// under the player's feet. With MoveAvatarMessageComposer carrying the clicked altitude, the
+    /// no-op case is exactly "the surface asked for is the one stood on", and nothing else.
+    /// </summary>
+    [Fact]
+    public async Task ClickingTheSurfaceAlreadyStoodOn_IsRefusedOnceTheHeightIsKnown()
+    {
+        // The same fixture ClickingTheTileYouAreOn_MeansItsOtherSurface uses, and for the same
+        // reason: its second surface is genuinely reachable. With one that is not, the walk fails
+        // later for want of a route and returns false whatever the guard decided -- the test would
+        // pass with the height field ripped out, which is no test at all.
+        (RoomHarness harness, int tileId) = await RoomWithPlatformAsync(bottom: 1, top: 1)
+            .ConfigureAwait(true);
+
+        RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(1, Tile, Tile);
+        avatar.SetHeight(Altitude.Zero);
+
+        harness.Grain.MapModule.AddAvatar(avatar, false);
+
+        int floorKey = 0;
+        int topKey = (int)Math.Round(harness.Grain.MapModule.GetTopSection(tileId).Height * 100);
+
+        topKey.Should().NotBe(floorKey, "the fixture is a tile with two surfaces");
+
+        bool ontoTheFloorItIsOn = await harness
+            .Grain.AvatarModule.WalkAvatarToAsync(
+                avatar,
+                Tile,
+                Tile,
+                CancellationToken.None,
+                floorKey
+            )
+            .ConfigureAwait(true);
+
+        ontoTheFloorItIsOn
+            .Should()
+            .BeFalse(
+                "the surface clicked is the one already stood on, so there is nothing to walk"
+            );
+
+        // The other surface of the same tile still starts a walk: this is a real request, and it
+        // is what makes the assertion above mean something -- without the height both calls take
+        // this branch, so the refusal is the height's doing and nothing else's.
+        bool ontoThePlatformAbove = await harness
+            .Grain.AvatarModule.WalkAvatarToAsync(
+                avatar,
+                Tile,
+                Tile,
+                CancellationToken.None,
+                topKey
+            )
+            .ConfigureAwait(true);
+
+        ontoThePlatformAbove
+            .Should()
+            .BeTrue("the tile's other surface is somewhere else to stand, so the walk goes ahead");
     }
 }

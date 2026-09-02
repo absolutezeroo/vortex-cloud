@@ -22,6 +22,8 @@ public enum VortexErrorCodeEnum
     PetNotFound,
     PetFoodNotFound,
     NoPermissionToManipulatePet,
+    RoomLimitReached,
+    NavigatorCategoryNotFound,
 }
 
 public static class ErrorCodeExtensions
@@ -53,6 +55,9 @@ public static class ErrorCodeExtensions
             VortexErrorCodeEnum.PetFoodNotFound => "The specified pet food could not be found.",
             VortexErrorCodeEnum.NoPermissionToManipulatePet =>
                 "You do not have permission to manipulate this pet.",
+            VortexErrorCodeEnum.RoomLimitReached => "You already own as many rooms as you may.",
+            VortexErrorCodeEnum.NavigatorCategoryNotFound =>
+                "The navigator category could not be found.",
             _ => "An unknown error occurred.",
         };
 }

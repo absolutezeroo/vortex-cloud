@@ -14,6 +14,7 @@ using Vortex.Catalog.Grains;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -78,6 +79,18 @@ public sealed class CatalogGiftPurchaseTests
         harness.DebitRequests.Single().Amount.Should().Be(50);
         harness.TrackedCreditSpend.Should().Equal(50);
         harness.CreditBackCalls.Should().Be(0);
+
+        // Gifting is a purchase that moves between two players, and it used to leave no record of
+        // itself at all: it called the overload with no operation id, so nothing was opened, nothing
+        // was receipted, and a retry could not tell itself apart from a second gift.
+        harness
+            .Journal.Opened.Should()
+            .ContainSingle()
+            .Which.Kind.Should()
+            .Be(CommerceOperationKind.Gift);
+        harness
+            .Journal.Transitions.Should()
+            .Contain(t => t.State == CommerceOperationState.Completed);
     }
 
     [Fact]

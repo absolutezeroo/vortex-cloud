@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,14 +10,17 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Wired;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
+using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Pets.Providers;
@@ -150,14 +154,63 @@ public sealed class WiredTradeSessionTests
         harness.Failed.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task ADepositScreen_StopsStagingAtTheChestCapacity()
+    {
+        // CHEST-BOUND-018: nothing bounded a chest, and the staged list is held in the room's
+        // memory until the confirm turns it into an IN clause of its own size.
+        Harness harness = new(new RoomConfig { WiredChestCapacity = 2 });
+        ImmutableArray<int> items = harness.SeedInventory(5);
+
+        await harness
+            .Grain.StartWiredChestDepositAsync(harness.Context, CHEST_ID, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        await harness
+            .Grain.UpdateWiredDepositItemsAsync(
+                harness.Context,
+                remove: false,
+                items,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.Sessions[Player].ItemIds.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task ADepositIntoAFullChest_MovesOnlyWhatFits()
+    {
+        Harness harness = new(new RoomConfig { WiredChestCapacity = 3 });
+        ImmutableArray<int> items = harness.SeedInventory(5);
+
+        await harness
+            .Grain.StartWiredChestDepositAsync(harness.Context, CHEST_ID, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        // Staged past the cap on purpose: the screen is a client's idea of the deposit, and the
+        // confirm is where the chest's real remaining room decides.
+        harness.Sessions[Player].ItemIds.UnionWith(items);
+
+        await harness
+            .Grain.AcceptWiredDepositAsync(harness.Context, confirm: true, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        harness.StoredInChest().Should().Be(3);
+    }
+
     private sealed class Harness
     {
-        public Harness()
+        private readonly DbContextOptions<VortexDbContext> _options;
+
+        public Harness(RoomConfig? config = null)
         {
             DbContextOptions<VortexDbContext> options =
                 new DbContextOptionsBuilder<VortexDbContext>()
                     .UseInMemoryDatabase($"wired-session-{Guid.NewGuid()}")
                     .Options;
+
+            _options = options;
 
             // Open to donations, so the deposit under test is gated by the session logic rather
             // than by the rights of a room whose snapshot these tests never stand up.
@@ -179,9 +232,13 @@ public sealed class WiredTradeSessionTests
             Grain = GrainActivationContext.CreateWithIntegerKey<RoomGrain>(
                 ROOM_ID,
                 new TestDbContextFactory(options),
-                FakeProxy.Create<IFurnitureDefinitionProvider>(_ => null),
+                // Every seeded row resolves to one tradable definition, which is what makes an
+                // inventory item depositable at all.
+                FakeProxy.Create<IFurnitureDefinitionProvider>(call =>
+                    call.Method.Name == "TryGetDefinition" ? TradableDefinition : null
+                ),
                 new StuffDataFactory(),
-                Options.Create(new RoomConfig()),
+                Options.Create(config ?? new RoomConfig()),
                 NullLogger<IRoomGrain>.Instance,
                 FakeProxy.Create<IRoomModelProvider>(_ => null),
                 FakeProxy.Create<IRoomItemsProvider>(_ => null),
@@ -190,11 +247,25 @@ public sealed class WiredTradeSessionTests
                 FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
                 RoomGrainStubs.NoListeners(),
                 FakeProxy.Create<IGrainFactory>(call =>
-                    call.Method.IsGenericMethod
-                    && call.Method.GetGenericArguments()[0] == typeof(IPlayerPresenceGrain)
+                {
+                    if (!call.Method.IsGenericMethod)
+                    {
+                        return null;
+                    }
+
+                    Type grain = call.Method.GetGenericArguments()[0];
+
+                    // A confirmed deposit tells the depositor's inventory the rows are gone; the
+                    // screens are not what these tests are about.
+                    if (grain == typeof(IInventoryGrain))
+                    {
+                        return FakeProxy.Create<IInventoryGrain>(_ => Task.CompletedTask);
+                    }
+
+                    return grain == typeof(IPlayerPresenceGrain)
                         ? FakeProxy.Create<IPlayerPresenceGrain>(_ => Task.CompletedTask)
-                        : null
-                ),
+                        : null;
+                }),
                 FakeProxy.Create<IEventPublisher>(_ => null),
                 RoomGrainStubs.NeverCancels(),
                 FakeProxy.Create<IPermissionService>(_ => null),
@@ -203,7 +274,8 @@ public sealed class WiredTradeSessionTests
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
+                new RoomWiredLogChannel(),
+                FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 
             Grain._state.ItemsById[CHEST_ID] = ChestItem();
@@ -256,8 +328,66 @@ public sealed class WiredTradeSessionTests
                 ExpiresAt = DateTime.UtcNow.AddSeconds(-1),
             };
 
+        /// <summary>Items in the player's hand, ready to be staked into a chest.</summary>
+        public ImmutableArray<int> SeedInventory(int count)
+        {
+            using VortexDbContext db = new(_options);
+
+            List<FurnitureEntity> rows =
+            [
+                .. Enumerable
+                    .Range(0, count)
+                    .Select(_ => new FurnitureEntity
+                    {
+                        PlayerEntityId = PLAYER_ID,
+                        FurnitureDefinitionEntityId = 1,
+                    }),
+            ];
+
+            db.Furnitures.AddRange(rows);
+            db.SaveChanges();
+
+            return [.. rows.Select(row => row.Id)];
+        }
+
+        /// <summary>How many rows the chest actually holds, which is the only answer that counts:
+        /// the screen is a report, the column is the chest.</summary>
+        public int StoredInChest()
+        {
+            using VortexDbContext db = new(_options);
+
+            int chestRowId = db.WiredChests.Single(c => c.FurnitureEntityId == CHEST_ID).Id;
+
+            return db.Furnitures.Count(f => f.WiredChestEntityId == chestRowId);
+        }
+
         private static TradeContractRule Rule(int coins) =>
             new() { Nodes = [new TradeContractNode { IsFurni = false, Amount = coins }] };
+
+        private static readonly FurnitureDefinitionSnapshot TradableDefinition = new()
+        {
+            Id = 1,
+            SpriteId = 1,
+            Name = "sofa",
+            ProductType = ProductType.Floor,
+            FurniCategory = FurnitureCategory.Default,
+            LogicName = "default_floor",
+            TotalStates = 1,
+            Width = 1,
+            Length = 1,
+            StackHeight = Altitude.Zero,
+            CanStack = true,
+            CanWalk = false,
+            CanSit = false,
+            CanLay = false,
+            CanRecycle = false,
+            CanTrade = true,
+            CanGroup = false,
+            CanSell = false,
+            UsagePolicy = FurnitureUsageType.Nobody,
+            ExtraData = null,
+            StuffDataType = StuffDataType.LegacyKey,
+        };
 
         private static IRoomItem ChestItem()
         {

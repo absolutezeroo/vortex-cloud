@@ -19,6 +19,11 @@ namespace Vortex.Database.Entities.Commerce;
 [Index(nameof(State), nameof(PivotedAt))]
 [Index(nameof(RelayedAt))]
 [Index(nameof(PlayerId))]
+// The retention sweep's predicate: finished, and finished long enough ago. (State, PivotedAt) does
+// not serve it -- a completed operation's pivot time says when it became irreversible, not when it
+// stopped being interesting, and most rows in the table are Completed so the state alone narrows
+// nothing (PERS-RCP-013).
+[Index(nameof(State), nameof(UpdatedAt))]
 [Table("commerce_operations")]
 public class CommerceOperationEntity
 {

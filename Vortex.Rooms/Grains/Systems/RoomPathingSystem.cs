@@ -10,6 +10,14 @@ namespace Vortex.Rooms.Grains.Systems;
 
 public sealed class RoomPathingSystem(RoomGrain roomGrain)
 {
+    /// <summary>
+    /// How many surfaces a tile is assumed to be able to present, for the purpose of never budgeting
+    /// a search below what its own room needs. Not a limit on anything — a tile with more of them
+    /// simply eats into the slack, and RoomConfig.MaxPathNodes is still the ceiling when it is
+    /// higher than this floor.
+    /// </summary>
+    private const int NodesPerTileFloor = 3;
+
     private static readonly int CARDINAL_COST = 10;
     private static readonly int DIAGONAL_COST = 14;
 
@@ -30,7 +38,8 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
     public IReadOnlyList<(int X, int Y)> FindPath(
         IRoomAvatar avatar,
         (int X, int Y) start,
-        (int X, int Y) goal
+        (int X, int Y) goal,
+        int? targetZKey = null
     )
     {
         // The avatar's own altitude, not the tile's highest surface. Reading the top instead told
@@ -42,6 +51,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             start,
             goal,
             avatar.Z,
+            targetZKey,
             tileIdx => _roomGrain.MapModule.CanAvatarWalk(avatar, tileIdx),
             (currentTileId, nextTileId, fromZ, isGoal) =>
                 _roomGrain.MapModule.GetWalkableSectionsBetween(
@@ -74,6 +84,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             start,
             goal,
             _roomGrain.MapModule.GetTopSection(_roomGrain.MapModule.ToIdx(start.X, start.Y)).Height,
+            null,
             canOccupyTile,
             (currentTileId, nextTileId, _, isGoal) =>
                 canMoveBetween(currentTileId, nextTileId, isGoal)
@@ -95,6 +106,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         (int X, int Y) start,
         (int X, int Y) goal,
         Altitude startZ,
+        int? targetZKey,
         Func<int, bool> canOccupyTile,
         StepsBetween stepsBetween
     )
@@ -161,7 +173,18 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             HashSet<(int, int, int)> closed = new();
             Node? best = null;
 
-            while (open.Count > 0 && allNodes.Count <= _roomGrain._roomConfig.MaxPathNodes)
+            // Never below what the map itself needs. The configured value is a ceiling on a runaway
+            // search, and at its 4,096 default it was under the tile count of a large room (76x76 is
+            // 5,776) -- so the search ran out of budget before it had looked at the room once, and
+            // the walk simply did not happen. Nodes are now per *surface* rather than per tile, so
+            // the floor allows a few of them each: one tile can be a floor, the top of a platform,
+            // and the crawlspace between.
+            int maxNodes = Math.Max(
+                _roomGrain._roomConfig.MaxPathNodes,
+                _roomGrain.MapModule.Width * _roomGrain.MapModule.Height * NodesPerTileFloor
+            );
+
+            while (open.Count > 0 && allNodes.Count <= maxNodes)
             {
                 try
                 {
@@ -190,12 +213,31 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                         // node still queued costs at least the F at the head, so once that passes
                         // the best arrival's cost nothing better can turn up and the search ends
                         // there rather than walking the whole room.
-                        if (best is null || current.Z > best.Z)
+                        // "Highest wins" was a stand-in for a height the wire did not carry. When
+                        // the client names the surface it clicked, that beats the guess outright --
+                        // clicking the floor *under* a platform now walks there instead of onto it.
+                        // The guess stays for a client that sends no height, and for the case where
+                        // the named surface turns out to be unreachable.
+                        bool wanted = targetZKey is not null && ZKey(current.Z) == targetZKey;
+                        bool bestWanted = best is not null && ZKey(best.Z) == targetZKey;
+
+                        if (
+                            best is null
+                            || (wanted && !bestWanted)
+                            || (wanted == bestWanted && current.Z > best.Z)
+                        )
                         {
                             best = current;
+                            bestWanted = wanted;
                         }
 
-                        if (open.Count == 0 || open.Peek().F > best.F)
+                        // Only stop early on an arrival that is actually the one asked for. With a
+                        // requested surface still unfound, a cheaper wrong-height arrival must not
+                        // end the search that would have reached it.
+                        if (
+                            (bestWanted || targetZKey is null)
+                            && (open.Count == 0 || open.Peek().F > best.F)
+                        )
                         {
                             return ReconstructPath(best);
                         }
@@ -302,6 +344,24 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
             if (best is not null)
             {
                 return ReconstructPath(best);
+            }
+
+            // Saturation and "there is genuinely no way there" both came back as an empty path, and
+            // an empty path is how a walk quietly does not happen. They are not the same problem and
+            // only one of them is a bug in this method, so say which.
+            if (allNodes.Count > maxNodes)
+            {
+                _roomGrain._logger.LogWarning(
+                    "Pathfinding from ({StartX},{StartY}) to ({GoalX},{GoalY}) in room {RoomId} ran "
+                        + "out of nodes at {MaxNodes}; no path was returned. The room may be larger "
+                        + "than RoomConfig.MaxPathNodes allows for.",
+                    start.X,
+                    start.Y,
+                    goal.X,
+                    goal.Y,
+                    _roomGrain.RoomId,
+                    maxNodes
+                );
             }
         }
         catch (Exception ex)

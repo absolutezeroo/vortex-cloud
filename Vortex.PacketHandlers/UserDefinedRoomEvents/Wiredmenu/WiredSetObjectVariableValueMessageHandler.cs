@@ -28,6 +28,7 @@ public class WiredSetObjectVariableValueMessageHandler(IGrainFactory grainFactor
         bool success = await _grainFactory
             .GetRoomWired(ctx.RoomId)
             .SetPermanentVariableAsync(
+                ctx.AsActionContext(),
                 (WiredVariableTargetType)message.EntityType,
                 message.EntityId,
                 message.VariableId,

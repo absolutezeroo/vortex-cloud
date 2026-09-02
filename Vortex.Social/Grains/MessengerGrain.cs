@@ -14,6 +14,7 @@ using Vortex.Logging.Extensions;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
+using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
@@ -36,9 +37,12 @@ internal sealed partial class MessengerGrain(
     IGrainFactory grainFactory,
     IEventPublisher events,
     ILogger<MessengerGrain> logger,
-    IOptions<MessengerConfig> messengerConfig
+    IOptions<MessengerConfig> messengerConfig,
+    ISessionGateway sessionGateway
 ) : Grain, IMessengerGrain
 {
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
+
     private readonly MessengerConfig _messengerConfig = messengerConfig.Value;
     private readonly HashSet<int> _blockedIds = new();
     private readonly List<FriendCategorySnapshot> _categories = new();

@@ -339,6 +339,7 @@ internal sealed partial class RoomService(
         ActionContext ctx,
         int targetX,
         int targetY,
+        int? targetZKey,
         CancellationToken ct
     )
     {
@@ -353,7 +354,7 @@ internal sealed partial class RoomService(
             .ConfigureAwait(false);
         await _grainFactory
             .GetRoomAvatars(ctx.RoomId)
-            .WalkAvatarToAsync(ctx, targetX, targetY, ct)
+            .WalkAvatarToAsync(ctx, targetX, targetY, targetZKey, ct)
             .ConfigureAwait(false);
     }
 

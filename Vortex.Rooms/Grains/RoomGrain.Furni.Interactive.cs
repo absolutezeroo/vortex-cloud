@@ -1,11 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
@@ -198,10 +200,30 @@ public sealed partial class RoomGrain
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
-            FurnitureEntity entity = new() { Id = item.ObjectId.Value };
-            dbCtx.Attach(entity);
+            // Loaded rather than attached blind, and the query is the guard: a row already marked
+            // deleted does not come back, so a second consumption of the same item writes nothing
+            // and reports false instead of stamping DeletedAt again and handing out a second prize.
+            // The guard that used to stand for this -- the item being taken out of ItemsById --
+            // lands twenty lines and two awaits after the write (RSYS-CONSUME-049).
+            FurnitureEntity? entity = await dbCtx
+                .Furnitures.FirstOrDefaultAsync(
+                    f => f.Id == item.ObjectId.Value && f.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                _logger.LogDebug(
+                    "Consumption of furniture {ObjectId} in room {RoomId} found nothing to delete.",
+                    item.ObjectId.Value,
+                    _state.RoomId.Value
+                );
+
+                return false;
+            }
+
             entity.DeletedAt = DateTime.UtcNow;
-            dbCtx.Entry(entity).Property(f => f.DeletedAt).IsModified = true;
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
@@ -233,6 +255,31 @@ public sealed partial class RoomGrain
 
         return true;
     }
+
+    /// <summary>
+    /// Runs the payout half of a consumed-furniture prize under a journal operation, so a prize that
+    /// was paid for with a furniture and never arrived is something an operator can find.
+    /// </summary>
+    /// <remarks>
+    /// The caller has destroyed the furniture before calling this, on purpose — the reverse order
+    /// lets a repeated click mint prizes from one item — so the prize is owed from before the payout
+    /// runs. That is the whole of <c>RecordOwedPayoutAsync</c>, which a quest reward and an
+    /// achievement level reach by their own route (RSYS-PRIZE-050, PROG-REWARD-032).
+    /// </remarks>
+    internal Task GrantConsumedPrizeAsync(
+        PlayerId beneficiary,
+        string detail,
+        Func<CancellationToken, Task> grantAsync,
+        CancellationToken ct
+    ) =>
+        _commerceJournal.RecordOwedPayoutAsync(
+            CommerceOperationKind.PrizeGrant,
+            (int)beneficiary,
+            detail,
+            grantAsync,
+            _logger,
+            ct
+        );
 
     private void RecomputeFootprint(IRoomFloorItem floor)
     {

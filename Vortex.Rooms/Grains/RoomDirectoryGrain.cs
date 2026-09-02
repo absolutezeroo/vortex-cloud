@@ -139,24 +139,41 @@ public class RoomDirectoryGrain(
         return Task.CompletedTask;
     }
 
-    private async Task CheckRoomsAsync(CancellationToken ct)
+    /// <summary>
+    /// Tells every active room whether to stay up. Fire-and-forget by construction: both calls are
+    /// <c>[OneWay]</c>, so this turn hands off N messages and ends rather than waiting on N rooms.
+    /// </summary>
+    /// <remarks>
+    /// This grain has one activation for the whole cluster and every room entry and exit in the
+    /// hotel passes through it, so anything this method waits for, the whole hotel waits for.
+    /// Awaiting the fan-out froze it for the length of the slowest room -- and a room that was
+    /// itself mid-call to this directory could not answer until this turn ended, which is two
+    /// non-reentrant grains waiting on each other until Orleans times one out.
+    /// <para>
+    /// ponytail: still one message per active room per sweep. That is a real cost at ten thousand
+    /// rooms and it is no longer a stall -- sharding this grain by roomId bucket is the next step if
+    /// the send itself starts to show.
+    /// </para>
+    /// </remarks>
+    private Task CheckRoomsAsync(CancellationToken ct)
     {
-        RoomActiveSnapshot[] rooms = _activeRooms.Values.ToArray();
-
-        List<Task> pending = new(rooms.Length);
-
-        foreach (RoomActiveSnapshot room in rooms)
+        foreach (RoomActiveSnapshot room in _activeRooms.Values.ToArray())
         {
             int population = _roomPopulations.TryGetValue(room.RoomId, out int pop) ? pop : 0;
             IRoomCore roomGrain = _grainFactory.GetRoomCore(room.RoomId);
 
-            pending.Add(
-                population > 0
-                    ? roomGrain.DelayRoomDeactivationAsync()
-                    : roomGrain.DeactivateRoomAsync()
-            );
+            // Discarded rather than logged: a one-way call's task is already completed when it
+            // returns and can never carry a fault, so there is nothing to observe.
+            if (population > 0)
+            {
+                _ = roomGrain.DelayRoomDeactivationAsync();
+            }
+            else
+            {
+                _ = roomGrain.DeactivateRoomAsync();
+            }
         }
 
-        await Task.WhenAll(pending).ConfigureAwait(true);
+        return Task.CompletedTask;
     }
 }

@@ -70,6 +70,21 @@ public class RoomConfig : IWiredLimits
     public int WiredMaxEventsPerTick { get; init; } = 64;
     public int WiredSelectorMaxAreaSize { get; init; } = 100;
     public int WiredSelectedItemsLimit { get; init; } = 20;
+
+    /// <summary>
+    /// How many players one wired action may act on in a single execution. The furni side of a
+    /// selection has been bounded since the beginning — <see cref="WiredSelectorMaxAreaSize"/> and
+    /// <see cref="WiredSelectedItemsLimit"/> — and the player side never was, so "give furni to
+    /// everyone" ran one write, one full inventory reload and one client push per selected player,
+    /// sequentially, inside the room's turn. That is the only fan-out in the engine a player builds
+    /// rather than an operator configures.
+    /// <para>
+    /// Twice <see cref="MaxVisitorsLimit"/>, so no room a hotel actually runs reaches it and it only
+    /// bites the room built to hurt. Trims are counted as <c>selection-limit</c> on
+    /// <c>Vortex.wired.chain.stopped</c>.
+    /// </para>
+    /// </summary>
+    public int WiredSelectedPlayersLimit { get; init; } = 100;
     public bool WiredAllowWallFurni { get; init; } = true;
     public int WiredMaxIntParams { get; init; } = 16;
     public int WiredNeighborhoodRadius { get; init; } = 5;
@@ -78,6 +93,14 @@ public class RoomConfig : IWiredLimits
     /// this bounds memory under a sustained event storm — events past the cap are dropped and
     /// reported once per tick in the room's wired log.</summary>
     public int WiredMaxQueuedEvents { get; init; } = 512;
+
+    /// <summary>Hard cap on the pending scheduled executions a room may hold. The same bound as
+    /// <see cref="WiredMaxQueuedEvents"/>, one layer further on: WiredMaxScheduledPerTick bounds
+    /// what a tick <em>runs</em>, and bounded no better than the event queue does what accumulates
+    /// when a room schedules faster than it drains. A pending execution is much heavier than an
+    /// event — it holds the pile, its actions, the selection and the processing context — so this
+    /// was the cheapest room in the hotel to exhaust memory from.</summary>
+    public int WiredMaxPendingExecutions { get; init; } = 512;
 
     /// <summary>How long a wired box stays lit after firing before the wired system reverts its
     /// visual state.</summary>
@@ -91,6 +114,18 @@ public class RoomConfig : IWiredLimits
     /// parser also bounds a single batch (<c>ProtocolLimitsConfig.MaxTradeItems</c>) for wire safety;
     /// this is the per-side offer ceiling enforced by the trade session.</summary>
     public int MaxTradeItemsPerSide { get; init; } = 1500;
+
+    /// <summary>
+    /// How many items one wired chest may hold. There was no ceiling at all, and every chest
+    /// operation loads the whole content into the room's turn — listing it, settling a contract
+    /// against it, paying out of it — so the cost of touching a chest was whatever a player had
+    /// chosen to put in it.
+    /// <para>
+    /// Also the ceiling on one deposit screen, which is the same bound arriving earlier: the staged
+    /// list is held in the room's memory and turns into an <c>IN</c> clause of its own size.
+    /// </para>
+    /// </summary>
+    public int WiredChestCapacity { get; init; } = 1000;
 
     /// <summary>How long a half-open mystery box keeps waiting for its other half. The client's wait
     /// dialog has no timer of its own, so without this a player who walked away leaves the box

@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
@@ -44,9 +45,11 @@ internal sealed class PlayerMintGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
-    ILogger<PlayerMintGrain> logger
+    ILogger<PlayerMintGrain> logger,
+    ICommerceJournal journal
 ) : Grain, IPlayerMintGrain
 {
+    private readonly ICommerceJournal _journal = journal;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IEventPublisher _events = events;
@@ -90,31 +93,91 @@ internal sealed class PlayerMintGrain(
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(PlayerId);
 
-        // The price is the one this hotel published, never the one the client sent: the purchase
-        // message carries only an offer id, and that is deliberate.
-        WalletDebitResult debit = await wallet
-            .TryDebitAsync([SilverCost(offer.SilverPrice)], ct)
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.MintTokenPurchase,
+                (int)PlayerId,
+                $"stamps offer={offerId} amount={offer.AmountTokens} silver={offer.SilverPrice}",
+                ct
+            )
             .ConfigureAwait(true);
 
-        if (!debit.Succeeded)
-        {
-            return new MintTokenPurchaseResult
-            {
-                Purchased = false,
-                Balance = await GetTokenBalanceAsync(ct).ConfigureAwait(true),
-            };
-        }
-
+        // The price is the one this hotel published, never the one the client sent: the purchase
+        // message carries only an offer id, and that is deliberate.
+        //
+        // Through the shared executor rather than a debit and a hand-written catch. The catch it
+        // replaces was correct in shape and wrong in one detail: it compensated on `ct`, and a
+        // cancelled request -- a client disconnecting mid-purchase, which is the commonest reason
+        // the grant does not finish -- is exactly the case where that token is already cancelled and
+        // the refund would never run. The executor compensates on no token for that reason, and the
+        // comment saying so has been there all along.
         try
         {
-            int balance = await AddTokensAsync(offer.AmountTokens, ct).ConfigureAwait(true);
+            WalletPurchaseResult<int> result = await wallet
+                .ExecutePurchaseAsync(
+                    [SilverCost(offer.SilverPrice)],
+                    operation,
+                    async innerCt =>
+                    {
+                        await _journal
+                            .TransitionAsync(
+                                operation,
+                                CommerceOperationState.Debited,
+                                CommerceStepKeys.DEBIT,
+                                null,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+
+                        int credited = await AddTokensAsync(offer.AmountTokens, innerCt)
+                            .ConfigureAwait(true);
+
+                        await _journal
+                            .TransitionAsync(
+                                operation,
+                                CommerceOperationState.Completed,
+                                CommerceStepKeys.MINT_TOKENS,
+                                null,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+
+                        return credited;
+                    },
+                    _logger,
+                    ct,
+                    _journal
+                )
+                .ConfigureAwait(true);
+
+            if (!result.Succeeded)
+            {
+                await _journal
+                    .TransitionAsync(
+                        operation,
+                        CommerceOperationState.FailedBeforePivot,
+                        CommerceStepKeys.DEBIT,
+                        "insufficient balance",
+                        ct
+                    )
+                    .ConfigureAwait(true);
+
+                return new MintTokenPurchaseResult
+                {
+                    Purchased = false,
+                    Balance = await GetTokenBalanceAsync(ct).ConfigureAwait(true),
+                };
+            }
 
             _logger.LogInformation(
                 "Player {PlayerId} bought {Amount} stamp(s) for {Price} silver; balance is now {Balance}.",
                 PlayerId,
                 offer.AmountTokens,
                 offer.SilverPrice,
-                balance
+                result.Reward
             );
 
             await _events
@@ -124,20 +187,18 @@ internal sealed class PlayerMintGrain(
                 )
                 .ConfigureAwait(true);
 
-            return new MintTokenPurchaseResult { Purchased = true, Balance = balance };
+            return new MintTokenPurchaseResult { Purchased = true, Balance = result.Reward };
         }
         catch (Exception ex)
         {
-            // The silver is already gone at this point, so it goes back before anything else.
+            // The executor has already refunded and recorded it; this only keeps the caller's
+            // contract, which is a result rather than a fault.
             _logger.LogError(
                 ex,
-                "Crediting {Amount} stamp(s) to player {PlayerId} failed after the debit; refunding {Price} silver.",
+                "Crediting {Amount} stamp(s) to player {PlayerId} failed after the debit; the silver was refunded.",
                 offer.AmountTokens,
-                PlayerId,
-                offer.SilverPrice
+                PlayerId
             );
-
-            await wallet.CreditBackAsync([SilverCost(offer.SilverPrice)], ct).ConfigureAwait(true);
 
             return new MintTokenPurchaseResult
             {
@@ -210,12 +271,19 @@ internal sealed class PlayerMintGrain(
         // No room condition here, deliberately. A room detaches its furniture from the database in
         // a deferred batch, so a row keeps naming the room it just left for as long as that flush
         // takes -- and requiring room_id to be null refused every item that had been in a room
-        // moments earlier, silently. The real guard is the inventory snapshot read above: the
+        // moments earlier, silently. The inventory snapshot read above stands in for it: the
         // inventory only ever holds furniture that is not standing in a room.
+        //
+        // The chest condition is not in that position and is enforced here (NFT-MINT-029). An item
+        // staked in a wired chest keeps player_id and deleted_at exactly as a loose one does, so
+        // those two predicates alone would convert somebody's shop stock into a Relic on the
+        // strength of a cache entry; it is the one predicate the inventory loader has that this
+        // claim was missing.
         int deleted = await dbCtx
             .Furnitures.Where(furni =>
                 furni.Id == itemId
                 && furni.PlayerEntityId == PlayerId.Value
+                && furni.WiredChestEntityId == null
                 && furni.DeletedAt == null
             )
             .ExecuteUpdateAsync(

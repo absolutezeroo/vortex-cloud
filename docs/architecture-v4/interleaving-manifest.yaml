@@ -56,6 +56,17 @@ entries:
     justification: Pure read; navigator and directory poll it constantly.
     owner: rooms
 
+  - symbol: Vortex.Primitives.Rooms.Grains.IRoomCore.GetRoomPopulationAsync
+    overload: ()
+    category: ImmutableRead
+    implementation: Vortex.Rooms/Grains/RoomGrain.cs
+    justification: >
+      Counts the room's own avatars and mutates nothing. It replaced a round trip to the
+      cluster-wide directory — a room asking somebody else how many people were standing in it —
+      and it is polled by the navigator, so queueing it behind the 50ms tick would put a scan of
+      the hotel behind every busy room's clock.
+    owner: rooms
+
   - symbol: Vortex.Primitives.Rooms.Grains.IRoomCore.GetRoomPropertiesAsync
     overload: ()
     category: ImmutableRead

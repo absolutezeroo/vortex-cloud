@@ -94,6 +94,8 @@ internal sealed class FakeWiredRoomHost
 
     public int MaxScheduledPerTick { get; set; } = 64;
 
+    public int MaxPendingExecutions { get; set; } = 512;
+
     public int FlashDurationMs { get; set; } = 500;
 
     public int TileCount { get; set; } = 100;
@@ -294,6 +296,8 @@ internal sealed class FakeWiredRoomHost
     public int WiredSelectorMaxAreaSize { get; set; } = 100;
 
     public int WiredSelectedItemsLimit { get; set; } = 20;
+
+    public int WiredSelectedPlayersLimit { get; set; } = 100;
 
     public int WiredNeighborhoodRadius { get; set; } = 5;
 

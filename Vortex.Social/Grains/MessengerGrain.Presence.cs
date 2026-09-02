@@ -34,7 +34,7 @@ internal sealed partial class MessengerGrain
             return;
         }
 
-        foreach ((PlayerId friendId, MessengerFriendSnapshot _) in _friends)
+        foreach (PlayerId friendId in FriendsWhoCanSeeThis())
         {
             IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendId);
             LogAndForget(
@@ -64,7 +64,7 @@ internal sealed partial class MessengerGrain
             return;
         }
 
-        foreach ((PlayerId friendId, MessengerFriendSnapshot _) in _friends)
+        foreach (PlayerId friendId in FriendsWhoCanSeeThis())
         {
             IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendId);
             LogAndForget(
@@ -77,6 +77,31 @@ internal sealed partial class MessengerGrain
                 )
             );
         }
+    }
+
+    /// <summary>
+    /// The friends there is any point telling: the ones with a client connected right now.
+    /// </summary>
+    /// <remarks>
+    /// This loop used to run over the whole friend list, and a friend-list entry is not a cheap
+    /// thing to call. Addressing a messenger grain activates it, and MessengerGrain.OnActivateAsync
+    /// hydrates from the database and registers a repeating timer -- so a player with a full Habbo
+    /// list of 1,100 friends cost 1,100 activations, 1,100 queries and 1,100 resident timers every
+    /// time they logged in, to deliver a presence update to 1,080 people who were not there to read
+    /// it. Five hundred players reconnecting after a restart is that number again five hundred
+    /// times, in a few seconds. RoomConfig's own comment records what a login storm did to the room
+    /// tick -- "a run during a login storm managed 11 [Hz]" -- and this is the most likely reason.
+    /// <para>
+    /// The online set is a projection the session layer already keeps in memory, so asking it costs
+    /// nothing and activates nobody. It is silo-local, which this build already is everywhere else;
+    /// the startup guard in VortexEmulator refuses a second silo and names this among the reasons.
+    /// </para>
+    /// </remarks>
+    private IEnumerable<PlayerId> FriendsWhoCanSeeThis()
+    {
+        HashSet<PlayerId> online = [.. _sessionGateway.GetOnlinePlayerIds()];
+
+        return _friends.Keys.Where(online.Contains);
     }
 
     public async Task NotifyFriendPresenceChangedAsync(

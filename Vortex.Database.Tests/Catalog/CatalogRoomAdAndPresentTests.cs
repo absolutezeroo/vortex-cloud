@@ -6,6 +6,7 @@ using FluentAssertions;
 using Vortex.Catalog.Exceptions;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Xunit;
 
 namespace Vortex.Database.Tests.Catalog;
@@ -60,6 +61,17 @@ public sealed class CatalogRoomAdAndPresentTests
         name.Should().Be("my room");
         expiresAt.Should().BeCloseTo(before.AddDays(3), TimeSpan.FromMinutes(1));
         harness.DebitRequests.Single().Amount.Should().Be(25);
+
+        // Buying an advertisement is a purchase like any other, and was the third flow found with
+        // no operation id: credits left the buyer and nothing anywhere recorded that they had.
+        harness
+            .Journal.Opened.Should()
+            .ContainSingle()
+            .Which.Kind.Should()
+            .Be(CommerceOperationKind.RoomAdPurchase);
+        harness
+            .Journal.Transitions.Should()
+            .Contain(t => t.State == CommerceOperationState.Completed);
     }
 
     /// <summary>"Extended" doubles the run rather than naming a second duration per offer.</summary>

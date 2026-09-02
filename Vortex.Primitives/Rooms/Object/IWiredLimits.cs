@@ -2,7 +2,7 @@ namespace Vortex.Primitives.Rooms.Object;
 
 /// <summary>
 /// The wired tuning knobs furniture logic reads. The room's configuration object itself is a
-/// room-side type, so this is the slice of it that crosses into the object contracts -- five
+/// room-side type, so this is the slice of it that crosses into the object contracts -- six
 /// scalars, no more.
 /// </summary>
 public interface IWiredLimits
@@ -12,6 +12,9 @@ public interface IWiredLimits
 
     /// <summary>How many items a wired box may hold in its selection.</summary>
     int WiredSelectedItemsLimit { get; }
+
+    /// <summary>How many players one action may act on in a single execution.</summary>
+    int WiredSelectedPlayersLimit { get; }
 
     /// <summary>Radius, in tiles, of the neighbourhood selector.</summary>
     int WiredNeighborhoodRadius { get; }

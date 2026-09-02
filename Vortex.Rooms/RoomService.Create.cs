@@ -6,8 +6,11 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
+using Vortex.Logging;
+using Vortex.Primitives;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
@@ -31,6 +34,26 @@ internal sealed partial class RoomService
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
+        // The limit was already being calculated -- in CanCreateRoomMessageHandler, which answers
+        // the navigator's "may I?" screen and serves it to the client in CanCreateRoomMessageComposer
+        // as RoomLimit. The protocol therefore announced a limit the server never enforced, and
+        // CreateFlat is its own packet: a client that simply sends it never asks the question. With
+        // no quota and no per-message rate limit, ten packets a second is thirty-six thousand rooms
+        // an hour, one row each, for as long as somebody cares to keep sending.
+        int maxRooms = await _grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(RoomsConfig.MaxRoomsPerPlayerKey, RoomsConfig.MaxRoomsPerPlayerDefault)
+            .ConfigureAwait(false);
+
+        int ownedRooms = await dbCtx
+            .Rooms.CountAsync(r => r.PlayerEntityId == playerId.Value, ct)
+            .ConfigureAwait(false);
+
+        if (ownedRooms >= maxRooms)
+        {
+            throw new VortexException(VortexErrorCodeEnum.RoomLimitReached);
+        }
+
         RoomModelEntity model =
             await dbCtx
                 .RoomModels.FirstOrDefaultAsync(x => x.Name == modelName && x.DeletedAt == null, ct)
@@ -46,6 +69,24 @@ internal sealed partial class RoomService
                 .ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Player {playerId} not found.");
 
+        // categoryId comes off the wire. A positive id that names no category used to reach the
+        // insert and fail there on the foreign key -- an unhandled exception on a forgeable packet.
+        if (
+            categoryId > 0
+            && !await dbCtx
+                .NavigatorFlatCategories.AnyAsync(c => c.Id == categoryId, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            throw new VortexException(VortexErrorCodeEnum.NavigatorCategoryNotFound);
+        }
+
+        // So does maxPlayers, and it is not merely a number: the room's own door reads
+        // "PlayersMax > 0 && avatars >= PlayersMax", so zero or a negative turns the population
+        // limit off entirely rather than setting it low. Clamped into the range the client's own
+        // dialog can express.
+        int cappedMaxPlayers = Math.Clamp(maxPlayers, 1, RoomsConfig.MaxPlayersCeiling);
+
         string trimmedName = name.Trim();
 
         RoomEntity room = new RoomEntity
@@ -59,7 +100,7 @@ internal sealed partial class RoomService
             NavigatorCategoryEntityId = categoryId > 0 ? categoryId : null,
             DoorMode = RoomDoorModeType.Open,
             UsersNow = 0,
-            PlayersMax = maxPlayers,
+            PlayersMax = cappedMaxPlayers,
             TradeType = tradeType,
             // Decoration ids stay null until the owner applies one -- the grain reports the
             // client's default surface ("0") for an unset value.

@@ -1,10 +1,12 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Observability;
@@ -121,7 +123,8 @@ public sealed class TickBoundaryTests
             FakeProxy.Create<IPetLevelProvider>(_ => null),
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),
-            new RoomWiredLogChannel()
+            new RoomWiredLogChannel(),
+            FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
         );
 
         grain._state.EpochMs = epoch;

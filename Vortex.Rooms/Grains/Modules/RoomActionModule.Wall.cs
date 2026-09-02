@@ -75,7 +75,8 @@ public sealed partial class RoomActionModule
 
         await inventory.RemoveFurnitureAsync(item.ObjectId, ct);
 
-        await _roomGrain._events.PublishAsync(
+        // Detached, as on the floor: see RoomGrain.PublishDetached.
+        _roomGrain.PublishDetached(
             new ItemPlacedEvent(
                 item.ObjectId.Value,
                 ctx.PlayerId.Value,
@@ -92,8 +93,7 @@ public sealed partial class RoomActionModule
                     }
                 ),
                 snapshot.Definition.Id
-            ),
-            ct
+            )
         );
 
         return true;
@@ -146,7 +146,7 @@ public sealed partial class RoomActionModule
             return false;
         }
 
-        await _roomGrain._events.PublishAsync(
+        _roomGrain.PublishDetached(
             new ItemMovedEvent(
                 itemId.Value,
                 ctx.PlayerId.Value,
@@ -161,8 +161,7 @@ public sealed partial class RoomActionModule
                         rotation = rot.ToString(),
                     }
                 )
-            ),
-            ct
+            )
         );
 
         return true;

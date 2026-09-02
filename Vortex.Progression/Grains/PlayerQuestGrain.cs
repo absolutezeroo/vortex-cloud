@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -32,12 +33,14 @@ internal sealed class PlayerQuestGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
+    ICommerceJournal journal,
     ILogger<PlayerQuestGrain> logger
 ) : Grain, IPlayerQuestGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<PlayerQuestGrain> _logger = logger;
 
     /// <summary>Campaign whose quests form the rotating daily pool (shown via the daily section, not
@@ -221,7 +224,7 @@ internal sealed class PlayerQuestGrain(
         QuestSnapshot? daily = DailyQuestSelector.Pick(
             dailyPool,
             PlayerId,
-            DateOnly.FromDateTime(DateTime.Now)
+            DateOnly.FromDateTime(DateTime.UtcNow)
         );
 
         return new DailyQuestSnapshot
@@ -288,14 +291,14 @@ internal sealed class PlayerQuestGrain(
                         PlayerEntityId = PlayerId,
                         QuestEntityId = questId,
                         Accepted = true,
-                        AcceptedAt = DateTime.Now,
+                        AcceptedAt = DateTime.UtcNow,
                     }
                 );
             }
             else
             {
                 row.Accepted = true;
-                row.AcceptedAt = DateTime.Now;
+                row.AcceptedAt = DateTime.UtcNow;
             }
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
@@ -523,7 +526,7 @@ internal sealed class PlayerQuestGrain(
                         PlayerEntityId = PlayerId,
                         QuestEntityId = did,
                         Accepted = true,
-                        AcceptedAt = DateTime.Now,
+                        AcceptedAt = DateTime.UtcNow,
                     };
                     dbCtx.PlayerQuests.Add(dailyRow);
                     toProcess.Add(dailyRow);
@@ -539,7 +542,7 @@ internal sealed class PlayerQuestGrain(
             // (a freshly-created row has a default date and still counts as its first time today).
             if (oncePerDay)
             {
-                DateTime today = DateTime.Now.Date;
+                DateTime today = DateTime.UtcNow.Date;
                 toProcess = [.. toProcess.Where(r => r.UpdatedAt.Date != today)];
             }
 
@@ -560,7 +563,7 @@ internal sealed class PlayerQuestGrain(
                 row.Completed = done;
                 if (done && row.CompletedAt is null)
                 {
-                    row.CompletedAt = DateTime.Now;
+                    row.CompletedAt = DateTime.UtcNow;
                 }
 
                 changed.Add((row.QuestEntityId, done));
@@ -592,6 +595,7 @@ internal sealed class PlayerQuestGrain(
             if (done)
             {
                 await GrantRewardAsync(
+                        snapshot.Id,
                         snapshot.ActivityPointType,
                         snapshot.RewardCurrencyAmount,
                         ct
@@ -659,7 +663,7 @@ internal sealed class PlayerQuestGrain(
         int index = DailyQuestSelector.PickIndex(
             dailyDefs.Count,
             PlayerId,
-            DateOnly.FromDateTime(DateTime.Now)
+            DateOnly.FromDateTime(DateTime.UtcNow)
         );
 
         if (index < 0)
@@ -746,7 +750,12 @@ internal sealed class PlayerQuestGrain(
             .ConfigureAwait(true);
     }
 
-    private async Task GrantRewardAsync(int rewardType, int rewardAmount, CancellationToken ct)
+    private async Task GrantRewardAsync(
+        int questId,
+        int rewardType,
+        int rewardAmount,
+        CancellationToken ct
+    )
     {
         if (rewardAmount <= 0)
         {
@@ -755,8 +764,23 @@ internal sealed class PlayerQuestGrain(
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((long)PlayerId);
 
-        await wallet
-            .GrantCurrencyAsync(CurrencyRewardRules.KindFor(rewardType), rewardAmount, ct)
+        // The quest row was marked complete and saved before this ran, which is the right order and
+        // means the reward is owed from that moment. Under an operation so that a payout that never
+        // lands is findable instead of silent (PROG-REWARD-032).
+        await _journal
+            .RecordOwedPayoutAsync(
+                CommerceOperationKind.QuestReward,
+                (int)PlayerId,
+                $"quest={questId} amount={rewardAmount} type={rewardType}",
+                innerCt =>
+                    wallet.GrantCurrencyAsync(
+                        CurrencyRewardRules.KindFor(rewardType),
+                        rewardAmount,
+                        innerCt
+                    ),
+                _logger,
+                ct
+            )
             .ConfigureAwait(true);
     }
 
@@ -879,7 +903,7 @@ internal sealed class PlayerQuestGrain(
                     progress?.Completed ?? false,
                     completedInCampaign,
                     questCountByCampaign.GetValueOrDefault(definition.CampaignCode),
-                    DateTime.Now
+                    DateTime.UtcNow
                 )
             );
         }

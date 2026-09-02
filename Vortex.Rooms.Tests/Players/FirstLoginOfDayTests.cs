@@ -10,6 +10,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Players.Configuration;
 using Vortex.Players.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Providers;
@@ -157,7 +158,9 @@ public sealed class FirstLoginOfDayTests
                     FakeProxy.Create<IEventPublisher>(_ => null),
                     NullLogger<PlayerGrain>.Instance,
                     Options.Create(new ClubConfig()),
-                    FakeProxy.Create<IAccountLevelProvider>(_ => AccountLevelLadder.FloorLevel)
+                    FakeProxy.Create<IAccountLevelProvider>(_ => AccountLevelLadder.FloorLevel),
+                    // Nothing here buys anything; the grain simply needs one to be built.
+                    FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
                 )
             );
         }

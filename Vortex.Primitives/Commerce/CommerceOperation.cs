@@ -98,6 +98,28 @@ public enum CommerceOperationKind
     MarketplaceCancel = 4,
     MarketplaceBuy = 5,
     MarketplaceRedeem = 6,
+    RentableSpaceRent = 7,
+    ClubPurchase = 8,
+    LtdRaffleEntry = 9,
+    RoomAdPurchase = 10,
+    DailyTaskReward = 11,
+    MintTokenPurchase = 12,
+
+    /// <summary>A contract settled against a wired chest: coins and furniture, both directions.</summary>
+    WiredChestContract = 13,
+
+    /// <summary>A prize handed out for a furniture that was destroyed to get it — a crackable, a
+    /// mystery trophy, a mystery box. The consumption is the pivot and it has already happened, so
+    /// these operations are opened past it: they complete or they are owed.</summary>
+    PrizeGrant = 14,
+
+    /// <summary>What a completed quest pays. The row is marked complete first, so the reward is
+    /// owed from before the payout runs.</summary>
+    QuestReward = 15,
+
+    /// <summary>What an achievement level pays: its badge, its currency and its score. Same shape —
+    /// the level is persisted before any of it is handed over.</summary>
+    AchievementReward = 16,
 }
 
 /// <summary>
@@ -135,6 +157,37 @@ public static class CommerceStepKeys
 
     /// <summary>Removing the listed item from the seller's inventory.</summary>
     public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>Crediting the stamps a mint-token purchase bought.</summary>
+    public const string MINT_TOKENS = "mint-tokens";
+
+    /// <summary>Paying out what a completed task promised.</summary>
+    public const string REWARD_PAYOUT = "reward-payout";
+
+    /// <summary>The advertisement row that puts a room in front of the navigator.</summary>
+    public const string ROOM_AD = "room-ad";
+
+    /// <summary>The club months, their badges and the events that go with them.</summary>
+    public const string CLUB_MONTHS = "club-months";
+
+    /// <summary>The raffle entry row that makes a paid ticket a ticket.</summary>
+    public const string LTD_ENTRY = "ltd-entry";
+
+    /// <summary>Writing the rental itself: who holds the space and until when.</summary>
+    public const string RENTABLE_SPACE_GRANT = "rentable-space-grant";
+
+    /// <summary>Paying the space's owner what their tenant just paid. Strictly after the pivot: the
+    /// tenant already holds the space, so a failure here is owed, never refunded.</summary>
+    public const string RENTABLE_SPACE_OWNER_CREDIT = "rentable-space-owner-credit";
+
+    /// <summary>Moving the staked furniture into the chest and the reward furniture out of it. The
+    /// pivot of a chest contract: after it the goods have changed hands and the payment is no longer
+    /// owed back.</summary>
+    public const string CHEST_SWAP = "chest-swap";
+
+    /// <summary>Paying the contract's reward coins out of the chest. Undoes itself into the chest
+    /// when the wallet refuses, which is why the books are written after it and not before.</summary>
+    public const string CHEST_PAYOUT = "chest-payout";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";

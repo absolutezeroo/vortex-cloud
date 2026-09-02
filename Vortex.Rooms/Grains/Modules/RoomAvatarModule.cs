@@ -221,6 +221,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         ActionContext ctx,
         int targetX,
         int targetY,
+        int? targetZKey,
         CancellationToken ct
     )
     {
@@ -234,7 +235,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
                 objectIdValue,
                 out IRoomAvatar? avatar
             )
-            || !await WalkAvatarToAsync(avatar, targetX, targetY, ct)
+            || !await WalkAvatarToAsync(avatar, targetX, targetY, ct, targetZKey)
         )
         {
             return false;
@@ -265,7 +266,8 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         IRoomAvatar avatar,
         int targetX,
         int targetY,
-        CancellationToken ct
+        CancellationToken ct,
+        int? targetZKey = null
     )
     {
         // A frozen avatar (wired freeze-user box, a Freeze hit) starts no walk. The in-flight walk
@@ -296,9 +298,20 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             // stairs, which is what a player means and what they would do on foot.
             bool sameTile = goalTileId == currentTileId;
 
-            if (sameTile && !HasAnotherSurface(currentTileId, avatar.Z))
+            if (sameTile)
             {
-                return false;
+                // With a height on the wire the guess above is no longer needed: a same-tile click
+                // is a no-op exactly when the surface asked for is the one already stood on, and
+                // anything else is a real request to change height on this tile. Without a height
+                // it falls back to "is there anywhere else to stand here at all".
+                bool nothingToDo = targetZKey is not null
+                    ? targetZKey == (int)Math.Round(avatar.Z * 100)
+                    : !HasAnotherSurface(currentTileId, avatar.Z);
+
+                if (nothingToDo)
+                {
+                    return false;
+                }
             }
 
             if (!avatar.SetGoalTileId(goalTileId))
@@ -322,7 +335,8 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             IReadOnlyList<(int X, int Y)> path = _roomGrain.PathingSystem.FindPath(
                 avatar,
                 (currentX, currentY),
-                (targetX, targetY)
+                (targetX, targetY),
+                targetZKey
             );
 
             if (path.Count == 0)

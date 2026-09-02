@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Database.Commerce;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Marketplace.Grains;
 using Vortex.Primitives.Events;
@@ -53,9 +54,31 @@ public sealed class MarketplaceListingTests : IDisposable
         db.Database.EnsureDeleted();
     }
 
+    /// <summary>
+    /// The seller's actual row. Listing takes it for good now, so there has to be one to take —
+    /// before, this suite listed an item that existed only as a fake grain's return value.
+    /// </summary>
+    private async Task SeedTheSellersItemAsync()
+    {
+        await using VortexDbContext db = new(_options);
+
+        db.Furnitures.Add(
+            new FurnitureEntity
+            {
+                Id = ITEM_ID,
+                PlayerEntityId = SELLER,
+                FurnitureDefinitionEntityId = DEFINITION_ID,
+            }
+        );
+
+        await db.SaveChangesAsync();
+    }
+
     [Fact]
     public async Task ACompleteListing_TakesTheItemAndPublishesTheOffer()
     {
+        await SeedTheSellersItemAsync();
+
         (int result, int offerId) = await BuildGrain()
             .MakeOfferAsync(ITEM_ID, PRICE, CancellationToken.None);
 

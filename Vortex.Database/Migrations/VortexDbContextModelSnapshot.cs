@@ -1192,6 +1192,9 @@ namespace Vortex.Database.Migrations
 
                     b.HasIndex("SeriesEntityId");
 
+                    b.HasIndex("SeriesEntityId", "SerialNumber")
+                        .IsUnique();
+
                     b.ToTable("catalog_ltd_raffle_entries");
                 });
 
@@ -2363,6 +2366,8 @@ namespace Vortex.Database.Migrations
 
                     b.HasIndex("State", "PivotedAt");
 
+                    b.HasIndex("State", "UpdatedAt");
+
                     b.ToTable("commerce_operations");
                 });
 
@@ -3342,13 +3347,13 @@ namespace Vortex.Database.Migrations
 
                     b.HasIndex("FurnitureDefinitionEntityId");
 
-                    b.HasIndex("PlayerEntityId");
-
                     b.HasIndex("RentableSpaceFurnitureEntityId");
 
                     b.HasIndex("RoomEntityId");
 
                     b.HasIndex("WiredChestEntityId");
+
+                    b.HasIndex("PlayerEntityId", "RoomEntityId", "WiredChestEntityId", "DeletedAt");
 
                     b.ToTable("furniture");
                 });

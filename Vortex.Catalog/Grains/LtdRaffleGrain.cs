@@ -11,6 +11,7 @@ using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
@@ -49,9 +50,12 @@ public sealed class LtdRaffleGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
-    ILogger<LtdRaffleGrain> logger
+    ILogger<LtdRaffleGrain> logger,
+    ICommerceJournal journal
 ) : Grain, ILtdRaffleGrain
 {
+    private readonly ICommerceJournal _journal = journal;
+
     private LtdSeriesEntity? _series;
     private int _furniDefinitionId;
     private readonly List<LtdRaffleEntryEntity> _currentBatch = [];
@@ -158,6 +162,18 @@ public sealed class LtdRaffleGrain(
         string batchId = _currentBatchId ?? Guid.NewGuid().ToString("N");
         DateTime enteredAt = DateTime.UtcNow;
 
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.LtdRaffleEntry,
+                playerIdInt,
+                $"ltd series={SeriesId} batch={batchId} cost={_series.CostCredits}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         WalletPurchaseResult<LtdRaffleEntryEntity> result;
 
         try
@@ -165,8 +181,19 @@ public sealed class LtdRaffleGrain(
             result = await wallet
                 .ExecutePurchaseAsync(
                     debitRequests,
+                    operation,
                     async innerCt =>
                     {
+                        await _journal
+                            .TransitionAsync(
+                                operation,
+                                CommerceOperationState.Debited,
+                                CommerceStepKeys.DEBIT,
+                                null,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+
                         LtdRaffleEntryEntity entry = new()
                         {
                             SeriesEntityId = SeriesId,
@@ -181,10 +208,23 @@ public sealed class LtdRaffleGrain(
                         dbCtx.LtdRaffleEntries.Add(entry);
                         await dbCtx.SaveChangesAsync(innerCt);
 
+                        // The ticket exists. Refunding past here would take an entry out of a draw
+                        // it is already in, or leave one in that was paid for by nobody.
+                        await _journal
+                            .TransitionAsync(
+                                operation,
+                                CommerceOperationState.Completed,
+                                CommerceStepKeys.LTD_ENTRY,
+                                null,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+
                         return entry;
                     },
                     logger,
-                    ct
+                    ct,
+                    _journal
                 )
                 .ConfigureAwait(true);
         }

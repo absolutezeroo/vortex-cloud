@@ -349,23 +349,42 @@ internal sealed class PlayerWalletGrain(
             )
         )
         {
-            PlayerCurrencyEntity? entity = await dbCtx
-                .PlayerCurrencies.Where(x =>
-                    x.Id == snapshot.Id && x.PlayerEntityId == (int)this.GetPrimaryKeyLong()
-                )
-                .FirstOrDefaultAsync(ct);
+            int currencyId = snapshot.Id;
+            int playerId = (int)this.GetPrimaryKeyLong();
 
-            if (entity is not null)
+            // The database decides whether the balance covers this, not the grain. It used to read
+            // the row, compare in C# and subtract in memory -- correct only for as long as this
+            // grain is the wallet's sole writer, which is true today, guaranteed by nothing, and
+            // false for the moment a double activation overlaps during a silo handover or a network
+            // partition. There is no concurrency token anywhere in the schema to catch it either.
+            //
+            // As a conditional UPDATE the race cannot be lost: two debits for the last hundred
+            // credits both run "WHERE amount >= 100", one affects a row and one affects none.
+            if (cost > 0)
             {
-                currentAmount = entity.Amount;
+                int claimed = await dbCtx
+                    .PlayerCurrencies.Where(x =>
+                        x.Id == currencyId && x.PlayerEntityId == playerId && x.Amount >= cost
+                    )
+                    .ExecuteUpdateAsync(
+                        u => u.SetProperty(p => p.Amount, p => p.Amount - cost),
+                        ct
+                    );
 
-                if ((cost > 0) && (currentAmount >= cost))
+                if (claimed == 1)
                 {
                     changedBy = cost;
-                    entity.Amount -= changedBy;
-                    currentAmount = entity.Amount;
                 }
             }
+
+            // Read back rather than compute: ExecuteUpdate goes round the change tracker, so the
+            // balance to report is whatever the row now holds. A currency the player has no row for
+            // reads as zero, which is what it was worth before too.
+            currentAmount = await dbCtx
+                .PlayerCurrencies.AsNoTracking()
+                .Where(x => x.Id == currencyId && x.PlayerEntityId == playerId)
+                .Select(x => x.Amount)
+                .FirstOrDefaultAsync(ct);
 
             _currenciesByKind[request.CurrencyKind] = snapshot with { Amount = currentAmount };
         }

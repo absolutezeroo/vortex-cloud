@@ -89,6 +89,10 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
     // room's wired log instead of spamming one entry per drop.
     private int _droppedEventCount;
 
+    // Delayed chains refused because the pending set hit WiredMaxPendingExecutions, reported the
+    // same way and for the same reason.
+    private int _droppedExecutionCount;
+
     // The room-clock time of the tick currently being processed, so an executing action (e.g. the Timer
     // Reset effect) can re-anchor schedules to "now" without threading the value through every call.
     private long _currentTickMs;
@@ -181,6 +185,18 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             );
 
             _droppedEventCount = 0;
+        }
+
+        if (_droppedExecutionCount > 0)
+        {
+            WriteWiredRoomLog(
+                WiredLogLevel.Warning,
+                WiredLogSource.System,
+                $"Dropped {_droppedExecutionCount} delayed chain(s): the room already has "
+                    + $"{Room.MaxPendingExecutions} waiting to run."
+            );
+
+            _droppedExecutionCount = 0;
         }
 
         if (_firstRun)
@@ -471,6 +487,20 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             ProcessingContext = ctx,
             NextActionIndex = 0,
         };
+
+        // MaxScheduledPerTick bounds what a tick runs; MaxPendingExecutions bounds what accumulates
+        // when a room schedules faster than it drains. Sixty-four events each arranging two delayed
+        // chains, against sixty-four drained, grows the set by about 1,280 entries a second -- and
+        // each one holds the pile, its actions, the selection, the selector pool and the processing
+        // context. It was the cheapest room in the hotel to exhaust memory from, and a player could
+        // build it.
+        if (_schedule.IsFull(Room.MaxPendingExecutions))
+        {
+            _droppedExecutionCount++;
+            Diagnostics.ChainStopped(WiredStopReason.SCHEDULE_DROP);
+
+            return;
+        }
 
         _schedule.Schedule(ctx.Stack.StackId, pending, dueAtMs);
     }

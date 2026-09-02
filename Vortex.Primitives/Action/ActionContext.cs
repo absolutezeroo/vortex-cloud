@@ -45,6 +45,11 @@ public readonly record struct ActionContext(
             ),
         };
 
+    /// <summary>
+    /// Nobody, acting on nothing. What an event that was not caused by anyone carries, and it holds
+    /// <see cref="ActionOrigin.None"/> rather than <see cref="ActionOrigin.System"/>: a context
+    /// named Invalid should not be the most privileged one in the process.
+    /// </summary>
     public static ActionContext Invalid =>
-        new(ActionOrigin.System, SessionKey.Invalid, PlayerId.Invalid, RoomId.Invalid);
+        new(ActionOrigin.None, SessionKey.Invalid, PlayerId.Invalid, RoomId.Invalid);
 }

@@ -22,6 +22,13 @@ public static class RoomSecurityPolicy
         RoomGroupContext group = default
     )
     {
+        // The default of the struct, which is nobody. Answered before System is, so that a context
+        // that was never filled in gets the lowest level rather than the highest.
+        if (origin == ActionOrigin.None)
+        {
+            return RoomControllerType.None;
+        }
+
         if (origin == ActionOrigin.System)
         {
             return RoomControllerType.Moderator;

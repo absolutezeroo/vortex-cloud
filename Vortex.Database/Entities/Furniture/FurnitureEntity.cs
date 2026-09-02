@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Rooms.Enums;
@@ -7,6 +8,12 @@ using Vortex.Primitives.Rooms.Enums;
 namespace Vortex.Database.Entities.Furniture;
 
 [Table("furniture")]
+// The inventory query, covered. Opening the hand loads every item a player owns through four
+// predicates -- player, no room, no wired chest, not deleted -- and the schema offered it only the
+// simple foreign-key index on player_id, so a player with fifty thousand items had all fifty
+// thousand rows read and filtered in the server for every one of them. It is the most-run query in
+// the hotel: every login, and every reload after a trade, a placement or a purchase.
+[Index(nameof(PlayerEntityId), nameof(RoomEntityId), nameof(WiredChestEntityId), nameof(DeletedAt))]
 public class FurnitureEntity : VortexEntity
 {
     [Column("player_id")]

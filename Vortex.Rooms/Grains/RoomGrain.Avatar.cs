@@ -144,12 +144,13 @@ public sealed partial class RoomGrain
         ActionContext ctx,
         int targetX,
         int targetY,
+        int? targetZKey,
         CancellationToken ct
     )
     {
         try
         {
-            return await AvatarModule.WalkAvatarToAsync(ctx, targetX, targetY, ct);
+            return await AvatarModule.WalkAvatarToAsync(ctx, targetX, targetY, targetZKey, ct);
         }
         catch (Exception ex)
         {

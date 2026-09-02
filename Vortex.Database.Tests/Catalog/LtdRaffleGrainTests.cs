@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Catalog.Grains;
+using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Players;
@@ -15,6 +16,7 @@ using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Grains;
@@ -493,7 +495,14 @@ public sealed class LtdRaffleGrainTests
                 new TestDbContextFactory(_options),
                 BuildGrainFactory(),
                 FakeProxy.Create<IEventPublisher>(_ => null),
-                NullLogger<LtdRaffleGrain>.Instance
+                NullLogger<LtdRaffleGrain>.Instance,
+                // A real journal over the same database: an entry is a paid ticket, and whether it
+                // was recorded as one is now part of what these tests are about.
+                new CommerceJournal(
+                    new TestDbContextFactory(_options),
+                    FakeProxy.Create<IVortexMetrics>(_ => null),
+                    NullLogger<CommerceJournal>.Instance
+                )
             );
 
         private IGrainFactory BuildGrainFactory() =>

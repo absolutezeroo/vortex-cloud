@@ -12,6 +12,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Wired;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -110,6 +111,57 @@ public sealed class WiredContractSettlementOrderingTests
         row.WithdrawCoinsCount.Should().Be(REWARD);
     }
 
+    /// <summary>
+    /// ECON-CHEST-015: the settlement debited a wallet, moved furniture in both directions and
+    /// adjusted a chest's credits with nothing durable naming the operation. Its own books are
+    /// written from what landed, which is a receipt for what happened and no record at all of what
+    /// stopped halfway.
+    /// </summary>
+    [Fact]
+    public async Task ASettlementThatGoesThrough_IsOpenedPivotedAndCompleted()
+    {
+        Harness harness = new(seedChest: true);
+
+        await harness.OfferAndAcceptAsync().ConfigureAwait(true);
+
+        harness.JournalOpened.Should().Equal(CommerceOperationKind.WiredChestContract);
+        harness
+            .JournalStates.Should()
+            .Equal(
+                CommerceOperationState.Debited,
+                CommerceOperationState.Pivoted,
+                CommerceOperationState.Completed
+            );
+    }
+
+    [Fact]
+    public async Task ASettlementCompensatedBeforeThePivot_SaysSo()
+    {
+        Harness harness = new(seedChest: true, failOnSaveNumber: 1);
+
+        await harness.OfferAndAcceptAsync().ConfigureAwait(true);
+
+        // The refund landed, so the operation is closed as compensated rather than left at Debited
+        // -- which is what an operation somebody still has to finish looks like.
+        harness.Wallet.Granted.Should().Equal(PAYMENT);
+        harness
+            .JournalStates.Should()
+            .Equal(CommerceOperationState.Debited, CommerceOperationState.FailedBeforePivot);
+    }
+
+    [Fact]
+    public async Task ASettlementThatFailsAfterThePivot_GoesOnTheOperatorsList()
+    {
+        // The goods have moved by the second save, so there is nothing to compensate and the coins
+        // are not given back: it is owed, and an operator settles it.
+        Harness harness = new(seedChest: true, failOnSaveNumber: 2);
+
+        await harness.OfferAndAcceptAsync().ConfigureAwait(true);
+
+        harness.Wallet.Granted.Should().NotContain(PAYMENT);
+        harness.JournalStates.Should().EndWith(CommerceOperationState.NeedsIntervention);
+    }
+
     [Fact]
     public async Task AFurniThatIsNotAChest_SettlesNothing()
     {
@@ -194,7 +246,8 @@ public sealed class WiredContractSettlementOrderingTests
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
+                new RoomWiredLogChannel(),
+                BuildJournal()
             );
 
             Grain._state.ItemsById[CHEST_ID] = ItemWithLogic("furniture_furnichest");
@@ -308,6 +361,28 @@ public sealed class WiredContractSettlementOrderingTests
                 call.Method.Name == $"get_{nameof(IRoomItem.Definition)}" ? definition : null
             );
         }
+
+        /// <summary>Every state the settlement moved its operation through, in order.</summary>
+        public List<CommerceOperationState> JournalStates { get; } = [];
+
+        /// <summary>The kinds it opened. One per settlement that got past preflight.</summary>
+        public List<CommerceOperationKind> JournalOpened { get; } = [];
+
+        private ICommerceJournal BuildJournal() =>
+            FakeProxy.Create<ICommerceJournal>(call =>
+            {
+                switch (call.Method.Name)
+                {
+                    case nameof(ICommerceJournal.OpenAsync):
+                        JournalOpened.Add((CommerceOperationKind)call.Args![1]!);
+                        break;
+                    case nameof(ICommerceJournal.TransitionAsync):
+                        JournalStates.Add((CommerceOperationState)call.Args![1]!);
+                        break;
+                }
+
+                return Task.CompletedTask;
+            });
 
         private IGrainFactory BuildGrainFactory() =>
             FakeProxy.Create<IGrainFactory>(call =>

@@ -495,9 +495,17 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
             return;
         }
 
+        // The whole check, not half of it: idx < 0 catches a negative coordinate and misses the one
+        // that matters, x = Width folding onto the first tile of the next row. Its sibling twenty
+        // lines up already bounds-checks before ToIdx and says why (ROOMM-TILECALL-043).
+        if (!_roomGrain.MapModule.InBounds(x, y))
+        {
+            return;
+        }
+
         int idx = _roomGrain.MapModule.ToIdx(x, y);
 
-        if (idx < 0 || FindFreezeBlock(idx) is not FurnitureFreezeBlockLogic block)
+        if (FindFreezeBlock(idx) is not FurnitureFreezeBlockLogic block)
         {
             return;
         }

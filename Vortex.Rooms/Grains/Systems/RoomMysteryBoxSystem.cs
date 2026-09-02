@@ -237,9 +237,23 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
             return;
         }
 
+        // The trophy is gone by here, so the furniture it turned into is owed rather than optional
+        // (RSYS-PRIZE-050).
         await _roomGrain
-            ._grainFactory.GetInventoryGrain(trophy.OwnerId.Value)
-            .GrantFurnitureWithLegacyStuffDataAsync(prize.FurnitureDefinitionId, legacyData, ct)
+            .GrantConsumedPrizeAsync(
+                trophy.OwnerId,
+                $"mystery-trophy={objectId.Value} prize={prize.Id} definition={prize.FurnitureDefinitionId} "
+                    + $"room={_roomGrain._state.RoomId.Value}",
+                innerCt =>
+                    _roomGrain
+                        ._grainFactory.GetInventoryGrain(trophy.OwnerId.Value)
+                        .GrantFurnitureWithLegacyStuffDataAsync(
+                            prize.FurnitureDefinitionId,
+                            legacyData,
+                            innerCt
+                        ),
+                ct
+            )
             .ConfigureAwait(true);
 
         await _roomGrain
@@ -486,12 +500,25 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
             .PickAsync(PrizePoolCodes.MysteryBox, color, ct)
             .ConfigureAwait(true);
 
-        PrizeAward? award = prize is null
-            ? null
-            : await _roomGrain
-                ._grainFactory.GetPlayerPrizeGrain(playerId)
-                .GrantAsync(prize, PrizeSources.MysteryBox, ct)
+        PrizeAward? award = null;
+
+        if (prize is not null)
+        {
+            // Both the box and the key were consumed to get here, so a draw that fails to land is
+            // owed to the player and has to leave a record (RSYS-PRIZE-050).
+            await _roomGrain
+                .GrantConsumedPrizeAsync(
+                    playerId,
+                    $"mystery-box={color} prize={prize.Id} room={_roomGrain._state.RoomId.Value}",
+                    async innerCt =>
+                        award = await _roomGrain
+                            ._grainFactory.GetPlayerPrizeGrain(playerId)
+                            .GrantAsync(prize, PrizeSources.MysteryBox, innerCt)
+                            .ConfigureAwait(true),
+                    ct
+                )
                 .ConfigureAwait(true);
+        }
 
         if (award is null)
         {

@@ -287,6 +287,15 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
     public Task ClickTileAsync(ActionContext ctx, int x, int y, CancellationToken ct)
     {
+        // These are raw ints off the wire, on the most-sent packet of the game. Bounds have to be
+        // checked on the coordinates, not on the flattened index -- see GetTileIdForSize below for
+        // the worked counter-example: x = Width folds onto the next row, which would let a player
+        // fire the click listener of a tile they never clicked, from anywhere in the room.
+        if (!InBounds(x, y))
+        {
+            return Task.CompletedTask;
+        }
+
         int idx = ToIdx(x, y);
         RoomTileFlags tile = _roomGrain._state.TileFlags[idx];
 
@@ -323,7 +332,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
     public void ComputeTile(int id)
     {
-        if (_roomGrain._state.IsTileComputationPaused)
+        if (_roomGrain._state.IsTileComputationPaused || !InBounds(id))
         {
             return;
         }
@@ -613,11 +622,28 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
     public Task<RoomTileSnapshot> GetTileSnapshotAsync(int x, int y, CancellationToken ct)
     {
+        // Here rather than only in the id overload below, because ToIdx destroys the evidence: x =
+        // Width folds onto the first tile of the next row, and the id that comes out is a perfectly
+        // legal one. A coordinate pair can only be bounds-checked as a pair.
+        if (!InBounds(x, y))
+        {
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
+        }
+
         return GetTileSnapshotAsync(ToIdx(x, y), ct);
     }
 
     public Task<RoomTileSnapshot> GetTileSnapshotAsync(int id, CancellationToken ct)
     {
+        // Both overloads of this are members of IRoomMap, a public grain interface, and this one
+        // indexes five parallel arrays with the number it is handed. Every caller in the repository
+        // passes an object's own position, but that is a fact about today's callers rather than a
+        // property of the method (ROOMM-TILECALL-043).
+        if (!InBounds(id))
+        {
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
+        }
+
         return Task.FromResult(
             new RoomTileSnapshot
             {

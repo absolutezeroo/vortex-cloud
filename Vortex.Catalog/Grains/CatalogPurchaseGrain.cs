@@ -180,7 +180,8 @@ public sealed partial class CatalogPurchaseGrain(
                     return offer;
                 },
                 _logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 

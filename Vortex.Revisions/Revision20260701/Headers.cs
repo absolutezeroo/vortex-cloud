@@ -84,9 +84,24 @@ internal static class MessageEvent
     public const int WiredGetVariableOwnersPageEvent = 2221;
     public const int ClaimDailyTaskEvent = 4101;
     public const int GetDailyTasksEvent = 4100;
-    public const int ProgressTreasureHuntMessageEvent = 762;
+
+    // 762 is in NEITHER table of WIN63's own registry (habbo/communication/_SafeCls_2046.as) — not
+    // as a composer, not as an event — so this client cannot send it and never could. Nothing here
+    // handles it either. Kept as -1 so the client's wire-coverage sweep stops reporting a gap that
+    // is really a leftover header from an older revision. Verified 2026-09-01.
+    public const int ProgressTreasureHuntMessageEvent = -1;
     public const int ClickCharacterEvent = 3244; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[3244] = _SafeCls_2770(int), room/_SafeCls_1821.as:600. 785 was in no registry table.
-    public const int WiredUpdateRoomEvent = 3814; // NOT wired-domain: AS3 shape (type:int,duration:int,isPermanent:bool) matches a moderation mute/freeze payload, not a wired concept. Left unimplemented on purpose - do not build a wired handler for this without re-verifying its real purpose first.
+
+    // RESOLVED 2026-09-01, and it is not a client→server message at all. The earlier note here
+    // guessed "a moderation mute/freeze payload" from the shape (type:int, duration:int,
+    // isPermanent:bool) and asked for verification before anyone built a handler. WIN63's registry
+    // settles it: 3814 is in the *event* table (`_SafeStr_4546[3814] = _SafeCls_2624`), whose
+    // parser `_SafeCls_2974` reads exactly those three fields — it is the avatar-effect activation
+    // push, and this file already has it correctly as `AvatarEffectActivatedMessageComposer = 3814`
+    // in the server→client region below. The client registers 3814 as
+    // AvatarEffectActivatedMessageEvent. Nothing referenced this constant.
+    public const int WiredUpdateRoomEvent = -1;
+
     #region Incoming
 
     public const int BreedPetsMessageEvent = 1922; // AS3-verified (ghost fix): AvatarInfoWidget::cancelBreedPets()
@@ -786,7 +801,14 @@ internal static class MessageComposer
     public const int JukeboxPlayListFullMessageComposer = 949; // AS3-verified (ghost fix): onJukeboxPlayListFullMessage @ JukeboxPlayListController
     public const int JukeboxSongDisksMessageComposer = 2257; // AS3-verified (ghost fix): onJukeboxSongDisksMessage @ JukeboxPlayListController
     public const int NowPlayingMessageComposer = 398; // AS3-verified (ghost fix): onNowPlayingMessage @ JukeboxPlayListController
-    public const int OfficialSongIdMessageComposer = 2264;
+
+    // AS3-verified (direct read of the 2026 registry): _events[3050] = _SafeCls_3346, the event
+    // SongDiskProductViewCatalogWidget::onOfficialSongIdMessageEvent() subscribes to. NOT 2264:
+    // that was win63_version's id, and the 2026 registry reassigned 2264 to
+    // WeeklyCompetitiveFriendsLeaderboardEvent (_SafeCls_2046.as:1373 vs :1502), so the old value
+    // made this answer arrive at the client as a leaderboard. The client has been registered at
+    // 3050 all along (HabboMessages.ts, "=== SOUND (Trax) ===").
+    public const int OfficialSongIdMessageComposer = 3050;
     public const int PlayListMessageComposer = 1242;
     public const int PlayListSongAddedMessageComposer = 2785; // AS3-verified (ghost fix): onPlayListSongAddedMessage @ SoundMachinePlayListController
     public const int TraxSongInfoMessageComposer = 2278;

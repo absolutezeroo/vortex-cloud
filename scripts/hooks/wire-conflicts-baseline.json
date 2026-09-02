@@ -2,6 +2,7 @@
   "subjects": [
     "incoming/AcceptFriend",
     "incoming/DeclineFriend",
+    "incoming/MoveAvatar",
     "incoming/PickupObject",
     "incoming/RemoveFriend",
     "incoming/SendRoomInvite",

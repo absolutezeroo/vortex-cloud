@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.MysteryBox;
@@ -201,7 +202,8 @@ public sealed class RoomGrainMysteryBoxAbandonTests
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
+                new RoomWiredLogChannel(),
+                FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 
             IRoomItem box = FakeProxy.Create<IRoomItem>(call =>

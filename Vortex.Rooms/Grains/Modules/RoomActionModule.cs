@@ -59,15 +59,16 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 
         await inventory.AddFurnitureFromRoomItemSnapshotAsync(snapshot, ct);
 
-        await _roomGrain._events.PublishAsync(
+        // Detached: the item is already in the inventory and the client already has its answer.
+        // See RoomGrain.PublishDetached.
+        _roomGrain.PublishDetached(
             new ItemPickedUpEvent(
                 itemId.Value,
                 ctx.PlayerId.Value,
                 previousOwnerId.Value,
                 pickerId.Value,
                 _roomGrain.RoomId.Value
-            ),
-            ct
+            )
         );
 
         return true;

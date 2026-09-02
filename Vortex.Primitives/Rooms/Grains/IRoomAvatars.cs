@@ -29,6 +29,7 @@ public interface IRoomAvatars : IGrainWithIntegerKey
         ActionContext ctx,
         int targetX,
         int targetY,
+        int? targetZKey,
         CancellationToken ct
     );
     public Task<bool> UpdateAvatarWithPlayerAsync(

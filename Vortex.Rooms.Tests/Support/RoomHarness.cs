@@ -17,6 +17,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Navigator.Enums;
@@ -79,7 +80,11 @@ internal sealed class RoomHarness
 
     private long _now;
 
-    private RoomHarness(DbContextOptions<VortexDbContext> options, bool canManipulate)
+    private RoomHarness(
+        DbContextOptions<VortexDbContext> options,
+        bool canManipulate,
+        string[] capabilities
+    )
     {
         _options = options;
 
@@ -104,7 +109,11 @@ internal sealed class RoomHarness
                     PublishedEvents.Add((IEvent)call.Args![0]!);
                 }
 
-                return null;
+                // VSTHRD003: handing back a task the test made on purpose -- a slow or broken
+                // publisher is the whole point of PublishResult, and nothing here awaits it.
+#pragma warning disable VSTHRD003
+                return PublishResult;
+#pragma warning restore VSTHRD003
             }),
             FakeProxy.Create<ICancellableEventPublisher>(call =>
             {
@@ -120,13 +129,14 @@ internal sealed class RoomHarness
                     }
                 );
             }),
-            BuildPermissionService(),
+            BuildPermissionService(capabilities),
             FakeProxy.Create<IVortexMetrics>(_ => null),
             FakeProxy.Create<IRoomModerationStore>(_ => null),
             BuildPetLevelProvider(),
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),
-            new RoomWiredLogChannel()
+            new RoomWiredLogChannel(),
+            BuildCommerceJournal()
         );
 
         // The security module reads the room's own snapshot to decide who owns the place, so a
@@ -289,9 +299,14 @@ internal sealed class RoomHarness
             ]
             : [];
 
+    /// <param name="capabilities">
+    /// The hotel-wide capabilities the permission service answers with, for the grain methods that
+    /// gate on a staff power rather than on an in-room controller level.
+    /// </param>
     public static async Task<RoomHarness> CreateAsync(
         int placedBotId = PlacedBotId,
-        bool canManipulate = true
+        bool canManipulate = true,
+        string[]? capabilities = null
     )
     {
         DbContextOptions<VortexDbContext> options = new DbContextOptionsBuilder<VortexDbContext>()
@@ -317,7 +332,7 @@ internal sealed class RoomHarness
             await seed.SaveChangesAsync().ConfigureAwait(true);
         }
 
-        return new RoomHarness(options, canManipulate);
+        return new RoomHarness(options, canManipulate, capabilities ?? []);
     }
 
     public VortexDbContext NewDbContext() => new(_options);
@@ -488,13 +503,42 @@ internal sealed class RoomHarness
         );
 
     /// <summary>
+    /// What the event publisher hands back, so a test can make handlers slow or broken. Null (the
+    /// default) means the proxy's own completed task.
+    /// </summary>
+    public Task? PublishResult { get; set; }
+
+    /// <summary>Every state the room moved a commerce operation through, in order.</summary>
+    public List<CommerceOperationState> JournalStates { get; } = [];
+
+    /// <summary>Makes the journal itself fail, which a payout must survive: the furniture behind a
+    /// prize is already destroyed by the time it is written.</summary>
+    public bool JournalThrows { get; set; }
+
+    private ICommerceJournal BuildCommerceJournal() =>
+        FakeProxy.Create<ICommerceJournal>(call =>
+        {
+            if (JournalThrows)
+            {
+                throw new InvalidOperationException("journal unavailable");
+            }
+
+            if (call.Method.Name == nameof(ICommerceJournal.TransitionAsync))
+            {
+                JournalStates.Add((CommerceOperationState)call.Args![1]!);
+            }
+
+            return Task.CompletedTask;
+        });
+
+    /// <summary>
     /// A staff-capability-free player, so the manipulate check falls through to the room's own
     /// rights list — which is what the tests vary.
     /// </summary>
-    private static IPermissionService BuildPermissionService() =>
+    private static IPermissionService BuildPermissionService(string[] capabilities) =>
         FakeProxy.Create<IPermissionService>(call =>
             call.Method.Name == nameof(IPermissionService.ResolveForPlayerAsync)
-                ? Task.FromResult(new PermissionSet([], []))
+                ? Task.FromResult(new PermissionSet([], capabilities))
                 : null
         );
 

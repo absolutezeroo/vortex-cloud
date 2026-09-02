@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Logging;
 using Vortex.Players.Configuration;
 using Vortex.Primitives;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
@@ -36,6 +37,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
     private readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerGrain> _logger;
     private readonly IAccountLevelProvider _accountLevels;
+    private readonly ICommerceJournal _journal;
 
     private readonly PlayerLiveState _state;
 
@@ -45,7 +47,8 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         IEventPublisher events,
         ILogger<PlayerGrain> logger,
         IOptions<ClubConfig> clubConfig,
-        IAccountLevelProvider accountLevels
+        IAccountLevelProvider accountLevels,
+        ICommerceJournal journal
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -54,6 +57,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _logger = logger;
         _clubConfig = clubConfig.Value;
         _accountLevels = accountLevels;
+        _journal = journal;
 
         _state = new PlayerLiveState { PlayerId = PlayerId.Parse((int)this.GetPrimaryKeyLong()) };
     }
@@ -81,7 +85,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         (bool allowed, int givenToday, DateTime resetDate) = RespectBudget.TryConsume(
             _state.RespectGivenToday,
             _state.RespectResetDate,
-            DateTime.Now,
+            DateTime.UtcNow,
             dailyLimit
         );
 
@@ -454,6 +458,18 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 ]
                 : [];
 
+        CommerceOperationId operation = CommerceOperationId.New();
+
+        await _journal
+            .OpenAsync(
+                operation,
+                CommerceOperationKind.ClubPurchase,
+                (int)_state.PlayerId,
+                $"club months={months} vip={isVip} cost={costCredits}",
+                ct
+            )
+            .ConfigureAwait(true);
+
         // Applying the months writes subscription rows, grants badges and raises events, any of
         // which can throw. This used to sit after a bare debit, so a failure in there took the
         // player's credits and left them without the membership they paid for.
@@ -461,13 +477,63 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             .GetPlayerWalletGrain(_state.PlayerId)
             .ExecutePurchaseAsync(
                 debitRequests,
-                innerCt => ApplyClubMonthsAsync(months, isVip, costCredits, innerCt),
+                operation,
+                async innerCt =>
+                {
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Debited,
+                            CommerceStepKeys.DEBIT,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
+                    ClubPurchaseResult applied = await ApplyClubMonthsAsync(
+                            months,
+                            isVip,
+                            costCredits,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
+                    // The months are on the account: badges granted, events raised, and the client
+                    // already told. Refunding past here would leave a member who paid nothing.
+                    await _journal
+                        .TransitionAsync(
+                            operation,
+                            CommerceOperationState.Completed,
+                            CommerceStepKeys.CLUB_MONTHS,
+                            null,
+                            innerCt
+                        )
+                        .ConfigureAwait(true);
+
+                    return applied;
+                },
                 _logger,
-                ct
+                ct,
+                _journal
             )
             .ConfigureAwait(true);
 
-        return result.Succeeded ? result.Reward! : ClubPurchaseResult.NotEnoughCredits;
+        if (!result.Succeeded)
+        {
+            await _journal
+                .TransitionAsync(
+                    operation,
+                    CommerceOperationState.FailedBeforePivot,
+                    CommerceStepKeys.DEBIT,
+                    "insufficient balance",
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            return ClubPurchaseResult.NotEnoughCredits;
+        }
+
+        return result.Reward!;
     }
 
     public Task<ClubPurchaseResult> GrantClubMonthsAsync(
@@ -1067,7 +1133,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 ct
             );
 
-        _state.LastUpdated = DateTime.Now;
+        _state.LastUpdated = DateTime.UtcNow;
     }
 
     private async Task GrantClubBadgesAsync(bool isVip, CancellationToken ct)

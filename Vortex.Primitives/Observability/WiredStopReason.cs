@@ -22,8 +22,24 @@ public static class WiredStopReason
     /// <summary>The room event queue was full and the event was refused (WiredMaxQueuedEvents).</summary>
     public const string QUEUE_DROP = "queue-drop";
 
+    /// <summary>
+    /// The room already held <c>WiredMaxPendingExecutions</c> delayed chains and another was
+    /// refused. Distinct from <see cref="QUEUE_DROP"/> on purpose: that one says the room is being
+    /// told about more than it can read, this one says the room's own wired is arranging more
+    /// future work than it gets through — which is a room to go and look at, not a busy hotel.
+    /// </summary>
+    public const string SCHEDULE_DROP = "schedule-drop";
+
     /// <summary>The pile fired more often than its allowance window permits.</summary>
     public const string EXECUTION_LIMIT = "execution-limit";
+
+    /// <summary>
+    /// An action's effective selection held more players than <c>WiredSelectedPlayersLimit</c> and
+    /// the rest were dropped. The only one of these a player can raise by walking into a room, which
+    /// is why it is a counter rather than a log line: a room hitting it repeatedly is either an
+    /// operator running a bigger hotel than the limit assumes, or the abuse the limit is there for.
+    /// </summary>
+    public const string SELECTION_LIMIT = "selection-limit";
 
     /// <summary>
     /// A delayed effect lost its pile during the wait — dragged onto another tile, or picked up —

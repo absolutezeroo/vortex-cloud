@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
@@ -119,8 +120,11 @@ public sealed class MarketplacePurchaseGrain(
 
         try
         {
-            // THE PIVOT: the item leaves the seller's inventory here, and the offer it left for
-            // already exists.
+            // The seller's client stops showing the item here. This is a cache and a notification,
+            // not the pivot -- InventoryGrain.RemoveFurnitureAsync writes nothing durable, which is
+            // correct for its other five callers because each of them persists the item's new home
+            // itself before calling it. This one had no such half, so the row stayed exactly as the
+            // inventory loader selects it and came back on the next reload.
             removed = await inventoryGrain
                 .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
                 .ConfigureAwait(true);
@@ -139,6 +143,50 @@ public sealed class MarketplacePurchaseGrain(
 
             return (1, 0);
         }
+
+        // THE PIVOT: the row leaves the seller's inventory for good. Soft-deleted rather than moved,
+        // because there is nowhere to move it to -- an offer holds no furniture id, and every exit
+        // the offer has (sold, cancelled, expired) hands out a *fresh* row through DeliverAsync. The
+        // original is therefore a second copy however the listing ends, not a thing to give back.
+        //
+        // The four conditions are the inventory loader's own predicate. Matching nothing means the
+        // item stopped being the seller's free-standing property between the snapshot read above and
+        // here -- placed in a room, pledged to a chest, already minted -- and the listing must not
+        // proceed. DeletedAt is absent from the test on purpose: the global soft-delete query filter
+        // supplies it.
+        //
+        // ponytail: a read-then-write, not a conditional claim. It closes the duplication, which is
+        // one row losing its home; it does not close two writers racing for the same row
+        // (ECON-ITM-004) -- that wants the shared ExecuteUpdate claim primitive the marketplace
+        // buy path already uses, applied to every ownership move at once rather than to this one.
+        int sellerId = (int)this.GetPrimaryKeyLong();
+
+        FurnitureEntity? sellersRow = await dbCtx
+            .Furnitures.FirstOrDefaultAsync(
+                f =>
+                    f.Id == furnitureItemId
+                    && f.PlayerEntityId == sellerId
+                    && f.RoomEntityId == null
+                    && f.WiredChestEntityId == null,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (sellersRow is null)
+        {
+            await AbandonPendingOfferAsync(
+                    offer.Id,
+                    operation,
+                    "the item was no longer the seller's to list"
+                )
+                .ConfigureAwait(true);
+
+            return (1, 0);
+        }
+
+        sellersRow.DeletedAt = DateTime.UtcNow;
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _journal
             .TransitionAsync(
@@ -379,7 +427,8 @@ public sealed class MarketplacePurchaseGrain(
                         return true;
                     },
                     _logger,
-                    ct
+                    ct,
+                    _journal
                 )
                 .ConfigureAwait(true);
         }

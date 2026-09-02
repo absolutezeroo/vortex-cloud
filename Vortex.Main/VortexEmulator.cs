@@ -86,9 +86,11 @@ public class VortexEmulator(
         }
 
         throw new InvalidOperationException(
-            $"{hosts.Count} active silos are in this cluster, and this build's caches, metrics and "
-                + "room streams are silo-local: an admin catalog or furniture edit would reload one "
-                + "node and leave the others serving stale definitions indefinitely. Make those "
+            $"{hosts.Count} active silos are in this cluster, and this build's caches, metrics, "
+                + "room streams and messenger presence fan-out are silo-local: an admin catalog or "
+                + "furniture edit would reload one node and leave the others serving stale "
+                + "definitions indefinitely, and a friend on another silo would never be told you "
+                + "came online. Make those "
                 + "components cluster-aware, then set "
                 + $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.MultiSiloReady)}' "
                 + $"to true. Active silos: {string.Join(", ", hosts.Keys)}."

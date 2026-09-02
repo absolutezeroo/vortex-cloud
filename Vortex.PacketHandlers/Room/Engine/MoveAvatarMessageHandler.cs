@@ -36,7 +36,13 @@ public class MoveAvatarMessageHandler(IRoomService roomService, IGrainFactory gr
         }
 
         await _roomService
-            .ClickTileAsync(ctx.AsActionContext(), message.TargetX, message.TargetY, ct)
+            .ClickTileAsync(
+                ctx.AsActionContext(),
+                message.TargetX,
+                message.TargetY,
+                message.TargetZKey,
+                ct
+            )
             .ConfigureAwait(false);
     }
 }

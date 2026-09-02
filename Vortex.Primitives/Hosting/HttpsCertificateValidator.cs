@@ -80,6 +80,9 @@ public static class HttpsCertificateValidator
                 certificatePassword
             );
 
+            // DateTime.Now on purpose, and the only place in the server where that is true:
+            // X509Certificate2.NotAfter is returned in local time, so UtcNow would compare against
+            // the wrong clock and call a certificate expired (or not) by the host's UTC offset.
             if (certificate.NotAfter < DateTime.Now)
             {
                 return ListenerSecurityResult.AllowedWithWarning(

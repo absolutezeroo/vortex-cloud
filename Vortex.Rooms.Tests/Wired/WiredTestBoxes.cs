@@ -93,6 +93,7 @@ internal static class WiredTestBoxes
         {
             "get_WiredSelectorMaxAreaSize" => 64,
             "get_WiredSelectedItemsLimit" => 32,
+            "get_WiredSelectedPlayersLimit" => 100,
             "get_WiredNeighborhoodRadius" => 3,
             "get_WiredMaxIntParams" => 16,
             "get_WiredAllowWallFurni" => true,

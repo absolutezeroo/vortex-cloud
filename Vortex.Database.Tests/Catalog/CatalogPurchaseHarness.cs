@@ -57,6 +57,9 @@ internal sealed class CatalogPurchaseHarness
 
     public CatalogPurchaseGrain Grain { get; }
 
+    /// <summary>What the flow told the journal. Enough to answer "did it journal at all".</summary>
+    public Commerce.NullCommerceJournal Journal { get; } = new();
+
     public ClubSubscriptionSnapshot Club { get; set; } =
         new ClubSubscriptionSnapshot { IsActive = false, IsVip = false };
 
@@ -129,7 +132,7 @@ internal sealed class CatalogPurchaseHarness
 
                 return Task.CompletedTask;
             }),
-            new Commerce.NullCommerceJournal(),
+            Journal,
             NullLogger<CatalogPurchaseGrain>.Instance
         );
 

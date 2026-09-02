@@ -297,62 +297,49 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         }
     }
 
+    /// <summary>
+    /// Hands the pets whose stats have moved to the room's persistence grain.
+    /// </summary>
+    /// <remarks>
+    /// This used to open a <c>DbContext</c> and save, inside the room's own turn, every sixty
+    /// seconds — a periodic spike on the clock that moves avatars, in a room that may hold a dozen
+    /// pets (PET-TICK-044). The furniture has been written from <c>RoomPersistenceGrain</c> all
+    /// along, and a comment two files over claimed the pets did too; they did not, and believing it
+    /// is what kept this here.
+    /// <para>
+    /// The dirty flags are cleared on handover rather than after a save, because the save is no
+    /// longer this grain's to watch. Nothing is lost by it: the persistence grain keeps its queue
+    /// until a write succeeds, which is the same guarantee the old in-line clear was reaching for.
+    /// </para>
+    /// </remarks>
     public async Task FlushDirtyPetsAsync(CancellationToken ct)
     {
-        List<int> dirtyIds = [];
+        List<PetSnapshot> dirty = [];
 
         foreach (KeyValuePair<int, PetMotionState> kvp in _motionByPetId)
         {
-            if (kvp.Value.IsStatsDirty)
+            if (
+                kvp.Value.IsStatsDirty
+                && _roomGrain._state.PetsById.TryGetValue(kvp.Key, out PetSnapshot? snapshot)
+            )
             {
-                dirtyIds.Add(kvp.Key);
+                dirty.Add(snapshot);
             }
         }
 
-        if (dirtyIds.Count == 0)
+        if (dirty.Count == 0)
         {
             return;
         }
 
-        await using VortexDbContext dbCtx = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
+        await _roomGrain
+            ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId)
+            .EnqueueDirtyPetsAsync(_roomGrain.RoomId, dirty, ct)
+            .ConfigureAwait(true);
 
-        PetEntity[] entities = await dbCtx
-            .Pets.Where(p => dirtyIds.Contains(p.Id) && p.DeletedAt == null)
-            .ToArrayAsync(ct);
-
-        foreach (PetEntity entity in entities)
+        foreach (PetSnapshot pet in dirty)
         {
-            if (!_roomGrain._state.PetsById.TryGetValue(entity.Id, out PetSnapshot? snapshot))
-            {
-                continue;
-            }
-
-            entity.Nutrition = snapshot.Nutrition;
-            entity.Energy = snapshot.Energy;
-            entity.Experience = snapshot.Experience;
-            entity.Level = snapshot.Level;
-            entity.Respect = snapshot.Respect;
-            entity.Happiness = snapshot.Happiness;
-            entity.Thirst = snapshot.Thirst;
-            entity.RespectTodayCount = snapshot.RespectTodayCount;
-            entity.RespectLastResetDate = snapshot.RespectLastResetDate;
-            entity.CanBreed = snapshot.CanBreed;
-            entity.LastWateredAt = snapshot.LastWateredAt;
-            entity.X = snapshot.X;
-            entity.Y = snapshot.Y;
-            entity.Z = snapshot.Z;
-            entity.Direction = (int)snapshot.Direction;
-        }
-
-        await dbCtx.SaveChangesAsync(ct);
-
-        // Cleared after the save, not before it. Cleared first, a throw from SaveChanges left the
-        // pets marked clean while their stats were still only in memory: an hour of feeding and
-        // levelling gone, and not for the sixty seconds the flush interval promises but until
-        // something happened to dirty each pet again.
-        foreach (PetEntity entity in entities)
-        {
-            if (_motionByPetId.TryGetValue(entity.Id, out PetMotionState? motion))
+            if (_motionByPetId.TryGetValue(pet.PetId, out PetMotionState? motion))
             {
                 motion.IsStatsDirty = false;
             }

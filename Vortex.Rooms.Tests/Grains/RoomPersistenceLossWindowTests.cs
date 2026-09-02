@@ -9,8 +9,10 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Database.Entities.Pets;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots.StuffData;
+using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
@@ -99,6 +101,72 @@ public sealed class RoomPersistenceLossWindowTests
         h.RowsInRoom().Should().Be(0);
     }
 
+    /// <summary>
+    /// Two rooms, one row. Pick a sofa up in A and drop it in B inside <c>DirtyItemsTickMs</c>: B
+    /// claims the row at once, and A's flush was then writing <c>RoomEntityId = null</c> over the
+    /// claim, so the sofa vanished from B (ROOM-PER-005). A removal only applies while the row is
+    /// still this room's.
+    /// </summary>
+    [Fact]
+    public async Task ARemovalDoesNotUnseatARoomThatAlreadyClaimedTheItem()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueRemovalAsync(1);
+        h.ClaimByAnotherRoom(1, room: 99);
+
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be(99);
+    }
+
+    [Fact]
+    public async Task ARemovalOfAnItemStillInTheRoom_TakesItOut()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueAsync(1);
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be((int)ROOM);
+
+        await h.EnqueueRemovalAsync(1);
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().BeNull();
+    }
+
+    /// <summary>
+    /// PET-TICK-044: the pet stats used to be written by the room itself, from inside its tick.
+    /// They come here now, on the clock that already writes the furniture.
+    /// </summary>
+    [Fact]
+    public async Task EnqueuedPets_AreWrittenOnTheSameFlush()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueuePetAsync(petId: 1, nutrition: 42);
+        await h.DeactivateAsync();
+
+        h.PetNutrition(1).Should().Be(42);
+    }
+
+    [Fact]
+    public async Task APetTheDatabaseRefused_IsKeptForTheNextFlush()
+    {
+        Harness h = new(maxPerFlush: 100) { Fail = true };
+
+        await h.EnqueuePetAsync(petId: 1, nutrition: 42);
+        await h.DeactivateAsync();
+
+        h.PetNutrition(1).Should().Be(0, "the save never happened");
+
+        h.Fail = false;
+        await h.DeactivateAsync();
+
+        h.PetNutrition(1).Should().Be(42, "and the queue still had it");
+    }
+
     private sealed class Harness
     {
         private readonly RoomPersistenceGrain _grain;
@@ -166,12 +234,104 @@ public sealed class RoomPersistenceLossWindowTests
         /// </summary>
         public Task DeactivateAsync() => _grain.OnDeactivateAsync(Reason(), CancellationToken.None);
 
+        /// <summary>Seeds a pet row and hands the grain a snapshot of it with new stats.</summary>
+        public async Task EnqueuePetAsync(int petId, int nutrition)
+        {
+            using (VortexDbContext db = new(_options))
+            {
+                db.Pets.Add(
+                    new PetEntity
+                    {
+                        Id = petId,
+                        OwnerPlayerEntityId = 1,
+                        Name = "pet",
+                        Type = 0,
+                        Race = 0,
+                        Color = "ffffff",
+                        Gender = AvatarGenderType.Male,
+                        Level = 1,
+                        Experience = 0,
+                        Energy = 0,
+                        Nutrition = 0,
+                        Respect = 0,
+                        X = 0,
+                        Y = 0,
+                        Z = 0,
+                        Direction = 0,
+                        OwnerPlayerEntity = null!,
+                    }
+                );
+
+                db.SaveChanges();
+            }
+
+            await _grain.EnqueueDirtyPetsAsync(
+                new RoomId((int)ROOM),
+                [PetSnapshotWith(petId, nutrition)],
+                CancellationToken.None
+            );
+        }
+
+        public int PetNutrition(int petId)
+        {
+            using VortexDbContext db = new(_options);
+
+            return db.Pets.Single(pet => pet.Id == petId).Nutrition;
+        }
+
+        public Task EnqueueRemovalAsync(int objectId) =>
+            _grain.EnqueueDirtyItemAsync(
+                new RoomId((int)ROOM),
+                Snapshot(objectId),
+                CancellationToken.None,
+                remove: true
+            );
+
+        /// <summary>The other room getting there first, which is all "dropped in B" looks like from
+        /// here: one row, claimed.</summary>
+        public void ClaimByAnotherRoom(int objectId, int room)
+        {
+            using VortexDbContext db = new(_options);
+
+            db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId = room;
+            db.SaveChanges();
+        }
+
+        public int? RoomOf(int objectId)
+        {
+            using VortexDbContext db = new(_options);
+
+            return db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId;
+        }
+
         public int RowsInRoom()
         {
             using VortexDbContext db = new(_options);
 
             return db.Set<FurnitureEntity>().Count(f => f.RoomEntityId == (int)ROOM);
         }
+
+        private static PetSnapshot PetSnapshotWith(int petId, int nutrition) =>
+            new()
+            {
+                PetId = petId,
+                OwnerId = new PlayerId(1),
+                RoomId = (int)ROOM,
+                Name = "pet",
+                Type = 0,
+                Race = 0,
+                Color = "ffffff",
+                Gender = AvatarGenderType.Male,
+                Level = 1,
+                Experience = 0,
+                Energy = 0,
+                Nutrition = nutrition,
+                Respect = 0,
+                X = 0,
+                Y = 0,
+                Z = 0,
+                Direction = Rotation.South,
+            };
 
         private static DeactivationReason Reason() =>
             new(DeactivationReasonCode.ShuttingDown, "test");

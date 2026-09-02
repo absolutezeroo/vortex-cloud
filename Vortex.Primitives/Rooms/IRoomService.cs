@@ -28,7 +28,13 @@ public partial interface IRoomService
         string password = ""
     );
     public Task CloseRoomForPlayerAsync(PlayerId playerId, CancellationToken ct);
-    public Task ClickTileAsync(ActionContext ctx, int targetX, int targetY, CancellationToken ct);
+    public Task ClickTileAsync(
+        ActionContext ctx,
+        int targetX,
+        int targetY,
+        int? targetZKey,
+        CancellationToken ct
+    );
     public Task PickupItemInRoomAsync(
         ActionContext ctx,
         RoomObjectId itemId,

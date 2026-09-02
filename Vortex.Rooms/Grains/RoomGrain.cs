@@ -17,9 +17,12 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
 using Vortex.Logging;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -72,6 +75,15 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomModelProvider _roomModelProvider;
 
     internal readonly RoomLiveState _state;
+
+    /// <summary>
+    /// Where a room's value-moving operations are recorded. One flow uses it — the wired chest
+    /// contract settlement, which debits a wallet, moves furniture between an inventory and a chest
+    /// and adjusts the chest's credits, and until now did all three with no operation an operator
+    /// could find afterwards (ECON-CHEST-015).
+    /// </summary>
+    internal readonly ICommerceJournal _commerceJournal;
+
     internal readonly RoomWiredLogChannel _wiredLogChannel;
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     internal readonly IRoomEventListenerProvider _eventListenerProvider;
@@ -127,7 +139,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IPetLevelProvider petLevelProvider,
         IPetCommandProvider petCommandProvider,
         IPetVocalProvider petVocalProvider,
-        RoomWiredLogChannel wiredLogChannel
+        RoomWiredLogChannel wiredLogChannel,
+        // Last on purpose: GrainActivationContext.CreateWithIntegerKey takes params object[], so a
+        // dependency inserted anywhere else compiles cleanly in every test that builds this grain
+        // and then fails at activation.
+        ICommerceJournal commerceJournal
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -151,6 +167,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _petCommandProvider = petCommandProvider;
         _petVocalProvider = petVocalProvider;
         _wiredLogChannel = wiredLogChannel;
+        _commerceJournal = commerceJournal;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new RoomPathingSystem(this);
@@ -242,17 +259,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         };
     }
 
-    public async Task<int> GetRoomPopulationAsync()
-    {
-        using (
-            _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetRoomPopulationAsync))
-        )
-        {
-            return await _grainFactory
-                .GetRoomDirectoryGrain()
-                .GetRoomPopulationAsync(_state.RoomId);
-        }
-    }
+    public Task<int> GetRoomPopulationAsync() => Task.FromResult(_state.AvatarsByPlayerId.Count);
 
     public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync() =>
         Task.FromResult(_state.RoomProperties.ToImmutableArray());
@@ -590,17 +597,57 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             .FirstOrDefaultAsync(ct)
             .ConfigureAwait(true);
 
-        List<GroupMemberEntity> members = await dbCtx
+        // Two columns, not the row. The roster is read for one question -- what rank does this
+        // player hold here -- and a guild base for a large guild was pulling every column of every
+        // membership row, foreign keys and timestamps included, into the room's activation
+        // (PERS-HYD-014). It is still every member: trimming the list would quietly take a rank
+        // away from whoever fell off the end.
+        List<GroupMemberRankRow> members = await dbCtx
             .GroupMembers.AsNoTracking()
             .Where(m => m.GroupEntityId == id && m.DeletedAt == null)
+            .Select(m => new GroupMemberRankRow(m.PlayerEntityId, m.Rank))
             .ToListAsync(ct)
             .ConfigureAwait(true);
 
-        foreach (GroupMemberEntity member in members)
+        foreach (GroupMemberRankRow member in members)
         {
-            _state.GroupMemberRanks[member.PlayerEntityId] = member.Rank;
+            _state.GroupMemberRanks[member.PlayerId] = member.Rank;
         }
     }
+
+    /// <summary>
+    /// Publishes an event without holding the room's turn open for its handlers.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>EventRegistry</c> runs handlers in parallel, but <c>PublishAsync</c> is awaited, so the
+    /// room waits for the slowest of them. On the furniture events that is a cross-grain call per
+    /// subscriber — quest progress, achievement progress, the daily task — and it happens on every
+    /// click of a build session: placing a sofa held the room, and everyone standing in it, until
+    /// the placer's own grains had answered (INFRA-EVENT-058).
+    /// </para>
+    /// <para>
+    /// Only for events that <b>no handler answers back into this room with</b>. The three furniture
+    /// ones qualify: their subscribers write forensics into an in-memory buffer and call the
+    /// <em>player's</em> grains, never the room's, so nothing detached here can re-enter the
+    /// activation it was published from. That is the question INFRA-AWAIT-059 leaves open in
+    /// general, and it has to be answered per event rather than assumed — which is why this is a
+    /// named method used at five sites, not the default for <c>_events</c>.
+    /// </para>
+    /// <para>
+    /// Published on no cancellation token: the caller's token belongs to a turn that is about to
+    /// end, and cancelling with it would drop the event exactly when the request completed normally.
+    /// </para>
+    /// </remarks>
+    internal void PublishDetached(IEvent evt) =>
+        _events
+            .PublishAsync(evt, CancellationToken.None)
+            .LogAndForget(
+                _logger,
+                "Detached publication of {EventType} from room {RoomId} failed.",
+                evt.GetType().Name,
+                _state.RoomId.Value
+            );
 
     internal long NowMs()
     {
@@ -635,6 +682,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         // the boundary it just fired, or the same tick runs again.
         return aligned == now ? now + tickMs : aligned;
     }
+
+    /// <summary>The two columns of a membership row the room actually reads.</summary>
+    private readonly record struct GroupMemberRankRow(int PlayerId, GroupMemberRank Rank);
 
     private async Task HydrateModerationStateAsync(CancellationToken ct)
     {

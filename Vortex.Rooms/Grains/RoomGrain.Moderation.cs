@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Rooms.Grains;
@@ -55,18 +57,42 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => ModerationSystem.UnbanUserAsync(actorCtx, targetPlayerId, ct);
 
-    public Task<bool> ApplyStaffRoomActionsAsync(
+    public async Task<bool> ApplyStaffRoomActionsAsync(
         PlayerId actorPlayerId,
         bool unlockDoor,
         bool resetNameAndDescription,
         bool kickUsers,
         CancellationToken ct
-    ) =>
-        ModerationSystem.ApplyStaffRoomActionsAsync(
-            actorPlayerId,
-            unlockDoor,
-            resetNameAndDescription,
-            kickUsers,
-            ct
-        );
+    )
+    {
+        // The room tool reaches into a room its user neither owns nor stands in, so no controller
+        // level can gate it -- which left the packet handler as the only check, on a method of a
+        // public grain interface (ROOMG-GATE-038). The grain is the boundary.
+        if (
+            !await SecurityModule
+                .HasCapabilityAsync(actorPlayerId, Capabilities.Room.ModerateAny)
+                .ConfigureAwait(true)
+        )
+        {
+            _logger.LogWarning(
+                "Player {ActorPlayerId} tried to apply staff room actions to room {RoomId} without "
+                    + "{Capability}.",
+                actorPlayerId,
+                _state.RoomId,
+                Capabilities.Room.ModerateAny
+            );
+
+            return false;
+        }
+
+        return await ModerationSystem
+            .ApplyStaffRoomActionsAsync(
+                actorPlayerId,
+                unlockDoor,
+                resetNameAndDescription,
+                kickUsers,
+                ct
+            )
+            .ConfigureAwait(true);
+    }
 }

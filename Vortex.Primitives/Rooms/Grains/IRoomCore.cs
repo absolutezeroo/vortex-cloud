@@ -15,7 +15,17 @@ namespace Vortex.Primitives.Rooms.Grains;
 [Alias("Vortex.Primitives.Rooms.Grains.IRoomCore")]
 public interface IRoomCore : IGrainWithIntegerKey
 {
+    // One-way, both of them. Their only cross-grain caller is the room directory's periodic sweep,
+    // which touches every active room in the hotel and has nothing to do with the answer: awaiting
+    // them held the directory's single cluster-wide activation for the length of the whole fan-out,
+    // and -- because a room asking the directory anything then queued behind that -- gave two
+    // non-reentrant grains a way to wait on each other until Orleans timed one of them out. Called
+    // on a room by its own code (EnsureRoomActiveAsync, the settings path) these are plain method
+    // calls and unaffected.
+    [OneWay]
     public Task DeactivateRoomAsync();
+
+    [OneWay]
     public Task DelayRoomDeactivationAsync();
     public Task EnsureRoomActiveAsync(CancellationToken ct);
 
@@ -28,6 +38,15 @@ public interface IRoomCore : IGrainWithIntegerKey
     [AlwaysInterleave]
     [ReadOnly]
     public Task<RoomSummarySnapshot> GetSummaryAsync();
+
+    /// <summary>How many avatars are standing in the room.</summary>
+    /// <remarks>
+    /// Answered from the room's own occupants. It used to be a round trip to the cluster-wide room
+    /// directory — a room asking somebody else how many people were standing in it — which put the
+    /// hotel's single busiest serialization point on the path of the room's own summary.
+    /// </remarks>
+    [AlwaysInterleave]
+    [ReadOnly]
     public Task<int> GetRoomPopulationAsync();
 
     [AlwaysInterleave]

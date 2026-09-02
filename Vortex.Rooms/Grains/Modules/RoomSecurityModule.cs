@@ -164,6 +164,14 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         ModerationAction action
     )
     {
+        // An unfilled context is nobody and moderates nothing. Everything else that is not a player
+        // -- system, wired, a bot, a plugin -- is the server acting on its own behalf and carries no
+        // capabilities to resolve.
+        if (ctx.Origin == ActionOrigin.None)
+        {
+            return false;
+        }
+
         if (ctx.Origin != ActionOrigin.Player)
         {
             return true;
@@ -236,6 +244,30 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         }
 
         return _roomGrain._permissionService.ResolveForPlayerAsync(ctx.PlayerId);
+    }
+
+    /// <summary>
+    /// Whether a hotel-wide capability holds for this player, for the grain methods that answer to a
+    /// staff power rather than to an in-room controller level.
+    /// </summary>
+    /// <remarks>
+    /// Those methods used to leave the check to their packet handler. A handler is not a security
+    /// boundary: the method is a member of a public grain interface, callable by anything in the
+    /// cluster that can name the room (ROOMG-GATE-038). The handler keeps its own check — it answers
+    /// the client without waking a room — and this is the one that decides.
+    /// </remarks>
+    public async Task<bool> HasCapabilityAsync(PlayerId actor, string capability)
+    {
+        if (actor <= 0)
+        {
+            return false;
+        }
+
+        PermissionSet permissions = await _roomGrain
+            ._permissionService.ResolveForPlayerAsync(actor)
+            .ConfigureAwait(true);
+
+        return permissions.Has(capability);
     }
 
     public async Task RefreshControllerLevelForPlayerAsync(PlayerId playerId, CancellationToken ct)

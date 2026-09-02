@@ -8,12 +8,16 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
+using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Room;
 using Vortex.Players.Grains;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
@@ -90,6 +94,47 @@ public sealed class RentableSpaceRefundTests
         harness.Wallet.OwnerCredits.Should().Equal(PRICE);
     }
 
+    /// <summary>
+    /// The rental leaves a record of itself, in the state the flow actually ended in.
+    /// </summary>
+    /// <remarks>
+    /// This flow moves value in two directions -- the tenant is debited, the owner is credited --
+    /// and it used to do both with no operation id at all. A crash between the two left the tenant
+    /// paying an owner who was never paid, with nothing written down to say anything was owed and
+    /// nothing to resume from. Completed is the assertion that matters: an operation that stops at
+    /// Pivoted is one the escalation sweep has to pick up.
+    /// </remarks>
+    [Fact]
+    public async Task SuccessfulRent_IsRecordedAsACompletedOperation()
+    {
+        Harness harness = new Harness(seedFurniture: true);
+
+        await harness.Grain.RentAsync(RENTER_ID, CancellationToken.None).ConfigureAwait(true);
+
+        await using VortexDbContext db = harness.NewDbContext();
+        CommerceOperationEntity operation = await db.CommerceOperations.SingleAsync();
+
+        operation.Kind.Should().Be(CommerceOperationKind.RentableSpaceRent);
+        operation.PlayerId.Should().Be(RENTER_ID);
+        operation.State.Should().Be(CommerceOperationState.Completed);
+    }
+
+    /// <summary>A rental that never happened leaves no operation claiming it did.</summary>
+    [Fact]
+    public async Task ARefusedRent_IsNotRecordedAsCompleted()
+    {
+        Harness harness = new Harness(seedFurniture: true);
+        harness.Wallet.DebitSucceeds = false;
+
+        await harness.Grain.RentAsync(RENTER_ID, CancellationToken.None).ConfigureAwait(true);
+
+        await using VortexDbContext db = harness.NewDbContext();
+
+        (await db.CommerceOperations.CountAsync(o => o.State == CommerceOperationState.Completed))
+            .Should()
+            .Be(0);
+    }
+
     [Fact]
     public async Task NotEnoughCredits_WritesNoRental()
     {
@@ -124,12 +169,21 @@ public sealed class RentableSpaceRefundTests
                 db.SaveChanges();
             }
 
+            // A real journal over the same database, not a fake: what these tests are about is
+            // whether value moved, and the journal is now part of how the answer is recorded.
+            Journal = new CommerceJournal(
+                new TestDbContextFactory(_options),
+                FakeProxy.Create<IVortexMetrics>(_ => null),
+                NullLogger<CommerceJournal>.Instance
+            );
+
             Grain = GrainActivationContext.CreateWithIntegerKey<RentableSpaceGrain>(
                 FURNITURE_ID,
                 new TestDbContextFactory(_options),
                 BuildGrainFactory(),
                 FakeProxy.Create<IEventPublisher>(_ => null),
-                NullLogger<RentableSpaceGrain>.Instance
+                NullLogger<RentableSpaceGrain>.Instance,
+                Journal
             );
 
             SetPrivateField(
@@ -154,6 +208,10 @@ public sealed class RentableSpaceRefundTests
         }
 
         public RentableSpaceGrain Grain { get; }
+
+        public CommerceJournal Journal { get; }
+
+        public VortexDbContext NewDbContext() => new(_options);
 
         public RecordingWallet Wallet { get; } = new();
 
