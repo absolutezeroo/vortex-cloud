@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -32,12 +33,14 @@ internal sealed class PlayerQuestGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
+    ICommerceJournal journal,
     ILogger<PlayerQuestGrain> logger
 ) : Grain, IPlayerQuestGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<PlayerQuestGrain> _logger = logger;
 
     /// <summary>Campaign whose quests form the rotating daily pool (shown via the daily section, not
@@ -592,6 +595,7 @@ internal sealed class PlayerQuestGrain(
             if (done)
             {
                 await GrantRewardAsync(
+                        snapshot.Id,
                         snapshot.ActivityPointType,
                         snapshot.RewardCurrencyAmount,
                         ct
@@ -746,7 +750,12 @@ internal sealed class PlayerQuestGrain(
             .ConfigureAwait(true);
     }
 
-    private async Task GrantRewardAsync(int rewardType, int rewardAmount, CancellationToken ct)
+    private async Task GrantRewardAsync(
+        int questId,
+        int rewardType,
+        int rewardAmount,
+        CancellationToken ct
+    )
     {
         if (rewardAmount <= 0)
         {
@@ -755,8 +764,23 @@ internal sealed class PlayerQuestGrain(
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((long)PlayerId);
 
-        await wallet
-            .GrantCurrencyAsync(CurrencyRewardRules.KindFor(rewardType), rewardAmount, ct)
+        // The quest row was marked complete and saved before this ran, which is the right order and
+        // means the reward is owed from that moment. Under an operation so that a payout that never
+        // lands is findable instead of silent (PROG-REWARD-032).
+        await _journal
+            .RecordOwedPayoutAsync(
+                CommerceOperationKind.QuestReward,
+                (int)PlayerId,
+                $"quest={questId} amount={rewardAmount} type={rewardType}",
+                innerCt =>
+                    wallet.GrantCurrencyAsync(
+                        CurrencyRewardRules.KindFor(rewardType),
+                        rewardAmount,
+                        innerCt
+                    ),
+                _logger,
+                ct
+            )
             .ConfigureAwait(true);
     }
 

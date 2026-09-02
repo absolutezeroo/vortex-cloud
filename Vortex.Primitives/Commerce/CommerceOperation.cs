@@ -112,6 +112,14 @@ public enum CommerceOperationKind
     /// mystery trophy, a mystery box. The consumption is the pivot and it has already happened, so
     /// these operations are opened past it: they complete or they are owed.</summary>
     PrizeGrant = 14,
+
+    /// <summary>What a completed quest pays. The row is marked complete first, so the reward is
+    /// owed from before the payout runs.</summary>
+    QuestReward = 15,
+
+    /// <summary>What an achievement level pays: its badge, its currency and its score. Same shape —
+    /// the level is persisted before any of it is handed over.</summary>
+    AchievementReward = 16,
 }
 
 /// <summary>
@@ -180,9 +188,6 @@ public static class CommerceStepKeys
     /// <summary>Paying the contract's reward coins out of the chest. Undoes itself into the chest
     /// when the wallet refuses, which is why the books are written after it and not before.</summary>
     public const string CHEST_PAYOUT = "chest-payout";
-
-    /// <summary>Handing over what a destroyed furniture was destroyed for.</summary>
-    public const string PRIZE_GRANT = "prize-grant";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";

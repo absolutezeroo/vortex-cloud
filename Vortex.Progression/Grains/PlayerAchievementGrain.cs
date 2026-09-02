@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
@@ -42,6 +43,7 @@ internal sealed class PlayerAchievementGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IOptions<AchievementConfig> achievementConfig,
     IEventPublisher events,
+    ICommerceJournal journal,
     ILogger<PlayerAchievementGrain> logger
 ) : Grain, IPlayerAchievementGrain
 {
@@ -63,6 +65,7 @@ internal sealed class PlayerAchievementGrain(
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly AchievementConfig _achievementConfig = achievementConfig.Value;
     private readonly IEventPublisher _events = events;
+    private readonly ICommerceJournal _journal = journal;
     private readonly ILogger<PlayerAchievementGrain> _logger = logger;
 
     private readonly Dictionary<int, ProgressState> _stateByAchievementId = [];
@@ -288,36 +291,56 @@ internal sealed class PlayerAchievementGrain(
             oldCompleted >= 1 ? definition.Levels[oldCompleted - 1].BadgeCode : string.Empty;
         string finalBadge = definition.Levels[result.NewCompletedLevels - 1].BadgeCode;
 
-        // A player holds only the highest achievement badge: drop the previous one, grant the new.
-        if (!string.IsNullOrEmpty(badgeHeldBefore) && badgeHeldBefore != finalBadge)
-        {
-            await inventory.RemoveBadgeAsync(badgeHeldBefore, ct).ConfigureAwait(true);
-        }
-
-        await inventory.GrantBadgeAsync(finalBadge, ct).ConfigureAwait(true);
-
         int scoreGained = 0;
-        foreach (AchievementLevelUp levelUp in result.LevelUps)
-        {
-            scoreGained += levelUp.ScorePoints;
+        int newScore = 0;
 
-            if (levelUp.RewardAmount <= 0)
-            {
-                continue;
-            }
+        // The level was persisted above before any of this ran, so from here the badge, the currency
+        // and the score are owed. One operation for all three: they are one reward, and an operator
+        // finding a half-paid level-up needs to see it as one thing (PROG-REWARD-032).
+        await _journal
+            .RecordOwedPayoutAsync(
+                CommerceOperationKind.AchievementReward,
+                (int)PlayerId,
+                $"achievement={definition.Id} level={result.NewCompletedLevels} badge={finalBadge}",
+                async innerCt =>
+                {
+                    // A player holds only the highest achievement badge: drop the previous one,
+                    // grant the new.
+                    if (!string.IsNullOrEmpty(badgeHeldBefore) && badgeHeldBefore != finalBadge)
+                    {
+                        await inventory
+                            .RemoveBadgeAsync(badgeHeldBefore, innerCt)
+                            .ConfigureAwait(true);
+                    }
 
-            await wallet
-                .GrantCurrencyAsync(
-                    CurrencyRewardRules.KindFor(levelUp.RewardType),
-                    levelUp.RewardAmount,
-                    ct
-                )
-                .ConfigureAwait(true);
-        }
+                    await inventory.GrantBadgeAsync(finalBadge, innerCt).ConfigureAwait(true);
 
-        int newScore = await _grainFactory
-            .GetGrain<IPlayerGrain>((long)PlayerId)
-            .AddAchievementScoreAsync(scoreGained, ct)
+                    foreach (AchievementLevelUp levelUp in result.LevelUps)
+                    {
+                        scoreGained += levelUp.ScorePoints;
+
+                        if (levelUp.RewardAmount <= 0)
+                        {
+                            continue;
+                        }
+
+                        await wallet
+                            .GrantCurrencyAsync(
+                                CurrencyRewardRules.KindFor(levelUp.RewardType),
+                                levelUp.RewardAmount,
+                                innerCt
+                            )
+                            .ConfigureAwait(true);
+                    }
+
+                    newScore = await _grainFactory
+                        .GetGrain<IPlayerGrain>((long)PlayerId)
+                        .AddAchievementScoreAsync(scoreGained, innerCt)
+                        .ConfigureAwait(true);
+                },
+                _logger,
+                ct
+            )
             .ConfigureAwait(true);
 
         AchievementLevelUp lastLevel = result.LevelUps[^1];

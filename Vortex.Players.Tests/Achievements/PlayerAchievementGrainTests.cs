@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
@@ -94,6 +95,40 @@ public sealed class PlayerAchievementGrainTests
         row.Should().NotBeNull("a badge and a reward ride on this level; the row cannot lag");
         row!.Level.Should().Be(1);
         row.Progress.Should().Be(5);
+    }
+
+    /// <summary>
+    /// PROG-REWARD-032: the level is written through before the badge, the currency and the score
+    /// are handed over — the right order, and it means the reward is owed from that moment. It used
+    /// to be owed with nothing recording it, so a grant that threw left a player short and silent.
+    /// </summary>
+    [Fact]
+    public async Task ALevelUp_PaysOutUnderAnOperationTheJournalCanShow()
+    {
+        Harness harness = await Harness.CreateAsync().ConfigureAwait(true);
+
+        await harness
+            .Grain.ProgressAsync(RoomEntry, 5, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        harness.JournalKinds.Should().Equal(CommerceOperationKind.AchievementReward);
+        harness
+            .JournalStates.Should()
+            .Equal(CommerceOperationState.Pivoted, CommerceOperationState.Completed);
+    }
+
+    [Fact]
+    public async Task ProgressWithoutALevelUp_OpensNoOperation()
+    {
+        // Nothing is owed until a level completes, and an operation per point of progress would
+        // bury the journal in rows nobody will ever read.
+        Harness harness = await Harness.CreateAsync().ConfigureAwait(true);
+
+        await harness
+            .Grain.ProgressAsync(RoomEntry, 1, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        harness.JournalKinds.Should().BeEmpty();
     }
 
     [Fact]
@@ -201,6 +236,11 @@ public sealed class PlayerAchievementGrainTests
         /// <summary>Everything the grain raised, in order. The forensics timeline reads these.</summary>
         public List<IEvent> Published { get; }
 
+        /// <summary>The operations the grain opened, and the states it moved them through.</summary>
+        public required List<CommerceOperationKind> JournalKinds { get; init; }
+
+        public required List<CommerceOperationState> JournalStates { get; init; }
+
         private CountingDbContextFactory Factory { get; }
 
         public int DbContextsCreated => Factory.Created;
@@ -251,6 +291,8 @@ public sealed class PlayerAchievementGrainTests
 
             CountingDbContextFactory factory = new(options);
             List<IEvent> published = [];
+            List<CommerceOperationKind> journalKinds = [];
+            List<CommerceOperationState> journalStates = [];
 
             PlayerAchievementGrain grain =
                 GrainActivationContext.CreateWithIntegerKey<PlayerAchievementGrain>(
@@ -267,12 +309,30 @@ public sealed class PlayerAchievementGrainTests
 
                         return Task.CompletedTask;
                     }),
+                    FakeProxy.Create<ICommerceJournal>(call =>
+                    {
+                        switch (call.Method.Name)
+                        {
+                            case nameof(ICommerceJournal.OpenAsync):
+                                journalKinds.Add((CommerceOperationKind)call.Args![1]!);
+                                break;
+                            case nameof(ICommerceJournal.TransitionAsync):
+                                journalStates.Add((CommerceOperationState)call.Args![1]!);
+                                break;
+                        }
+
+                        return Task.CompletedTask;
+                    }),
                     NullLogger<PlayerAchievementGrain>.Instance
                 );
 
             await grain.OnActivateAsync(CancellationToken.None).ConfigureAwait(true);
 
-            return new Harness(grain, options, factory, published);
+            return new Harness(grain, options, factory, published)
+            {
+                JournalKinds = journalKinds,
+                JournalStates = journalStates,
+            };
         }
 
         /// <summary>
