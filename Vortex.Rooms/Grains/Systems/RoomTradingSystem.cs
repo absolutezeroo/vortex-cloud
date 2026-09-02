@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
-using Vortex.Database.Entities.Furniture;
 using Vortex.Events.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Collectibles;
@@ -594,20 +593,23 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                     .Database.BeginTransactionAsync(ct)
                     .ConfigureAwait(true);
 
-                List<FurnitureEntity> oneRows = await dbCtx
-                    .Furnitures.Where(f => oneIds.Contains(f.Id))
-                    .ToListAsync(ct)
+                // Claimed, not read and then written. The check and the write are one statement, so
+                // two trades of the same chair cannot both read it as its owner's and both hand it
+                // over: the second updates nothing and its count comes back short (ECON-ITM-004).
+                // This is the shape the marketplace and the mint have always used; the trade is the
+                // last of the five ownership paths that did not.
+                //
+                // The chest predicate is new. An item staked in a wired chest keeps its player_id
+                // exactly as a loose one does, so the old guard -- owner, and not in a room -- would
+                // trade away somebody's shop stock.
+                int oneMoved = await ClaimForTradeAsync(dbCtx, oneIds, oneOwner, twoOwner, ct)
                     .ConfigureAwait(true);
-                List<FurnitureEntity> twoRows = await dbCtx
-                    .Furnitures.Where(f => twoIds.Contains(f.Id))
-                    .ToListAsync(ct)
+                int twoMoved = await ClaimForTradeAsync(dbCtx, twoIds, twoOwner, oneOwner, ct)
                     .ConfigureAwait(true);
 
-                if (
-                    !IsOfferPersistable(oneRows, oneIds.Count, oneOwner)
-                    || !IsOfferPersistable(twoRows, twoIds.Count, twoOwner)
-                )
+                if (oneMoved != oneIds.Count || twoMoved != twoIds.Count)
                 {
+                    // Nothing is committed, so the transaction takes both halves back with it.
                     return false;
                 }
 
@@ -631,16 +633,6 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                     return false;
                 }
 
-                foreach (FurnitureEntity row in oneRows)
-                {
-                    row.PlayerEntityId = twoOwner;
-                }
-
-                foreach (FurnitureEntity row in twoRows)
-                {
-                    row.PlayerEntityId = oneOwner;
-                }
-
                 MoveAssets(dbCtx, oneAssets, oneOwner, twoOwner);
                 MoveAssets(dbCtx, twoAssets, twoOwner, oneOwner);
 
@@ -652,13 +644,32 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
             .ConfigureAwait(true);
     }
 
-    private static bool IsOfferPersistable(
-        List<FurnitureEntity> rows,
-        int expectedCount,
-        int expectedOwner
+    /// <summary>
+    /// Hands one side's furniture over, and answers how many rows it actually took.
+    /// </summary>
+    /// <remarks>
+    /// The predicate is the definition of "this player's, and free to move": theirs, not standing in
+    /// a room, not staked in a wired chest, not deleted. A row that fails any of it is not updated
+    /// and the caller sees a count that does not match what was offered.
+    /// </remarks>
+    private static Task<int> ClaimForTradeAsync(
+        VortexDbContext dbCtx,
+        List<int> itemIds,
+        int fromOwner,
+        int toOwner,
+        CancellationToken ct
     ) =>
-        rows.Count == expectedCount
-        && rows.All(r => r.PlayerEntityId == expectedOwner && r.RoomEntityId is null);
+        itemIds.Count == 0
+            ? Task.FromResult(0)
+            : dbCtx
+                .Furnitures.Where(f =>
+                    itemIds.Contains(f.Id)
+                    && f.PlayerEntityId == fromOwner
+                    && f.RoomEntityId == null
+                    && f.WiredChestEntityId == null
+                    && f.DeletedAt == null
+                )
+                .ExecuteUpdateAsync(row => row.SetProperty(f => f.PlayerEntityId, toOwner), ct);
 
     /// <summary>A Relic cannot be standing in a room, so the guard is only that every one of them
     /// still exists and still belongs to the player who offered it.</summary>
