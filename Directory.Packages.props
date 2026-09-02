@@ -61,6 +61,12 @@
       Include="OpenTelemetry.Exporter.Prometheus.AspNetCore"
       Version="1.17.0-beta.1"
     />
+    <!-- OBS-RT-023: the runtime's own numbers. GC pauses and collection counts, heap size, thread
+         pool queue depth, exceptions thrown. None of it comes from our meters, so a hotel that was
+         slow could be read for room ticks and session counts and never for the garbage collector
+         underneath them. It is the one instrumentation package whose absence is invisible: every
+         graph still works, it just cannot answer why. -->
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
     <PackageVersion Include="SuperSocket.Server" Version="2.1.0" />
     <PackageVersion Include="SuperSocket.Server.Abstractions" Version="2.1.0" />
     <PackageVersion Include="SuperSocket.ProtoBase" Version="2.1.0" />

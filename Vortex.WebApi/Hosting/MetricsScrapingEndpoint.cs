@@ -51,6 +51,11 @@ internal static class MetricsScrapingEndpoint
                 metrics
                     .AddMeter(VortexMeterNames.VORTEX)
                     .AddMeter(VortexMeterNames.ORLEANS)
+                    // The runtime underneath both of them: GC pauses and collection counts, heap
+                    // size, thread pool queue depth, exceptions thrown. Our meters describe the
+                    // hotel and Orleans describes the grains, and neither can say that a slow tick
+                    // was a gen-2 collection or a starved thread pool (OBS-RT-023).
+                    .AddRuntimeInstrumentation()
                     .AddPrometheusExporter()
             );
     }
