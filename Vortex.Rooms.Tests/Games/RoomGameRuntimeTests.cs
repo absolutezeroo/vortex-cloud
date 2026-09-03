@@ -87,11 +87,15 @@ public sealed class RoomGameRuntimeTests
 
         // THE regression this whole change exists for: a hall with a Banzai board, a Freeze rink and
         // a football pitch answered one press of one counter with three unrelated matches. An
-        // ambiguous room now starts nothing and logs which arenas were in contention.
+        // ambiguous room now starts NO match and logs which arenas were in contention.
         started.Should().BeFalse();
         first.Starts.Should().Be(0);
         second.Starts.Should().Be(0);
-        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().BeEmpty();
+
+        // The room's ROUND still opens, and that is not a loophole: GAME_STARTS is a room-level
+        // wired trigger that fires in rooms with no game furniture at all. What an ambiguous room
+        // refuses is picking a match, not running its wired.
+        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -197,6 +201,23 @@ public sealed class RoomGameRuntimeTests
 
         first.RoundEnds.Should().Be(1);
         second.RoundEnds.Should().Be(1);
+        harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task ARoomWithNoGameFurnitureAtAll_StillRunsARound()
+    {
+        // The pure-wired room: a give-score box, some scoreboards, a timer, no arena. Its round has
+        // to open and close, because that is what its GAME_STARTS and GAME_ENDS boxes run off.
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+
+        bool started = await StartAsync(harness).ConfigureAwait(true);
+
+        started.Should().BeFalse("there is no match to run");
+        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().ContainSingle();
+
+        await EndAsync(harness).ConfigureAwait(true);
+
         harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().ContainSingle();
     }
 

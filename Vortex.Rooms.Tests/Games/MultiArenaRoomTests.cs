@@ -85,7 +85,10 @@ public sealed class MultiArenaRoomTests
         started.Should().BeFalse();
         harness.Grain.GameRuntime.PhaseOf(BanzaiConstants.Game).Should().Be(GamePhase.Idle);
         harness.Grain.GameRuntime.PhaseOf(FootballConstants.Game).Should().Be(GamePhase.Idle);
-        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().BeEmpty();
+
+        // The room's round still opens — it is a room-level wired concept, not a match — and the
+        // point is that it opened with NO match under it.
+        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().ContainSingle();
     }
 
     [Fact]

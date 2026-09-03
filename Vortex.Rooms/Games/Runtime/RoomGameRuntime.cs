@@ -389,41 +389,34 @@ public sealed class RoomGameRuntime
     public async Task<bool> StartGameAsync(RoomObjectId source, GameId game, CancellationToken ct)
     {
         GameTarget target = ResolveStartTarget(source, game);
+        ArenaHost? host = target.IsResolved ? FindHost(target.Arena) : null;
 
-        if (!target.IsResolved)
+        if (host is not null && IsRestartable(host.Phase))
+        {
+            // A new round supersedes the previous one's showcase: pressing the timer again while
+            // Banzai is still blinking its winner starts the next match rather than being ignored.
+            await TransitionAsync(host, GamePhase.Resetting, ct);
+            await TransitionAsync(host, GamePhase.Idle, ct);
+        }
+
+        // The ROOM's round starts either way, and that is not a technicality: a room with wired
+        // boxes, scoreboards and no game furniture at all is a real Habbo room, its timer fires
+        // GAME_STARTS, and its boards zero. A match is what may or may not have a target.
+        await BeginRoundAsync(ct);
+
+        if (host is null || host.Phase != GamePhase.Idle)
         {
             LogUnresolved("start", target, source, game);
 
             return false;
         }
 
-        ArenaHost? host = FindHost(target.Arena);
-
-        if (host is null)
-        {
-            return false;
-        }
-
-        if (IsRestartable(host.Phase))
-        {
-            await TransitionAsync(host, GamePhase.Resetting, ct);
-            await TransitionAsync(host, GamePhase.Idle, ct);
-        }
-
-        if (host.Phase != GamePhase.Idle)
-        {
-            return false;
-        }
-
-        // Teams survive: they are picked at the gates before kick-off, so wiping membership here
-        // would empty the arena. Scores do not — but only when no OTHER live arena is keeping score
-        // in the same book, because zeroing a shared ledger under a running match would wipe it.
-        if (!IsBookBusy(host))
+        // A private book is this arena's alone, so it resets with the arena's own match. The room's
+        // shared ledger was already reset by the round starting.
+        if (!host.SharesRoomTeams && !IsBookBusy(host))
         {
             host.Teams.ResetScores();
         }
-
-        await AnnounceRoundStartAsync(ct);
 
         await StartMatchAsync(host, ct);
 
@@ -435,25 +428,22 @@ public sealed class RoomGameRuntime
     public async Task<bool> EndGameAsync(RoomObjectId source, GameId game, CancellationToken ct)
     {
         GameTarget target = ResolveStopTarget(source, game);
-
-        if (!target.IsResolved)
-        {
-            LogUnresolved("stop", target, source, game);
-
-            return false;
-        }
-
-        ArenaHost? host = FindHost(target.Arena);
+        ArenaHost? host = target.IsResolved ? FindHost(target.Arena) : null;
 
         if (host is null)
         {
-            return false;
+            LogUnresolved("stop", target, source, game);
+        }
+        else
+        {
+            await EndMatchAsync(host, ct);
         }
 
-        await EndMatchAsync(host, ct);
-        await AnnounceRoundEndIfLastAsync(ct);
+        // The round ends when the last match does — or immediately, in a room that started a round
+        // with no match to run.
+        await EndRoundIfLastAsync(ct);
 
-        return true;
+        return host is not null;
     }
 
     /// <summary>Ends every match in the room, whatever arena it is on. The room is being cleared —
@@ -465,7 +455,7 @@ public sealed class RoomGameRuntime
             await EndMatchAsync(host, ct);
         }
 
-        await AnnounceRoundEndIfLastAsync(ct);
+        await EndRoundIfLastAsync(ct);
     }
 
     /// <summary>Whether another live arena keeps score in the same book as this one — the guard that
@@ -487,9 +477,18 @@ public sealed class RoomGameRuntime
         return false;
     }
 
-    /// <summary>Fires the room's GAME_STARTS once, on the first arena to go live. The wired triggers
-    /// are room-level, so a second arena starting is not a second round.</summary>
-    private async Task AnnounceRoundStartAsync(CancellationToken ct)
+    /// <summary>
+    /// Opens the room's round, once. The wired triggers are room-level: a second arena kicking off
+    /// is not a second round, and a room with no arena at all still has one.
+    /// <para>
+    /// The order is load-bearing and has been wrong before. The shared scores are zeroed FIRST and
+    /// the GAME_STARTS trigger fires second: a GAME_STARTS box wired to a give-score action runs off
+    /// that event, and a reset arriving afterwards would wipe the points it just awarded with no
+    /// error and no log. Team MEMBERSHIP survives — it is picked at the gates before kick-off, so
+    /// wiping it here would empty the arena.
+    /// </para>
+    /// </summary>
+    private async Task BeginRoundAsync(CancellationToken ct)
     {
         if (_roundAnnounced)
         {
@@ -499,6 +498,8 @@ public sealed class RoomGameRuntime
         // Set before publishing, so a GAME_STARTS box that starts another arena falls into the guard
         // above instead of recursing.
         _roundAnnounced = true;
+
+        _roomTeams.ResetScores();
 
         await _roomGrain.PublishRoomEventAsync(
             new WiredGameStartedEvent
@@ -510,8 +511,9 @@ public sealed class RoomGameRuntime
         );
     }
 
-    /// <summary>Fires the room's GAME_ENDS once the LAST live arena has stopped.</summary>
-    private async Task AnnounceRoundEndIfLastAsync(CancellationToken ct)
+    /// <summary>Closes the room's round once the LAST live arena has stopped — or at once, in a room
+    /// whose round never had a match in it.</summary>
+    private async Task EndRoundIfLastAsync(CancellationToken ct)
     {
         if (!_roundAnnounced || IsRunning)
         {
@@ -535,7 +537,7 @@ public sealed class RoomGameRuntime
     internal async Task RequestRoundEndAsync(ArenaHost host, CancellationToken ct)
     {
         await EndMatchAsync(host, ct);
-        await AnnounceRoundEndIfLastAsync(ct);
+        await EndRoundIfLastAsync(ct);
 
         if (!IsRunning)
         {
