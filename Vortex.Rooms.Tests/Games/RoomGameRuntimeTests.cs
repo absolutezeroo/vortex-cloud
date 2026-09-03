@@ -188,16 +188,35 @@ public sealed class RoomGameRuntimeTests
     }
 
     [Fact]
-    public async Task EndingTheRound_EndsEveryGameAfterAnnouncingIt()
+    public async Task EndingTheRound_EndsTheMatchAndAnnouncesIt()
     {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingGame only = new("only");
+        harness.Grain.GameRuntime.Register(_ => only);
+        await StartAsync(harness).ConfigureAwait(true);
+
+        await EndAsync(harness).ConfigureAwait(true);
+
+        only.RoundEnds.Should().Be(1);
+        harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task EveryMatchInTheRoom_CanBeEndedAtOnce()
+    {
+        // The room is being cleared rather than a game stopped — a shutdown, a moderator wipe — so
+        // there is no target to resolve and every arena winds down.
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RecordingGame first = new("first");
         RecordingGame second = new("second");
         harness.Grain.GameRuntime.Register(_ => first);
         harness.Grain.GameRuntime.Register(_ => second);
-        await StartAsync(harness).ConfigureAwait(true);
+        await StartAsync(harness, "first").ConfigureAwait(true);
+        await StartAsync(harness, "second").ConfigureAwait(true);
 
-        await EndAsync(harness).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.EndAllGamesAsync(CancellationToken.None)
+            .ConfigureAwait(true);
 
         first.RoundEnds.Should().Be(1);
         second.RoundEnds.Should().Be(1);

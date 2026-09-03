@@ -35,7 +35,14 @@ namespace Vortex.Rooms.Games.Freeze;
 [RoomGame]
 public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(context)
 {
-    private readonly FreezeRoster _roster = new(context.Teams);
+    private FreezeRoster? _rosterOrNull;
+
+    /// <summary>
+    /// Built on first use, never in a field initialiser: an arena's team book is bound to its host
+    /// AFTER the module is constructed — the host cannot know which book to hand over until the
+    /// module has declared which teams the game plays — so a field initialiser would capture nothing.
+    /// </summary>
+    private FreezeRoster _roster => _rosterOrNull ??= new FreezeRoster(_context.Teams);
 
     // A snowball's flight: the blast lands BlastDelayMs after the throw, then the ripple resets
     // ResetDelayMs after that. Time-ordered queues drained each room tick.

@@ -1,3 +1,4 @@
+using System;
 using Vortex.Primitives.Rooms.Games;
 using Vortex.Rooms.Games.Abstractions;
 using Vortex.Rooms.Games.Presentation;
@@ -39,7 +40,19 @@ internal sealed class ArenaHost
     /// scoreboards keep addressing exactly what they always did — and a private book otherwise,
     /// because a team space the four colours cannot express has nothing to share with them.
     /// </summary>
-    public TeamBook Teams { get; set; } = null!;
+    public TeamBook Teams
+    {
+        get =>
+            _teams
+            ?? throw new InvalidOperationException(
+                "An arena's team book is bound AFTER its module is constructed, because which book "
+                    + "it gets depends on the teams the module declares. Read _context.Teams where "
+                    + "you need it; capturing it in a field initialiser captures nothing."
+            );
+        set => _teams = value;
+    }
+
+    private TeamBook? _teams;
 
     /// <summary>How this arena's teams map onto the Habbo colours, for the furniture and effects that
     /// can only speak in colours.</summary>
