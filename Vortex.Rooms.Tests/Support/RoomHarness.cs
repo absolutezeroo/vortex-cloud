@@ -43,11 +43,9 @@ using Vortex.Primitives.Rooms.Snapshots.Mapping;
 using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Sound.Providers;
 using Vortex.Rooms.Configuration;
-using Vortex.Rooms.Games;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
 using Vortex.Rooms.Object.Avatars.Player;
-using Vortex.Rooms.Providers;
 using Vortex.Rooms.Wired.Logs;
 using Vortex.Tests.Support;
 
@@ -140,7 +138,7 @@ internal sealed class RoomHarness
             FakeProxy.Create<IPetVocalProvider>(_ => null),
             new RoomWiredLogChannel(),
             FakeProxy.Create<ISongProvider>(_ => null),
-            BuildGameProvider(),
+            TestRoomGames.Provider(),
             BuildCommerceJournal()
         );
 
@@ -536,36 +534,6 @@ internal sealed class RoomHarness
     /// <summary>Makes the journal itself fail, which a payout must survive: the furniture behind a
     /// prize is already destroyed by the time it is written.</summary>
     public bool JournalThrows { get; set; }
-
-    /// <summary>
-    /// The real game provider, loaded the way production loads it: the real feature processor scans
-    /// the real <c>Vortex.Rooms</c> assembly for <c>[RoomGame]</c>. A harness that registered the
-    /// games by hand would pass even if the attribute, the processor or the DI wiring were broken —
-    /// and "the game builds, tests and never runs" is the exact failure this seam exists to stop.
-    /// </summary>
-    private static IRoomGameProvider BuildGameProvider()
-    {
-        IServiceProvider services = new EmptyServiceProvider();
-        RoomGameProvider provider = new(services);
-
-        // The processor's own work is synchronous (a reflection sweep); the Task it returns is
-        // already completed, so there is nothing here to block on.
-#pragma warning disable VSTHRD002
-        new RoomGameFeatureProcessor(provider, NullLogger<RoomGameFeatureProcessor>.Instance)
-            .ProcessAsync(typeof(RoomGrain).Assembly, services)
-            .GetAwaiter()
-            .GetResult();
-#pragma warning restore VSTHRD002
-
-        return provider;
-    }
-
-    /// <summary>Resolves nothing: the game modules take only their context, so there is nothing for
-    /// the container to supply.</summary>
-    private sealed class EmptyServiceProvider : IServiceProvider
-    {
-        public object? GetService(Type serviceType) => null;
-    }
 
     private ICommerceJournal BuildCommerceJournal() =>
         FakeProxy.Create<ICommerceJournal>(call =>

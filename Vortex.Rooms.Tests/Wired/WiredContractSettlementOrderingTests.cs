@@ -249,6 +249,7 @@ public sealed class WiredContractSettlementOrderingTests
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
                 new RoomWiredLogChannel(),
                 FakeProxy.Create<ISongProvider>(_ => null),
+                TestRoomGames.Provider(),
                 BuildJournal()
             );
 

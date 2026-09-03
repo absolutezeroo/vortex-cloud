@@ -277,6 +277,7 @@ public sealed class WiredTradeSessionTests
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
                 new RoomWiredLogChannel(),
                 FakeProxy.Create<ISongProvider>(_ => null),
+                TestRoomGames.Provider(),
                 FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 
