@@ -16,6 +16,7 @@ using Vortex.Crypto.Extensions;
 using Vortex.Dashboard.API;
 using Vortex.Database.Extensions;
 using Vortex.Events.Extensions;
+using Vortex.Fishing;
 using Vortex.Furniture;
 using Vortex.Inventory;
 using Vortex.Logging.Extensions;
@@ -131,6 +132,7 @@ internal class Program
         builder.Services.AddHostPlugin<ProgressionModule>(builder);
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
+        builder.Services.AddHostPlugin<FishingModule>(builder);
         builder.Services.AddHostPlugin<DashboardApiModule>(builder);
         builder.Services.AddHostPlugin<BenchmarkModule>(builder);
         builder.Services.AddHostPlugin<NavigatorModule>(builder);

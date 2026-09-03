@@ -1,12 +1,13 @@
 <script>
   import { onMount } from 'svelte';
-  import { Pencil, Plus, Trash2 } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import Pagination from '../components/Pagination.svelte';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
+  import { diffFields } from '../lib/changes.js';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -23,14 +24,12 @@
   let denied = $state(false);
   let error = $state('');
 
-  // One form for both create and edit: an operator editing a song is filling in the same six fields
-  // they filled in to create it, and two forms side by side would be two places to keep in step.
-  let editingId = $state(null);
-  let form = $state(emptySong());
+  // Editing happens in the drawer, never in the page: a form spliced under the table pushes the
+  // list off screen, which is the thing you were looking at when you decided to change a number.
+  let drawer = $state(null);
 
   const ops = createWriteOps(async () => {
-    form = emptySong();
-    editingId = null;
+    drawer = null;
     await load();
   });
 
@@ -38,8 +37,21 @@
     return { name: '', creator: '', lengthSeconds: '', officialSongId: '', data: '' };
   }
 
+  // What the audit line says an edit actually changed, rather than just which row was touched. The
+  // operator's own note stays optional; this is the half only the screen knew.
+  const SONG_FIELDS = [
+    { key: 'name', label: 'Name' },
+    { key: 'creator', label: 'Creator' },
+    { key: 'lengthSeconds', label: 'Length (s)' },
+    { key: 'officialSongId', label: 'Official code' },
+    { key: 'data', label: 'Composition' },
+  ];
+
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsSongsManage));
   let pageCount = $derived(Math.max(1, Math.ceil(total / pageSize)));
+  let canSave = $derived(
+    Boolean(drawer?.form.name.trim()) && Number(drawer?.form.lengthSeconds) > 0
+  );
 
   // Milliseconds on the wire and in the table; an operator reads 2:08 off a track. The conversion
   // is the server's on the way in, and this is the way out.
@@ -50,32 +62,39 @@
     return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
   }
 
-  function edit(song) {
-    editingId = song.id;
-    form = {
-      name: song.name,
+  function openCreate() {
+    drawer = { mode: 'create', id: null, form: emptySong() };
+  }
+
+  function openEdit(song) {
+    const form = {
+        name: song.name,
       creator: song.creator,
       lengthSeconds: Math.round(song.lengthMs / 1000),
       officialSongId: song.officialSongId,
       data: song.data,
     };
+
+    // The values as loaded, kept so the diff can say what they WERE.
+    drawer = { mode: 'edit', id: song.id, before: { ...form }, form };
   }
 
   function save() {
     const body = {
-      name: form.name,
-      creator: form.creator,
-      lengthSeconds: Number(form.lengthSeconds) || 0,
-      officialSongId: form.officialSongId,
-      data: form.data,
+      name: drawer.form.name,
+      creator: drawer.form.creator,
+      lengthSeconds: Number(drawer.form.lengthSeconds) || 0,
+      officialSongId: drawer.form.officialSongId,
+      data: drawer.form.data,
     };
 
-    if (editingId) {
+    if (drawer.mode === 'edit') {
       ops.ask(
         '/api/v1/operations/songs/update',
-        { ...body, songId: editingId },
-        $t('songs.editSong'),
-        $t('songs.updated')
+        { ...body, songId: drawer.id },
+        `${$t('songs.editSong')} #${drawer.id}`,
+        $t('songs.updated'),
+        { changes: diffFields(drawer.before, drawer.form, SONG_FIELDS) }
       );
     } else {
       ops.ask('/api/v1/operations/songs', body, $t('songs.newSong'), $t('songs.created'));
@@ -138,6 +157,7 @@
         >
           {$t('songs.reload')}
         </button>
+        <button type="button" class="success" onclick={openCreate}>{$t('songs.newSong')}</button>
       {/if}
     </div>
   </div>
@@ -155,21 +175,24 @@
   <section class="panel">
     <div class="panel-head">
       <h2>{$t('songs.title')} <span class="muted">({formatNumber(total)})</span></h2>
-      <div class="head-actions">
-        <input
-          autocomplete="off"
-          spellcheck="false"
-          class="search-input"
-          placeholder={$t('songs.searchPlaceholder')}
-          bind:value={search}
-          onkeydown={(e) => {
-            if (e.key === 'Enter') {
-              page = 1;
-              load();
-            }
-          }}
-        />
-      </div>
+    </div>
+
+    <!-- Filtering has its own row above the table rather than sharing the heading. The search is
+         the server's, so it runs on Enter instead of on every keystroke. -->
+    <div class="filters">
+      <input
+        autocomplete="off"
+        spellcheck="false"
+        type="search"
+        placeholder={$t('songs.searchPlaceholder')}
+        bind:value={search}
+        onkeydown={(e) => {
+          if (e.key === 'Enter') {
+            page = 1;
+            load();
+          }
+        }}
+      />
     </div>
 
     {#if loading}
@@ -214,11 +237,11 @@
                 </td>
                 {#if canManage}
                   <td class="row-actions">
-                    <button type="button" class="ghost-button" onclick={() => edit(song)}>
-                      <Pencil size={14} /> {$t('common.edit')}
+                    <button type="button" class="ghost-button" onclick={() => openEdit(song)}>
+                      {$t('common.edit')}
                     </button>
                     <button type="button" class="danger" onclick={() => remove(song)}>
-                      <Trash2 size={14} /> {$t('songs.delete')}
+                      {$t('songs.delete')}
                     </button>
                   </td>
                 {/if}
@@ -245,79 +268,88 @@
       />
     {/if}
   </section>
+{/if}
 
-  {#if canManage}
-    <section class="panel">
-      <div class="panel-head">
-        <h2>{editingId ? $t('songs.editSong') : $t('songs.newSong')}</h2>
-        {#if editingId}
-          <button
-            type="button"
-            class="ghost-button"
-            onclick={() => {
-              editingId = null;
-              form = emptySong();
-            }}
-          >
-            {$t('songs.cancel')}
-          </button>
-        {/if}
+{#if drawer}
+  <Drawer
+    title={drawer.mode === 'create' ? $t('songs.newSong') : $t('songs.editSong')}
+    eyebrow={$t('songs.title')}
+    onclose={() => (drawer = null)}
+  >
+    <div class="drawer-form">
+      <div class="op-field">
+        <label for="song-name">{$t('songs.name')}</label>
+        <input autocomplete="off" spellcheck="false" id="song-name" bind:value={drawer.form.name} />
       </div>
+      <div class="op-field">
+        <label for="song-creator">{$t('songs.creator')}</label>
+        <input
+          autocomplete="off"
+          spellcheck="false"
+          id="song-creator"
+          bind:value={drawer.form.creator}
+        />
+      </div>
+      <div class="op-field">
+        <label for="song-length">{$t('songs.lengthSeconds')}</label>
+        <input
+          autocomplete="off"
+          spellcheck="false"
+          id="song-length"
+          type="number"
+          min="1"
+          bind:value={drawer.form.lengthSeconds}
+        />
+        <p class="field-hint">{$t('songs.lengthHint')}</p>
+      </div>
+      <div class="op-field">
+        <label for="song-code">{$t('songs.officialSongId')}</label>
+        <input
+          autocomplete="off"
+          spellcheck="false"
+          id="song-code"
+          bind:value={drawer.form.officialSongId}
+        />
+        <p class="field-hint">{$t('songs.officialSongIdHint')}</p>
+      </div>
+      <div class="op-field">
+        <label for="song-data">{$t('songs.data')}</label>
+        <textarea id="song-data" rows="4" bind:value={drawer.form.data}></textarea>
+        <p class="field-hint">{$t('songs.dataHint')}</p>
+      </div>
+    </div>
 
-      <div class="op-grid">
-        <div class="op-field">
-          <label for="song-name">{$t('songs.name')}</label>
-          <input autocomplete="off" spellcheck="false" id="song-name" bind:value={form.name} />
-        </div>
-        <div class="op-field">
-          <label for="song-creator">{$t('songs.creator')}</label>
-          <input
-            autocomplete="off"
-            spellcheck="false"
-            id="song-creator"
-            bind:value={form.creator}
-          />
-        </div>
-        <div class="op-field">
-          <label for="song-length">{$t('songs.lengthSeconds')}</label>
-          <input
-            autocomplete="off"
-            spellcheck="false"
-            id="song-length"
-            type="number"
-            min="1"
-            bind:value={form.lengthSeconds}
-          />
-          <p class="field-hint">{$t('songs.lengthHint')}</p>
-        </div>
-        <div class="op-field">
-          <label for="song-code">{$t('songs.officialSongId')}</label>
-          <input autocomplete="off" spellcheck="false" id="song-code" bind:value={form.officialSongId} />
-          <p class="field-hint">{$t('songs.officialSongIdHint')}</p>
-        </div>
-        <div class="op-field op-field--wide">
-          <label for="song-data">{$t('songs.data')}</label>
-          <textarea id="song-data" rows="3" bind:value={form.data}></textarea>
-          <p class="field-hint">{$t('songs.dataHint')}</p>
-        </div>
-      </div>
-
-      <div class="head-actions">
-        <button
-          type="button"
-          onclick={save}
-          disabled={!form.name.trim() || !(Number(form.lengthSeconds) > 0)}
-        >
-          <Plus size={14} /> {$t('songs.save')}
-        </button>
-      </div>
-    </section>
-  {/if}
+    {#snippet actions()}
+      <button
+        type="button"
+        class={drawer.mode === 'create' ? 'success' : ''}
+        onclick={save}
+        disabled={!canSave}
+      >
+        {$t('songs.save')}
+      </button>
+      <button type="button" class="ghost-button" onclick={() => (drawer = null)}>
+        {$t('songs.cancel')}
+      </button>
+    {/snippet}
+  </Drawer>
 {/if}
 
 <style>
-  .search-input {
-    min-width: 18rem;
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .filters input {
+    flex: 1 1 220px;
+  }
+
+  .drawer-form {
+    display: grid;
+    gap: 14px;
   }
 
   .row-actions {
@@ -330,10 +362,6 @@
     margin: 0.25rem 0 0;
     font-size: 0.78rem;
     opacity: 0.7;
-  }
-
-  .op-field--wide {
-    grid-column: 1 / -1;
   }
 
   .mono {

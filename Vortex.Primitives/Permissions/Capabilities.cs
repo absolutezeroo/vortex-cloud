@@ -123,6 +123,10 @@ public static class Capabilities
         public const string SongsRead = "dashboard.songs.read";
         public const string OpsSongsManage = "dashboard.ops.songs.manage";
 
+        /// <summary>Fishing's four content tables, and what players have caught out of them.</summary>
+        public const string FishingRead = "dashboard.fishing.read";
+        public const string OpsFishingManage = "dashboard.ops.fishing.manage";
+
         /// <summary>Survey definitions, their question trees and the answers players gave.</summary>
         public const string PollsRead = "dashboard.polls.read";
         public const string OpsPollsManage = "dashboard.ops.polls.manage";
@@ -270,6 +274,8 @@ public static class Capabilities
             OpsQuestsManage,
             SongsRead,
             OpsSongsManage,
+            FishingRead,
+            OpsFishingManage,
             PollsRead,
             OpsPollsManage,
             PrizePoolsRead,

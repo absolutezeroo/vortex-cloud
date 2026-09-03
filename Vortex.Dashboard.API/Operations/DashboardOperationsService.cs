@@ -21,6 +21,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Console;
 using Vortex.Primitives.Content;
+using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox;
@@ -65,6 +66,7 @@ internal sealed partial class DashboardOperationsService(
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
     ISongAdminService songAdmin,
+    IFishingAdminService fishingAdmin,
     GamedataDocumentStore gamedata,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
@@ -102,6 +104,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly ISongAdminService _songAdmin = songAdmin;
+    private readonly IFishingAdminService _fishingAdmin = fishingAdmin;
     private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;

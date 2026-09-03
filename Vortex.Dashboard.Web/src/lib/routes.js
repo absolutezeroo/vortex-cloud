@@ -67,6 +67,7 @@ export const NAV = [
 
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, load: () => import('../pages/QuestsPage.svelte'), writes: true },
   { path: '/songs', labelKey: 'nav.songs', shortKey: 'nav.songsShort', group: 'Content', caps: ROUTE_PERMISSIONS.songs, load: () => import('../pages/SongsPage.svelte'), writes: true },
+  { path: '/fishing', labelKey: 'nav.fishing', shortKey: 'nav.fishingShort', group: 'Content', caps: ROUTE_PERMISSIONS.fishing, load: () => import('../pages/FishingPage.svelte'), writes: true },
   { path: '/polls', labelKey: 'nav.polls', shortKey: 'nav.pollsShort', group: 'Content', caps: ROUTE_PERMISSIONS.polls, load: () => import('../pages/PollsPage.svelte'), writes: true },
   { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, load: () => import('../pages/AchievementsPage.svelte'), writes: true },
   // Same capability as /achievements: the statue is a view onto achievement progress, so a new one

@@ -326,6 +326,22 @@ time.
   - **Never make an operator type an id**: use `<PickerModal kind="furniture" />` (or `kind="user"`),
     backed by `/api/v1/directory/furniture`. A number input alone means looking the id up elsewhere
     first.
+- **Every create and every edit goes in `<Drawer>`. No exceptions, and never a form panel spliced
+  into the page.** This one is missed on almost every new page, including by people who had just
+  read the component: an inline form under the table pushes the list off screen, so you lose the
+  thing you were looking at when you decided to change a number, and a row's inline editor breaks
+  the grid around it. The drawer keeps the list beside the form and pins Save where it cannot scroll
+  away. Pattern: `let drawer = $state(null)`, a `New …` button in the `panel-head` that sets
+  `{ mode: 'create', form: empty() }`, a row action that sets `{ mode: 'edit', id, form: {...row} }`,
+  and `{#snippet actions()}` for the buttons. Modals stay for short confirmations
+  (`ConfirmReasonModal`) and pickers — those are answers, not editing.
+- **Filters get their own row above the table**, never the `panel-head` and never mixed in with the
+  page's actions. `<TableFilter bind:query shown total />` for a table already loaded in full; a
+  plain `<div class="filters">` with the inputs when the search is the server's. The heading says
+  what the table is; the filter row says what you are narrowing it to.
+- **Buttons: an add is `class="success"` (green), a destructive one `class="danger"`, a secondary one
+  `class="ghost-button"`, a refresh `class="warning"` — and none of them carry an icon.** Label only.
+  The colour is the affordance; a lucide glyph beside the word is noise this dashboard does not use.
 - Forbidden changes:
   - no direct DB writes from `DashboardOperationsService`; route through an `I<Domain>AdminService`
   - no admin write that skips reloading the manager-grain cache it feeds

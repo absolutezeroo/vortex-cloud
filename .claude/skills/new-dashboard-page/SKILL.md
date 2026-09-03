@@ -43,6 +43,20 @@ Full walkthrough: `docs/walkthroughs/add-a-dashboard-page.md`. Reference pair:
 This is not polish. It is the difference between a usable page and an unusable one, and it has been
 missed on every new page so far.
 
+- **Every create and every edit goes in `<Drawer>`.** Never a form panel spliced into the page under
+  the table, never an editor expanded inside a row. An inline form pushes the list off screen — the
+  thing you were looking at when you decided to change a number — and a row editor breaks the grid
+  around it. `let drawer = $state(null)`; a `New …` button in the `panel-head` sets
+  `{ mode: 'create', form: empty() }`; the row action sets `{ mode: 'edit', id, form: {...row} }`;
+  the buttons go in `{#snippet actions()}` so Save cannot scroll away. Modals are for short
+  confirmations and pickers only — answers, not editing. **This is missed more often than anything
+  else on this list, including by people who had just read `Drawer.svelte`'s own comment.**
+- **Filters get their own row above the table.** Not the `panel-head`, not mixed into the page
+  actions. `<TableFilter bind:query shown total />` when the table is already fully loaded; a plain
+  `<div class="filters">` holding the inputs when the search is the server's.
+- **Buttons carry a label and no icon.** An add is `class="success"` (green), a destructive action
+  `class="danger"`, a secondary one `class="ghost-button"`, a refresh `class="warning"`. The colour
+  is the affordance; a lucide glyph beside the word is noise this dashboard does not use.
 - **Show the artwork, never a bare id.** The read API adds `furnitureIconUrl = BuildFurniIconUrl(name)`
   (see `DashboardApiService.Catalog.cs`); render it with `<AssetImage src={...} />`. Same for avatars
   and guild badges via `DashboardAssetUrls`.
