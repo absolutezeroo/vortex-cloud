@@ -119,6 +119,10 @@ public static class Capabilities
         public const string QuestsRead = "dashboard.quests.read";
         public const string OpsQuestsManage = "dashboard.ops.quests.manage";
 
+        /// <summary>The Trax song catalogue a jukebox plays out of.</summary>
+        public const string SongsRead = "dashboard.songs.read";
+        public const string OpsSongsManage = "dashboard.ops.songs.manage";
+
         /// <summary>Survey definitions, their question trees and the answers players gave.</summary>
         public const string PollsRead = "dashboard.polls.read";
         public const string OpsPollsManage = "dashboard.ops.polls.manage";
@@ -264,6 +268,8 @@ public static class Capabilities
             OpsTargetedOffersManage,
             QuestsRead,
             OpsQuestsManage,
+            SongsRead,
+            OpsSongsManage,
             PollsRead,
             OpsPollsManage,
             PrizePoolsRead,

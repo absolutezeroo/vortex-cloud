@@ -37,6 +37,7 @@ using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Primitives.Sound;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -63,6 +64,7 @@ internal sealed partial class DashboardOperationsService(
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
+    ISongAdminService songAdmin,
     GamedataDocumentStore gamedata,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
@@ -99,6 +101,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
+    private readonly ISongAdminService _songAdmin = songAdmin;
     private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
