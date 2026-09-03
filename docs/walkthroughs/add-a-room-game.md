@@ -37,10 +37,12 @@ Five things live in the framework and never in a game:
 | Concern | Where |
 |---|---|
 | Lifecycle | `GamePhase` + `GameStateMachine` + `RoomGameRuntime`. A module has **no** `IsRunning` of its own. |
-| Teams and scores | `GameTeamBook`, one per room. Every wired team leaf reads it. |
+| Teams and scores | `TeamBook` over the game's own `TeamSet`, keyed by `TeamId`. Never a colour. |
+| Habbo colours | `HabboTeamPalette`, the one mapping between a team and one of the four. |
 | Arena lookup | `IGameArena`, a filtered view over the room's single item index. No game scans the room. |
 | Client IO | `IGameChrome` (effects, game mode, the number bubble, movement locks, timer reset). |
-| Match identity | `MatchId`, minted per game per round, carried by everything a module defers. |
+| Which arena starts | `GameTargetResolver`. A start has one target or none — never a fan-out. |
+| Match identity | `MatchId`, minted per ARENA per round, carried by everything a module defers. |
 
 ---
 
@@ -105,12 +107,29 @@ game.
 
 ## Rules that are not obvious
 
+**Teams are yours, colours are Habbo's.** Declare a `TeamSet` in your profile — any number of teams,
+named by you. `_context.Teams` is keyed by those. A gate, goal or board reports the COLOUR it is
+painted, because that is what the furni is; `_context.Palette.TeamOf(colour)` turns it into one of
+your teams and `ColourOf(team)` turns one back for an aura. Those two calls are the only place the
+two meet. A game whose teams the four colours cannot express still plays; it simply has nothing to
+show on coloured furniture.
+
+**Never capture the team book in a field initialiser.** An arena's book is bound *after* the module
+is constructed, because which book it gets depends on the teams the module declares. Read
+`_context.Teams` where you need it; a field initialiser captures nothing and `ArenaHost.Teams` will
+throw to tell you so.
+
+**A start may not reach you.** The framework resolves a start to ONE arena — the game the caller
+named, else the arena the requesting furni belongs to, else the one it stands nearest to, else the
+only candidate — and refuses an ambiguous room. Nothing about this is yours to influence beyond
+declaring `ArenaSeparation` if your game genuinely supports several playfields in a room.
+
 **Never keep your own phase.** `IsLive` and `HasMatch` on `RoomGameModule` read the runtime's. A
 second flag is how the old system ended up with four booleans in four files, none of which agreed.
 
-**Never end yourself.** Call `_context.RequestMatchEndAsync`. It ends the ROOM's round, which is
-what fires `GAME_ENDS`, resets the game-timer furni and winds the room's other games down with it.
-Calling your own end hook skips all three.
+**Never end yourself.** Call `_context.RequestMatchEndAsync`. It ends YOUR arena's match and, if it
+was the last one running, the room's round with it — which is what fires `GAME_ENDS` and resets the
+game-timer furni. Calling your own end hook skips both.
 
 **Never write a score directly.** `_context.ScoreAsync(new GameScore(team, player, amount, reason,
 source))`. That is what fires `SCORE_ACHIEVED`, repaints the boards and puts the act in the trace. A
@@ -147,8 +166,10 @@ strategy.
 - **`IGameArena`** (`_context.Arena`) — `ComponentsOf<T>()`, `CountOf<T>()`, `OnTile<T>(idx)`,
   `TilesOf<T>()`, all filtered to your game. A filtered view over the room's one item index, so it
   is correct through placement, pickup and a definition swap with no subscription.
-- **`TeamGateRules.Toggle`** — the gate rules, once. The capacity check runs before the player
-  leaves their current team, so a rejected switch never strips the membership they had.
+- **`TeamGateRules.Toggle`** — the gate rules, once, over a `TeamSet` and a `TeamId`. The capacity
+  check runs before the player leaves their current team, so a rejected switch never strips the
+  membership they had, and capacity is per team so an asymmetric game can have one seeker and five
+  hiders.
 - **`GameCadence`** — a slow in-game clock as a struct field: `if (_tick.Due(now)) { … }`,
   `Reset()` at prepare. Keep the field non-readonly; it is a mutable struct.
 - **`GameColorKey.FromKeySuffix`** — colour from `_red/_green/_blue/_yellow` logic keys or

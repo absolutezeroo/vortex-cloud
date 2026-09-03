@@ -382,8 +382,13 @@ nothing that starts or stops a round learns the game's name.
 - Use the shared bricks, never a private copy:
   - lifecycle: `GamePhase` + `GameStateMachine`. A module has NO `IsRunning` of its own —
     `RoomGameModule.IsLive` / `.HasMatch` read the runtime's phase
-  - teams and scores: the room's one `GameTeamBook`, written through `_context.ScoreAsync` with a
-    `GameScore(team, player, amount, reason, source)`; gates go through `TeamGateRules.Toggle`
+  - teams and scores: the arena's `TeamBook`, keyed by the game's own `TeamId`s over the `TeamSet`
+    its profile declares — two teams, four, seven, or teams with no Habbo colour at all. Written
+    through `_context.ScoreAsync` with a `GameScore(team, player, amount, reason, source)`; gates go
+    through `TeamGateRules.Toggle`
+  - Habbo colours: `_context.Palette` (`HabboTeamPalette`) is the ONLY place a colour becomes a team.
+    A gate/goal/board reports the colour it is painted, the module asks the palette which of its own
+    teams that is. `GameTeamColor` never appears in a rule, a score or an event
   - arena lookup: `_context.Arena` (`ComponentsOf<T>` / `CountOf<T>` / `OnTile<T>` / `TilesOf<T>`),
     a filtered view over the room's ONE item index — never a scan of `ItemsById`
   - client IO: `_context.Chrome` (`IGameChrome`). From a participant-left hook, only
@@ -397,11 +402,22 @@ nothing that starts or stops a round learns the game's name.
   - no per-game member on `IRoomObjectContext`, and no per-game access interface. Arena furniture
     reports a `GameSignal`; the runtime routes it. This is the rule the old
     `IRoomFreezeAccess`/`IRoomBanzaiAccess` pair broke
-  - no per-game teams or scores; a second store is invisible to every wired team leaf
-  - no direct `GameTeamBook` score write; go through `_context.ScoreAsync` or `SCORE_ACHIEVED`
+  - no `GameTeamColor` in the domain — not as a team identity, not as a score key, not on an event.
+    A colour is presentation; teams are `TeamId` over the game's own `TeamSet`
+  - no team book captured in a FIELD INITIALISER; the arena's book is bound after the module is
+    constructed (which book depends on the teams the module declares), so read `_context.Teams`
+    where you need it. `ArenaHost.Teams` throws rather than hand out a null
+  - no per-game teams or scores kept privately alongside the book; a second store is invisible to
+    every wired team leaf
+  - no direct `TeamBook` score write; go through `_context.ScoreAsync` or `SCORE_ACHIEVED`
     never fires
   - no clearing scores in `OnPreparingAsync`; the runtime already did it before GAME_STARTS was
     published, and doing it again silently wipes what that event just awarded
+  - no assuming a start reaches you. A start resolves to ONE arena (`GameTargetResolver`: the named
+    game, else the requesting furni's own arena, else the arena it stands nearest to, else the only
+    candidate) and refuses an ambiguous room outright. A game that wants several playfields in one
+    room sets `GameProfile.ArenaSeparation`; the default of 0 is one arena per room, which is all the
+    client can address
   - no ending your own match; call `_context.RequestMatchEndAsync`, which ends the room's round,
     fires GAME_ENDS and resets the timer furni
   - no registration line in `RoomGrain`, and no new hardcoded game call in `FurnitureGameTimerLogic`
