@@ -76,8 +76,7 @@ public sealed class RoomGameRuntimeTests
         // anything: the ordering is what keeps its points from vanishing without a trace.
         harness
             .RoomEvents.OfType<WiredGameStartedEvent>()
-            .Should()
-            .ContainSingle("a room announces one round, however many games it hosts");
+            .Should().ContainSingle("a room announces one round, however many games it hosts");
         game.RoomEventsSeenAtPrepare.Should().Be(1);
     }
 
@@ -149,8 +148,7 @@ public sealed class RoomGameRuntimeTests
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
         await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
 
-        game
-            .Phases.Should()
+        game.Phases.Should()
             .Equal(
                 GamePhase.Preparing,
                 GamePhase.Running,
@@ -221,7 +219,10 @@ public sealed class RoomGameRuntimeTests
     public async Task AGameThatThrowsOnRoundEnd_DoesNotStopTheOthers()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
-        RecordingGame broken = new("broken") { OnRoundEnd = _ => throw new InvalidOperationException("boom") };
+        RecordingGame broken = new("broken")
+        {
+            OnRoundEnd = _ => throw new InvalidOperationException("boom"),
+        };
         RecordingGame healthy = new("healthy");
         harness.Grain.GameRuntime.Register(_ => broken);
         harness.Grain.GameRuntime.Register(_ => healthy);
@@ -256,7 +257,9 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.TickAsync(1_000, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.TickAsync(1_000, CancellationToken.None)
+            .ConfigureAwait(true);
 
         // Twenty frames a second per room, in every room in the hotel: "return early when idle" was
         // still a virtual call each time.
@@ -293,8 +296,7 @@ public sealed class RoomGameRuntimeTests
                 RoomHarness.Stranger,
                 GameTeamColor.Blue,
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
 
         await harness
             .Grain.GameRuntime.OnPlayerLeftAsync(RoomHarness.Stranger, CancellationToken.None)

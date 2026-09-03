@@ -56,8 +56,7 @@ public sealed class BanzaiGameTests
             .Grain.GameRuntime.SignalAsync(
                 GameSignal.WalkOn(gate, RoomHarness.Stranger),
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
 
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Red);
         avatar.CurrentEffectId.Should().Be(33, "Banzai wears the wired aura set (32 + team)");
@@ -92,8 +91,7 @@ public sealed class BanzaiGameTests
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Yellow);
         harness
             .Grain.GameRuntime.GetPlayersInTeam(GameTeamColor.Red)
-            .Should()
-            .BeEmpty("the old membership moved, it was not duplicated");
+            .Should().BeEmpty("the old membership moved, it was not duplicated");
         avatar.CurrentEffectId.Should().Be(36);
     }
 
@@ -107,10 +105,7 @@ public sealed class BanzaiGameTests
 
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
 
-        harness
-            .Grain.GameRuntime.PhaseOf(BanzaiConstants.Game)
-            .Should()
-            .Be(GamePhase.Running);
+        harness.Grain.GameRuntime.PhaseOf(BanzaiConstants.Game).Should().Be(GamePhase.Running);
         tile.GetState().Should().Be(BanzaiConstants.TileNeutral);
         gate.CanWalk().Should().BeFalse("gates are shut for the duration of a match");
     }
@@ -198,10 +193,7 @@ public sealed class BanzaiGameTests
 
         // A match on a board that no longer exists is a match nobody can end; the arena going away
         // has to end it.
-        harness
-            .Grain.GameRuntime.PhaseOf(BanzaiConstants.Game)
-            .Should()
-            .NotBe(GamePhase.Running);
+        harness.Grain.GameRuntime.PhaseOf(BanzaiConstants.Game).Should().NotBe(GamePhase.Running);
     }
 
     private static Task Walk(RoomHarness harness, IGameComponent component) =>

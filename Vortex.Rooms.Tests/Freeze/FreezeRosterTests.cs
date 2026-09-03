@@ -29,24 +29,21 @@ public sealed class FreezeRosterTests
 
         roster
             .ToggleGate(Layout, P(1), GameTeamColor.Red, true, FreezeSettings.Default)
-            .Should()
-            .Be(TeamGateResult.Joined);
+            .Should().Be(TeamGateResult.Joined);
         teams.GetTeam(P(1)).Should().Be(GameTeamColor.Red);
         roster.LivingCount(GameTeamColor.Red).Should().Be(1);
 
         // The same gate again leaves.
         roster
             .ToggleGate(Layout, P(1), GameTeamColor.Red, true, FreezeSettings.Default)
-            .Should()
-            .Be(TeamGateResult.Left);
+            .Should().Be(TeamGateResult.Left);
         teams.GetTeam(P(1)).Should().Be(GameTeamColor.None);
 
         // A different gate switches teams.
         roster.ToggleGate(Layout, P(1), GameTeamColor.Red, true, FreezeSettings.Default);
         roster
             .ToggleGate(Layout, P(1), GameTeamColor.Blue, true, FreezeSettings.Default)
-            .Should()
-            .Be(TeamGateResult.Joined);
+            .Should().Be(TeamGateResult.Joined);
         teams.GetTeam(P(1)).Should().Be(GameTeamColor.Blue);
         roster.LivingCount(GameTeamColor.Red).Should().Be(0);
     }
@@ -60,18 +57,14 @@ public sealed class FreezeRosterTests
         {
             roster
                 .ToggleGate(Layout, P(i), GameTeamColor.Green, true, FreezeSettings.Default)
-                .Should()
-                .Be(TeamGateResult.Joined);
+                .Should().Be(TeamGateResult.Joined);
         }
 
         roster
             .ToggleGate(Layout, P(99), GameTeamColor.Green, true, FreezeSettings.Default)
-            .Should()
-            .Be(TeamGateResult.None);
+            .Should().Be(TeamGateResult.None);
         roster
-            .LivingCount(GameTeamColor.Green)
-            .Should()
-            .Be(FreezeSettings.Default.MaxPlayersPerTeam);
+            .LivingCount(GameTeamColor.Green).Should().Be(FreezeSettings.Default.MaxPlayersPerTeam);
     }
 
     [Fact]
@@ -86,8 +79,7 @@ public sealed class FreezeRosterTests
 
         roster
             .ToggleGate(oneEach, P(2), GameTeamColor.Blue, true, FreezeSettings.Default)
-            .Should()
-            .Be(TeamGateResult.None);
+            .Should().Be(TeamGateResult.None);
         teams.GetTeam(P(2)).Should().Be(GameTeamColor.Red, "a rejected switch changes nothing");
         roster.LivingCount(GameTeamColor.Red).Should().Be(1);
     }
@@ -105,9 +97,7 @@ public sealed class FreezeRosterTests
                 GameTeamColor.Blue,
                 acceptingPlayers: false,
                 FreezeSettings.Default
-            )
-            .Should()
-            .Be(TeamGateResult.None);
+            ).Should().Be(TeamGateResult.None);
         teams.GetTeam(P(2)).Should().Be(GameTeamColor.None);
     }
 
@@ -256,9 +246,7 @@ public sealed class FreezeRosterTests
         FreezePlayerState player = new(P(1), GameTeamColor.Green, FreezeSettings.Default);
 
         player
-            .CurrentEffect()
-            .Should()
-            .Be(FreezeConstants.TeamEffectBase + (int)GameTeamColor.Green);
+            .CurrentEffect().Should().Be(FreezeConstants.TeamEffectBase + (int)GameTeamColor.Green);
 
         player.AddProtection();
         player

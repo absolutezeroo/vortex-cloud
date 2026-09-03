@@ -9,6 +9,7 @@ using Vortex.Primitives.Rooms.Games.Components;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Rooms.Games.Abstractions;
 using Vortex.Rooms.Games.Arena;
+using Vortex.Rooms.Games.Events;
 using Vortex.Rooms.Games.Presentation;
 using Vortex.Rooms.Games.Scoring;
 using Vortex.Rooms.Games.Teams;
@@ -304,7 +305,16 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
 
         // The last tile taken out from under a live match ends it rather than leaving a match with
         // no board to play on.
-        return _board.TileCount == 0 ? _context.RequestMatchEndAsync(ct) : Task.CompletedTask;
+        return _board.TileCount == 0 ? InvalidateAsync(ct) : Task.CompletedTask;
+    }
+
+    private async Task InvalidateAsync(CancellationToken ct)
+    {
+        await _context.PublishAsync(
+            new GameArenaInvalidatedEvent { Reason = "the last Banzai tile was picked up" },
+            ct
+        );
+        await _context.RequestMatchEndAsync(ct);
     }
 
     public override Task OnParticipantLeftAsync(PlayerId playerId, CancellationToken ct) =>

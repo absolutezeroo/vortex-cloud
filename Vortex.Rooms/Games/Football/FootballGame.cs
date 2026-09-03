@@ -57,21 +57,10 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     /// </summary>
     public override ArenaValidation ValidateArena()
     {
-        int goalColours = 0;
-        HashSet<GameTeamColor> seen = [];
-
-        foreach (IGoalComponent goal in _context.Arena.ComponentsOf<IGoalComponent>())
-        {
-            if (GameTeamBook.IsRealTeam(goal.Team) && seen.Add(goal.Team))
-            {
-                goalColours++;
-            }
-        }
-
         return ArenaValidation
             .Builder()
             .Require("Football", _context.Arena.CountOf<IBallComponent>())
-            .Require("Goals of different colours", goalColours, required: 2)
+            .Require("Goals of different colours", CountGoalColours(), required: 2)
             .Prefer("Team gates", _context.Arena.CountOf<ITeamGateComponent>(), required: 2)
             .Build();
     }
@@ -303,12 +292,16 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
         {
-            { Kind: GameSignalKind.WalkOn, Component: IBallComponent ball } =>
-                KickAsync(signal.Player, ball, ct),
+            { Kind: GameSignalKind.WalkOn, Component: IBallComponent ball } => KickAsync(
+                signal.Player,
+                ball,
+                ct
+            ),
             { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
                 OnGateWalkOnAsync(signal.Player, gate, ct),
             { Kind: GameSignalKind.Detached, Component: IBallComponent ball } =>
-                OnBallDetached(ball, ct),
+                OnBallDetachedAsync(ball, ct),
+            { Kind: GameSignalKind.Detached, Component: IGoalComponent } => OnGoalDetachedAsync(ct),
             _ => Task.CompletedTask,
         };
 
@@ -362,14 +355,42 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         );
     }
 
-    private Task OnBallDetached(IBallComponent ball, CancellationToken ct)
+    private Task OnBallDetachedAsync(IBallComponent ball, CancellationToken ct)
     {
         _balls.Remove(ball.ObjectId);
 
         // The last ball taken out of a live match ends it: there is nothing left to play with.
         return IsLive && _context.Arena.CountOf<IBallComponent>() == 0
-            ? _context.RequestMatchEndAsync(ct)
+            ? InvalidateAsync("the last football was picked up", ct)
             : Task.CompletedTask;
+    }
+
+    /// <summary>A goal was picked up mid-match. Two colours is the minimum a match validated on, so
+    /// falling under it ends the match rather than leaving one side with nothing to defend.</summary>
+    private Task OnGoalDetachedAsync(CancellationToken ct) =>
+        IsLive && CountGoalColours() < 2
+            ? InvalidateAsync("a goal was picked up, leaving fewer than two colours", ct)
+            : Task.CompletedTask;
+
+    private async Task InvalidateAsync(string reason, CancellationToken ct)
+    {
+        await _context.PublishAsync(new GameArenaInvalidatedEvent { Reason = reason }, ct);
+        await _context.RequestMatchEndAsync(ct);
+    }
+
+    private int CountGoalColours()
+    {
+        HashSet<GameTeamColor> seen = [];
+
+        foreach (IGoalComponent goal in _context.Arena.ComponentsOf<IGoalComponent>())
+        {
+            if (GameTeamBook.IsRealTeam(goal.Team))
+            {
+                seen.Add(goal.Team);
+            }
+        }
+
+        return seen.Count;
     }
 
     private async Task OnGateWalkOnAsync(

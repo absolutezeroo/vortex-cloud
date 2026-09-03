@@ -162,8 +162,7 @@ public sealed class FootballGameTests
 
         harness
             .Grain.GameRuntime.GetTeamScore(GameTeamColor.Red)
-            .Should()
-            .Be(FootballSettings.Default.GoalPoints);
+            .Should().Be(FootballSettings.Default.GoalPoints);
         red.GetState().Should().Be(FootballConstants.GoalScoredState);
         ball.X.Should().Be(7, "the ball sits in the net while the goal is shown");
 

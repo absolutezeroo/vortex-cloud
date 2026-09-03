@@ -216,12 +216,19 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
         {
             { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
                 OnGateWalkOnAsync(signal.Player, gate, ct),
-            { Kind: GameSignalKind.WalkOn, Component: IArenaExitComponent } =>
-                OnForfeitAsync(signal.Player, ct),
+            { Kind: GameSignalKind.WalkOn, Component: IArenaExitComponent } => OnForfeitAsync(
+                signal.Player,
+                ct
+            ),
             { Kind: GameSignalKind.WalkOn, Component: IDestructibleComponent block } =>
                 OnBlockWalkOnAsync(signal.Player, block, ct),
-            { Kind: GameSignalKind.Use, Component: IArenaTileComponent tile } =>
-                ThrowBallAsync(signal.Player, tile, ct),
+            { Kind: GameSignalKind.Use, Component: IArenaTileComponent tile } => ThrowBallAsync(
+                signal.Player,
+                tile,
+                ct
+            ),
+            { Kind: GameSignalKind.Detached, Component: IArenaTileComponent } =>
+                OnArenaTileDetachedAsync(ct),
             _ => Task.CompletedTask,
         };
 
@@ -284,6 +291,22 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
         );
 
         await RefreshGateCountersAsync();
+    }
+
+    /// <summary>The rink was dismantled mid-match. A Freeze match with no tiles left has nothing to
+    /// throw at and no way to end on its own rules, so it ends here.</summary>
+    private async Task OnArenaTileDetachedAsync(CancellationToken ct)
+    {
+        if (!IsLive || _context.Arena.CountOf<IArenaTileComponent>() > 0)
+        {
+            return;
+        }
+
+        await _context.PublishAsync(
+            new GameArenaInvalidatedEvent { Reason = "the last Freeze tile was picked up" },
+            ct
+        );
+        await _context.RequestMatchEndAsync(ct);
     }
 
     public override Task OnParticipantLeftAsync(PlayerId playerId, CancellationToken ct)

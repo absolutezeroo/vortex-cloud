@@ -93,20 +93,15 @@ public sealed class FreezeGameTests
 
         await Use(harness, tile).ConfigureAwait(true);
 
-        tile.GetState()
-            .Should()
-            .NotBe(FreezeConstants.TileIdle, "the ball rises before it lands");
+        tile.GetState().Should().NotBe(FreezeConstants.TileIdle, "the ball rises before it lands");
 
         await harness
             .Grain.GameRuntime.TickAsync(
                 Kickoff + FreezeConstants.BlastDelayMs,
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
 
-        tile.GetState()
-            .Should()
-            .Be(FreezeConstants.TileBlast * FreezeConstants.StateWireScale);
+        tile.GetState().Should().Be(FreezeConstants.TileBlast * FreezeConstants.StateWireScale);
     }
 
     [Fact]
@@ -154,14 +149,12 @@ public sealed class FreezeGameTests
             .Grain.GameRuntime.SignalAsync(
                 GameSignal.WalkOn(red, RoomHarness.Stranger),
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.SignalAsync(
                 GameSignal.WalkOn(blue, RoomHarness.Owner),
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
         await Use(harness, target).ConfigureAwait(true);
@@ -169,15 +162,13 @@ public sealed class FreezeGameTests
             .Grain.GameRuntime.TickAsync(
                 Kickoff + FreezeConstants.BlastDelayMs,
                 CancellationToken.None
-            )
-            .ConfigureAwait(true);
+            ).ConfigureAwait(true);
 
         victim.CurrentEffectId.Should().Be(FreezeConstants.FrozenEffect);
         thrower.CurrentEffectId.Should().Be(41, "the thrower keeps their team aura");
         harness
             .Grain.GameRuntime.GetTeamScore(GameTeamColor.Red)
-            .Should()
-            .Be(FreezeSettings.Default.FreezePlayerPoints);
+            .Should().Be(FreezeSettings.Default.FreezePlayerPoints);
     }
 
     [Fact]
@@ -218,8 +209,7 @@ public sealed class FreezeGameTests
     {
         // One tick first so the runtime has a clock: a throw queued at "now" needs one.
         await harness
-            .Grain.GameRuntime.TickAsync(Kickoff, CancellationToken.None)
-            .ConfigureAwait(true);
+            .Grain.GameRuntime.TickAsync(Kickoff, CancellationToken.None).ConfigureAwait(true);
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
     }
 

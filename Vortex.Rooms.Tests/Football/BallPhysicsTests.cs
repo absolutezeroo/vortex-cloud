@@ -45,9 +45,7 @@ public sealed class BallPhysicsTests
         grid.Closed.Add(Idx(6, 5));
 
         BallPhysics
-            .Advance(Idx(5, 5), Rotation.East, grid)
-            .Outcome.Should()
-            .Be(BallStepOutcome.Blocked);
+            .Advance(Idx(5, 5), Rotation.East, grid).Outcome.Should().Be(BallStepOutcome.Blocked);
     }
 
     [Fact]
@@ -57,9 +55,7 @@ public sealed class BallPhysicsTests
         grid.Avatars.Add(Idx(6, 5));
 
         BallPhysics
-            .Advance(Idx(5, 5), Rotation.East, grid)
-            .Outcome.Should()
-            .Be(BallStepOutcome.Blocked);
+            .Advance(Idx(5, 5), Rotation.East, grid).Outcome.Should().Be(BallStepOutcome.Blocked);
     }
 
     [Fact]
@@ -83,9 +79,7 @@ public sealed class BallPhysicsTests
         Grid grid = new();
 
         BallPhysics
-            .Advance(Idx(5, 5), Rotation.None, grid)
-            .Outcome.Should()
-            .Be(BallStepOutcome.Blocked);
+            .Advance(Idx(5, 5), Rotation.None, grid).Outcome.Should().Be(BallStepOutcome.Blocked);
     }
 
     [Fact]

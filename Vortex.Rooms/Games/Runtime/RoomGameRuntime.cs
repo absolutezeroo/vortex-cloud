@@ -788,7 +788,8 @@ public sealed class RoomGameRuntime
         {
             _roomGrain._logger.LogError(
                 ex,
-                "Game {Game} failed to validate its arena in room {RoomId}; treating it as unplayable.",
+                "Game {Game} failed to validate its arena in room {RoomId}; it counts as "
+                    + "unplayable.",
                 host.Game.Profile.Id,
                 _roomGrain.RoomId
             );
