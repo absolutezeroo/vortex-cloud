@@ -75,7 +75,7 @@ public sealed class FootballGameTests
         RoomPlayerAvatar player = Striker(harness, 4, 5, Rotation.East, ball);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
 
         player.Should().NotBeNull();
@@ -91,7 +91,7 @@ public sealed class FootballGameTests
         Striker(harness, 4, 5, Rotation.East, ball);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
 
         // The kicker is standing on the ball's tile at this instant; moving it now animates it out
         // from under the step the client has not finished playing.
@@ -106,7 +106,7 @@ public sealed class FootballGameTests
         Striker(harness, 0, 5, Rotation.East, ball);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(1 + Balance.KickDistance);
@@ -127,7 +127,7 @@ public sealed class FootballGameTests
         player.SetGoalTileId(harness.Grain.MapModule.ToIdx(9, 5));
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(5 + Balance.DragDistance);
@@ -142,7 +142,7 @@ public sealed class FootballGameTests
         player.SetRotation(Rotation.East);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Use(harness, ball).ConfigureAwait(true);
+        await UseAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(5 + Balance.TackleDistance);
@@ -158,7 +158,7 @@ public sealed class FootballGameTests
         player.SetRotation(Rotation.East);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Use(harness, ball).ConfigureAwait(true);
+        await UseAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(5);
@@ -174,7 +174,7 @@ public sealed class FootballGameTests
         Striker(harness, 0, 5, Rotation.East, ball);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
 
         ball.GetState().Should().Be(Balance.KickDistance + 1);
 
@@ -191,7 +191,7 @@ public sealed class FootballGameTests
         Striker(harness, 9, 5, Rotation.East, ball);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         // The map is 12 wide, so the ball reaches column 11, turns, and spends the rest of the kick
@@ -233,11 +233,11 @@ public sealed class FootballGameTests
         FootballGoalComponent red = PlaceGoal(harness, "red", 7, 5);
         PlaceGoal(harness, "blue", 2, 5, Rotation.East);
         FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
 
         // Two hops to reach the net, stepped by hand: rolling the clock out past the reset would
         // measure the ball's return rather than the goal.
@@ -264,11 +264,11 @@ public sealed class FootballGameTests
         PlaceGoal(harness, "red", 7, 5, Rotation.East);
         PlaceGoal(harness, "blue", 2, 1, Rotation.East);
         FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         harness.Grain.GameRuntime.GetTeamScore(GameTeamColor.Red).Should().Be(0);
@@ -285,7 +285,7 @@ public sealed class FootballGameTests
         PlaceGoal(harness, "blue", 1, 5, Rotation.East);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
         int stoppedAt = ball.X;
 
@@ -304,7 +304,7 @@ public sealed class FootballGameTests
         PlaceGoal(harness, "red", 7, 5);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
-        await Walk(harness, ball).ConfigureAwait(true);
+        await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         // A football in an ordinary room is a toy: it goes in, the net reacts, nothing is scored.
@@ -346,13 +346,13 @@ public sealed class FootballGameTests
     private static Task TickAsync(RoomHarness harness, long nowMs) =>
         harness.Grain.GameRuntime.TickAsync(nowMs, CancellationToken.None);
 
-    private static Task Walk(RoomHarness harness, IGameComponent component) =>
+    private static Task WalkAsync(RoomHarness harness, IGameComponent component) =>
         harness.Grain.GameRuntime.SignalAsync(
             GameSignal.WalkOn(component, RoomHarness.Stranger),
             CancellationToken.None
         );
 
-    private static Task Use(RoomHarness harness, IGameComponent component) =>
+    private static Task UseAsync(RoomHarness harness, IGameComponent component) =>
         harness.Grain.GameRuntime.SignalAsync(
             GameSignal.Use(component, RoomHarness.Stranger, 0),
             CancellationToken.None

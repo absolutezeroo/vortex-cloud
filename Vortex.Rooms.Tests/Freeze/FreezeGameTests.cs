@@ -61,7 +61,7 @@ public sealed class FreezeGameTests
         RoomPlayerAvatar avatar = harness.PutRealPlayerOnTile(RoomHarness.Stranger, 2, 2);
         FreezeGateComponent gate = PlaceGate(harness, "red", 2, 2);
 
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
 
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Red);
         avatar
@@ -88,10 +88,10 @@ public sealed class FreezeGameTests
         harness.PutRealPlayerOnTile(RoomHarness.Stranger, 5, 5);
         FreezeGateComponent gate = PlaceGate(harness, "red", 2, 2);
         FreezeTileComponent tile = PlaceTile(harness, 5, 5);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
-        await Use(harness, tile).ConfigureAwait(true);
+        await UseAsync(harness, tile).ConfigureAwait(true);
 
         tile.GetState().Should().NotBe(FreezeConstants.TileIdle, "the ball rises before it lands");
 
@@ -112,10 +112,10 @@ public sealed class FreezeGameTests
         harness.PutRealPlayerOnTile(RoomHarness.Stranger, 1, 1);
         FreezeGateComponent gate = PlaceGate(harness, "red", 2, 2);
         FreezeTileComponent far = PlaceTile(harness, 8, 8);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
-        await Use(harness, far).ConfigureAwait(true);
+        await UseAsync(harness, far).ConfigureAwait(true);
 
         // The client sends intent; the server decides. A throw at the other end of the room is a
         // client that made something up.
@@ -129,9 +129,9 @@ public sealed class FreezeGameTests
         harness.PutRealPlayerOnTile(RoomHarness.Stranger, 5, 5);
         FreezeGateComponent gate = PlaceGate(harness, "red", 2, 2);
         FreezeTileComponent tile = PlaceTile(harness, 5, 5);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
 
-        await Use(harness, tile).ConfigureAwait(true);
+        await UseAsync(harness, tile).ConfigureAwait(true);
 
         tile.GetState().Should().Be(FreezeConstants.TileIdle);
     }
@@ -164,7 +164,7 @@ public sealed class FreezeGameTests
             .ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
-        await Use(harness, target).ConfigureAwait(true);
+        await UseAsync(harness, target).ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.TickAsync(
                 Kickoff + FreezeConstants.BlastDelayMs,
@@ -187,7 +187,7 @@ public sealed class FreezeGameTests
         RoomPlayerAvatar player = harness.PutRealPlayerOnTile(RoomHarness.Stranger, 5, 5);
         FreezeGateComponent gate = PlaceGate(harness, "red", 2, 2);
         PlaceTile(harness, 5, 5);
-        await Walk(harness, gate).ConfigureAwait(true);
+        await WalkAsync(harness, gate).ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
         await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
@@ -223,13 +223,13 @@ public sealed class FreezeGameTests
         await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
     }
 
-    private static Task Walk(RoomHarness harness, IGameComponent component) =>
+    private static Task WalkAsync(RoomHarness harness, IGameComponent component) =>
         harness.Grain.GameRuntime.SignalAsync(
             GameSignal.WalkOn(component, RoomHarness.Stranger),
             CancellationToken.None
         );
 
-    private static Task Use(RoomHarness harness, IGameComponent component) =>
+    private static Task UseAsync(RoomHarness harness, IGameComponent component) =>
         harness.Grain.GameRuntime.SignalAsync(
             GameSignal.Use(component, RoomHarness.Stranger, 0),
             CancellationToken.None
