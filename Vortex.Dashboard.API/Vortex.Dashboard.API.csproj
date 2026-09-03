@@ -90,6 +90,14 @@
       <EmbeddedResource Include="Assets\*.html;Assets\*.css;Assets\*.js;Assets\*.png;Assets\*.svg" />
     </ItemGroup>
 
+    <!--
+      The stamp lives in obj\, which on a clean checkout does not exist yet: this target runs off
+      Inputs/Outputs before the standard PrepareForBuild has created the intermediate directory, so
+      Touch failed with MSB3371 and took the whole build with it. Creating the directory first is
+      what the ordinary MSBuild targets do for their own outputs.
+    -->
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+
     <Touch Files="$(IntermediateOutputPath)dashboard-frontend.stamp" AlwaysCreate="true" />
   </Target>
 
