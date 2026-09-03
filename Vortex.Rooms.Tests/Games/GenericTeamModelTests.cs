@@ -132,15 +132,10 @@ public sealed class GenericTeamModelTests
     {
         // The old layout had one capacity for the whole game. Teams can now differ, which is what an
         // asymmetric game (one seeker, five hiders) needs.
-        TeamSet asymmetric = TeamSet.Of("seeker", "hiders");
-        TeamSet withCaps = asymmetric with
-        {
-            Teams =
-            [
-                asymmetric.Teams[0] with { Capacity = 1 },
-                asymmetric.Teams[1] with { Capacity = 5 },
-            ],
-        };
+        TeamSet withCaps = TeamSet
+            .Of("seeker", "hiders")
+            .WithCapacity(new TeamId(1), 1)
+            .WithCapacity(new TeamId(2), 5);
 
         withCaps.CapacityOf(new TeamId(1)).Should().Be(1);
         withCaps.CapacityOf(new TeamId(2)).Should().Be(5);

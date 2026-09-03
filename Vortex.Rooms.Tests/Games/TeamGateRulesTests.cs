@@ -28,10 +28,7 @@ public sealed class TeamGateRulesTests
     {
         TeamBook teams = new(Teams);
 
-        TeamGateRules
-            .Toggle(teams, Teams, Alice, Red, true)
-            .Should()
-            .Be(TeamGateResult.Joined);
+        TeamGateRules.Toggle(teams, Teams, Alice, Red, true).Should().Be(TeamGateResult.Joined);
         teams.GetTeam(Alice).Should().Be(Red);
     }
 
@@ -41,10 +38,7 @@ public sealed class TeamGateRulesTests
         TeamBook teams = new(Teams);
         TeamGateRules.Toggle(teams, Teams, Alice, Red, true);
 
-        TeamGateRules
-            .Toggle(teams, Teams, Alice, Red, true)
-            .Should()
-            .Be(TeamGateResult.Left);
+        TeamGateRules.Toggle(teams, Teams, Alice, Red, true).Should().Be(TeamGateResult.Left);
         teams.GetTeam(Alice).Should().Be(TeamId.None);
     }
 
@@ -54,10 +48,7 @@ public sealed class TeamGateRulesTests
         TeamBook teams = new(Teams);
         TeamGateRules.Toggle(teams, Teams, Alice, Red, true);
 
-        TeamGateRules
-            .Toggle(teams, Teams, Alice, Blue, true)
-            .Should()
-            .Be(TeamGateResult.Joined);
+        TeamGateRules.Toggle(teams, Teams, Alice, Blue, true).Should().Be(TeamGateResult.Joined);
         teams.GetTeam(Alice).Should().Be(Blue);
         teams.GetTeamMemberCount(Red).Should().Be(0);
     }
@@ -70,10 +61,7 @@ public sealed class TeamGateRulesTests
         TeamGateRules.Toggle(teams, oneEach, Alice, Red, true);
         TeamGateRules.Toggle(teams, oneEach, Bob, Blue, true);
 
-        TeamGateRules
-            .Toggle(teams, oneEach, Bob, Red, true)
-            .Should()
-            .Be(TeamGateResult.None);
+        TeamGateRules.Toggle(teams, oneEach, Bob, Red, true).Should().Be(TeamGateResult.None);
         teams.GetTeam(Bob).Should().Be(Blue, "a rejected switch changes nothing");
     }
 
@@ -121,9 +109,6 @@ public sealed class TeamGateRulesTests
         };
         TeamBook teams = new(Teams);
 
-        TeamGateRules
-            .Toggle(teams, twoTeams, Alice, Yellow, true)
-            .Should()
-            .Be(TeamGateResult.None);
+        TeamGateRules.Toggle(teams, twoTeams, Alice, Yellow, true).Should().Be(TeamGateResult.None);
     }
 }

@@ -75,10 +75,7 @@ public sealed class ArenaPartitionTests
 
         foreach (ArenaPlacement placement in hall)
         {
-            first
-                .InstanceOf(placement.ObjectId)
-                .Should()
-                .Be(second.InstanceOf(placement.ObjectId));
+            first.InstanceOf(placement.ObjectId).Should().Be(second.InstanceOf(placement.ObjectId));
         }
     }
 

@@ -46,10 +46,6 @@ public readonly record struct GameScore(
     public static GameScore For(TeamId team, int amount, ScoreReason reason) =>
         new(team, default, amount, reason, default);
 
-    public static GameScore By(
-        TeamId team,
-        PlayerId player,
-        int amount,
-        ScoreReason reason
-    ) => new(team, player, amount, reason, default);
+    public static GameScore By(TeamId team, PlayerId player, int amount, ScoreReason reason) =>
+        new(team, player, amount, reason, default);
 }

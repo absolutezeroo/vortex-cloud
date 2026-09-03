@@ -65,6 +65,22 @@ public sealed record TeamSet
         return this with { Teams = builder.ToImmutable() };
     }
 
+    /// <summary>Caps one team, leaving the others alone — what an asymmetric game needs (one seeker,
+    /// five hiders). The old single per-game capacity could not express it.</summary>
+    public TeamSet WithCapacity(TeamId team, int capacity)
+    {
+        ImmutableArray<GameTeam>.Builder builder = ImmutableArray.CreateBuilder<GameTeam>(
+            Teams.Length
+        );
+
+        foreach (GameTeam existing in Teams)
+        {
+            builder.Add(existing.Id == team ? existing with { Capacity = capacity } : existing);
+        }
+
+        return this with { Teams = builder.ToImmutable() };
+    }
+
     public TeamSet WithMinimumTeams(int minimum) => this with { MinimumTeams = minimum };
 
     public bool Contains(TeamId id) => Find(id) is not null;

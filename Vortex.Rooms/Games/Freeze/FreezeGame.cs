@@ -85,9 +85,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
         _settings = await FreezeConfig.ResolveAsync(_context);
-        _teams = TeamSet
-            .HabboColours.WithCapacity(_settings.MaxPlayersPerTeam)
-            .WithMinimumTeams(2);
+        _teams = TeamSet.HabboColours.WithCapacity(_settings.MaxPlayersPerTeam).WithMinimumTeams(2);
 
         _blasts.Clear();
         _resets.Clear();

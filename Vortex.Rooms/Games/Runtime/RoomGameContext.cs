@@ -288,14 +288,7 @@ internal sealed class RoomGameContext(
     /// <summary>Stamps the event with this game and its live match before fanning it out, so a
     /// module never has to name the match it is in — and cannot name the wrong one.</summary>
     public Task PublishAsync(GameEvent evt, CancellationToken ct) =>
-        _runtime.PublishGameEventAsync(
-            evt with
-            {
-                Game = _host.Id.Game,
-                Match = Match,
-            },
-            ct
-        );
+        _runtime.PublishGameEventAsync(evt with { Game = _host.Id.Game, Match = Match }, ct);
 
     public Task RequestMatchEndAsync(CancellationToken ct) =>
         _runtime.RequestRoundEndAsync(_host, ct);

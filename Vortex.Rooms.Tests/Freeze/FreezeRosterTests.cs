@@ -74,10 +74,7 @@ public sealed class FreezeRosterTests
             .ToggleGate(Layout, P(99), Green, true, FreezeSettings.Default)
             .Should()
             .Be(TeamGateResult.None);
-        roster
-            .LivingCount(Green)
-            .Should()
-            .Be(FreezeSettings.Default.MaxPlayersPerTeam);
+        roster.LivingCount(Green).Should().Be(FreezeSettings.Default.MaxPlayersPerTeam);
     }
 
     [Fact]
@@ -261,10 +258,7 @@ public sealed class FreezeRosterTests
     {
         FreezePlayerState player = new(P(1), Green, FreezeSettings.Default);
 
-        player
-            .CurrentEffect()
-            .Should()
-            .Be(FreezeConstants.TeamEffectBase + (int)Green);
+        player.CurrentEffect().Should().Be(FreezeConstants.TeamEffectBase + (int)Green);
 
         player.AddProtection();
         player

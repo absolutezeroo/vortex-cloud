@@ -1,6 +1,6 @@
-using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Games.Events;
 using Vortex.Rooms.Games.Scoring;
+using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.BattleBanzai;
 
