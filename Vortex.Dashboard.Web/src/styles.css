@@ -26,12 +26,17 @@
 @import "@fontsource/ubuntu/700.css";
 
 /* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
-   original/default look and must stay pixel-identical to what shipped before theming existed --
-   :root with no attribute falls back to it too, so an unthemed load (JS not yet run, or a stored
-   preference that's since become invalid) never renders unstyled/wrong colors. "dark" is a true
-   neutral dark mode (near-black, no blue tint). "white" is a light theme. Every color a component
-   needs must be one of these tokens -- a literal hex/rgba in a component only themes correctly by
-   accident, and generally won't. */
+   original/default look -- :root with no attribute falls back to it too, so an unthemed load (JS not
+   yet run, or a stored preference that's since become invalid) never renders unstyled/wrong colors.
+   "dark" is a true neutral dark mode (near-black, no blue tint). "white" is a light theme. Every
+   color a component needs must be one of these tokens -- a literal hex/rgba in a component only
+   themes correctly by accident, and generally won't.
+
+   BLUE'S COLOURS are the Habbo Unity mockup's, sampled rather than eyeballed, and
+   check-design-tokens.mjs pins all 58 of them. Its GEOMETRY is no longer the mockup's: the Habbo
+   control construction under "HABBO CONTROLS" is shared by all three themes now, because that look
+   is the direction for the dashboard rather than a property of one theme. Colour is what the mockup
+   is authoritative for; the shape of a key is not. */
 :root,
 :root[data-theme='blue'] {
   color-scheme: dark;
@@ -137,6 +142,26 @@
   --button-warning-active: #96610f;
   --button-warning-border-active: #b9791a;
   --button-warning-ink: #ffffff;
+
+  /* The Habbo key's construction, in this theme's colours. The construction itself is shared by all
+     three themes (see "HABBO CONTROLS" below); only these values are per-theme. The edge is lighter
+     than the face on every state, which is what reads as a lit top rather than an outline, and the
+     drop is hard with no blur so the key looks stamped rather than floated. */
+  --button-border-hover: #4f93d8;
+  --button-border-active: #1b4f7e;
+  --button-danger-hover: #c65344;
+  --button-danger-border-hover: #e06a4d;
+  --button-danger-border-active: #8f3327;
+  --button-neutral-bg: #1b3c5c;
+  --button-neutral-border: #3b648a;
+  --button-neutral-hover: #24507a;
+  --button-neutral-border-hover: #4f7fa8;
+  --button-neutral-active: #14304a;
+  --button-neutral-border-active: #2d5a80;
+  --field-border-focus: #4f93d8;
+  --field-inset: #9ebecc;
+  --key-drop: 0 3px 0 1px rgba(0, 0, 0, 0.3);
+  --key-drop-pressed: 0 1px 0 1px rgba(0, 0, 0, 0.3);
 
   --ink: #ffffff;
   --muted: #cad4da;
@@ -319,6 +344,25 @@
   --button-warning-active: #8a5813;
   --button-warning-border-active: #6f4610;
   --button-warning-ink: #ffffff;
+
+  /* Same construction, inverted: on a light page the edge has to be DARKER than the face, because a
+     lighter one against white is invisible. The drop is softer for the same reason -- black at 30%
+     under a white card reads as dirt rather than as depth. */
+  --button-border-hover: #123f66;
+  --button-border-active: #0d3252;
+  --button-danger-hover: #b8323b;
+  --button-danger-border-hover: #96262e;
+  --button-danger-border-active: #7d1f26;
+  --button-neutral-bg: #ffffff;
+  --button-neutral-border: #c3cedb;
+  --button-neutral-hover: #e9f0f7;
+  --button-neutral-border-hover: #a9b8ca;
+  --button-neutral-active: #dbe5ef;
+  --button-neutral-border-active: #8fa1b6;
+  --field-border-focus: #1f5fa6;
+  --field-inset: #ffffff;
+  --key-drop: 0 3px 0 1px rgba(22, 40, 58, 0.18);
+  --key-drop-pressed: 0 1px 0 1px rgba(22, 40, 58, 0.18);
   --sidebar-active: #e3ecf6;
   --topbar-bg: #ffffff;
   --table-header-bg: #f2f6fa;
@@ -1753,7 +1797,7 @@ select {
   background-repeat: no-repeat;
 }
 
-:root[data-theme='dark'] select {
+select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235c6168' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
@@ -2338,9 +2382,20 @@ form > .op-actions,
    is identical. Leave one of the three numbers alone and the pair goes crooked --
    that is exactly what a 5px/3px field did next to an 8px/2px key.
 
-   Scoped to the dark theme deliberately. "blue" is the Habbo Unity mockup and is
-   required to stay pixel-identical to it (see the note at the top of this file), and
-   "white" is a light theme these saturated fills are not built for.
+   SHARED BY ALL THREE THEMES. It was scoped to "dark" at first, on the reasoning that
+   "blue" had to stay pixel-identical to the mockup and that a light theme was not built
+   for saturated fills. That left two of the three themes with no control language at
+   all -- flat rectangles where the third had keys -- and the Habbo look is the
+   direction for the whole dashboard, not for one theme. So the CONSTRUCTION below
+   (edge lighter than the face, hard drop, 2px press travel, the field's build, the
+   uppercase label) is unscoped, and every colour it uses is a token each theme sets for
+   itself. Blue keeps the mockup's own hues -- check-design-tokens.mjs still pins all 58
+   of them -- and white inverts the rule the construction rests on: its edge is DARKER
+   than the face, because a lighter edge on white is invisible.
+
+   The one thing that deliberately does NOT take the key construction is a badge or a
+   pill: it states a fact rather than being something you press, so it stays a tint
+   built from each theme's own --ok/--warning/--danger.
 
    The neutral (.ghost-button, 218 uses — the app's secondary button) takes the
    GEOMETRY above but keeps the dark theme's own surface tokens. Habbo's neutral key
@@ -2436,10 +2491,10 @@ form > .op-actions,
    the rule below, which names them directly. */
 /* --- The key: one geometry, four fills ------------------------------------- */
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn),
-:root[data-theme='dark'] .ghost-button,
-:root[data-theme='dark'] .btn,
-:root[data-theme='dark'] .icon-btn {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn),
+.ghost-button,
+.btn,
+.icon-btn {
   border-width: 2px;
   border-style: solid;
   border-radius: 5px;
@@ -2456,45 +2511,45 @@ form > .op-actions,
    keeps the geometry, the fill and the drop; it just stops shouting the name back. Uppercasing a
    label is fine for "SAVE" and wrong for a room called qsgqsg, which read as "QSGQSG".
    Add `verbatim` to any button whose text comes from data rather than from the interface. */
-:root[data-theme='dark'] .verbatim,
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.verbatim {
+.verbatim,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.verbatim {
   text-transform: none;
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
-:root[data-theme='dark'] .ghost-button:active:not(:disabled),
-:root[data-theme='dark'] .btn:active:not(:disabled),
-:root[data-theme='dark'] .icon-btn:active:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
+.ghost-button:active:not(:disabled),
+.btn:active:not(:disabled),
+.icon-btn:active:not(:disabled) {
   box-shadow: var(--key-drop-pressed);
   transform: translate(0, 2px);
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled,
-:root[data-theme='dark'] .ghost-button:disabled,
-:root[data-theme='dark'] .btn:disabled,
-:root[data-theme='dark'] .icon-btn:disabled {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled,
+.ghost-button:disabled,
+.btn:disabled,
+.icon-btn:disabled {
   opacity: 0.4;
 }
 
 /* Blue. The bare button inside a panel/toolbar IS the primary in this app; .btn-primary
    is the same key reached through the shared component. */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
-:root[data-theme='dark'] .btn-primary {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
+.btn-primary {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   color: var(--button-ink);
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
-:root[data-theme='dark'] .btn-primary:hover:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
+.btn-primary:hover:not(:disabled) {
   background-color: var(--button-bg-hover);
   border-color: var(--button-border-hover);
   /* The kit reaches for brightness() on hover; Habbo names the lit colour, so drop it. */
   filter: none;
 }
 
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
-:root[data-theme='dark'] .btn-primary:active:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
+.btn-primary:active:not(:disabled) {
   background-color: var(--button-bg-active);
   border-color: var(--button-border-active);
 }
@@ -2502,24 +2557,24 @@ form > .op-actions,
 /* Neutral. Two classes deep so it beats the blue rule above on specificity rather
    than on source order: .ghost-button is the app's secondary and turns up inside
    panels constantly. */
-:root[data-theme='dark'] .ghost-button,
-:root[data-theme='dark'] .btn-ghost,
-:root[data-theme='dark'] .icon-btn {
+.ghost-button,
+.btn-ghost,
+.icon-btn {
   background-color: var(--button-neutral-bg);
   border-color: var(--button-neutral-border);
   color: var(--ink);
 }
 
-:root[data-theme='dark'] .ghost-button:hover:not(:disabled),
-:root[data-theme='dark'] .btn-ghost:hover:not(:disabled),
-:root[data-theme='dark'] .icon-btn:hover:not(:disabled) {
+.ghost-button:hover:not(:disabled),
+.btn-ghost:hover:not(:disabled),
+.icon-btn:hover:not(:disabled) {
   background-color: var(--button-neutral-hover);
   border-color: var(--button-neutral-border-hover);
 }
 
-:root[data-theme='dark'] .ghost-button:active:not(:disabled),
-:root[data-theme='dark'] .btn-ghost:active:not(:disabled),
-:root[data-theme='dark'] .icon-btn:active:not(:disabled) {
+.ghost-button:active:not(:disabled),
+.btn-ghost:active:not(:disabled),
+.icon-btn:active:not(:disabled) {
   background-color: var(--button-neutral-active);
   border-color: var(--button-neutral-border-active);
 }
@@ -2527,71 +2582,71 @@ form > .op-actions,
 /* Red. .ghost-button.danger is how the app already writes a destructive action
    (43 of them); it was a translucent red wash, which reads as a disabled state next
    to a solid key. */
-:root[data-theme='dark'] .ghost-button.danger,
-:root[data-theme='dark'] .btn-danger,
-:root[data-theme='dark'] button.danger {
+.ghost-button.danger,
+.btn-danger,
+button.danger {
   background-color: var(--button-danger-bg);
   border-color: var(--button-danger-border);
   color: #ffffff;
 }
 
-:root[data-theme='dark'] .ghost-button.danger:hover:not(:disabled),
-:root[data-theme='dark'] .btn-danger:hover:not(:disabled),
-:root[data-theme='dark'] button.danger:hover:not(:disabled) {
+.ghost-button.danger:hover:not(:disabled),
+.btn-danger:hover:not(:disabled),
+button.danger:hover:not(:disabled) {
   background-color: var(--button-danger-hover);
   border-color: var(--button-danger-border-hover);
   filter: none;
 }
 
-:root[data-theme='dark'] .ghost-button.danger:active:not(:disabled),
-:root[data-theme='dark'] .btn-danger:active:not(:disabled),
-:root[data-theme='dark'] button.danger:active:not(:disabled) {
+.ghost-button.danger:active:not(:disabled),
+.btn-danger:active:not(:disabled),
+button.danger:active:not(:disabled) {
   background-color: var(--button-danger-active);
   border-color: var(--button-danger-border-active);
 }
 
 /* Green. */
-:root[data-theme='dark'] .ghost-button.success,
-:root[data-theme='dark'] .btn-success,
-:root[data-theme='dark'] button.success {
+.ghost-button.success,
+.btn-success,
+button.success {
   background-color: var(--button-success-bg);
   border-color: var(--button-success-border);
   color: #ffffff;
 }
 
-:root[data-theme='dark'] .ghost-button.success:hover:not(:disabled),
-:root[data-theme='dark'] .btn-success:hover:not(:disabled),
-:root[data-theme='dark'] button.success:hover:not(:disabled) {
+.ghost-button.success:hover:not(:disabled),
+.btn-success:hover:not(:disabled),
+button.success:hover:not(:disabled) {
   background-color: var(--button-success-hover);
   border-color: var(--button-success-border-hover);
 }
 
-:root[data-theme='dark'] .ghost-button.success:active:not(:disabled),
-:root[data-theme='dark'] .btn-success:active:not(:disabled),
-:root[data-theme='dark'] button.success:active:not(:disabled) {
+.ghost-button.success:active:not(:disabled),
+.btn-success:active:not(:disabled),
+button.success:active:not(:disabled) {
   background-color: var(--button-success-active);
   border-color: var(--button-success-border-active);
 }
 
 /* Yellow. */
-:root[data-theme='dark'] .ghost-button.warning,
-:root[data-theme='dark'] .btn-warning,
-:root[data-theme='dark'] button.warning {
+.ghost-button.warning,
+.btn-warning,
+button.warning {
   background-color: var(--button-warning-bg);
   border-color: var(--button-warning-border);
   color: var(--button-warning-ink);
 }
 
-:root[data-theme='dark'] .ghost-button.warning:hover:not(:disabled),
-:root[data-theme='dark'] .btn-warning:hover:not(:disabled),
-:root[data-theme='dark'] button.warning:hover:not(:disabled) {
+.ghost-button.warning:hover:not(:disabled),
+.btn-warning:hover:not(:disabled),
+button.warning:hover:not(:disabled) {
   background-color: var(--button-warning-hover);
   border-color: var(--button-warning-border-hover);
 }
 
-:root[data-theme='dark'] .ghost-button.warning:active:not(:disabled),
-:root[data-theme='dark'] .btn-warning:active:not(:disabled),
-:root[data-theme='dark'] button.warning:active:not(:disabled) {
+.ghost-button.warning:active:not(:disabled),
+.btn-warning:active:not(:disabled),
+button.warning:active:not(:disabled) {
   background-color: var(--button-warning-active);
   border-color: var(--button-warning-border-active);
 }
@@ -2603,11 +2658,11 @@ form > .op-actions,
    chevron is a background-image positioned once at the right edge: reset, it fell
    back to repeat/0 0 and tiled a wall of chevrons across every dropdown in the app.
    Same trap, opposite direction, as the ordering note in the skin generator. */
-:root[data-theme='dark'] select,
-:root[data-theme='dark'] textarea,
-:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare),
-:root[data-theme='dark'] .op-field input:not([type='checkbox']):not([type='radio']),
-:root[data-theme='dark'] .toolbar input:not(.bare):not([type='checkbox']):not([type='radio']) {
+select,
+textarea,
+input:not([type='checkbox']):not([type='radio']):not(.bare),
+.op-field input:not([type='checkbox']):not([type='radio']),
+.toolbar input:not(.bare):not([type='checkbox']):not([type='radio']) {
   border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
@@ -2626,33 +2681,33 @@ form > .op-actions,
 }
 
 /* A textarea is the one field that is meant to be taller than a key. */
-:root[data-theme='dark'] textarea {
+textarea {
   min-height: 60px;
 }
 
 /* The chevron needs its lane back: the padding above is shorthand and overrides the
    34px right gutter the base `select` rule sets for it. */
-:root[data-theme='dark'] select {
+select {
   padding-right: 34px;
 }
 
-:root[data-theme='dark'] select:focus-visible,
-:root[data-theme='dark'] textarea:focus-visible,
-:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare):focus-visible,
-:root[data-theme='dark'] .op-field input:not([type='checkbox']):not([type='radio']):focus-visible,
-:root[data-theme='dark'] .toolbar input:not(.bare):not([type='checkbox']):not([type='radio']):focus-visible {
+select:focus-visible,
+textarea:focus-visible,
+input:not([type='checkbox']):not([type='radio']):not(.bare):focus-visible,
+.op-field input:not([type='checkbox']):not([type='radio']):focus-visible,
+.toolbar input:not(.bare):not([type='checkbox']):not([type='radio']):focus-visible {
   background-color: var(--field-bg-focus);
   border-color: var(--field-border-focus);
   box-shadow: inset 0 2px 0 0 var(--field-inset);
 }
 
-:root[data-theme='dark'] select:hover:not(:disabled) {
+select:hover:not(:disabled) {
   background-color: var(--field-bg-focus);
 }
 
-:root[data-theme='dark'] select:disabled,
-:root[data-theme='dark'] textarea:disabled,
-:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare):disabled {
+select:disabled,
+textarea:disabled,
+input:not([type='checkbox']):not([type='radio']):not(.bare):disabled {
   background-color: var(--field-bg-disabled);
   color: var(--field-ink-disabled);
 }
@@ -2668,7 +2723,7 @@ form > .op-actions,
    `repeat=no-repeat pos=calc(100% - 12px) 50%` at rest turning into
    `repeat=repeat pos=0% 0%` on focus. These win at (0,2,1) over the (0,1,1) they
    were losing to, in every state. */
-:root[data-theme='dark'] select {
+select {
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 11px 7px;
@@ -2678,7 +2733,7 @@ form > .op-actions,
    in its own comment -- not because it is a key. Its scoped style asks for a flat
    transparent cell at (0,2,0) and lost to the key rules at (0,3,1), which turned every
    sortable header in the app into a blue key with a drop shadow. */
-:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button {
+:is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button {
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -2694,14 +2749,14 @@ form > .op-actions,
    action was a different height depending on which page wrote it. Pinned to the field's
    39px so a toolbar reads as one row of controls. .btn-sm stays deliberately smaller;
    it is the one that means "smaller". */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .btn-sm),
-:root[data-theme='dark'] .ghost-button:not(.btn-sm),
-:root[data-theme='dark'] .btn:not(.btn-sm) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .btn-sm),
+.ghost-button:not(.btn-sm),
+.btn:not(.btn-sm) {
   padding: 8px 12px;
   min-height: 39px;
 }
 
-:root[data-theme='dark'] .icon-btn {
+.icon-btn {
   width: 39px;
   height: 39px;
   min-height: 39px;
@@ -2713,12 +2768,12 @@ form > .op-actions,
    label AND the field stacked -- the "buttons far too big" in every filter bar. The
    grid is align-items: end so a bare button sits on the fields' bottom edge, where a
    label would have pushed it down. */
-:root[data-theme='dark'] .toolbar {
+.toolbar {
   align-items: center;
   flex-wrap: wrap;
 }
 
-:root[data-theme='dark'] .toolbar-grid {
+.toolbar-grid {
   align-items: end;
 }
 
@@ -2727,7 +2782,7 @@ form > .op-actions,
    list. It is a <button> only because the choice comes from a modal rather than a native
    dropdown, so it takes the FIELD's look, not a key's -- as a blue primary it shouted
    "ANY PLAYER" louder than the Filter button that actually runs the search. */
-:root[data-theme='dark'] .picker-button {
+.picker-button {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -2749,7 +2804,7 @@ form > .op-actions,
   transform: none;
 }
 
-:root[data-theme='dark'] .picker-button:hover:not(:disabled) {
+.picker-button:hover:not(:disabled) {
   background-color: var(--field-bg-focus);
   border-color: var(--field-border-focus);
 }
@@ -2760,7 +2815,7 @@ form > .op-actions,
    than the input, so the search icon can sit inside it. That opt-out predates this theme
    and left one dark 8px-radius box among light Habbo fields on every table page. The box
    moves to the field's look; the input inside stays transparent, as its own style intends. */
-:root[data-theme='dark'] .table-filter .tf-input {
+.table-filter .tf-input {
   border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
@@ -2769,17 +2824,17 @@ form > .op-actions,
   min-height: 39px;
 }
 
-:root[data-theme='dark'] .table-filter .tf-input:focus-within {
+.table-filter .tf-input:focus-within {
   background-color: var(--field-bg-focus);
   border-color: var(--field-border-focus);
 }
 
-:root[data-theme='dark'] .table-filter .tf-input input {
+.table-filter .tf-input input {
   color: var(--field-ink);
   line-height: 1.2;
 }
 
-:root[data-theme='dark'] .table-filter .tf-input input::placeholder {
+.table-filter .tf-input input::placeholder {
   color: var(--field-placeholder);
   opacity: 1;
 }
@@ -2803,8 +2858,8 @@ td.row-actions {
    rule deliberately skips, so they kept the browser's own blue-on-white box next to Habbo's
    light-on-dark-blue fields. Same paper, same ink, same border; checked is the primary
    key's blue so a ticked box reads as an action taken. */
-:root[data-theme='dark'] input[type='checkbox'],
-:root[data-theme='dark'] input[type='radio'] {
+input[type='checkbox'],
+input[type='radio'] {
   appearance: none;
   width: 16px;
   height: 16px;
@@ -2816,15 +2871,15 @@ td.row-actions {
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 
-:root[data-theme='dark'] input[type='checkbox'] {
+input[type='checkbox'] {
   border-radius: 3px;
 }
 
-:root[data-theme='dark'] input[type='radio'] {
+input[type='radio'] {
   border-radius: 50%;
 }
 
-:root[data-theme='dark'] input[type='checkbox']:checked {
+input[type='checkbox']:checked {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' viewBox='0 0 10 8'%3E%3Cpath d='M1 4.2 3.5 6.8 9 1.2' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -2833,20 +2888,20 @@ td.row-actions {
   background-size: 10px 8px;
 }
 
-:root[data-theme='dark'] input[type='radio']:checked {
+input[type='radio']:checked {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   /* The dot is the field's own paper punched out of the fill, so it matches the box it sits in. */
   box-shadow: inset 0 0 0 3px var(--field-bg);
 }
 
-:root[data-theme='dark'] input[type='checkbox']:hover:not(:disabled),
-:root[data-theme='dark'] input[type='radio']:hover:not(:disabled) {
+input[type='checkbox']:hover:not(:disabled),
+input[type='radio']:hover:not(:disabled) {
   border-color: var(--field-border-focus);
 }
 
-:root[data-theme='dark'] input[type='checkbox']:disabled,
-:root[data-theme='dark'] input[type='radio']:disabled {
+input[type='checkbox']:disabled,
+input[type='radio']:disabled {
   background-color: var(--field-bg-disabled);
   cursor: default;
 }
@@ -2857,7 +2912,7 @@ td.row-actions {
    .ghost-button for the same "Any owner" control -- so one came out as a light field and
    the other as a black key in the same row. Matching on the ROLE (a labelled control in a
    filter row) rather than on the class covers both, and any future third spelling. */
-:root[data-theme='dark'] :is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button {
+:is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -2876,14 +2931,14 @@ td.row-actions {
   transform: none;
 }
 
-:root[data-theme='dark'] :is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button:hover:not(:disabled) {
+:is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button:hover:not(:disabled) {
   background-color: var(--field-bg-focus);
   border-color: var(--field-border-focus);
 }
 
 /* A checkbox label in a filter row occupies the same band as the fields beside it, so the
    box sits at their middle instead of hanging off their bottom edge. */
-:root[data-theme='dark'] :is(.toolbar-grid, .edit-grid, .inline-form) label.check {
+:is(.toolbar-grid, .edit-grid, .inline-form) label.check {
   min-height: 39px;
   align-items: center;
 }
@@ -2893,8 +2948,8 @@ td.row-actions {
    :hover rule scores (0,5,1) and the flat-header reset only (0,3,2), so every sortable
    column still flooded blue under the pointer. A column header is not a key -- it
    lightens the way a row does, and nothing more. */
-:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:hover:not(:disabled),
-:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:active:not(:disabled) {
+:is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:hover:not(:disabled),
+:is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:active:not(:disabled) {
   background-color: var(--surface-hover);
   border: 0;
   border-radius: 0;
@@ -2915,13 +2970,13 @@ td.row-actions {
    "Filter" the width of a 160px column, and .catalog-list -- a single-column grid -- gave
    "+ New offer" and "Delete offer" the entire width of the panel. A button is as wide as
    what it says. Fields are exempt: a picker inside a <label> IS the column. */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool),
-:root[data-theme='dark'] .ghost-button,
-:root[data-theme='dark'] .btn {
+:where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool),
+.ghost-button,
+.btn {
   justify-self: start;
 }
 
-:root[data-theme='dark'] label > button {
+label > button {
   justify-self: stretch;
 }
 
@@ -2933,7 +2988,7 @@ td.row-actions {
    never redefined, so it still carries the BLUE theme's #5a93d0: every catalog row, table
    link and tile wore a light-blue hairline across its top edge. Same list as the key rules,
    inverted. */
-:root[data-theme='dark'] :is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
+:is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
   .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item,
   .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop,
   .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice) {
@@ -2965,26 +3020,26 @@ td.row-actions {
 
    No markup change: the grouping comes from where each item is allowed to start, not from
    wrappers the four editors would each need. */
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid,
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form {
+:is(.drawer-panel, .modal-panel) .edit-grid,
+:is(.drawer-panel, .modal-panel) .inline-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   align-items: end;
   gap: 12px;
 }
 
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > label:not(.check),
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form > label:not(.check) {
+:is(.drawer-panel, .modal-panel) .edit-grid > label:not(.check),
+:is(.drawer-panel, .modal-panel) .inline-form > label:not(.check) {
   grid-column: 1 / -1;
 }
 
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > label.check:first-of-type,
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type,
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form > button:first-of-type {
+:is(.drawer-panel, .modal-panel) .edit-grid > label.check:first-of-type,
+:is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type,
+:is(.drawer-panel, .modal-panel) .inline-form > button:first-of-type {
   grid-column-start: 1;
 }
 
-:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type {
+:is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type {
   margin-top: 6px;
 }
 
@@ -2993,9 +3048,9 @@ td.row-actions {
    (only twelve were listed), so a button whose label is preceded by an icon laid the icon
    and the text out as two block rows -- "+ / ADD A CHOICE" stacked, twice the height of
    every other key beside it. */
-:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice),
-:root[data-theme='dark'] .ghost-button,
-:root[data-theme='dark'] .btn {
+:where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice),
+.ghost-button,
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3006,13 +3061,13 @@ td.row-actions {
 /* Nothing in the drawer may push past its edge. A fieldset of choices laid out in three
    columns was wider than the 560px panel and simply ran off the right-hand side, with no
    way to reach it -- the panel is the only thing that scrolls, and it scrolls vertically. */
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) {
+:is(.drawer-body, .modal-body) {
   overflow-x: hidden;
 }
 
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) fieldset,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) .edit-grid,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) form {
+:is(.drawer-body, .modal-body) fieldset,
+:is(.drawer-body, .modal-body) .edit-grid,
+:is(.drawer-body, .modal-body) form {
   max-width: 100%;
   min-width: 0;
 }
@@ -3021,10 +3076,10 @@ td.row-actions {
 /* The drawer is the box. Three wrappers draw a bordered card of their own -- right when the
    editor was spliced into the page, redundant once it opens in a panel that already has a
    title bar, a border and its own padding. Nesting them read as a card inside a card. */
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .catalog-card-detail,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .editor-form,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .question-form,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .op-subgroup {
+:is(.drawer-body, .modal-body) > .catalog-card-detail,
+:is(.drawer-body, .modal-body) > .editor-form,
+:is(.drawer-body, .modal-body) > .question-form,
+:is(.drawer-body, .modal-body) > .op-subgroup {
   border: 0;
   border-radius: 0;
   background: none;
@@ -3040,9 +3095,9 @@ td.row-actions {
 /* .modal-panel, not .modal-body: a Modal renders its content straight into the panel, with no
    body wrapper -- so this rule reached every drawer and no modal, and the selects in the picker
    kept their intrinsic width inside a 620px dialog. */
-:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) input:not([type='checkbox']):not([type='radio']),
-:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) select,
-:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) textarea {
+:is(.drawer-body, .modal-body, .modal-panel) input:not([type='checkbox']):not([type='radio']),
+:is(.drawer-body, .modal-body, .modal-panel) select,
+:is(.drawer-body, .modal-body, .modal-panel) textarea {
   min-width: 0;
   width: 100%;
 }
@@ -3052,8 +3107,8 @@ td.row-actions {
    `.op-field input` branch beside it never did -- so inside an .op-field a checkbox took the
    field's own box: 7px padding, a 3px border and min-height 39px, measured 28x39 against the
    16x16 it asks for. The two exclusions are now on both branches; this is the belt. */
-:root[data-theme='dark'] input[type='checkbox'],
-:root[data-theme='dark'] input[type='radio'] {
+input[type='checkbox'],
+input[type='radio'] {
   width: 16px;
   height: 16px;
   min-height: 0;
@@ -3065,8 +3120,8 @@ td.row-actions {
 
 /* And a label that holds a checkbox is a sentence, not a field caption: .op-field label is
    0.74rem uppercase 700, which is right above an input and wrong beside a tickbox. */
-:root[data-theme='dark'] .op-field label:has(> input[type='checkbox']),
-:root[data-theme='dark'] .op-field label:has(> input[type='radio']) {
+.op-field label:has(> input[type='checkbox']),
+.op-field label:has(> input[type='radio']) {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3180,12 +3235,12 @@ svg.spin {
 /* A tab is not a button in a box. Given a full border each, two tabs side by side read as two
    buttons and nothing says they are alternatives -- which is exactly what was reported. They
    share one baseline and the current one is the one attached to it; the others sit above it. */
-:root[data-theme='dark'] .tabs {
+.tabs {
   border-bottom: 1px solid var(--line-strong);
   gap: 2px;
 }
 
-:root[data-theme='dark'] .tabs button {
+.tabs button {
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 4px 4px 0 0;
@@ -3200,20 +3255,20 @@ svg.spin {
   transform: none;
 }
 
-:root[data-theme='dark'] .tabs button:hover:not(:disabled) {
+.tabs button:hover:not(:disabled) {
   color: var(--ink);
   background: var(--button-neutral-bg);
   border-color: transparent;
   transform: none;
 }
 
-:root[data-theme='dark'] .tabs button.active {
+.tabs button.active {
   color: var(--ink);
   border-bottom-color: var(--button-border);
   background: none;
 }
 
-:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill) {
+:is(.catalog-tab, .crumb-button, .domain-pill) {
   border: 2px solid var(--button-neutral-border);
   border-radius: 5px;
   background-color: var(--button-neutral-bg);
@@ -3224,7 +3279,7 @@ svg.spin {
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
-:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill):hover:not(:disabled) {
+:is(.catalog-tab, .crumb-button, .domain-pill):hover:not(:disabled) {
   background-color: var(--button-neutral-hover);
   border-color: var(--button-neutral-border-hover);
   color: var(--ink);
@@ -3232,7 +3287,7 @@ svg.spin {
 
 /* The current one is named by its edge, the way the field's focus is -- not by a fill, which
    would make a tab look like the primary key sitting next to it. */
-:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill).active {
+:is(.catalog-tab, .crumb-button, .domain-pill).active {
   border-color: var(--button-border);
   color: var(--ink);
 }
@@ -3240,8 +3295,8 @@ svg.spin {
 
 /* A picker that fills a labelled slot behaves like the field it replaces; one standing on its
    own in a toolbar sizes to its content, so the button beside it stays on the same line. */
-:root[data-theme='dark'] label > .picker-button,
-:root[data-theme='dark'] .toolbar-grid > .picker-button {
+label > .picker-button,
+.toolbar-grid > .picker-button {
   width: 100%;
 }
 
@@ -3250,11 +3305,11 @@ svg.spin {
    All / None are the size of a form's primary key -- 39px tall with 12px of side padding --
    which makes six group headers read as six toolbars. They keep the key's construction, at
    the size of the line they belong to. */
-:root[data-theme='dark'] .cap-area-head button.ghost-button,
-:root[data-theme='dark'] .cap-area-head button,
-:root[data-theme='dark'] .question-head button.ghost-button,
-:root[data-theme='dark'] .question-head button,
-:root[data-theme='dark'] .btn-sm {
+.cap-area-head button.ghost-button,
+.cap-area-head button,
+.question-head button.ghost-button,
+.question-head button,
+.btn-sm {
   min-height: 0;
   padding: 4px 9px;
   font-size: 0.74rem;
@@ -3262,11 +3317,11 @@ svg.spin {
   box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.3);
 }
 
-:root[data-theme='dark'] .cap-area-head button.ghost-button:active:not(:disabled),
-:root[data-theme='dark'] .cap-area-head button:active:not(:disabled),
-:root[data-theme='dark'] .question-head button.ghost-button:active:not(:disabled),
-:root[data-theme='dark'] .question-head button:active:not(:disabled),
-:root[data-theme='dark'] .btn-sm:active:not(:disabled) {
+.cap-area-head button.ghost-button:active:not(:disabled),
+.cap-area-head button:active:not(:disabled),
+.question-head button.ghost-button:active:not(:disabled),
+.question-head button:active:not(:disabled),
+.btn-sm:active:not(:disabled) {
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   transform: translate(0, 1px);
 }
@@ -3276,7 +3331,7 @@ svg.spin {
    so twenty checkboxes read as one undifferentiated list and the group name floated in it.
    A rule above each group and room to breathe; the first one needs neither, since the drawer's
    own header already closes the space above it. */
-:root[data-theme='dark'] :is(.drawer-body, .modal-body) .cap-area + .cap-area {
+:is(.drawer-body, .modal-body) .cap-area + .cap-area {
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--line-strong);
@@ -3284,11 +3339,11 @@ svg.spin {
 
 /* The group's name sits ON its rule rather than beside its buttons: it is a heading, and it
    was reading as a third button in the row. */
-:root[data-theme='dark'] .cap-area-head {
+.cap-area-head {
   margin-bottom: 10px;
 }
 
-:root[data-theme='dark'] .cap-area-head strong {
+.cap-area-head strong {
   margin-right: auto;
   font-size: 0.82rem;
   text-transform: uppercase;
@@ -3351,18 +3406,18 @@ svg.spin {
 
    One height for everything, and the kit's own key for the two real buttons. The identity chip
    keeps its pill shape: it is a status, not something you press. */
-:root[data-theme='dark'] :is(.locale-switch, .theme-switch, .logout-btn) {
+:is(.locale-switch, .theme-switch, .logout-btn) {
   min-height: 39px;
 }
 
 /* min-height only ever raises, and this one was already 42 -- its own padding. Scoped to the
    bar so the status pills used elsewhere in the app keep their own size. */
-:root[data-theme='dark'] .session-area .status-pill {
+.session-area .status-pill {
   height: 39px;
   padding: 0 14px;
 }
 
-:root[data-theme='dark'] .logout-btn {
+.logout-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -3378,12 +3433,12 @@ svg.spin {
   box-shadow: var(--key-drop);
 }
 
-:root[data-theme='dark'] .logout-btn:hover:not(:disabled) {
+.logout-btn:hover:not(:disabled) {
   background-color: var(--button-neutral-hover);
   border-color: var(--button-neutral-border-hover);
 }
 
-:root[data-theme='dark'] .logout-btn:active:not(:disabled) {
+.logout-btn:active:not(:disabled) {
   background-color: var(--button-neutral-active);
   border-color: var(--button-neutral-border-active);
   box-shadow: var(--key-drop-pressed);
@@ -3392,7 +3447,7 @@ svg.spin {
 
 /* The two segmented switches are one control each, so the group carries the border and the
    segments inside it carry none -- otherwise every segment reads as its own button. */
-:root[data-theme='dark'] :is(.locale-switch, .theme-switch) {
+:is(.locale-switch, .theme-switch) {
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -3402,7 +3457,7 @@ svg.spin {
   padding: 3px;
 }
 
-:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button {
+:is(.locale-switch, .theme-switch) button {
   min-height: 0;
   height: 27px;
   padding: 0 10px;
@@ -3416,13 +3471,13 @@ svg.spin {
   text-transform: uppercase;
 }
 
-:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button:hover:not(:disabled) {
+:is(.locale-switch, .theme-switch) button:hover:not(:disabled) {
   color: var(--ink);
   background-color: var(--button-neutral-hover);
   transform: none;
 }
 
-:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button.active {
+:is(.locale-switch, .theme-switch) button.active {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   color: var(--button-ink);
@@ -3435,7 +3490,7 @@ svg.spin {
    486px row. A caption belongs above the thing it names, and the control takes the width it was
    given. `.check` is exempt: there the caption belongs BESIDE the box, which is the whole point
    of a tickbox. */
-:root[data-theme='dark'] :is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) {
+:is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -3443,7 +3498,7 @@ svg.spin {
   width: 100%;
 }
 
-:root[data-theme='dark'] :is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) > span {
+:is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) > span {
   font-size: 0.74rem;
   text-transform: uppercase;
   font-weight: 700;
@@ -3452,7 +3507,7 @@ svg.spin {
 }
 
 /* And the dialog's own stack gets room between fields, rather than the fields touching. */
-:root[data-theme='dark'] .modal-panel.column {
+.modal-panel.column {
   gap: 12px;
 }
 
@@ -3524,8 +3579,8 @@ svg.spin {
 /* A tickbox and its text are one line, in a dialog as anywhere else. Previously this was granted
    by naming the classes that mean "checkbox row" -- .check, .cap-check -- which missed
    .pick-check in the picker and left a lone box floating above its own label. */
-:root[data-theme='dark'] label:has(> input[type='checkbox']),
-:root[data-theme='dark'] label:has(> input[type='radio']) {
+label:has(> input[type='checkbox']),
+label:has(> input[type='radio']) {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
@@ -3537,14 +3592,14 @@ svg.spin {
 /* The picker's filter row. Its labels are flex items in a wrapping row, so they sized to their
    own text and a "Default order" select sat at 260px in a 620px dialog. Growing them fills the
    row: one filter takes the width, two share it. */
-:root[data-theme='dark'] .pick-filters > label:not(:has(> input[type='checkbox'])) {
+.pick-filters > label:not(:has(> input[type='checkbox'])) {
   flex: 1 1 200px;
   min-width: 0;
 }
 
 /* A tickbox takes the width of its own text. Left growing like the fields, it split the row in
    half and the sort select came out at 288px instead of the ~500 that were free. */
-:root[data-theme='dark'] .pick-filters > label:has(> input[type='checkbox']) {
+.pick-filters > label:has(> input[type='checkbox']) {
   flex: 0 0 auto;
 }
 
@@ -3557,7 +3612,7 @@ svg.spin {
 
    The current page is FILLED, the others are not. Filled beats gold here because gold is now
    the refresh colour, and a gold thing that is not a button to press would read as one. */
-:root[data-theme='dark'] .pager .pager-pages button {
+.pager .pager-pages button {
   min-width: 34px;
   height: 34px;
   min-height: 0;
@@ -3570,14 +3625,14 @@ svg.spin {
   transform: none;
 }
 
-:root[data-theme='dark'] .pager .pager-pages button:hover:not(:disabled) {
+.pager .pager-pages button:hover:not(:disabled) {
   background-color: var(--button-neutral-hover);
   border-color: var(--button-neutral-border-hover);
   color: var(--ink);
   transform: none;
 }
 
-:root[data-theme='dark'] .pager .pager-pages button.active {
+.pager .pager-pages button.active {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   color: var(--button-ink);
@@ -3593,7 +3648,7 @@ svg.spin {
    background rgba(0,0,0,0) at rest, rgb(42,156,222) on hover.
 
    They brighten and keep their underline, like a link. */
-:root[data-theme='dark'] :is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
+:is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
   .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill,
   .crumb-button, .nav-group-label, .chip-x, .chip-remove, .op-choice):hover:not(:disabled) {
   background-color: transparent;
@@ -3613,7 +3668,7 @@ svg.spin {
   gap: 10px;
 }
 
-:root[data-theme='dark'] .op-choice {
+.op-choice {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3630,12 +3685,12 @@ svg.spin {
   min-height: 0;
 }
 
-:root[data-theme='dark'] .op-choice:hover:not(:disabled) {
+.op-choice:hover:not(:disabled) {
   background-color: var(--button-neutral-hover);
   border-color: var(--button-neutral-border-hover);
 }
 
-:root[data-theme='dark'] .op-choice:active:not(:disabled) {
+.op-choice:active:not(:disabled) {
   box-shadow: var(--key-drop-pressed);
   transform: translate(0, 2px);
 }
@@ -3690,13 +3745,13 @@ svg.spin {
 /* A wallet movement is two facts, not one sentence: what moved, and what caused it. Run together
    on one line the amount, the currency, the balance and the cause read as a single grey string --
    the amount is what an operator scans for, so it gets the line. */
-:root[data-theme='dark'] .ledger-move {
+.ledger-move {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-:root[data-theme='dark'] .ledger-why {
+.ledger-why {
   margin-top: 2px;
   color: var(--muted);
   font-size: 12px;
@@ -3714,32 +3769,19 @@ svg.spin {
   min-width: 0;
 }
 
-/* Badges and pills spoke a different green, red and yellow from the buttons beside them: they were
-   built on --ok/--danger/--warning, which predate the Habbo key colours. Same four hues, as a tint
-   rather than a fill -- a badge states a fact, it is not something you press. */
-:root[data-theme='dark'] .status-badge--ok,
-:root[data-theme='dark'] .status-badge--healthy,
-:root[data-theme='dark'] .status-pill.ok {
-  color: var(--button-success-border);
-  background: rgba(0, 129, 62, 0.22);
-  border-color: rgba(142, 218, 85, 0.42);
+/* Badges and pills state a fact -- they are a tint, not a key you press, which is the one place this
+   skin deliberately does not use the button construction. The colours come from each theme's own
+   --ok/--warning/--danger set rather than from the Habbo key palette: those are tuned for saturated
+   fills on near-black, and the same wash on a white page is mud. */
+.status-badge--ok,
+.status-badge--healthy,
+.status-pill.ok {
+  color: var(--ok);
+  background: var(--success-bg);
+  border-color: var(--success-border);
 }
 
-:root[data-theme='dark'] .status-badge--warn,
-:root[data-theme='dark'] .status-pill.warning {
-  color: var(--button-warning-border);
-  background: rgba(255, 185, 0, 0.18);
-  border-color: rgba(255, 234, 0, 0.4);
-}
-
-:root[data-theme='dark'] .status-badge--bad,
-:root[data-theme='dark'] .status-pill.danger {
-  color: var(--button-danger-border);
-  background: rgba(192, 23, 78, 0.22);
-  border-color: rgba(243, 115, 135, 0.42);
-}
-
-:root[data-theme='dark'] .status-badge--unknown {
+.status-badge--unknown {
   color: var(--muted-strong);
   background: var(--button-neutral-bg);
   border-color: var(--button-neutral-border);
@@ -3756,10 +3798,10 @@ svg.spin {
 /* One border weight across the theme. Keys were 2px and everything around them 1px -- a badge or a
    panel edge beside a button read as a different material. The pill radius goes with it: a chip
    next to a 5px key was the only fully-round thing on the page. */
-:root[data-theme='dark'] .status-badge,
-:root[data-theme='dark'] .status-pill,
-:root[data-theme='dark'] .cost-chip,
-:root[data-theme='dark'] .op-chip {
+.status-badge,
+.status-pill,
+.cost-chip,
+.op-chip {
   border-width: 2px;
   border-style: solid;
   border-radius: 5px;
@@ -3767,10 +3809,10 @@ svg.spin {
 
 /* .table-wrap is deliberately absent: it is a scroll container with no border of its own, so
    giving it a style and no colour drew a currentColor box around every table on the site. */
-:root[data-theme='dark'] .panel,
-:root[data-theme='dark'] .modal-panel,
-:root[data-theme='dark'] .drawer-panel,
-:root[data-theme='dark'] .stat {
+.panel,
+.modal-panel,
+.drawer-panel,
+.stat {
   border-width: 2px;
   border-radius: 5px;
 }
