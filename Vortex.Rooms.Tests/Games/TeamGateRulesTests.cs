@@ -95,14 +95,19 @@ public sealed class TeamGateRulesTests
     }
 
     [Fact]
-    public void AColourTheLayoutDoesNotUse_IsRefused()
+    public void ATeamTheGameDoesNotPlay_IsRefused()
     {
-        TeamSet twoTeams = Teams with
-        {
-            Colours = [Red, Blue],
-        };
-        TeamBook teams = new(Teams);
+        // A two-team game in a room whose furniture offers four gates: the two it does not play are
+        // inert, and that is the SET's answer rather than a colour check.
+        TeamSet twoTeams = TeamSet.Of("red", "blue");
+        TeamBook teams = new(twoTeams);
+        TeamId third = new(3);
+        TeamId second = new(2);
 
-        TeamGateRules.Toggle(teams, twoTeams, Alice, Yellow, true).Should().Be(TeamGateResult.None);
+        TeamGateRules.Toggle(teams, twoTeams, Alice, third, true).Should().Be(TeamGateResult.None);
+        TeamGateRules
+            .Toggle(teams, twoTeams, Alice, second, true)
+            .Should()
+            .Be(TeamGateResult.Joined);
     }
 }

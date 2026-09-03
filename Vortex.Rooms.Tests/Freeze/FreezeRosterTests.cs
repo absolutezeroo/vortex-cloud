@@ -196,10 +196,7 @@ public sealed class FreezeRosterTests
     [Fact]
     public void Mega_Snowball_Forces_Max_Radius_Once()
     {
-        FreezePlayerState player = new(P(1), Red, FreezeSettings.Default)
-        {
-            TempMassive = true,
-        };
+        FreezePlayerState player = new(P(1), Red, FreezeSettings.Default) { TempMassive = true };
 
         player.TakeThrowRadius().Should().Be(FreezeSettings.Default.MaxExplosionBoost);
         player.TakeThrowRadius().Should().Be(0); // consumed
