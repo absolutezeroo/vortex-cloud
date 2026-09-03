@@ -1,41 +1,46 @@
 # Walkthrough: Add a Room Game
 
-Freeze, Battle Banzai, football, hockey: a room game is a subsystem that a round starts and
-stops, that gets a slice of the room tick, and that scores into teams. They all plug into the
-same seam so that **nothing which starts or stops a round has to know which games exist**.
+Battle Banzai, Freeze, football, and whatever comes next: a room game is a set of rules that the
+framework drives. It does not own its lifecycle, its teams, its scores, its arena index or any
+packet — so adding one is **a new folder and an attribute**, and no file outside that folder
+changes.
 
-That seam was not free. Freeze was originally wired in by hand at every call site, and the
-result was the bug this document exists to prevent: the game-timer furni's button started both
-the room game and Freeze, but the wired `wf_act_control_clock` action started only the room
-game. A wired clock ran the countdown and the arena furniture next to it never woke up. Nothing
-in the build or the tests could see it.
-
-> Follow the hard boundaries in `CONTEXT.md` and the contract in `AGENTS.md`. The placement
-> rules here restate where those files say each kind of code belongs.
+> Follow the hard boundaries in `CONTEXT.md` and the contract in `AGENTS.md`. The placement rules
+> here restate where those files say each kind of code belongs.
 
 ---
 
-## The seam
-
-`RoomGameSystem` is the room's **game coordinator**. It owns the two things every game shares:
-
-- **Teams and scores** — one `GameTeamState` per room, which every game writes into and every
-  wired team leaf reads out of (`wf_cnd_actor_in_team`, `wf_cnd_team_has_score`,
-  `wf_cnd_team_has_rank`, `wf_slc_users_team`, `wf_trg_score_achieved`).
-- **The round lifecycle** — `StartGameAsync` / `EndGameAsync`, which clear the scores, raise the
-  wired `GAME_STARTS` / `GAME_ENDS` triggers, and fan out to the registered games.
-
-A game derives from `RoomMinigameBase` (the no-op-virtuals base over `IRoomMinigame`) and is
-registered once. Everything else already routes through the coordinator.
+## The shape
 
 ```
-game-timer furni button ─┐
-wf_act_control_clock ────┼─> RoomGameSystem.StartGameAsync / EndGameAsync ─> every IRoomMinigame
-a game ending itself ────┘
-
-room tick ───────────────> foreach GameSystem.Minigames ─> TickAsync
-avatar leaves room ──────> RoomGameSystem.OnPlayerLeftAsync ─> every IRoomMinigame
+room tick ─────────────► RoomGameRuntime.TickAsync ─┐
+game-timer furni button ┐                           │
+wf_act_control_clock ───┼► StartGameAsync/EndGameAsync
+a game ending itself ───┘                           │
+                                                    ▼
+                                        ┌──── GameHost (phase, match, arena, rng) ────┐
+arena furni walked on ──► GameSignal ───►│  IRoomGame  ── rules only                  │
+                                         │      │                                     │
+                                         │      ├─► IRoomGameContext  ── the room     │
+                                         │      ├─► GameTeamBook      ── teams/scores │
+                                         │      └─► IGameArena        ── its furni    │
+                                         └──────────────┬──────────────────────────────┘
+                                                        ▼
+                                             GameEvent ──► sinks
+                                                            ├─ GameScoreboardPresenter → furni
+                                                            ├─ RoomGameChrome          → composers
+                                                            └─ GameDiagnosticsSink     → logs
 ```
+
+Five things live in the framework and never in a game:
+
+| Concern | Where |
+|---|---|
+| Lifecycle | `GamePhase` + `GameStateMachine` + `RoomGameRuntime`. A module has **no** `IsRunning` of its own. |
+| Teams and scores | `GameTeamBook`, one per room. Every wired team leaf reads it. |
+| Arena lookup | `IGameArena`, a filtered view over the room's single item index. No game scans the room. |
+| Client IO | `IGameChrome` (effects, game mode, the number bubble, movement locks, timer reset). |
+| Match identity | `MatchId`, minted per game per round, carried by everything a module defers. |
 
 ---
 
@@ -43,69 +48,124 @@ avatar leaves room ──────> RoomGameSystem.OnPlayerLeftAsync ─> eve
 
 | # | File | What to add |
 |---|------|-------------|
-| 1 | `Vortex.Rooms/Grains/Systems/Room<Game>System.cs` | the system, `: RoomMinigameBase`, with a lowercase constant `Name`; override only the hooks you use |
-| 2 | `Vortex.Rooms/Grains/Systems/<Game>/Room<Game>Game.cs` | the pure rules POCO, no IO, holding `GameTeamState Teams { get; init; }` |
-| 3 | `Vortex.Rooms/Grains/RoomGrain.cs` | the field, the construction next to the other systems, and **`GameSystem.Register(<Game>System);`** |
-| 4 | `Vortex.Rooms/Object/Logic/Furniture/Floor/<Game>/` | one `[RoomObjectLogic("...")]` class per arena furni family — a colour family (gates, scoreboards, goals) is ONE class with one attribute per colour key and `GameColorKey.FromKeySuffix(ctx.Definition.LogicName)` |
-| 5 | `Vortex.Primitives/Rooms/Object/IRoom<Game>Access.cs` + `RoomObjectContext.cs` + `RoomGrain.Capabilities.cs` | only the verbs the furni needs (walk-on, click, …) — **never Start/End** |
-| 6 | `Vortex.Rooms.Tests/<Game>/` | rules tests on the POCO, plus the shared-team-state tests |
+| 1 | `Vortex.Rooms/Games/<Game>/<Game>Game.cs` | the module: `[RoomGame]`, `: RoomGameModule`, a `GameProfile`, and only the hooks you use |
+| 2 | `Vortex.Rooms/Games/<Game>/<Game>Constants.cs` | the `GameId` and the wire-fixed furni states |
+| 3 | `Vortex.Rooms/Games/<Game>/<Game>Config.cs` + `<Game>Settings.cs` | balance, resolved in ONE round trip at prepare |
+| 4 | `Vortex.Rooms/Games/<Game>/Components/*.cs` | one `[RoomObjectLogic]` class per arena furni family, `: GameFurnitureLogic` + a capability interface |
+| 5 | `Vortex.Primitives/Server/ConfigKeyCatalog.cs` | the same keys, so an operator can edit them |
+| 6 | `tools/catalog_converter/data/vortex_logics.json` | the new logic keys, so furniture can bind to them |
+| 7 | `Vortex.Rooms.Tests/<Game>/` | rules tests on the pure parts, plus an integration test through the runtime |
 
-Step 3 is the one that matters. A game written but never registered builds clean, tests clean,
-and never runs — `RoomMinigameCoordinationTests.Freeze_Is_Registered_On_Every_Room` is the
-pattern for guarding against that; add the equivalent for the new game.
+**There is no step that edits the room grain, the timer furni, the wired actions or the runtime.**
+That is the point. A game is found by the `[RoomGame]` attribute at startup and every room hosts it
+from then on; `RoomGameRuntimeTests.EveryShippedGame_IsHostedByEveryRoom` is the guard.
 
-## The shared bricks
+---
 
-The point of the seam is that a game is rules + composition, not plumbing. The plumbing exists
-once; use it:
+## The module
 
-- **`RoomGameChrome`** (`_roomGrain.GameChrome`) — every client-facing send a game needs:
-  `BroadcastEffectAsync`, `BroadcastTeamAuraAsync` (the two aura sets are the `GameAuraSet`
-  enum: Wired/Banzai = 33-36, Freeze = 40-43), `SetPlayingModeAsync`, `BroadcastPlayerValueAsync`
-  (the number bubble), `LockMovement`/`UnlockMovement` (the one "frozen in place" primitive —
-  the wired freeze-user boxes and a Freeze hit share it), `ResetGameTimers` (after an early round
-  end). From a player-LEFT hook, only `SetPlayingModeAndForget` — awaiting back into the leaver's
-  presence grain deadlocks the room's turn for 30 s.
-- **`RoomItemIndex`** (`_roomGrain._state.ItemIndex`) — `ItemsOf<TLogic>()` / `LogicsOf<TLogic>()`
-  instead of scanning `ItemsById`; `RoomMapModule.FirstLogicOnTile<TLogic>(tileIdx)` for "is my
-  arena furni on this tile". `LogicsOf` returns a snapshot that is safe to await across.
-- **`GameCadence`** — a slow in-game clock (Freeze's 1 s player tick) as a struct field:
-  `if (_tick.Due(now)) { … }`, `Reset()` at round start. Keep the field non-readonly.
-- **`IServerConfigGrain.GetManyAsync` + `ServerConfigValues`** — resolve the whole balance group
-  in one grain round trip (see `FreezeConfig.ResolveAsync`); round start is a hot path.
-- **`GameColorKey.FromKeySuffix`** — colour from `_red/_green/_blue/_yellow` logic keys or
-  `_r/_g/_b/_y` classnames; unknown → `None`, never a throw (a throw in a logic constructor
-  fails the item attach).
+```csharp
+[RoomGame]
+public sealed class TagGame(IRoomGameContext context) : RoomGameModule(context)
+{
+    public override GameProfile Profile { get; } =
+        new() { Id = TagConstants.Game, Teams = TeamLayout.FourColours };
 
-Candidates deliberately not yet converted to the index: the roller, pet-nest and wired item
-scans. Convert them when touched.
+    public override ArenaValidation ValidateArena() =>
+        ArenaValidation.Builder().Require("Tag tiles", _context.Arena.CountOf<IArenaTileComponent>()).Build();
+
+    public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct) { … }
+
+    public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
+        signal switch
+        {
+            { Kind: GameSignalKind.WalkOn, Component: IArenaTileComponent tile } => TagAsync(signal.Player, tile, ct),
+            _ => Task.CompletedTask,
+        };
+}
+```
+
+A component is as small as it looks:
+
+```csharp
+[RoomObjectLogic("tag_tile")]
+public sealed class TagTileComponent(IStuffDataFactory f, IRoomFloorItemContext ctx)
+    : GameFurnitureLogic(f, ctx), IArenaTileComponent
+{
+    public override GameId Game => TagConstants.Game;
+}
+```
+
+The base forwards walk-on, walk-off, use and detach into the runtime as `GameSignal`s, keeps the
+furni's state unpersisted (a match's paint means nothing outside it), and deliberately does **not**
+advance the state on a use the way ordinary furniture does — an arena furni's state belongs to the
+game.
 
 ---
 
 ## Rules that are not obvious
 
-**Do not keep your own teams or scores.** Hold the room's `GameTeamState` and mirror
-membership into it as players join. A second store is invisible to every wired team leaf, which
-is what made Freeze's gates and scores unreachable from wired until they were merged.
+**Never keep your own phase.** `IsLive` and `HasMatch` on `RoomGameModule` read the runtime's. A
+second flag is how the old system ended up with four booleans in four files, none of which agreed.
 
-**Score through `RoomGameSystem.AddTeamScoreAsync`**, not by mutating the state directly. That
-is what fires the `SCORE_ACHIEVED` trigger; a direct write scores silently.
+**Never end yourself.** Call `_context.RequestMatchEndAsync`. It ends the ROOM's round, which is
+what fires `GAME_ENDS`, resets the game-timer furni and winds the room's other games down with it.
+Calling your own end hook skips all three.
 
-**Do not clear scores when your round starts.** The coordinator already did it, *before*
-`GAME_STARTS` was published. Clearing them again in `StartAsync` lands after the event and wipes
-whatever a `GAME_STARTS`-triggered give-score box just awarded — with no error and no log.
+**Never write a score directly.** `_context.ScoreAsync(new GameScore(team, player, amount, reason,
+source))`. That is what fires `SCORE_ACHIEVED`, repaints the boards and puts the act in the trace. A
+direct write to the team book scores silently — and the runtime refuses a score outside a live match
+for you, so "a finished game cannot accept score changes" is not something you have to remember.
 
-**End through the coordinator.** When your game decides the round is over (Freeze does, the
-moment one team is left standing), call `RoomGameSystem.EndGameAsync`, never your own
-`EndAsync`. Ending yourself skips `GAME_ENDS` and leaves the room's other games running. The
-re-entrancy is safe: the coordinator flips its running flag before fanning out.
+**Never clear the scores at kick-off.** The runtime already did, *before* `GAME_STARTS` was
+published. Clearing them again lands after the event and wipes whatever a `GAME_STARTS`-triggered
+give-score box just awarded, with no error and no log.
 
-**Return early when idle.** `TickAsync` runs on every frame of every room, including the
-overwhelming majority that contain none of your furniture.
+**Stamp deferred work with the match.** Anything you queue — a projectile, a delayed teleport, a
+rolling ball — carries `_context.Match` and is dropped when it no longer matches. That is what makes
+"events from match N cannot mutate match N+1" true rather than hoped for.
 
-**Your failures stay yours.** The coordinator catches and logs per game, so one game that
-throws does not stop the others starting, ending or cleaning up. Do not rely on that to skip
-your own error handling — it is a backstop, not a strategy.
+**Ask for idle ticks, do not assume them.** A game with no match is not ticked at all. If you have
+work in flight outside a match (a football rolling in a room with no goals), call
+`_context.KeepTicking()` for as long as it lasts.
+
+**Roll through `_context.Random`.** It is seeded from the match id, so a match replays identically
+and a test can assert on a power-up or a teleport destination. `Random.Shared` cannot be stubbed.
+
+**Your failures stay yours.** The runtime catches and logs per game, per step, so one game that
+throws does not stop the others starting, ending or cleaning up — and a game that throws while
+preparing does not go on to play a match on an arena it failed to set up. It is a backstop, not a
+strategy.
+
+---
+
+## The shared bricks
+
+- **`IGameChrome`** (`_context.Chrome`) — every client-facing send a game needs. From a
+  participant-LEFT hook, only `SetPlayingModeAndForget`: awaiting back into the leaver's own
+  presence grain deadlocks the room's turn for 30 s.
+- **`IGameArena`** (`_context.Arena`) — `ComponentsOf<T>()`, `CountOf<T>()`, `OnTile<T>(idx)`,
+  `TilesOf<T>()`, all filtered to your game. A filtered view over the room's one item index, so it
+  is correct through placement, pickup and a definition swap with no subscription.
+- **`TeamGateRules.Toggle`** — the gate rules, once. The capacity check runs before the player
+  leaves their current team, so a rejected switch never strips the membership they had.
+- **`GameCadence`** — a slow in-game clock as a struct field: `if (_tick.Due(now)) { … }`,
+  `Reset()` at prepare. Keep the field non-readonly; it is a mutable struct.
+- **`GameColorKey.FromKeySuffix`** — colour from `_red/_green/_blue/_yellow` logic keys or
+  `_r/_g/_b/_y` classnames; unknown → `None`, never a throw (a throw in a logic constructor fails
+  the item attach and takes the furni out of the room).
+- **`IServerConfigGrain` via `_context.GetConfigAsync`** — the whole balance group in one round
+  trip, at prepare.
+
+---
+
+## Concurrency
+
+Everything in the games tree runs inside the room grain's single-threaded turn. There is no locking
+and there must not be: Orleans already serialises the room, and a lock inside an actor can only
+deadlock. What the turn does **not** give you is atomicity across an `await` — it can interleave at
+every one — so a loop that awaits must iterate a snapshot. `IGameArena`'s queries materialise for
+exactly this reason.
 
 ---
 

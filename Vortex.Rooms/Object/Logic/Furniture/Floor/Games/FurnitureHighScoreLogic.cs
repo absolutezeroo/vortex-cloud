@@ -9,7 +9,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
-using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Games.Events;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 
@@ -21,7 +21,8 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 /// What the board tracks is written in its classname, Arcturus-style:
 /// <c>highscore_&lt;scoretype&gt;*&lt;variant&gt;</c> where scoretype is <c>perteam</c>(0) /
 /// <c>mostwin</c>(1) / <c>classic</c>(2) and variant 1..4 maps to alltime/daily/weekly/monthly.
-/// The round results arrive from <see cref="RoomGameScoreboardSystem"/> on GAME_ENDS; entries are
+/// The round results arrive from <see cref="Games.Presentation.GameScoreboardPresenter"/> on
+/// GAME_ENDS; entries are
 /// timestamped so the windowed variants prune themselves at rebuild time. Until per-player scoring
 /// exists, classic records per team like perteam — the shared scores are per team.
 /// </para>
@@ -65,7 +66,7 @@ public sealed class FurnitureHighScoreLogic(
         SetStateAsync(GetState() == StateOpen ? StateClosed : StateOpen);
 
     /// <summary>Records a finished round per the board's score type and persists the board.</summary>
-    public async Task RecordRoundAsync(GameRoundResult result, CancellationToken ct)
+    public async Task RecordRoundAsync(GameMatchResult result, CancellationToken ct)
     {
         if (StuffData is not IHighscoreStuffData highscore)
         {

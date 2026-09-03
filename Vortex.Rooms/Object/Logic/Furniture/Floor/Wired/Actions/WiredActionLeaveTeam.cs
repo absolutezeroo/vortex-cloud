@@ -11,7 +11,7 @@ using Vortex.Primitives.Rooms.Wired;
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
 /// <summary>Removes each resolved user from their game team (Habbo's "leave team"), clearing their team
-/// aura. No int params (actiontypes/class_3685). Delegates to <see cref="Grains.Systems.RoomGameSystem"/>.</summary>
+/// aura. No int params (actiontypes/class_3685). Delegates to the room's game runtime.</summary>
 [RoomObjectLogic("wf_act_leave_team")]
 public class WiredActionLeaveTeam(
     IGrainFactory grainFactory,

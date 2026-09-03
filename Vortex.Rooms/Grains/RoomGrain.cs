@@ -38,9 +38,12 @@ using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots;
 using Vortex.Primitives.Sound.Providers;
 using Vortex.Rooms.Configuration;
+using Vortex.Rooms.Games.Presentation;
+using Vortex.Rooms.Games.Runtime;
 using Vortex.Rooms.Grains.Modules;
 using Vortex.Rooms.Grains.Systems;
 using Vortex.Rooms.Grains.Systems.WiredTrading;
+using Vortex.Rooms.Providers;
 using Vortex.Rooms.Wired.Logs;
 
 namespace Vortex.Rooms.Grains;
@@ -94,12 +97,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomHandItemModule HandItemModule;
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
-    public readonly RoomGameChrome GameChrome;
-    public readonly RoomGameSystem GameSystem;
-    public readonly RoomFreezeSystem FreezeSystem;
-    public readonly RoomBanzaiSystem BanzaiSystem;
-    public readonly RoomGameTimerSystem GameTimerSystem;
-    public readonly RoomGameScoreboardSystem ScoreboardSystem;
+    /// <summary>The room's one game coordinator. Every game the room hosts is inside it, and nothing
+    /// outside it names a game.</summary>
+    public readonly RoomGameRuntime GameRuntime;
+    public readonly GameTimerSystem GameTimers;
+    public readonly GameScoreboardPresenter ScoreboardPresenter;
 
     public readonly RoomEventModule EventModule;
     public readonly RoomFurniModule FurniModule;
@@ -144,6 +146,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IPetVocalProvider petVocalProvider,
         RoomWiredLogChannel wiredLogChannel,
         ISongProvider songProvider,
+        IRoomGameProvider gameProvider,
         // Last on purpose: GrainActivationContext.CreateWithIntegerKey takes params object[], so a
         // dependency inserted anywhere else compiles cleanly in every test that builds this grain
         // and then fails at activation.
@@ -191,14 +194,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         RollerSystem = new RoomRollerSystem(this);
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);
-        // Chrome before GameSystem, GameSystem before any game: RoomFreezeSystem's field
-        // initializer reads GameSystem.TeamState, and every game system reads GameChrome.
-        GameChrome = new RoomGameChrome(this);
-        GameSystem = new RoomGameSystem(this);
-        FreezeSystem = new RoomFreezeSystem(this);
-        BanzaiSystem = new RoomBanzaiSystem(this);
-        GameTimerSystem = new RoomGameTimerSystem(this);
-        ScoreboardSystem = new RoomGameScoreboardSystem(this);
+        GameRuntime = new RoomGameRuntime(this);
+        GameTimers = new GameTimerSystem(this);
+        ScoreboardPresenter = new GameScoreboardPresenter(this);
         ModerationSystem = new RoomModerationSystem(this);
         MysteryBoxSystem = new RoomMysteryBoxSystem(this);
         CrackableSystem = new RoomCrackableSystem(this);
@@ -206,17 +204,18 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         WiredTradingSystem = new RoomWiredTradingSystem(this);
         JukeboxSystem = new RoomJukeboxSystem(this);
 
-        // Every game the room can host plugs in here, and nowhere else: the game-timer furni, the wired
-        // control-clock action, the tick loop and the avatar-left path all go through GameSystem and
-        // never name a game. Football and hockey each land as one more line.
-        GameSystem.Register(FreezeSystem);
-        GameSystem.Register(BanzaiSystem);
+        // Every game the room hosts arrives from the provider, which holds whatever any scanned
+        // assembly marked [RoomGame]. There is no list of games in this file and there must not be
+        // one: that is the property that makes adding a game a new folder rather than an edit here,
+        // in the timer furni, in the wired control-clock action and in the tick loop.
+        gameProvider.AttachGamesTo(GameRuntime);
+        GameRuntime.AddSink(new GameDiagnosticsSink(_logger));
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);
-        // The scoreboard brick paints every game's score displays from the same events the wired
+        // The scoreboard adapter paints every game's score displays from the same events the wired
         // boxes read, so no game refreshes a board by hand.
-        EventModule.Register(ScoreboardSystem);
+        EventModule.Register(ScoreboardPresenter);
     }
 
     public RoomId RoomId => _state.RoomId;
@@ -377,13 +376,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         await RunTickStepAsync("bots", () => BotSystem.ProcessBotsAsync(now, ct));
         await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
         await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
-        await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
+        await RunTickStepAsync("game-timer", () => GameTimers.ProcessAsync(now, ct));
         await RunTickStepAsync("jukebox", () => JukeboxSystem.ProcessAsync(now, ct));
-
-        foreach (IRoomMinigame minigame in GameSystem.Minigames)
-        {
-            await RunTickStepAsync(minigame.Name, () => minigame.TickAsync(now, ct));
-        }
+        // One step for every game the room hosts. The runtime isolates each game's failure and skips
+        // the ones with nothing to do, so a room with no match running does no per-game work at all.
+        await RunTickStepAsync("games", () => GameRuntime.TickAsync(now, ct));
 
         await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
         await RunTickStepAsync("mystery-box", () => ProcessMysteryBoxTimeoutsAsync(now, ct));
@@ -454,6 +451,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     {
         try
         {
+            // Games first: a room unload destroys its game runtime, and tearing every match down
+            // through its own cleanup is what guarantees no timer, effect or queued piece of work
+            // outlives the activation.
+            await GameRuntime.ShutdownAsync(ct);
+
             await FlushDirtyItemsAsync(ct);
             await PetSystem.FlushDirtyPetsAsync(ct);
 

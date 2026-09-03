@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Vortex.Primitives.Rooms.Enums.Games;
-using Vortex.Rooms.Grains.Systems.Banzai;
+using Vortex.Rooms.Games.BattleBanzai;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Banzai;

@@ -15,7 +15,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// points"). Int params from the client setup form (conditions/TeamHasScore): [0] = team (1-4, matching
 /// <see cref="GameTeamColor"/>), [1] = threshold (0-1000), [2] = comparison operator (0 = equal,
 /// 1 = less than, 2 = greater than — the same comparison radio the altitude condition uses). Reads the
-/// single source of truth in <see cref="Grains.Systems.RoomGameSystem"/>. No negative variant.</summary>
+/// single source of truth in the room's game runtime. No negative variant.</summary>
 [RoomObjectLogic("wf_cnd_team_has_score")]
 public class WiredConditionTeamHasScore(
     IGrainFactory grainFactory,

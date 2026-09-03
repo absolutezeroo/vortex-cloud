@@ -35,6 +35,33 @@
  "fireworks": [
   "floor"
  ],
+ "football": [
+  "floor"
+ ],
+ "football_gate_blue": [
+  "floor"
+ ],
+ "football_gate_green": [
+  "floor"
+ ],
+ "football_gate_red": [
+  "floor"
+ ],
+ "football_gate_yellow": [
+  "floor"
+ ],
+ "football_goal_blue": [
+  "floor"
+ ],
+ "football_goal_green": [
+  "floor"
+ ],
+ "football_goal_red": [
+  "floor"
+ ],
+ "football_goal_yellow": [
+  "floor"
+ ],
  "freeze_block": [
   "floor"
  ],

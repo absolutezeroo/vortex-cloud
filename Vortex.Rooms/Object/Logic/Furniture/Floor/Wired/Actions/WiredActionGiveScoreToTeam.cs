@@ -16,7 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// predefined team"). Int params (actiontypes/class_3921, which extends GiveScore): [0] = points
 /// (signed), [1] = times-per-game cap (0 = unlimited), [2] = team (1-4, matching
 /// <see cref="GameTeamColor"/>). The cap is enforced per score box. Delegates to
-/// <see cref="Grains.Systems.RoomGameSystem"/>.</summary>
+/// the room's game runtime.</summary>
 [RoomObjectLogic("wf_act_give_score_tm")]
 public class WiredActionGiveScoreToTeam(
     IGrainFactory grainFactory,

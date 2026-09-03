@@ -15,7 +15,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// client setup form (actiontypes/GiveScore): [0] = points (signed; the "subtract" toggle stores a
 /// negative), [1] = times-per-game cap (0 = unlimited). The cap is enforced per (this score box, user)
 /// so the same user cannot be scored more than N times per game by this box. Delegates to
-/// <see cref="Grains.Systems.RoomGameSystem"/>; users on no team are skipped.</summary>
+/// the room's game runtime; users on no team are skipped.</summary>
 [RoomObjectLogic("wf_act_give_score")]
 public class WiredActionGiveScore(
     IGrainFactory grainFactory,

@@ -16,7 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Selectors;
 
 /// <summary>Selects every player currently on the configured team (Habbo's "users in team" input
 /// source). Int param [0] is the team (1-4, matching <see cref="GameTeamColor"/>). Reads the single
-/// source of truth in <see cref="Grains.Systems.RoomGameSystem"/>.</summary>
+/// source of truth in the room's game runtime.</summary>
 [RoomObjectLogic("wf_slc_users_team")]
 public class WiredSelectorEntitiesInTeam(
     IGrainFactory grainFactory,

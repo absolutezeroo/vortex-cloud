@@ -16,7 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// Adds each resolved user to a game team (Habbo's "join team"). Client JoinTeam.ts sends
 /// <c>[team, type]</c>: the team is 1-4 (matching <see cref="GameTeamColor"/>), and the type picks
 /// which game the team belongs to — <c>team_type.0</c> Wired, <c>.1</c> Battle Banzai, <c>.2</c>
-/// Freeze. Delegates to <see cref="Grains.Systems.RoomGameSystem"/> so team state has one owner.
+/// Freeze. Delegates to the room's game runtime so team state has one owner.
 /// <para>
 /// The type was previously read as an auto-balance flag, which does not exist in the client: picking
 /// Battle Banzai silently put the user in the smallest team rather than the one chosen, and Freeze was

@@ -28,6 +28,10 @@ namespace Vortex.Rooms.Tests.Games;
 /// </summary>
 public sealed class ScoreboardSystemTests
 {
+    /// <summary>The wired give-score box the test scores through. Uncapped (0), so a test can score
+    /// as many times as it likes from the same box.</summary>
+    private static readonly RoomObjectId ScoreBox = new(9_100);
+
     [Fact]
     public async Task AScoreChange_PaintsOnlyTheMatchingColoursBoards()
     {
@@ -40,7 +44,13 @@ public sealed class ScoreboardSystemTests
         FurnitureScoreboardLogic blue = AttachScoreboard(harness, "bb_score_b", "furniture_score");
 
         await harness
-            .Grain.GameSystem.AddTeamScoreAsync(GameTeamColor.Red, 5, CancellationToken.None)
+            .Grain.GameRuntime.TryGiveScoreToTeamAsync(
+                ScoreBox,
+                GameTeamColor.Red,
+                5,
+                0,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         red.GetState().Should().Be(5);
@@ -58,7 +68,7 @@ public sealed class ScoreboardSystemTests
         );
         harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
         await harness
-            .Grain.GameSystem.JoinTeamAsync(
+            .Grain.GameRuntime.JoinTeamAsync(
                 RoomHarness.Stranger,
                 GameTeamColor.Red,
                 CancellationToken.None
@@ -68,7 +78,7 @@ public sealed class ScoreboardSystemTests
         // The capped wired give-score path, with no round running — the boards must live-update,
         // which is what they do on Habbo.
         bool given = await harness
-            .Grain.GameSystem.TryGiveScoreToPlayerTeamAsync(
+            .Grain.GameRuntime.TryGiveScoreToPlayerTeamAsync(
                 new RoomObjectId(9000),
                 RoomHarness.Stranger,
                 3,
@@ -91,10 +101,16 @@ public sealed class ScoreboardSystemTests
             "freeze_counter_red"
         );
         await harness
-            .Grain.GameSystem.AddTeamScoreAsync(GameTeamColor.Red, 7, CancellationToken.None)
+            .Grain.GameRuntime.TryGiveScoreToTeamAsync(
+                ScoreBox,
+                GameTeamColor.Red,
+                7,
+                0,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameSystem.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
 
         // The coordinator reset the shared scores before announcing the start; the boards must
         // follow, or last round's tally sits there through the whole next round.
@@ -110,12 +126,18 @@ public sealed class ScoreboardSystemTests
             "es_score_r",
             "freeze_counter_red"
         );
-        await harness.Grain.GameSystem.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
         await harness
-            .Grain.GameSystem.AddTeamScoreAsync(GameTeamColor.Red, 4, CancellationToken.None)
+            .Grain.GameRuntime.TryGiveScoreToTeamAsync(
+                ScoreBox,
+                GameTeamColor.Red,
+                4,
+                0,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameSystem.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
 
         red.GetState().Should().Be(4);
     }
@@ -128,18 +150,24 @@ public sealed class ScoreboardSystemTests
             .ConfigureAwait(true);
         harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
         await harness
-            .Grain.GameSystem.JoinTeamAsync(
+            .Grain.GameRuntime.JoinTeamAsync(
                 RoomHarness.Stranger,
                 GameTeamColor.Red,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
-        await harness.Grain.GameSystem.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
         await harness
-            .Grain.GameSystem.AddTeamScoreAsync(GameTeamColor.Red, 10, CancellationToken.None)
+            .Grain.GameRuntime.TryGiveScoreToTeamAsync(
+                ScoreBox,
+                GameTeamColor.Red,
+                10,
+                0,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameSystem.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
 
         IHighscoreStuffData data = (IHighscoreStuffData)board.StuffData;
         HighscoreEntry entry = data.Entries.Should().ContainSingle().Subject;
@@ -154,9 +182,9 @@ public sealed class ScoreboardSystemTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         FurnitureHighScoreLogic board = await AttachHighScoreAsync(harness, "highscore_classic*1")
             .ConfigureAwait(true);
-        await harness.Grain.GameSystem.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
 
-        await harness.Grain.GameSystem.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
 
         ((IHighscoreStuffData)board.StuffData).Entries.Should().BeEmpty();
     }

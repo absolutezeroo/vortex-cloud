@@ -371,6 +371,44 @@ public static class ConfigKeyCatalog
             "Banzai: enclosed-region tiles painted per room tick (protects the wired event queue)",
             "Banzai"
         ),
+        // Football balance. Keys/defaults mirror Vortex.Rooms FootballConfig / FootballSettings.
+        // Every one of these is a Vortex choice: Habbo's own kick numbers are unknown, so they are
+        // all editable rather than compiled in beside genuinely wire-fixed values.
+        new(
+            "football.kick_distance",
+            "6",
+            ConfigValueKind.Int,
+            "Football: tiles a kick carries the ball",
+            "Football"
+        ),
+        new(
+            "football.ball_step_ms",
+            "200",
+            ConfigValueKind.Int,
+            "Football: milliseconds between the ball's tile hops",
+            "Football"
+        ),
+        new(
+            "football.goal_points",
+            "1",
+            ConfigValueKind.Int,
+            "Football: points a goal awards the team whose colour the goal carries",
+            "Football"
+        ),
+        new(
+            "football.goal_reset_ms",
+            "2000",
+            ConfigValueKind.Int,
+            "Football: how long the ball sits in the goal before returning to the kickoff spot",
+            "Football"
+        ),
+        new(
+            "football.max_players_per_team",
+            "5",
+            ConfigValueKind.Int,
+            "Football: max players per team",
+            "Football"
+        ),
     ];
 
     /// <summary>The descriptor for <paramref name="key"/>, or null if the key is not a known config key.</summary>

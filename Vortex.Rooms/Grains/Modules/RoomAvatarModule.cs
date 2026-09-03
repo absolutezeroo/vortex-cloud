@@ -148,7 +148,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
         // After the avatar is resolvable by player id, so a game reacting to the entry can already
         // address it (auras re-sync on their own through the snapshot; this is game entry state).
-        await _roomGrain.GameSystem.OnPlayerEnteredAsync(snapshot.PlayerId, ct);
+        await _roomGrain.GameRuntime.OnPlayerEnteredAsync(snapshot.PlayerId, ct);
 
         return avatar;
     }
@@ -185,7 +185,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
             // Team membership must never outlive a player's presence in the room; the game system
             // passes the departure on to each game it hosts.
-            await _roomGrain.GameSystem.OnPlayerLeftAsync(playerId, ct);
+            await _roomGrain.GameRuntime.OnPlayerLeftAsync(playerId, ct);
         }
         catch (Exception ex)
         {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Vortex.Rooms.Grains.Systems.Freeze;
+using Vortex.Rooms.Games.Freeze;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Freeze;

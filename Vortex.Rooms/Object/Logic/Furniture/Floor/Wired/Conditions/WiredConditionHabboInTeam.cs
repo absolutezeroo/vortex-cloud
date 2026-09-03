@@ -13,7 +13,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
 /// <summary>Passes when the triggering player is on the configured team (Habbo's "actor is on team").
 /// Int param [0] is the team (1-4, matching <see cref="GameTeamColor"/>, from the client's team
-/// selector). Reads the single source of truth in <see cref="Grains.Systems.RoomGameSystem"/>. The
+/// selector). Reads the single source of truth in the room's game runtime. The
 /// negative variant inherits this and flips <see cref="FurnitureWiredConditionLogic.IsNegative"/>.</summary>
 [RoomObjectLogic("wf_cnd_actor_in_team")]
 public class WiredConditionHabboInTeam(

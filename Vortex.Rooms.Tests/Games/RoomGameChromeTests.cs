@@ -4,7 +4,7 @@ using FluentAssertions;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Protocol.Messages.Outgoing.Room.Session;
-using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Games.Presentation;
 using Vortex.Rooms.Object.Avatars.Player;
 using Vortex.Rooms.Tests.Support;
 using Xunit;
@@ -29,7 +29,7 @@ public sealed class RoomGameChromeTests
         RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
 
         await harness
-            .Grain.GameChrome.BroadcastEffectAsync(RoomHarness.Stranger, 40)
+            .Grain.GameRuntime.Chrome.BroadcastEffectAsync(RoomHarness.Stranger, 40)
             .ConfigureAwait(true);
 
         avatar
@@ -49,7 +49,7 @@ public sealed class RoomGameChromeTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
-            .Grain.GameChrome.BroadcastEffectAsync(RoomHarness.Stranger, 40)
+            .Grain.GameRuntime.Chrome.BroadcastEffectAsync(RoomHarness.Stranger, 40)
             .ConfigureAwait(true);
 
         harness.BroadcastToRoom.Should().BeEmpty();
@@ -70,7 +70,7 @@ public sealed class RoomGameChromeTests
         RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
 
         await harness
-            .Grain.GameChrome.BroadcastTeamAuraAsync(RoomHarness.Stranger, aura, team)
+            .Grain.GameRuntime.Chrome.BroadcastTeamAuraAsync(RoomHarness.Stranger, aura, team)
             .ConfigureAwait(true);
 
         avatar.CurrentEffectId.Should().Be(expectedEffect);
@@ -84,7 +84,7 @@ public sealed class RoomGameChromeTests
         avatar.SetEffect(40);
 
         await harness
-            .Grain.GameChrome.BroadcastTeamAuraAsync(
+            .Grain.GameRuntime.Chrome.BroadcastTeamAuraAsync(
                 RoomHarness.Stranger,
                 GameAuraSet.Freeze,
                 GameTeamColor.None
@@ -101,7 +101,7 @@ public sealed class RoomGameChromeTests
         harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
 
         await harness
-            .Grain.GameChrome.SetPlayingModeAsync(RoomHarness.Stranger, true)
+            .Grain.GameRuntime.Chrome.SetPlayingModeAsync(RoomHarness.Stranger, true)
             .ConfigureAwait(true);
 
         harness.ComposersSentTo.Should().ContainSingle().Which.Should().Be(RoomHarness.Stranger);
@@ -116,7 +116,7 @@ public sealed class RoomGameChromeTests
         // Fire-and-forget by contract (the leave path must not await back into the leaver's own
         // presence grain); the fake presence grain completes synchronously, so the send is visible
         // immediately.
-        harness.Grain.GameChrome.SetPlayingModeAndForget(RoomHarness.Stranger, false);
+        harness.Grain.GameRuntime.Chrome.SetPlayingModeAndForget(RoomHarness.Stranger, false);
 
         harness.ComposersSentTo.Should().ContainSingle().Which.Should().Be(RoomHarness.Stranger);
     }
@@ -128,7 +128,7 @@ public sealed class RoomGameChromeTests
         RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
 
         await harness
-            .Grain.GameChrome.BroadcastPlayerValueAsync(RoomHarness.Stranger, 3)
+            .Grain.GameRuntime.Chrome.BroadcastPlayerValueAsync(RoomHarness.Stranger, 3)
             .ConfigureAwait(true);
 
         GamePlayerValueMessageComposer composer = harness

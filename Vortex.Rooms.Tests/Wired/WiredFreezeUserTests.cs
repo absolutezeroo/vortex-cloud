@@ -21,7 +21,7 @@ public sealed class WiredFreezeUserTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
 
-        harness.Grain.GameChrome.LockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.LockMovement(RoomHarness.Stranger);
 
         avatar.IsMovementLocked.Should().BeTrue();
 
@@ -41,7 +41,7 @@ public sealed class WiredFreezeUserTests
             .Grain.AvatarModule.WalkAvatarToAsync(avatar, 4, 4, CancellationToken.None)
             .ConfigureAwait(true);
 
-        harness.Grain.GameChrome.LockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.LockMovement(RoomHarness.Stranger);
 
         avatar.IsWalking.Should().BeFalse("the in-flight walk is cancelled, not just future ones");
         avatar.TilePath.Should().BeEmpty();
@@ -52,9 +52,9 @@ public sealed class WiredFreezeUserTests
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RoomPlayerAvatar avatar = harness.PutRealPlayerInRoom(RoomHarness.Stranger, 2, 2);
-        harness.Grain.GameChrome.LockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.LockMovement(RoomHarness.Stranger);
 
-        harness.Grain.GameChrome.UnlockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.UnlockMovement(RoomHarness.Stranger);
 
         avatar.IsMovementLocked.Should().BeFalse();
 
@@ -70,7 +70,7 @@ public sealed class WiredFreezeUserTests
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
-        harness.Grain.GameChrome.LockMovement(RoomHarness.Stranger);
-        harness.Grain.GameChrome.UnlockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.LockMovement(RoomHarness.Stranger);
+        harness.Grain.GameRuntime.Chrome.UnlockMovement(RoomHarness.Stranger);
     }
 }

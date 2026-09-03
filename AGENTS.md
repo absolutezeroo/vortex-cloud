@@ -360,48 +360,54 @@ time.
   - restart the emulator — a running `Vortex.Main` holds its own DLLs, so a rebuilt binary is not
     live until it is restarted
 
-### Add a room game (Freeze, Battle Banzai, football, hockey)
-Every room game plugs into one seam so that nothing which starts or stops a round names an
-individual game. `RoomGameSystem` is the coordinator: it owns the room's single `GameTeamState`
-(teams + scores, read by every wired team leaf) and the round lifecycle that raises GAME_STARTS /
-GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
+### Add a room game (Freeze, Battle Banzai, football, and the next one)
+Every room game is rules and nothing else. The framework in `Vortex.Rooms/Games/` owns the
+lifecycle, the teams, the scores, the arena index, the client IO and the match identity, so adding a
+game is **a new folder and a `[RoomGame]` attribute** — no file outside that folder changes, and
+nothing that starts or stops a round learns the game's name.
 - Required context files:
   - `docs/walkthroughs/add-a-room-game.md` (full checklist and the non-obvious rules)
-  - `Vortex.Rooms/Grains/Systems/IRoomMinigame.cs`
-  - `Vortex.Rooms/Grains/Systems/RoomFreezeSystem.cs` as the worked example
+  - `Vortex.Rooms/Games/Abstractions/IRoomGame.cs` and `IRoomGameContext.cs`
+  - `Vortex.Rooms/Games/Freeze/FreezeGame.cs` as the worked example
 - Required edits:
-  1. the system deriving from `RoomMinigameBase`, plus its pure rules POCO holding the room's
-     `GameTeamState`
-  2. **`GameSystem.Register(<Game>System);`** in the `RoomGrain` constructor — a game that is
-     never registered builds clean, tests clean and never runs
-  3. a test asserting the game is registered on every room (see
-     `RoomMinigameCoordinationTests.Freeze_Is_Registered_On_Every_Room`)
+  1. `Vortex.Rooms/Games/<Game>/<Game>Game.cs` — the module, `[RoomGame]`, `: RoomGameModule`,
+     a `GameProfile`, and only the hooks it uses
+  2. `Vortex.Rooms/Games/<Game>/Components/*.cs` — one `[RoomObjectLogic]` class per arena furni
+     family, `: GameFurnitureLogic` plus the capability interface it plays
+     (`IArenaTileComponent`, `ITeamGateComponent`, `IGoalComponent`, `IBallComponent`, …)
+  3. `Vortex.Primitives/Server/ConfigKeyCatalog.cs` — the balance keys, so an operator can edit them
+  4. `tools/catalog_converter/data/vortex_logics.json` — the logic keys, so furniture can bind
+  5. `Vortex.Rooms.Tests/<Game>/` — rules tests on the pure parts, plus one integration test driven
+     through `RoomGameRuntime.SignalAsync` with real components (`GameFurni.Place`)
 - Use the shared bricks, never a private copy:
-  - client IO (effects/auras, playing mode, player value, timer reset) goes through
-    `RoomGameChrome`; the two team-aura sets are the `GameAuraSet` enum
-  - item lookups go through `RoomLiveState.ItemIndex` (`ItemsOf<T>` / `LogicsOf<T>`) and
-    `RoomMapModule.FirstLogicOnTile<T>`, never a scan of `ItemsById`
-  - balance config resolves in ONE grain round trip: `IServerConfigGrain.GetManyAsync` +
-    `ServerConfigValues` readers (see `FreezeConfig.ResolveAsync`)
-  - colour-family furni (gates, scoreboards, goals) is ONE logic class with one
-    `[RoomObjectLogic]` attribute per colour key and `GameColorKey.FromKeySuffix` — never a
-    shell subclass per colour
-  - a slow in-game clock is a `GameCadence` field, not a hand-rolled next-due long
+  - lifecycle: `GamePhase` + `GameStateMachine`. A module has NO `IsRunning` of its own —
+    `RoomGameModule.IsLive` / `.HasMatch` read the runtime's phase
+  - teams and scores: the room's one `GameTeamBook`, written through `_context.ScoreAsync` with a
+    `GameScore(team, player, amount, reason, source)`; gates go through `TeamGateRules.Toggle`
+  - arena lookup: `_context.Arena` (`ComponentsOf<T>` / `CountOf<T>` / `OnTile<T>` / `TilesOf<T>`),
+    a filtered view over the room's ONE item index — never a scan of `ItemsById`
+  - client IO: `_context.Chrome` (`IGameChrome`). From a participant-left hook, only
+    `SetPlayingModeAndForget` — an awaited call back into the leaver's own presence grain deadlocks
+    the room's turn
+  - balance: `_context.GetConfigAsync` in ONE grain round trip at prepare
+  - randomness: `_context.Random`, seeded per match — never `Random.Shared`
+  - colour-family furni (gates, scoreboards, goals) is ONE logic class with one `[RoomObjectLogic]`
+    attribute per colour key and `GameColorKey.FromKeySuffix` — never a shell subclass per colour
 - Forbidden changes:
+  - no per-game member on `IRoomObjectContext`, and no per-game access interface. Arena furniture
+    reports a `GameSignal`; the runtime routes it. This is the rule the old
+    `IRoomFreezeAccess`/`IRoomBanzaiAccess` pair broke
   - no per-game teams or scores; a second store is invisible to every wired team leaf
-  - no direct `GameTeamState` score writes; go through `RoomGameSystem.AddTeamScoreAsync` or the
-    SCORE_ACHIEVED trigger never fires
-  - no clearing scores in your own `StartAsync`; the coordinator already did it before
-    GAME_STARTS was published, and doing it again silently wipes what that event just awarded
-  - no `StartGameAsync` / `EndGameAsync` on a per-game access interface, and no new hardcoded
-    game call in `FurnitureGameTimerLogic` or `WiredActionControlClock`
-  - no awaited presence-grain call from a player-left hook; use
-    `RoomGameChrome.SetPlayingModeAndForget` (an await back into the leaver's own presence grain
-    deadlocks the room's turn)
-- Validation:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
-  - start a round from the game-timer furni button **and** from a wired `wf_act_control_clock`
-    box; both must reach the new game
+  - no direct `GameTeamBook` score write; go through `_context.ScoreAsync` or `SCORE_ACHIEVED`
+    never fires
+  - no clearing scores in `OnPreparingAsync`; the runtime already did it before GAME_STARTS was
+    published, and doing it again silently wipes what that event just awarded
+  - no ending your own match; call `_context.RequestMatchEndAsync`, which ends the room's round,
+    fires GAME_ENDS and resets the timer furni
+  - no registration line in `RoomGrain`, and no new hardcoded game call in `FurnitureGameTimerLogic`
+    or `WiredActionControlClock`
+  - no deferred work without `_context.Match` on it; that stamp is what stops a callback from match
+    N mutating match N+1
 
 ### Change Habbo protocol behaviour (handler, composer payload, or feature flow)
 - Required context files:

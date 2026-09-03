@@ -81,7 +81,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         }
     }
 
-    /// <summary>Advance the countdown; called once per room tick by <see cref="Grains.Systems.RoomGameTimerSystem"/>.</summary>
+    /// <summary>Advance the countdown; called once per room tick by <see cref="Games.Presentation.GameTimerSystem"/>.</summary>
     public async Task AdvanceAsync(long nowMs, CancellationToken ct)
     {
         if (!_gameActive)

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Games.Abstractions;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Games;

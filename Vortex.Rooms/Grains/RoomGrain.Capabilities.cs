@@ -6,6 +6,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -21,8 +22,8 @@ namespace Vortex.Rooms.Grains;
 /// The in-process capabilities the room offers to the object logic running inside its turn.
 /// <para>
 /// Every member is an explicit interface implementation. That is deliberate: it keeps these off
-/// <c>RoomGrain</c>'s own surface (which is already large), and it is what lets the game and freeze
-/// subsystems each keep a <c>StartGameAsync</c>/<c>EndGameAsync</c> of their own without colliding.
+/// <c>RoomGrain</c>'s own surface, which is already large, and it lets two subsystems keep a method
+/// of the same name without colliding.
 /// </para>
 /// <para>
 /// None of these interfaces derives from a grain interface, so Orleans generates no proxy for them
@@ -33,10 +34,8 @@ public sealed partial class RoomGrain
     : IRoomLookup,
         IRoomMapAccess,
         IRoomGameAccess,
-        IRoomFreezeAccess,
         IRoomChestAccess,
         IRoomTransactionAccess,
-        IRoomBanzaiAccess,
         IRoomFurniAccess
 {
     private static readonly IReadOnlySet<RoomObjectId> EmptyStack = new HashSet<RoomObjectId>();
@@ -122,25 +121,25 @@ public sealed partial class RoomGrain
             ? _state.TileAvatarStacks[tileIndex]
             : EmptyStack;
 
-    GameTeamColor IRoomGameAccess.GetTeam(PlayerId playerId) => GameSystem.GetTeam(playerId);
+    GameTeamColor IRoomGameAccess.GetTeam(PlayerId playerId) => GameRuntime.GetTeam(playerId);
 
-    int IRoomGameAccess.GetTeamScore(GameTeamColor team) => GameSystem.GetTeamScore(team);
+    int IRoomGameAccess.GetTeamScore(GameTeamColor team) => GameRuntime.GetTeamScore(team);
 
     IReadOnlyList<PlayerId> IRoomGameAccess.GetPlayersInTeam(GameTeamColor team) =>
-        GameSystem.GetPlayersInTeam(team);
+        GameRuntime.GetPlayersInTeam(team);
 
-    Task IRoomGameAccess.StartGameAsync(CancellationToken ct) => GameSystem.StartGameAsync(ct);
+    Task IRoomGameAccess.StartGameAsync(CancellationToken ct) => GameRuntime.StartGameAsync(ct);
 
-    Task IRoomGameAccess.EndGameAsync(CancellationToken ct) => GameSystem.EndGameAsync(ct);
+    Task IRoomGameAccess.EndGameAsync(CancellationToken ct) => GameRuntime.EndGameAsync(ct);
 
     Task IRoomGameAccess.JoinTeamAsync(
         PlayerId playerId,
         GameTeamColor team,
         CancellationToken ct
-    ) => GameSystem.JoinTeamAsync(playerId, team, ct);
+    ) => GameRuntime.JoinTeamAsync(playerId, team, ct);
 
     Task IRoomGameAccess.LeaveTeamAsync(PlayerId playerId, CancellationToken ct) =>
-        GameSystem.LeaveTeamAsync(playerId, ct);
+        GameRuntime.LeaveTeamAsync(playerId, ct);
 
     Task<bool> IRoomGameAccess.TryGiveScoreToTeamAsync(
         RoomObjectId box,
@@ -148,7 +147,7 @@ public sealed partial class RoomGrain
         int amount,
         int cap,
         CancellationToken ct
-    ) => GameSystem.TryGiveScoreToTeamAsync(box, team, amount, cap, ct);
+    ) => GameRuntime.TryGiveScoreToTeamAsync(box, team, amount, cap, ct);
 
     Task<bool> IRoomGameAccess.TryGiveScoreToPlayerTeamAsync(
         RoomObjectId box,
@@ -156,11 +155,18 @@ public sealed partial class RoomGrain
         int amount,
         int cap,
         CancellationToken ct
-    ) => GameSystem.TryGiveScoreToPlayerTeamAsync(box, playerId, amount, cap, ct);
+    ) => GameRuntime.TryGiveScoreToPlayerTeamAsync(box, playerId, amount, cap, ct);
 
-    void IRoomGameAccess.LockMovement(PlayerId playerId) => GameChrome.LockMovement(playerId);
+    bool IRoomGameAccess.IsRunning(GameId game) => GameRuntime.IsRunningGame(game);
 
-    void IRoomGameAccess.UnlockMovement(PlayerId playerId) => GameChrome.UnlockMovement(playerId);
+    Task IRoomGameAccess.SignalAsync(GameSignal signal, CancellationToken ct) =>
+        GameRuntime.SignalAsync(signal, ct);
+
+    void IRoomGameAccess.LockMovement(PlayerId playerId) =>
+        GameRuntime.Chrome.LockMovement(playerId);
+
+    void IRoomGameAccess.UnlockMovement(PlayerId playerId) =>
+        GameRuntime.Chrome.UnlockMovement(playerId);
 
     Task<bool> IRoomTransactionAccess.OfferTransactionAsync(
         int contractId,
@@ -203,49 +209,6 @@ public sealed partial class RoomGrain
         int count,
         CancellationToken ct
     ) => PayOutWiredChestItemsAsync(chestId, playerId, count, ct);
-
-    Task IRoomFreezeAccess.ThrowBallAsync(
-        PlayerId playerId,
-        int targetX,
-        int targetY,
-        CancellationToken ct
-    ) => FreezeSystem.ThrowBallAsync(playerId, targetX, targetY, ct);
-
-    Task IRoomFreezeAccess.OnBlockWalkOnAsync(
-        PlayerId playerId,
-        int x,
-        int y,
-        CancellationToken ct
-    ) => FreezeSystem.OnBlockWalkOnAsync(playerId, x, y, ct);
-
-    Task IRoomFreezeAccess.OnExitWalkOnAsync(PlayerId playerId, CancellationToken ct) =>
-        FreezeSystem.OnExitWalkOnAsync(playerId, ct);
-
-    Task IRoomFreezeAccess.OnGateWalkOnAsync(
-        PlayerId playerId,
-        GameTeamColor team,
-        CancellationToken ct
-    ) => FreezeSystem.OnGateWalkOnAsync(playerId, team, ct);
-
-    bool IRoomBanzaiAccess.IsRoundRunning => BanzaiSystem.IsRoundRunning;
-
-    Task IRoomBanzaiAccess.OnTileWalkOnAsync(
-        PlayerId playerId,
-        int tileIdx,
-        CancellationToken ct
-    ) => BanzaiSystem.OnTileWalkOnAsync(playerId, tileIdx, ct);
-
-    Task IRoomBanzaiAccess.OnGateWalkOnAsync(
-        PlayerId playerId,
-        GameTeamColor team,
-        CancellationToken ct
-    ) => BanzaiSystem.OnGateWalkOnAsync(playerId, team, ct);
-
-    Task IRoomBanzaiAccess.OnTeleportWalkOnAsync(
-        PlayerId playerId,
-        RoomObjectId sourceItemId,
-        CancellationToken ct
-    ) => BanzaiSystem.OnTeleportWalkOnAsync(playerId, sourceItemId, ct);
 
     Task<bool> IRoomFurniAccess.ValidateFloorItemPlacementAsync(
         ActionContext ctx,

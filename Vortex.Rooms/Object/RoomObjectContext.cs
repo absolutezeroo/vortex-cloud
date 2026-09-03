@@ -5,6 +5,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Events;
+using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Logic;
@@ -32,17 +33,15 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
     public TFacet RoomAs<TFacet>()
         where TFacet : IAddressable => (TFacet)(object)_roomGrain;
 
-    // The room's in-process capabilities. RoomGrain implements all five explicitly, so these are
-    // the same activation seen through five narrow, non-grain contracts.
+    // The room's in-process capabilities. RoomGrain implements each explicitly, so these are the
+    // same activation seen through narrow, non-grain contracts. There is ONE game contract however
+    // many games the room hosts: a per-game property here is what made adding a game an edit to the
+    // core, and there must never be another one.
     public IRoomLookup Lookup => _roomGrain;
     public IRoomMapAccess Map => _roomGrain;
     public IRoomGameAccess Game => _roomGrain;
-    public IRoomFreezeAccess Freeze => _roomGrain;
-
     public IRoomChestAccess Chests => _roomGrain;
-
     public IRoomTransactionAccess Transactions => _roomGrain;
-    public IRoomBanzaiAccess Banzai => _roomGrain;
     public IRoomFurniAccess Furni => _roomGrain;
 
     public long NowMs() => _roomGrain.NowMs();
