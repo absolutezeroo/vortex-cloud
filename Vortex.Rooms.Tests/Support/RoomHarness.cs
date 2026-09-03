@@ -548,10 +548,14 @@ internal sealed class RoomHarness
         IServiceProvider services = new EmptyServiceProvider();
         RoomGameProvider provider = new(services);
 
-        new RoomGameFeatureProcessor(
-            provider,
-            NullLogger<RoomGameFeatureProcessor>.Instance
-        ).ProcessAsync(typeof(RoomGrain).Assembly, services).GetAwaiter().GetResult();
+        // The processor's own work is synchronous (a reflection sweep); the Task it returns is
+        // already completed, so there is nothing here to block on.
+#pragma warning disable VSTHRD002
+        new RoomGameFeatureProcessor(provider, NullLogger<RoomGameFeatureProcessor>.Instance)
+            .ProcessAsync(typeof(RoomGrain).Assembly, services)
+            .GetAwaiter()
+            .GetResult();
+#pragma warning restore VSTHRD002
 
         return provider;
     }

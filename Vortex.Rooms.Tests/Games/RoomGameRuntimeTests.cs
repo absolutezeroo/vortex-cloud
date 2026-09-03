@@ -36,7 +36,9 @@ public sealed class RoomGameRuntimeTests
         // A game that exists but was never plugged in is invisible: it builds, it tests and it never
         // runs. The harness loads the games exactly the way production does — the real feature
         // processor over the real assembly — so this also covers the attribute and the DI wiring.
-        IEnumerable<GameId> hosted = harness.Grain.GameRuntime.Games.Select(game => game.Profile.Id);
+        IEnumerable<GameId> hosted = harness.Grain.GameRuntime.Games.Select(game =>
+            game.Profile.Id
+        );
 
         hosted
             .Should()

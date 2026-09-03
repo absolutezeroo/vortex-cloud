@@ -193,11 +193,8 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         {
             { Kind: GameSignalKind.WalkOn, Component: IArenaTileComponent tile } =>
                 OnTileWalkOnAsync(signal.Player, tile, ct),
-            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } => OnGateWalkOnAsync(
-                signal.Player,
-                gate,
-                ct
-            ),
+            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
+                OnGateWalkOnAsync(signal.Player, gate, ct),
             { Kind: GameSignalKind.WalkOn, Component: IRandomTeleportComponent teleport } =>
                 EnqueueTeleportHopAsync(signal.Player, teleport.ObjectId, depth: 0),
             { Kind: GameSignalKind.Detached, Component: IArenaTileComponent tile } =>

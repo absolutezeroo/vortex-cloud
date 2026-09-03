@@ -303,20 +303,12 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
         {
-            { Kind: GameSignalKind.WalkOn, Component: IBallComponent ball } => KickAsync(
-                signal.Player,
-                ball,
-                ct
-            ),
-            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } => OnGateWalkOnAsync(
-                signal.Player,
-                gate,
-                ct
-            ),
-            { Kind: GameSignalKind.Detached, Component: IBallComponent ball } => OnBallDetached(
-                ball,
-                ct
-            ),
+            { Kind: GameSignalKind.WalkOn, Component: IBallComponent ball } =>
+                KickAsync(signal.Player, ball, ct),
+            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
+                OnGateWalkOnAsync(signal.Player, gate, ct),
+            { Kind: GameSignalKind.Detached, Component: IBallComponent ball } =>
+                OnBallDetached(ball, ct),
             _ => Task.CompletedTask,
         };
 

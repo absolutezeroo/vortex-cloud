@@ -22,7 +22,12 @@ public sealed class FreezeGameTests
 {
     private const long Kickoff = 10_000;
 
-    private static FreezeGateComponent PlaceGate(RoomHarness harness, string colour, int x, int y) =>
+    private static FreezeGateComponent PlaceGate(
+        RoomHarness harness,
+        string colour,
+        int x,
+        int y
+    ) =>
         GameFurni.Place(
             harness,
             $"freeze_gate_{colour}",

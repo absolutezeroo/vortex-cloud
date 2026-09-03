@@ -44,7 +44,8 @@ public abstract class RoomGameModule(IRoomGameContext context) : IRoomGame
 
     public virtual Task TickAsync(long nowMs, CancellationToken ct) => Task.CompletedTask;
 
-    public virtual Task OnSignalAsync(GameSignal signal, CancellationToken ct) => Task.CompletedTask;
+    public virtual Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
+        Task.CompletedTask;
 
     public virtual Task OnParticipantLeftAsync(PlayerId playerId, CancellationToken ct) =>
         Task.CompletedTask;

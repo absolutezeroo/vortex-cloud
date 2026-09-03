@@ -120,12 +120,7 @@ public sealed class RoomItemIndexTests
         index.OnLogicAttached(second);
         index.OnItemDetached(first);
 
-        index
-            .ItemsOf<FreezeGateComponent>()
-            .Should()
-            .ContainSingle()
-            .Which.Should()
-            .Be(second);
+        index.ItemsOf<FreezeGateComponent>().Should().ContainSingle().Which.Should().Be(second);
     }
 
     /// <summary>A real logic of type <typeparamref name="TLogic"/> attached to a stub item, built the

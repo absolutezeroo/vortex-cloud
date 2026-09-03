@@ -109,10 +109,7 @@ internal sealed class RoomGameContext(
         foreach (RoomObjectId avatarId in _roomGrain._state.TileAvatarStacks[tileIdx])
         {
             if (
-                _roomGrain._state.AvatarsByObjectId.TryGetValue(
-                    avatarId,
-                    out IRoomAvatar? avatar
-                )
+                _roomGrain._state.AvatarsByObjectId.TryGetValue(avatarId, out IRoomAvatar? avatar)
                 && avatar is IRoomPlayer player
             )
             {

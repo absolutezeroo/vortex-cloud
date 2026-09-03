@@ -18,7 +18,7 @@ public sealed record TeamLayout
 
     /// <summary>The colours this game plays with, in the order a balancing pick walks them.</summary>
     public ImmutableArray<GameTeamColor> Colours { get; init; } =
-        [GameTeamColor.Red, GameTeamColor.Green, GameTeamColor.Blue, GameTeamColor.Yellow];
+    [GameTeamColor.Red, GameTeamColor.Green, GameTeamColor.Blue, GameTeamColor.Yellow];
 
     /// <summary>Members allowed per team. 0 means unlimited.</summary>
     public int Capacity { get; init; } = 5;

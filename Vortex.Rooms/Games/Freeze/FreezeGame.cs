@@ -214,22 +214,14 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
         {
-            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } => OnGateWalkOnAsync(
-                signal.Player,
-                gate,
-                ct
-            ),
-            { Kind: GameSignalKind.WalkOn, Component: IArenaExitComponent } => OnForfeitAsync(
-                signal.Player,
-                ct
-            ),
+            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
+                OnGateWalkOnAsync(signal.Player, gate, ct),
+            { Kind: GameSignalKind.WalkOn, Component: IArenaExitComponent } =>
+                OnForfeitAsync(signal.Player, ct),
             { Kind: GameSignalKind.WalkOn, Component: IDestructibleComponent block } =>
                 OnBlockWalkOnAsync(signal.Player, block, ct),
-            { Kind: GameSignalKind.Use, Component: IArenaTileComponent tile } => ThrowBallAsync(
-                signal.Player,
-                tile,
-                ct
-            ),
+            { Kind: GameSignalKind.Use, Component: IArenaTileComponent tile } =>
+                ThrowBallAsync(signal.Player, tile, ct),
             _ => Task.CompletedTask,
         };
 

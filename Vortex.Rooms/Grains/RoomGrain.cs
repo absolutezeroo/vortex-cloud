@@ -97,6 +97,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomHandItemModule HandItemModule;
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
+
     /// <summary>The room's one game coordinator. Every game the room hosts is inside it, and nothing
     /// outside it names a game.</summary>
     public readonly RoomGameRuntime GameRuntime;

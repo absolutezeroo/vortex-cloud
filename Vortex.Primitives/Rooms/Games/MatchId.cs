@@ -23,8 +23,5 @@ public readonly record struct MatchId(RoomId Room, GameId Game, int Sequence)
     public override string ToString() =>
         IsNone
             ? "none"
-            : string.Create(
-                CultureInfo.InvariantCulture,
-                $"{Room.Value}/{Game.Value}#{Sequence}"
-            );
+            : string.Create(CultureInfo.InvariantCulture, $"{Room.Value}/{Game.Value}#{Sequence}");
 }

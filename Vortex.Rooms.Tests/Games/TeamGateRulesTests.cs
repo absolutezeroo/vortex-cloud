@@ -93,7 +93,13 @@ public sealed class TeamGateRulesTests
         GameTeamBook teams = new();
 
         TeamGateRules
-            .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, acceptingPlayers: false)
+            .Toggle(
+                teams,
+                TeamLayout.FourColours,
+                Alice,
+                GameTeamColor.Red,
+                acceptingPlayers: false
+            )
             .Should()
             .Be(TeamGateResult.None);
         teams.GetTeam(Alice).Should().Be(GameTeamColor.None);

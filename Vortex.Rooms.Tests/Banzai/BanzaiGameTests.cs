@@ -22,7 +22,12 @@ namespace Vortex.Rooms.Tests.Banzai;
 /// </summary>
 public sealed class BanzaiGameTests
 {
-    private static BanzaiGateComponent PlaceGate(RoomHarness harness, string colour, int x, int y) =>
+    private static BanzaiGateComponent PlaceGate(
+        RoomHarness harness,
+        string colour,
+        int x,
+        int y
+    ) =>
         GameFurni.Place(
             harness,
             $"battlebanzai_gate_{colour}",

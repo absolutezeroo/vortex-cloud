@@ -485,7 +485,12 @@ public sealed class RoomGameRuntime
                 break;
 
             case GamePhase.Resetting:
-                await RunGuardedAsync(host, "reset", () => host.Game.OnResettingAsync(match, ct), ct);
+                await RunGuardedAsync(
+                    host,
+                    "reset",
+                    () => host.Game.OnResettingAsync(match, ct),
+                    ct
+                );
                 break;
 
             case GamePhase.Idle:
