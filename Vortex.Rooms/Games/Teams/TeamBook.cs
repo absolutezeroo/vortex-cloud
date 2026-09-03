@@ -1,49 +1,52 @@
 using System;
 using System.Collections.Generic;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Rooms.Games.Teams;
 
 /// <summary>
-/// The room's one team + score ledger: which team each player is on, each team's score, and the
-/// per-match caps the wired score actions consume. Pure — no IO, no room, no packets — so every rule
-/// in it is unit-testable on its own, and the runtime turns the "did something change" answers into
-/// client updates.
+/// A team + score ledger over a <see cref="TeamSet"/>: which team each player is on, each team's
+/// score, and the per-match caps the wired score actions consume. Pure — no IO, no room, no packets,
+/// no colours — so every rule in it is unit-testable on its own, and the runtime turns the "did
+/// something change" answers into client updates.
 /// <para>
-/// There is exactly one of these per room, shared by every game, because every wired team leaf reads
-/// it: <c>wf_cnd_actor_in_team</c>, <c>wf_cnd_team_has_score</c>, <c>wf_cnd_team_has_rank</c>,
-/// <c>wf_slc_users_team</c> and <c>wf_trg_score_achieved</c>. A game that kept its own teams would be
-/// invisible to all of them — which is the bug this shape exists to prevent.
+/// Storage is keyed by <see cref="TeamId"/> rather than indexed by a colour, which is what lets a
+/// game have two teams, or seven, or teams with no Habbo colour at all. The book knows its own set,
+/// so "every team" is a walk of that set and never a count to four.
 /// </para>
-/// <para>Member counts are always DERIVED from the membership map, never a parallel counter that
-/// could drift.</para>
+/// <para>
+/// Member counts are always DERIVED from the membership map, never a parallel counter that could
+/// drift.
+/// </para>
 /// </summary>
-public sealed class GameTeamBook
+public sealed class TeamBook(TeamSet teams)
 {
-    private readonly Dictionary<PlayerId, GameTeamColor> _teamByPlayer = [];
-
-    // Team score indexed by (int)GameTeamColor (1..4); index 0 (None) is unused.
-    private readonly int[] _scoreByTeam = new int[5];
+    private readonly Dictionary<PlayerId, TeamId> _teamByPlayer = [];
+    private readonly Dictionary<TeamId, int> _scoreByTeam = [];
 
     // Per-match caps: GIVE_SCORE is capped per (score box, player); GIVE_SCORE_TO_TEAM per box.
     private readonly Dictionary<(RoomObjectId Box, PlayerId Player), int> _giveScoreUses = [];
     private readonly Dictionary<RoomObjectId, int> _giveTeamScoreUses = [];
 
-    public static bool IsRealTeam(GameTeamColor team) =>
-        team is > GameTeamColor.None and <= GameTeamColor.Yellow;
+    /// <summary>The teams this book knows. Everything that iterates teams iterates this.</summary>
+    public TeamSet Teams { get; } = teams;
 
-    public GameTeamColor GetTeam(PlayerId playerId) =>
-        _teamByPlayer.TryGetValue(playerId, out GameTeamColor team) ? team : GameTeamColor.None;
+    /// <summary>Whether that id is a team of this book's set. Replaces the old "is it between Red and
+    /// Yellow" test, which was really asking the same question of a hardcoded set.</summary>
+    public bool Knows(TeamId team) => !team.IsNone && Teams.Contains(team);
 
-    public int GetTeamScore(GameTeamColor team) => IsRealTeam(team) ? _scoreByTeam[(int)team] : 0;
+    public TeamId GetTeam(PlayerId playerId) =>
+        _teamByPlayer.TryGetValue(playerId, out TeamId team) ? team : TeamId.None;
 
-    public int GetTeamMemberCount(GameTeamColor team)
+    public int GetTeamScore(TeamId team) =>
+        Knows(team) && _scoreByTeam.TryGetValue(team, out int score) ? score : 0;
+
+    public int GetTeamMemberCount(TeamId team)
     {
         int count = 0;
 
-        foreach (GameTeamColor value in _teamByPlayer.Values)
+        foreach (TeamId value in _teamByPlayer.Values)
         {
             if (value == team)
             {
@@ -54,15 +57,15 @@ public sealed class GameTeamBook
         return count;
     }
 
-    /// <summary>How many of the layout's teams currently have at least one member — what a game
-    /// checks before arming an "only one team left standing" win condition.</summary>
-    public int GetOccupiedTeamCount(TeamLayout layout)
+    /// <summary>How many of the set's teams currently have at least one member — what a game checks
+    /// before arming an "only one team left standing" win condition.</summary>
+    public int GetOccupiedTeamCount()
     {
         int occupied = 0;
 
-        foreach (GameTeamColor colour in layout.Colours)
+        foreach (TeamId team in Teams.Ids())
         {
-            if (GetTeamMemberCount(colour) > 0)
+            if (GetTeamMemberCount(team) > 0)
             {
                 occupied++;
             }
@@ -71,16 +74,16 @@ public sealed class GameTeamBook
         return occupied;
     }
 
-    public IReadOnlyList<PlayerId> GetPlayersInTeam(GameTeamColor team)
+    public IReadOnlyList<PlayerId> GetPlayersInTeam(TeamId team)
     {
         List<PlayerId> players = [];
 
-        if (!IsRealTeam(team))
+        if (!Knows(team))
         {
             return players;
         }
 
-        foreach ((PlayerId playerId, GameTeamColor value) in _teamByPlayer)
+        foreach ((PlayerId playerId, TeamId value) in _teamByPlayer)
         {
             if (value == team)
             {
@@ -91,21 +94,21 @@ public sealed class GameTeamBook
         return players;
     }
 
-    /// <summary>The layout's least-populated team (ties resolve to the layout's own order). Used by
-    /// the "join balanced team" option of the wired join-team action.</summary>
-    public GameTeamColor GetSmallestTeam(TeamLayout layout)
+    /// <summary>The least-populated team (ties resolve to the set's own order). Used by the "join
+    /// balanced team" option of the wired join-team action.</summary>
+    public TeamId GetSmallestTeam()
     {
-        GameTeamColor smallest = GameTeamColor.None;
+        TeamId smallest = TeamId.None;
         int smallestCount = int.MaxValue;
 
-        foreach (GameTeamColor colour in layout.Colours)
+        foreach (TeamId team in Teams.Ids())
         {
-            int count = GetTeamMemberCount(colour);
+            int count = GetTeamMemberCount(team);
 
             if (count < smallestCount)
             {
                 smallestCount = count;
-                smallest = colour;
+                smallest = team;
             }
         }
 
@@ -114,9 +117,9 @@ public sealed class GameTeamBook
 
     /// <summary>Puts the player on <paramref name="team"/>, leaving any previous team. Returns true
     /// when the membership actually changed, i.e. the caller should broadcast the new team aura.</summary>
-    public bool JoinTeam(PlayerId playerId, GameTeamColor team)
+    public bool JoinTeam(PlayerId playerId, TeamId team)
     {
-        if (!IsRealTeam(team) || GetTeam(playerId) == team)
+        if (!Knows(team) || GetTeam(playerId) == team)
         {
             return false;
         }
@@ -133,9 +136,9 @@ public sealed class GameTeamBook
     /// per-(box, player) cap is exhausted.</summary>
     public bool TryGiveScoreToPlayerTeam(RoomObjectId box, PlayerId playerId, int amount, int cap)
     {
-        GameTeamColor team = GetTeam(playerId);
+        TeamId team = GetTeam(playerId);
 
-        if (team == GameTeamColor.None || !TryConsumeUse(_giveScoreUses, (box, playerId), cap))
+        if (team.IsNone || !TryConsumeUse(_giveScoreUses, (box, playerId), cap))
         {
             return false;
         }
@@ -146,9 +149,9 @@ public sealed class GameTeamBook
     }
 
     /// <summary>Awards points to a fixed team. False when the per-box cap is exhausted.</summary>
-    public bool TryGiveScoreToTeam(RoomObjectId box, GameTeamColor team, int amount, int cap)
+    public bool TryGiveScoreToTeam(RoomObjectId box, TeamId team, int amount, int cap)
     {
-        if (!IsRealTeam(team) || !TryConsumeUse(_giveTeamScoreUses, box, cap))
+        if (!Knows(team) || !TryConsumeUse(_giveTeamScoreUses, box, cap))
         {
             return false;
         }
@@ -194,38 +197,41 @@ public sealed class GameTeamBook
     /// would empty the arena.</summary>
     public void ResetScores()
     {
-        Array.Clear(_scoreByTeam);
+        _scoreByTeam.Clear();
         _giveScoreUses.Clear();
         _giveTeamScoreUses.Clear();
     }
 
     /// <summary>Awards (or deducts) points with no cap accounting — the path game rules score
-    /// through. Team scores floor at 0. Ignored for <see cref="GameTeamColor.None"/>.</summary>
-    public void AddScore(GameTeamColor team, int amount)
+    /// through. Team scores floor at 0. Ignored for a team this book does not know.</summary>
+    public void AddScore(TeamId team, int amount)
     {
-        if (!IsRealTeam(team))
+        if (!Knows(team))
         {
             return;
         }
 
-        long updated = (long)_scoreByTeam[(int)team] + amount;
+        long updated = (long)GetTeamScore(team) + amount;
 
-        _scoreByTeam[(int)team] = (int)Math.Clamp(updated, 0, int.MaxValue);
+        _scoreByTeam[team] = (int)Math.Clamp(updated, 0, int.MaxValue);
     }
 
-    /// <summary>The team with the highest score, or <see cref="GameTeamColor.None"/> when nobody has
-    /// scored. Ties resolve to the lowest colour — the order the wired rank condition uses.</summary>
-    public GameTeamColor GetLeadingTeam()
+    /// <summary>The team with the highest score, or <see cref="TeamId.None"/> when nobody has scored.
+    /// Ties resolve to the set's own order — which for the Habbo colours is the order the wired rank
+    /// condition uses.</summary>
+    public TeamId GetLeadingTeam()
     {
-        GameTeamColor best = GameTeamColor.None;
+        TeamId best = TeamId.None;
         int bestScore = 0;
 
-        for (int team = (int)GameTeamColor.Red; team <= (int)GameTeamColor.Yellow; team++)
+        foreach (TeamId team in Teams.Ids())
         {
-            if (_scoreByTeam[team] > bestScore)
+            int score = GetTeamScore(team);
+
+            if (score > bestScore)
             {
-                bestScore = _scoreByTeam[team];
-                best = (GameTeamColor)team;
+                bestScore = score;
+                best = team;
             }
         }
 

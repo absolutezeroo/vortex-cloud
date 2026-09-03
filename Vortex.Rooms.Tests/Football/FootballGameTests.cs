@@ -206,7 +206,7 @@ public sealed class FootballGameTests
         PlaceBall(harness, 5, 5);
         PlaceGoal(harness, "red", 8, 5);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
 
         // One goal is a target nobody defends. The refusal is what says so.
         harness.Grain.GameRuntime.PhaseOf(FootballConstants.Game).Should().Be(GamePhase.Idle);
@@ -219,7 +219,7 @@ public sealed class FootballGameTests
         PlaceGoal(harness, "red", 8, 5);
         PlaceGoal(harness, "blue", 2, 5, Rotation.East);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
 
         harness.Grain.GameRuntime.PhaseOf(FootballConstants.Game).Should().Be(GamePhase.Idle);
     }
@@ -235,7 +235,7 @@ public sealed class FootballGameTests
         FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
         await WalkAsync(harness, gate).ConfigureAwait(true);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
 
         await WalkAsync(harness, ball).ConfigureAwait(true);
 
@@ -266,7 +266,7 @@ public sealed class FootballGameTests
         FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
         await WalkAsync(harness, gate).ConfigureAwait(true);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
 
         await WalkAsync(harness, ball).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
@@ -284,12 +284,12 @@ public sealed class FootballGameTests
         PlaceGoal(harness, "red", 9, 5);
         PlaceGoal(harness, "blue", 1, 5, Rotation.East);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
         await WalkAsync(harness, ball).ConfigureAwait(true);
         await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
         int stoppedAt = ball.X;
 
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(stoppedAt, "a ball cannot keep rolling after its match ended");

@@ -24,8 +24,8 @@ using Vortex.Rooms.Grains;
 namespace Vortex.Rooms.Games.Runtime;
 
 /// <summary>
-/// The real <see cref="IRoomGameContext"/>: one per game per room, translating the narrow vocabulary
-/// game modules speak into the room grain's own APIs. It is the only file in the games tree that
+/// The real <see cref="IRoomGameContext"/>: one per ARENA, translating the narrow vocabulary game
+/// modules speak into the room grain's own APIs. It is the only file in the games tree that
 /// knows what a <c>RoomGrain</c> is, which is what keeps every module testable against a fake.
 /// <para>
 /// The room's coordinates, pathfinding, occupancy and collision are used, never reimplemented: a
@@ -36,19 +36,27 @@ namespace Vortex.Rooms.Games.Runtime;
 internal sealed class RoomGameContext(
     RoomGrain roomGrain,
     RoomGameRuntime runtime,
-    GameHost host,
+    ArenaHost host,
     IGameArena arena
 ) : IRoomGameContext
 {
     private readonly RoomGrain _roomGrain = roomGrain;
     private readonly RoomGameRuntime _runtime = runtime;
-    private readonly GameHost _host = host;
+    private readonly ArenaHost _host = host;
 
     public RoomId RoomId => _roomGrain.RoomId;
 
     public ILogger Logger => _roomGrain._logger;
 
-    public GameTeamBook Teams => _runtime.TeamBook;
+    public ArenaId ArenaId => _host.Id;
+
+    /// <summary>This arena's ledger: the room's shared one when the game plays with the room's teams,
+    /// a private one when it defines its own.</summary>
+    public TeamBook Teams => _host.Teams;
+
+    public TeamSet TeamSet => _host.Game.Profile.Teams;
+
+    public HabboTeamPalette Palette => _host.Palette;
 
     public IGameChrome Chrome => _runtime.Chrome;
 
@@ -283,13 +291,14 @@ internal sealed class RoomGameContext(
         _runtime.PublishGameEventAsync(
             evt with
             {
-                Game = _host.Game.Profile.Id,
+                Game = _host.Id.Game,
                 Match = Match,
             },
             ct
         );
 
-    public Task RequestMatchEndAsync(CancellationToken ct) => _runtime.RequestRoundEndAsync(ct);
+    public Task RequestMatchEndAsync(CancellationToken ct) =>
+        _runtime.RequestRoundEndAsync(_host, ct);
 
     public Task<ImmutableDictionary<string, string>> GetConfigAsync(ImmutableArray<string> keys) =>
         _roomGrain._grainFactory.GetServerConfigGrain().GetManyAsync(keys);

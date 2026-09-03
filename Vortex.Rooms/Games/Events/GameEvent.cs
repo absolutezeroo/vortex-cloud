@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Games;
 using Vortex.Rooms.Games.Scoring;
+using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.Events;
 
@@ -46,7 +46,7 @@ public sealed record GameMatchStartedEvent : GameEvent
 /// so a high-score board records what actually happened rather than what is left a moment later.</summary>
 public sealed record GameMatchEndedEvent : GameEvent
 {
-    public required GameMatchResult Result { get; init; }
+    public required MatchOutcome Outcome { get; init; }
 }
 
 /// <summary>A team's score changed, and why.</summary>
@@ -64,7 +64,7 @@ public sealed record GameParticipantJoinedEvent : GameEvent
 {
     public required PlayerId Player { get; init; }
 
-    public required GameTeamColor Team { get; init; }
+    public required TeamId Team { get; init; }
 }
 
 /// <summary>A player left a team, a match or the room.</summary>
@@ -72,7 +72,7 @@ public sealed record GameParticipantLeftEvent : GameEvent
 {
     public required PlayerId Player { get; init; }
 
-    public required GameTeamColor Team { get; init; }
+    public required TeamId Team { get; init; }
 }
 
 /// <summary>A player is out of the current match and cannot act as a participant again until the
@@ -81,7 +81,7 @@ public sealed record GameParticipantEliminatedEvent : GameEvent
 {
     public required PlayerId Player { get; init; }
 
-    public required GameTeamColor Team { get; init; }
+    public required TeamId Team { get; init; }
 }
 
 /// <summary>The arena stopped being playable mid-match — the last goal was picked up, every arena
@@ -92,22 +92,26 @@ public sealed record GameArenaInvalidatedEvent : GameEvent
     public required string Reason { get; init; }
 }
 
-/// <summary>The outcome of a finished match, built the moment it ends — while the final scores are
-/// standing and the participants are still in their teams. Membership read any later is already
-/// shrinking as players walk away.</summary>
-public sealed record GameMatchResult
+/// <summary>
+/// The outcome of a finished match, built the moment it ends — while the final scores are standing
+/// and the participants are still in their teams. Membership read any later is already shrinking as
+/// players walk away.
+/// <para>
+/// Keyed by the game's own teams, not by colour. A Habbo high-score board needs colours; projecting
+/// this outcome onto them is the presentation layer's job, and doing it there is what lets a game
+/// with five teams — or with teams no coloured furni can show — still finish and still be recorded.
+/// </para>
+/// </summary>
+public sealed record MatchOutcome
 {
-    /// <summary>The leading team, or <see cref="GameTeamColor.None"/> on a scoreless match.</summary>
-    public required GameTeamColor WinningTeam { get; init; }
+    /// <summary>The leading team, or <see cref="TeamId.None"/> on a scoreless match.</summary>
+    public required TeamId WinningTeam { get; init; }
 
     /// <summary>Final score per team, zeros included.</summary>
-    public required IReadOnlyDictionary<GameTeamColor, int> Scores { get; init; }
+    public required IReadOnlyDictionary<TeamId, int> Scores { get; init; }
 
     /// <summary>The display names of each team's members at the final whistle.</summary>
-    public required IReadOnlyDictionary<
-        GameTeamColor,
-        IReadOnlyList<string>
-    > MemberNames { get; init; }
+    public required IReadOnlyDictionary<TeamId, IReadOnlyList<string>> MemberNames { get; init; }
 }
 
 /// <summary>

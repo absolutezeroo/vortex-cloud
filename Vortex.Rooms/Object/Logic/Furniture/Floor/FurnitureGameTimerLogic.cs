@@ -9,6 +9,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Events;
+using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
@@ -111,7 +112,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             _gameActive = false;
 
-            await _ctx.Game.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(_ctx.ObjectId, GameId.None, ct);
         }
     }
 
@@ -121,8 +122,11 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             StartCountdown();
 
-            // The game system starts whatever games this room hosts; the button does not name them.
-            await _ctx.Game.StartGameAsync(ct);
+            // The button still names no game. It passes ITSELF, and the framework resolves which of
+            // the room's arenas that means — the one this counter belongs to, the one it stands
+            // beside, or the only one there is. A hall with three arenas and one bare counter starts
+            // nothing rather than all three.
+            await _ctx.Game.StartGameAsync(_ctx.ObjectId, GameId.None, ct);
 
             return;
         }
@@ -203,7 +207,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             _gameActive = false;
 
-            await _ctx.Game.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(_ctx.ObjectId, GameId.None, ct);
 
             IncreaseTimer();
         }

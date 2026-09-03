@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Rooms.Games.Teams;
 using Xunit;
 
@@ -13,109 +12,117 @@ namespace Vortex.Rooms.Tests.Games;
 /// </summary>
 public sealed class TeamGateRulesTests
 {
+    // The four Habbo colours as this game's teams: ordinals 1-4, exactly as HabboTeamPalette.Standard
+    // maps them. Named here so the tests read like the domain and not like a colour enum.
+    private static readonly TeamSet Teams = TeamSet.HabboColours;
+    private static readonly TeamId Red = new(1);
+    private static readonly TeamId Green = new(2);
+    private static readonly TeamId Blue = new(3);
+    private static readonly TeamId Yellow = new(4);
+
     private static readonly PlayerId Alice = new(1);
     private static readonly PlayerId Bob = new(2);
 
     [Fact]
     public void AGateTouch_JoinsTheSharedTeam()
     {
-        GameTeamBook teams = new();
+        TeamBook teams = new(Teams);
 
         TeamGateRules
-            .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true)
+            .Toggle(teams, Teams, Alice, Red, true)
             .Should()
             .Be(TeamGateResult.Joined);
-        teams.GetTeam(Alice).Should().Be(GameTeamColor.Red);
+        teams.GetTeam(Alice).Should().Be(Red);
     }
 
     [Fact]
     public void YourOwnGate_LeavesTheTeam()
     {
-        GameTeamBook teams = new();
-        TeamGateRules.Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true);
+        TeamBook teams = new(Teams);
+        TeamGateRules.Toggle(teams, Teams, Alice, Red, true);
 
         TeamGateRules
-            .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true)
+            .Toggle(teams, Teams, Alice, Red, true)
             .Should()
             .Be(TeamGateResult.Left);
-        teams.GetTeam(Alice).Should().Be(GameTeamColor.None);
+        teams.GetTeam(Alice).Should().Be(TeamId.None);
     }
 
     [Fact]
     public void AnotherGate_SwitchesTeams()
     {
-        GameTeamBook teams = new();
-        TeamGateRules.Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true);
+        TeamBook teams = new(Teams);
+        TeamGateRules.Toggle(teams, Teams, Alice, Red, true);
 
         TeamGateRules
-            .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Blue, true)
+            .Toggle(teams, Teams, Alice, Blue, true)
             .Should()
             .Be(TeamGateResult.Joined);
-        teams.GetTeam(Alice).Should().Be(GameTeamColor.Blue);
-        teams.GetTeamMemberCount(GameTeamColor.Red).Should().Be(0);
+        teams.GetTeam(Alice).Should().Be(Blue);
+        teams.GetTeamMemberCount(Red).Should().Be(0);
     }
 
     [Fact]
     public void AFullTeam_RejectsTheJoin_WithoutStrippingMembership()
     {
-        TeamLayout oneEach = TeamLayout.FourColours with { Capacity = 1 };
-        GameTeamBook teams = new();
-        TeamGateRules.Toggle(teams, oneEach, Alice, GameTeamColor.Red, true);
-        TeamGateRules.Toggle(teams, oneEach, Bob, GameTeamColor.Blue, true);
+        TeamSet oneEach = Teams.WithCapacity(1);
+        TeamBook teams = new(Teams);
+        TeamGateRules.Toggle(teams, oneEach, Alice, Red, true);
+        TeamGateRules.Toggle(teams, oneEach, Bob, Blue, true);
 
         TeamGateRules
-            .Toggle(teams, oneEach, Bob, GameTeamColor.Red, true)
+            .Toggle(teams, oneEach, Bob, Red, true)
             .Should()
             .Be(TeamGateResult.None);
-        teams.GetTeam(Bob).Should().Be(GameTeamColor.Blue, "a rejected switch changes nothing");
+        teams.GetTeam(Bob).Should().Be(Blue, "a rejected switch changes nothing");
     }
 
     [Fact]
     public void ZeroCapacity_MeansUnlimited()
     {
-        TeamLayout unlimited = TeamLayout.FourColours with { Capacity = 0 };
-        GameTeamBook teams = new();
+        TeamSet unlimited = Teams.WithCapacity(0);
+        TeamBook teams = new(Teams);
 
         for (int i = 1; i <= 30; i++)
         {
             TeamGateRules
-                .Toggle(teams, unlimited, new PlayerId(i), GameTeamColor.Green, true)
+                .Toggle(teams, unlimited, new PlayerId(i), Green, true)
                 .Should()
                 .Be(TeamGateResult.Joined);
         }
 
-        teams.GetTeamMemberCount(GameTeamColor.Green).Should().Be(30);
+        teams.GetTeamMemberCount(Green).Should().Be(30);
     }
 
     [Fact]
     public void GatesAreDead_WhileAMatchRuns()
     {
-        GameTeamBook teams = new();
+        TeamBook teams = new(Teams);
 
         TeamGateRules
             .Toggle(
                 teams,
-                TeamLayout.FourColours,
+                Teams,
                 Alice,
-                GameTeamColor.Red,
+                Red,
                 acceptingPlayers: false
             )
             .Should()
             .Be(TeamGateResult.None);
-        teams.GetTeam(Alice).Should().Be(GameTeamColor.None);
+        teams.GetTeam(Alice).Should().Be(TeamId.None);
     }
 
     [Fact]
     public void AColourTheLayoutDoesNotUse_IsRefused()
     {
-        TeamLayout twoTeams = TeamLayout.FourColours with
+        TeamSet twoTeams = Teams with
         {
-            Colours = [GameTeamColor.Red, GameTeamColor.Blue],
+            Colours = [Red, Blue],
         };
-        GameTeamBook teams = new();
+        TeamBook teams = new(Teams);
 
         TeamGateRules
-            .Toggle(teams, twoTeams, Alice, GameTeamColor.Yellow, true)
+            .Toggle(teams, twoTeams, Alice, Yellow, true)
             .Should()
             .Be(TeamGateResult.None);
     }

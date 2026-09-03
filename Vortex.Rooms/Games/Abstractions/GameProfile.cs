@@ -17,8 +17,20 @@ public sealed record GameProfile
 {
     public required GameId Id { get; init; }
 
-    /// <summary>Which team colours this game plays with, and how many fit in one.</summary>
-    public TeamLayout Teams { get; init; } = TeamLayout.FourColours;
+    /// <summary>The teams this game plays with. Any number of them, named by the game — the four
+    /// Habbo colours only because the shipped games' arenas are built from the four coloured furni
+    /// families, not because the framework counts to four.</summary>
+    public TeamSet Teams { get; init; } = TeamSet.HabboColours;
+
+    /// <summary>
+    /// How far apart two of this game's furni must be to count as two separate installations, in
+    /// tiles. 0 — the default, and what every Habbo game uses — means the game forms ONE arena per
+    /// room: the client has no way to address a second board, so one <c>bb_score_r</c> shows one red
+    /// score and one counter starts one game. A game that genuinely supports several playfields in a
+    /// room sets the gap that separates them, and the framework partitions its furniture and hosts an
+    /// independent match on each.
+    /// </summary>
+    public int ArenaSeparation { get; init; }
 
     /// <summary>Rounds per match. 1 for every Habbo room game shipped today; the loop back from
     /// <see cref="GamePhase.RoundEnding"/> to <see cref="GamePhase.Preparing"/> exists so a game that

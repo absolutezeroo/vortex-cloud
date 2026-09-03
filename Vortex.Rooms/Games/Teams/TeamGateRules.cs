@@ -1,13 +1,12 @@
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 
 namespace Vortex.Rooms.Games.Teams;
 
 /// <summary>What stepping on a team gate did.</summary>
 public enum TeamGateResult
 {
-    /// <summary>Nothing: the match is under way, the colour is not one this game plays, or the team
-    /// is full.</summary>
+    /// <summary>Nothing: the match is under way, the gate names a team this game does not play, or
+    /// the team is full.</summary>
     None = 0,
 
     Joined = 1,
@@ -33,14 +32,14 @@ public static class TeamGateRules
     /// <param name="acceptingPlayers">Whether the game is between matches. Gates are inert during
     /// one — a player cannot change sides mid-match.</param>
     public static TeamGateResult Toggle(
-        GameTeamBook teams,
-        TeamLayout layout,
+        TeamBook teams,
+        TeamSet layout,
         PlayerId playerId,
-        GameTeamColor team,
+        TeamId team,
         bool acceptingPlayers
     )
     {
-        if (!acceptingPlayers || !layout.Uses(team) || !GameTeamBook.IsRealTeam(team))
+        if (!acceptingPlayers || !layout.Contains(team) || !teams.Knows(team))
         {
             return TeamGateResult.None;
         }
@@ -52,7 +51,9 @@ public static class TeamGateRules
             return TeamGateResult.Left;
         }
 
-        if (layout.Capacity > 0 && teams.GetTeamMemberCount(team) >= layout.Capacity)
+        int capacity = layout.CapacityOf(team);
+
+        if (capacity > 0 && teams.GetTeamMemberCount(team) >= capacity)
         {
             return TeamGateResult.None;
         }

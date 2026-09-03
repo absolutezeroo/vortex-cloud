@@ -43,7 +43,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     private readonly PriorityQueue<TileReset, long> _resets = new();
 
     private FreezeSettings _settings = FreezeSettings.Default;
-    private TeamLayout _layout = TeamLayout.FourColours;
+    private TeamSet _teams = TeamSet.HabboColours;
 
     // The 1 s freeze/shield countdown inside the 50 ms room tick. Not readonly — GameCadence is a
     // mutable struct; a readonly field would silently advance a copy.
@@ -55,7 +55,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     private bool _endEarlyArmed;
 
     public override GameProfile Profile { get; } =
-        new() { Id = FreezeConstants.Game, Teams = TeamLayout.FourColours };
+        new() { Id = FreezeConstants.Game, Teams = TeamSet.HabboColours };
 
     /// <summary>A snowball in flight. The match id is what makes it impossible for a blast to land in
     /// a match that did not throw it.</summary>
@@ -85,11 +85,9 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
         _settings = await FreezeConfig.ResolveAsync(_context);
-        _layout = TeamLayout.FourColours with
-        {
-            Capacity = _settings.MaxPlayersPerTeam,
-            MinimumTeams = 2,
-        };
+        _teams = TeamSet
+            .HabboColours.WithCapacity(_settings.MaxPlayersPerTeam)
+            .WithMinimumTeams(2);
 
         _blasts.Clear();
         _resets.Clear();
@@ -101,7 +99,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
 
     public override async Task OnStartedAsync(GameMatch match, CancellationToken ct)
     {
-        _endEarlyArmed = _roster.LivingTeamCount() >= _layout.MinimumTeams;
+        _endEarlyArmed = _roster.LivingTeamCount() >= _teams.MinimumTeams;
 
         foreach ((PlayerId playerId, FreezePlayerState player) in _roster.Players)
         {
@@ -238,10 +236,14 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
         CancellationToken ct
     )
     {
+        // A gate is painted one of the four colours; which of THIS game's teams that is, is the
+        // palette's answer and nobody else's.
+        TeamId team = _context.Palette.TeamOf(gate.Team);
+
         TeamGateResult result = _roster.ToggleGate(
-            _layout,
+            _teams,
             playerId,
-            gate.Team,
+            team,
             acceptingPlayers: !HasMatch,
             _settings
         );
@@ -259,8 +261,8 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
 
         await _context.PublishAsync(
             result == TeamGateResult.Joined
-                ? new GameParticipantJoinedEvent { Player = playerId, Team = gate.Team }
-                : new GameParticipantLeftEvent { Player = playerId, Team = gate.Team },
+                ? new GameParticipantJoinedEvent { Player = playerId, Team = team }
+                : new GameParticipantLeftEvent { Player = playerId, Team = team },
             ct
         );
 
@@ -276,7 +278,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             return;
         }
 
-        GameTeamColor team = _context.Teams.GetTeam(playerId);
+        TeamId team = _context.Teams.GetTeam(playerId);
 
         _context.Chrome.UnlockMovement(playerId);
         await _context.Chrome.ClearEffectAsync(playerId);
@@ -618,7 +620,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
     {
         foreach (ITeamGateComponent gate in _context.Arena.ComponentsOf<ITeamGateComponent>())
         {
-            await gate.SetStateAsync(_roster.LivingCount(gate.Team));
+            await gate.SetStateAsync(_roster.LivingCount(_context.Palette.TeamOf(gate.Team)));
         }
     }
 }

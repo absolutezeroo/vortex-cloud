@@ -59,10 +59,10 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     private readonly Dictionary<RoomObjectId, BallMotion> _balls = [];
 
     private FootballSettings _settings = FootballSettings.Default;
-    private TeamLayout _layout = TeamLayout.FourColours;
+    private TeamSet _teams = TeamSet.HabboColours;
 
     public override GameProfile Profile { get; } =
-        new() { Id = FootballConstants.Game, Teams = TeamLayout.FourColours };
+        new() { Id = FootballConstants.Game, Teams = TeamSet.HabboColours };
 
     // ---- validation --------------------------------------------------------
 
@@ -86,7 +86,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
         _settings = await FootballConfig.ResolveAsync(_context);
-        _layout = TeamLayout.FourColours with { Capacity = _settings.MaxPlayersPerTeam };
+        _teams = TeamSet.HabboColours.WithCapacity(_settings.MaxPlayersPerTeam);
 
         _balls.Clear();
 
@@ -299,7 +299,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         {
             await _context.ScoreAsync(
                 new GameScore(
-                    goal.Team,
+                    _context.Palette.TeamOf(goal.Team),
                     motion.LastKicker,
                     _settings.GoalPoints,
                     FootballScoreReasons.Goal,
@@ -313,7 +313,9 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
                 {
                     Team = goal.Team,
                     Kicker = motion.LastKicker,
-                    KickerTeam = _context.Teams.GetTeam(motion.LastKicker),
+                    KickerTeam = _context.Palette.ColourOf(
+                        _context.Teams.GetTeam(motion.LastKicker)
+                    ),
                     Goal = goal.ObjectId,
                 },
                 ct
@@ -519,7 +521,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
 
         foreach (IGoalComponent goal in _context.Arena.ComponentsOf<IGoalComponent>())
         {
-            if (GameTeamBook.IsRealTeam(goal.Team))
+            if (HabboTeamPalette.IsColour(goal.Team))
             {
                 seen.Add(goal.Team);
             }
@@ -534,11 +536,15 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         CancellationToken ct
     )
     {
+        // A gate is painted one of the four colours; which of THIS game's teams that is, is the
+        // palette's answer and nobody else's.
+        TeamId team = _context.Palette.TeamOf(gate.Team);
+
         TeamGateResult result = TeamGateRules.Toggle(
             _context.Teams,
-            _layout,
+            _teams,
             playerId,
-            gate.Team,
+            team,
             acceptingPlayers: !HasMatch
         );
 
@@ -555,8 +561,8 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
 
         await _context.PublishAsync(
             result == TeamGateResult.Joined
-                ? new GameParticipantJoinedEvent { Player = playerId, Team = gate.Team }
-                : new GameParticipantLeftEvent { Player = playerId, Team = gate.Team },
+                ? new GameParticipantJoinedEvent { Player = playerId, Team = team }
+                : new GameParticipantLeftEvent { Player = playerId, Team = team },
             ct
         );
 
@@ -655,7 +661,9 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     {
         foreach (ITeamGateComponent gate in _context.Arena.ComponentsOf<ITeamGateComponent>())
         {
-            await gate.SetStateAsync(_context.Teams.GetTeamMemberCount(gate.Team));
+            await gate.SetStateAsync(
+                _context.Teams.GetTeamMemberCount(_context.Palette.TeamOf(gate.Team))
+            );
         }
     }
 }

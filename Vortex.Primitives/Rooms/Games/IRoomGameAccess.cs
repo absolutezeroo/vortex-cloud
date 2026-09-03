@@ -56,12 +56,23 @@ public interface IRoomGameAccess
     /// <summary>Releases a movement lock (wired unfreeze-user, a thaw, a match ending).</summary>
     void UnlockMovement(PlayerId playerId);
 
-    /// <summary>Starts a match in every game whose arena validates. Called by the game-timer furni's
-    /// button and by the wired control-clock action; neither of them names a game.</summary>
-    Task StartGameAsync(CancellationToken ct);
+    /// <summary>
+    /// Starts ONE match: the arena this request resolves to. Called by the game-timer furni's button
+    /// and by the wired control-clock action — neither of which names a game, and neither of which
+    /// has to: <paramref name="source"/> is the furni asking, and the framework resolves the arena
+    /// from it (the arena the furni belongs to, else the arena it stands nearest to, else the only
+    /// one there is). A room with several arenas and nothing to choose between them starts nothing
+    /// and says so, which is the point — this used to start all of them.
+    /// </summary>
+    /// <param name="source">The furni making the request, or default when there isn't one.</param>
+    /// <param name="game">The game to start, when the caller knows it. <see cref="GameId.None"/>
+    /// leaves the choice to the resolver.</param>
+    /// <returns>Whether a match was actually started.</returns>
+    Task<bool> StartGameAsync(RoomObjectId source, GameId game, CancellationToken ct);
 
-    /// <summary>Ends every running match.</summary>
-    Task EndGameAsync(CancellationToken ct);
+    /// <summary>Ends ONE match, resolved the same way — so a counter beside a finished board cannot
+    /// reach across the room and stop the match that is still going.</summary>
+    Task<bool> EndGameAsync(RoomObjectId source, GameId game, CancellationToken ct);
 
     /// <summary>Whether that game has a match in its <see cref="GamePhase.Running"/> phase — what a
     /// team gate reads to go unwalkable mid-match.</summary>

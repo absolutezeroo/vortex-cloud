@@ -1,4 +1,4 @@
-using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Games.Events;
 using Vortex.Rooms.Games.Scoring;
 
@@ -25,7 +25,7 @@ public static class BanzaiScoreReasons
 /// </summary>
 public sealed record BanzaiRegionLockedEvent : GameEvent
 {
-    public required GameTeamColor Team { get; init; }
+    public required TeamId Team { get; init; }
 
     public required int TileCount { get; init; }
 }

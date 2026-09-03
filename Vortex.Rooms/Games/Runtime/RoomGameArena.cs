@@ -19,24 +19,36 @@ namespace Vortex.Rooms.Games.Runtime;
 /// during a match are the tile one.
 /// </para>
 /// </summary>
-internal sealed class RoomGameArena(GameHost host, RoomGrain roomGrain) : IGameArena
+internal sealed class RoomGameArena(ArenaHost host, RoomGrain roomGrain) : IGameArena
 {
-    private readonly GameHost _host = host;
+    private readonly ArenaHost _host = host;
     private readonly RoomGrain _roomGrain = roomGrain;
 
-    /// <summary>Read from the host rather than captured, because the arena has to exist before the
-    /// module that names it does — the module is handed the context the arena belongs to.</summary>
+    /// <summary>Read from the host rather than captured, because the view has to exist before the
+    /// module that names it does — the module is handed the context the view belongs to.</summary>
     public GameId Game => _host.Game is { } game ? game.Profile.Id : GameId.None;
+
+    public ArenaId Id => _host.Id;
+
+    /// <summary>
+    /// Whether a component of this game belongs to THIS installation. For a game that forms one arena
+    /// per room — every Habbo game — the partition is the constant "instance 0" and this compiles down
+    /// to a comparison against zero; for a game that separates its playfields it is a dictionary hit.
+    /// Either way no game ever scans the room.
+    /// </summary>
+    private bool Owns(IGameComponent component) =>
+        component.Game == Game
+        && _roomGrain.GameRuntime.PartitionOf(Game).InstanceOf(component.ObjectId)
+            == _host.Id.Instance;
 
     public IReadOnlyList<TComponent> ComponentsOf<TComponent>()
         where TComponent : class, IGameComponent
     {
         List<TComponent> found = [];
-        GameId game = Game;
 
         foreach (TComponent candidate in _roomGrain._state.ItemIndex.LogicsOf<TComponent>())
         {
-            if (candidate.Game == game)
+            if (Owns(candidate))
             {
                 found.Add(candidate);
             }
@@ -49,11 +61,10 @@ internal sealed class RoomGameArena(GameHost host, RoomGrain roomGrain) : IGameA
         where TComponent : class, IGameComponent
     {
         int count = 0;
-        GameId game = Game;
 
         foreach (IRoomItem item in _roomGrain._state.ItemIndex.ItemsOf<TComponent>())
         {
-            if (item.Logic is TComponent component && component.Game == game)
+            if (item.Logic is TComponent component && Owns(component))
             {
                 count++;
             }
@@ -67,7 +78,7 @@ internal sealed class RoomGameArena(GameHost host, RoomGrain roomGrain) : IGameA
     {
         TComponent? candidate = _roomGrain.MapModule.FirstLogicOnTile<TComponent>(tileIdx);
 
-        return candidate is not null && candidate.Game == Game ? candidate : null;
+        return candidate is not null && Owns(candidate) ? candidate : null;
     }
 
     public List<int> TilesOf<TComponent>()

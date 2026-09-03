@@ -20,11 +20,14 @@ using Xunit;
 namespace Vortex.Rooms.Tests.Games;
 
 /// <summary>
-/// The seam every room game plugs into. The point of it is that nothing which starts or stops a
-/// round — the game-timer furni, the wired control-clock action, the tick loop, the avatar-left
-/// path — names an individual game: they all go through the runtime, which fans out to whatever the
-/// provider handed it. Freeze was once hardcoded at each of those call sites and a wired clock start
-/// reached only half of them; these tests are what stops the next game repeating that.
+/// The seam every room game plugs into. Nothing which starts or stops a round — the game-timer furni,
+/// the wired control-clock action, the tick loop, the avatar-left path — names an individual game:
+/// they all go through the runtime, which resolves ONE arena to act on.
+/// <para>
+/// The resolution is the point. "Start the game" used to mean "start every game whose arena
+/// validates", so one press of one counter in a hall with three arenas kicked off three unrelated
+/// matches. These tests pin the replacement: a start has a target or it does nothing.
+/// </para>
 /// </summary>
 public sealed class RoomGameRuntimeTests
 {
@@ -48,8 +51,35 @@ public sealed class RoomGameRuntimeTests
             );
     }
 
+    /// <summary>An untargeted start, the way a bare counter or a wired clock makes one.</summary>
+    private static Task<bool> StartAsync(RoomHarness harness, string game = "") =>
+        harness.Grain.GameRuntime.StartGameAsync(
+            default,
+            new GameId(game),
+            CancellationToken.None
+        );
+
+    private static Task<bool> EndAsync(RoomHarness harness, string game = "") =>
+        harness.Grain.GameRuntime.EndGameAsync(default, new GameId(game), CancellationToken.None);
+
     [Fact]
-    public async Task StartingTheRound_StartsEveryGameThatValidates()
+    public async Task OneValidGameInTheRoom_StartsOnAnUntargetedRequest()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingGame only = new("only");
+        harness.Grain.GameRuntime.Register(_ => only);
+
+        // The shipped games are hosted too, but none of their arenas validates in an empty room, so
+        // there is exactly one candidate and nothing to be confused about. This is what keeps every
+        // ordinary single-game room behaving as it always did.
+        bool started = await StartAsync(harness).ConfigureAwait(true);
+
+        started.Should().BeTrue();
+        only.Starts.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task SeveralValidGamesAndNothingToChooseBetweenThem_StartsNONEOfThem()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RecordingGame first = new("first");
@@ -57,10 +87,73 @@ public sealed class RoomGameRuntimeTests
         harness.Grain.GameRuntime.Register(_ => first);
         harness.Grain.GameRuntime.Register(_ => second);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        bool started = await StartAsync(harness).ConfigureAwait(true);
 
+        // THE regression this whole change exists for: a hall with a Banzai board, a Freeze rink and
+        // a football pitch answered one press of one counter with three unrelated matches. An
+        // ambiguous room now starts nothing and logs which arenas were in contention.
+        started.Should().BeFalse();
+        first.Starts.Should().Be(0);
+        second.Starts.Should().Be(0);
+        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task NamingTheGame_StartsThatOneAndOnlyThatOne()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingGame first = new("first");
+        RecordingGame second = new("second");
+        harness.Grain.GameRuntime.Register(_ => first);
+        harness.Grain.GameRuntime.Register(_ => second);
+
+        bool started = await StartAsync(harness, "first").ConfigureAwait(true);
+
+        started.Should().BeTrue();
         first.Starts.Should().Be(1);
-        second.Starts.Should().Be(1);
+        second.Starts.Should().Be(0, "an ambiguous room is disambiguated, not fanned out to");
+    }
+
+    [Fact]
+    public async Task StoppingResolvesAgainstWhatIsRunning_AndLeavesTheOtherMatchAlone()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingGame first = new("first");
+        RecordingGame second = new("second");
+        harness.Grain.GameRuntime.Register(_ => first);
+        harness.Grain.GameRuntime.Register(_ => second);
+        await StartAsync(harness, "first").ConfigureAwait(true);
+        await StartAsync(harness, "second").ConfigureAwait(true);
+
+        await EndAsync(harness, "second").ConfigureAwait(true);
+
+        second.RoundEnds.Should().Be(1);
+        first.RoundEnds.Should().Be(0, "stopping one match must not reach across to the other");
+        harness
+            .RoomEvents.OfType<WiredGameEndedEvent>()
+            .Should()
+            .BeEmpty("the room's round is not over while a match is still running");
+    }
+
+    [Fact]
+    public async Task TheRoomsRoundEnds_OnlyWhenTheLastMatchDoes()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingGame first = new("first");
+        RecordingGame second = new("second");
+        harness.Grain.GameRuntime.Register(_ => first);
+        harness.Grain.GameRuntime.Register(_ => second);
+        await StartAsync(harness, "first").ConfigureAwait(true);
+        await StartAsync(harness, "second").ConfigureAwait(true);
+
+        // GAME_STARTS / GAME_ENDS are ROOM-level wired triggers: a second arena kicking off is not a
+        // second round, and the round is not over until the last arena has stopped.
+        harness.RoomEvents.OfType<WiredGameStartedEvent>().Should().ContainSingle();
+
+        await EndAsync(harness, "first").ConfigureAwait(true);
+        await EndAsync(harness, "second").ConfigureAwait(true);
+
+        harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -70,7 +163,7 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first") { RoomEventCount = () => harness.RoomEvents.Count };
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
         // A GAME_STARTS box wired to a give-score action has to have run before a game clears
         // anything: the ordering is what keeps its points from vanishing without a trace.
@@ -88,8 +181,8 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
         game.Starts.Should().Be(1);
     }
@@ -102,9 +195,9 @@ public sealed class RoomGameRuntimeTests
         RecordingGame second = new("second");
         harness.Grain.GameRuntime.Register(_ => first);
         harness.Grain.GameRuntime.Register(_ => second);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
 
         first.RoundEnds.Should().Be(1);
         second.RoundEnds.Should().Be(1);
@@ -118,7 +211,7 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
 
         game.RoundEnds.Should().Be(0);
         harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().BeEmpty();
@@ -129,11 +222,12 @@ public sealed class RoomGameRuntimeTests
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RecordingGame game = new("first");
-        game.OnRoundEnd = ct => harness.Grain.GameRuntime.EndGameAsync(ct);
+        game.OnRoundEnd = ct =>
+            harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, ct);
         harness.Grain.GameRuntime.Register(_ => game);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
 
         game.RoundEnds.Should().Be(1);
         harness.RoomEvents.OfType<WiredGameEndedEvent>().Should().ContainSingle();
@@ -146,8 +240,8 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
 
         game.Phases.Should()
             .Equal(
@@ -168,9 +262,9 @@ public sealed class RoomGameRuntimeTests
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
         // Without this, a callback from the previous round cannot tell it is stale, and the only
         // defence left is remembering to clear every queue at kick-off.
@@ -188,7 +282,7 @@ public sealed class RoomGameRuntimeTests
         };
         harness.Grain.GameRuntime.Register(_ => game);
 
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
         game.Starts.Should().Be(0);
         harness.Grain.GameRuntime.PhaseOf(new GameId("first")).Should().Be(GamePhase.Idle);
@@ -206,10 +300,11 @@ public sealed class RoomGameRuntimeTests
         harness.Grain.GameRuntime.Register(_ => broken);
         harness.Grain.GameRuntime.Register(_ => healthy);
 
-        // Games in a room are independent. A Freeze arena that cannot read its balance config must
+        // Arenas in a room are independent. A Freeze rink that cannot read its balance config must
         // not stop the room's football match from kicking off, and must not throw the failure back
         // at whoever pressed the timer.
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness, "broken").ConfigureAwait(true);
+        await StartAsync(harness, "healthy").ConfigureAwait(true);
 
         healthy.Starts.Should().Be(1);
         broken.Starts.Should().Be(0, "a game that could not set its arena up must not then play");
@@ -227,9 +322,11 @@ public sealed class RoomGameRuntimeTests
         RecordingGame healthy = new("healthy");
         harness.Grain.GameRuntime.Register(_ => broken);
         harness.Grain.GameRuntime.Register(_ => healthy);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness, "broken").ConfigureAwait(true);
+        await StartAsync(harness, "healthy").ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await EndAsync(harness, "broken").ConfigureAwait(true);
+        await EndAsync(harness, "healthy").ConfigureAwait(true);
 
         // A round left half-ended is worse than one that ended noisily: the survivors must wind down.
         healthy.RoundEnds.Should().Be(1);
@@ -241,8 +338,8 @@ public sealed class RoomGameRuntimeTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         ScoringGame? game = null;
         harness.Grain.GameRuntime.Register(ctx => game = new ScoringGame(ctx));
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.EndGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
+        await EndAsync(harness).ConfigureAwait(true);
 
         // "A finished game cannot accept score changes" is enforced by the runtime, not remembered
         // by each module.
@@ -313,7 +410,7 @@ public sealed class RoomGameRuntimeTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RecordingGame game = new("first");
         harness.Grain.GameRuntime.Register(_ => game);
-        await harness.Grain.GameRuntime.StartGameAsync(CancellationToken.None).ConfigureAwait(true);
+        await StartAsync(harness).ConfigureAwait(true);
 
         await harness.Grain.GameRuntime.ShutdownAsync(CancellationToken.None).ConfigureAwait(true);
 
@@ -428,7 +525,13 @@ public sealed class RoomGameRuntimeTests
 
         private Task ScoreAsync(CancellationToken ct) =>
             _context.ScoreAsync(
-                new GameScore(GameTeamColor.Red, default, 5, ScoreReason.Unspecified, default),
+                new GameScore(
+                    _context.Palette.TeamOf(GameTeamColor.Red),
+                    default,
+                    5,
+                    ScoreReason.Unspecified,
+                    default
+                ),
                 ct
             );
     }

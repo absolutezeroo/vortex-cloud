@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vortex.Primitives.Rooms.Enums.Games;
-using Vortex.Rooms.Games.Teams;
+using Vortex.Rooms.Games.Presentation;
 
 namespace Vortex.Rooms.Games.BattleBanzai;
 
@@ -153,7 +153,7 @@ public sealed class BanzaiBoard
     {
         if (
             !IsActive
-            || !GameTeamBook.IsRealTeam(team)
+            || !HabboTeamPalette.IsColour(team)
             || !_stateByTile.TryGetValue(tileIdx, out int state)
             || state == BanzaiConstants.TileOff
             || IsLockedState(state)

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Numerics;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.Freeze;
@@ -11,16 +9,16 @@ namespace Vortex.Rooms.Games.Freeze;
 /// timers. Pure rules with no IO, so the whole roster is unit-testable without a room; the module
 /// turns what it returns into effects, teleports and score.
 /// <para>
-/// Membership is mirrored into the room's shared <see cref="GameTeamBook"/> rather than kept only
+/// Membership is mirrored into the arena's <see cref="TeamBook"/> rather than kept only
 /// here, because every wired team leaf reads that one: a Freeze player has to be a team member as
 /// far as <c>wf_cnd_actor_in_team</c>, <c>wf_slc_users_team</c> and the team score and rank
 /// conditions are concerned. What lives here is the state the shared ledger has no concept of.
 /// </para>
 /// </summary>
-public sealed class FreezeRoster(GameTeamBook teams)
+public sealed class FreezeRoster(TeamBook teams)
 {
     private readonly Dictionary<PlayerId, FreezePlayerState> _players = [];
-    private readonly GameTeamBook _teams = teams;
+    private readonly TeamBook _teams = teams;
 
     public IReadOnlyDictionary<PlayerId, FreezePlayerState> Players => _players;
 
@@ -29,7 +27,7 @@ public sealed class FreezeRoster(GameTeamBook teams)
 
     /// <summary>Living members of a team — what a gate's counter shows and what the last-team-standing
     /// check counts.</summary>
-    public int LivingCount(GameTeamColor team)
+    public int LivingCount(TeamId team)
     {
         int count = 0;
 
@@ -44,20 +42,22 @@ public sealed class FreezeRoster(GameTeamBook teams)
         return count;
     }
 
-    /// <summary>How many distinct teams still have at least one living player.</summary>
+    /// <summary>How many distinct teams still have at least one living player. A set rather than a
+    /// bit mask, because a game's teams are however many it declared and not however many fit in an
+    /// int.</summary>
     public int LivingTeamCount()
     {
-        int mask = 0;
+        HashSet<TeamId> alive = [];
 
         foreach (FreezePlayerState player in _players.Values)
         {
-            if (!player.Dead && GameTeamBook.IsRealTeam(player.Team))
+            if (!player.Dead && _teams.Knows(player.Team))
             {
-                mask |= 1 << (int)player.Team;
+                alive.Add(player.Team);
             }
         }
 
-        return BitOperations.PopCount((uint)mask);
+        return alive.Count;
     }
 
     /// <summary>
@@ -66,14 +66,14 @@ public sealed class FreezeRoster(GameTeamBook teams)
     /// membership they had.
     /// </summary>
     public TeamGateResult ToggleGate(
-        TeamLayout layout,
+        TeamSet layout,
         PlayerId playerId,
-        GameTeamColor team,
+        TeamId team,
         bool acceptingPlayers,
         FreezeSettings settings
     )
     {
-        if (!acceptingPlayers || !layout.Uses(team) || !GameTeamBook.IsRealTeam(team))
+        if (!acceptingPlayers || !layout.Contains(team) || !_teams.Knows(team))
         {
             return TeamGateResult.None;
         }
@@ -88,7 +88,9 @@ public sealed class FreezeRoster(GameTeamBook teams)
             return TeamGateResult.Left;
         }
 
-        if (layout.Capacity > 0 && LivingCount(team) >= layout.Capacity)
+        int capacity = layout.CapacityOf(team);
+
+        if (capacity > 0 && LivingCount(team) >= capacity)
         {
             return TeamGateResult.None;
         }

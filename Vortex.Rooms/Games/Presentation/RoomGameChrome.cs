@@ -7,7 +7,6 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Protocol.Messages.Outgoing.Room.Session;
-using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
@@ -51,7 +50,7 @@ public sealed class RoomGameChrome(RoomGrain roomGrain) : IGameChrome
     public Task BroadcastTeamAuraAsync(PlayerId playerId, GameAuraSet aura, GameTeamColor team) =>
         BroadcastEffectAsync(
             playerId,
-            GameTeamBook.IsRealTeam(team) ? (int)aura + (int)team : NoEffect
+            HabboTeamPalette.IsColour(team) ? (int)aura + (int)team : NoEffect
         );
 
     public Task ClearEffectAsync(PlayerId playerId) => BroadcastEffectAsync(playerId, NoEffect);

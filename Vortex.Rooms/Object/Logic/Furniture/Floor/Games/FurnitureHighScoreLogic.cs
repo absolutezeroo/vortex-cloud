@@ -9,7 +9,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
-using Vortex.Rooms.Games.Events;
+using Vortex.Rooms.Games.Presentation;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 

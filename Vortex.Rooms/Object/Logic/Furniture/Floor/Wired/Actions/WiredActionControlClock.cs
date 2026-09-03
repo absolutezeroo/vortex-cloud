@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
@@ -71,17 +72,17 @@ public class WiredActionControlClock(
             }
         }
 
-        // Starting the counter starts the room game (GAME_STARTS); stopping or resetting it ends the
-        // game (GAME_ENDS). Both are idempotent, so pause/resume leave the game state untouched. The
-        // game system carries the round on to whichever games the room hosts — a wired clock is the
-        // other half of the timer furni's own start/stop button, and it used to move only half of it.
+        // Starting the counter starts a game (GAME_STARTS); stopping or resetting it ends one
+        // (GAME_ENDS). Pause/resume leave the game state untouched. Which game is resolved from this
+        // box's own position, exactly as the timer furni's button is — a wired clock is the other
+        // half of that button, and neither of them names a game.
         if (control == ControlStart)
         {
-            await _ctx.Game.StartGameAsync(ct);
+            await _ctx.Game.StartGameAsync(_ctx.ObjectId, GameId.None, ct);
         }
         else if (control is ControlStop or ControlReset)
         {
-            await _ctx.Game.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(_ctx.ObjectId, GameId.None, ct);
         }
 
         return true;

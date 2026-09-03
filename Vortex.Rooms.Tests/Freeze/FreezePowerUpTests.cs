@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Games.Freeze;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace Vortex.Rooms.Tests.Freeze;
 public sealed class FreezePowerUpTests
 {
     private static FreezePlayerState Player() =>
-        new((PlayerId)1, GameTeamColor.Red, FreezeSettings.Default);
+        new((PlayerId)1, new TeamId(1), FreezeSettings.Default);
 
     [Fact]
     public void ExtraSnowball_Adds_Ammo()

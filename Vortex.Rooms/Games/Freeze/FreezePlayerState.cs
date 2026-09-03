@@ -1,6 +1,6 @@
 using System;
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.Freeze;
 
@@ -13,7 +13,7 @@ namespace Vortex.Rooms.Games.Freeze;
 /// </summary>
 public sealed class FreezePlayerState(
     PlayerId playerId,
-    GameTeamColor team,
+    TeamId team,
     FreezeSettings settings
 )
 {
@@ -22,7 +22,7 @@ public sealed class FreezePlayerState(
     private FreezeSettings _settings = settings;
 
     public PlayerId PlayerId { get; } = playerId;
-    public GameTeamColor Team { get; } = team;
+    public TeamId Team { get; } = team;
 
     public int Lives { get; private set; } = settings.StartLives;
     public int Snowballs { get; private set; } = settings.StartSnowballs;

@@ -128,9 +128,17 @@ public sealed partial class RoomGrain
     IReadOnlyList<PlayerId> IRoomGameAccess.GetPlayersInTeam(GameTeamColor team) =>
         GameRuntime.GetPlayersInTeam(team);
 
-    Task IRoomGameAccess.StartGameAsync(CancellationToken ct) => GameRuntime.StartGameAsync(ct);
+    Task<bool> IRoomGameAccess.StartGameAsync(
+        RoomObjectId source,
+        GameId game,
+        CancellationToken ct
+    ) => GameRuntime.StartGameAsync(source, game, ct);
 
-    Task IRoomGameAccess.EndGameAsync(CancellationToken ct) => GameRuntime.EndGameAsync(ct);
+    Task<bool> IRoomGameAccess.EndGameAsync(
+        RoomObjectId source,
+        GameId game,
+        CancellationToken ct
+    ) => GameRuntime.EndGameAsync(source, game, ct);
 
     Task IRoomGameAccess.JoinTeamAsync(
         PlayerId playerId,

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Players;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.Scoring;
 
@@ -28,25 +28,26 @@ public readonly record struct ScoreReason(string Value)
 /// achievement and analytics work that comes later has something to subscribe to instead of a diff
 /// between two integers.
 /// </summary>
-/// <param name="Team">The team credited. <see cref="GameTeamColor.None"/> is a no-op, not an error —
-/// a teamless player triggering a scoring act simply scores nothing.</param>
+/// <param name="Team">The team credited, in the GAME's own terms — never a colour. A team the
+/// scoring book does not know (<see cref="TeamId.None"/> included) is a no-op, not an error: a
+/// teamless player triggering a scoring act simply scores nothing.</param>
 /// <param name="Player">Who caused it, where that is meaningful. Default when nobody did.</param>
 /// <param name="Amount">Points, positive or negative. The team total floors at zero.</param>
 /// <param name="Reason">The scoring act.</param>
 /// <param name="Source">The furni that caused it, where there is one.</param>
 public readonly record struct GameScore(
-    GameTeamColor Team,
+    TeamId Team,
     PlayerId Player,
     int Amount,
     ScoreReason Reason,
     RoomObjectId Source
 )
 {
-    public static GameScore For(GameTeamColor team, int amount, ScoreReason reason) =>
+    public static GameScore For(TeamId team, int amount, ScoreReason reason) =>
         new(team, default, amount, reason, default);
 
     public static GameScore By(
-        GameTeamColor team,
+        TeamId team,
         PlayerId player,
         int amount,
         ScoreReason reason

@@ -80,7 +80,7 @@ public sealed class GameDiagnosticsSink(ILogger logger) : IGameEventSink
                     "[game {Game} match {Match}] finished, winner {Winner}",
                     evt.Game,
                     evt.Match,
-                    ended.Result.WinningTeam
+                    ended.Outcome.WinningTeam
                 );
                 break;
         }

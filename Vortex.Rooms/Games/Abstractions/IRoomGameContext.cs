@@ -35,9 +35,21 @@ public interface IRoomGameContext
 
     ILogger Logger { get; }
 
-    /// <summary>The room's shared team + score ledger. Read freely; write through
+    /// <summary>Which installation of this game the module is running. Two boards of one game in a
+    /// room are two modules with two of these.</summary>
+    ArenaId ArenaId { get; }
+
+    /// <summary>This arena's team + score ledger, in the game's OWN teams. Read freely; write through
     /// <see cref="ScoreAsync"/> so the score event fires.</summary>
-    GameTeamBook Teams { get; }
+    TeamBook Teams { get; }
+
+    /// <summary>The teams this game declared, which is what its ledger is keyed by.</summary>
+    TeamSet TeamSet { get; }
+
+    /// <summary>How this game's teams map onto the four Habbo colours. Needed exactly where the game
+    /// meets coloured furniture or a coloured aura — a gate reports the colour it is painted, and the
+    /// module turns it into one of its own teams here — and nowhere else.</summary>
+    HabboTeamPalette Palette { get; }
 
     IGameChrome Chrome { get; }
 

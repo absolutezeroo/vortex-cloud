@@ -9,7 +9,6 @@ using Vortex.Primitives.Rooms.Games.Components;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Rooms.Games.Events;
-using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 
@@ -72,7 +71,7 @@ public sealed class GameScoreboardPresenter(RoomGrain roomGrain) : IRoomEventLis
             IScoreDisplayComponent board in _roomGrain._state.ItemIndex.LogicsOf<IScoreDisplayComponent>()
         )
         {
-            if (GameTeamBook.IsRealTeam(board.Team))
+            if (HabboTeamPalette.IsColour(board.Team))
             {
                 await board.SetStateAsync(_roomGrain.GameRuntime.GetTeamScore(board.Team));
             }
@@ -106,16 +105,17 @@ public sealed class GameScoreboardPresenter(RoomGrain roomGrain) : IRoomEventLis
         }
     }
 
+    /// <summary>
+    /// Projects the room's ledger onto the four Habbo colours for the boards, which is the only shape
+    /// a <c>highscore_*</c> furni can record. This walk over the four IS a Habbo enumeration and
+    /// belongs here: it is asking "what can the boards show", not "what teams exist".
+    /// </summary>
     private GameMatchResult BuildRoundResult()
     {
         Dictionary<GameTeamColor, int> scores = [];
         Dictionary<GameTeamColor, IReadOnlyList<string>> names = [];
 
-        for (
-            GameTeamColor team = GameTeamColor.Red;
-            team <= GameTeamColor.Yellow;
-            team = (GameTeamColor)((int)team + 1)
-        )
+        foreach (GameTeamColor team in HabboTeamPalette.Colours)
         {
             scores[team] = _roomGrain.GameRuntime.GetTeamScore(team);
 

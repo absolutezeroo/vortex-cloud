@@ -17,6 +17,11 @@ public interface IGameArena
 {
     GameId Game { get; }
 
+    /// <summary>Which installation of that game this view is. Two Banzai boards in one room are two
+    /// views with the same <see cref="Game"/> and different ids, and neither can see the other's
+    /// furniture.</summary>
+    ArenaId Id { get; }
+
     /// <summary>Every component of this game playing <typeparamref name="TComponent"/>'s role. A
     /// materialised snapshot: safe to iterate across an await that changes the room.</summary>
     IReadOnlyList<TComponent> ComponentsOf<TComponent>()

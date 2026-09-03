@@ -45,7 +45,7 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
     private readonly PriorityQueue<RoomObjectId, long> _teleportResets = new();
 
     private BanzaiSettings _settings = BanzaiSettings.Default;
-    private TeamLayout _layout = TeamLayout.FourColours;
+    private TeamSet _teams = TeamSet.HabboColours;
     private FlickerJob? _flicker;
     private GameCadence _endCheck = new(1000);
 
@@ -53,7 +53,7 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         new()
         {
             Id = BanzaiConstants.Game,
-            Teams = TeamLayout.FourColours,
+            Teams = TeamSet.HabboColours,
             RoundEndMs = BanzaiConstants.RoundEndMs,
         };
 
@@ -85,7 +85,7 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
         _settings = await BanzaiConfig.ResolveAsync(_context);
-        _layout = TeamLayout.FourColours with { Capacity = _settings.MaxPlayersPerTeam };
+        _teams = TeamSet.HabboColours.WithCapacity(_settings.MaxPlayersPerTeam);
 
         _pendingPaints.Clear();
         _flicker = null;
@@ -115,7 +115,9 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
 
     public override async Task OnRoundEndingAsync(GameMatch match, CancellationToken ct)
     {
-        GameTeamColor winner = _context.Teams.GetLeadingTeam();
+        // The board paints in Habbo colours because a bb_patch's wire state IS the colour; the
+        // winner is a team, so it converts once, here.
+        GameTeamColor winner = _context.Palette.ColourOf(_context.Teams.GetLeadingTeam());
 
         // Neutral tiles go dark; claimed and locked tiles keep their colour until the next kick-off.
         foreach (int idx in _board.Deactivate())
@@ -125,7 +127,7 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
 
         _pendingPaints.Clear();
 
-        if (GameTeamBook.IsRealTeam(winner))
+        if (HabboTeamPalette.IsColour(winner))
         {
             List<int> lockedTiles = _board.LockedTilesOf(winner);
 
@@ -217,8 +219,12 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         }
 
         int tileIdx = _context.ToIdx(tile.X, tile.Y);
-        GameTeamColor team = _context.Teams.GetTeam(playerId);
-        BanzaiMarkResult result = _board.Mark(team, tileIdx);
+        TeamId team = _context.Teams.GetTeam(playerId);
+
+        // The board speaks in colours because a bb_patch's state IS one; the rules speak in teams.
+        // This is the single conversion between them on the claim path.
+        GameTeamColor colour = _context.Palette.ColourOf(team);
+        BanzaiMarkResult result = _board.Mark(colour, tileIdx);
 
         if (result.Kind == BanzaiMarkKind.None)
         {
@@ -251,7 +257,7 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
             return;
         }
 
-        int lockedState = BanzaiBoard.LockedStateOf(team);
+        int lockedState = BanzaiBoard.LockedStateOf(colour);
 
         foreach (int idx in result.RegionLocked)
         {
@@ -272,11 +278,13 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         CancellationToken ct
     )
     {
+        // A gate is painted one of the four colours; which of THIS game's teams that is, is the
+        // palette's answer and nobody else's.
         TeamGateResult result = TeamGateRules.Toggle(
             _context.Teams,
-            _layout,
+            _teams,
             playerId,
-            gate.Team,
+            _context.Palette.TeamOf(gate.Team),
             acceptingPlayers: !HasMatch
         );
 
