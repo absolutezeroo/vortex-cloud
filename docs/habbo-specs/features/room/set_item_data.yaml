@@ -46,5 +46,25 @@ generated:
   - room.set_item_data.success
   unknowns:
   - uk_6f75f7f1a0
-verified: {}
-manual: {}
+verified:
+  colour_and_text_are_one_string:
+    confidence: assumed
+    claim: The colour and the text are stored as a single value, "<colorHex> <text>", split on the FIRST space.
+    reason: "The client is unambiguous about reading it that way and there is no capture of what the official server stores. FurnitureStickieWidgetHandler takes the item's data, and if it contains a space uses everything before the first one as the colour and everything after it as the body -- newlines included, so the text may itself contain spaces and only the first one separates. A note shorter than six characters is refused by the widget before it draws, which is why an empty note is written as the colour alone rather than as an empty string."
+    evidence:
+    - kind: client_code
+      source: com/sulake/habbo/ui/handler/FurnitureStickieWidgetHandler.as
+      symbol: processWidgetMessage
+    - kind: client_code
+      source: com/sulake/habbo/room/object/logic/furniture/FurnitureStickieLogic.as
+      symbol: setColorIndexFromItemData
+  colour_is_not_validated:
+    confidence: assumed
+    claim: Any colour string is stored as sent; the server does not restrict it to the client's eight papers.
+    reason: "What the official server accepts is unknown. The client already fails safe -- FurnitureStickieLogic matches the value against its own eight hex codes and falls back to yellow on anything else -- so refusing here would only replace a wrong-coloured note with a note that cannot be saved, and the value is never interpreted as anything but a colour."
+    evidence:
+    - kind: client_code
+      source: com/sulake/habbo/room/object/logic/furniture/FurnitureStickieLogic.as
+      symbol: setColorIndexFromItemData
+manual:
+  rights: "Room rights, not ownership -- the same rule the bin button already uses. A room owner expects to be able to rewrite a sticky a visitor left on their wall."

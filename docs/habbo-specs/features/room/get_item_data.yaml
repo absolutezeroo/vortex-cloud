@@ -46,5 +46,14 @@ generated:
   - room.get_item_data.success
   unknowns:
   - uk_69d9472773
-verified: {}
-manual: {}
+verified:
+  answered_to_the_asker_only:
+    confidence: assumed
+    claim: The answer is an ItemDataUpdate sent to the requesting client alone, not broadcast to the room.
+    reason: "Everyone in the room already received the item's data with the room's contents; this request is raised by one client opening the note. Broadcasting would be a second copy of what the others already hold. What the official server does is unknown, but the client's own handler is a per-widget request, not a room event."
+    evidence:
+    - kind: client_code
+      source: com/sulake/habbo/room/_SafeCls_1821.as
+      symbol: ROFCAE_STICKIE
+manual:
+  blank_vs_absent: "An item that exists but carries nothing answers with an empty string; an item that is gone, or that the caller may not touch, is not answered at all. The client draws the first as a blank note and leaves the dialog closed on the second."

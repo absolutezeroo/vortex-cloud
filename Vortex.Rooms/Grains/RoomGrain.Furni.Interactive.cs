@@ -623,6 +623,71 @@ public sealed partial class RoomGrain
             IsOn = dimmer.IsOn,
         };
 
+    public async Task<string?> GetItemDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        IRoomItem? item = await FindManipulableItemAsync(ctx, itemId).ConfigureAwait(true);
+
+        // The legacy projection rather than the typed snapshot: it is what the wall item already
+        // puts on the wire, so the answer and the room's own copy cannot disagree.
+        return item?.Logic.StuffData.GetLegacyString();
+    }
+
+    public async Task<bool> SetClothingChangeDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        string gender,
+        string look,
+        CancellationToken ct
+    )
+    {
+        IRoomItem? item = await FindManipulableItemAsync(ctx, itemId).ConfigureAwait(true);
+
+        if (item?.Logic.StuffData is not ILegacyStuffData legacy)
+        {
+            return false;
+        }
+
+        // Merge, never overwrite: one message carries one gender and the booth holds both.
+        legacy.SetState(ClothingChangeData.Merge(legacy.GetLegacyString(), gender, look));
+
+        await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
+
+        return true;
+    }
+
+    public async Task<bool> SetObjectDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        IReadOnlyList<(string Key, string Value)> pairs,
+        CancellationToken ct
+    )
+    {
+        IRoomItem? item = await FindManipulableItemAsync(ctx, itemId).ConfigureAwait(true);
+
+        if (item?.Logic.StuffData is not IMapStuffData map)
+        {
+            return false;
+        }
+
+        foreach ((string key, string value) in pairs)
+        {
+            // An empty key would be a field with no name: it survives a round trip through the map
+            // and comes back as a blank row in every editor that reads the furni afterwards.
+            if (!string.IsNullOrEmpty(key))
+            {
+                map.Data[key] = value;
+            }
+        }
+
+        await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
+
+        return true;
+    }
+
     public async Task<bool> SetPostItAsync(
         ActionContext ctx,
         RoomObjectId itemId,

@@ -9,8 +9,8 @@ mapped: 523
 unresolved_surface_count: 2
 counts:
   missing: 39
-  partial: 119
-  implemented: 404
+  partial: 110
+  implemented: 413
   complete: 0
   unknown: 0
   not_applicable: 16
@@ -3916,6 +3916,8 @@ obligations:
   vortex_handler: MoveAvatarMessageHandler
   feature: room.click_tile
   reason: room.click_tile reaches a domain operation from MoveAvatarMessageHandler
+  conflicts:
+  - cf_6e94fff5b9
 - id: incoming/MoveObject
   name: MoveObject
   domain: room
@@ -4483,13 +4485,13 @@ obligations:
 - id: incoming/UpdateFloorProperties
   name: UpdateFloorProperties
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_2580
   header_id: 2937
   mapped_in_vortex: true
   vortex_handler: UpdateFloorPropertiesMessageHandler
   feature: room.update_floor_properties
-  reason: room.update_floor_properties exists but the handler reaches no domain operation
+  reason: room.update_floor_properties reaches a domain operation from UpdateFloorPropertiesMessageHandler
   conflicts:
   - cf_00baab209e
   - cf_0b0859a6b6
@@ -4550,65 +4552,69 @@ obligations:
 - id: incoming/AddJukeboxDisk
   name: AddJukeboxDisk
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_3368
   header_id: 1637
   mapped_in_vortex: true
   vortex_handler: AddJukeboxDiskMessageHandler
   feature: sound.add_jukebox_disk
-  reason: sound.add_jukebox_disk exists but the handler reaches no domain operation
-  unknowns:
-  - uk_37e5d943a9
+  reason: sound.add_jukebox_disk reaches a domain operation from AddJukeboxDiskMessageHandler
 - id: incoming/GetJukeboxPlayList
   name: GetJukeboxPlayList
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_2479
   header_id: 3707
   mapped_in_vortex: true
   vortex_handler: GetJukeboxPlayListMessageHandler
   feature: sound.get_jukebox_play_list
-  reason: sound.get_jukebox_play_list exists but the handler reaches no domain operation
+  reason: sound.get_jukebox_play_list reaches a domain operation from GetJukeboxPlayListMessageHandler
+  conflicts:
+  - cf_a47144a65a
 - id: incoming/GetNowPlaying
   name: GetNowPlaying
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_3734
   header_id: 1281
   mapped_in_vortex: true
   vortex_handler: GetNowPlayingMessageHandler
   feature: sound.get_now_playing
-  reason: sound.get_now_playing exists but the handler reaches no domain operation
+  reason: sound.get_now_playing reaches a domain operation from GetNowPlayingMessageHandler
+  conflicts:
+  - cf_a805f25c04
 - id: incoming/GetOfficialSongId
   name: GetOfficialSongId
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_2775
   header_id: 1723
   mapped_in_vortex: true
   vortex_handler: GetOfficialSongIdMessageHandler
-  feature: sound.get_official_song_id
-  reason: sound.get_official_song_id exists but the handler reaches no domain operation
+  feature: sound.try_get_song_by_official_id
+  reason: sound.try_get_song_by_official_id reaches a domain operation from GetOfficialSongIdMessageHandler
 - id: incoming/GetSongInfo
   name: GetSongInfo
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_3365
   header_id: 3130
   mapped_in_vortex: true
   vortex_handler: GetSongInfoMessageHandler
-  feature: sound.get_song_info
-  reason: sound.get_song_info exists but the handler reaches no domain operation
+  feature: sound.try_get_song
+  reason: sound.try_get_song reaches a domain operation from GetSongInfoMessageHandler
+  conflicts:
+  - cf_7b6f4a8ede
 - id: incoming/GetSoundMachinePlayList
   name: GetSoundMachinePlayList
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_3689
   header_id: 3633
   mapped_in_vortex: true
   vortex_handler: GetSoundMachinePlayListMessageHandler
   feature: sound.get_sound_machine_play_list
-  reason: sound.get_sound_machine_play_list exists but the handler reaches no domain operation
+  reason: sound.get_sound_machine_play_list reaches a domain operation from GetSoundMachinePlayListMessageHandler
 - id: incoming/GetSoundSettings
   name: GetSoundSettings
   domain: sound
@@ -4624,23 +4630,25 @@ obligations:
 - id: incoming/GetUserSongDisks
   name: GetUserSongDisks
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_2691
   header_id: 1685
   mapped_in_vortex: true
   vortex_handler: GetUserSongDisksMessageHandler
   feature: sound.get_user_song_disks
-  reason: sound.get_user_song_disks exists but the handler reaches no domain operation
+  reason: sound.get_user_song_disks reaches a domain operation from GetUserSongDisksMessageHandler
+  conflicts:
+  - cf_b97214b1ab
 - id: incoming/RemoveJukeboxDisk
   name: RemoveJukeboxDisk
   domain: sound
-  status: partial
+  status: implemented
   client_class: _SafeCls_3444
   header_id: 2003
   mapped_in_vortex: true
   vortex_handler: RemoveJukeboxDiskMessageHandler
   feature: sound.remove_jukebox_disk
-  reason: sound.remove_jukebox_disk exists but the handler reaches no domain operation
+  reason: sound.remove_jukebox_disk reaches a domain operation from RemoveJukeboxDiskMessageHandler
 - id: incoming/GetTalentTrack
   name: GetTalentTrack
   domain: talent

@@ -16,8 +16,8 @@ design — those were never at risk.
 |---|---|
 | logic names in the pass | 73 |
 | definitions covered | 42059 |
-| answered by a logic | 38112 / 42059 (90.6%) |
-| stranded on an unregistered name | 3947 |
+| answered by a logic | 40974 / 42059 (97.4%) |
+| stranded on an unregistered name | 1085 |
 
 ## Unregistered, worst first
 
@@ -26,7 +26,6 @@ intentional fallback from an accident.
 
 | definitions | logic |
 |---|---|
-| 2862 | furniture_purchasable_clothing |
 | 418 | furniture_soundblock |
 | 135 | furniture_credit |
 | 61 | furniture_trophy |
@@ -87,6 +86,7 @@ intentional fallback from an accident.
 |---|---|---|
 | 31967 | furniture_multistate | FurnitureFloorLogic, FurnitureWallLogic |
 | 5679 | furniture_basic | FurnitureFloorLogic, FurnitureWallLogic |
+| 2862 | furniture_purchasable_clothing | FurnitureFloorLogic |
 | 314 | furniture_crackable | FurnitureCrackableLogic |
 | 28 | furniture_custom_stack_height | FurnitureCustomStackHeightLogic |
 | 27 | furniture_present | FurniturePresentLogic |

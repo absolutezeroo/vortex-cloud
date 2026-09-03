@@ -9,23 +9,20 @@ Target client: `WIN63-202607011411-782849652`
 |---|---|
 | obligations | 9 |
 | missing | 0 |
-| partial | 8 |
-| implemented | 1 |
+| partial | 0 |
+| implemented | 9 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
 
-## partial
-
-- `AddJukeboxDisk` (1637) — sound.add_jukebox_disk exists but the handler reaches no domain operation
-- `GetJukeboxPlayList` (3707) — sound.get_jukebox_play_list exists but the handler reaches no domain operation
-- `GetNowPlaying` (1281) — sound.get_now_playing exists but the handler reaches no domain operation
-- `GetOfficialSongId` (1723) — sound.get_official_song_id exists but the handler reaches no domain operation
-- `GetSongInfo` (3130) — sound.get_song_info exists but the handler reaches no domain operation
-- `GetSoundMachinePlayList` (3633) — sound.get_sound_machine_play_list exists but the handler reaches no domain operation
-- `GetUserSongDisks` (1685) — sound.get_user_song_disks exists but the handler reaches no domain operation
-- `RemoveJukeboxDisk` (2003) — sound.remove_jukebox_disk exists but the handler reaches no domain operation
-
 ## implemented
 
+- `AddJukeboxDisk` (1637) — sound.add_jukebox_disk reaches a domain operation from AddJukeboxDiskMessageHandler
+- `GetJukeboxPlayList` (3707) — sound.get_jukebox_play_list reaches a domain operation from GetJukeboxPlayListMessageHandler
+- `GetNowPlaying` (1281) — sound.get_now_playing reaches a domain operation from GetNowPlayingMessageHandler
+- `GetOfficialSongId` (1723) — sound.try_get_song_by_official_id reaches a domain operation from GetOfficialSongIdMessageHandler
+- `GetSongInfo` (3130) — sound.try_get_song reaches a domain operation from GetSongInfoMessageHandler
+- `GetSoundMachinePlayList` (3633) — sound.get_sound_machine_play_list reaches a domain operation from GetSoundMachinePlayListMessageHandler
 - `GetSoundSettings` (541) — sound.get_sound_settings reaches a domain operation from GetSoundSettingsMessageHandler
+- `GetUserSongDisks` (1685) — sound.get_user_song_disks reaches a domain operation from GetUserSongDisksMessageHandler
+- `RemoveJukeboxDisk` (2003) — sound.remove_jukebox_disk reaches a domain operation from RemoveJukeboxDiskMessageHandler

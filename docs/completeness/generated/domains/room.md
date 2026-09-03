@@ -9,8 +9,8 @@ Target client: `WIN63-202607011411-782849652`
 |---|---|
 | obligations | 102 |
 | missing | 0 |
-| partial | 19 |
-| implemented | 83 |
+| partial | 18 |
+| implemented | 84 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -34,7 +34,6 @@ Target client: `WIN63-202607011411-782849652`
 - `SetItemData` (3498) — room.set_item_data exists but the handler reaches no domain operation
 - `SetObjectData` (246) — room.set_object_data exists but the handler reaches no domain operation
 - `SetYoutubeDisplayPlaylist` (1672) — room.set_youtube_display_playlist exists but the handler reaches no domain operation
-- `UpdateFloorProperties` (2937) — room.update_floor_properties exists but the handler reaches no domain operation
 - `UpdateRoomFilter` (1622) — room.update_room_filter exists but the handler reaches no domain operation
 
 ## implemented
@@ -118,6 +117,7 @@ Target client: `WIN63-202607011411-782849652`
 - `TogglePetRidingPermission` (3713) — room.toggle_pet_riding_permission reaches a domain operation from TogglePetRidingPermissionMessageHandler
 - `UnbanUserFromRoom` (2804) — room.unban_user_from_room reaches a domain operation from UnbanUserFromRoomMessageHandler
 - `UnmuteUser` (498) — room.unmute_user reaches a domain operation from UnmuteUserMessageHandler
+- `UpdateFloorProperties` (2937) — room.update_floor_properties reaches a domain operation from UpdateFloorPropertiesMessageHandler
 - `UpdateRoomCategoryAndTradeSettings` (3946) — room.update_room_category_and_trade_settings reaches a domain operation from UpdateRoomCategoryAndTradeSettingsMessageHandler
 - `UseFurniture` (3353) — room.use_item_in_room reaches a domain operation from UseFurnitureMessageHandler
 - `UseWallItem` (3590) — room.use_item_in_room reaches a domain operation from UseWallItemMessageHandler

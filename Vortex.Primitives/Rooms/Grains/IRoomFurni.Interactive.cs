@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
@@ -27,6 +28,51 @@ public partial interface IRoomFurni
         ActionContext ctx,
         RoomObjectId itemId,
         string name,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Reads a furni's data as the client reads it: one legacy string.
+    /// </summary>
+    /// <remarks>
+    /// The sticky note asks for this the moment it is opened, before anything is drawn, so an
+    /// unanswered request is a note that stays blank. Null when the item is gone or the caller may
+    /// not touch it; an item that simply has nothing written on it answers with an empty string,
+    /// which is a different thing and the client draws it as a blank note rather than not at all.
+    /// </remarks>
+    public Task<string?> GetItemDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Sets one gender's outfit on a clothing-change booth, keeping the other.
+    /// </summary>
+    /// <remarks>
+    /// The booth holds both looks in one string as <c>"&lt;boy&gt;,&lt;girl&gt;"</c> and the client
+    /// takes the half matching whoever is standing in front of it. One message carries one gender,
+    /// so this merges: overwriting would silently clear the outfit nobody was editing.
+    /// </remarks>
+    public Task<bool> SetClothingChangeDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        string gender,
+        string look,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Writes named fields onto a furni whose editor is a set of keys rather than a single note.
+    /// </summary>
+    /// <remarks>
+    /// Merged into whatever the furni already holds, key by key: the client sends only the fields
+    /// its editor showed, and a furni's data usually carries more than one editor writes.
+    /// </remarks>
+    public Task<bool> SetObjectDataAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        IReadOnlyList<(string Key, string Value)> pairs,
         CancellationToken ct
     );
 

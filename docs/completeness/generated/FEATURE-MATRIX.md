@@ -426,21 +426,21 @@ reproduced from the target client and the current code on the next run.
 | implemented | room | TogglePetRidingPermission | 3713 | TogglePetRidingPermissionMessageHandler | room.toggle_pet_riding_permission | room.toggle_pet_riding_permission reaches a domain operation from TogglePetRidingPermissionMessageHandler |
 | implemented | room | UnbanUserFromRoom | 2804 | UnbanUserFromRoomMessageHandler | room.unban_user_from_room | room.unban_user_from_room reaches a domain operation from UnbanUserFromRoomMessageHandler |
 | implemented | room | UnmuteUser | 498 | UnmuteUserMessageHandler | room.unmute_user | room.unmute_user reaches a domain operation from UnmuteUserMessageHandler |
-| partial | room | UpdateFloorProperties | 2937 | UpdateFloorPropertiesMessageHandler | room.update_floor_properties | room.update_floor_properties exists but the handler reaches no domain operation |
+| implemented | room | UpdateFloorProperties | 2937 | UpdateFloorPropertiesMessageHandler | room.update_floor_properties | room.update_floor_properties reaches a domain operation from UpdateFloorPropertiesMessageHandler |
 | implemented | room | UpdateRoomCategoryAndTradeSettings | 3946 | UpdateRoomCategoryAndTradeSettingsMessageHandler | room.update_room_category_and_trade_settings | room.update_room_category_and_trade_settings reaches a domain operation from UpdateRoomCategoryAndTradeSettingsMessageHandler |
 | partial | room | UpdateRoomFilter | 1622 | UpdateRoomFilterMessageHandler | room.update_room_filter | room.update_room_filter exists but the handler reaches no domain operation |
 | implemented | room | UseFurniture | 3353 | UseFurnitureMessageHandler | room.use_item_in_room | room.use_item_in_room reaches a domain operation from UseFurnitureMessageHandler |
 | implemented | room | UseWallItem | 3590 | UseWallItemMessageHandler | room.use_item_in_room | room.use_item_in_room reaches a domain operation from UseWallItemMessageHandler |
 | implemented | room | Whisper | 1697 | WhisperMessageHandler | room.whisper | room.whisper reaches a domain operation from WhisperMessageHandler |
-| partial | sound | AddJukeboxDisk | 1637 | AddJukeboxDiskMessageHandler | sound.add_jukebox_disk | sound.add_jukebox_disk exists but the handler reaches no domain operation |
-| partial | sound | GetJukeboxPlayList | 3707 | GetJukeboxPlayListMessageHandler | sound.get_jukebox_play_list | sound.get_jukebox_play_list exists but the handler reaches no domain operation |
-| partial | sound | GetNowPlaying | 1281 | GetNowPlayingMessageHandler | sound.get_now_playing | sound.get_now_playing exists but the handler reaches no domain operation |
-| partial | sound | GetOfficialSongId | 1723 | GetOfficialSongIdMessageHandler | sound.get_official_song_id | sound.get_official_song_id exists but the handler reaches no domain operation |
-| partial | sound | GetSongInfo | 3130 | GetSongInfoMessageHandler | sound.get_song_info | sound.get_song_info exists but the handler reaches no domain operation |
-| partial | sound | GetSoundMachinePlayList | 3633 | GetSoundMachinePlayListMessageHandler | sound.get_sound_machine_play_list | sound.get_sound_machine_play_list exists but the handler reaches no domain operation |
+| implemented | sound | AddJukeboxDisk | 1637 | AddJukeboxDiskMessageHandler | sound.add_jukebox_disk | sound.add_jukebox_disk reaches a domain operation from AddJukeboxDiskMessageHandler |
+| implemented | sound | GetJukeboxPlayList | 3707 | GetJukeboxPlayListMessageHandler | sound.get_jukebox_play_list | sound.get_jukebox_play_list reaches a domain operation from GetJukeboxPlayListMessageHandler |
+| implemented | sound | GetNowPlaying | 1281 | GetNowPlayingMessageHandler | sound.get_now_playing | sound.get_now_playing reaches a domain operation from GetNowPlayingMessageHandler |
+| implemented | sound | GetOfficialSongId | 1723 | GetOfficialSongIdMessageHandler | sound.try_get_song_by_official_id | sound.try_get_song_by_official_id reaches a domain operation from GetOfficialSongIdMessageHandler |
+| implemented | sound | GetSongInfo | 3130 | GetSongInfoMessageHandler | sound.try_get_song | sound.try_get_song reaches a domain operation from GetSongInfoMessageHandler |
+| implemented | sound | GetSoundMachinePlayList | 3633 | GetSoundMachinePlayListMessageHandler | sound.get_sound_machine_play_list | sound.get_sound_machine_play_list reaches a domain operation from GetSoundMachinePlayListMessageHandler |
 | implemented | sound | GetSoundSettings | 541 | GetSoundSettingsMessageHandler | sound.get_sound_settings | sound.get_sound_settings reaches a domain operation from GetSoundSettingsMessageHandler |
-| partial | sound | GetUserSongDisks | 1685 | GetUserSongDisksMessageHandler | sound.get_user_song_disks | sound.get_user_song_disks exists but the handler reaches no domain operation |
-| partial | sound | RemoveJukeboxDisk | 2003 | RemoveJukeboxDiskMessageHandler | sound.remove_jukebox_disk | sound.remove_jukebox_disk exists but the handler reaches no domain operation |
+| implemented | sound | GetUserSongDisks | 1685 | GetUserSongDisksMessageHandler | sound.get_user_song_disks | sound.get_user_song_disks reaches a domain operation from GetUserSongDisksMessageHandler |
+| implemented | sound | RemoveJukeboxDisk | 2003 | RemoveJukeboxDiskMessageHandler | sound.remove_jukebox_disk | sound.remove_jukebox_disk reaches a domain operation from RemoveJukeboxDiskMessageHandler |
 | partial | talent | GetTalentTrack | 3757 | GetTalentTrackMessageHandler | talent.get_talent_track | talent.get_talent_track exists but the handler reaches no domain operation |
 | partial | talent | GetTalentTrackLevel | 2280 | GetTalentTrackLevelMessageHandler | talent.get_talent_track_level | talent.get_talent_track_level exists but the handler reaches no domain operation |
 | partial | talent | GuideAdvertisementRead | 1850 | GuideAdvertisementReadMessageHandler | talent.guide_advertisement_read | talent.guide_advertisement_read exists but the handler reaches no domain operation |

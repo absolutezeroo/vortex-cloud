@@ -17,7 +17,7 @@ reproduced from the target client and the current code on the next run.
 | axis | value |
 |---|---|
 | protocol mapping | 523 / 578 (90.5%) |
-| implementation | 404 / 578 (69.9%) |
+| implementation | 413 / 578 (71.5%) |
 | verified complete | 0 / 578 (0.0%) |
 
 `protocol mapping` counts obligations Vortex can receive at all. `implementation`
@@ -39,8 +39,8 @@ checked against the protocol and wrote the evidence down.
 | status | count |
 |---|---|
 | missing | 39 |
-| partial | 119 |
-| implemented | 404 |
+| partial | 110 |
+| implemented | 413 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 16 |
@@ -76,8 +76,8 @@ checked against the protocol and wrote the evidence down.
 | preferences | 10 | 0 | 0 | 10 | 0 | 0 | 0 |
 | quest | 18 | 0 | 4 | 12 | 0 | 0 | 2 |
 | register | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| room | 102 | 0 | 19 | 83 | 0 | 0 | 0 |
-| sound | 9 | 0 | 8 | 1 | 0 | 0 | 0 |
+| room | 102 | 0 | 18 | 84 | 0 | 0 | 0 |
+| sound | 9 | 0 | 0 | 9 | 0 | 0 | 0 |
 | talent | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
 | tracking | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
 | unsorted | 44 | 30 | 0 | 0 | 0 | 0 | 14 |
