@@ -110,8 +110,7 @@ public sealed class FootballGameTests
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(1 + Balance.KickDistance);
-        ball
-            .GetState()
+        ball.GetState()
             .Should()
             .Be(FootballConstants.BallRestingState, "a ball at rest is not spinning");
     }
