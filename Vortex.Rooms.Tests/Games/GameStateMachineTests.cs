@@ -45,14 +45,16 @@ public sealed class GameStateMachineTests
     public void EveryPhaseWithAMatch_CanFallToCleanup(GamePhase from) =>
         GameStateMachine
             .CanTransition(from, GamePhase.Resetting)
-            .Should().BeTrue("cleanup is never skipped, whatever went wrong");
+            .Should()
+            .BeTrue("cleanup is never skipped, whatever went wrong");
 
     [Fact]
     public void IdleDoesNotResetAndNoPhaseTransitionsToItself()
     {
         GameStateMachine
             .CanTransition(GamePhase.Idle, GamePhase.Resetting)
-            .Should().BeFalse("there is nothing to clean up");
+            .Should()
+            .BeFalse("there is nothing to clean up");
 
         foreach (GamePhase phase in System.Enum.GetValues<GamePhase>())
         {

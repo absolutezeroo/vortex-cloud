@@ -76,7 +76,8 @@ public sealed class RoomGameRuntimeTests
         // anything: the ordering is what keeps its points from vanishing without a trace.
         harness
             .RoomEvents.OfType<WiredGameStartedEvent>()
-            .Should().ContainSingle("a room announces one round, however many games it hosts");
+            .Should()
+            .ContainSingle("a room announces one round, however many games it hosts");
         game.RoomEventsSeenAtPrepare.Should().Be(1);
     }
 
@@ -296,7 +297,8 @@ public sealed class RoomGameRuntimeTests
                 RoomHarness.Stranger,
                 GameTeamColor.Blue,
                 CancellationToken.None
-            ).ConfigureAwait(true);
+            )
+            .ConfigureAwait(true);
 
         await harness
             .Grain.GameRuntime.OnPlayerLeftAsync(RoomHarness.Stranger, CancellationToken.None)

@@ -23,7 +23,8 @@ public sealed class TeamGateRulesTests
 
         TeamGateRules
             .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true)
-            .Should().Be(TeamGateResult.Joined);
+            .Should()
+            .Be(TeamGateResult.Joined);
         teams.GetTeam(Alice).Should().Be(GameTeamColor.Red);
     }
 
@@ -35,7 +36,8 @@ public sealed class TeamGateRulesTests
 
         TeamGateRules
             .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Red, true)
-            .Should().Be(TeamGateResult.Left);
+            .Should()
+            .Be(TeamGateResult.Left);
         teams.GetTeam(Alice).Should().Be(GameTeamColor.None);
     }
 
@@ -47,7 +49,8 @@ public sealed class TeamGateRulesTests
 
         TeamGateRules
             .Toggle(teams, TeamLayout.FourColours, Alice, GameTeamColor.Blue, true)
-            .Should().Be(TeamGateResult.Joined);
+            .Should()
+            .Be(TeamGateResult.Joined);
         teams.GetTeam(Alice).Should().Be(GameTeamColor.Blue);
         teams.GetTeamMemberCount(GameTeamColor.Red).Should().Be(0);
     }
@@ -61,7 +64,9 @@ public sealed class TeamGateRulesTests
         TeamGateRules.Toggle(teams, oneEach, Bob, GameTeamColor.Blue, true);
 
         TeamGateRules
-            .Toggle(teams, oneEach, Bob, GameTeamColor.Red, true).Should().Be(TeamGateResult.None);
+            .Toggle(teams, oneEach, Bob, GameTeamColor.Red, true)
+            .Should()
+            .Be(TeamGateResult.None);
         teams.GetTeam(Bob).Should().Be(GameTeamColor.Blue, "a rejected switch changes nothing");
     }
 
@@ -75,7 +80,8 @@ public sealed class TeamGateRulesTests
         {
             TeamGateRules
                 .Toggle(teams, unlimited, new PlayerId(i), GameTeamColor.Green, true)
-                .Should().Be(TeamGateResult.Joined);
+                .Should()
+                .Be(TeamGateResult.Joined);
         }
 
         teams.GetTeamMemberCount(GameTeamColor.Green).Should().Be(30);
@@ -93,7 +99,9 @@ public sealed class TeamGateRulesTests
                 Alice,
                 GameTeamColor.Red,
                 acceptingPlayers: false
-            ).Should().Be(TeamGateResult.None);
+            )
+            .Should()
+            .Be(TeamGateResult.None);
         teams.GetTeam(Alice).Should().Be(GameTeamColor.None);
     }
 
@@ -108,6 +116,7 @@ public sealed class TeamGateRulesTests
 
         TeamGateRules
             .Toggle(teams, twoTeams, Alice, GameTeamColor.Yellow, true)
-            .Should().Be(TeamGateResult.None);
+            .Should()
+            .Be(TeamGateResult.None);
     }
 }

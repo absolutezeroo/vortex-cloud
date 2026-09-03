@@ -56,7 +56,8 @@ public sealed class BanzaiGameTests
             .Grain.GameRuntime.SignalAsync(
                 GameSignal.WalkOn(gate, RoomHarness.Stranger),
                 CancellationToken.None
-            ).ConfigureAwait(true);
+            )
+            .ConfigureAwait(true);
 
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Red);
         avatar.CurrentEffectId.Should().Be(33, "Banzai wears the wired aura set (32 + team)");
@@ -91,7 +92,8 @@ public sealed class BanzaiGameTests
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Yellow);
         harness
             .Grain.GameRuntime.GetPlayersInTeam(GameTeamColor.Red)
-            .Should().BeEmpty("the old membership moved, it was not duplicated");
+            .Should()
+            .BeEmpty("the old membership moved, it was not duplicated");
         avatar.CurrentEffectId.Should().Be(36);
     }
 

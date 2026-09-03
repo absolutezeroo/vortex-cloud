@@ -22,7 +22,9 @@ public sealed class ArenaValidationTests
     public void AMetRequirement_CanStart()
     {
         ArenaValidation validation = ArenaValidation
-            .Builder().Require("Banzai tiles", found: 74).Build();
+            .Builder()
+            .Require("Banzai tiles", found: 74)
+            .Build();
 
         validation.CanStart.Should().BeTrue();
         validation.DescribeShortfall().Should().BeEmpty();
@@ -34,7 +36,8 @@ public sealed class ArenaValidationTests
         ArenaValidation validation = ArenaValidation
             .Builder()
             .Require("Football", found: 1)
-            .Require("Goals of different colours", found: 1, required: 2).Build();
+            .Require("Goals of different colours", found: 1, required: 2)
+            .Build();
 
         validation.CanStart.Should().BeFalse();
         validation.DescribeShortfall().Should().Be("Goals of different colours: 1/2");
@@ -45,7 +48,9 @@ public sealed class ArenaValidationTests
     {
         ArenaValidation validation = ArenaValidation
             .Builder()
-            .Require("Freeze tiles", found: 20).Prefer("Team gates", found: 0, required: 2).Build();
+            .Require("Freeze tiles", found: 20)
+            .Prefer("Team gates", found: 0, required: 2)
+            .Build();
 
         validation
             .CanStart.Should()
@@ -58,7 +63,9 @@ public sealed class ArenaValidationTests
     {
         ArenaValidation validation = ArenaValidation
             .Builder()
-            .Require("Football", found: 0).Prefer("Team gates", found: 1, required: 2).Build();
+            .Require("Football", found: 0)
+            .Prefer("Team gates", found: 1, required: 2)
+            .Build();
 
         validation.DescribeShortfall().Should().Be("Football: 0/1; Team gates: 1/2");
     }

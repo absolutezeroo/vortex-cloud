@@ -446,19 +446,15 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             if (thrower is not null)
             {
                 bool friendlyFire = victim.Team == thrower.Team;
+                int points = friendlyFire
+                    ? -_settings.FreezePlayerPoints
+                    : _settings.FreezePlayerPoints;
+                ScoreReason reason = friendlyFire
+                    ? FreezeScoreReasons.FriendlyFire
+                    : FreezeScoreReasons.PlayerFrozen;
 
                 await _context.ScoreAsync(
-                    new GameScore(
-                        thrower.Team,
-                        thrower.PlayerId,
-                        friendlyFire
-                            ? -_settings.FreezePlayerPoints
-                            : _settings.FreezePlayerPoints,
-                        friendlyFire
-                            ? FreezeScoreReasons.FriendlyFire
-                            : FreezeScoreReasons.PlayerFrozen,
-                        default
-                    ),
+                    new GameScore(thrower.Team, thrower.PlayerId, points, reason, default),
                     ct
                 );
             }
