@@ -218,8 +218,7 @@ public sealed class RoomGameRuntimeTests
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         RecordingGame game = new("first");
-        game.OnRoundEnd = ct =>
-            harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, ct);
+        game.OnRoundEnd = ct => harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, ct);
         harness.Grain.GameRuntime.Register(_ => game);
         await StartAsync(harness).ConfigureAwait(true);
 

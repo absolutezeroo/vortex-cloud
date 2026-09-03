@@ -102,13 +102,7 @@ public sealed class FreezeRosterTests
         FreezeRoster roster = new(teams);
 
         roster
-            .ToggleGate(
-                Layout,
-                P(2),
-                Blue,
-                acceptingPlayers: false,
-                FreezeSettings.Default
-            )
+            .ToggleGate(Layout, P(2), Blue, acceptingPlayers: false, FreezeSettings.Default)
             .Should()
             .Be(TeamGateResult.None);
         teams.GetTeam(P(2)).Should().Be(TeamId.None);

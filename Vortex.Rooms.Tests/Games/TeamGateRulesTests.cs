@@ -88,13 +88,7 @@ public sealed class TeamGateRulesTests
         TeamBook teams = new(Teams);
 
         TeamGateRules
-            .Toggle(
-                teams,
-                Teams,
-                Alice,
-                Red,
-                acceptingPlayers: false
-            )
+            .Toggle(teams, Teams, Alice, Red, acceptingPlayers: false)
             .Should()
             .Be(TeamGateResult.None);
         teams.GetTeam(Alice).Should().Be(TeamId.None);

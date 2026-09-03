@@ -62,7 +62,10 @@ public sealed record TeamSet
             builder.Add(team with { Capacity = capacity });
         }
 
-        return this with { Teams = builder.ToImmutable() };
+        return this with
+        {
+            Teams = builder.ToImmutable(),
+        };
     }
 
     /// <summary>Caps one team, leaving the others alone — what an asymmetric game needs (one seeker,
@@ -78,7 +81,10 @@ public sealed record TeamSet
             builder.Add(existing.Id == team ? existing with { Capacity = capacity } : existing);
         }
 
-        return this with { Teams = builder.ToImmutable() };
+        return this with
+        {
+            Teams = builder.ToImmutable(),
+        };
     }
 
     public TeamSet WithMinimumTeams(int minimum) => this with { MinimumTeams = minimum };
