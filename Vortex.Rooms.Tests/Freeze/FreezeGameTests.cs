@@ -66,7 +66,7 @@ public sealed class FreezeGameTests
         harness.Grain.GameRuntime.GetTeam(RoomHarness.Stranger).Should().Be(GameTeamColor.Red);
         avatar
             .CurrentEffectId.Should()
-            .Be(41, "Freeze wears its own aura set (39 + team), not the wired one");
+            .Be(40, "Freeze wears its own aura set (39 + team), not the wired one");
         gate.GetState().Should().Be(1);
     }
 
@@ -140,11 +140,15 @@ public sealed class FreezeGameTests
     public async Task ABlastFreezesAnEnemyOnTheTile_AndScoresTheThrower()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+
+        // Diagonally apart, and the throw is diagonal too. That is not decoration: a default blast
+        // reaches one tile along each CARDINAL arm, so a thrower who aims at the tile beside them is
+        // inside their own blast and freezes themselves. Aiming diagonally is what keeps them out.
         RoomPlayerAvatar thrower = harness.PutRealPlayerOnTile(RoomHarness.Stranger, 5, 5);
-        RoomPlayerAvatar victim = harness.PutRealPlayerOnTile(RoomHarness.Owner, 5, 5);
+        RoomPlayerAvatar victim = harness.PutRealPlayerOnTile(RoomHarness.Owner, 6, 6);
         FreezeGateComponent red = PlaceGate(harness, "red", 2, 2);
         FreezeGateComponent blue = PlaceGate(harness, "blue", 3, 2);
-        FreezeTileComponent target = PlaceTile(harness, 5, 5);
+        FreezeTileComponent target = PlaceTile(harness, 6, 6);
 
         await harness
             .Grain.GameRuntime.SignalAsync(
@@ -169,7 +173,7 @@ public sealed class FreezeGameTests
             .ConfigureAwait(true);
 
         victim.CurrentEffectId.Should().Be(FreezeConstants.FrozenEffect);
-        thrower.CurrentEffectId.Should().Be(41, "the thrower keeps their team aura");
+        thrower.CurrentEffectId.Should().Be(40, "the thrower keeps their team aura");
         harness
             .Grain.GameRuntime.GetTeamScore(GameTeamColor.Red)
             .Should()
