@@ -27,12 +27,23 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// either, so those furni fall back on both sides; accepting it server-side costs nothing and
 /// records why the odd spelling exists.
 /// </para>
+/// <para>
+/// <c>furniture_purchasable_clothing</c> — 2 862 definitions, the largest single name still falling
+/// back — belongs here rather than in a class of its own, and the client says why: its logic extends
+/// <c>FurnitureMultiStateLogic</c> and overrides <c>useObject()</c> to raise a confirmation dialog
+/// instead of sending anything. No use ever reaches the server for one of these; the redemption
+/// arrives as <c>RedeemPurchasableClothing</c> naming the room object, which
+/// <c>RedeemPurchasableClothingMessageHandler</c> already serves. So the server-side behaviour that
+/// was missing is exactly the plain floor furni's, and the only thing the fallback cost was a
+/// warning per placement.
+/// </para>
 /// </remarks>
 [RoomObjectLogic("default_floor")]
 [RoomObjectLogic("furniture_basic")]
 [RoomObjectLogic("furniture_multistate")]
 [RoomObjectLogic("furniture_muItistate")]
 [RoomObjectLogic("furniture_static")]
+[RoomObjectLogic("furniture_purchasable_clothing")]
 public class FurnitureFloorLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
     : FurnitureLogic<IRoomFloorItem, IFurnitureFloorLogic, IRoomFloorItemContext>(
         stuffDataFactory,

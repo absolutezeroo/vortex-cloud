@@ -54,4 +54,14 @@ public sealed class RoomObjectLogicKeyTests
     {
         KeysOf<FurnitureCrackableLogic>().Should().Equal("furniture_crackable");
     }
+
+    [Fact]
+    public void ThePurchasableClothingIsPlainFloorFurniture_ItsRedemptionIsAPacket()
+    {
+        // The client's own logic for this name extends FurnitureMultiStateLogic and overrides
+        // useObject() to open a dialog, so nothing is ever "used" server-side — the redemption comes
+        // in as RedeemPurchasableClothing. Binding the name to anything but the plain floor logic
+        // would be inventing behaviour the client never asks for.
+        KeysOf<FurnitureFloorLogic>().Should().Contain("furniture_purchasable_clothing");
+    }
 }
