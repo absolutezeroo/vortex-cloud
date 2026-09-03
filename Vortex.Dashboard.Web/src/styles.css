@@ -119,6 +119,25 @@
   --button-danger-border-top: #da4e31;
   --ghost-border: #4b84b1;
 
+  /* Green (an add) and yellow (a refresh) on this theme's navy chrome. Declared here rather than
+     only inside the dark skin, which is what left both rendering as the primary blue everywhere
+     except dark. */
+  --button-success-bg: #1f8a52;
+  --button-success-border: #2fa866;
+  --button-success-border-top: #4cc082;
+  --button-success-hover: #24a061;
+  --button-success-border-hover: #4cc082;
+  --button-success-active: #166b3f;
+  --button-success-border-active: #24a061;
+  --button-warning-bg: #b9791a;
+  --button-warning-border: #d69324;
+  --button-warning-border-top: #e8ac45;
+  --button-warning-hover: #d69324;
+  --button-warning-border-hover: #e8ac45;
+  --button-warning-active: #96610f;
+  --button-warning-border-active: #b9791a;
+  --button-warning-ink: #ffffff;
+
   --ink: #ffffff;
   --muted: #cad4da;
   --muted-strong: #e4ebf0;
@@ -282,6 +301,24 @@
   --button-danger-bg: #cf3b45;
   --button-danger-active: #a72d36;
   --button-danger-disabled: #d9c2c5;
+
+  /* Darker than the navy theme's: these sit on white, where the dark theme's #00ab54 and #ffb900
+     are bright enough to glare and drop white ink below contrast. */
+  --button-success-bg: #17864f;
+  --button-success-border: #0f6b41;
+  --button-success-border-top: #2a9d64;
+  --button-success-hover: #1a9a5b;
+  --button-success-border-hover: #17864f;
+  --button-success-active: #0f5c37;
+  --button-success-border-active: #0c4a2c;
+  --button-warning-bg: #b9791a;
+  --button-warning-border: #9a6315;
+  --button-warning-border-top: #d18f2c;
+  --button-warning-hover: #a76c17;
+  --button-warning-border-hover: #8a5813;
+  --button-warning-active: #8a5813;
+  --button-warning-border-active: #6f4610;
+  --button-warning-ink: #ffffff;
   --sidebar-active: #e3ecf6;
   --topbar-bg: #ffffff;
   --table-header-bg: #f2f6fa;
@@ -758,6 +795,62 @@ button.danger:active:not(:disabled) {
 :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:disabled,
 button.danger:disabled {
   background: var(--button-danger-disabled);
+}
+
+/* Green and yellow, for every theme. They used to exist only inside the dark theme's skin block,
+   so on `blue` (the default) and on `white` an add button and a refresh button both rendered as the
+   primary blue — the colour that is supposed to distinguish them simply was not there. Same shape as
+   danger and secondary above; the dark theme's own rules are scoped tighter and still win. */
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success,
+button.success,
+.btn-success,
+.ghost-button.success {
+  background: var(--button-success-bg);
+  border-color: var(--button-success-border);
+  box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-success-border-top);
+  color: var(--button-ink);
+}
+
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success:hover:not(:disabled),
+button.success:hover:not(:disabled),
+.btn-success:hover:not(:disabled),
+.ghost-button.success:hover:not(:disabled) {
+  background: var(--button-success-hover);
+  border-color: var(--button-success-border-hover);
+}
+
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success:active:not(:disabled),
+button.success:active:not(:disabled),
+.btn-success:active:not(:disabled),
+.ghost-button.success:active:not(:disabled) {
+  background: var(--button-success-active);
+  border-color: var(--button-success-border-active);
+}
+
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning,
+button.warning,
+.btn-warning,
+.ghost-button.warning {
+  background: var(--button-warning-bg);
+  border-color: var(--button-warning-border);
+  box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-warning-border-top);
+  color: var(--button-warning-ink);
+}
+
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning:hover:not(:disabled),
+button.warning:hover:not(:disabled),
+.btn-warning:hover:not(:disabled),
+.ghost-button.warning:hover:not(:disabled) {
+  background: var(--button-warning-hover);
+  border-color: var(--button-warning-border-hover);
+}
+
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning:active:not(:disabled),
+button.warning:active:not(:disabled),
+.btn-warning:active:not(:disabled),
+.ghost-button.warning:active:not(:disabled) {
+  background: var(--button-warning-active);
+  border-color: var(--button-warning-border-active);
 }
 
 :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary,
