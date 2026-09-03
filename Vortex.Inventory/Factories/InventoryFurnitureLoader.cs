@@ -57,6 +57,8 @@ internal sealed class InventoryFurnitureLoader(
                     // withdrawn. Without this it would be listed here as well, and the same row
                     // would exist twice on screen: once in the inventory, once in the chest.
                     && x.WiredChestEntityId == null
+                    // And the same for a song disk loaded into a jukebox.
+                    && x.JukeboxEntityId == null
                     && x.DeletedAt == null
                 )
                 .ToListAsync(ct)

@@ -46,5 +46,17 @@ generated:
   - sound.get_now_playing.success
   unknowns:
   - uk_cc22d643e4
-verified: {}
-manual: {}
+verified:
+  playback_is_a_looping_clock:
+    confidence: assumed
+    claim: The playlist loops, and the position in it is derived from when the current song started rather than stored. The server pushes NowPlaying again at every song boundary.
+    reason: "Official playback behaviour is unknown - no capture observes a jukebox running. The push is not a choice: JukeboxPlayListController.onSongFinishedPlayingEvent is empty, so a client is never told to advance by itself and a server that only answers GetNowPlaying plays one song and goes quiet. Deriving the offset from a room-anchored start is what makes two clients in one room hear the same bar, which is the only observable the message has. Looping rather than stopping matches the reference emulator."
+    evidence:
+    - kind: client_code
+      source: com/sulake/habbo/sound/music/JukeboxPlayListController.as
+      symbol: onSongFinishedPlayingEvent
+    - kind: client_code
+      source: com/sulake/habbo/sound/music/JukeboxPlayListController.as
+      symbol: onNowPlayingMessage
+manual:
+  field_meanings: "currentPosition and nextPosition are positions in the playlist, not in the track - the client exposes the first as playPosition. Time is carried by syncCount alone, in milliseconds, which the client divides by 1000."

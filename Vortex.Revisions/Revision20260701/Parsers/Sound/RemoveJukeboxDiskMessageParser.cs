@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Sound;
 
 internal class RemoveJukeboxDiskMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new RemoveJukeboxDiskMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new RemoveJukeboxDiskMessage { Index = packet.PopInt() };
 }

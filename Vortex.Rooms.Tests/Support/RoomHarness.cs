@@ -41,6 +41,7 @@ using Vortex.Primitives.Rooms.Snapshots;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Mapping;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Primitives.Sound.Providers;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
@@ -136,6 +137,7 @@ internal sealed class RoomHarness
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),
             new RoomWiredLogChannel(),
+            FakeProxy.Create<ISongProvider>(_ => null),
             BuildCommerceJournal()
         );
 

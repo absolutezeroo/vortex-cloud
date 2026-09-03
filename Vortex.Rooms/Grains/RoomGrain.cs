@@ -36,6 +36,7 @@ using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Primitives.Sound.Providers;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains.Modules;
 using Vortex.Rooms.Grains.Systems;
@@ -72,6 +73,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IPetCommandProvider _petCommandProvider;
     internal readonly IPetVocalProvider _petVocalProvider;
     internal readonly RoomConfig _roomConfig;
+    internal readonly ISongProvider _songProvider;
     internal readonly IRoomModelProvider _roomModelProvider;
 
     internal readonly RoomLiveState _state;
@@ -115,6 +117,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomCrackableSystem CrackableSystem;
     public readonly RoomTradingSystem TradingSystem;
     public readonly RoomWiredTradingSystem WiredTradingSystem;
+    public readonly RoomJukeboxSystem JukeboxSystem;
 
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
@@ -140,6 +143,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IPetCommandProvider petCommandProvider,
         IPetVocalProvider petVocalProvider,
         RoomWiredLogChannel wiredLogChannel,
+        ISongProvider songProvider,
         // Last on purpose: GrainActivationContext.CreateWithIntegerKey takes params object[], so a
         // dependency inserted anywhere else compiles cleanly in every test that builds this grain
         // and then fails at activation.
@@ -167,6 +171,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _petCommandProvider = petCommandProvider;
         _petVocalProvider = petVocalProvider;
         _wiredLogChannel = wiredLogChannel;
+        _songProvider = songProvider;
         _commerceJournal = commerceJournal;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
@@ -199,6 +204,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         CrackableSystem = new RoomCrackableSystem(this);
         TradingSystem = new RoomTradingSystem(this);
         WiredTradingSystem = new RoomWiredTradingSystem(this);
+        JukeboxSystem = new RoomJukeboxSystem(this);
 
         // Every game the room can host plugs in here, and nowhere else: the game-timer furni, the wired
         // control-clock action, the tick loop and the avatar-left path all go through GameSystem and
@@ -372,6 +378,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
         await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
         await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
+        await RunTickStepAsync("jukebox", () => JukeboxSystem.ProcessAsync(now, ct));
 
         foreach (IRoomMinigame minigame in GameSystem.Minigames)
         {

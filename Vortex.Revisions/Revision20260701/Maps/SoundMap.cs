@@ -52,5 +52,25 @@ internal sealed class SoundMap : IRevisionMap
                 MessageComposer.UserSongDisksInventoryMessageComposer
             )
         );
+        builder.MapSerializer(
+            typeof(JukeboxSongDisksMessageComposer),
+            new JukeboxSongDisksMessageComposerSerializer(
+                MessageComposer.JukeboxSongDisksMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(JukeboxPlayListFullMessageComposer),
+            new JukeboxPlayListFullMessageComposerSerializer(
+                MessageComposer.JukeboxPlayListFullMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NowPlayingMessageComposer),
+            new NowPlayingMessageComposerSerializer(MessageComposer.NowPlayingMessageComposer)
+        );
+        builder.MapSerializer(
+            typeof(PlayListMessageComposer),
+            new PlayListMessageComposerSerializer(MessageComposer.PlayListMessageComposer)
+        );
     }
 }

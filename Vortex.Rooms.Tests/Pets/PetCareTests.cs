@@ -22,6 +22,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Primitives.Sound.Providers;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
@@ -221,6 +222,7 @@ public sealed class PetCareTests
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
                 new RoomWiredLogChannel(),
+                FakeProxy.Create<ISongProvider>(_ => null),
                 FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 

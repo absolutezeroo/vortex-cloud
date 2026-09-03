@@ -46,5 +46,14 @@ generated:
   - sound.get_sound_machine_play_list.success
   unknowns:
   - uk_e785cff4a8
-verified: {}
-manual: {}
+verified:
+  answered_empty:
+    confidence: assumed
+    claim: Vortex answers with an empty PlayList. Loading a sound machine is not implemented.
+    reason: "Silence is worse than an empty list here: SoundMachinePlayListController waits for this message before it draws anything, so an unanswered request leaves the composer dialog blank with no explanation. An empty list is both true - nothing is loaded, because nothing can be - and something the client already renders. What the official server sends for a machine with no disks is unknown."
+    evidence:
+    - kind: client_code
+      source: com/sulake/habbo/sound/music/SoundMachinePlayListController.as
+      symbol: requestPlayList
+manual:
+  not_implemented: "The sound machine's own loading path (disks into the machine, PlayListSongAdded) is not built. The packet is answered; the feature behind it is not."

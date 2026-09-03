@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Sound;
 
 internal class AddJukeboxDiskMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new AddJukeboxDiskMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new AddJukeboxDiskMessage { DiskItemId = packet.PopInt(), SlotNumber = packet.PopInt() };
 }

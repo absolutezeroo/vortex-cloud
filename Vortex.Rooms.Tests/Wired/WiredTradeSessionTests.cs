@@ -35,6 +35,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
+using Vortex.Primitives.Sound.Providers;
 using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
@@ -275,6 +276,7 @@ public sealed class WiredTradeSessionTests
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
                 FakeProxy.Create<IPetVocalProvider>(_ => null),
                 new RoomWiredLogChannel(),
+                FakeProxy.Create<ISongProvider>(_ => null),
                 FakeProxy.Create<ICommerceJournal>(_ => Task.CompletedTask)
             );
 

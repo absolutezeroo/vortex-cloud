@@ -167,7 +167,8 @@ public sealed class MarketplacePurchaseGrain(
                     f.Id == furnitureItemId
                     && f.PlayerEntityId == sellerId
                     && f.RoomEntityId == null
-                    && f.WiredChestEntityId == null,
+                    && f.WiredChestEntityId == null
+                    && f.JukeboxEntityId == null,
                 ct
             )
             .ConfigureAwait(true);

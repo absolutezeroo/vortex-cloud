@@ -842,12 +842,16 @@ public sealed partial class InventoryGrain
             // `furniture_extras` and parses as a number. A disk carrying anything else is a disk of
             // nothing: it is skipped rather than reported as song 0, which the client would ask
             // about, never get an answer for, and keep as a nameless entry all session.
-            if (
-                item.Definition.LogicName != SoundLogicNames.SongDisk
-                || item.StuffData is not LegacyStuffSnapshot legacy
-                || !int.TryParse(legacy.Data, out int songId)
-                || songId <= 0
-            )
+            if (item.Definition.LogicName != SoundLogicNames.SongDisk)
+            {
+                continue;
+            }
+
+            int songId = SongDiskExtraData.ReadSongId(
+                (item.StuffData as LegacyStuffSnapshot)?.Data
+            );
+
+            if (songId <= 0)
             {
                 continue;
             }

@@ -147,6 +147,7 @@ public sealed partial class WiredTradeSettlement(
                     && f.PlayerEntityId == (int)ctx.PlayerId
                     && f.RoomEntityId == null
                     && f.WiredChestEntityId == null
+                    && f.JukeboxEntityId == null
                     && f.DeletedAt == null
                 )
                 .ToListAsync(ct)

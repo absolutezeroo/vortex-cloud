@@ -75,6 +75,9 @@ public static class GrainFactoryExtensions
     public static IRoomWired GetRoomWired(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomWired>((long)roomId.Value);
 
+    public static IRoomJukebox GetRoomJukebox(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomJukebox>((long)roomId.Value);
+
     public static IRoomPersistenceGrain GetRoomPersistenceGrain(
         this IGrainFactory factory,
         RoomId roomId

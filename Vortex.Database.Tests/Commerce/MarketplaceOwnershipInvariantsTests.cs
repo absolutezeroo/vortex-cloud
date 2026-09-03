@@ -30,9 +30,9 @@ namespace Vortex.Database.Tests.Commerce;
 /// duplication below survived it.
 ///
 /// This asks the database instead, with the seller's furniture row really there. The predicate is
-/// <c>InventoryFurnitureLoader</c>'s own, spelled out: player, no room, no wired chest. Those four
-/// columns are the whole definition of "in this player's inventory", and re-reading them is exactly
-/// what happens when the grain is collected after two idle minutes or the player reconnects.
+/// <c>InventoryFurnitureLoader</c>'s own, spelled out: player, no room, no wired chest, no jukebox.
+/// Those columns are the whole definition of "in this player's inventory", and re-reading them is
+/// exactly what happens when the grain is collected after two idle minutes or the player reconnects.
 ///
 /// A row that still answers them after a listing is an item the seller gets back for free — and
 /// every exit an offer has (sold, cancelled, expired) grants a fresh row through DeliverAsync, so
@@ -62,7 +62,10 @@ public sealed class MarketplaceOwnershipInvariantsTests : IDisposable
         await using VortexDbContext db = new(_options);
 
         return await db.Furnitures.CountAsync(f =>
-            f.PlayerEntityId == SELLER && f.RoomEntityId == null && f.WiredChestEntityId == null
+            f.PlayerEntityId == SELLER
+            && f.RoomEntityId == null
+            && f.WiredChestEntityId == null
+            && f.JukeboxEntityId == null
         );
     }
 

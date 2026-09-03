@@ -127,6 +127,13 @@ public class RoomConfig : IWiredLimits
     /// </summary>
     public int WiredChestCapacity { get; init; } = 1000;
 
+    /// <summary>
+    /// How many song disks one jukebox holds. The client is told this number and draws that many
+    /// slots, so it is a display bound as much as a limit; the refusal it triggers has its own
+    /// message (<c>JukeboxPlayListFull</c>) and its own dialog.
+    /// </summary>
+    public int JukeboxCapacity { get; init; } = 20;
+
     /// <summary>How long a half-open mystery box keeps waiting for its other half. The client's wait
     /// dialog has no timer of its own, so without this a player who walked away leaves the box
     /// permanently reserved against everyone else.</summary>
