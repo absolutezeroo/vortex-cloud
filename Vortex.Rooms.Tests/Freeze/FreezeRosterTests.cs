@@ -256,9 +256,7 @@ public sealed class FreezeRosterTests
             .CurrentEffect()
             .Should()
             .Be(
-                FreezeConstants.TeamEffectBase
-                    + (int)Green
-                    + FreezeConstants.ProtectionEffectBonus
+                FreezeConstants.TeamEffectBase + (int)Green + FreezeConstants.ProtectionEffectBonus
             );
 
         // A protected player cannot be frozen; a fresh one shows the frozen effect once hit.
