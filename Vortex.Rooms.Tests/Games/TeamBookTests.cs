@@ -17,6 +17,14 @@ namespace Vortex.Rooms.Tests.Games;
 /// </para></summary>
 public sealed class TeamBookTests
 {
+    // The four Habbo colours as this game's teams: ordinals 1-4, exactly as HabboTeamPalette.Standard
+    // maps them. Named here so the tests read like the domain and not like a colour enum.
+    private static readonly TeamSet Teams = TeamSet.HabboColours;
+    private static readonly TeamId Red = new(1);
+    private static readonly TeamId Green = new(2);
+    private static readonly TeamId Blue = new(3);
+    private static readonly TeamId Yellow = new(4);
+
     private static readonly PlayerId One = new(101);
     private static readonly PlayerId Two = new(202);
     private static readonly PlayerId Three = new(303);
