@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Sound;
 
 internal class GetOfficialSongIdMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetOfficialSongIdMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetOfficialSongIdMessage { OfficialSongId = packet.PopString() };
 }

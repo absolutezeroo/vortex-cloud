@@ -1,5 +1,7 @@
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Sound;
 using Vortex.Revisions.Revision20260701.Parsers.Sound;
+using Vortex.Revisions.Revision20260701.Serializers.Sound;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -30,6 +32,25 @@ internal sealed class SoundMap : IRevisionMap
         builder.MapParser(
             MessageEvent.RemoveJukeboxDiskEvent,
             new RemoveJukeboxDiskMessageParser()
+        );
+
+        // The answers. This map registered parsers only, so every sound composer written so far was
+        // unreachable: sending one found no serializer and the client heard nothing back.
+        builder.MapSerializer(
+            typeof(TraxSongInfoMessageComposer),
+            new TraxSongInfoMessageComposerSerializer(MessageComposer.TraxSongInfoMessageComposer)
+        );
+        builder.MapSerializer(
+            typeof(OfficialSongIdMessageComposer),
+            new OfficialSongIdMessageComposerSerializer(
+                MessageComposer.OfficialSongIdMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(UserSongDisksInventoryMessageComposer),
+            new UserSongDisksInventoryMessageComposerSerializer(
+                MessageComposer.UserSongDisksInventoryMessageComposer
+            )
         );
     }
 }

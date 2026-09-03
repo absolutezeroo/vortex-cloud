@@ -7,6 +7,7 @@ using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Errors;
 using Vortex.Database.Entities.Fishing;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Database.Entities.Gamedata;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Help;
 using Vortex.Database.Entities.Marketplace;
@@ -267,6 +268,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
         null!;
 
     public DbSet<FigureSellableSetEntity> FigureSellableSets { get; init; } = null!;
+
+    public DbSet<SongEntity> Songs { get; init; } = null!;
 
     public DbSet<PlayerClothingEntity> PlayerClothing { get; init; } = null!;
 

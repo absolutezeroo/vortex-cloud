@@ -8,6 +8,7 @@ internal class OfficialSongIdMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, OfficialSongIdMessageComposer message)
     {
-        //
+        packet.WriteString(message.OfficialSongId);
+        packet.WriteInteger(message.SongId);
     }
 }

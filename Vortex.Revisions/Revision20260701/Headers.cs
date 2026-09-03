@@ -812,6 +812,11 @@ internal static class MessageComposer
     public const int PlayListMessageComposer = 1242;
     public const int PlayListSongAddedMessageComposer = 2785; // AS3-verified (ghost fix): onPlayListSongAddedMessage @ SoundMachinePlayListController
     public const int TraxSongInfoMessageComposer = 2278;
+
+    // AS3-verified (direct read of the 2026 registry): _SafeStr_4546[1930] = _SafeCls_3625, the
+    // event HabboMusicController::onSongDiskInventoryMessage() subscribes to. Its parser reads a
+    // count then that many (diskId, songId) pairs.
+    public const int UserSongDisksInventoryMessageComposer = 1930;
     public const int AchievementComposer = 3981; // AS3-verified (ghost fix): onAchievement
     public const int AchievementsComposer = 1969; // AS3-verified (ghost fix): onAchievements
     public const int AchievementsScoreComposer = 3070;
