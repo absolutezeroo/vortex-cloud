@@ -124,10 +124,7 @@ public static class GameTargetResolver
             : GameTarget.Ambiguous(candidates.Count);
     }
 
-    private static GameTarget ResolveExplicit(
-        IReadOnlyList<ArenaCandidate> candidates,
-        GameId game
-    )
+    private static GameTarget ResolveExplicit(IReadOnlyList<ArenaCandidate> candidates, GameId game)
     {
         ArenaId found = ArenaId.None;
         int matches = 0;

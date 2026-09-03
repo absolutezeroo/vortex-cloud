@@ -53,11 +53,7 @@ public sealed class RoomGameRuntimeTests
 
     /// <summary>An untargeted start, the way a bare counter or a wired clock makes one.</summary>
     private static Task<bool> StartAsync(RoomHarness harness, string game = "") =>
-        harness.Grain.GameRuntime.StartGameAsync(
-            default,
-            new GameId(game),
-            CancellationToken.None
-        );
+        harness.Grain.GameRuntime.StartGameAsync(default, new GameId(game), CancellationToken.None);
 
     private static Task<bool> EndAsync(RoomHarness harness, string game = "") =>
         harness.Grain.GameRuntime.EndGameAsync(default, new GameId(game), CancellationToken.None);

@@ -105,7 +105,9 @@ public sealed class BanzaiGameTests
         BanzaiGateComponent gate = PlaceGate(harness, "red", 2, 2);
         BanzaiTileComponent tile = PlaceTile(harness, 5, 5);
 
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         harness.Grain.GameRuntime.PhaseOf(BanzaiConstants.Game).Should().Be(GamePhase.Running);
         tile.GetState().Should().Be(BanzaiConstants.TileNeutral);
@@ -118,7 +120,9 @@ public sealed class BanzaiGameTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         PlaceGate(harness, "red", 2, 2);
 
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         // A match on an arena that does not exist used to start, do nothing and say nothing.
         harness.Grain.GameRuntime.PhaseOf(BanzaiConstants.Game).Should().Be(GamePhase.Idle);
@@ -132,7 +136,9 @@ public sealed class BanzaiGameTests
         BanzaiGateComponent gate = PlaceGate(harness, "red", 2, 2);
         BanzaiTileComponent tile = PlaceTile(harness, 5, 5);
         await WalkAsync(harness, gate).ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         await WalkAsync(harness, tile).ConfigureAwait(true); // hijack the neutral tile
         harness.Grain.GameRuntime.GetTeamScore(GameTeamColor.Red).Should().Be(0);
@@ -159,7 +165,9 @@ public sealed class BanzaiGameTests
         harness.PutRealPlayerOnTile(RoomHarness.Stranger, 2, 2);
         PlaceGate(harness, "red", 2, 2);
         BanzaiTileComponent tile = PlaceTile(harness, 5, 5);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         await WalkAsync(harness, tile).ConfigureAwait(true);
 
@@ -187,7 +195,9 @@ public sealed class BanzaiGameTests
         harness.PutRealPlayerOnTile(RoomHarness.Stranger, 2, 2);
         PlaceGate(harness, "red", 2, 2);
         BanzaiTileComponent tile = PlaceTile(harness, 5, 5);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         await harness
             .Grain.GameRuntime.SignalAsync(GameSignal.Detached(tile), CancellationToken.None)

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Vortex.Primitives.Players;
-using Vortex.Rooms.Games.Teams;
 using Vortex.Rooms.Games.Freeze;
+using Vortex.Rooms.Games.Teams;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Freeze;

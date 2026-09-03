@@ -386,11 +386,7 @@ public sealed class RoomGameRuntime
     /// wipe the points it just awarded with no error and no log.
     /// </para>
     /// </summary>
-    public async Task<bool> StartGameAsync(
-        RoomObjectId source,
-        GameId game,
-        CancellationToken ct
-    )
+    public async Task<bool> StartGameAsync(RoomObjectId source, GameId game, CancellationToken ct)
     {
         GameTarget target = ResolveStartTarget(source, game);
 
@@ -623,10 +619,7 @@ public sealed class RoomGameRuntime
     private async Task StartMatchAsync(ArenaHost host, CancellationToken ct)
     {
         host.Sequence++;
-        host.Match = new GameMatch(
-            new MatchId(_roomGrain.RoomId, host.Id, host.Sequence),
-            _nowMs
-        );
+        host.Match = new GameMatch(new MatchId(_roomGrain.RoomId, host.Id, host.Sequence), _nowMs);
 
         // Seeded from the match id — the ARENA's, so two boards of the same game in one room do not
         // replay each other's rolls — which is what makes a Freeze power-up or a Banzai teleport

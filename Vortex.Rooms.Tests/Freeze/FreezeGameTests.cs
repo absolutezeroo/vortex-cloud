@@ -76,7 +76,9 @@ public sealed class FreezeGameTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         PlaceGate(harness, "red", 2, 2);
 
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         harness.Grain.GameRuntime.PhaseOf(FreezeConstants.Game).Should().Be(GamePhase.Idle);
     }
@@ -190,7 +192,9 @@ public sealed class FreezeGameTests
         await WalkAsync(harness, gate).ConfigureAwait(true);
         await StartAsync(harness).ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         // A lock that outlived the match would strand a player until a wired unfreeze box happened
         // to fire.
@@ -220,7 +224,9 @@ public sealed class FreezeGameTests
         await harness
             .Grain.GameRuntime.TickAsync(Kickoff, CancellationToken.None)
             .ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
     }
 
     private static Task WalkAsync(RoomHarness harness, IGameComponent component) =>

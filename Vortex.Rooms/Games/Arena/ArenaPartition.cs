@@ -59,10 +59,7 @@ public sealed class ArenaPartition
 
     private readonly Dictionary<RoomObjectId, int>? _instanceByObject;
 
-    private ArenaPartition(
-        Dictionary<RoomObjectId, int>? instanceByObject,
-        int instanceCount
-    )
+    private ArenaPartition(Dictionary<RoomObjectId, int>? instanceByObject, int instanceCount)
     {
         _instanceByObject = instanceByObject;
         InstanceCount = instanceCount;

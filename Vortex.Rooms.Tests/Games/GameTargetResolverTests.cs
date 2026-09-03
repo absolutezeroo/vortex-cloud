@@ -106,11 +106,7 @@ public sealed class GameTargetResolverTests
     [Fact]
     public void NamingAGameTheRoomCannotPlay_ResolvesToNothing()
     {
-        GameTarget target = GameTargetResolver.Resolve(
-            [Candidate(Banzai, 0)],
-            Freeze,
-            default
-        );
+        GameTarget target = GameTargetResolver.Resolve([Candidate(Banzai, 0)], Freeze, default);
 
         target.Outcome.Should().Be(GameTargetOutcome.NoCandidate);
     }

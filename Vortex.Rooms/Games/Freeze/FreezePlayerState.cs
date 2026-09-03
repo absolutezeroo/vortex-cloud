@@ -11,11 +11,7 @@ namespace Vortex.Rooms.Games.Freeze;
 /// score. Balance comes from an injected <see cref="FreezeSettings"/> (live server config); only the
 /// effect ids are compiled constants. Mutators return whether a visible change happened.
 /// </summary>
-public sealed class FreezePlayerState(
-    PlayerId playerId,
-    TeamId team,
-    FreezeSettings settings
-)
+public sealed class FreezePlayerState(PlayerId playerId, TeamId team, FreezeSettings settings)
 {
     // Refreshed from the live server config each round by Reset(), so config edits between rounds take
     // effect for players who joined a gate before the round started.

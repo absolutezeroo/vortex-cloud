@@ -111,7 +111,9 @@ public sealed class ScoreboardSystemTests
             )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         // The coordinator reset the shared scores before announcing the start; the boards must
         // follow, or last round's tally sits there through the whole next round.
@@ -127,7 +129,9 @@ public sealed class ScoreboardSystemTests
             "es_score_r",
             "freeze_counter_red"
         );
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.TryGiveScoreToTeamAsync(
                 ScoreBox,
@@ -138,7 +142,9 @@ public sealed class ScoreboardSystemTests
             )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         red.GetState().Should().Be(4);
     }
@@ -157,7 +163,9 @@ public sealed class ScoreboardSystemTests
                 CancellationToken.None
             )
             .ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.TryGiveScoreToTeamAsync(
                 ScoreBox,
@@ -168,7 +176,9 @@ public sealed class ScoreboardSystemTests
             )
             .ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         IHighscoreStuffData data = (IHighscoreStuffData)board.StuffData;
         HighscoreEntry entry = data.Entries.Should().ContainSingle().Subject;
@@ -183,9 +193,13 @@ public sealed class ScoreboardSystemTests
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         FurnitureHighScoreLogic board = await AttachHighScoreAsync(harness, "highscore_classic*1")
             .ConfigureAwait(true);
-        await harness.Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
-        await harness.Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None).ConfigureAwait(true);
+        await harness
+            .Grain.GameRuntime.EndGameAsync(default, GameId.None, CancellationToken.None)
+            .ConfigureAwait(true);
 
         ((IHighscoreStuffData)board.StuffData).Entries.Should().BeEmpty();
     }
