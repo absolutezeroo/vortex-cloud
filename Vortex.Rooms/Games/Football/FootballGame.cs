@@ -34,12 +34,28 @@ namespace Vortex.Rooms.Games.Football;
 /// repaint off the score event.</item>
 /// </list>
 /// </para>
-/// <para><b>Server-authoritative.</b> The client says only "a player stepped onto the ball". The
-/// direction, the distance, every tile the ball occupies and every goal are decided here.</para>
+/// <para><b>Server-authoritative.</b> The client says only "a player stepped onto the ball" or
+/// "clicked it". The direction, the distance, every tile the ball occupies and every goal are
+/// decided here.</para>
+/// <para>
+/// <b>Provenance.</b> Habbo's own football is not authoritatively known — there is no capture of the
+/// official server, and the official client carries no football logic at all, because a
+/// <c>fball</c> is an ordinary floor item the server slides with the same bundle the rollers use.
+/// The behaviour below (a struck ball travels further than a dribbled one, it accelerates then
+/// slows, it bounces off what it cannot pass, a net only accepts a ball entering its mouth, and a
+/// player in the way usually but not always takes it) is what the open-source reference emulator
+/// does. Per the repository contract that is <b>evidence, not authority</b>; every number it implies
+/// is admin-editable in <see cref="FootballSettings"/> rather than compiled in.
+/// </para>
 /// </summary>
 [RoomGame]
 public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(context), IBallSpace
 {
+    /// <summary>How many times one hop may turn the ball before we let it settle. The reference
+    /// emulator recurses without a bound and can spin forever on a ball walled in on both sides; a
+    /// cap costs nothing and makes "a ball always comes to rest" an invariant.</summary>
+    private const int MaxBouncesPerStep = 8;
+
     private readonly Dictionary<RoomObjectId, BallMotion> _balls = [];
 
     private FootballSettings _settings = FootballSettings.Default;
@@ -86,6 +102,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         }
 
         await ResetGoalsAsync();
+        await RestAllBallsAsync();
     }
 
     public override Task OnRoundEndingAsync(GameMatch match, CancellationToken ct) =>
@@ -93,11 +110,12 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         // tick discover it is what makes that an invariant instead of a race.
         StopAllBallsAsync();
 
-    public override Task OnResettingAsync(GameMatch match, CancellationToken ct)
+    public override async Task OnResettingAsync(GameMatch match, CancellationToken ct)
     {
         _balls.Clear();
 
-        return ResetGoalsAsync();
+        await ResetGoalsAsync();
+        await RestAllBallsAsync();
     }
 
     // ---- tick --------------------------------------------------------------
@@ -161,6 +179,12 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         }
     }
 
+    /// <summary>
+    /// One hop. A ball that cannot go where it was headed turns rather than stops — that is the whole
+    /// of the bounce — and only rests when it has run out of travel, been taken off a player's feet,
+    /// or has nowhere left to turn. Bouncing costs neither a hop nor a beat, exactly as the reference
+    /// does, but is bounded here so a ball boxed into a single tile settles instead of spinning.
+    /// </summary>
     private async Task StepBallAsync(
         RoomObjectId ballId,
         BallMotion motion,
@@ -177,33 +201,67 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         }
 
         int fromIdx = _context.ToIdx(ball.X, ball.Y);
-        BallStep step = BallPhysics.Advance(fromIdx, motion.Direction, this);
+        int delayMs = BallPhysics.StepDelayMs(motion.CurrentStep, motion.TotalSteps, _settings);
 
-        switch (step.Outcome)
+        for (int attempt = 0; attempt <= MaxBouncesPerStep; attempt++)
         {
-            case BallStepOutcome.Blocked:
-                motion.Stop();
+            BallStep step = BallPhysics.Advance(fromIdx, motion.Direction, this);
 
-                return;
+            switch (step.Outcome)
+            {
+                case BallStepOutcome.Goal:
+                    await ScoreGoalAsync(ball, motion, step.TileIdx, nowMs, ct);
 
-            case BallStepOutcome.Goal:
-                await ScoreGoalAsync(ball, motion, step.TileIdx, nowMs, ct);
+                    return;
 
-                return;
+                case BallStepOutcome.Rolled:
+                    await _context.SlideItemAsync(ball, step.TileIdx);
 
-            case BallStepOutcome.Rolled:
-                await _context.SlideItemAsync(ball, step.TileIdx);
+                    motion.NextStepAtMs = nowMs + delayMs;
+                    motion.StepsRemaining--;
 
-                motion.StepsRemaining--;
-                motion.NextStepAtMs = nowMs + _settings.BallStepMs;
+                    if (motion.StepsRemaining <= 0)
+                    {
+                        await RestAsync(ball, motion);
+                    }
+                    else
+                    {
+                        await ball.SetStateAsync(BallPhysics.RollState(motion.StepsRemaining));
+                    }
 
-                if (motion.StepsRemaining <= 0)
-                {
-                    motion.Stop();
-                }
+                    return;
 
-                return;
+                case BallStepOutcome.Tackled:
+                    // Somebody's feet, not a wall. It stops dead where it is.
+                    await RestAsync(ball, motion);
+
+                    return;
+
+                case BallStepOutcome.Blocked:
+                    if (!motion.CanBounce)
+                    {
+                        await RestAsync(ball, motion);
+
+                        return;
+                    }
+
+                    Rotation bounced = BallPhysics.Bounce(fromIdx, motion.Direction, this);
+
+                    if (bounced == Rotation.None || bounced == motion.Direction)
+                    {
+                        await RestAsync(ball, motion);
+
+                        return;
+                    }
+
+                    motion.Direction = bounced;
+
+                    break;
+            }
         }
+
+        // Boxed in: it turned as many times as we allow and still had nowhere to go.
+        await RestAsync(ball, motion);
     }
 
     private async Task ScoreGoalAsync(
@@ -215,9 +273,12 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     )
     {
         await _context.SlideItemAsync(ball, goalTileIdx);
+        await ball.SetStateAsync(FootballConstants.BallRestingState);
 
         motion.Direction = Rotation.None;
+        motion.TotalSteps = 0;
         motion.StepsRemaining = 0;
+        motion.CanBounce = false;
         motion.NextStepAtMs = 0;
 
         IGoalComponent? goal = _context.Arena.OnTile<IGoalComponent>(goalTileIdx);
@@ -259,6 +320,15 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             );
         }
 
+        if (_settings.GoalResetMs <= 0)
+        {
+            // Configured to leave the ball in the net, which is what the reference emulator does:
+            // somebody walks it back out. The goal keeps its scored state until the match resets it.
+            motion.Stop();
+
+            return;
+        }
+
         motion.ReturnAtMs = nowMs + _settings.GoalResetMs;
 
         _context.KeepTicking();
@@ -297,6 +367,11 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
                 ball,
                 ct
             ),
+            { Kind: GameSignalKind.Use, Component: IBallComponent ball } => TackleAsync(
+                signal.Player,
+                ball,
+                ct
+            ),
             { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
                 OnGateWalkOnAsync(signal.Player, gate, ct),
             { Kind: GameSignalKind.Detached, Component: IBallComponent ball } =>
@@ -307,11 +382,68 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
 
     /// <summary>
     /// A player stepped into a ball. The direction is the one they were walking in — their body
-    /// rotation, which the room has already turned toward the tile they stepped onto — and the
-    /// distance is config, not anything the client sends.
+    /// rotation, which the room has already turned toward the tile they stepped onto.
+    /// <para>
+    /// How far it goes depends on what they were doing. Walking AT the ball — the tile they were
+    /// heading for is the ball's own — strikes it the full distance; crossing that tile on the way
+    /// somewhere else only nudges it along, and a nudge does not bounce off walls. That distinction
+    /// is what makes dribbling possible at all, and it is why the walker's goal tile is asked for
+    /// rather than assumed.
+    /// </para>
     /// </summary>
     private Task KickAsync(PlayerId playerId, IBallComponent ball, CancellationToken ct)
     {
+        bool struck =
+            _context.TryGetPlayerGoalTile(playerId, out int goalTileIdx)
+            && goalTileIdx == _context.ToIdx(ball.X, ball.Y);
+
+        return SetBallMovingAsync(
+            playerId,
+            ball,
+            struck ? _settings.KickDistance : _settings.DragDistance,
+            canBounce: struck,
+            ct
+        );
+    }
+
+    /// <summary>
+    /// A player clicked the ball from beside it, without stepping on it. It travels less far than a
+    /// run-up kick and, being struck rather than nudged, bounces. Only from an adjacent tile: a click
+    /// from across the room is the client asking for something the server will not do.
+    /// </summary>
+    private Task TackleAsync(PlayerId playerId, IBallComponent ball, CancellationToken ct)
+    {
+        if (!_context.TryGetPlayerPosition(playerId, out int x, out int y))
+        {
+            return Task.CompletedTask;
+        }
+
+        return IsAdjacent(x, y, ball)
+            ? SetBallMovingAsync(playerId, ball, _settings.TackleDistance, canBounce: true, ct)
+            : Task.CompletedTask;
+    }
+
+    private static bool IsAdjacent(int x, int y, IBallComponent ball)
+    {
+        int dx = x - ball.X;
+        int dy = y - ball.Y;
+
+        return (dx, dy) != (0, 0) && dx is >= -1 and <= 1 && dy is >= -1 and <= 1;
+    }
+
+    private async Task SetBallMovingAsync(
+        PlayerId playerId,
+        IBallComponent ball,
+        int distance,
+        bool canBounce,
+        CancellationToken ct
+    )
+    {
+        if (distance <= 0)
+        {
+            return;
+        }
+
         if (!_balls.TryGetValue(ball.ObjectId, out BallMotion? motion))
         {
             // A ball kicked outside a match: it still rolls, it just belongs to no match.
@@ -322,34 +454,37 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         // A ball on its way back from a goal is out of play until it is back on the spot.
         if (motion.IsWaitingToReturn)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         if (!_context.TryGetPlayerFacing(playerId, out Rotation facing) || facing == Rotation.None)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         motion.Kick(
             _context.Match,
             playerId,
             facing,
-            _settings.KickDistance,
-            // Next tick, not this one: the kicker is standing on the ball's tile right now, and a
+            distance,
+            canBounce,
+            // Next hop, not this turn: the kicker is standing on the ball's tile right now, and a
             // ball that moved in the same turn would be animated from under their feet before the
             // client has finished the step that put them there.
-            _context.NowMs + _settings.BallStepMs
+            _context.NowMs + BallPhysics.StepDelayMs(1, distance, _settings)
         );
+
+        await ball.SetStateAsync(BallPhysics.RollState(distance));
 
         _context.KeepTicking();
 
-        return _context.PublishAsync(
+        await _context.PublishAsync(
             new FootballBallKickedEvent
             {
                 Ball = ball.ObjectId,
                 Kicker = playerId,
                 Direction = facing,
-                Distance = _settings.KickDistance,
+                Distance = distance,
             },
             ct
         );
@@ -438,10 +573,19 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
 
     bool IBallSpace.IsOpen(int tileIdx) => IsOpen(tileIdx);
 
-    bool IBallSpace.HasAvatar(int tileIdx) => HasAvatar(tileIdx);
+    /// <summary>Rolled, not decided: a player does not stop every ball that reaches them. The roll
+    /// goes through the match's seeded random, so a replayed match intercepts the same balls.</summary>
+    bool IBallSpace.AvatarStopsBall(int tileIdx) =>
+        HasAvatar(tileIdx) && _context.Random.Chance(_settings.AvatarStopChancePercent);
 
-    bool IBallSpace.IsGoal(int tileIdx) =>
-        _context.Arena.OnTile<IGoalComponent>(tileIdx) is not null;
+    bool IBallSpace.TryGetGoal(int tileIdx, out Rotation facing)
+    {
+        IGoalComponent? goal = _context.Arena.OnTile<IGoalComponent>(tileIdx);
+
+        facing = goal?.Facing ?? Rotation.None;
+
+        return goal is not null;
+    }
 
     private bool IsOpen(int tileIdx) => _context.IsTileOpenForItem(tileIdx);
 
@@ -469,7 +613,31 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             motion.Stop();
         }
 
+        await RestAllBallsAsync();
         await ResetGoalsAsync();
+    }
+
+    /// <summary>Stops a ball and clears the roll state, so the client puts it down instead of leaving
+    /// it spinning on the floor forever.</summary>
+    private static async Task RestAsync(IBallComponent ball, BallMotion motion)
+    {
+        motion.Stop();
+
+        if (ball.GetState() != FootballConstants.BallRestingState)
+        {
+            await ball.SetStateAsync(FootballConstants.BallRestingState);
+        }
+    }
+
+    private async Task RestAllBallsAsync()
+    {
+        foreach (IBallComponent ball in _context.Arena.ComponentsOf<IBallComponent>())
+        {
+            if (ball.GetState() != FootballConstants.BallRestingState)
+            {
+                await ball.SetStateAsync(FootballConstants.BallRestingState);
+            }
+        }
     }
 
     private async Task ResetGoalsAsync()

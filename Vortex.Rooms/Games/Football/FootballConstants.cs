@@ -13,6 +13,10 @@ public static class FootballConstants
     /// <summary>The game's identity. Every football component carries it and the runtime routes on it.</summary>
     public static readonly GameId Game = new("football");
 
+    /// <summary>The ball's state at rest. While it rolls the state counts the hops it has left, which
+    /// is what the client animates from; see <c>BallPhysics.RollState</c>.</summary>
+    public const int BallRestingState = 0;
+
     /// <summary>The goal furni's state while a ball is in it. One state, held for the celebration and
     /// cleared when the ball returns to the spot — the goals are plain multistate furni.</summary>
     public const int GoalScoredState = 1;

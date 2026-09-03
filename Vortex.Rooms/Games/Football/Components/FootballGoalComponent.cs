@@ -1,4 +1,5 @@
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Games.Components;
@@ -30,4 +31,6 @@ public sealed class FootballGoalComponent(
         && byKey != GameTeamColor.None
             ? byKey
             : GameColorKey.FromKeySuffix(ctx.Definition.Name);
+
+    public Rotation Facing => _ctx.RoomObject.Rotation;
 }

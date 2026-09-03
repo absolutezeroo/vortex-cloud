@@ -34,7 +34,8 @@ internal static class GameFurni
         int x,
         int y,
         Func<StuffDataFactory, IRoomFloorItemContext, TComponent> create,
-        string? classname = null
+        string? classname = null,
+        Rotation rotation = Rotation.North
     )
         where TComponent : class, IRoomObjectLogic
     {
@@ -93,7 +94,7 @@ internal static class GameFurni
                 "get_Y" => position[1],
                 "get_Z" => default(Altitude),
                 "get_Height" => default(Altitude),
-                "get_Rotation" => Rotation.North,
+                "get_Rotation" => rotation,
                 _ => null,
             };
         });

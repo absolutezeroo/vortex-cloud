@@ -10,9 +10,10 @@ namespace Vortex.Rooms.Tests.Football;
 /// <summary>
 /// Guards the deliberate duplication between the feature-side <see cref="FootballConfig"/> keys /
 /// <see cref="FootballSettings"/> defaults and the dashboard-facing <see cref="ConfigKeyCatalog"/>.
-/// It matters more for football than for the others: every one of its numbers is an assumption
-/// rather than a Habbo behaviour, so an operator has to be able to change all of them, and a key
-/// missing from the catalogue is a knob that exists and can never be turned.
+/// It matters more for football than for the others: none of its numbers is an attested Habbo
+/// behaviour — they are what the reference emulator does, which is evidence and not authority — so
+/// an operator has to be able to change all of them, and a key missing from the catalogue is a knob
+/// that exists and can never be turned.
 /// </summary>
 public sealed class FootballConfigCatalogTests
 {
@@ -23,7 +24,12 @@ public sealed class FootballConfigCatalogTests
         FootballSettings d = FootballSettings.Default;
 
         yield return [FootballConfig.KickDistanceKey, I(d.KickDistance)];
-        yield return [FootballConfig.BallStepMsKey, I(d.BallStepMs)];
+        yield return [FootballConfig.DragDistanceKey, I(d.DragDistance)];
+        yield return [FootballConfig.TackleDistanceKey, I(d.TackleDistance)];
+        yield return [FootballConfig.FastStepMsKey, I(d.FastStepMs)];
+        yield return [FootballConfig.SlowStepMsKey, I(d.SlowStepMs)];
+        yield return [FootballConfig.FastStepsKey, I(d.FastSteps)];
+        yield return [FootballConfig.AvatarStopChancePercentKey, I(d.AvatarStopChancePercent)];
         yield return [FootballConfig.GoalPointsKey, I(d.GoalPoints)];
         yield return [FootballConfig.GoalResetMsKey, I(d.GoalResetMs)];
         yield return [FootballConfig.MaxPlayersPerTeamKey, I(d.MaxPlayersPerTeam)];
@@ -48,6 +54,6 @@ public sealed class FootballConfigCatalogTests
     {
         // A key someone adds to the settings but forgets in AllKeys silently resolves to its
         // default forever — the batch must cover the whole group.
-        FootballConfig.AllKeys.Should().HaveCount(5).And.OnlyHaveUniqueItems();
+        FootballConfig.AllKeys.Should().HaveCount(10).And.OnlyHaveUniqueItems();
     }
 }

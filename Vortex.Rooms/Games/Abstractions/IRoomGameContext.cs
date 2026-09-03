@@ -107,6 +107,11 @@ public interface IRoomGameContext
     /// they are walking in — what decides which way a football they step on is kicked.</summary>
     bool TryGetPlayerFacing(PlayerId playerId, out Rotation facing);
 
+    /// <summary>The tile the player is walking TO, false when they are standing still. It is what
+    /// separates walking at something from walking through it: a player whose goal is the ball's own
+    /// tile meant to strike it, and one merely crossing that tile is dribbling it along.</summary>
+    bool TryGetPlayerGoalTile(PlayerId playerId, out int tileIdx);
+
     string? NameOf(PlayerId playerId);
 
     void CancelWalk(PlayerId playerId);

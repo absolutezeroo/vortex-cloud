@@ -17,7 +17,15 @@ public sealed class BallMotion
 
     public Rotation Direction { get; set; } = Rotation.None;
 
+    /// <summary>The travel the kick was given. Kept alongside <see cref="StepsRemaining"/> because
+    /// the ball's pace depends on how far into the kick it is, not only on what is left.</summary>
+    public int TotalSteps { get; set; }
+
     public int StepsRemaining { get; set; }
+
+    /// <summary>Whether hitting something turns the ball rather than stopping it. A struck ball
+    /// bounces; a ball being dribbled along by a walking player does not.</summary>
+    public bool CanBounce { get; set; }
 
     public long NextStepAtMs { get; set; }
 
@@ -37,7 +45,17 @@ public sealed class BallMotion
 
     public bool IsIdle => !IsRolling && !IsWaitingToReturn;
 
-    public void Kick(MatchId match, PlayerId kicker, Rotation direction, int steps, long startAtMs)
+    /// <summary>The 1-based index of the hop about to be taken, which is what decides its pace.</summary>
+    public int CurrentStep => (TotalSteps - StepsRemaining) + 1;
+
+    public void Kick(
+        MatchId match,
+        PlayerId kicker,
+        Rotation direction,
+        int steps,
+        bool canBounce,
+        long startAtMs
+    )
     {
         // A ball already on its way to a goal reset is not kickable; the caller checks. A second kick
         // while rolling simply replaces the first — the room's turn serialises them, so "two players
@@ -45,7 +63,9 @@ public sealed class BallMotion
         Match = match;
         LastKicker = kicker;
         Direction = direction;
+        TotalSteps = steps;
         StepsRemaining = steps;
+        CanBounce = canBounce;
         NextStepAtMs = startAtMs;
         ReturnAtMs = 0;
     }
@@ -53,7 +73,9 @@ public sealed class BallMotion
     public void Stop()
     {
         Direction = Rotation.None;
+        TotalSteps = 0;
         StepsRemaining = 0;
+        CanBounce = false;
         NextStepAtMs = 0;
         ReturnAtMs = 0;
     }

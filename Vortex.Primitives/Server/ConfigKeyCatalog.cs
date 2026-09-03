@@ -372,20 +372,56 @@ public static class ConfigKeyCatalog
             "Banzai"
         ),
         // Football balance. Keys/defaults mirror Vortex.Rooms FootballConfig / FootballSettings.
-        // Every one of these is a Vortex choice: Habbo's own kick numbers are unknown, so they are
-        // all editable rather than compiled in beside genuinely wire-fixed values.
+        // Habbo's own kick numbers are not authoritatively known — no capture, and no football logic
+        // in the client to read them from — so these defaults come from the reference emulator, which
+        // is evidence rather than authority. All editable, precisely for that reason.
         new(
             "football.kick_distance",
             "6",
             ConfigValueKind.Int,
-            "Football: tiles a kick carries the ball",
+            "Football: tiles a deliberate kick carries the ball",
             "Football"
         ),
         new(
-            "football.ball_step_ms",
-            "200",
+            "football.drag_distance",
+            "1",
             ConfigValueKind.Int,
-            "Football: milliseconds between the ball's tile hops",
+            "Football: tiles the ball moves when a player walks through it rather than at it",
+            "Football"
+        ),
+        new(
+            "football.tackle_distance",
+            "4",
+            ConfigValueKind.Int,
+            "Football: tiles the ball moves when clicked from an adjacent tile",
+            "Football"
+        ),
+        new(
+            "football.fast_step_ms",
+            "125",
+            ConfigValueKind.Int,
+            "Football: milliseconds between the ball's hops while the kick still has pace",
+            "Football"
+        ),
+        new(
+            "football.slow_step_ms",
+            "500",
+            ConfigValueKind.Int,
+            "Football: milliseconds between the ball's hops once it is slowing",
+            "Football"
+        ),
+        new(
+            "football.fast_steps",
+            "4",
+            ConfigValueKind.Int,
+            "Football: how many of a kick's hops are taken at the fast interval",
+            "Football"
+        ),
+        new(
+            "football.avatar_stop_chance_percent",
+            "70",
+            ConfigValueKind.Int,
+            "Football: chance in percent that a player in the ball's path stops it",
             "Football"
         ),
         new(
@@ -399,7 +435,7 @@ public static class ConfigKeyCatalog
             "football.goal_reset_ms",
             "2000",
             ConfigValueKind.Int,
-            "Football: how long the ball sits in the goal before returning to the kickoff spot",
+            "Football: how long the ball sits in the goal before returning to the kickoff spot (0 leaves it in the net)",
             "Football"
         ),
         new(

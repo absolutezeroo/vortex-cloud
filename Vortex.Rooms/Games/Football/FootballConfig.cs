@@ -13,7 +13,12 @@ namespace Vortex.Rooms.Games.Football;
 public static class FootballConfig
 {
     public const string KickDistanceKey = "football.kick_distance";
-    public const string BallStepMsKey = "football.ball_step_ms";
+    public const string DragDistanceKey = "football.drag_distance";
+    public const string TackleDistanceKey = "football.tackle_distance";
+    public const string FastStepMsKey = "football.fast_step_ms";
+    public const string SlowStepMsKey = "football.slow_step_ms";
+    public const string FastStepsKey = "football.fast_steps";
+    public const string AvatarStopChancePercentKey = "football.avatar_stop_chance_percent";
     public const string GoalPointsKey = "football.goal_points";
     public const string GoalResetMsKey = "football.goal_reset_ms";
     public const string MaxPlayersPerTeamKey = "football.max_players_per_team";
@@ -21,7 +26,12 @@ public static class FootballConfig
     public static readonly ImmutableArray<string> AllKeys =
     [
         KickDistanceKey,
-        BallStepMsKey,
+        DragDistanceKey,
+        TackleDistanceKey,
+        FastStepMsKey,
+        SlowStepMsKey,
+        FastStepsKey,
+        AvatarStopChancePercentKey,
         GoalPointsKey,
         GoalResetMsKey,
         MaxPlayersPerTeamKey,
@@ -35,7 +45,16 @@ public static class FootballConfig
         return new FootballSettings
         {
             KickDistance = ServerConfigValues.GetInt(v, KickDistanceKey, d.KickDistance),
-            BallStepMs = ServerConfigValues.GetInt(v, BallStepMsKey, d.BallStepMs),
+            DragDistance = ServerConfigValues.GetInt(v, DragDistanceKey, d.DragDistance),
+            TackleDistance = ServerConfigValues.GetInt(v, TackleDistanceKey, d.TackleDistance),
+            FastStepMs = ServerConfigValues.GetInt(v, FastStepMsKey, d.FastStepMs),
+            SlowStepMs = ServerConfigValues.GetInt(v, SlowStepMsKey, d.SlowStepMs),
+            FastSteps = ServerConfigValues.GetInt(v, FastStepsKey, d.FastSteps),
+            AvatarStopChancePercent = ServerConfigValues.GetInt(
+                v,
+                AvatarStopChancePercentKey,
+                d.AvatarStopChancePercent
+            ),
             GoalPoints = ServerConfigValues.GetInt(v, GoalPointsKey, d.GoalPoints),
             GoalResetMs = ServerConfigValues.GetInt(v, GoalResetMsKey, d.GoalResetMs),
             MaxPlayersPerTeam = ServerConfigValues.GetInt(

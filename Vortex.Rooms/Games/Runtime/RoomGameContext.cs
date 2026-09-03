@@ -164,6 +164,20 @@ internal sealed class RoomGameContext(
         return false;
     }
 
+    public bool TryGetPlayerGoalTile(PlayerId playerId, out int tileIdx)
+    {
+        if (TryGetAvatar(playerId, out IRoomAvatar? avatar) && avatar is not null)
+        {
+            tileIdx = avatar.GoalTileId;
+
+            return tileIdx >= 0;
+        }
+
+        tileIdx = -1;
+
+        return false;
+    }
+
     public bool TryGetTileInFront(int tileIdx, Rotation direction, out int nextTileIdx) =>
         _roomGrain.MapModule.TryGetTileInFront(tileIdx, direction, out nextTileIdx);
 
