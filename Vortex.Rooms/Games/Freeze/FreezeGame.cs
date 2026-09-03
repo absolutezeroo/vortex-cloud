@@ -102,7 +102,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
         foreach ((PlayerId playerId, FreezePlayerState player) in _roster.Players)
         {
             await _context.Chrome.SetPlayingModeAsync(playerId, true);
-            await _context.Chrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
+            await ShowEffectAsync(player);
             await _context.Chrome.BroadcastPlayerValueAsync(playerId, player.Lives);
         }
 
@@ -201,7 +201,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
                 _context.Chrome.UnlockMovement(playerId);
             }
 
-            await _context.Chrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
+            await ShowEffectAsync(player);
         }
     }
 
@@ -469,7 +469,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             // Frozen means frozen: rooted in place until the thaw. This is the same lock the wired
             // freeze-user box uses, so "frozen" means one thing in the room.
             _context.Chrome.LockMovement(victim.PlayerId);
-            await _context.Chrome.BroadcastEffectAsync(victim.PlayerId, victim.CurrentEffect());
+            await ShowEffectAsync(victim);
             await _context.Chrome.BroadcastPlayerValueAsync(victim.PlayerId, victim.Lives);
         }
     }
@@ -591,7 +591,7 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
         );
 
         // A shield pick-up changes the effect the player wears; an extra life changes the bubble.
-        await _context.Chrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
+        await ShowEffectAsync(player);
 
         if (powerUp == FreezePowerUp.ExtraLife)
         {
@@ -613,6 +613,16 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             }
         }
     }
+
+    /// <summary>
+    /// Puts the player's current aura on them. The effect id is <c>base + colour</c>, so the palette
+    /// is consulted here — the one place Freeze's own teams meet a Habbo effect family.
+    /// </summary>
+    private Task ShowEffectAsync(FreezePlayerState player) =>
+        _context.Chrome.BroadcastEffectAsync(
+            player.PlayerId,
+            player.CurrentEffect(_context.Palette.ColourOf(player.Team))
+        );
 
     private async Task RefreshGateCountersAsync()
     {

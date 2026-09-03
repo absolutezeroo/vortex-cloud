@@ -505,7 +505,9 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
     {
         foreach (ITeamGateComponent gate in _context.Arena.ComponentsOf<ITeamGateComponent>())
         {
-            await gate.SetStateAsync(_context.Teams.GetTeamMemberCount(gate.Team));
+            await gate.SetStateAsync(
+                _context.Teams.GetTeamMemberCount(_context.Palette.TeamOf(gate.Team))
+            );
         }
     }
 }

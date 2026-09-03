@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Rooms.Games.Freeze;
 using Vortex.Rooms.Games.Teams;
 using Xunit;
@@ -249,19 +250,25 @@ public sealed class FreezeRosterTests
     {
         FreezePlayerState player = new(P(1), Green, FreezeSettings.Default);
 
-        player.CurrentEffect().Should().Be(FreezeConstants.TeamEffectBase + (int)Green);
+        // The palette turns this game's team 2 into Habbo green; the effect id is base + that.
+        player
+            .CurrentEffect(GameTeamColor.Green)
+            .Should()
+            .Be(FreezeConstants.TeamEffectBase + (int)GameTeamColor.Green);
 
         player.AddProtection();
         player
-            .CurrentEffect()
+            .CurrentEffect(GameTeamColor.Green)
             .Should()
             .Be(
-                FreezeConstants.TeamEffectBase + (int)Green + FreezeConstants.ProtectionEffectBonus
+                FreezeConstants.TeamEffectBase
+                    + (int)GameTeamColor.Green
+                    + FreezeConstants.ProtectionEffectBonus
             );
 
         // A protected player cannot be frozen; a fresh one shows the frozen effect once hit.
         FreezePlayerState other = new(P(2), Green, FreezeSettings.Default);
         other.Freeze();
-        other.CurrentEffect().Should().Be(FreezeConstants.FrozenEffect);
+        other.CurrentEffect(GameTeamColor.Green).Should().Be(FreezeConstants.FrozenEffect);
     }
 }

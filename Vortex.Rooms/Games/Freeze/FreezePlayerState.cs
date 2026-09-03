@@ -1,5 +1,6 @@
 using System;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Rooms.Games.Teams;
 
 namespace Vortex.Rooms.Games.Freeze;
@@ -168,8 +169,14 @@ public sealed class FreezePlayerState(PlayerId playerId, TeamId team, FreezeSett
         }
     }
 
-    /// <summary>The avatar effect id this player should currently show.</summary>
-    public int CurrentEffect()
+    /// <summary>
+    /// The avatar effect id this player should currently show. Takes the COLOUR because an effect id
+    /// is a Habbo presentation fact — the aura family is <c>base + colour</c> — and this state knows
+    /// only its game's own team; the module hands over what the palette says that team looks like.
+    /// A team no colour can show gets the frozen/none effects and no aura, which is the honest
+    /// outcome rather than a wrong one.
+    /// </summary>
+    public int CurrentEffect(GameTeamColor colour)
     {
         if (Dead)
         {
@@ -181,7 +188,12 @@ public sealed class FreezePlayerState(PlayerId playerId, TeamId team, FreezeSett
             return FreezeConstants.FrozenEffect;
         }
 
-        int teamEffect = FreezeConstants.TeamEffectBase + (int)Team;
+        if (colour == GameTeamColor.None)
+        {
+            return FreezeConstants.NoEffect;
+        }
+
+        int teamEffect = FreezeConstants.TeamEffectBase + (int)colour;
 
         return IsProtected ? teamEffect + FreezeConstants.ProtectionEffectBonus : teamEffect;
     }
