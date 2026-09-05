@@ -340,7 +340,11 @@
       <div class="player-headline-text">
         <strong>{player.name} #{player.id}</strong>
         {#if player.motto}<small class="muted">{player.motto}</small>{/if}
-        <small class="muted">{player.status} - {player.gender}</small>
+        <!-- Live presence, not `players.status`: that column is written at account creation and
+             never again, so it reads "Offline" for a player who is standing in a room. -->
+        <small class="muted">
+          {player.online ? $t('investigation.online') : $t('investigation.offline')} - {player.gender}
+        </small>
       </div>
     </div>
 

@@ -333,7 +333,9 @@ internal sealed partial class DashboardApiService
                             p.Figure,
                             p.CreatedAt,
                             p.UpdatedAt,
-                            status = p.PlayerStatus.ToString(),
+                            // `players.status` is deliberately NOT projected: nothing in the
+                            // emulator ever writes it after account creation, so it answers
+                            // "Offline" for a connected player. `online` below is the real answer.
                             gender = p.Gender.ToString(),
                             perks = p.PlayerPerks.ToString(),
                         })
@@ -576,7 +578,6 @@ internal sealed partial class DashboardApiService
                                 .Any(p => p.Value == player.Id),
                             createdAt = player.CreatedAt,
                             updatedAt = player.UpdatedAt,
-                            player.status,
                             player.gender,
                             player.perks,
                             window = new { since = profileWindowSince, until = profileWindowUntil },

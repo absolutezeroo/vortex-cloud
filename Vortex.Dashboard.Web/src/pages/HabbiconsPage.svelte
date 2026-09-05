@@ -11,6 +11,7 @@
   import { identity } from '../lib/session.js';
   import { formatDate, formatNumber } from '../lib/format.js';
   import { t, translate } from '../lib/i18n.js';
+  import { Smile, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -51,7 +52,7 @@
     { enabled: () => player !== null }
   );
 
-  let items = $derived($collections.data?.items ?? []);
+  let items = $derived(collections.data?.items ?? []);
   let totalHabbicons = $derived(items.reduce((sum, c) => sum + c.entryCount + (c.rewardHabbiconId ? 1 : 0), 0));
   let setsWithReward = $derived(items.filter((c) => c.rewardHabbiconId > 0).length);
 
@@ -231,32 +232,38 @@
   }
 </script>
 
-<PageHeader title={$t('habbicons.title')} subtitle={$t('habbicons.subtitle')} />
+<section class="panel">
+  <PageHeader title={$t('habbicons.title')} description={$t('habbicons.subtitle')}>
+    {#snippet actions()}
+      <button type="button" class="warning" onclick={collections.refresh}>
+        {$t('common.refresh')}
+      </button>
+    {/snippet}
+  </PageHeader>
+</section>
 
-{#if $collections.forbidden}
+{#if collections.forbidden}
   <AccessDeniedNotice />
 {:else}
   <Tabs
-    bind:value={tab}
+    bind:active={tab}
+    storageKey="habbicons"
     tabs={[
-      { id: 'collections', label: $t('habbicons.tabCollections') },
-      { id: 'players', label: $t('habbicons.tabPlayers') },
+      {
+        id: 'collections',
+        label: $t('habbicons.tabCollections'),
+        icon: Smile,
+        count: items.length,
+      },
+      { id: 'players', label: $t('habbicons.tabPlayers'), icon: Users },
     ]}
   />
 
   {#if tab === 'collections'}
-    <div class="stat-row">
+    <div class="metric-grid">
       <StatCard label={$t('habbicons.statCollections')} value={formatNumber(items.length)} />
       <StatCard label={$t('habbicons.statHabbicons')} value={formatNumber(totalHabbicons)} />
       <StatCard label={$t('habbicons.statWithReward')} value={formatNumber(setsWithReward)} />
-    </div>
-
-    {#if idWarning}
-      <p class="muted">{$t('habbicons.idWarning')}</p>
-    {/if}
-
-    <div class="filters">
-      <input type="search" bind:value={search} placeholder={$t('habbicons.searchPlaceholder')} />
     </div>
 
     <div class="panel">
@@ -273,12 +280,26 @@
         {/if}
       </div>
 
-      {#if $collections.loading}
+      {#if idWarning}
+        <p class="muted">{$t('habbicons.idWarning')}</p>
+      {/if}
+
+      <div class="filters">
+        <input
+          autocomplete="off"
+          spellcheck="false"
+          type="search"
+          bind:value={search}
+          placeholder={$t('habbicons.searchPlaceholder')}
+        />
+      </div>
+
+      {#if collections.loading}
         <p class="muted">{$t('common.loading')}</p>
       {:else if items.length === 0}
         <EmptyState message={$t('habbicons.noCollections')} />
       {:else}
-        <div class="table-scroll">
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
@@ -319,8 +340,14 @@
                   </td>
                   <td>{formatNumber(collection.completedBy)}</td>
                   <td>
-                    {#if !collection.enabled}<span class="chip">{$t('habbicons.disabled')}</span>{/if}
-                    {#if collection.hidden}<span class="chip">{$t('habbicons.hidden')}</span>{/if}
+                    <div class="chips">
+                      {#if !collection.enabled}
+                        <span class="status-badge status-badge--bad">{$t('habbicons.disabled')}</span>
+                      {/if}
+                      {#if collection.hidden}
+                        <span class="op-chip">{$t('habbicons.hidden')}</span>
+                      {/if}
+                    </div>
                   </td>
                   <td class="row-actions">
                     <button
@@ -386,7 +413,7 @@
                               <td>
                                 {habbicon.code}
                                 {#if habbicon.isCollectionReward}
-                                  <span class="chip">{$t('habbicons.setReward')}</span>
+                                  <span class="op-chip">{$t('habbicons.setReward')}</span>
                                 {/if}
                                 <div class="muted small">{habbicon.localizationKey}</div>
                               </td>
@@ -399,7 +426,7 @@
                               <td>{formatNumber(habbicon.owners)}</td>
                               <td>
                                 {#if !habbicon.enabled}
-                                  <span class="chip">{$t('habbicons.disabled')}</span>
+                                  <span class="op-chip">{$t('habbicons.disabled')}</span>
                                 {/if}
                               </td>
                               <td class="row-actions">
@@ -454,7 +481,7 @@
 
       {#if !player}
         <EmptyState message={$t('habbicons.pickPlayerHint')} />
-      {:else if $ownership.loading}
+      {:else if ownership.loading}
         <p class="muted">{$t('common.loading')}</p>
       {:else}
         {#if canManage}
@@ -468,10 +495,10 @@
           </div>
         {/if}
 
-        {#if ($ownership.data?.items ?? []).length === 0}
+        {#if (ownership.data?.items ?? []).length === 0}
           <EmptyState message={$t('habbicons.ownsNothing')} />
         {:else}
-          <div class="table-scroll">
+          <div class="table-wrap">
             <table>
               <thead>
                 <tr>
@@ -485,7 +512,7 @@
                 </tr>
               </thead>
               <tbody>
-                {#each $ownership.data.items as row (row.habbiconId)}
+                {#each ownership.data.items as row (row.habbiconId)}
                   <tr>
                     <td>{row.habbiconId}</td>
                     <td>{row.code}</td>
@@ -657,19 +684,21 @@
 <OpResult result={$ops.result} />
 
 <style>
+  /* `.row-actions`, `.table-wrap`, `.filters` spacing and the chips all come from styles.css --
+     only the two things the sheet has no opinion about are here. */
   .small {
     font-size: 0.8em;
-  }
-
-  .row-actions {
-    display: flex;
-    gap: 0.4rem;
-    justify-content: flex-end;
   }
 
   .filters {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
+  }
+
+  /* A row of pills in a table cell; without it they butt together. */
+  .chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
   }
 </style>

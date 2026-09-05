@@ -12,6 +12,7 @@
   import { identity } from '../lib/session.js';
   import { formatDate, formatNumber } from '../lib/format.js';
   import { t, translate } from '../lib/i18n.js';
+  import { Route, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -88,9 +89,9 @@
     { enabled: () => player !== null }
   );
 
-  let items = $derived($tracks.data?.items ?? []);
-  let actions = $derived($tracks.data?.actions ?? []);
-  let kinds = $derived($tracks.data?.kinds ?? []);
+  let items = $derived(tracks.data?.items ?? []);
+  let actions = $derived(tracks.data?.actions ?? []);
+  let kinds = $derived(tracks.data?.kinds ?? []);
   let live = $derived(items.filter((it) => it.status === 'Active').length);
   let participants = $derived(items.reduce((sum, it) => sum + it.participants, 0));
   let premiumHolders = $derived(items.reduce((sum, it) => sum + it.premiumHolders, 0));
@@ -336,29 +337,32 @@
   }
 </script>
 
-<PageHeader title={$t('rewardTracks.title')} subtitle={$t('rewardTracks.subtitle')} />
+<section class="panel">
+  <PageHeader title={$t('rewardTracks.title')} description={$t('rewardTracks.subtitle')}>
+    {#snippet actions()}
+      <button type="button" class="warning" onclick={tracks.refresh}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
+</section>
 
-{#if $tracks.forbidden}
+{#if tracks.forbidden}
   <AccessDeniedNotice />
 {:else}
   <Tabs
-    bind:value={tab}
+    bind:active={tab}
+    storageKey="rewardTracks"
     tabs={[
-      { id: 'tracks', label: $t('rewardTracks.tabTracks') },
-      { id: 'players', label: $t('rewardTracks.tabPlayers') },
+      { id: 'tracks', label: $t('rewardTracks.tabTracks'), icon: Route, count: items.length },
+      { id: 'players', label: $t('rewardTracks.tabPlayers'), icon: Users },
     ]}
   />
 
   {#if tab === 'tracks'}
-    <div class="stat-row">
+    <div class="metric-grid">
       <StatCard label={$t('rewardTracks.statTracks')} value={formatNumber(items.length)} />
       <StatCard label={$t('rewardTracks.statLive')} value={formatNumber(live)} />
       <StatCard label={$t('rewardTracks.statParticipants')} value={formatNumber(participants)} />
       <StatCard label={$t('rewardTracks.statPremium')} value={formatNumber(premiumHolders)} />
-    </div>
-
-    <div class="filters">
-      <input type="search" bind:value={search} placeholder={$t('rewardTracks.searchPlaceholder')} />
     </div>
 
     <div class="panel">
@@ -375,12 +379,22 @@
         {/if}
       </div>
 
-      {#if $tracks.loading}
+      <div class="filters">
+        <input
+          autocomplete="off"
+          spellcheck="false"
+          type="search"
+          bind:value={search}
+          placeholder={$t('rewardTracks.searchPlaceholder')}
+        />
+      </div>
+
+      {#if tracks.loading}
         <p class="muted">{$t('common.loading')}</p>
       {:else if items.length === 0}
         <EmptyState message={$t('rewardTracks.noTracks')} />
       {:else}
-        <div class="table-scroll">
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
@@ -398,7 +412,7 @@
                 <tr>
                   <td>
                     <strong>{track.trackId}</strong>
-                    {#if track.hidden}<span class="chip">{$t('rewardTracks.hidden')}</span>{/if}
+                    {#if track.hidden}<span class="op-chip">{$t('rewardTracks.hidden')}</span>{/if}
                     <div class="muted small">{track.localizationKey}</div>
                   </td>
                   <td>{track.status}</td>
@@ -524,21 +538,23 @@
                             <tr>
                               <td>
                                 {task.taskId}
-                                {#if task.premium}<span class="chip">{$t('rewardTracks.premium')}</span>{/if}
+                                {#if task.premium}<span class="op-chip">{$t('rewardTracks.premium')}</span>{/if}
                               </td>
                               <td>
                                 {task.actionCode}
                                 {#if !task.wired}
-                                  <span class="chip danger-chip">{$t('rewardTracks.notWired')}</span>
+                                  <span class="status-badge status-badge--bad">{$t('rewardTracks.notWired')}</span>
                                 {/if}
                               </td>
                               <td>{task.mode}</td>
                               <td>
-                                {#each task.levels as level (level.levelIndex)}
-                                  <span class="chip">
-                                    {level.requiredCount} → {level.pointsReward}
-                                  </span>
-                                {/each}
+                                <div class="chips">
+                                  {#each task.levels as level (level.levelIndex)}
+                                    <span class="op-chip">
+                                      {level.requiredCount} → {level.pointsReward}
+                                    </span>
+                                  {/each}
+                                </div>
                               </td>
                               <td class="row-actions">
                                 {#if canManage}
@@ -604,20 +620,22 @@
                             <tr>
                               <td>
                                 {prize.prizeId}
-                                {#if prize.premium}<span class="chip">{$t('rewardTracks.premium')}</span>{/if}
+                                {#if prize.premium}<span class="op-chip">{$t('rewardTracks.premium')}</span>{/if}
                               </td>
                               <td>
                                 {formatNumber(prize.requiredPoints)}
                                 {#if !prize.reachable}
-                                  <span class="chip danger-chip">{$t('rewardTracks.unreachable')}</span>
+                                  <span class="status-badge status-badge--bad">{$t('rewardTracks.unreachable')}</span>
                                 {/if}
                               </td>
                               <td>
-                                {#each prize.rewards as reward (reward.id)}
-                                  <span class="chip">
-                                    {reward.kind}:{reward.rewardTypeId} ×{reward.amount}
-                                  </span>
-                                {/each}
+                                <div class="chips">
+                                  {#each prize.rewards as reward (reward.id)}
+                                    <span class="op-chip">
+                                      {reward.kind}:{reward.rewardTypeId} ×{reward.amount}
+                                    </span>
+                                  {/each}
+                                </div>
                               </td>
                               <td class="row-actions">
                                 {#if canManage}
@@ -680,12 +698,12 @@
 
       {#if !player}
         <EmptyState message={$t('rewardTracks.pickPlayerHint')} />
-      {:else if $progress.loading}
+      {:else if progress.loading}
         <p class="muted">{$t('common.loading')}</p>
-      {:else if ($progress.data?.items ?? []).length === 0}
+      {:else if (progress.data?.items ?? []).length === 0}
         <EmptyState message={$t('rewardTracks.noProgress')} />
       {:else}
-        {#each $progress.data.items as row (row.trackId)}
+        {#each progress.data.items as row (row.trackId)}
           <div class="panel">
             <div class="panel-head">
               <h3>{row.trackId}</h3>
@@ -1054,21 +1072,15 @@
 <OpResult result={$ops.result} />
 
 <style>
+  /* `.row-actions`, `.table-wrap` and the chips come from styles.css; only what the sheet has no
+     opinion about is here. */
   .small {
     font-size: 0.8em;
-  }
-
-  .row-actions {
-    display: flex;
-    gap: 0.4rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
   }
 
   .filters {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
   }
 
   .level-row,
@@ -1080,7 +1092,11 @@
     flex-wrap: wrap;
   }
 
-  .danger-chip {
-    background: var(--danger-bg, #5a1f1f);
+  /* A row of pills in a table cell. Without this they butt together and "1 → 10" "5 → 20" reads as
+     one number: the stage ladder was rendering as "1 → 105 → 20". */
+  .chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
   }
 </style>
