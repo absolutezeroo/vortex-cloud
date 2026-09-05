@@ -22,11 +22,12 @@ const enumsPath = join(root, 'Vortex.Dashboard.Web/src/lib/furnitureEnums.js');
 // no second list to keep in step. Order is the order an operator thinks in: the plain furniture
 // behaviours first, the wired construction kit after.
 const GROUPS = [
-  ['Basic', (k) => !/^(wf_|furniture_|freeze_|battlebanzai_|pet_|monsterplant_|game_)/.test(k)],
+  ['Basic', (k) => !/^(wf_|furniture_|freeze_|battlebanzai_|football_|pet_|monsterplant_|game_)/.test(k)],
   ['Furniture', (k) => k.startsWith('furniture_')],
   ['Pets', (k) => k.startsWith('pet_') || k.startsWith('monsterplant_')],
   ['Games: Battle Banzai', (k) => k.startsWith('battlebanzai_')],
   ['Games: Freeze', (k) => k.startsWith('freeze_')],
+  ['Games: Football', (k) => k.startsWith('football_')],
   ['Games: other', (k) => k.startsWith('game_')],
   ['Wired: Triggers', (k) => k.startsWith('wf_trg_')],
   ['Wired: Conditions', (k) => k.startsWith('wf_cnd_')],

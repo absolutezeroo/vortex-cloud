@@ -34,6 +34,7 @@ hook fires for one tool and for the files it happens to touch, which is not the 
 | `scripts/hooks/guard-emulator.mjs` (PreToolUse) | `Bash`/`PowerShell` | a command that would kill the running `Vortex.Main` |
 | `scripts/hooks/guard-commit.mjs` (PreToolUse) | `Bash`/`PowerShell` | a `git commit` that names nothing (no `-o`/`--only`/`-- <paths>`) or a `git add` that sweeps the tree — the index is shared with the user and with any other session |
 | `scripts/hooks/check-header-registry.mjs` | FastCheck, hook | a mapped header id absent from the client's message registry — it registers cleanly and can never fire; 14 known, baselined |
+| `scripts/hooks/check-logic-groups.mjs` | FastCheck | a `[RoomObjectLogic("...")]` key missing from the admin's furniture logic dropdown — the behaviour exists but nobody can pick it; `--write` regenerates |
 | `scripts/hooks/check-wire-conflicts.mjs` | QualityGate | a NEW field-count disagreement with the official client; the 23 known ones are baselined. Needs the client sources beside the repo, and says so instead of passing quietly |
 | `.claude/agents/wire-truth-auditor.md` | on request | serializer-vs-AS3-client drift, fabricated header ids |
 | `.claude/agents/grain-rules-reviewer.md` | on request | the Orleans rules in `AGENTS.md` that no analyzer enforces |

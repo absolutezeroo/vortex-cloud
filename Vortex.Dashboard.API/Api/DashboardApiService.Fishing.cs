@@ -114,7 +114,7 @@ internal sealed partial class DashboardApiService
                 // own zone, so the denominator is per zone rather than global. Computed here because
                 // a page that worked it out itself would be a second implementation of the rule the
                 // server draws by.
-                var zoneWeights = species
+                Dictionary<int, long> zoneWeights = species
                     .GroupBy(s => s.ZoneId)
                     .ToDictionary(g => g.Key, g => g.Sum(s => (long)s.RarityWeight));
 

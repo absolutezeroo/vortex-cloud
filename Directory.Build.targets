@@ -20,7 +20,7 @@
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <!--
-      Four checks that no compiler sees. They lived only in the Claude Code PostToolUse hook, which
+      Five checks that no compiler sees. They lived only in the Claude Code PostToolUse hook, which
       means they fired for exactly one tool and for exactly the files it happened to edit: a commit
       from any other author, or a page whose capability was declared in a file nobody touched
       afterwards, went through untouched. Each is under a second and needs no node_modules.
@@ -28,6 +28,8 @@
         - header registry   : an id the client's registry does not contain, registered and dead
         - architecture walls: the CONTEXT.md boundaries that were prose and therefore optional
         - specs validate    : the behavioural specs AGENTS.md requires to be clean before shipping
+        - logic groups      : a furniture behaviour an operator cannot pick because the admin's
+                              hand-maintained dropdown never learned the key exists
     -->
     <Exec
       Command="node scripts/hooks/check-dashboard-capabilities.mjs"
@@ -39,6 +41,10 @@
     />
     <Exec
       Command="node scripts/hooks/check-architecture-walls.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <Exec
+      Command="node scripts/hooks/check-logic-groups.mjs"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
