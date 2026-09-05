@@ -52,6 +52,25 @@ internal static class Content
             Levels = levels.Length == 0 ? [Level(0, 1, 10)] : [.. levels],
         };
 
+    /// <summary>A task carrying extra conditions, which are ANDed with each other and the parameter.</summary>
+    public static RewardTrackTaskDefinitionSnapshot TaskWith(
+        TaskProgressMode mode = TaskProgressMode.Counter,
+        string parameter = "",
+        params RewardTrackTaskConditionSnapshot[] conditions
+    ) => Task(mode: mode, parameter: parameter) with { Conditions = [.. conditions] };
+
+    public static RewardTrackTaskConditionSnapshot Condition(
+        TaskConditionField field,
+        TaskConditionOperator op,
+        string value
+    ) =>
+        new()
+        {
+            Field = field,
+            Operator = op,
+            Value = value,
+        };
+
     public static RewardGrantSnapshot Reward(
         RewardKind kind = RewardKind.Currency,
         string typeId = "0",

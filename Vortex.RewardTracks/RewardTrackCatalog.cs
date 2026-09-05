@@ -89,6 +89,14 @@ internal sealed class RewardTrackCatalog(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
+            List<RewardTrackTaskConditionEntity> conditionRows = await db
+                .RewardTrackTaskConditions.AsNoTracking()
+                .Where(c => c.DeletedAt == null)
+                .OrderBy(c => c.SortOrder)
+                .ThenBy(c => c.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
             List<RewardTrackPrizeEntity> prizeRows = await db
                 .RewardTrackPrizes.AsNoTracking()
                 .Where(p => p.DeletedAt == null)
@@ -111,6 +119,9 @@ internal sealed class RewardTrackCatalog(
             ILookup<int, RewardTrackTaskLevelEntity> levelsByTask = levelRows.ToLookup(l =>
                 l.RewardTrackTaskEntityId
             );
+            ILookup<int, RewardTrackTaskConditionEntity> conditionsByTask = conditionRows.ToLookup(
+                c => c.RewardTrackTaskEntityId
+            );
             ILookup<int, RewardTrackPrizeEntity> prizesByTrack = prizeRows.ToLookup(p =>
                 p.RewardTrackEntityId
             );
@@ -125,6 +136,7 @@ internal sealed class RewardTrackCatalog(
                         t,
                         tasksByTrack[t.Id],
                         levelsByTask,
+                        conditionsByTask,
                         prizesByTrack[t.Id],
                         rewardsByPrize
                     )
@@ -155,6 +167,7 @@ internal sealed class RewardTrackCatalog(
         RewardTrackEntity track,
         IEnumerable<RewardTrackTaskEntity> tasks,
         ILookup<int, RewardTrackTaskLevelEntity> levelsByTask,
+        ILookup<int, RewardTrackTaskConditionEntity> conditionsByTask,
         IEnumerable<RewardTrackPrizeEntity> prizes,
         ILookup<int, RewardTrackPrizeRewardEntity> rewardsByPrize
     ) =>
@@ -182,13 +195,17 @@ internal sealed class RewardTrackCatalog(
                     CostDiamonds = track.PremiumCostDiamonds,
                 }
                 : null,
-            Tasks = [.. tasks.Select(t => BuildTask(t, levelsByTask[t.Id]))],
+            Tasks =
+            [
+                .. tasks.Select(t => BuildTask(t, levelsByTask[t.Id], conditionsByTask[t.Id])),
+            ],
             Prizes = [.. prizes.Select(p => BuildPrize(p, rewardsByPrize[p.Id]))],
         };
 
     private static RewardTrackTaskDefinitionSnapshot BuildTask(
         RewardTrackTaskEntity task,
-        IEnumerable<RewardTrackTaskLevelEntity> levels
+        IEnumerable<RewardTrackTaskLevelEntity> levels,
+        IEnumerable<RewardTrackTaskConditionEntity> conditions
     ) =>
         new()
         {
@@ -198,6 +215,18 @@ internal sealed class RewardTrackCatalog(
             Mode = task.Mode,
             Premium = task.Premium,
             SortOrder = task.SortOrder,
+            // Order is presentation only -- they are ANDed -- so the operator's own order is kept.
+            Conditions =
+            [
+                .. conditions
+                    .OrderBy(c => c.SortOrder)
+                    .Select(c => new RewardTrackTaskConditionSnapshot
+                    {
+                        Field = c.Field,
+                        Operator = c.Operator,
+                        Value = c.Value,
+                    }),
+            ],
             // Ordered by requirement, not by the stored index: the stage math walks them in
             // ascending order and a content edit that renumbers badly would otherwise pay stages
             // out of sequence.

@@ -106,6 +106,14 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                List<RewardTrackTaskConditionEntity> conditions = await db
+                    .RewardTrackTaskConditions.AsNoTracking()
+                    .Where(c => c.DeletedAt == null)
+                    .OrderBy(c => c.SortOrder)
+                    .ThenBy(c => c.Id)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
                 List<RewardTrackPrizeEntity> prizes = await db
                     .RewardTrackPrizes.AsNoTracking()
                     .Where(p => p.DeletedAt == null)
@@ -226,6 +234,15 @@ internal sealed partial class DashboardApiService
                                     mode = t.Mode.ToString(),
                                     premium = t.Premium,
                                     sortOrder = t.SortOrder,
+                                    conditions = conditions
+                                        .Where(c => c.RewardTrackTaskEntityId == t.Id)
+                                        .Select(c => new
+                                        {
+                                            field = (int)c.Field,
+                                            op = (int)c.Operator,
+                                            value = c.Value,
+                                        })
+                                        .ToList(),
                                     levels = levels
                                         .Where(l => l.RewardTrackTaskEntityId == t.Id)
                                         .Select(l => new
@@ -358,6 +375,8 @@ internal sealed partial class DashboardApiService
         RewardTrackActions.CreateRoom,
         RewardTrackActions.PlaceItem,
         RewardTrackActions.MoveItem,
+        RewardTrackActions.RotateItem,
+        RewardTrackActions.PetLevel,
         RewardTrackActions.BuyFromCatalogue,
         RewardTrackActions.SpendCredits,
         RewardTrackActions.CompleteTrade,

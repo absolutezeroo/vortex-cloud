@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Snapshots;
 
@@ -91,7 +92,7 @@ internal static class TaskProgressRules
             return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
         }
 
-        if (!Matches(task.Parameter, target))
+        if (!Matches(task.Parameter, task.Conditions, amount, target))
         {
             return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
         }
@@ -273,11 +274,112 @@ internal static class TaskProgressRules
     }
 
     /// <summary>
-    /// Whether a signal's target satisfies a task's parameter. An empty parameter means the task
-    /// takes any occurrence, which is what most tasks are.
+    /// Whether a signal satisfies a task's parameter and every one of its conditions. An empty
+    /// parameter and no conditions means the task takes any occurrence, which is what most tasks
+    /// are.
     /// </summary>
-    private static bool Matches(string parameter, string? target) =>
-        parameter.Length == 0 || string.Equals(parameter, target, StringComparison.Ordinal);
+    /// <remarks>
+    /// Conditions are ANDed and are additive to the parameter, never a replacement: the parameter
+    /// is on the wire and the client reads it. Pure and total — an unparseable value or an operator
+    /// applied to the wrong field fails the condition rather than throwing, because this runs on a
+    /// hot path behind content an operator typed, and a campaign that stops the room's event
+    /// pipeline is worse than a task that never advances.
+    /// </remarks>
+    private static bool Matches(
+        string parameter,
+        ImmutableArray<RewardTrackTaskConditionSnapshot> conditions,
+        int amount,
+        string? target
+    )
+    {
+        if (parameter.Length > 0 && !string.Equals(parameter, target, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (conditions.IsDefaultOrEmpty)
+        {
+            return true;
+        }
+
+        foreach (RewardTrackTaskConditionSnapshot condition in conditions)
+        {
+            if (!Satisfies(condition, amount, target))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>One condition against one signal.</summary>
+    private static bool Satisfies(
+        RewardTrackTaskConditionSnapshot condition,
+        int amount,
+        string? target
+    ) =>
+        condition.Field switch
+        {
+            // A signal with no target satisfies nothing that asks about one -- including
+            // NotEquals. "Anything but the welcome lounge" is a statement about a room, and an
+            // action that names no room has not made it true.
+            TaskConditionField.Target => target is not null
+                && condition.Operator switch
+                {
+                    TaskConditionOperator.Equals => string.Equals(
+                        target,
+                        condition.Value,
+                        StringComparison.Ordinal
+                    ),
+                    TaskConditionOperator.NotEquals => !string.Equals(
+                        target,
+                        condition.Value,
+                        StringComparison.Ordinal
+                    ),
+                    TaskConditionOperator.OneOf => ListContains(condition.Value, target),
+                    // AtLeast/AtMost are numeric and the target is an opaque id: an id is not an
+                    // ordered quantity, and comparing two of them would answer a question nobody
+                    // asked. The validator refuses the pairing; this is the runtime's half.
+                    _ => false,
+                },
+            TaskConditionField.Amount => int.TryParse(
+                condition.Value,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out int value
+            )
+                && condition.Operator switch
+                {
+                    TaskConditionOperator.Equals => amount == value,
+                    TaskConditionOperator.NotEquals => amount != value,
+                    TaskConditionOperator.AtLeast => amount >= value,
+                    TaskConditionOperator.AtMost => amount <= value,
+                    TaskConditionOperator.OneOf => ListContains(
+                        condition.Value,
+                        amount.ToString(CultureInfo.InvariantCulture)
+                    ),
+                    _ => false,
+                },
+            _ => false,
+        };
+
+    /// <summary>
+    /// Whether a comma-separated list holds this value. Entries are trimmed, because an operator
+    /// typing "4312, 4313" means two ids and not one of them followed by a space.
+    /// </summary>
+    private static bool ListContains(string list, string value)
+    {
+        foreach (Range range in list.AsSpan().Split(','))
+        {
+            if (list.AsSpan()[range].Trim().SequenceEqual(value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static IEnumerable<string> Split(string keys) =>
         keys.Length == 0

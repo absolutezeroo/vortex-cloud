@@ -194,6 +194,16 @@ public sealed partial class RoomActionModule
             }
         }
 
+        // Read before the move, because after it there is nothing left to compare against: the
+        // client turns a piece by moving it to the square it is already on.
+        bool rotatedInPlace =
+            _roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? before)
+            && before is IRoomFloorItem previous
+            && previous.GetSnapshot() is { } was
+            && was.X == x
+            && was.Y == y
+            && was.Rotation != rot;
+
         if (!await _roomGrain.FurniModule.MoveFloorItemByIdAsync(ctx, itemId, x, y, null, rot, ct))
         {
             return false;
@@ -212,7 +222,8 @@ public sealed partial class RoomActionModule
                         y,
                         rotation = rot.ToString(),
                     }
-                )
+                ),
+                rotatedInPlace
             )
         );
 

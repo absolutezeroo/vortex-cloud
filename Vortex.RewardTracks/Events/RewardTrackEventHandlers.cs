@@ -335,6 +335,74 @@ public sealed class RewardTrackItemMovedHandler(
 }
 
 /// <summary>
+/// Furniture turned on the spot.
+/// </summary>
+/// <remarks>
+/// A rotation is also a move and is deliberately left counting as one: the client has no separate
+/// rotate message, every rotation has always raised <see cref="ItemMovedEvent"/>, and quietly
+/// excluding them here would make existing <c>move_item</c> tasks count less than the day they were
+/// written. <see cref="ItemMovedEvent.RotatedInPlace"/> is what makes the narrower signal possible,
+/// not a reclassification of the wider one.
+/// </remarks>
+public sealed class RewardTrackItemRotatedHandler(
+    IGrainFactory grainFactory,
+    IRewardTrackCatalog catalog
+) : IEventHandler<ItemMovedEvent>
+{
+    public async ValueTask HandleAsync(ItemMovedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        if (!e.RotatedInPlace)
+        {
+            return;
+        }
+
+        await RewardTrackSignal
+            .SendAsync(
+                grainFactory,
+                catalog,
+                e.ActorPlayerId,
+                RewardTrackActions.RotateItem,
+                1,
+                null,
+                ct
+            )
+            .ConfigureAwait(false);
+    }
+}
+
+/// <summary>
+/// A pet reached a new level.
+/// </summary>
+/// <remarks>
+/// The amount is the level reached, not one: the client's own task is "get a pet to level N", which
+/// is <see cref="TaskProgressMode.Highest"/> over the level. A counter-mode task on this action
+/// would add levels together and is content's mistake to make, not this handler's to prevent.
+/// The credit goes to the pet's owner, who need not be the player who fed it.
+/// </remarks>
+public sealed class RewardTrackPetLevelHandler(
+    IGrainFactory grainFactory,
+    IRewardTrackCatalog catalog
+) : IEventHandler<PetLeveledUpEvent>
+{
+    public async ValueTask HandleAsync(
+        PetLeveledUpEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await RewardTrackSignal
+            .SendAsync(
+                grainFactory,
+                catalog,
+                e.OwnerId.Value,
+                RewardTrackActions.PetLevel,
+                e.Level,
+                e.PetId.ToString(CultureInfo.InvariantCulture),
+                ct
+            )
+            .ConfigureAwait(false);
+}
+
+/// <summary>
 /// Catalogue purchases. Feeds two action codes: one counting purchases, one counting the credits
 /// they cost — which is how "spend 100 credits" is a task without a spending event of its own.
 /// </summary>

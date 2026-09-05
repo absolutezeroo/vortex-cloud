@@ -36,6 +36,18 @@ public sealed record RewardTrackTaskDefinitionSnapshot
     [Id(6)]
     public required ImmutableArray<RewardTrackTaskLevelSnapshot> Levels { get; init; }
 
+    /// <summary>
+    /// Extra tests a signal must pass, all of them, on top of <see cref="Parameter"/>. Empty for
+    /// almost every task — the default is "any occurrence of the action counts".
+    /// </summary>
+    /// <remarks>
+    /// Additive to <see cref="Parameter"/> rather than a replacement for it: the parameter is on
+    /// the wire and the client reads it, so removing it would be a protocol change to gain nothing.
+    /// A task with neither behaves exactly as it did before conditions existed.
+    /// </remarks>
+    [Id(7)]
+    public ImmutableArray<RewardTrackTaskConditionSnapshot> Conditions { get; init; } = [];
+
     /// <summary>The last stage's requirement — the point past which progress stops mattering.</summary>
     public int MaxRequiredCount => Levels.IsDefaultOrEmpty ? 0 : Levels[^1].RequiredCount;
 }

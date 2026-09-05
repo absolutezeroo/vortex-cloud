@@ -13,6 +13,7 @@ using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 using Vortex.RewardTracks.Content;
+using Vortex.RewardTracks.Progression;
 
 namespace Vortex.RewardTracks.Admin;
 
@@ -307,6 +308,12 @@ internal sealed class RewardTrackAdminService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false)
         );
+        db.RewardTrackTaskConditions.RemoveRange(
+            await db
+                .RewardTrackTaskConditions.Where(c => taskIds.Contains(c.RewardTrackTaskEntityId))
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
         db.RewardTrackPrizeRewards.RemoveRange(
             await db
                 .RewardTrackPrizeRewards.Where(r => prizeIds.Contains(r.RewardTrackPrizeEntityId))
@@ -334,6 +341,14 @@ internal sealed class RewardTrackAdminService(
         if (string.IsNullOrWhiteSpace(spec.TaskId) || string.IsNullOrWhiteSpace(spec.ActionCode))
         {
             return RewardTrackAdminResult.Fail("task_id_and_action_required");
+        }
+
+        // A condition that can never be true is worse than no condition: the task simply stops
+        // advancing, with nothing on screen to say why. Refuse it here, where the operator is
+        // still looking at the form.
+        if (RewardTrackConditionRules.FirstProblem(spec.Conditions) is string problem)
+        {
+            return RewardTrackAdminResult.Fail(problem);
         }
 
         await using VortexDbContext db = await dbContextFactory
@@ -405,6 +420,31 @@ internal sealed class RewardTrackAdminService(
             );
         }
 
+        // Replaced wholesale like the stages, and for the same reason: conditions hold no player
+        // state, so rewriting them costs nothing and saves the operator a row-by-row dance.
+        db.RewardTrackTaskConditions.RemoveRange(
+            await db
+                .RewardTrackTaskConditions.Where(c => c.RewardTrackTaskEntityId == row.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
+
+        int conditionOrder = 0;
+
+        foreach (RewardTrackTaskConditionSpec condition in spec.Conditions ?? [])
+        {
+            db.RewardTrackTaskConditions.Add(
+                new RewardTrackTaskConditionEntity
+                {
+                    RewardTrackTaskEntityId = row.Id,
+                    SortOrder = conditionOrder++,
+                    Field = condition.Field,
+                    Operator = condition.Operator,
+                    Value = condition.Value.Trim(),
+                }
+            );
+        }
+
         track.ContentVersion++;
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -432,6 +472,12 @@ internal sealed class RewardTrackAdminService(
         db.RewardTrackTaskLevels.RemoveRange(
             await db
                 .RewardTrackTaskLevels.Where(l => l.RewardTrackTaskEntityId == taskRowId)
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
+        db.RewardTrackTaskConditions.RemoveRange(
+            await db
+                .RewardTrackTaskConditions.Where(c => c.RewardTrackTaskEntityId == taskRowId)
                 .ToListAsync(ct)
                 .ConfigureAwait(false)
         );
@@ -765,6 +811,29 @@ internal sealed class RewardTrackAdminService(
                         RequiredCount = level.RequiredCount,
                         PointsReward = level.PointsReward,
                         Premium = level.Premium,
+                    }
+                );
+            }
+
+            // Conditions travel with the task, like its stages. A clone that dropped them would
+            // count everything the original narrowed -- a wider task, quietly, in a copy made to be
+            // the same.
+            foreach (
+                RewardTrackTaskConditionEntity condition in await db
+                    .RewardTrackTaskConditions.AsNoTracking()
+                    .Where(c => c.RewardTrackTaskEntityId == task.Id && c.DeletedAt == null)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false)
+            )
+            {
+                db.RewardTrackTaskConditions.Add(
+                    new RewardTrackTaskConditionEntity
+                    {
+                        RewardTrackTaskEntityId = clone.Id,
+                        SortOrder = condition.SortOrder,
+                        Field = condition.Field,
+                        Operator = condition.Operator,
+                        Value = condition.Value,
                     }
                 );
             }

@@ -407,7 +407,12 @@ public sealed partial class RoomPetSystem
         if (leveledUp)
         {
             await _roomGrain._events.PublishAsync(
-                new PetLeveledUpEvent(updated.PetId, _roomGrain.RoomId.Value, updated.Level),
+                new PetLeveledUpEvent(
+                    updated.OwnerId,
+                    updated.PetId,
+                    _roomGrain.RoomId.Value,
+                    updated.Level
+                ),
                 ct
             );
 

@@ -128,6 +128,13 @@ public sealed record RewardTrackRowRequest(int TrackRowId, string Reason) : IRea
 
 public sealed record RewardTrackTaskLevelBody(int RequiredCount, int PointsReward, bool Premium);
 
+/// <summary>
+/// One extra test on the task's signals. <c>Op</c> rather than <c>Operator</c>: the latter is a C#
+/// keyword's name in every other language the dashboard's JSON passes through, and the front end
+/// already sends this shape.
+/// </summary>
+public sealed record RewardTrackTaskConditionBody(int Field, int Op, string Value);
+
 public sealed record UpsertRewardTrackTaskRequest(
     int TrackRowId,
     string TaskId,
@@ -137,6 +144,7 @@ public sealed record UpsertRewardTrackTaskRequest(
     bool Premium,
     int SortOrder,
     IReadOnlyList<RewardTrackTaskLevelBody> Levels,
+    IReadOnlyList<RewardTrackTaskConditionBody>? Conditions,
     string Reason
 ) : IReasonedRequest;
 

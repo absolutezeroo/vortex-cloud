@@ -18,4 +18,10 @@ public sealed record PetPickedUpEvent(PlayerId ActorId, int PetId, int RoomId) :
 /// A pet reached a new level. Deliberately the level, not every experience grant: XP moves on every
 /// command obeyed, and a record per grant would bury the timeline it is meant to make readable.
 /// </summary>
-public sealed record PetLeveledUpEvent(int PetId, int RoomId, int Level) : IEvent;
+/// <remarks>
+/// <paramref name="OwnerId"/> is the pet's owner, not whoever fed it: a level belongs to the pet,
+/// and the pet belongs to one account wherever it is standing. Anything crediting a player for this
+/// needs that — without it the event names a pet nobody can be paid for, which is exactly why the
+/// reward track's <c>pet_level</c> action had nothing to listen to.
+/// </remarks>
+public sealed record PetLeveledUpEvent(PlayerId OwnerId, int PetId, int RoomId, int Level) : IEvent;

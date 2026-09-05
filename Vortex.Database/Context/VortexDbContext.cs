@@ -348,6 +348,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<RewardTrackTaskLevelEntity> RewardTrackTaskLevels { get; init; } = null!;
 
+    public DbSet<RewardTrackTaskConditionEntity> RewardTrackTaskConditions { get; init; } = null!;
+
     public DbSet<RewardTrackPrizeEntity> RewardTrackPrizes { get; init; } = null!;
 
     public DbSet<RewardTrackPrizeRewardEntity> RewardTrackPrizeRewards { get; init; } = null!;

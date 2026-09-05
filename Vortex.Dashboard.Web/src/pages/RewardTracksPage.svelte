@@ -46,6 +46,42 @@
     { value: 5, key: 'rewardTracks.unlockFeatureFlag' },
   ];
 
+  // Mirrors TaskConditionField / TaskConditionOperator. Only the two things a signal carries:
+  // ProgressAsync(actionCode, amount, target) has nothing else in it, and offering a third field
+  // would be a filter that silently never matches.
+  const CONDITION_FIELDS = [
+    { value: 0, key: 'rewardTracks.conditionFieldTarget' },
+    { value: 1, key: 'rewardTracks.conditionFieldAmount' },
+  ];
+
+  const CONDITION_OP_ONE_OF = 2;
+
+  // Which operators mean anything for which field, mirroring RewardTrackConditionRules. "At least"
+  // on a target is the pairing this exists to prevent: a room id is not an ordered quantity, and
+  // the server refuses the same combination on save.
+  const CONDITION_OPERATORS = {
+    0: [
+      { value: 0, key: 'rewardTracks.conditionOpEquals' },
+      { value: 1, key: 'rewardTracks.conditionOpNotEquals' },
+      { value: CONDITION_OP_ONE_OF, key: 'rewardTracks.conditionOpOneOf' },
+    ],
+    1: [
+      { value: 0, key: 'rewardTracks.conditionOpEquals' },
+      { value: 1, key: 'rewardTracks.conditionOpNotEquals' },
+      { value: 3, key: 'rewardTracks.conditionOpAtLeast' },
+      { value: 4, key: 'rewardTracks.conditionOpAtMost' },
+    ],
+  };
+
+  function operatorsFor(field) {
+    return CONDITION_OPERATORS[Number(field) || 0] ?? CONDITION_OPERATORS[0];
+  }
+
+  /** Switching field can strand an operator the new field rejects; snap to a valid one. */
+  function firstOperatorFor(field) {
+    return operatorsFor(field)[0].value;
+  }
+
   const COMPLETION_POLICIES = [
     { value: 0, key: 'rewardTracks.policyFreeClaimed' },
     { value: 1, key: 'rewardTracks.policyAllClaimed' },
@@ -131,6 +167,7 @@
       premium: false,
       sortOrder: 0,
       levels: [{ requiredCount: 1, pointsReward: 10, premium: false }],
+      conditions: [],
     };
   }
 
@@ -238,6 +275,11 @@
           requiredCount: Number(l.requiredCount) || 1,
           pointsReward: Number(l.pointsReward) || 0,
           premium: l.premium,
+        })),
+        conditions: form.conditions.map((c) => ({
+          field: Number(c.field) || 0,
+          op: Number(c.op) || 0,
+          value: String(c.value ?? '').trim(),
         })),
       },
       $t('rewardTracks.saveTask'),
@@ -572,6 +614,11 @@
                                           trackRowId: track.id,
                                           mode: modeValue(task.mode),
                                           levels: task.levels.map((l) => ({ ...l })),
+                                          // Copied, not aliased: the drawer edits this list in
+                                          // place and a cancel has to leave the row alone.
+                                          conditions: (task.conditions ?? []).map((c) => ({
+                                            ...c,
+                                          })),
                                         },
                                       })}
                                   >
@@ -937,6 +984,56 @@
       <input type="text" bind:value={taskDraft.form.parameter} />
     </label>
     <p class="muted small">{$t('rewardTracks.parameterHint')}</p>
+
+    <!--
+      Conditions are ANDed and evaluated per signal, so this is a stack of filters and not a
+      program: there is no OR and no "then". Both would need state this engine does not keep, and a
+      half-working one would read as if it did.
+    -->
+    <h4 class="drawer-section">{$t('rewardTracks.conditions')}</h4>
+    <p class="muted small">{$t('rewardTracks.conditionsHint')}</p>
+    {#each taskDraft.form.conditions as condition, index (index)}
+      <div class="condition-row">
+        <select
+          bind:value={condition.field}
+          onchange={() => (condition.op = firstOperatorFor(condition.field))}
+        >
+          {#each CONDITION_FIELDS as field (field.value)}
+            <option value={field.value}>{$t(field.key)}</option>
+          {/each}
+        </select>
+        <select bind:value={condition.op}>
+          {#each operatorsFor(condition.field) as op (op.value)}
+            <option value={op.value}>{$t(op.key)}</option>
+          {/each}
+        </select>
+        <input
+          type="text"
+          bind:value={condition.value}
+          placeholder={$t(
+            Number(condition.op) === CONDITION_OP_ONE_OF
+              ? 'rewardTracks.conditionListPlaceholder'
+              : 'rewardTracks.conditionValuePlaceholder'
+          )}
+        />
+        <button
+          type="button"
+          class="ghost-button"
+          onclick={() => taskDraft.form.conditions.splice(index, 1)}
+        >
+          {$t('common.remove')}
+        </button>
+      </div>
+    {/each}
+    <div>
+      <button
+        type="button"
+        onclick={() => taskDraft.form.conditions.push({ field: 0, op: 0, value: '' })}
+      >
+        {$t('rewardTracks.addCondition')}
+      </button>
+    </div>
+
     <label class="checkbox">
       <input type="checkbox" bind:checked={taskDraft.form.premium} />
       {$t('rewardTracks.premiumTask')}
@@ -1087,6 +1184,30 @@
     gap: 0.5rem;
   }
 
+  /* Same section rule as the article editor's, so a drawer that grew a second half still reads as
+     one form rather than two stacked ones. */
+  .drawer-section {
+    margin: 18px 0 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* The drawer's own rule stretches every field to the full width, which turns one condition into
+     three stacked rows. Here the two selects take what they need and the value box takes the
+     slack, so a condition reads as the sentence it is. */
+  .condition-row select {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .condition-row input {
+    flex: 1 1 6rem;
+    width: auto;
+    min-width: 0;
+  }
+
+  .condition-row,
   .level-row,
   .reward-row {
     display: flex;

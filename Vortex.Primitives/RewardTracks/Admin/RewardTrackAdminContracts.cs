@@ -32,7 +32,10 @@ public sealed record RewardTrackSpec(
     string CampaignCode
 );
 
-/// <summary>Create/update spec for a task. <paramref name="Levels"/> replaces the whole stage ladder.</summary>
+/// <summary>
+/// Create/update spec for a task. <paramref name="Levels"/> replaces the whole stage ladder and
+/// <paramref name="Conditions"/> the whole condition list.
+/// </summary>
 public sealed record RewardTrackTaskSpec(
     string TaskId,
     string ActionCode,
@@ -40,11 +43,19 @@ public sealed record RewardTrackTaskSpec(
     TaskProgressMode Mode,
     bool Premium,
     int SortOrder,
-    IReadOnlyList<RewardTrackTaskLevelSpec> Levels
+    IReadOnlyList<RewardTrackTaskLevelSpec> Levels,
+    IReadOnlyList<RewardTrackTaskConditionSpec>? Conditions = null
 );
 
 /// <summary>One stage of a task.</summary>
 public sealed record RewardTrackTaskLevelSpec(int RequiredCount, int PointsReward, bool Premium);
+
+/// <summary>One extra test on the task's signals. All of a task's conditions must pass.</summary>
+public sealed record RewardTrackTaskConditionSpec(
+    TaskConditionField Field,
+    TaskConditionOperator Operator,
+    string Value
+);
 
 /// <summary>Create/update spec for a milestone. <paramref name="Rewards"/> replaces the whole bundle.</summary>
 public sealed record RewardTrackPrizeSpec(
