@@ -37,7 +37,7 @@ public sealed class MultiArenaRoomTests
     private static FootballBallComponent PlaceBall(RoomHarness harness, int x, int y) =>
         GameFurni.Place(
             harness,
-            "football",
+            "furniture_pushable",
             x,
             y,
             (factory, ctx) => new FootballBallComponent(factory, ctx)

@@ -38,14 +38,15 @@ namespace Vortex.Rooms.Games.Football;
 /// "clicked it". The direction, the distance, every tile the ball occupies and every goal are
 /// decided here.</para>
 /// <para>
-/// <b>Provenance.</b> Habbo's own football is not authoritatively known — there is no capture of the
-/// official server, and the official client carries no football logic at all, because a
-/// <c>fball</c> is an ordinary floor item the server slides with the same bundle the rollers use.
-/// The behaviour below (a struck ball travels further than a dribbled one, it accelerates then
-/// slows, it bounces off what it cannot pass, a net only accepts a ball entering its mouth, and a
-/// player in the way usually but not always takes it) is what the open-source reference emulator
-/// does. Per the repository contract that is <b>evidence, not authority</b>; every number it implies
-/// is admin-editable in <see cref="FootballSettings"/> rather than compiled in.
+/// <b>Provenance.</b> Habbo's own football RULES are not authoritatively known — there is no capture
+/// of the official server, and the client carries no football logic, only the
+/// <c>FurniturePushableLogic</c> that slides any pushable furni. What that class reads off the wire
+/// IS authoritative, and is the one thing here taken as fixed: the ball's state, whose two digits
+/// are its pace (see <c>BallPhysics.RollState</c>). The rest — a struck ball travels further than a
+/// dribbled one, it slows a rung per tile, it bounces off what it cannot pass, a net only accepts a
+/// ball entering its mouth, and a player in the way usually but not always takes it — is what the
+/// open-source reference emulators do. Per the repository contract that is <b>evidence, not
+/// authority</b>; every number it implies is admin-editable in <see cref="FootballSettings"/>.
 /// </para>
 /// </summary>
 [RoomGame]
@@ -59,7 +60,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     private readonly Dictionary<RoomObjectId, BallMotion> _balls = [];
 
     private FootballSettings _settings = FootballSettings.Default;
-    private TeamSet _teams = TeamSet.HabboColours;
 
     public override GameProfile Profile { get; } =
         new() { Id = FootballConstants.Game, Teams = TeamSet.HabboColours };
@@ -68,8 +68,14 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
 
     /// <summary>
     /// A football match needs a ball and at least two goals of different colours — one goal is a
-    /// target nobody defends, and no ball is not a game. The gates are preferred rather than required
-    /// because a wired join-team box can put players on teams without any.
+    /// target nobody defends, and no ball is not a game.
+    /// <para>
+    /// No gate is asked for, because football has none. Habbo's <c>fball_gate</c> is a kit changer
+    /// (<c>furniture_clothing_change</c> in the furnidata, a look-swapping gate in the reference
+    /// emulator), and the reference's football carries no participants at all: a goal credits the
+    /// colour the NET wears, not the kicker's side. A player who is on a team got there through a
+    /// wired join-team box.
+    /// </para>
     /// </summary>
     public override ArenaValidation ValidateArena()
     {
@@ -77,7 +83,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             .Builder()
             .Require("Football", _context.Arena.CountOf<IBallComponent>())
             .Require("Goals of different colours", CountGoalColours(), required: 2)
-            .Prefer("Team gates", _context.Arena.CountOf<ITeamGateComponent>(), required: 2)
             .Build();
     }
 
@@ -86,7 +91,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
         _settings = await FootballConfig.ResolveAsync(_context);
-        _teams = TeamSet.HabboColours.WithCapacity(_settings.MaxPlayersPerTeam);
 
         _balls.Clear();
 
@@ -201,7 +205,10 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         }
 
         int fromIdx = _context.ToIdx(ball.X, ball.Y);
-        int delayMs = BallPhysics.StepDelayMs(motion.CurrentStep, motion.TotalSteps, _settings);
+
+        // One number for the hop: how long it takes and what the ball shows are the same thing.
+        int pace = BallPhysics.PaceOf(motion.StepsRemaining, _settings);
+        int delayMs = BallPhysics.StepDelayMs(pace);
 
         for (int attempt = 0; attempt <= MaxBouncesPerStep; attempt++)
         {
@@ -226,7 +233,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
                     }
                     else
                     {
-                        await ball.SetStateAsync(BallPhysics.RollState(motion.StepsRemaining));
+                        await ball.SetStateAsync(BallPhysics.RollState(pace));
                     }
 
                     return;
@@ -276,7 +283,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         await ball.SetStateAsync(FootballConstants.BallRestingState);
 
         motion.Direction = Rotation.None;
-        motion.TotalSteps = 0;
         motion.StepsRemaining = 0;
         motion.CanBounce = false;
         motion.NextStepAtMs = 0;
@@ -374,8 +380,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
                 ball,
                 ct
             ),
-            { Kind: GameSignalKind.WalkOn, Component: ITeamGateComponent gate } =>
-                OnGateWalkOnAsync(signal.Player, gate, ct),
             { Kind: GameSignalKind.Detached, Component: IBallComponent ball } =>
                 OnBallDetachedAsync(ball, ct),
             { Kind: GameSignalKind.Detached, Component: IGoalComponent } => OnGoalDetachedAsync(ct),
@@ -395,9 +399,26 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     /// </summary>
     private Task KickAsync(PlayerId playerId, IBallComponent ball, CancellationToken ct)
     {
+        BallMotion motion = MotionFor(ball);
+        bool walking = _context.TryGetPlayerGoalTile(playerId, out int goalTileIdx);
+
+        // The second half is what makes the dribble reachable. A nudge leaves the ball ON the tile
+        // the walker is heading for, so from their next step onward "my destination is the ball's
+        // tile" is true of a ball they are pushing along, not one they aimed at — and every dribble
+        // ended in a full-power shot as the walk finished.
         bool struck =
-            _context.TryGetPlayerGoalTile(playerId, out int goalTileIdx)
-            && goalTileIdx == _context.ToIdx(ball.X, ball.Y);
+            walking
+            && goalTileIdx == _context.ToIdx(ball.X, ball.Y)
+            && !motion.IsDribbleInProgress(playerId, goalTileIdx);
+
+        if (struck)
+        {
+            motion.ForgetDribble();
+        }
+        else if (walking)
+        {
+            motion.Dribbled(playerId, goalTileIdx);
+        }
 
         return SetBallMovingAsync(
             playerId,
@@ -415,6 +436,15 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     /// </summary>
     private Task TackleAsync(PlayerId playerId, IBallComponent ball, CancellationToken ct)
     {
+        // Only a ball at rest. A double-click sends a walk AND a use: the walk-on strikes the ball,
+        // and the use lands a moment later while the room still has the walker's X/Y on the tile
+        // BEFORE the ball — RoomAvatarModule commits the position on the following tick — so they
+        // read as adjacent and the ball was kicked a second time, the tackle replacing the strike.
+        if (MotionFor(ball).IsRolling)
+        {
+            return Task.CompletedTask;
+        }
+
         if (!_context.TryGetPlayerPosition(playerId, out int x, out int y))
         {
             return Task.CompletedTask;
@@ -423,6 +453,36 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         return IsAdjacent(x, y, ball)
             ? SetBallMovingAsync(playerId, ball, _settings.TackleDistance, canBounce: true, ct)
             : Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Which way the ball goes: the line from the player to the ball, not the avatar's body rotation.
+    /// <para>
+    /// The room sets that rotation AFTER firing the walk-on for the step, so a kick that read it got
+    /// the direction of the walker's PREVIOUS step — right on a straight run at the ball, wrong on
+    /// any walk that turned onto it. The line from where they stand to where the ball stands cannot
+    /// be stale; it is also what the reference emulator uses. Their tile is still the one before the
+    /// ball at this point, which is exactly what makes the line meaningful.
+    /// </para>
+    /// <para>The body rotation is the fallback for the case the line cannot answer: a player already
+    /// standing on the ball's own tile, where there is no line to draw.</para>
+    /// </summary>
+    private bool TryGetKickDirection(PlayerId playerId, IBallComponent ball, out Rotation facing)
+    {
+        if (
+            _context.TryGetPlayerPosition(playerId, out int x, out int y)
+            && (x, y) != (ball.X, ball.Y)
+        )
+        {
+            facing = RotationExtensions.FromPoints(x, y, ball.X, ball.Y);
+
+            if (facing != Rotation.None)
+            {
+                return true;
+            }
+        }
+
+        return _context.TryGetPlayerFacing(playerId, out facing) && facing != Rotation.None;
     }
 
     private static bool IsAdjacent(int x, int y, IBallComponent ball)
@@ -446,12 +506,7 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             return;
         }
 
-        if (!_balls.TryGetValue(ball.ObjectId, out BallMotion? motion))
-        {
-            // A ball kicked outside a match: it still rolls, it just belongs to no match.
-            motion = new BallMotion();
-            _balls[ball.ObjectId] = motion;
-        }
+        BallMotion motion = MotionFor(ball);
 
         // A ball on its way back from a goal is out of play until it is back on the spot.
         if (motion.IsWaitingToReturn)
@@ -459,10 +514,13 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             return;
         }
 
-        if (!_context.TryGetPlayerFacing(playerId, out Rotation facing) || facing == Rotation.None)
+        if (!TryGetKickDirection(playerId, ball, out Rotation facing))
         {
             return;
         }
+
+        int pace = BallPhysics.PaceOf(distance, _settings);
+        int delayMs = BallPhysics.StepDelayMs(pace);
 
         motion.Kick(
             _context.Match,
@@ -473,10 +531,10 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             // Next hop, not this turn: the kicker is standing on the ball's tile right now, and a
             // ball that moved in the same turn would be animated from under their feet before the
             // client has finished the step that put them there.
-            _context.NowMs + BallPhysics.StepDelayMs(1, distance, _settings)
+            _context.NowMs + delayMs
         );
 
-        await ball.SetStateAsync(BallPhysics.RollState(distance));
+        await ball.SetStateAsync(BallPhysics.RollState(pace));
 
         _context.KeepTicking();
 
@@ -530,48 +588,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         return seen.Count;
     }
 
-    private async Task OnGateWalkOnAsync(
-        PlayerId playerId,
-        ITeamGateComponent gate,
-        CancellationToken ct
-    )
-    {
-        // A gate is painted one of the four colours; which of THIS game's teams that is, is the
-        // palette's answer and nobody else's.
-        TeamId team = _context.Palette.TeamOf(gate.Team);
-
-        TeamGateResult result = TeamGateRules.Toggle(
-            _context.Teams,
-            _teams,
-            playerId,
-            team,
-            acceptingPlayers: !HasMatch
-        );
-
-        if (result == TeamGateResult.None)
-        {
-            return;
-        }
-
-        await _context.Chrome.BroadcastTeamAuraAsync(
-            playerId,
-            GameAuraSet.Wired,
-            result == TeamGateResult.Joined ? gate.Team : GameTeamColor.None
-        );
-
-        await _context.PublishAsync(
-            result == TeamGateResult.Joined
-                ? new GameParticipantJoinedEvent { Player = playerId, Team = team }
-                : new GameParticipantLeftEvent { Player = playerId, Team = team },
-            ct
-        );
-
-        await RefreshGateCountersAsync();
-    }
-
-    public override Task OnParticipantLeftAsync(PlayerId playerId, CancellationToken ct) =>
-        RefreshGateCountersAsync();
-
     // ---- IBallSpace: the room, as the physics needs it ----------------------
 
     bool IBallSpace.TryStep(int fromTileIdx, Rotation direction, out int nextTileIdx) =>
@@ -598,6 +614,19 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     private bool HasAvatar(int tileIdx) => _context.HasAvatarOn(tileIdx);
 
     // ---- helpers -----------------------------------------------------------
+
+    /// <summary>This ball's motion, minted on first contact. A ball kicked outside a match still
+    /// rolls; it just belongs to no match.</summary>
+    private BallMotion MotionFor(IBallComponent ball)
+    {
+        if (!_balls.TryGetValue(ball.ObjectId, out BallMotion? motion))
+        {
+            motion = new BallMotion();
+            _balls[ball.ObjectId] = motion;
+        }
+
+        return motion;
+    }
 
     private IBallComponent? FindBall(RoomObjectId objectId)
     {
@@ -654,16 +683,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             {
                 await goal.SetStateAsync(FootballConstants.GoalIdleState);
             }
-        }
-    }
-
-    private async Task RefreshGateCountersAsync()
-    {
-        foreach (ITeamGateComponent gate in _context.Arena.ComponentsOf<ITeamGateComponent>())
-        {
-            await gate.SetStateAsync(
-                _context.Teams.GetTeamMemberCount(_context.Palette.TeamOf(gate.Team))
-            );
         }
     }
 }

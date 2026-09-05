@@ -26,13 +26,10 @@ public sealed class FootballConfigCatalogTests
         yield return [FootballConfig.KickDistanceKey, I(d.KickDistance)];
         yield return [FootballConfig.DragDistanceKey, I(d.DragDistance)];
         yield return [FootballConfig.TackleDistanceKey, I(d.TackleDistance)];
-        yield return [FootballConfig.FastStepMsKey, I(d.FastStepMs)];
-        yield return [FootballConfig.SlowStepMsKey, I(d.SlowStepMs)];
-        yield return [FootballConfig.FastStepsKey, I(d.FastSteps)];
+        yield return [FootballConfig.TopPaceKey, I(d.TopPace)];
         yield return [FootballConfig.AvatarStopChancePercentKey, I(d.AvatarStopChancePercent)];
         yield return [FootballConfig.GoalPointsKey, I(d.GoalPoints)];
         yield return [FootballConfig.GoalResetMsKey, I(d.GoalResetMs)];
-        yield return [FootballConfig.MaxPlayersPerTeamKey, I(d.MaxPlayersPerTeam)];
     }
 
     [Theory]
@@ -54,6 +51,6 @@ public sealed class FootballConfigCatalogTests
     {
         // A key someone adds to the settings but forgets in AllKeys silently resolves to its
         // default forever — the batch must cover the whole group.
-        FootballConfig.AllKeys.Should().HaveCount(10).And.OnlyHaveUniqueItems();
+        FootballConfig.AllKeys.Should().HaveCount(7).And.OnlyHaveUniqueItems();
     }
 }

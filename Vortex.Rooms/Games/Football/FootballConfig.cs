@@ -15,26 +15,20 @@ public static class FootballConfig
     public const string KickDistanceKey = "football.kick_distance";
     public const string DragDistanceKey = "football.drag_distance";
     public const string TackleDistanceKey = "football.tackle_distance";
-    public const string FastStepMsKey = "football.fast_step_ms";
-    public const string SlowStepMsKey = "football.slow_step_ms";
-    public const string FastStepsKey = "football.fast_steps";
+    public const string TopPaceKey = "football.top_pace";
     public const string AvatarStopChancePercentKey = "football.avatar_stop_chance_percent";
     public const string GoalPointsKey = "football.goal_points";
     public const string GoalResetMsKey = "football.goal_reset_ms";
-    public const string MaxPlayersPerTeamKey = "football.max_players_per_team";
 
     public static readonly ImmutableArray<string> AllKeys =
     [
         KickDistanceKey,
         DragDistanceKey,
         TackleDistanceKey,
-        FastStepMsKey,
-        SlowStepMsKey,
-        FastStepsKey,
+        TopPaceKey,
         AvatarStopChancePercentKey,
         GoalPointsKey,
         GoalResetMsKey,
-        MaxPlayersPerTeamKey,
     ];
 
     public static async Task<FootballSettings> ResolveAsync(IRoomGameContext context)
@@ -47,9 +41,7 @@ public static class FootballConfig
             KickDistance = ServerConfigValues.GetInt(v, KickDistanceKey, d.KickDistance),
             DragDistance = ServerConfigValues.GetInt(v, DragDistanceKey, d.DragDistance),
             TackleDistance = ServerConfigValues.GetInt(v, TackleDistanceKey, d.TackleDistance),
-            FastStepMs = ServerConfigValues.GetInt(v, FastStepMsKey, d.FastStepMs),
-            SlowStepMs = ServerConfigValues.GetInt(v, SlowStepMsKey, d.SlowStepMs),
-            FastSteps = ServerConfigValues.GetInt(v, FastStepsKey, d.FastSteps),
+            TopPace = ServerConfigValues.GetInt(v, TopPaceKey, d.TopPace),
             AvatarStopChancePercent = ServerConfigValues.GetInt(
                 v,
                 AvatarStopChancePercentKey,
@@ -57,11 +49,6 @@ public static class FootballConfig
             ),
             GoalPoints = ServerConfigValues.GetInt(v, GoalPointsKey, d.GoalPoints),
             GoalResetMs = ServerConfigValues.GetInt(v, GoalResetMsKey, d.GoalResetMs),
-            MaxPlayersPerTeam = ServerConfigValues.GetInt(
-                v,
-                MaxPlayersPerTeamKey,
-                d.MaxPlayersPerTeam
-            ),
         };
     }
 }

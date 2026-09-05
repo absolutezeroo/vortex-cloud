@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Rooms.Games.Football;
@@ -231,16 +232,22 @@ public sealed class BallPhysicsTests
     // ---- cadence and roll state ---------------------------------------------
 
     [Fact]
-    public void AFullKick_IsFastThenSlow()
+    public void AFullKick_DeceleratesOneStepPerTile()
     {
         FootballSettings s = FootballSettings.Default;
 
-        // A struck ball has pace for its first few tiles and then slows; that acceleration curve is
-        // the whole of what a viewer reads as "physics".
-        BallPhysics.StepDelayMs(1, 6, s).Should().Be(s.FastStepMs);
-        BallPhysics.StepDelayMs(4, 6, s).Should().Be(s.FastStepMs);
-        BallPhysics.StepDelayMs(5, 6, s).Should().Be(s.SlowStepMs);
-        BallPhysics.StepDelayMs(6, 6, s).Should().Be(s.SlowStepMs);
+        // A ball slows down; it does not change gear. The old model gave four hops at 125ms and the
+        // rest at 500ms, a 4x cliff in the middle of the kick that reads as a stutter.
+        int[] delays =
+        [
+            .. Enumerable
+                .Range(0, s.KickDistance)
+                .Select(hop =>
+                    BallPhysics.StepDelayMs(BallPhysics.PaceOf(s.KickDistance - hop, s))
+                ),
+        ];
+
+        delays.Should().Equal(100, 125, 166, 250, 500);
     }
 
     [Fact]
@@ -248,18 +255,51 @@ public sealed class BallPhysicsTests
     {
         FootballSettings s = FootballSettings.Default;
 
-        // A one-tile dribble must not flick across the floor faster than a kick's first tile.
-        BallPhysics.StepDelayMs(1, 1, s).Should().Be(s.SlowStepMs);
-        BallPhysics.StepDelayMs(1, s.FastSteps, s).Should().Be(s.SlowStepMs);
+        // A one-tile dribble is the last rung of the ladder, so it crawls exactly like a kick's
+        // final tile rather than flicking across the floor.
+        BallPhysics.PaceOf(1, s).Should().Be(1);
+        BallPhysics
+            .StepDelayMs(BallPhysics.PaceOf(1, s))
+            .Should()
+            .Be(FootballConstants.PushableAnimationTimeMs);
     }
 
     [Fact]
-    public void TheRollState_CountsDownAndClearsAtRest()
+    public void AKickLongerThanTheLadder_SpendsTheSurplusAtTopPace()
     {
-        // The furni has no idea it is a football: the roll animation is entirely this number, and a
-        // ball left holding a non-zero one spins on the floor forever.
-        BallPhysics.RollState(6).Should().Be(7);
-        BallPhysics.RollState(1).Should().Be(2);
+        FootballSettings s = FootballSettings.Default with { KickDistance = 8 };
+
+        BallPhysics.PaceOf(8, s).Should().Be(s.TopPace);
+        BallPhysics.PaceOf(6, s).Should().Be(s.TopPace);
+        BallPhysics.PaceOf(5, s).Should().Be(5);
+        BallPhysics.PaceOf(3, s).Should().Be(3);
+    }
+
+    [Fact]
+    public void ThePace_IsClampedToWhatOneDigitCanSay()
+    {
+        // Both digits of the state are the pace, so an operator asking for 40 would send state 440:
+        // the client would read animation frame 0 and stop animating a moving ball.
+        FootballSettings s = FootballSettings.Default with
+        {
+            TopPace = 40,
+        };
+
+        BallPhysics.PaceOf(40, s).Should().Be(BallPhysics.MaxPace);
+        BallPhysics.RollState(BallPhysics.MaxPace).Should().Be(99);
+    }
+
+    [Fact]
+    public void TheRollState_IsTheClientsPushableEncoding_NotACountOfHops()
+    {
+        // FurniturePushableLogic reads state/10 as the divisor of its 500ms slide and state%10 as
+        // the animation frame. Both digits are the pace, so the number that says "hop every 100ms"
+        // is the same number that says "play that hop in 100ms".
+        BallPhysics.RollState(5).Should().Be(55);
+        BallPhysics.RollState(4).Should().Be(44);
+        BallPhysics.RollState(1).Should().Be(11);
+
+        // A ball left holding a non-zero state spins on the floor forever.
         BallPhysics.RollState(0).Should().Be(FootballConstants.BallRestingState);
         BallPhysics.RollState(-1).Should().Be(FootballConstants.BallRestingState);
     }

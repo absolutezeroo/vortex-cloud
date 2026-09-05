@@ -19,8 +19,9 @@ public sealed record FootballSettings
     public static readonly FootballSettings Default = new();
 
     /// <summary>How many tiles a deliberate kick carries the ball — the player walked at the ball's
-    /// own tile rather than through it.</summary>
-    public int KickDistance { get; init; } = 6;
+    /// own tile rather than through it. Five, so the ball spends exactly one hop at each pace and
+    /// arrives having slowed to a stop rather than stopping while still quick.</summary>
+    public int KickDistance { get; init; } = 5;
 
     /// <summary>How far the ball goes when a player walks THROUGH its tile on the way somewhere else.
     /// One tile: they dribbled it along rather than struck it, and a dribble does not bounce.</summary>
@@ -30,16 +31,20 @@ public sealed record FootballSettings
     /// on it — shorter than a run-up kick.</summary>
     public int TackleDistance { get; init; } = 4;
 
-    /// <summary>Milliseconds between the ball's first hops, while the kick still has pace.</summary>
-    public int FastStepMs { get; init; } = 125;
-
-    /// <summary>Milliseconds between hops once the ball is slowing, and for a kick too short to ever
-    /// pick up pace.</summary>
-    public int SlowStepMs { get; init; } = 500;
-
-    /// <summary>How many hops are taken at <see cref="FastStepMs"/>. A kick shorter than this is slow
-    /// throughout, so a one-tile dribble does not flick across the floor.</summary>
-    public int FastSteps { get; init; } = 4;
+    /// <summary>
+    /// The pace a struck ball leaves at, which is also how many hops it takes to slow to a crawl.
+    /// One number, because the client derives the slide time from the same digit it animates: at 5
+    /// the ball plays its first hop in 100ms showing state 55, then 125ms/44, 167ms/33, 250ms/22 and
+    /// 500ms/11, and comes to rest. A ball kicked further than this simply spends its extra hops at
+    /// the top pace before the ladder starts.
+    /// <para>
+    /// It replaced a fast interval, a slow one and a count of fast hops: three numbers that could
+    /// disagree with each other and with the state on the wire, and whose only reachable shape was a
+    /// gear change — four hops at one speed, the rest at another — instead of a ball slowing down.
+    /// Above 9 the client's encoding runs out of digits, so it is clamped there.
+    /// </para>
+    /// </summary>
+    public int TopPace { get; init; } = 5;
 
     /// <summary>The chance, in percent, that a player standing in the ball's path actually stops it.
     /// Not 100: a ball that could never pass anybody makes a crowded pitch unplayable, and the
@@ -54,6 +59,4 @@ public sealed record FootballSettings
     /// addition, kept on by default because a match with one ball otherwise stalls until somebody
     /// walks it out.</summary>
     public int GoalResetMs { get; init; } = 2_000;
-
-    public int MaxPlayersPerTeam { get; init; } = 5;
 }

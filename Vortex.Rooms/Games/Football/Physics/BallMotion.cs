@@ -17,10 +17,8 @@ public sealed class BallMotion
 
     public Rotation Direction { get; set; } = Rotation.None;
 
-    /// <summary>The travel the kick was given. Kept alongside <see cref="StepsRemaining"/> because
-    /// the ball's pace depends on how far into the kick it is, not only on what is left.</summary>
-    public int TotalSteps { get; set; }
-
+    /// <summary>The travel the kick has left, which is also its pace: the ball slows one rung per
+    /// tile, so what remains and how fast it is going are the same number.</summary>
     public int StepsRemaining { get; set; }
 
     /// <summary>Whether hitting something turns the ball rather than stopping it. A struck ball
@@ -39,14 +37,23 @@ public sealed class BallMotion
     /// <summary>Set while the ball is sitting in a goal waiting to be put back.</summary>
     public long ReturnAtMs { get; set; }
 
+    /// <summary>Who is dribbling this ball and where they were walking to when they last nudged it.
+    /// <para>
+    /// A nudge pushes the ball onto the very tile the player is walking to, so one step later
+    /// "their destination is the ball's tile" — the test for a deliberate strike — is true for a
+    /// ball they merely bumped into. Every walk that met the ball therefore ended in a full-power
+    /// shot on its last step, and the dribble, which the game does implement, could not be reached
+    /// at all. Remembering the walk is what tells the two apart.
+    /// </para></summary>
+    public PlayerId Dribbler { get; private set; }
+
+    public int DribbleGoalTileIdx { get; private set; } = -1;
+
     public bool IsRolling => StepsRemaining > 0 && Direction != Rotation.None;
 
     public bool IsWaitingToReturn => ReturnAtMs > 0;
 
     public bool IsIdle => !IsRolling && !IsWaitingToReturn;
-
-    /// <summary>The 1-based index of the hop about to be taken, which is what decides its pace.</summary>
-    public int CurrentStep => (TotalSteps - StepsRemaining) + 1;
 
     public void Kick(
         MatchId match,
@@ -63,17 +70,35 @@ public sealed class BallMotion
         Match = match;
         LastKicker = kicker;
         Direction = direction;
-        TotalSteps = steps;
         StepsRemaining = steps;
         CanBounce = canBounce;
         NextStepAtMs = startAtMs;
         ReturnAtMs = 0;
     }
 
+    /// <summary>Whether this contact is the continuation of a dribble rather than a fresh aim at the
+    /// ball: the same player, still walking to the same tile, having already pushed it there.</summary>
+    public bool IsDribbleInProgress(PlayerId playerId, int goalTileIdx) =>
+        DribbleGoalTileIdx == goalTileIdx && Dribbler == playerId;
+
+    public void Dribbled(PlayerId playerId, int goalTileIdx)
+    {
+        Dribbler = playerId;
+        DribbleGoalTileIdx = goalTileIdx;
+    }
+
+    /// <summary>Deliberately NOT called from <see cref="Stop"/>: a nudged ball rests after its one
+    /// tile, and forgetting the dribble there would make the walker's very next step a strike —
+    /// which is the bug this exists to prevent.</summary>
+    public void ForgetDribble()
+    {
+        Dribbler = default;
+        DribbleGoalTileIdx = -1;
+    }
+
     public void Stop()
     {
         Direction = Rotation.None;
-        TotalSteps = 0;
         StepsRemaining = 0;
         CanBounce = false;
         NextStepAtMs = 0;

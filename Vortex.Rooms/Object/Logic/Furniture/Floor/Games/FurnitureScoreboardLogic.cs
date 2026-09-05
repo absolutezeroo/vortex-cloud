@@ -12,10 +12,12 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 /// a number and animates the delta.
 /// <para>
 /// It is an <see cref="IScoreDisplayComponent"/> rather than a game component, because a board
-/// belongs to no game: one class serves every game's boards — <c>bb_score_*</c> and <c>fball_score_*</c>
-/// bind to <c>furniture_score</c> and carry their colour in the classname, while <c>es_score_*</c>
-/// bind to the Vortex <c>freeze_counter_*</c> keys which carry it in the key, so the colour resolves
-/// from the logic key first and falls back to the classname. The number on it is pushed by the game
+/// belongs to no game: <c>bb_score_*</c> binds to <c>furniture_score</c> and carries its colour in
+/// the classname, while <c>es_score_*</c> binds to the <c>freeze_counter_*</c> keys which carry it in
+/// the key, so the colour resolves from the logic key first and falls back to the classname.
+/// (<c>fball_score_*</c> is NOT here — the furnidata binds it to <c>furniture_hockey_score</c>, and
+/// <see cref="FurnitureHockeyScoreLogic"/> is the same kind of board on that key.) The number is
+/// pushed by the game
 /// scoreboard presenter on every score change, in or out of a match; it is live display and never
 /// persisted.
 /// </para>

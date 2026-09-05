@@ -1,3 +1,4 @@
+using System;
 using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Rooms.Games.Football.Physics;
@@ -65,6 +66,10 @@ public interface IBallSpace
 /// </summary>
 public static class BallPhysics
 {
+    /// <summary>The fastest a ball may be told to travel. The pace is one digit of the state on the
+    /// wire, so 9 is not a policy but the end of the encoding.</summary>
+    public const int MaxPace = 9;
+
     /// <summary>
     /// Advances a ball one tile.
     /// <para>
@@ -164,23 +169,31 @@ public static class BallPhysics
     }
 
     /// <summary>
-    /// How long before the ball's next hop. A kick is fast for its first few tiles and then slows,
-    /// which is the whole of the ball's "physics" as far as a viewer is concerned; a nudge of one or
-    /// two tiles never reaches the fast phase and is slow throughout.
+    /// The pace of the hop about to be taken: the ball leaves at <see cref="FootballSettings.TopPace"/>
+    /// and loses a step of it per tile, so a kick decelerates instead of changing gear. A ball with
+    /// more travel left than the ladder is long spends the surplus at the top pace.
     /// </summary>
-    /// <param name="currentStep">1-based, counting the hop about to be taken.</param>
-    public static int StepDelayMs(int currentStep, int totalSteps, FootballSettings settings) =>
-        totalSteps > settings.FastSteps && currentStep <= settings.FastSteps
-            ? settings.FastStepMs
-            : settings.SlowStepMs;
+    /// <param name="stepsRemaining">Counting the hop about to be taken.</param>
+    public static int PaceOf(int stepsRemaining, FootballSettings settings) =>
+        Math.Clamp(stepsRemaining, 1, Math.Clamp(settings.TopPace, 1, MaxPace));
+
+    /// <summary>How long the hop has to play in. The client is told the same thing by the state, so
+    /// the two are derived from the one number rather than kept in step by hand.</summary>
+    public static int StepDelayMs(int pace) =>
+        FootballConstants.PushableAnimationTimeMs / Math.Clamp(pace, 1, MaxPace);
 
     /// <summary>
-    /// The value a rolling ball shows. It counts down to 1 over the kick and is cleared to
-    /// <see cref="FootballConstants.BallRestingState"/> when the ball stops, which is how the client
-    /// animates it: the furni has no idea it is a football, so the roll is entirely in this number.
+    /// The value a rolling ball shows, in the encoding the client's <c>FurniturePushableLogic</c>
+    /// actually reads: <c>state / 10</c> divides its default slide time and <c>state % 10</c> is the
+    /// animation frame. Both digits are the pace — 55, 44, 33, 22, 11 — so a ball told to hop every
+    /// 100ms is also told to play that hop in 100ms, and slows visibly as it goes.
+    /// <para>
+    /// This was once <c>stepsRemaining + 1</c>, which is a count of hops and not a state: it asked
+    /// the client for animation frame 7 and a two-and-a-half-second slide per tile.
+    /// </para>
     /// </summary>
-    public static int RollState(int stepsRemaining) =>
-        stepsRemaining <= 0 ? FootballConstants.BallRestingState : stepsRemaining + 1;
+    public static int RollState(int pace) =>
+        pace <= 0 ? FootballConstants.BallRestingState : (pace * 10) + pace;
 
     private static Rotation? FirstOpen(
         int fromTileIdx,

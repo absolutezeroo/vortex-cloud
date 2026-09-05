@@ -372,12 +372,12 @@ public static class ConfigKeyCatalog
             "Banzai"
         ),
         // Football balance. Keys/defaults mirror Vortex.Rooms FootballConfig / FootballSettings.
-        // Habbo's own kick numbers are not authoritatively known — no capture, and no football logic
-        // in the client to read them from — so these defaults come from the reference emulator, which
-        // is evidence rather than authority. All editable, precisely for that reason.
+        // Habbo's own kick numbers are not authoritatively known — no capture, and the client's
+        // pushable logic carries no rules — so these defaults come from the reference emulators,
+        // which is evidence rather than authority. All editable, precisely for that reason.
         new(
             "football.kick_distance",
-            "6",
+            "5",
             ConfigValueKind.Int,
             "Football: tiles a deliberate kick carries the ball",
             "Football"
@@ -397,24 +397,10 @@ public static class ConfigKeyCatalog
             "Football"
         ),
         new(
-            "football.fast_step_ms",
-            "125",
+            "football.top_pace",
+            "5",
             ConfigValueKind.Int,
-            "Football: milliseconds between the ball's hops while the kick still has pace",
-            "Football"
-        ),
-        new(
-            "football.slow_step_ms",
-            "500",
-            ConfigValueKind.Int,
-            "Football: milliseconds between the ball's hops once it is slowing",
-            "Football"
-        ),
-        new(
-            "football.fast_steps",
-            "4",
-            ConfigValueKind.Int,
-            "Football: how many of a kick's hops are taken at the fast interval",
+            "Football: the pace a struck ball leaves at, 1-9; it slows one step per hop (5 = 100ms, 4 = 125ms ... 1 = 500ms)",
             "Football"
         ),
         new(
@@ -436,13 +422,6 @@ public static class ConfigKeyCatalog
             "2000",
             ConfigValueKind.Int,
             "Football: how long the ball sits in the goal before returning to the kickoff spot (0 leaves it in the net)",
-            "Football"
-        ),
-        new(
-            "football.max_players_per_team",
-            "5",
-            ConfigValueKind.Int,
-            "Football: max players per team",
             "Football"
         ),
     ];

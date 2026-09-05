@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -7,7 +8,9 @@ using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Games.Components;
 using Vortex.Rooms.Games.Football;
 using Vortex.Rooms.Games.Football.Components;
+using Vortex.Rooms.Games.Football.Physics;
 using Vortex.Rooms.Object.Avatars.Player;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 using Vortex.Rooms.Tests.Support;
 using Xunit;
 
@@ -24,12 +27,20 @@ public sealed class FootballGameTests
 {
     private const long Kickoff = 10_000;
 
+    /// <summary>The room frame these tests step in, so a cadence assertion measures what the live
+    /// room can actually resolve rather than an interval no tick lands on.</summary>
+    private const int RoomTickMs = 50;
+
     private static readonly FootballSettings Balance = FootballSettings.Default;
+
+    /// <summary>The wait before a struck ball's first hop — the shortest one it ever takes.</summary>
+    private static int TopStepMs =>
+        BallPhysics.StepDelayMs(BallPhysics.PaceOf(Balance.KickDistance, Balance));
 
     private static FootballBallComponent PlaceBall(RoomHarness harness, int x, int y) =>
         GameFurni.Place(
             harness,
-            "football",
+            "furniture_pushable",
             x,
             y,
             (factory, ctx) => new FootballBallComponent(factory, ctx)
@@ -53,7 +64,9 @@ public sealed class FootballGameTests
             rotation: facing
         );
 
-    private static FootballGateComponent PlaceGate(
+    /// <summary>A team counter. The classname carries the colour and the logic key does not, which is
+    /// how the furnidata binds every <c>fball_score_*</c>: on <c>furniture_hockey_score</c>.</summary>
+    private static FurnitureHockeyScoreLogic PlaceScoreboard(
         RoomHarness harness,
         string colour,
         int x,
@@ -61,10 +74,11 @@ public sealed class FootballGameTests
     ) =>
         GameFurni.Place(
             harness,
-            $"football_gate_{colour}",
+            "furniture_hockey_score",
             x,
             y,
-            (factory, ctx) => new FootballGateComponent(factory, ctx)
+            (factory, ctx) => new FurnitureHockeyScoreLogic(factory, ctx),
+            classname: $"fball_score_{colour}"
         );
 
     [Fact]
@@ -76,7 +90,7 @@ public sealed class FootballGameTests
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
 
         await WalkAsync(harness, ball).ConfigureAwait(true);
-        await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
+        await TickAsync(harness, Kickoff + TopStepMs).ConfigureAwait(true);
 
         player.Should().NotBeNull();
         ball.X.Should().Be(6, "the ball is server-authoritative and moves one tile per step");
@@ -134,6 +148,42 @@ public sealed class FootballGameTests
     }
 
     [Fact]
+    public async Task DribblingOntoYourOwnDestination_StaysADribbleToTheLastStep()
+    {
+        // The bug this pins made the dribble unreachable in play. A nudge pushes the ball onto the
+        // very tile the walker is heading for, so from the next step on, "my destination is the
+        // ball's tile" — the test for a deliberate strike — was true of a ball being pushed along.
+        // Every walk that met the ball therefore ended in a full-power shot, and a player who only
+        // ever walked forward saw one behaviour: it blasts off.
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        FootballBallComponent ball = PlaceBall(harness, 1, 5);
+        RoomPlayerAvatar player = harness.PutRealPlayerOnTile(RoomHarness.Stranger, 0, 5);
+        player.SetRotation(Rotation.East);
+        player.SetGoalTileId(harness.Grain.MapModule.ToIdx(3, 5));
+
+        long now = Kickoff;
+
+        // Three steps of one walk to (3,5). The ball is a tile ahead each time, and the last contact
+        // happens with the ball standing on the destination itself.
+        for (int step = 0; step < 3; step++)
+        {
+            await WalkAsync(harness, ball).ConfigureAwait(true);
+
+            now = await RollOutFromAsync(harness, now).ConfigureAwait(true);
+        }
+
+        ball.X.Should().Be(1 + (3 * Balance.DragDistance), "every step of one walk is a nudge");
+
+        // And aiming at where it now sits is a fresh strike, not more dribbling.
+        player.SetGoalTileId(harness.Grain.MapModule.ToIdx(ball.X, ball.Y));
+
+        await WalkAsync(harness, ball).ConfigureAwait(true);
+        await RollOutFromAsync(harness, now).ConfigureAwait(true);
+
+        ball.X.Should().Be(4 + Balance.KickDistance);
+    }
+
+    [Fact]
     public async Task ClickingTheBallFromNextToIt_MovesItTheTackleDistance()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
@@ -146,6 +196,25 @@ public sealed class FootballGameTests
         await RollOutAsync(harness).ConfigureAwait(true);
 
         ball.X.Should().Be(5 + Balance.TackleDistance);
+    }
+
+    [Fact]
+    public async Task AUseLandingOnABallAlreadyRolling_DoesNotKickItASecondTime()
+    {
+        // What a double-click actually is: a walk AND a use. The walk-on strikes the ball, then the
+        // use arrives while the room still has the walker on the tile BEFORE it — the position is
+        // committed on the following tick — so they read as adjacent and the 4-tile tackle replaced
+        // the 5-tile kick already under way. The ball was hit twice for one click.
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        FootballBallComponent ball = PlaceBall(harness, 2, 5);
+        Striker(harness, 1, 5, Rotation.East, ball);
+        await TickAsync(harness, Kickoff).ConfigureAwait(true);
+
+        await WalkAsync(harness, ball).ConfigureAwait(true);
+        await UseAsync(harness, ball).ConfigureAwait(true);
+        await RollOutFromAsync(harness, Kickoff).ConfigureAwait(true);
+
+        ball.X.Should().Be(2 + Balance.KickDistance, "a ball in flight is not tackled by a click");
     }
 
     [Fact]
@@ -165,10 +234,12 @@ public sealed class FootballGameTests
     }
 
     [Fact]
-    public async Task ARollingBall_ShowsItsRemainingTravel()
+    public async Task ARollingBall_ComesDownThePaceLadderOneRungPerTile()
     {
-        // The furni has no idea it is a football: the client's roll animation is entirely this state,
-        // so a ball that never sets it slides across the floor rigid.
+        // The client's FurniturePushableLogic reads this state: state/10 divides its own 500ms slide
+        // and state%10 is the animation frame. Both digits are the pace, so these four numbers are
+        // at once the deceleration a viewer sees and the interval the server hops on. The old model
+        // could only produce a gear change — four hops at 125ms, the rest at 500ms.
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         FootballBallComponent ball = PlaceBall(harness, 1, 5);
         Striker(harness, 0, 5, Rotation.East, ball);
@@ -176,11 +247,27 @@ public sealed class FootballGameTests
 
         await WalkAsync(harness, ball).ConfigureAwait(true);
 
-        ball.GetState().Should().Be(Balance.KickDistance + 1);
+        List<int> shown = [];
 
-        await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
+        for (int ms = 0; ms <= 1_500; ms += RoomTickMs)
+        {
+            int state = ball.GetState();
 
-        ball.GetState().Should().Be(Balance.KickDistance);
+            if (
+                state != FootballConstants.BallRestingState
+                && (shown.Count == 0 || shown[^1] != state)
+            )
+            {
+                shown.Add(state);
+            }
+
+            await TickAsync(harness, Kickoff + ms).ConfigureAwait(true);
+        }
+
+        shown.Should().Equal(55, 44, 33, 22);
+        ball.GetState()
+            .Should()
+            .Be(FootballConstants.BallRestingState, "and then it stops rolling");
     }
 
     [Fact]
@@ -229,15 +316,14 @@ public sealed class FootballGameTests
     }
 
     [Fact]
-    public async Task AGoal_ScoresTheColourTheGoalCarries_AndReturnsTheBallToTheSpot()
+    public async Task AGoal_ScoresTheColourTheGoalCarries_PaintsItsBoard_AndReturnsTheBallToTheSpot()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
         FootballBallComponent ball = PlaceBall(harness, 5, 5);
         Striker(harness, 4, 5, Rotation.East, ball);
         FootballGoalComponent red = PlaceGoal(harness, "red", 7, 5);
         PlaceGoal(harness, "blue", 2, 5, Rotation.East);
-        FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
-        await WalkAsync(harness, gate).ConfigureAwait(true);
+        FurnitureHockeyScoreLogic board = PlaceScoreboard(harness, "r", 3, 3);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
@@ -254,6 +340,13 @@ public sealed class FootballGameTests
         red.GetState().Should().Be(FootballConstants.GoalScoredState);
         ball.X.Should().Be(7, "the ball sits in the net while the goal is shown");
 
+        // The board is the only place a football score is visible: the game has no gates and no
+        // participants, so nothing else in the room would ever show that a goal was scored.
+        board
+            .GetState()
+            .Should()
+            .Be(Balance.GoalPoints, "a red goal paints the red fball_score board");
+
         await TickAsync(harness, Kickoff + 400 + Balance.GoalResetMs + 100).ConfigureAwait(true);
 
         ball.X.Should().Be(5, "and then goes back to where the match started it");
@@ -269,8 +362,6 @@ public sealed class FootballGameTests
         Striker(harness, 4, 5, Rotation.East, ball);
         PlaceGoal(harness, "red", 7, 5, Rotation.East);
         PlaceGoal(harness, "blue", 2, 1, Rotation.East);
-        FootballGateComponent gate = PlaceGate(harness, "red", 3, 3);
-        await WalkAsync(harness, gate).ConfigureAwait(true);
         await TickAsync(harness, Kickoff).ConfigureAwait(true);
         await harness
             .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
@@ -296,7 +387,7 @@ public sealed class FootballGameTests
             .Grain.GameRuntime.StartGameAsync(default, GameId.None, CancellationToken.None)
             .ConfigureAwait(true);
         await WalkAsync(harness, ball).ConfigureAwait(true);
-        await TickAsync(harness, Kickoff + Balance.FastStepMs).ConfigureAwait(true);
+        await TickAsync(harness, Kickoff + TopStepMs).ConfigureAwait(true);
         int stoppedAt = ball.X;
 
         await harness
@@ -351,8 +442,24 @@ public sealed class FootballGameTests
     {
         for (int step = 1; step <= 40; step++)
         {
-            await TickAsync(harness, Kickoff + (Balance.SlowStepMs * step)).ConfigureAwait(true);
+            await TickAsync(harness, Kickoff + (FootballConstants.PushableAnimationTimeMs * step))
+                .ConfigureAwait(true);
         }
+    }
+
+    /// <summary>Rolls any ball out from a clock that keeps going, and returns where the clock got to.
+    /// A test with more than one kick in it cannot re-tick the same timestamps: the second kick would
+    /// be scheduled in the future of a clock that never advanced past the first.</summary>
+    private static async Task<long> RollOutFromAsync(RoomHarness harness, long fromMs)
+    {
+        for (int tick = 0; tick < 40; tick++)
+        {
+            fromMs += RoomTickMs;
+
+            await TickAsync(harness, fromMs).ConfigureAwait(true);
+        }
+
+        return fromMs;
     }
 
     private static Task TickAsync(RoomHarness harness, long nowMs) =>
