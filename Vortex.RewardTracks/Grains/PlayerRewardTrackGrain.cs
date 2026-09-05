@@ -77,6 +77,12 @@ internal sealed partial class PlayerRewardTrackGrain(
         public int ProgressCount { get; set; }
         public int HighestPaidLevelIndex { get; set; } = -1;
         public string DistinctKeys { get; set; } = string.Empty;
+
+        /// <summary>Where this player stands in the task's sequence; always 0 for a plain task.</summary>
+        public int CurrentStep { get; set; }
+
+        /// <summary>What each satisfied step matched, for the steps that point back at them.</summary>
+        public string CapturedFacts { get; set; } = string.Empty;
     }
 
     public override async Task OnActivateAsync(CancellationToken ct)
@@ -448,6 +454,8 @@ internal sealed partial class PlayerRewardTrackGrain(
                     ProgressCount = row.ProgressCount,
                     HighestPaidLevelIndex = row.HighestPaidLevelIndex,
                     DistinctKeys = row.DistinctKeys,
+                    CurrentStep = row.CurrentStep,
+                    CapturedFacts = row.CapturedFacts,
                 };
             }
 

@@ -128,12 +128,17 @@ public sealed record RewardTrackRowRequest(int TrackRowId, string Reason) : IRea
 
 public sealed record RewardTrackTaskLevelBody(int RequiredCount, int PointsReward, bool Premium);
 
+/// <summary>One action in a task's sequence, with the tests a signal must pass to satisfy it.</summary>
+public sealed record RewardTrackTaskStepBody(
+    string ActionCode,
+    IReadOnlyList<RewardTrackStepFilterBody>? Filters
+);
+
 /// <summary>
-/// One extra test on the task's signals. <c>Op</c> rather than <c>Operator</c>: the latter is a C#
-/// keyword's name in every other language the dashboard's JSON passes through, and the front end
-/// already sends this shape.
+/// One test on a signal's facts. <c>Op</c> rather than <c>Operator</c>, which is a keyword in most
+/// of the languages this JSON passes through.
 /// </summary>
-public sealed record RewardTrackTaskConditionBody(int Field, int Op, string Value);
+public sealed record RewardTrackStepFilterBody(string FactKey, int Op, string Value);
 
 public sealed record UpsertRewardTrackTaskRequest(
     int TrackRowId,
@@ -144,7 +149,7 @@ public sealed record UpsertRewardTrackTaskRequest(
     bool Premium,
     int SortOrder,
     IReadOnlyList<RewardTrackTaskLevelBody> Levels,
-    IReadOnlyList<RewardTrackTaskConditionBody>? Conditions,
+    IReadOnlyList<RewardTrackTaskStepBody>? Steps,
     string Reason
 ) : IReasonedRequest;
 

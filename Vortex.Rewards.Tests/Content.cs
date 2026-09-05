@@ -50,25 +50,53 @@ internal static class Content
             Premium = premium,
             SortOrder = 0,
             Levels = levels.Length == 0 ? [Level(0, 1, 10)] : [.. levels],
+            // What the catalog does for a task with no stored steps. Without it every task here
+            // would be a sequence of nothing and advance for no signal at all.
+            Steps =
+            [
+                new RewardTrackTaskStepSnapshot
+                {
+                    StepIndex = 0,
+                    ActionCode = actionCode,
+                    Filters = [],
+                },
+            ],
         };
 
-    /// <summary>A task carrying extra conditions, which are ANDed with each other and the parameter.</summary>
-    public static RewardTrackTaskDefinitionSnapshot TaskWith(
+    /// <summary>A task whose sequence is the given steps, in order.</summary>
+    public static RewardTrackTaskDefinitionSnapshot Sequence(
         TaskProgressMode mode = TaskProgressMode.Counter,
-        string parameter = "",
-        params RewardTrackTaskConditionSnapshot[] conditions
-    ) => Task(mode: mode, parameter: parameter) with { Conditions = [.. conditions] };
+        params RewardTrackTaskStepSnapshot[] steps
+    ) =>
+        Task(mode: mode) with
+        {
+            ActionCode = steps.Length > 0 ? steps[0].ActionCode : "act",
+            // Numbered here rather than at each call site: Step() cannot know its own position.
+            Steps = [.. steps.Select((step, index) => step with { StepIndex = index })],
+        };
 
-    public static RewardTrackTaskConditionSnapshot Condition(
-        TaskConditionField field,
-        TaskConditionOperator op,
+    public static RewardTrackTaskStepSnapshot Step(
+        string actionCode,
+        params RewardTrackStepFilterSnapshot[] filters
+    ) =>
+        new()
+        {
+            StepIndex = 0,
+            ActionCode = actionCode,
+            Filters = [.. filters],
+        };
+
+    public static RewardTrackStepFilterSnapshot Filter(
+        string factKey,
+        StepFilterOperator op,
         string value
     ) =>
         new()
         {
-            Field = field,
+            FactKey = factKey,
             Operator = op,
             Value = value,
+            ReferencedStep = value.Length > 1 && value[0] == '$' ? value[1] - '0' : -1,
         };
 
     public static RewardGrantSnapshot Reward(

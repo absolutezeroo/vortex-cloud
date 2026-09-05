@@ -30,6 +30,7 @@ internal sealed partial class PlayerRewardTrackGrain
         string actionCode,
         int amount,
         string? target,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
         CancellationToken ct
     )
     {
@@ -71,8 +72,10 @@ internal sealed partial class PlayerRewardTrackGrain
                     track,
                     task,
                     outcome: null,
+                    actionCode,
                     amount,
                     target,
+                    facts,
                     now,
                     ct
                 )
@@ -143,8 +146,10 @@ internal sealed partial class PlayerRewardTrackGrain
                 track,
                 task,
                 outcome,
+                string.Empty,
                 amount,
-                target: null,
+                null,
+                [],
                 now,
                 ct
             )
@@ -168,8 +173,10 @@ internal sealed partial class PlayerRewardTrackGrain
         RewardTrackDefinitionSnapshot track,
         RewardTrackTaskDefinitionSnapshot task,
         TaskProgressOutcome? outcome,
+        string actionCode,
         int amount,
         string? target,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
         DateTime now,
         CancellationToken ct
     )
@@ -177,6 +184,7 @@ internal sealed partial class PlayerRewardTrackGrain
         TrackState state = EnsureTrack(track.TrackId);
         TaskState taskState = EnsureTask(state, task.TaskId);
         int previousProgress = taskState.ProgressCount;
+        int previousStep = taskState.CurrentStep;
 
         TaskProgressOutcome result =
             outcome
@@ -185,12 +193,16 @@ internal sealed partial class PlayerRewardTrackGrain
                 taskState.ProgressCount,
                 taskState.HighestPaidLevelIndex,
                 taskState.DistinctKeys,
+                taskState.CurrentStep,
+                taskState.CapturedFacts,
+                actionCode,
                 amount,
                 target,
+                facts,
                 state.PremiumUnlocked
             );
 
-        if (!result.Changed(previousProgress))
+        if (!result.Changed(previousProgress, previousStep))
         {
             // Nothing moved. Not writing is the point: a distinct task on a room the player has
             // already visited fires this path on every entry, and persisting an unchanged row every
@@ -205,6 +217,8 @@ internal sealed partial class PlayerRewardTrackGrain
         taskState.ProgressCount = result.NewProgress;
         taskState.HighestPaidLevelIndex = result.HighestPaidLevelIndex;
         taskState.DistinctKeys = result.DistinctKeys;
+        taskState.CurrentStep = result.NewStep;
+        taskState.CapturedFacts = result.Captures;
         state.Points += points;
         state.ContentVersion = track.ContentVersion;
 
@@ -315,6 +329,8 @@ internal sealed partial class PlayerRewardTrackGrain
                     ProgressCount = taskState.ProgressCount,
                     HighestPaidLevelIndex = taskState.HighestPaidLevelIndex,
                     DistinctKeys = taskState.DistinctKeys,
+                    CurrentStep = taskState.CurrentStep,
+                    CapturedFacts = taskState.CapturedFacts,
                 }
             );
         }
@@ -323,6 +339,8 @@ internal sealed partial class PlayerRewardTrackGrain
             taskRow.ProgressCount = taskState.ProgressCount;
             taskRow.HighestPaidLevelIndex = taskState.HighestPaidLevelIndex;
             taskRow.DistinctKeys = taskState.DistinctKeys;
+            taskRow.CurrentStep = taskState.CurrentStep;
+            taskRow.CapturedFacts = taskState.CapturedFacts;
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(true);

@@ -23,8 +23,16 @@ public sealed record PlayerDisconnectedEvent(
 public sealed record PlayerEnteringRoomEvent(PlayerId PlayerId, int RoomId) : IEvent;
 
 /// <summary>Player entered a room for a tracked user journey.</summary>
-public sealed record PlayerEnteredRoomEvent(PlayerId PlayerId, int RoomId, DateTime EnteredAtUtc)
-    : IEvent;
+/// <param name="OwnerId">
+/// Who owns the room. Carried so that "join their flat" is expressible without a follow event: a
+/// reward-track step can match this against the player an earlier step captured.
+/// </param>
+public sealed record PlayerEnteredRoomEvent(
+    PlayerId PlayerId,
+    int RoomId,
+    DateTime EnteredAtUtc,
+    int OwnerId = 0
+) : IEvent;
 
 /// <summary>
 /// Raised before a chat line reaches anyone, and published cancellably: cancelling drops the line

@@ -43,13 +43,33 @@ public sealed record TradeCancelledEvent(
 ) : IEvent;
 
 /// <summary>A furniture item was placed from inventory into a room.</summary>
+/// <param name="IsWallItem">
+/// Whether it went on a wall rather than the floor. The coarse type an operator means by "a floor
+/// item", which no definition id expresses on its own.
+/// </param>
 public sealed record ItemPlacedEvent(
     int ItemId,
     int ActorPlayerId,
     int OwnerId,
     int RoomId,
     string? Data,
-    int DefinitionId = 0
+    int DefinitionId = 0,
+    bool IsWallItem = false
+) : IEvent;
+
+/// <summary>
+/// A player stepped onto a piece of floor furniture.
+/// </summary>
+/// <remarks>
+/// Published from the base floor logic, so every floor item raises it. It fires very often -- once
+/// per tile walked onto -- which is why the reward-track bridge checks its action index before it
+/// does anything at all: with no content listening, this costs one hash lookup.
+/// </remarks>
+public sealed record PlayerWalkedOnFurniEvent(
+    int PlayerId,
+    int ItemId,
+    int DefinitionId,
+    int RoomId
 ) : IEvent;
 
 /// <summary>A furniture item was moved within a room.</summary>

@@ -92,7 +92,10 @@ public sealed partial class RoomActionModule
                         rotation = rot.ToString(),
                     }
                 ),
-                snapshot.Definition.Id
+                snapshot.Definition.Id,
+                // The one thing a definition id cannot say, and the thing an operator means by
+                // "a floor item" when they write a task.
+                IsWallItem: true
             )
         );
 

@@ -41,6 +41,24 @@ public class PlayerRewardTrackTaskEntity : VortexEntity
     /// mode. Bounded by the task's own highest requirement: once progress reaches it, nothing more
     /// is recorded, so the column cannot grow with how long a player plays.
     /// </summary>
+    /// <summary>
+    /// How far into the task's sequence this player has got. Zero for every plain task, because a
+    /// sequence of one is finished the moment it is matched. Resets on each completion, so it is a
+    /// cursor and never a watermark -- nothing is paid off it.
+    /// </summary>
+    [Column("current_step")]
+    [DefaultValue(0)]
+    public int CurrentStep { get; set; }
+
+    /// <summary>
+    /// What each satisfied step of the sequence matched, so a later step can point back at it —
+    /// the "walk on the furniture you just placed" half. Cleared on every completion, and empty for
+    /// every plain task.
+    /// </summary>
+    [Column("captured_facts")]
+    [DefaultValue("")]
+    public string CapturedFacts { get; set; } = string.Empty;
+
     [Column("distinct_keys")]
     [DefaultValue("")]
     public string DistinctKeys { get; set; } = string.Empty;

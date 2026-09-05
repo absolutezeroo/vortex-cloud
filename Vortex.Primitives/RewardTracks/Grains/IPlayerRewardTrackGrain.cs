@@ -46,7 +46,19 @@ public interface IPlayerRewardTrackGrain : IGrainWithIntegerKey
     /// <c>Parameter</c> only advances when it matches; a task without one ignores it. Also the
     /// dedup key for distinct-mode tasks.
     /// </param>
-    public Task ProgressAsync(string actionCode, int amount, string? target, CancellationToken ct);
+    /// <param name="facts">
+    /// The named facts about what happened, from <see cref="RewardTrackFacts"/>. This is what makes
+    /// a sequence composable: a step filters on them, and a later step can point back at what an
+    /// earlier one matched. <c>target</c> is one of them, which is why a task's <c>Parameter</c>
+    /// keeps working unchanged.
+    /// </param>
+    public Task ProgressAsync(
+        string actionCode,
+        int amount,
+        string? target,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
+        CancellationToken ct
+    );
 
     /// <summary>
     /// Advances one named task directly, bypassing the action index. The wired

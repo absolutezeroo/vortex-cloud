@@ -216,42 +216,15 @@ public enum RewardTrackCompletionPolicy
     AllTasksCompleted = 3,
 }
 
-/// <summary>
-/// What one of a task's extra conditions looks at. Deliberately only the two things a signal
-/// actually carries: <c>ProgressAsync(actionCode, amount, target)</c> has nothing else in it, and
-/// offering a field the engine cannot read would be a filter that silently never matches.
-/// </summary>
-public enum TaskConditionField
+/// <summary>How a step filter compares a fact to its value.</summary>
+public enum StepFilterOperator
 {
-    /// <summary>
-    /// What the signal was about, as a string — a room id, a furniture definition id, an offer id,
-    /// a Habbicon id, a collection code. Which of those it is depends on the action; the dashboard
-    /// tells the operator per action rather than pretending it is one type.
-    /// </summary>
-    Target = 0,
-
-    /// <summary>How much the signal reported: items bought, credits spent, the level reached.</summary>
-    Amount = 1,
-}
-
-/// <summary>How a condition compares its field to its value.</summary>
-public enum TaskConditionOperator
-{
-    /// <summary>Exact match. On <see cref="TaskConditionField.Amount"/>, numeric equality.</summary>
+    /// <summary>Exact match.</summary>
     Equals = 0,
 
-    /// <summary>Anything but this value. "Any room except the welcome lounge".</summary>
+    /// <summary>Anything but this. "Any room except the one you started in".</summary>
     NotEquals = 1,
 
-    /// <summary>
-    /// The value is a comma-separated list and the field must be one of it. This is the one that
-    /// earns the whole feature: "any of these four sofas" was previously four separate tasks.
-    /// </summary>
+    /// <summary>The value is a comma-separated list and the fact must be one of it.</summary>
     OneOf = 2,
-
-    /// <summary>Numeric, on <see cref="TaskConditionField.Amount"/>: at least this much.</summary>
-    AtLeast = 3,
-
-    /// <summary>Numeric, on <see cref="TaskConditionField.Amount"/>: at most this much.</summary>
-    AtMost = 4,
 }

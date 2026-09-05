@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.RewardTracks;
+using Vortex.Primitives.RewardTracks.Snapshots;
 
 namespace Vortex.RewardTracks.Events;
 
@@ -48,6 +50,25 @@ internal static class RewardTrackSignal
         int amount,
         string? target,
         CancellationToken ct
+    ) => SendAsync(grainFactory, catalog, playerId, actionCode, amount, target, [], ct);
+
+    /// <summary>
+    /// Sends one signal with the named facts about it, if any content is listening.
+    /// </summary>
+    /// <remarks>
+    /// The facts are what a sequence is built out of: a step filters on them, and a later step can
+    /// point back at what an earlier one matched. <c>target</c> is passed as one of them, which is
+    /// why a task's <c>Parameter</c> keeps working untouched.
+    /// </remarks>
+    public static Task SendAsync(
+        IGrainFactory grainFactory,
+        IRewardTrackCatalog catalog,
+        long playerId,
+        string actionCode,
+        int amount,
+        string? target,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
+        CancellationToken ct
     )
     {
         if (playerId <= 0 || !catalog.IsActionInteresting(actionCode))
@@ -55,10 +76,19 @@ internal static class RewardTrackSignal
             return Task.CompletedTask;
         }
 
+        if (target is not null)
+        {
+            facts = facts.Insert(0, new RewardTrackFactSnapshot(RewardTrackFacts.Target, target));
+        }
+
         return grainFactory
             .GetPlayerRewardTrackGrain(playerId)
-            .ProgressAsync(actionCode, amount, target, ct);
+            .ProgressAsync(actionCode, amount, target, facts, ct);
     }
+
+    /// <summary>An int as a fact value, in the invariant form every id is compared in.</summary>
+    public static RewardTrackFactSnapshot Fact(string key, int value) =>
+        new(key, value.ToString(CultureInfo.InvariantCulture));
 }
 
 /// <summary>
@@ -83,6 +113,7 @@ public sealed class RewardTrackRoomEntryHandler(
                 RewardTrackActions.EnterOtherUsersRoom,
                 1,
                 e.RoomId.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -168,6 +199,7 @@ public sealed class RewardTrackFriendRequestHandler(
                 RewardTrackActions.RequestFriend,
                 1,
                 e.TargetPlayerId.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Player, e.TargetPlayerId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -192,6 +224,7 @@ public sealed class RewardTrackRespectHandler(
                 RewardTrackActions.GiveRespect,
                 1,
                 e.TargetPlayerId.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Player, e.TargetPlayerId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -309,6 +342,17 @@ public sealed class RewardTrackItemPlacedHandler(
                 RewardTrackActions.PlaceItem,
                 1,
                 e.DefinitionId.ToString(CultureInfo.InvariantCulture),
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Item, e.ItemId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Definition, e.DefinitionId),
+                    new RewardTrackFactSnapshot(
+                        RewardTrackFacts.Placement,
+                        e.IsWallItem
+                            ? RewardTrackFacts.PlacementWall
+                            : RewardTrackFacts.PlacementFloor
+                    ),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
                 ct
             )
             .ConfigureAwait(false);
@@ -329,6 +373,10 @@ public sealed class RewardTrackItemMovedHandler(
                 RewardTrackActions.MoveItem,
                 1,
                 null,
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Item, e.ItemId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
                 ct
             )
             .ConfigureAwait(false);
@@ -364,6 +412,10 @@ public sealed class RewardTrackItemRotatedHandler(
                 RewardTrackActions.RotateItem,
                 1,
                 null,
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Item, e.ItemId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
                 ct
             )
             .ConfigureAwait(false);
@@ -517,7 +569,8 @@ public sealed class RewardTrackMessengerHandler(
                 e.PlayerId.Value,
                 RewardTrackActions.SendMessengerMessage,
                 1,
-                null,
+                e.ReceiverId.Value.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Player, e.ReceiverId.Value)],
                 ct
             )
             .ConfigureAwait(false);
@@ -615,6 +668,77 @@ public sealed class RewardTrackAchievementHandler(
                 RewardTrackActions.AchievementLevel,
                 1,
                 null,
+                ct
+            )
+            .ConfigureAwait(false);
+}
+
+/// <summary>
+/// Furniture taken back out of a room.
+/// </summary>
+/// <remarks>
+/// No client artwork exists for this, so it makes a poor step 0 and a good later step -- "place it,
+/// walk on it, then pick it up" is the shape it was added for.
+/// </remarks>
+public sealed class RewardTrackItemPickedUpHandler(
+    IGrainFactory grainFactory,
+    IRewardTrackCatalog catalog
+) : IEventHandler<ItemPickedUpEvent>
+{
+    public async ValueTask HandleAsync(
+        ItemPickedUpEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await RewardTrackSignal
+            .SendAsync(
+                grainFactory,
+                catalog,
+                e.ActorPlayerId,
+                RewardTrackActions.PickUpItem,
+                1,
+                e.ItemId.ToString(CultureInfo.InvariantCulture),
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Item, e.ItemId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
+                ct
+            )
+            .ConfigureAwait(false);
+}
+
+/// <summary>
+/// Stepping onto a piece of floor furniture.
+/// </summary>
+/// <remarks>
+/// The highest-frequency signal in this file by a wide margin -- once per tile walked onto, for
+/// every player in every room. It is only affordable because the index check happens on the calling
+/// thread before anything else: with no content naming <c>walk_on_furni</c>, this is one hash
+/// lookup and a return.
+/// </remarks>
+public sealed class RewardTrackWalkOnFurniHandler(
+    IGrainFactory grainFactory,
+    IRewardTrackCatalog catalog
+) : IEventHandler<PlayerWalkedOnFurniEvent>
+{
+    public async ValueTask HandleAsync(
+        PlayerWalkedOnFurniEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await RewardTrackSignal
+            .SendAsync(
+                grainFactory,
+                catalog,
+                e.PlayerId,
+                RewardTrackActions.WalkOnFurni,
+                1,
+                e.ItemId.ToString(CultureInfo.InvariantCulture),
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Item, e.ItemId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Definition, e.DefinitionId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
                 ct
             )
             .ConfigureAwait(false);

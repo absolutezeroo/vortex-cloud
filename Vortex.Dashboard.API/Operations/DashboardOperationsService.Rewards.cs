@@ -344,7 +344,7 @@ internal sealed partial class DashboardOperationsService
                 request.TaskId,
                 request.ActionCode,
                 levels = request.Levels.Count,
-                conditions = request.Conditions?.Count ?? 0,
+                steps = request.Steps?.Count ?? 0,
             },
             work: async c =>
                 Throw(
@@ -367,12 +367,19 @@ internal sealed partial class DashboardOperationsService
                                 ],
                                 [
                                     .. (
-                                        request.Conditions
-                                        ?? Array.Empty<RewardTrackTaskConditionBody>()
-                                    ).Select(c => new RewardTrackTaskConditionSpec(
-                                        (TaskConditionField)c.Field,
-                                        (TaskConditionOperator)c.Op,
-                                        c.Value
+                                        request.Steps ?? Array.Empty<RewardTrackTaskStepBody>()
+                                    ).Select(s => new RewardTrackTaskStepSpec(
+                                        s.ActionCode,
+                                        [
+                                            .. (
+                                                s.Filters
+                                                ?? Array.Empty<RewardTrackStepFilterBody>()
+                                            ).Select(f => new RewardTrackStepFilterSpec(
+                                                f.FactKey,
+                                                (StepFilterOperator)f.Op,
+                                                f.Value
+                                            )),
+                                        ]
                                     )),
                                 ]
                             ),

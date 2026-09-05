@@ -46,40 +46,28 @@
     { value: 5, key: 'rewardTracks.unlockFeatureFlag' },
   ];
 
-  // Mirrors TaskConditionField / TaskConditionOperator. Only the two things a signal carries:
-  // ProgressAsync(actionCode, amount, target) has nothing else in it, and offering a third field
-  // would be a filter that silently never matches.
-  const CONDITION_FIELDS = [
-    { value: 0, key: 'rewardTracks.conditionFieldTarget' },
-    { value: 1, key: 'rewardTracks.conditionFieldAmount' },
+  // Mirrors StepFilterOperator.
+  const FILTER_OPERATORS = [
+    { value: 0, key: 'rewardTracks.filterOpEquals' },
+    { value: 1, key: 'rewardTracks.filterOpNotEquals' },
+    { value: 2, key: 'rewardTracks.filterOpOneOf' },
   ];
 
-  const CONDITION_OP_ONE_OF = 2;
-
-  // Which operators mean anything for which field, mirroring RewardTrackConditionRules. "At least"
-  // on a target is the pairing this exists to prevent: a room id is not an ordered quantity, and
-  // the server refuses the same combination on save.
-  const CONDITION_OPERATORS = {
-    0: [
-      { value: 0, key: 'rewardTracks.conditionOpEquals' },
-      { value: 1, key: 'rewardTracks.conditionOpNotEquals' },
-      { value: CONDITION_OP_ONE_OF, key: 'rewardTracks.conditionOpOneOf' },
-    ],
-    1: [
-      { value: 0, key: 'rewardTracks.conditionOpEquals' },
-      { value: 1, key: 'rewardTracks.conditionOpNotEquals' },
-      { value: 3, key: 'rewardTracks.conditionOpAtLeast' },
-      { value: 4, key: 'rewardTracks.conditionOpAtMost' },
-    ],
-  };
-
-  function operatorsFor(field) {
-    return CONDITION_OPERATORS[Number(field) || 0] ?? CONDITION_OPERATORS[0];
+  /** The facts a given action emits, straight from the server: anything else can never match. */
+  function factsFor(actionCode) {
+    return actionOptions.find((a) => a.name === actionCode)?.facts ?? [];
   }
 
-  /** Switching field can strand an operator the new field rejects; snap to a valid one. */
-  function firstOperatorFor(field) {
-    return operatorsFor(field)[0].value;
+  /**
+   * The earlier steps a filter on this fact may point back at — only those whose own action
+   * records that fact, because $N resolves to the same fact key. "The same furniture" only works
+   * between two steps that both talk about furniture.
+   */
+  function referencesFor(steps, index, factKey) {
+    return steps
+      .slice(0, index)
+      .map((step, i) => ({ value: `$${i}`, index: i, action: step.actionCode }))
+      .filter((r) => factsFor(r.action).includes(factKey));
   }
 
   const COMPLETION_POLICIES = [
@@ -167,7 +155,9 @@
       premium: false,
       sortOrder: 0,
       levels: [{ requiredCount: 1, pointsReward: 10, premium: false }],
-      conditions: [],
+      // One step, mirroring the action above: a plain task is a sequence of one, and this is what
+      // the engine builds for a task with no stored steps.
+      steps: [{ actionCode: actionOptions[0]?.name ?? '', filters: [] }],
     };
   }
 
@@ -276,10 +266,13 @@
           pointsReward: Number(l.pointsReward) || 0,
           premium: l.premium,
         })),
-        conditions: form.conditions.map((c) => ({
-          field: Number(c.field) || 0,
-          op: Number(c.op) || 0,
-          value: String(c.value ?? '').trim(),
+        steps: form.steps.map((step) => ({
+          actionCode: step.actionCode,
+          filters: (step.filters ?? []).map((f) => ({
+            factKey: f.factKey,
+            op: Number(f.op) || 0,
+            value: String(f.value ?? '').trim(),
+          })),
         })),
       },
       $t('rewardTracks.saveTask'),
@@ -614,11 +607,17 @@
                                           trackRowId: track.id,
                                           mode: modeValue(task.mode),
                                           levels: task.levels.map((l) => ({ ...l })),
-                                          // Copied, not aliased: the drawer edits this list in
-                                          // place and a cancel has to leave the row alone.
-                                          conditions: (task.conditions ?? []).map((c) => ({
-                                            ...c,
-                                          })),
+                                          // Copied, not aliased: the drawer edits these in place
+                                          // and a cancel has to leave the row alone. A task with
+                                          // no stored steps gets the one the engine would build.
+                                          steps: (task.steps ?? []).length
+                                            ? task.steps.map((st) => ({
+                                                actionCode: st.actionCode,
+                                                filters: (st.filters ?? []).map((f) => ({
+                                                  ...f,
+                                                })),
+                                              }))
+                                            : [{ actionCode: task.actionCode, filters: [] }],
                                         },
                                       })}
                                   >
@@ -986,51 +985,116 @@
     <p class="muted small">{$t('rewardTracks.parameterHint')}</p>
 
     <!--
-      Conditions are ANDed and evaluated per signal, so this is a stack of filters and not a
-      program: there is no OR and no "then". Both would need state this engine does not keep, and a
-      half-working one would read as if it did.
+      The sequence. A plain task is one step; adding a second is what turns "place a sofa" into
+      "place a sofa, then walk on it". Filters inside a step are ANDed, and a filter's value can
+      point back at an earlier step with $N -- which is what "the same furniture" means.
     -->
-    <h4 class="drawer-section">{$t('rewardTracks.conditions')}</h4>
-    <p class="muted small">{$t('rewardTracks.conditionsHint')}</p>
-    {#each taskDraft.form.conditions as condition, index (index)}
-      <div class="condition-row">
-        <select
-          bind:value={condition.field}
-          onchange={() => (condition.op = firstOperatorFor(condition.field))}
-        >
-          {#each CONDITION_FIELDS as field (field.value)}
-            <option value={field.value}>{$t(field.key)}</option>
-          {/each}
-        </select>
-        <select bind:value={condition.op}>
-          {#each operatorsFor(condition.field) as op (op.value)}
-            <option value={op.value}>{$t(op.key)}</option>
-          {/each}
-        </select>
-        <input
-          type="text"
-          bind:value={condition.value}
-          placeholder={$t(
-            Number(condition.op) === CONDITION_OP_ONE_OF
-              ? 'rewardTracks.conditionListPlaceholder'
-              : 'rewardTracks.conditionValuePlaceholder'
-          )}
-        />
-        <button
-          type="button"
-          class="ghost-button"
-          onclick={() => taskDraft.form.conditions.splice(index, 1)}
-        >
-          {$t('common.remove')}
-        </button>
+    <h4 class="drawer-section">{$t('rewardTracks.sequence')}</h4>
+    <p class="muted small">{$t('rewardTracks.sequenceHint')}</p>
+
+    {#each taskDraft.form.steps as step, stepIndex (stepIndex)}
+      <div class="step-card">
+        <div class="step-head">
+          <span class="op-chip">{$t('rewardTracks.stepN', { n: stepIndex + 1 })}</span>
+          <select
+            bind:value={step.actionCode}
+            onchange={() => (step.filters = [])}
+          >
+            {#each actionOptions as action (action.name)}
+              <option value={action.name}>
+                {action.name}{action.wired ? '' : ` — ${translate('rewardTracks.notWired')}`}
+              </option>
+            {/each}
+          </select>
+          {#if taskDraft.form.steps.length > 1}
+            <button
+              type="button"
+              class="ghost-button"
+              onclick={() => taskDraft.form.steps.splice(stepIndex, 1)}
+            >
+              {$t('common.remove')}
+            </button>
+          {/if}
+        </div>
+
+        {#each step.filters as filter, filterIndex (filterIndex)}
+          {@const refs = referencesFor(taskDraft.form.steps, stepIndex, filter.factKey)}
+          <div class="condition-row">
+            <select
+              bind:value={filter.factKey}
+              onchange={() => (filter.value = '')}
+            >
+              {#each factsFor(step.actionCode) as fact (fact)}
+                <option value={fact}>{$t(`rewardTracks.fact_${fact}`)}</option>
+              {/each}
+            </select>
+            <select bind:value={filter.op}>
+              {#each FILTER_OPERATORS as op (op.value)}
+                <option value={op.value}>{$t(op.key)}</option>
+              {/each}
+            </select>
+            <!-- A reference is only offered where it can resolve, so an impossible one cannot be
+                 picked; the server refuses the same thing on save. -->
+            {#if refs.length > 0}
+              <select bind:value={filter.value}>
+                <option value="">{$t('rewardTracks.filterLiteral')}</option>
+                {#each refs as ref (ref.value)}
+                  <option value={ref.value}>
+                    {$t('rewardTracks.filterSameAsStep', { n: ref.index + 1 })}
+                  </option>
+                {/each}
+              </select>
+            {/if}
+            {#if !filter.value.startsWith('$')}
+              <input
+                type="text"
+                bind:value={filter.value}
+                placeholder={$t(
+                  Number(filter.op) === 2
+                    ? 'rewardTracks.conditionListPlaceholder'
+                    : 'rewardTracks.conditionValuePlaceholder'
+                )}
+              />
+            {/if}
+            <button
+              type="button"
+              class="ghost-button"
+              onclick={() => step.filters.splice(filterIndex, 1)}
+            >
+              {$t('common.remove')}
+            </button>
+          </div>
+        {/each}
+
+        {#if factsFor(step.actionCode).length > 0}
+          <button
+            type="button"
+            class="ghost-button"
+            onclick={() =>
+              step.filters.push({
+                factKey: factsFor(step.actionCode)[0],
+                op: 0,
+                value: '',
+              })}
+          >
+            {$t('rewardTracks.addFilter')}
+          </button>
+        {:else}
+          <p class="muted small">{$t('rewardTracks.actionHasNoFacts')}</p>
+        {/if}
       </div>
     {/each}
+
     <div>
       <button
         type="button"
-        onclick={() => taskDraft.form.conditions.push({ field: 0, op: 0, value: '' })}
+        onclick={() =>
+          taskDraft.form.steps.push({
+            actionCode: actionOptions[0]?.name ?? '',
+            filters: [],
+          })}
       >
-        {$t('rewardTracks.addCondition')}
+        {$t('rewardTracks.addStep')}
       </button>
     </div>
 
@@ -1190,6 +1254,28 @@
     margin: 18px 0 6px;
     padding-top: 14px;
     border-top: 1px solid var(--line);
+  }
+
+  /* A step and its filters read as one block; without the frame a three-step sequence is an
+     undifferentiated stack of selects. */
+  .step-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .step-head {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .step-head select {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
   }
 
   /* The drawer's own rule stretches every field to the full width, which turns one condition into

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Logging;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Mapping;
 using Vortex.Primitives.Rooms.Object;
@@ -234,6 +235,23 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                     (IRoomAvatarContext)avatar.Logic.Context,
                     ct
                 );
+
+                // Onto the domain bus as well, so progression can hear a step without the room
+                // knowing what a reward track is. Detached and index-gated on the other side: with
+                // no content naming walk_on_furni this is a publish into an empty handler list, and
+                // it fires once per tile walked onto by every avatar in the hotel.
+                // Players only: a bot walking over a tile is not someone's progress.
+                if (avatar is IRoomPlayer walker && walker.PlayerId.Value > 0)
+                {
+                    _roomGrain.PublishDetached(
+                        new PlayerWalkedOnFurniEvent(
+                            walker.PlayerId.Value,
+                            nextHighestItemId.Value,
+                            nextFloorItem.Definition.Id,
+                            _roomGrain.RoomId.Value
+                        )
+                    );
+                }
             }
 
             // The height the client is told to walk to is the section's, less whatever the item

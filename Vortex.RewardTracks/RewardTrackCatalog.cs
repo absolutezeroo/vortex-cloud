@@ -89,11 +89,18 @@ internal sealed class RewardTrackCatalog(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            List<RewardTrackTaskConditionEntity> conditionRows = await db
-                .RewardTrackTaskConditions.AsNoTracking()
-                .Where(c => c.DeletedAt == null)
-                .OrderBy(c => c.SortOrder)
-                .ThenBy(c => c.Id)
+            List<RewardTrackTaskStepEntity> stepRows = await db
+                .RewardTrackTaskSteps.AsNoTracking()
+                .Where(s => s.DeletedAt == null)
+                .OrderBy(s => s.StepIndex)
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            List<RewardTrackStepFilterEntity> filterRows = await db
+                .RewardTrackStepFilters.AsNoTracking()
+                .Where(f => f.DeletedAt == null)
+                .OrderBy(f => f.SortOrder)
+                .ThenBy(f => f.Id)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
@@ -119,8 +126,11 @@ internal sealed class RewardTrackCatalog(
             ILookup<int, RewardTrackTaskLevelEntity> levelsByTask = levelRows.ToLookup(l =>
                 l.RewardTrackTaskEntityId
             );
-            ILookup<int, RewardTrackTaskConditionEntity> conditionsByTask = conditionRows.ToLookup(
-                c => c.RewardTrackTaskEntityId
+            ILookup<int, RewardTrackTaskStepEntity> stepsByTask = stepRows.ToLookup(s =>
+                s.RewardTrackTaskEntityId
+            );
+            ILookup<int, RewardTrackStepFilterEntity> filtersByStep = filterRows.ToLookup(f =>
+                f.RewardTrackTaskStepEntityId
             );
             ILookup<int, RewardTrackPrizeEntity> prizesByTrack = prizeRows.ToLookup(p =>
                 p.RewardTrackEntityId
@@ -136,7 +146,8 @@ internal sealed class RewardTrackCatalog(
                         t,
                         tasksByTrack[t.Id],
                         levelsByTask,
-                        conditionsByTask,
+                        stepsByTask,
+                        filtersByStep,
                         prizesByTrack[t.Id],
                         rewardsByPrize
                     )
@@ -167,7 +178,8 @@ internal sealed class RewardTrackCatalog(
         RewardTrackEntity track,
         IEnumerable<RewardTrackTaskEntity> tasks,
         ILookup<int, RewardTrackTaskLevelEntity> levelsByTask,
-        ILookup<int, RewardTrackTaskConditionEntity> conditionsByTask,
+        ILookup<int, RewardTrackTaskStepEntity> stepsByTask,
+        ILookup<int, RewardTrackStepFilterEntity> filtersByStep,
         IEnumerable<RewardTrackPrizeEntity> prizes,
         ILookup<int, RewardTrackPrizeRewardEntity> rewardsByPrize
     ) =>
@@ -197,15 +209,110 @@ internal sealed class RewardTrackCatalog(
                 : null,
             Tasks =
             [
-                .. tasks.Select(t => BuildTask(t, levelsByTask[t.Id], conditionsByTask[t.Id])),
+                .. tasks.Select(t =>
+                    BuildTask(t, levelsByTask[t.Id], stepsByTask[t.Id], filtersByStep)
+                ),
             ],
             Prizes = [.. prizes.Select(p => BuildPrize(p, rewardsByPrize[p.Id]))],
         };
 
+    /// <summary>
+    /// A task's sequence, always with at least one step.
+    /// </summary>
+    /// <remarks>
+    /// A task with no stored steps is a plain one, and gets a single step synthesised from its own
+    /// action and parameter. That is what keeps every campaign written before sequences existed
+    /// working untouched, with no data migration and no second code path in the engine: from here
+    /// down, everything walks steps.
+    /// </remarks>
+    private static ImmutableArray<RewardTrackTaskStepSnapshot> BuildSteps(
+        RewardTrackTaskEntity task,
+        IEnumerable<RewardTrackTaskStepEntity> steps,
+        ILookup<int, RewardTrackStepFilterEntity> filtersByStep
+    )
+    {
+        List<RewardTrackTaskStepEntity> ordered = [.. steps.OrderBy(s => s.StepIndex)];
+
+        if (ordered.Count == 0)
+        {
+            return
+            [
+                new RewardTrackTaskStepSnapshot
+                {
+                    StepIndex = 0,
+                    ActionCode = task.ActionCode,
+                    Filters = [],
+                },
+            ];
+        }
+
+        return
+        [
+            .. ordered.Select(
+                (step, index) =>
+                    new RewardTrackTaskStepSnapshot
+                    {
+                        // Renumbered from the order rather than trusted: a gap in the stored
+                        // indexes would otherwise strand a player on a step that does not exist.
+                        StepIndex = index,
+                        ActionCode = step.ActionCode,
+                        Filters = BuildFilters(step, filtersByStep[step.Id]),
+                    }
+            ),
+        ];
+    }
+
+    private static ImmutableArray<RewardTrackStepFilterSnapshot> BuildFilters(
+        RewardTrackTaskStepEntity step,
+        IEnumerable<RewardTrackStepFilterEntity> filters
+    )
+    {
+        List<RewardTrackStepFilterSnapshot> built = [];
+
+        foreach (RewardTrackStepFilterEntity filter in filters.OrderBy(f => f.SortOrder))
+        {
+            int referenced = ParseBackReference(filter.Value);
+
+            // A reference forward, or to itself, can never resolve: the step it names has not run.
+            // Dropped here rather than left to fail every signal, so the log says so once at load
+            // instead of the task silently never advancing.
+            if (referenced >= step.StepIndex)
+            {
+                continue;
+            }
+
+            built.Add(
+                new RewardTrackStepFilterSnapshot
+                {
+                    FactKey = filter.FactKey,
+                    Operator = filter.Operator,
+                    Value = filter.Value,
+                    ReferencedStep = referenced,
+                }
+            );
+        }
+
+        return [.. built];
+    }
+
+    /// <summary>The step a <c>$N</c> value points at, or <c>-1</c> when the value is a literal.</summary>
+    private static int ParseBackReference(string value) =>
+        value.Length > 1
+        && value[0] == '$'
+        && int.TryParse(
+            value.AsSpan(1),
+            System.Globalization.NumberStyles.Integer,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out int step
+        )
+            ? step
+            : -1;
+
     private static RewardTrackTaskDefinitionSnapshot BuildTask(
         RewardTrackTaskEntity task,
         IEnumerable<RewardTrackTaskLevelEntity> levels,
-        IEnumerable<RewardTrackTaskConditionEntity> conditions
+        IEnumerable<RewardTrackTaskStepEntity> steps,
+        ILookup<int, RewardTrackStepFilterEntity> filtersByStep
     ) =>
         new()
         {
@@ -215,18 +322,7 @@ internal sealed class RewardTrackCatalog(
             Mode = task.Mode,
             Premium = task.Premium,
             SortOrder = task.SortOrder,
-            // Order is presentation only -- they are ANDed -- so the operator's own order is kept.
-            Conditions =
-            [
-                .. conditions
-                    .OrderBy(c => c.SortOrder)
-                    .Select(c => new RewardTrackTaskConditionSnapshot
-                    {
-                        Field = c.Field,
-                        Operator = c.Operator,
-                        Value = c.Value,
-                    }),
-            ],
+            Steps = BuildSteps(task, steps, filtersByStep),
             // Ordered by requirement, not by the stored index: the stage math walks them in
             // ascending order and a content edit that renumbers badly would otherwise pay stages
             // out of sequence.
@@ -302,13 +398,30 @@ internal sealed class RewardTrackCatalog(
                 // to "which tasks care about this?" depend on a schedule, and the index is content.
                 foreach (RewardTrackTaskDefinitionSnapshot task in track.Tasks)
                 {
-                    if (!byAction.TryGetValue(task.ActionCode, out List<RewardTrackTaskRef>? list))
+                    // Every action ANY of the task's steps names, not just the first. A sequence
+                    // that was only indexed on its opening action would never hear the signal that
+                    // moves it past step 0, and would sit there looking broken.
+                    foreach (RewardTrackTaskStepSnapshot step in task.Steps)
                     {
-                        list = [];
-                        byAction[task.ActionCode] = list;
-                    }
+                        if (
+                            !byAction.TryGetValue(
+                                step.ActionCode,
+                                out List<RewardTrackTaskRef>? list
+                            )
+                        )
+                        {
+                            list = [];
+                            byAction[step.ActionCode] = list;
+                        }
 
-                    list.Add(new RewardTrackTaskRef(track.TrackId, task.TaskId));
+                        RewardTrackTaskRef reference = new(track.TrackId, task.TaskId);
+
+                        // A sequence may use the same action twice ("place, then place again").
+                        if (!list.Contains(reference))
+                        {
+                            list.Add(reference);
+                        }
+                    }
                 }
             }
 

@@ -16,21 +16,40 @@ namespace Vortex.RewardTracks.Progression;
 /// <param name="PointsGranted">Track points the stages paid, before any premium boost.</param>
 /// <param name="HighestPaidLevelIndex">The new watermark to store.</param>
 /// <param name="DistinctKeys">The distinct-key set to store, unchanged for non-distinct tasks.</param>
+/// <param name="NewStep">
+/// Where the player now stands in the task's sequence. Always zero for a plain task, which is a
+/// sequence of one and so is never mid-flight.
+/// </param>
+/// <param name="Captures">
+/// What each satisfied step matched, so a later step can point back at it. Cleared whenever the
+/// sequence completes.
+/// </param>
 public readonly record struct TaskProgressOutcome(
     int NewProgress,
     ImmutableArray<int> StagesPaid,
     int PointsGranted,
     int HighestPaidLevelIndex,
-    string DistinctKeys
+    string DistinctKeys,
+    int NewStep = 0,
+    string Captures = ""
 )
 {
     /// <summary>Nothing happened: the signal did not apply, or it changed nothing worth storing.</summary>
-    public static TaskProgressOutcome None(int progress, int watermark, string distinctKeys) =>
-        new(progress, [], 0, watermark, distinctKeys);
+    public static TaskProgressOutcome None(
+        int progress,
+        int watermark,
+        string distinctKeys,
+        int step = 0,
+        string captures = ""
+    ) => new(progress, [], 0, watermark, distinctKeys, step, captures);
 
-    /// <summary>Whether anything needs persisting or telling the client about.</summary>
-    public bool Changed(int previousProgress) =>
-        NewProgress != previousProgress || !StagesPaid.IsDefaultOrEmpty;
+    /// <summary>
+    /// Whether anything needs persisting or telling the client about. Moving one step along a
+    /// sequence counts even though the count did not change: losing that cursor would put a player
+    /// back at the start of a task they were halfway through.
+    /// </summary>
+    public bool Changed(int previousProgress, int previousStep = 0) =>
+        NewProgress != previousProgress || NewStep != previousStep || !StagesPaid.IsDefaultOrEmpty;
 }
 
 /// <summary>
@@ -69,6 +88,11 @@ internal static class TaskProgressRules
     /// without it — a free player's progress still climbs past them, so buying premium later pays
     /// what they had already earned.
     /// </param>
+    /// <summary>
+    /// The plain-task shorthand: one signal, of this task's own action, carrying no facts and with
+    /// no sequence in flight. What almost every task is, and what every caller outside a sequence
+    /// means.
+    /// </summary>
     public static TaskProgressOutcome Apply(
         RewardTrackTaskDefinitionSnapshot task,
         int currentProgress,
@@ -77,11 +101,47 @@ internal static class TaskProgressRules
         int amount,
         string? target,
         bool premiumUnlocked
+    ) =>
+        Apply(
+            task,
+            currentProgress,
+            highestPaidLevelIndex,
+            distinctKeys,
+            0,
+            string.Empty,
+            task.Steps.IsDefaultOrEmpty ? task.ActionCode : task.Steps[0].ActionCode,
+            amount,
+            target,
+            target is null ? [] : [new RewardTrackFactSnapshot(RewardTrackFacts.Target, target)],
+            premiumUnlocked
+        );
+
+    public static TaskProgressOutcome Apply(
+        RewardTrackTaskDefinitionSnapshot task,
+        int currentProgress,
+        int highestPaidLevelIndex,
+        string distinctKeys,
+        int currentStep,
+        string capturedFacts,
+        string actionCode,
+        int amount,
+        string? target,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
+        bool premiumUnlocked
     )
     {
-        if (task.Levels.IsDefaultOrEmpty)
+        TaskProgressOutcome Unchanged() =>
+            TaskProgressOutcome.None(
+                currentProgress,
+                highestPaidLevelIndex,
+                distinctKeys,
+                currentStep,
+                capturedFacts
+            );
+
+        if (task.Levels.IsDefaultOrEmpty || task.Steps.IsDefaultOrEmpty)
         {
-            return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
+            return Unchanged();
         }
 
         if (task.Premium && !premiumUnlocked)
@@ -89,12 +149,51 @@ internal static class TaskProgressRules
             // A premium-only task does not advance at all for a free player. Letting it climb
             // invisibly and pay out the moment premium was bought would be a second, hidden
             // retroactive grant on top of the one that is deliberate.
-            return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
+            return Unchanged();
         }
 
-        if (!Matches(task.Parameter, task.Conditions, amount, target))
+        int step = Math.Clamp(currentStep, 0, task.Steps.Length - 1);
+        RewardTrackTaskStepSnapshot current = task.Steps[step];
+
+        // A sequence is woken by every action any of its steps names, so all but one of those
+        // wake-ups are for a step the player is not standing on.
+        if (!string.Equals(current.ActionCode, actionCode, StringComparison.Ordinal))
         {
-            return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
+            return Unchanged();
+        }
+
+        // The task's own parameter is step 0's target filter. Kept rather than folded into the
+        // step's filters because it is on the wire and the client reads it.
+        if (
+            step == 0
+            && task.Parameter.Length > 0
+            && !string.Equals(task.Parameter, target, StringComparison.Ordinal)
+        )
+        {
+            return Unchanged();
+        }
+
+        StepCaptures captures = StepCaptures.Parse(capturedFacts);
+
+        if (!StepMatches(current, facts, captures))
+        {
+            return Unchanged();
+        }
+
+        // An action that is not the one being waited for never resets the sequence. "Talk, then add
+        // a friend" has to survive the fifty other things a player does in between; punishing
+        // ordinary play would make every multi-step task read as broken.
+        if (step + 1 < task.Steps.Length)
+        {
+            return new TaskProgressOutcome(
+                currentProgress,
+                [],
+                0,
+                highestPaidLevelIndex,
+                distinctKeys,
+                step + 1,
+                captures.With(step, facts).Serialize()
+            );
         }
 
         (int newProgress, string newKeys) = Advance(
@@ -105,9 +204,18 @@ internal static class TaskProgressRules
             target
         );
 
+        // The sequence restarts either way. Landing the last step is what completes it, even when
+        // the count did not move -- a distinct task on a key already seen pays nothing and still
+        // has to be walked again from the top.
         if (newProgress == currentProgress)
         {
-            return TaskProgressOutcome.None(currentProgress, highestPaidLevelIndex, distinctKeys);
+            return TaskProgressOutcome.None(
+                currentProgress,
+                highestPaidLevelIndex,
+                distinctKeys,
+                0,
+                string.Empty
+            );
         }
 
         (ImmutableArray<int> paid, int points, int watermark) = PayStages(
@@ -117,7 +225,15 @@ internal static class TaskProgressRules
             premiumUnlocked
         );
 
-        return new TaskProgressOutcome(newProgress, paid, points, watermark, newKeys);
+        return new TaskProgressOutcome(
+            newProgress,
+            paid,
+            points,
+            watermark,
+            newKeys,
+            0,
+            string.Empty
+        );
     }
 
     /// <summary>
@@ -274,37 +390,62 @@ internal static class TaskProgressRules
     }
 
     /// <summary>
-    /// Whether a signal satisfies a task's parameter and every one of its conditions. An empty
-    /// parameter and no conditions means the task takes any occurrence, which is what most tasks
-    /// are.
+    /// Whether a signal satisfies the step the player is currently on.
     /// </summary>
     /// <remarks>
-    /// Conditions are ANDed and are additive to the parameter, never a replacement: the parameter
-    /// is on the wire and the client reads it. Pure and total — an unparseable value or an operator
-    /// applied to the wrong field fails the condition rather than throwing, because this runs on a
-    /// hot path behind content an operator typed, and a campaign that stops the room's event
-    /// pipeline is worse than a task that never advances.
+    /// Pure and total. An unresolvable back-reference or a fact the signal does not carry fails the
+    /// step rather than throwing: this runs on the room's event path behind content an operator
+    /// typed, and a campaign that stops the pipeline is worse than a task that does not advance.
     /// </remarks>
-    private static bool Matches(
-        string parameter,
-        ImmutableArray<RewardTrackTaskConditionSnapshot> conditions,
-        int amount,
-        string? target
+    private static bool StepMatches(
+        RewardTrackTaskStepSnapshot step,
+        ImmutableArray<RewardTrackFactSnapshot> facts,
+        StepCaptures captures
     )
     {
-        if (parameter.Length > 0 && !string.Equals(parameter, target, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        if (conditions.IsDefaultOrEmpty)
+        if (step.Filters.IsDefaultOrEmpty)
         {
             return true;
         }
 
-        foreach (RewardTrackTaskConditionSnapshot condition in conditions)
+        foreach (RewardTrackStepFilterSnapshot filter in step.Filters)
         {
-            if (!Satisfies(condition, amount, target))
+            if (Fact(facts, filter.FactKey) is not string actual)
+            {
+                // A filter asks about something this signal does not carry. That includes
+                // NotEquals: "any room but yours" is a claim about a room, and an action naming no
+                // room has not made it true.
+                return false;
+            }
+
+            string? expected =
+                filter.ReferencedStep < 0
+                    ? filter.Value
+                    : captures.Get(filter.ReferencedStep, filter.FactKey);
+
+            if (expected is null)
+            {
+                // The step it points at has not run in this attempt. Nothing to compare to.
+                return false;
+            }
+
+            bool ok = filter.Operator switch
+            {
+                StepFilterOperator.Equals => string.Equals(
+                    actual,
+                    expected,
+                    StringComparison.Ordinal
+                ),
+                StepFilterOperator.NotEquals => !string.Equals(
+                    actual,
+                    expected,
+                    StringComparison.Ordinal
+                ),
+                StepFilterOperator.OneOf => ListContains(expected, actual),
+                _ => false,
+            };
+
+            if (!ok)
             {
                 return false;
             }
@@ -313,56 +454,23 @@ internal static class TaskProgressRules
         return true;
     }
 
-    /// <summary>One condition against one signal.</summary>
-    private static bool Satisfies(
-        RewardTrackTaskConditionSnapshot condition,
-        int amount,
-        string? target
-    ) =>
-        condition.Field switch
+    private static string? Fact(ImmutableArray<RewardTrackFactSnapshot> facts, string key)
+    {
+        if (facts.IsDefaultOrEmpty)
         {
-            // A signal with no target satisfies nothing that asks about one -- including
-            // NotEquals. "Anything but the welcome lounge" is a statement about a room, and an
-            // action that names no room has not made it true.
-            TaskConditionField.Target => target is not null
-                && condition.Operator switch
-                {
-                    TaskConditionOperator.Equals => string.Equals(
-                        target,
-                        condition.Value,
-                        StringComparison.Ordinal
-                    ),
-                    TaskConditionOperator.NotEquals => !string.Equals(
-                        target,
-                        condition.Value,
-                        StringComparison.Ordinal
-                    ),
-                    TaskConditionOperator.OneOf => ListContains(condition.Value, target),
-                    // AtLeast/AtMost are numeric and the target is an opaque id: an id is not an
-                    // ordered quantity, and comparing two of them would answer a question nobody
-                    // asked. The validator refuses the pairing; this is the runtime's half.
-                    _ => false,
-                },
-            TaskConditionField.Amount => int.TryParse(
-                condition.Value,
-                NumberStyles.Integer,
-                CultureInfo.InvariantCulture,
-                out int value
-            )
-                && condition.Operator switch
-                {
-                    TaskConditionOperator.Equals => amount == value,
-                    TaskConditionOperator.NotEquals => amount != value,
-                    TaskConditionOperator.AtLeast => amount >= value,
-                    TaskConditionOperator.AtMost => amount <= value,
-                    TaskConditionOperator.OneOf => ListContains(
-                        condition.Value,
-                        amount.ToString(CultureInfo.InvariantCulture)
-                    ),
-                    _ => false,
-                },
-            _ => false,
-        };
+            return null;
+        }
+
+        foreach (RewardTrackFactSnapshot fact in facts)
+        {
+            if (string.Equals(fact.Key, key, StringComparison.Ordinal))
+            {
+                return fact.Value;
+            }
+        }
+
+        return null;
+    }
 
     /// <summary>
     /// Whether a comma-separated list holds this value. Entries are trimmed, because an operator

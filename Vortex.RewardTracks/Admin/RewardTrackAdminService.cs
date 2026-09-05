@@ -308,9 +308,24 @@ internal sealed class RewardTrackAdminService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false)
         );
-        db.RewardTrackTaskConditions.RemoveRange(
+        List<int> stepIds =
+        [
+            .. await db
+                .RewardTrackTaskSteps.Where(s => taskIds.Contains(s.RewardTrackTaskEntityId))
+                .Select(s => s.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false),
+        ];
+
+        db.RewardTrackStepFilters.RemoveRange(
             await db
-                .RewardTrackTaskConditions.Where(c => taskIds.Contains(c.RewardTrackTaskEntityId))
+                .RewardTrackStepFilters.Where(f => stepIds.Contains(f.RewardTrackTaskStepEntityId))
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
+        db.RewardTrackTaskSteps.RemoveRange(
+            await db
+                .RewardTrackTaskSteps.Where(s => taskIds.Contains(s.RewardTrackTaskEntityId))
                 .ToListAsync(ct)
                 .ConfigureAwait(false)
         );
@@ -346,7 +361,7 @@ internal sealed class RewardTrackAdminService(
         // A condition that can never be true is worse than no condition: the task simply stops
         // advancing, with nothing on screen to say why. Refuse it here, where the operator is
         // still looking at the form.
-        if (RewardTrackConditionRules.FirstProblem(spec.Conditions) is string problem)
+        if (RewardTrackSequenceRules.FirstProblem(spec.Steps) is string problem)
         {
             return RewardTrackAdminResult.Fail(problem);
         }
@@ -420,30 +435,7 @@ internal sealed class RewardTrackAdminService(
             );
         }
 
-        // Replaced wholesale like the stages, and for the same reason: conditions hold no player
-        // state, so rewriting them costs nothing and saves the operator a row-by-row dance.
-        db.RewardTrackTaskConditions.RemoveRange(
-            await db
-                .RewardTrackTaskConditions.Where(c => c.RewardTrackTaskEntityId == row.Id)
-                .ToListAsync(ct)
-                .ConfigureAwait(false)
-        );
-
-        int conditionOrder = 0;
-
-        foreach (RewardTrackTaskConditionSpec condition in spec.Conditions ?? [])
-        {
-            db.RewardTrackTaskConditions.Add(
-                new RewardTrackTaskConditionEntity
-                {
-                    RewardTrackTaskEntityId = row.Id,
-                    SortOrder = conditionOrder++,
-                    Field = condition.Field,
-                    Operator = condition.Operator,
-                    Value = condition.Value.Trim(),
-                }
-            );
-        }
+        await ReplaceStepsAsync(db, row, spec.Steps, ct).ConfigureAwait(false);
 
         track.ContentVersion++;
 
@@ -475,12 +467,7 @@ internal sealed class RewardTrackAdminService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false)
         );
-        db.RewardTrackTaskConditions.RemoveRange(
-            await db
-                .RewardTrackTaskConditions.Where(c => c.RewardTrackTaskEntityId == taskRowId)
-                .ToListAsync(ct)
-                .ConfigureAwait(false)
-        );
+        await RemoveStepsAsync(db, taskRowId, ct).ConfigureAwait(false);
         db.RewardTrackTasks.Remove(row);
 
         if (row.RewardTrack is not null)
@@ -766,6 +753,148 @@ internal sealed class RewardTrackAdminService(
         row.Status = spec.Status;
     }
 
+    /// <summary>
+    /// Rewrites a task's whole sequence, and keeps the task's own action equal to the first step's.
+    /// </summary>
+    /// <remarks>
+    /// That last part is not tidiness. The client draws a task's icon from
+    /// <c>reward_track_tasks_&lt;action_code&gt;</c> and there is one action per task on the wire, so
+    /// a sequence whose picture disagreed with the action it starts on would be a lie no one can see
+    /// from the editor.
+    /// </remarks>
+    private static async Task ReplaceStepsAsync(
+        VortexDbContext db,
+        RewardTrackTaskEntity task,
+        IReadOnlyList<RewardTrackTaskStepSpec>? steps,
+        CancellationToken ct
+    )
+    {
+        await RemoveStepsAsync(db, task.Id, ct).ConfigureAwait(false);
+
+        if (steps is null || steps.Count == 0)
+        {
+            // A plain task: the catalog builds its single step from the action above.
+            return;
+        }
+
+        task.ActionCode = steps[0].ActionCode;
+
+        for (int index = 0; index < steps.Count; index++)
+        {
+            RewardTrackTaskStepEntity step = new()
+            {
+                RewardTrackTaskEntityId = task.Id,
+                StepIndex = index,
+                ActionCode = steps[index].ActionCode,
+            };
+
+            db.RewardTrackTaskSteps.Add(step);
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            int order = 0;
+
+            foreach (RewardTrackStepFilterSpec filter in steps[index].Filters ?? [])
+            {
+                db.RewardTrackStepFilters.Add(
+                    new RewardTrackStepFilterEntity
+                    {
+                        RewardTrackTaskStepEntityId = step.Id,
+                        SortOrder = order++,
+                        FactKey = filter.FactKey.Trim(),
+                        Operator = filter.Operator,
+                        Value = filter.Value.Trim(),
+                    }
+                );
+            }
+        }
+    }
+
+    /// <summary>Drops a task's steps and their filters. Neither holds player state.</summary>
+    private static async Task RemoveStepsAsync(
+        VortexDbContext db,
+        int taskRowId,
+        CancellationToken ct
+    )
+    {
+        List<int> stepIds =
+        [
+            .. await db
+                .RewardTrackTaskSteps.Where(s => s.RewardTrackTaskEntityId == taskRowId)
+                .Select(s => s.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false),
+        ];
+
+        if (stepIds.Count == 0)
+        {
+            return;
+        }
+
+        db.RewardTrackStepFilters.RemoveRange(
+            await db
+                .RewardTrackStepFilters.Where(f => stepIds.Contains(f.RewardTrackTaskStepEntityId))
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
+        db.RewardTrackTaskSteps.RemoveRange(
+            await db
+                .RewardTrackTaskSteps.Where(s => s.RewardTrackTaskEntityId == taskRowId)
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        );
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    private static async Task CloneStepsAsync(
+        VortexDbContext db,
+        int sourceTaskRowId,
+        int targetTaskRowId,
+        CancellationToken ct
+    )
+    {
+        foreach (
+            RewardTrackTaskStepEntity source in await db
+                .RewardTrackTaskSteps.AsNoTracking()
+                .Where(s => s.RewardTrackTaskEntityId == sourceTaskRowId && s.DeletedAt == null)
+                .OrderBy(s => s.StepIndex)
+                .ToListAsync(ct)
+                .ConfigureAwait(false)
+        )
+        {
+            RewardTrackTaskStepEntity clone = new()
+            {
+                RewardTrackTaskEntityId = targetTaskRowId,
+                StepIndex = source.StepIndex,
+                ActionCode = source.ActionCode,
+                Parameter = source.Parameter,
+            };
+
+            db.RewardTrackTaskSteps.Add(clone);
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            foreach (
+                RewardTrackStepFilterEntity filter in await db
+                    .RewardTrackStepFilters.AsNoTracking()
+                    .Where(f => f.RewardTrackTaskStepEntityId == source.Id && f.DeletedAt == null)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false)
+            )
+            {
+                db.RewardTrackStepFilters.Add(
+                    new RewardTrackStepFilterEntity
+                    {
+                        RewardTrackTaskStepEntityId = clone.Id,
+                        SortOrder = filter.SortOrder,
+                        FactKey = filter.FactKey,
+                        Operator = filter.Operator,
+                        Value = filter.Value,
+                    }
+                );
+            }
+        }
+    }
+
     private static async Task CloneTasksAsync(
         VortexDbContext db,
         int sourceTrackRowId,
@@ -815,28 +944,10 @@ internal sealed class RewardTrackAdminService(
                 );
             }
 
-            // Conditions travel with the task, like its stages. A clone that dropped them would
-            // count everything the original narrowed -- a wider task, quietly, in a copy made to be
+            // The sequence travels with the task, like its stages. A clone that dropped it would
+            // count the opening action on its own -- a wider task, quietly, in a copy made to be
             // the same.
-            foreach (
-                RewardTrackTaskConditionEntity condition in await db
-                    .RewardTrackTaskConditions.AsNoTracking()
-                    .Where(c => c.RewardTrackTaskEntityId == task.Id && c.DeletedAt == null)
-                    .ToListAsync(ct)
-                    .ConfigureAwait(false)
-            )
-            {
-                db.RewardTrackTaskConditions.Add(
-                    new RewardTrackTaskConditionEntity
-                    {
-                        RewardTrackTaskEntityId = clone.Id,
-                        SortOrder = condition.SortOrder,
-                        Field = condition.Field,
-                        Operator = condition.Operator,
-                        Value = condition.Value,
-                    }
-                );
-            }
+            await CloneStepsAsync(db, task.Id, clone.Id, ct).ConfigureAwait(false);
         }
     }
 

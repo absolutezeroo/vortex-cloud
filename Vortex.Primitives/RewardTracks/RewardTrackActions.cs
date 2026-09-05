@@ -51,6 +51,20 @@ public static class RewardTrackActions
     /// <summary>Rotated furniture already in a room. (Introduction Track)</summary>
     public const string RotateItem = "rotate_item";
 
+    /// <summary>
+    /// Took a placed piece of furniture back into the inventory. No client artwork -- there is no
+    /// <c>reward_track_tasks_pick_up_item</c> embed -- so this is usable as a later step of a
+    /// sequence, where nothing is drawn, but makes a poor step 0.
+    /// </summary>
+    public const string PickUpItem = "pick_up_item";
+
+    /// <summary>
+    /// Stepped onto a piece of floor furniture. No client artwork, same caveat as
+    /// <see cref="PickUpItem"/>. Fires often, which is why nothing is published unless some
+    /// content is actually listening for it.
+    /// </summary>
+    public const string WalkOnFurni = "walk_on_furni";
+
     /// <summary>Arrived somewhere through a teleport. (Introduction Track)</summary>
     public const string Teleport = "teleport";
 

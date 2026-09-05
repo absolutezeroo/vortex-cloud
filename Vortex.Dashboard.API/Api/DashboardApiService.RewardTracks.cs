@@ -38,7 +38,16 @@ internal sealed partial class DashboardApiService
                 .Select(f => (string)f.GetRawConstantValue()!)
                 .OrderBy(name => name, StringComparer.Ordinal)
                 .Select(name =>
-                    (object)new { name, wired = WiredRewardTrackActions.Contains(name) }
+                    (object)
+                        new
+                        {
+                            name,
+                            wired = WiredRewardTrackActions.Contains(name),
+                            // What a step on this action can filter on, and what a later step can
+                            // point back at. The editor offers only these: a fact the action never
+                            // emits would be a filter that silently never matches.
+                            facts = RewardTrackActionFacts.For(name),
+                        }
                 ),
         ];
 
@@ -106,11 +115,18 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<RewardTrackTaskConditionEntity> conditions = await db
-                    .RewardTrackTaskConditions.AsNoTracking()
-                    .Where(c => c.DeletedAt == null)
-                    .OrderBy(c => c.SortOrder)
-                    .ThenBy(c => c.Id)
+                List<RewardTrackTaskStepEntity> steps = await db
+                    .RewardTrackTaskSteps.AsNoTracking()
+                    .Where(s => s.DeletedAt == null)
+                    .OrderBy(s => s.StepIndex)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<RewardTrackStepFilterEntity> stepFilters = await db
+                    .RewardTrackStepFilters.AsNoTracking()
+                    .Where(f => f.DeletedAt == null)
+                    .OrderBy(f => f.SortOrder)
+                    .ThenBy(f => f.Id)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -234,13 +250,23 @@ internal sealed partial class DashboardApiService
                                     mode = t.Mode.ToString(),
                                     premium = t.Premium,
                                     sortOrder = t.SortOrder,
-                                    conditions = conditions
-                                        .Where(c => c.RewardTrackTaskEntityId == t.Id)
-                                        .Select(c => new
+                                    // Empty for a plain task: the engine builds its single step from
+                                    // the action above, and the editor pre-fills the same way.
+                                    steps = steps
+                                        .Where(s => s.RewardTrackTaskEntityId == t.Id)
+                                        .Select(s => new
                                         {
-                                            field = (int)c.Field,
-                                            op = (int)c.Operator,
-                                            value = c.Value,
+                                            stepIndex = s.StepIndex,
+                                            actionCode = s.ActionCode,
+                                            filters = stepFilters
+                                                .Where(f => f.RewardTrackTaskStepEntityId == s.Id)
+                                                .Select(f => new
+                                                {
+                                                    factKey = f.FactKey,
+                                                    op = (int)f.Operator,
+                                                    value = f.Value,
+                                                })
+                                                .ToList(),
                                         })
                                         .ToList(),
                                     levels = levels
@@ -376,6 +402,8 @@ internal sealed partial class DashboardApiService
         RewardTrackActions.PlaceItem,
         RewardTrackActions.MoveItem,
         RewardTrackActions.RotateItem,
+        RewardTrackActions.PickUpItem,
+        RewardTrackActions.WalkOnFurni,
         RewardTrackActions.PetLevel,
         RewardTrackActions.BuyFromCatalogue,
         RewardTrackActions.SpendCredits,

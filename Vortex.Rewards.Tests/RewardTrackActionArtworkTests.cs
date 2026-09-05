@@ -73,6 +73,11 @@ public class RewardTrackActionArtworkTests
         RewardTrackActions.CompleteQuest,
         RewardTrackActions.AchievementLevel,
         RewardTrackActions.Wired,
+        // Added for sequences, where nothing after step 0 is ever drawn. Both make poor opening
+        // steps for exactly the reason this list exists, and good later ones: "place it, walk on
+        // it, then pick it up" shows the place_item icon and needs no picture for the rest.
+        RewardTrackActions.PickUpItem,
+        RewardTrackActions.WalkOnFurni,
     };
 
     private static IEnumerable<string> AllActionCodes() =>

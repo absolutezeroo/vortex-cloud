@@ -34,8 +34,13 @@ public sealed record RewardTrackSpec(
 
 /// <summary>
 /// Create/update spec for a task. <paramref name="Levels"/> replaces the whole stage ladder and
-/// <paramref name="Conditions"/> the whole condition list.
+/// <paramref name="Steps"/> the whole sequence.
 /// </summary>
+/// <remarks>
+/// <paramref name="ActionCode"/> is kept in step with the first step by the admin service: it is
+/// what the client draws the task's icon from, and a sequence whose picture disagreed with its
+/// first action would be a lie the operator cannot see.
+/// </remarks>
 public sealed record RewardTrackTaskSpec(
     string TaskId,
     string ActionCode,
@@ -44,16 +49,25 @@ public sealed record RewardTrackTaskSpec(
     bool Premium,
     int SortOrder,
     IReadOnlyList<RewardTrackTaskLevelSpec> Levels,
-    IReadOnlyList<RewardTrackTaskConditionSpec>? Conditions = null
+    IReadOnlyList<RewardTrackTaskStepSpec>? Steps = null
 );
 
 /// <summary>One stage of a task.</summary>
 public sealed record RewardTrackTaskLevelSpec(int RequiredCount, int PointsReward, bool Premium);
 
-/// <summary>One extra test on the task's signals. All of a task's conditions must pass.</summary>
-public sealed record RewardTrackTaskConditionSpec(
-    TaskConditionField Field,
-    TaskConditionOperator Operator,
+/// <summary>One action in a task's sequence, with the tests a signal must pass to satisfy it.</summary>
+public sealed record RewardTrackTaskStepSpec(
+    string ActionCode,
+    IReadOnlyList<RewardTrackStepFilterSpec> Filters
+);
+
+/// <summary>
+/// One test on a signal's facts. <paramref name="Value"/> is a literal, a comma-separated list for
+/// <see cref="StepFilterOperator.OneOf"/>, or <c>$N</c> pointing back at step N.
+/// </summary>
+public sealed record RewardTrackStepFilterSpec(
+    string FactKey,
+    StepFilterOperator Operator,
     string Value
 );
 
