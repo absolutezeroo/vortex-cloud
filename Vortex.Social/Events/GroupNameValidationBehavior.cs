@@ -17,7 +17,7 @@ namespace Vortex.Social.Events;
 ///     <c>Name</c> before this — <c>GroupEntity.Name</c> has no length constraint either — so a
 ///     player could create a guild with an empty or arbitrarily long name.
 /// </summary>
-internal sealed class GroupNameValidationBehavior(IGrainFactory grainFactory)
+public sealed class GroupNameValidationBehavior(IGrainFactory grainFactory)
     : IEventBehavior<GroupCreatingEvent>
 {
     public async ValueTask InvokeAsync(
