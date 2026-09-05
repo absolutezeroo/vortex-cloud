@@ -29,14 +29,53 @@ public sealed class RoomPlayerAvatar
     public AvatarGenderType Gender { get; private set; } = AvatarGenderType.Male;
     public AvatarDanceType DanceType { get; private set; } = AvatarDanceType.None;
 
+    /// <summary>
+    /// The look this player had before a clothing-change booth dressed them, or null when no booth
+    /// has.
+    /// <para>
+    /// It lives on the avatar and is never persisted, which is the whole of "the kit comes off when
+    /// you leave": the avatar dies with the visit, so a player who walks out still wearing one is
+    /// simply themselves again the next time a room draws them. The reference emulator needs a
+    /// session cache and three event handlers for the same guarantee, because over there the
+    /// override IS the saved look.
+    /// </para>
+    /// </summary>
+    private string? _lookBeforeBooth;
+
     public bool UpdateWithPlayer(PlayerSummarySnapshot snapshot)
     {
         Name = snapshot.Name;
         Motto = snapshot.Motto;
+        // The player saved a new look, so the booth's memory of the old one is now a look that no
+        // longer exists anywhere. Dropping it here is what stops a later step off the booth putting
+        // them back into a look they have already replaced.
+        _lookBeforeBooth = null;
         Figure = snapshot.Figure;
         Gender = snapshot.Gender;
 
         SetFavouriteGroup(snapshot.FavouriteGroupId, snapshot.FavouriteGroupName);
+
+        return true;
+    }
+
+    /// <summary>Puts the booth's outfit on, remembering the look underneath the first time.</summary>
+    public void WearBoothOutfit(string figure)
+    {
+        _lookBeforeBooth ??= Figure;
+        Figure = figure;
+    }
+
+    /// <summary>Puts the wearer back in their own look. False when no booth had dressed them, which
+    /// is what tells a booth to dress rather than undress.</summary>
+    public bool RemoveBoothOutfit()
+    {
+        if (_lookBeforeBooth is null)
+        {
+            return false;
+        }
+
+        Figure = _lookBeforeBooth;
+        _lookBeforeBooth = null;
 
         return true;
     }

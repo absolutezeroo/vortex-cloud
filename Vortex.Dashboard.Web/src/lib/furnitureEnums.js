@@ -78,6 +78,7 @@ export const LOGIC_GROUPS = [
     options: [
       { value: 'furniture_background_color', label: 'furniture_background_color' },
       { value: 'furniture_basic', label: 'furniture_basic' },
+      { value: 'furniture_clothing_change', label: 'furniture_clothing_change' },
       { value: 'furniture_coinschest', label: 'furniture_coinschest' },
       { value: 'furniture_crackable', label: 'furniture_crackable' },
       { value: 'furniture_custom_stack_height', label: 'furniture_custom_stack_height' },
@@ -99,6 +100,8 @@ export const LOGIC_GROUPS = [
       { value: 'furniture_nft_reward_box', label: 'furniture_nft_reward_box' },
       { value: 'furniture_one_way_door', label: 'furniture_one_way_door' },
       { value: 'furniture_present', label: 'furniture_present' },
+      { value: 'furniture_purchasable_clothing', label: 'furniture_purchasable_clothing' },
+      { value: 'furniture_pushable', label: 'furniture_pushable' },
       { value: 'furniture_roomdimmer', label: 'furniture_roomdimmer' },
       { value: 'furniture_score', label: 'furniture_score' },
       { value: 'furniture_static', label: 'furniture_static' },
@@ -142,6 +145,15 @@ export const LOGIC_GROUPS = [
       { value: 'freeze_gate_red', label: 'freeze_gate_red' },
       { value: 'freeze_gate_yellow', label: 'freeze_gate_yellow' },
       { value: 'freeze_tile', label: 'freeze_tile' },
+    ],
+  },
+  {
+    label: 'Games: Football',
+    options: [
+      { value: 'football_goal_blue', label: 'football_goal_blue' },
+      { value: 'football_goal_green', label: 'football_goal_green' },
+      { value: 'football_goal_red', label: 'football_goal_red' },
+      { value: 'football_goal_yellow', label: 'football_goal_yellow' },
     ],
   },
   {

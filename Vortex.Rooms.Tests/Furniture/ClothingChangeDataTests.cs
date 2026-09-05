@@ -1,5 +1,6 @@
 using FluentAssertions;
-using Vortex.Rooms.Grains;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Furniture;
@@ -60,5 +61,50 @@ public sealed class ClothingChangeDataTests
     {
         // A booth carrying a single look from some earlier write, or from a hand-edited row.
         ClothingChangeData.Merge(Boy, "F", Girl).Should().Be($"{Boy},{Girl}");
+    }
+
+    [Fact]
+    public void EachGender_ReadsItsOwnSide()
+    {
+        string booth = $"{Boy},{Girl}";
+
+        ClothingChangeData.LookFor(booth, AvatarGenderType.Male).Should().Be(Boy);
+        ClothingChangeData.LookFor(booth, AvatarGenderType.Female).Should().Be(Girl);
+    }
+
+    [Fact]
+    public void AGenderWithNothingOnItsSide_ReadsEmpty()
+    {
+        // What tells the booth to dress nobody. Reading the boys' look for a girl would put every
+        // girl in the boys' kit, which is worse than the booth doing nothing.
+        ClothingChangeData.LookFor($"{Boy},", AvatarGenderType.Female).Should().BeEmpty();
+        ClothingChangeData.LookFor(string.Empty, AvatarGenderType.Male).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Dressing_KeepsTheWearersHead_AndTakesTheBoothsClothes()
+    {
+        const string Wearer = "hd-180-1.hr-828-45.ch-999-1.lg-999-1.sh-999-1";
+        const string Kit = "hd-3-3.ch-210-66.lg-270-82.sh-305-62";
+
+        // The head parts are the wearer's and the outfit is the booth's -- the booth's own hd is
+        // dropped, which is what stops a kit turning everyone into the same person.
+        ClothingChangeData
+            .Dress(Wearer, Kit)
+            .Should()
+            .Be("hd-180-1.hr-828-45.ch-210-66.lg-270-82.sh-305-62");
+    }
+
+    [Fact]
+    public void APartialKit_LeavesTheMissingPiecesOff()
+    {
+        // A booth holding only a shirt: the wearer loses their own legs rather than keeping them,
+        // because the booth owns every clothing slot it is asked about. Pinned because the opposite
+        // reading -- "merge, keeping what the kit does not mention" -- is the intuitive one and is
+        // not what the reference emulator does.
+        ClothingChangeData
+            .Dress("hd-180-1.ch-999-1.lg-999-1", "ch-210-66")
+            .Should()
+            .Be("hd-180-1.ch-210-66");
     }
 }
