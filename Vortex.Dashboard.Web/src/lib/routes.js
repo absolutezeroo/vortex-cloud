@@ -66,6 +66,8 @@ export const NAV = [
   { path: '/economy-extras', labelKey: 'nav.economyExtras', shortKey: 'nav.economyExtrasShort', group: 'Economy', caps: ROUTE_PERMISSIONS.economyExtras, load: () => import('../pages/EconomyExtrasPage.svelte'), writes: true },
 
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, load: () => import('../pages/QuestsPage.svelte'), writes: true },
+  { path: '/habbicons', labelKey: 'nav.habbicons', shortKey: 'nav.habbiconsShort', group: 'Content', caps: ROUTE_PERMISSIONS.habbicons, load: () => import('../pages/HabbiconsPage.svelte'), writes: true },
+  { path: '/reward-tracks', labelKey: 'nav.rewardTracks', shortKey: 'nav.rewardTracksShort', group: 'Content', caps: ROUTE_PERMISSIONS.rewardTracks, load: () => import('../pages/RewardTracksPage.svelte'), writes: true },
   { path: '/songs', labelKey: 'nav.songs', shortKey: 'nav.songsShort', group: 'Content', caps: ROUTE_PERMISSIONS.songs, load: () => import('../pages/SongsPage.svelte'), writes: true },
   { path: '/fishing', labelKey: 'nav.fishing', shortKey: 'nav.fishingShort', group: 'Content', caps: ROUTE_PERMISSIONS.fishing, load: () => import('../pages/FishingPage.svelte'), writes: true },
   { path: '/polls', labelKey: 'nav.polls', shortKey: 'nav.pollsShort', group: 'Content', caps: ROUTE_PERMISSIONS.polls, load: () => import('../pages/PollsPage.svelte'), writes: true },

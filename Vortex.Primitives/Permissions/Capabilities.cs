@@ -119,6 +119,18 @@ public static class Capabilities
         public const string QuestsRead = "dashboard.quests.read";
         public const string OpsQuestsManage = "dashboard.ops.quests.manage";
 
+        /// <summary>Habbicon collections, their members, and who owns what.</summary>
+        public const string HabbiconsRead = "dashboard.habbicons.read";
+        public const string OpsHabbiconsManage = "dashboard.ops.habbicons.manage";
+
+        /// <summary>
+        /// Reward-track campaigns: the content, the lifecycle, and one player's progress. The manage
+        /// capability covers publishing, which is the write that puts a campaign in front of the
+        /// whole hotel.
+        /// </summary>
+        public const string RewardTracksRead = "dashboard.reward_tracks.read";
+        public const string OpsRewardTracksManage = "dashboard.ops.reward_tracks.manage";
+
         /// <summary>The Trax song catalogue a jukebox plays out of.</summary>
         public const string SongsRead = "dashboard.songs.read";
         public const string OpsSongsManage = "dashboard.ops.songs.manage";
@@ -272,6 +284,10 @@ public static class Capabilities
             OpsTargetedOffersManage,
             QuestsRead,
             OpsQuestsManage,
+            HabbiconsRead,
+            OpsHabbiconsManage,
+            RewardTracksRead,
+            OpsRewardTracksManage,
             SongsRead,
             OpsSongsManage,
             FishingRead,

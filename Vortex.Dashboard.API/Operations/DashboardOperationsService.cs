@@ -23,6 +23,7 @@ using Vortex.Primitives.Console;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Furniture;
+using Vortex.Primitives.Habbicons;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Navigator;
@@ -36,6 +37,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Quests;
+using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Primitives.Sound;
@@ -67,6 +69,9 @@ internal sealed partial class DashboardOperationsService(
     IFurnitureAdminService furnitureAdmin,
     ISongAdminService songAdmin,
     IFishingAdminService fishingAdmin,
+    IHabbiconAdminService habbiconAdmin,
+    IRewardTrackAdminService rewardTrackAdmin,
+    IRewardTrackCatalog rewardTrackCatalog,
     GamedataDocumentStore gamedata,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
@@ -105,6 +110,14 @@ internal sealed partial class DashboardOperationsService(
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly ISongAdminService _songAdmin = songAdmin;
     private readonly IFishingAdminService _fishingAdmin = fishingAdmin;
+    private readonly IHabbiconAdminService _habbiconAdmin = habbiconAdmin;
+    private readonly IRewardTrackAdminService _rewardTrackAdmin = rewardTrackAdmin;
+
+    /// <summary>
+    /// Read only, and only to carry a track's current status through an edit that does not set one.
+    /// Content writes go through <see cref="_rewardTrackAdmin"/>, which reloads this afterwards.
+    /// </summary>
+    private readonly IRewardTrackCatalog _rewardTrackCatalog = rewardTrackCatalog;
     private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;

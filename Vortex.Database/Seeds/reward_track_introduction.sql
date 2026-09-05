@@ -49,26 +49,41 @@ VALUES
 -- mode: 0 counter, 1 distinct, 2 absolute, 3 highest.
 -- `visit_rooms` is the only distinct one here: the client's text says "Explore rooms made by other
 -- players", and a counter would be satisfied by walking in and out of the same door twenty times.
+--
+-- TASK_ID AND ACTION_CODE ARE TWO DIFFERENT VOCABULARIES AND MUST NOT BE COPIED FROM ONE ANOTHER.
+-- `task_id` is the localization stem: the client renders `reward_track.introduction.task.<task_id>.name`,
+-- so it has to be one of the thirty ids in `external_flash_texts` -- `visit_rooms`, `change_outfit`,
+-- and so on. `action_code` is the ARTWORK key: `RewardTrackTaskRowView.as` builds the icon name as
+-- `"reward_track_tasks_" + actionType.toLowerCase()`, so it has to be one of the thirty
+-- `reward_track_tasks_*` embeds in `HabboWindowManagerCom.as` -- `enter_other_users_room`,
+-- `change_figure`. The two lists overlap in name but not in content, and this seed originally
+-- reused the first for the second: every task in the track drew a blank square and logged
+-- `ResourceManager: Asset not found`.
 INSERT IGNORE INTO reward_track_tasks
     (id, reward_track_id, task_id, action_code, parameter, mode, premium, sort_order, created_at)
 VALUES
-    (1,  1, 'visit_rooms',            'visit_rooms',            '', 1, 0, 10,  UTC_TIMESTAMP()),
-    (2,  1, 'chat_with_users',        'chat_with_users',        '', 0, 0, 20,  UTC_TIMESTAMP()),
-    (3,  1, 'make_friends',           'make_friends',           '', 0, 0, 30,  UTC_TIMESTAMP()),
+    (1,  1, 'visit_rooms',            'enter_other_users_room', '', 1, 0, 10,  UTC_TIMESTAMP()),
+    (2,  1, 'chat_with_users',        'chat_with_someone',      '', 0, 0, 20,  UTC_TIMESTAMP()),
+    (3,  1, 'make_friends',           'request_friend',         '', 0, 0, 30,  UTC_TIMESTAMP()),
     (4,  1, 'give_respect',           'give_respect',           '', 0, 0, 40,  UTC_TIMESTAMP()),
-    (5,  1, 'change_outfit',          'change_outfit',          '', 0, 0, 50,  UTC_TIMESTAMP()),
+    (5,  1, 'change_outfit',          'change_figure',          '', 0, 0, 50,  UTC_TIMESTAMP()),
     (6,  1, 'change_motto',           'change_motto',           '', 0, 0, 60,  UTC_TIMESTAMP()),
     (7,  1, 'create_room',            'create_room',            '', 0, 0, 70,  UTC_TIMESTAMP()),
-    (8,  1, 'place_furniture',        'place_furniture',        '', 0, 0, 80,  UTC_TIMESTAMP()),
-    (9,  1, 'move_furniture',         'move_furniture',         '', 0, 0, 90,  UTC_TIMESTAMP()),
-    (10, 1, 'buy_catalog_furni',      'buy_catalog_furni',      '', 0, 0, 100, UTC_TIMESTAMP()),
+    (8,  1, 'place_furniture',        'place_item',             '', 0, 0, 80,  UTC_TIMESTAMP()),
+    (9,  1, 'move_furniture',         'move_item',              '', 0, 0, 90,  UTC_TIMESTAMP()),
+    (10, 1, 'buy_catalog_furni',      'buy_from_catalogue',     '', 0, 0, 100, UTC_TIMESTAMP()),
     (11, 1, 'wear_badge',             'wear_badge',             '', 0, 0, 110, UTC_TIMESTAMP()),
     (12, 1, 'use_habbicon',           'use_habbicon',           '', 0, 0, 120, UTC_TIMESTAMP()),
-    (13, 1, 'dance_in_room',          'dance_in_room',          '', 0, 0, 130, UTC_TIMESTAMP()),
-    (14, 1, 'wave_at_user',           'wave_at_user',           '', 0, 0, 140, UTC_TIMESTAMP()),
+    (13, 1, 'dance_in_room',          'dance',                  '', 0, 0, 130, UTC_TIMESTAMP()),
+    (14, 1, 'wave_at_user',           'wave',                   '', 0, 0, 140, UTC_TIMESTAMP()),
     (15, 1, 'send_messenger_message', 'send_messenger_message', '', 0, 0, 150, UTC_TIMESTAMP()),
     -- Premium-only. A free player sees it locked, which is half the reason anyone buys premium, and
     -- it does not advance for them at all.
+    --
+    -- The only row here that is ours rather than Habbo's, and it shows: `complete_trade` is in
+    -- neither vocabulary, so this task renders its raw localization key and draws no icon. Left as
+    -- it is on purpose -- a made-up id would still have no text, and borrowing an unrelated icon
+    -- would say the task is something it is not.
     (16, 1, 'complete_trade',         'complete_trade',         '', 0, 1, 160, UTC_TIMESTAMP());
 
 -- ---------------------------------------------------------------------------------------------

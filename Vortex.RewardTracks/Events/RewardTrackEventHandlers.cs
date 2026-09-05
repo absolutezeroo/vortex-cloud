@@ -65,7 +65,7 @@ internal static class RewardTrackSignal
 /// Room entries. The target is the room id, which is what a distinct-mode task deduplicates on —
 /// "visit 20 different rooms" counts twenty rooms, not twenty doorways.
 /// </summary>
-internal sealed class RewardTrackRoomEntryHandler(
+public sealed class RewardTrackRoomEntryHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<PlayerEnteredRoomEvent>
@@ -80,7 +80,7 @@ internal sealed class RewardTrackRoomEntryHandler(
                 grainFactory,
                 catalog,
                 e.PlayerId.Value,
-                RewardTrackActions.VisitRooms,
+                RewardTrackActions.EnterOtherUsersRoom,
                 1,
                 e.RoomId.ToString(CultureInfo.InvariantCulture),
                 ct
@@ -93,10 +93,8 @@ internal sealed class RewardTrackRoomEntryHandler(
 /// <c>PlayerChattingEvent</c>: the latter fires for a line a behaviour then drops, and paying for
 /// words nobody heard is exactly what the "only successful actions progress" rule forbids.
 /// </summary>
-internal sealed class RewardTrackChatHandler(
-    IGrainFactory grainFactory,
-    IRewardTrackCatalog catalog
-) : IEventHandler<PlayerChattedEvent>
+public sealed class RewardTrackChatHandler(IGrainFactory grainFactory, IRewardTrackCatalog catalog)
+    : IEventHandler<PlayerChattedEvent>
 {
     public async ValueTask HandleAsync(PlayerChattedEvent e, EventContext ctx, CancellationToken ct)
     {
@@ -112,7 +110,7 @@ internal sealed class RewardTrackChatHandler(
                 grainFactory,
                 catalog,
                 e.PlayerId.Value,
-                RewardTrackActions.ChatWithUsers,
+                RewardTrackActions.ChatWithSomeone,
                 1,
                 null,
                 ct
@@ -122,7 +120,7 @@ internal sealed class RewardTrackChatHandler(
 }
 
 /// <summary>Dances and waves, each on its own action code.</summary>
-internal sealed class RewardTrackGestureHandler(
+public sealed class RewardTrackGestureHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<PlayerGesturedEvent>
@@ -135,8 +133,8 @@ internal sealed class RewardTrackGestureHandler(
     {
         string? action = e.Gesture switch
         {
-            "dance" => RewardTrackActions.DanceInRoom,
-            "wave" => RewardTrackActions.WaveAtUser,
+            "dance" => RewardTrackActions.Dance,
+            "wave" => RewardTrackActions.Wave,
             _ => null,
         };
 
@@ -152,7 +150,7 @@ internal sealed class RewardTrackGestureHandler(
 }
 
 /// <summary>Friend requests sent. The asking, not the accepting — the client's own task says "make friends".</summary>
-internal sealed class RewardTrackFriendRequestHandler(
+public sealed class RewardTrackFriendRequestHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<FriendRequestSentEvent>
@@ -167,7 +165,7 @@ internal sealed class RewardTrackFriendRequestHandler(
                 grainFactory,
                 catalog,
                 e.ActorPlayerId,
-                RewardTrackActions.MakeFriends,
+                RewardTrackActions.RequestFriend,
                 1,
                 e.TargetPlayerId.ToString(CultureInfo.InvariantCulture),
                 ct
@@ -176,7 +174,7 @@ internal sealed class RewardTrackFriendRequestHandler(
 }
 
 /// <summary>Respect given. The target is who received it, so a distinct task can require different people.</summary>
-internal sealed class RewardTrackRespectHandler(
+public sealed class RewardTrackRespectHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<RespectGivenEvent>
@@ -200,7 +198,7 @@ internal sealed class RewardTrackRespectHandler(
 }
 
 /// <summary>Figure changes.</summary>
-internal sealed class RewardTrackFigureHandler(
+public sealed class RewardTrackFigureHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<PlayerFigureChangedEvent>
@@ -215,7 +213,7 @@ internal sealed class RewardTrackFigureHandler(
                 grainFactory,
                 catalog,
                 e.PlayerId.Value,
-                RewardTrackActions.ChangeOutfit,
+                RewardTrackActions.ChangeFigure,
                 1,
                 null,
                 ct
@@ -224,10 +222,8 @@ internal sealed class RewardTrackFigureHandler(
 }
 
 /// <summary>Motto changes.</summary>
-internal sealed class RewardTrackMottoHandler(
-    IGrainFactory grainFactory,
-    IRewardTrackCatalog catalog
-) : IEventHandler<PlayerMottoChangedEvent>
+public sealed class RewardTrackMottoHandler(IGrainFactory grainFactory, IRewardTrackCatalog catalog)
+    : IEventHandler<PlayerMottoChangedEvent>
 {
     public async ValueTask HandleAsync(
         PlayerMottoChangedEvent e,
@@ -248,10 +244,8 @@ internal sealed class RewardTrackMottoHandler(
 }
 
 /// <summary>Badges equipped. One signal per badge worn, so a target can name a specific one.</summary>
-internal sealed class RewardTrackBadgeHandler(
-    IGrainFactory grainFactory,
-    IRewardTrackCatalog catalog
-) : IEventHandler<BadgesEquippedEvent>
+public sealed class RewardTrackBadgeHandler(IGrainFactory grainFactory, IRewardTrackCatalog catalog)
+    : IEventHandler<BadgesEquippedEvent>
 {
     public async ValueTask HandleAsync(
         BadgesEquippedEvent e,
@@ -277,7 +271,7 @@ internal sealed class RewardTrackBadgeHandler(
 }
 
 /// <summary>Rooms created.</summary>
-internal sealed class RewardTrackRoomCreatedHandler(
+public sealed class RewardTrackRoomCreatedHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<RoomCreatedEvent>
@@ -301,7 +295,7 @@ internal sealed class RewardTrackRoomCreatedHandler(
 }
 
 /// <summary>Furniture placed. The target is the definition id, so a task can require a kind of furni.</summary>
-internal sealed class RewardTrackItemPlacedHandler(
+public sealed class RewardTrackItemPlacedHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<ItemPlacedEvent>
@@ -312,7 +306,7 @@ internal sealed class RewardTrackItemPlacedHandler(
                 grainFactory,
                 catalog,
                 e.ActorPlayerId,
-                RewardTrackActions.PlaceFurniture,
+                RewardTrackActions.PlaceItem,
                 1,
                 e.DefinitionId.ToString(CultureInfo.InvariantCulture),
                 ct
@@ -321,7 +315,7 @@ internal sealed class RewardTrackItemPlacedHandler(
 }
 
 /// <summary>Furniture moved within a room.</summary>
-internal sealed class RewardTrackItemMovedHandler(
+public sealed class RewardTrackItemMovedHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<ItemMovedEvent>
@@ -332,7 +326,7 @@ internal sealed class RewardTrackItemMovedHandler(
                 grainFactory,
                 catalog,
                 e.ActorPlayerId,
-                RewardTrackActions.MoveFurniture,
+                RewardTrackActions.MoveItem,
                 1,
                 null,
                 ct
@@ -348,7 +342,7 @@ internal sealed class RewardTrackItemMovedHandler(
 /// Deduplicated by operation. The commerce relay delivers at least once by design, and advancing a
 /// task twice for one purchase is the silent wrongness the relay exists to avoid causing.
 /// </remarks>
-internal sealed class RewardTrackCatalogPurchaseHandler(
+public sealed class RewardTrackCatalogPurchaseHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog,
     ICommerceJournal journal
@@ -377,7 +371,7 @@ internal sealed class RewardTrackCatalogPurchaseHandler(
                 grainFactory,
                 catalog,
                 e.PlayerId,
-                RewardTrackActions.BuyCatalogFurni,
+                RewardTrackActions.BuyFromCatalogue,
                 e.Quantity > 0 ? e.Quantity : 1,
                 e.OfferId.ToString(CultureInfo.InvariantCulture),
                 ct
@@ -402,10 +396,8 @@ internal sealed class RewardTrackCatalogPurchaseHandler(
 }
 
 /// <summary>Completed trades, for both sides.</summary>
-internal sealed class RewardTrackTradeHandler(
-    IGrainFactory grainFactory,
-    IRewardTrackCatalog catalog
-) : IEventHandler<TradeCompletedEvent>
+public sealed class RewardTrackTradeHandler(IGrainFactory grainFactory, IRewardTrackCatalog catalog)
+    : IEventHandler<TradeCompletedEvent>
 {
     public async ValueTask HandleAsync(
         TradeCompletedEvent e,
@@ -440,7 +432,7 @@ internal sealed class RewardTrackTradeHandler(
 }
 
 /// <summary>Private messages the messenger accepted.</summary>
-internal sealed class RewardTrackMessengerHandler(
+public sealed class RewardTrackMessengerHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<MessengerMessageSentEvent>
@@ -467,7 +459,7 @@ internal sealed class RewardTrackMessengerHandler(
 /// Habbicons used. The whole of the reward-track side of the Habbicon integration: the Habbicon
 /// domain publishes, this subscribes, and neither names a type from the other.
 /// </summary>
-internal sealed class RewardTrackHabbiconUsedHandler(
+public sealed class RewardTrackHabbiconUsedHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<HabbiconUsedEvent>
@@ -491,7 +483,7 @@ internal sealed class RewardTrackHabbiconUsedHandler(
 }
 
 /// <summary>Habbicon collections completed. The target is the collection code, so a task can name one.</summary>
-internal sealed class RewardTrackHabbiconCollectionHandler(
+public sealed class RewardTrackHabbiconCollectionHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<HabbiconCollectionCompletedEvent>
@@ -515,10 +507,8 @@ internal sealed class RewardTrackHabbiconCollectionHandler(
 }
 
 /// <summary>Quests completed.</summary>
-internal sealed class RewardTrackQuestHandler(
-    IGrainFactory grainFactory,
-    IRewardTrackCatalog catalog
-) : IEventHandler<QuestCompletedEvent>
+public sealed class RewardTrackQuestHandler(IGrainFactory grainFactory, IRewardTrackCatalog catalog)
+    : IEventHandler<QuestCompletedEvent>
 {
     public async ValueTask HandleAsync(
         QuestCompletedEvent e,
@@ -539,7 +529,7 @@ internal sealed class RewardTrackQuestHandler(
 }
 
 /// <summary>Achievement level-ups.</summary>
-internal sealed class RewardTrackAchievementHandler(
+public sealed class RewardTrackAchievementHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
 ) : IEventHandler<AchievementLevelUpEvent>
