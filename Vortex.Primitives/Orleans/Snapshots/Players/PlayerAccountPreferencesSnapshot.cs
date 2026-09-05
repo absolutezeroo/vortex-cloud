@@ -30,4 +30,21 @@ public sealed record PlayerAccountPreferencesSnapshot
 
     [Id(6)]
     public required int UiFlags { get; init; }
+
+    /// <summary>Version of the Discord consent dialog the player answered; 0 = never answered, which
+    /// is what makes the client show its opt-in popup.</summary>
+    [Id(7)]
+    public required int DiscordSettingsVersion { get; init; }
+
+    [Id(8)]
+    public required bool DiscordShowHabbo { get; init; }
+
+    [Id(9)]
+    public required bool DiscordShareActivity { get; init; }
+
+    [Id(10)]
+    public required bool DiscordHideInHiddenRooms { get; init; }
+
+    [Id(11)]
+    public required bool DiscordAllowJoining { get; init; }
 }

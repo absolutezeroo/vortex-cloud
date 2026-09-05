@@ -642,6 +642,8 @@ internal static class MessageEvent
     public const int SetRoomCameraPreferencesMessageEvent = 3917; // AS3-verified (direct read, both revisions): OtherSettingsView disable_room_camera_follow_checkbox -> connection.send(new _SafeCls_3911(disabled)) @3917 (old _SafeCls_3094@3914)
     public const int SetSoundSettingsEvent = 3662; // AS3-verified (direct read, both revisions): HabboSoundManagerFlash10::storeVolumeSetting() -> connection.send(new _SafeCls_2171(trax,furni,generic)) @3662 (old _SafeCls_2070@2608; slot freed by correcting GuideSessionCreateMessageEvent above). NOTE: those are the CONSTRUCTOR args; the composer pushes them back to front, so the wire order is generic, furni, trax - see SetSoundSettingsMessageParser.
     public const int SetUIFlagsMessageEvent = 3653;
+    public const int GetDiscordPreferencesMessageEvent = 2883; // AS3-verified (direct read): _composers[2883] = _SafeCls_2988 (empty, no-arg) @ communication/_SafeCls_2046.as:880, sent by DiscordSettingsController::initComponent()
+    public const int SetDiscordPreferencesMessageEvent = 2304; // AS3-verified (direct read): _composers[2304] = _SafeCls_3638(version, showHabbo, shareActivity, hideInHiddenRooms, allowJoining) @ communication/_SafeCls_2046.as:792, sent by DiscordSettingsController::updatePreferences()
     public const int Game2ExitGameMessageEvent = 3510;
     public const int Game2GameChatMessageEvent = 3083;
     public const int Game2LoadStageReadyMessageEvent = 1320;
@@ -1209,6 +1211,7 @@ internal static class MessageComposer
     public const int TryVerificationCodeResultMessageComposer = 712; // AS3-verified (ghost fix): onVerificationCodeResultMessage @ HabboPhoneNumber
     public const int FigureSetIdsComposer = 1231;
     public const int AccountPreferencesComposer = 724;
+    public const int DiscordPreferencesComposer = 2767; // AS3-verified (direct read): _SafeStr_4546[2767] = _SafeCls_2938 @ communication/_SafeCls_2046.as:1453 -> parser _SafeCls_4070 -> DiscordPreferences.readFromData(): readInteger, then four readBoolean (one byte each)
     public const int Game2FriendsLeaderboardComposer = 2272;
     public const int Game2TotalGroupLeaderboardComposer = 2417;
     public const int Game2TotalLeaderboardComposer = 733;

@@ -597,6 +597,18 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task SetDiscordPreferencesAsync(
+            int version,
+            bool showHabbo,
+            bool shareActivity,
+            bool hideInHiddenRooms,
+            bool allowJoining,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<List<PlayerWardrobeOutfitSnapshot>> GetWardrobeAsync(CancellationToken ct)
         {
             throw new NotSupportedException();

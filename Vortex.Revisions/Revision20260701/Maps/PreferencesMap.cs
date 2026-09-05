@@ -32,6 +32,17 @@ internal sealed class PreferencesMap : IRevisionMap
         builder.MapParser(MessageEvent.SetSoundSettingsEvent, new SetSoundSettingsMessageParser());
         builder.MapParser(MessageEvent.SetUIFlagsMessageEvent, new SetUIFlagsMessageParser());
 
+        // Discord Rich Presence. The client asks for these at init on every login, so an unmapped
+        // 2883 was one "Incoming Unknown" per session and a settings dialog that refused to open.
+        builder.MapParser(
+            MessageEvent.GetDiscordPreferencesMessageEvent,
+            new GetDiscordPreferencesMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.SetDiscordPreferencesMessageEvent,
+            new SetDiscordPreferencesMessageParser()
+        );
+
         // The personal word filter. Distinct from the ROOM filter in RoomSettingsMap: this one is
         // per player, and its three headers had placeholder values with nothing behind them.
         builder.MapParser(
@@ -51,6 +62,13 @@ internal sealed class PreferencesMap : IRevisionMap
             typeof(AccountPreferencesEventMessageComposer),
             new AccountPreferencesEventMessageComposerSerializer(
                 MessageComposer.AccountPreferencesComposer
+            )
+        );
+
+        builder.MapSerializer(
+            typeof(DiscordPreferencesEventMessageComposer),
+            new DiscordPreferencesEventMessageComposerSerializer(
+                MessageComposer.DiscordPreferencesComposer
             )
         );
 

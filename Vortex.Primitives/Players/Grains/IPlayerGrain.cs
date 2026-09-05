@@ -195,6 +195,19 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// (SetUIFlags, header 3653).</summary>
     public Task SetUiFlagsAsync(int flags, CancellationToken ct);
 
+    /// <summary>Persists the four Discord Rich Presence toggles and the version of the consent dialog
+    /// the player answered (SetDiscordPreferences, header 2304). The version comes from the client's
+    /// <c>discord_activity.settings.version</c> and is stored verbatim: it is what decides whether the
+    /// opt-in popup shows again.</summary>
+    public Task SetDiscordPreferencesAsync(
+        int version,
+        bool showHabbo,
+        bool shareActivity,
+        bool hideInHiddenRooms,
+        bool allowJoining,
+        CancellationToken ct
+    );
+
     /// <summary>All the player's saved avatar-editor wardrobe outfits, ordered by slot, echoed to the
     /// client on GetWardrobe (header 2210).</summary>
     public Task<List<PlayerWardrobeOutfitSnapshot>> GetWardrobeAsync(CancellationToken ct);

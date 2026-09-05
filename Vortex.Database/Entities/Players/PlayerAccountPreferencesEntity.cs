@@ -49,6 +49,30 @@ public class PlayerAccountPreferencesEntity : VortexEntity
     [DefaultValue(3)]
     public required int UiFlags { get; set; }
 
+    // Discord Rich Presence: the four toggles of the client's own settings dialog, plus the version
+    // of the consent dialog the player answered. Version 0 means "never answered" and is what makes
+    // the client show the opt-in popup once — it is the client's mechanism, not ours, so it is
+    // stored verbatim and never defaulted to the current version.
+    [Column("discord_settings_version")]
+    [DefaultValue(0)]
+    public required int DiscordSettingsVersion { get; set; }
+
+    [Column("discord_show_habbo")]
+    [DefaultValue(true)]
+    public required bool DiscordShowHabbo { get; set; }
+
+    [Column("discord_share_activity")]
+    [DefaultValue(true)]
+    public required bool DiscordShareActivity { get; set; }
+
+    [Column("discord_hide_in_hidden_rooms")]
+    [DefaultValue(true)]
+    public required bool DiscordHideInHiddenRooms { get; set; }
+
+    [Column("discord_allow_joining")]
+    [DefaultValue(true)]
+    public required bool DiscordAllowJoining { get; set; }
+
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }
 }

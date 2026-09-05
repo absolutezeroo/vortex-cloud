@@ -18,6 +18,11 @@ internal sealed partial class PlayerGrain
     private const int DefaultVolume = 100;
     private const int DefaultUiFlags = 3;
 
+    // 0, deliberately: the client reads it as "never answered", falls back to its own all-on
+    // defaults for display, and shows the Discord opt-in popup once. Seeding the current version
+    // here would suppress that popup for every player who never saw it.
+    private const int DefaultDiscordVersion = 0;
+
     public async Task<PlayerAccountPreferencesSnapshot> GetAccountPreferencesAsync(
         CancellationToken ct
     )
@@ -37,6 +42,11 @@ internal sealed partial class PlayerGrain
             RoomInvitesIgnored = entity?.RoomInvitesIgnored ?? false,
             RoomCameraFollowDisabled = entity?.RoomCameraFollowDisabled ?? false,
             UiFlags = entity?.UiFlags ?? DefaultUiFlags,
+            DiscordSettingsVersion = entity?.DiscordSettingsVersion ?? DefaultDiscordVersion,
+            DiscordShowHabbo = entity?.DiscordShowHabbo ?? true,
+            DiscordShareActivity = entity?.DiscordShareActivity ?? true,
+            DiscordHideInHiddenRooms = entity?.DiscordHideInHiddenRooms ?? true,
+            DiscordAllowJoining = entity?.DiscordAllowJoining ?? true,
         };
     }
 
@@ -68,6 +78,27 @@ internal sealed partial class PlayerGrain
 
     public Task SetUiFlagsAsync(int flags, CancellationToken ct) =>
         UpdateAccountPreferencesAsync("ui_flags", e => e.UiFlags = flags, ct);
+
+    public Task SetDiscordPreferencesAsync(
+        int version,
+        bool showHabbo,
+        bool shareActivity,
+        bool hideInHiddenRooms,
+        bool allowJoining,
+        CancellationToken ct
+    ) =>
+        UpdateAccountPreferencesAsync(
+            "discord",
+            e =>
+            {
+                e.DiscordSettingsVersion = version;
+                e.DiscordShowHabbo = showHabbo;
+                e.DiscordShareActivity = shareActivity;
+                e.DiscordHideInHiddenRooms = hideInHiddenRooms;
+                e.DiscordAllowJoining = allowJoining;
+            },
+            ct
+        );
 
     /// <summary>
     /// The one write path for every preference, so the record is raised here rather than in five
@@ -101,6 +132,11 @@ internal sealed partial class PlayerGrain
                 RoomInvitesIgnored = false,
                 RoomCameraFollowDisabled = false,
                 UiFlags = DefaultUiFlags,
+                DiscordSettingsVersion = DefaultDiscordVersion,
+                DiscordShowHabbo = true,
+                DiscordShareActivity = true,
+                DiscordHideInHiddenRooms = true,
+                DiscordAllowJoining = true,
             };
 
             dbCtx.PlayerAccountPreferences.Add(entity);

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Protocol.Messages.Incoming.Preferences;
+using Vortex.Protocol.Messages.Outgoing.Preferences;
 using Vortex.Revisions.Configuration;
 using Xunit;
 using Rev = Vortex.Revisions.Revision20260701.Revision20260701;
@@ -23,6 +24,8 @@ public sealed class PreferencesWireLayoutTests
     private const int SetIgnoreRoomInvitesEvent = 1332;
     private const int SetRoomCameraPreferencesEvent = 3917;
     private const int SetUIFlagsEvent = 3653;
+    private const int GetDiscordPreferencesEvent = 2883;
+    private const int SetDiscordPreferencesEvent = 2304;
 
     private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
@@ -132,5 +135,80 @@ public sealed class PreferencesWireLayoutTests
             .Subject;
 
         message.Flags.Should().Be(3);
+    }
+
+    [Fact]
+    public void SetDiscordPreferencesParser_ReadsVersionThenFourOneByteBools()
+    {
+        // _SafeCls_3638 pushes (version, showHabbo, shareActivity, hideInHiddenRooms, allowJoining)
+        // in that order, and the client's encoder writes a real Boolean with writeBoolean -- one
+        // byte, not the four-byte int several of its other composers use for a flag.
+        ClientPacket packet = BuildClientPacket(
+            SetDiscordPreferencesEvent,
+            sp =>
+            {
+                sp.WriteInteger(2);
+                sp.WriteBoolean(true);
+                sp.WriteBoolean(false);
+                sp.WriteBoolean(true);
+                sp.WriteBoolean(false);
+            }
+        );
+
+        SetDiscordPreferencesMessage message = Revision
+            .Parsers[SetDiscordPreferencesEvent]
+            .Parse(packet)
+            .Should()
+            .BeOfType<SetDiscordPreferencesMessage>()
+            .Subject;
+
+        message.Version.Should().Be(2);
+        message.ShowHabbo.Should().BeTrue();
+        message.ShareActivity.Should().BeFalse();
+        message.HideInHiddenRooms.Should().BeTrue();
+        message.AllowJoining.Should().BeFalse();
+    }
+
+    [Fact]
+    public void GetDiscordPreferencesParser_IsMappedAndTakesNoBody()
+    {
+        ClientPacket packet = BuildClientPacket(GetDiscordPreferencesEvent, _ => { });
+
+        Revision
+            .Parsers[GetDiscordPreferencesEvent]
+            .Parse(packet)
+            .Should()
+            .BeOfType<GetDiscordPreferencesMessage>();
+    }
+
+    [Fact]
+    public void DiscordPreferencesSerializer_WritesVersionThenFourBools()
+    {
+        // DiscordPreferences.readFromData(): readInteger, then four readBoolean.
+        DiscordPreferencesEventMessageComposer composer = new()
+        {
+            Version = 1,
+            ShowHabbo = true,
+            ShareActivity = false,
+            HideInHiddenRooms = true,
+            AllowJoining = false,
+        };
+
+        byte[] bytes = Revision
+            .Serializers[typeof(DiscordPreferencesEventMessageComposer)]
+            .Serialize(composer)
+            .ToArray();
+
+        // AbstractSerializer prepends int length (4) + short header (2).
+        byte[] payload = new byte[bytes.Length - 6];
+        Array.Copy(bytes, 6, payload, 0, payload.Length);
+        ClientPacket body = new(0, payload);
+
+        body.PopInt().Should().Be(1);
+        body.PopBoolean().Should().BeTrue();
+        body.PopBoolean().Should().BeFalse();
+        body.PopBoolean().Should().BeTrue();
+        body.PopBoolean().Should().BeFalse();
+        body.End.Should().BeTrue("the layout must consume the whole packet");
     }
 }
