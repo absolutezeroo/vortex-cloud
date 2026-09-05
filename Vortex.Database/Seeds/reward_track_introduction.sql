@@ -156,6 +156,9 @@ VALUES
 -- ---------------------------------------------------------------------------------------------
 -- kind is the client's own product-type numbering: 8 currency, 12 habbicon, 100 entitlement.
 -- For currency, reward_type_id is the activity-point type: -1 credits, 0 duckets, 5 diamonds.
+-- For a Habbicon it is the `habbicons.id`, so it moved with the 2026-09-05 asset-pack alignment:
+-- 29 is duck_happy, 39 duck_cool, 51 frank_smile, 59 frank_wink (they were 7, 2, 29 and 33 under
+-- our old numbering, where 29 and 33 meant two entirely different icons).
 --
 -- No furniture. A furniture id has to exist in this hotel's furnidata, and seeding one that does
 -- not would be a milestone that fails to deliver -- exactly the failure the grant pipeline reports
@@ -165,9 +168,9 @@ INSERT IGNORE INTO reward_track_prize_rewards
     (id, prize_id, kind, reward_type_id, amount, extra_params, sort_order, created_at)
 VALUES
     (1,  1,  8,  '0',     100, '', 0, UTC_TIMESTAMP()),
-    (2,  2,  12, '7',     1,   '', 0, UTC_TIMESTAMP()),
+    (2,  2,  12, '29',    1,   '', 0, UTC_TIMESTAMP()),
     (3,  3,  8,  '0',     250, '', 0, UTC_TIMESTAMP()),
-    (4,  4,  12, '2',     1,   '', 0, UTC_TIMESTAMP()),
+    (4,  4,  12, '39',    1,   '', 0, UTC_TIMESTAMP()),
     -- The trading pass. The official track's own headline reward, and the reason RewardKind has an
     -- entitlement member at all: it sets the account's TRADE perk, and trading reads the perk it
     -- already read. Reward tracks never learn what trading is.
@@ -175,10 +178,10 @@ VALUES
     (6,  6,  8,  '0',     500, '', 0, UTC_TIMESTAMP()),
 
     (7,  7,  8,  '-1',    50,  '', 0, UTC_TIMESTAMP()),
-    (8,  8,  12, '29',    1,   '', 0, UTC_TIMESTAMP()),
+    (8,  8,  12, '51',    1,   '', 0, UTC_TIMESTAMP()),
     (9,  9,  8,  '-1',    150, '', 0, UTC_TIMESTAMP()),
     -- A bundle: one milestone, three rewards, one claim. The client draws the first (the Habbicon)
     -- and all three are granted together.
-    (10, 10, 12, '33',    1,   '', 0, UTC_TIMESTAMP()),
+    (10, 10, 12, '59',    1,   '', 0, UTC_TIMESTAMP()),
     (11, 10, 8,  '0',     300, '', 1, UTC_TIMESTAMP()),
     (12, 10, 8,  '-1',    100, '', 2, UTC_TIMESTAMP());
