@@ -45,10 +45,21 @@
     SlidersHorizontal,
     Gauge,
     PencilLine,
+    MessageSquareText,
+    Music,
+    Fish,
+    ClipboardList,
+    Newspaper,
+    FileCode,
+    Sticker,
+    Route,
+    Zap,
+    SquareTerminal,
+    Medal,
   } from '@lucide/svelte';
   import { identity } from '../lib/session.js';
   import MfaModal from './MfaModal.svelte';
-  import { NAV, hasRouteAccess } from '../lib/routes.js';
+  import { NAV, hasRouteAccess, foldSearch } from '../lib/routes.js';
   import { reasonSuggestions } from '../lib/reasonHistory.js';
   import { theme, setTheme, THEMES } from '../lib/theme.js';
   import { t, locale, setLocale, LOCALES } from '../lib/i18n.js';
@@ -64,8 +75,19 @@
   let { logout, logoutBusy = false, children } = $props();
 
   // Keep in sync with the `group` field on NAV entries (routes.js). Groups are domains, not tool
-  // kinds: an operator looks for "the quest thing", not for "the editing thing".
-  const GROUP_ORDER = ['Live', 'Players', 'Rooms', 'Economy', 'Content', 'Social', 'System'];
+  // kinds: an operator looks for "the quest thing", not for "the editing thing". None may exceed
+  // ~8 entries -- see the note above NAV for why Content was split and Social folded away.
+  const GROUP_ORDER = [
+    'Live',
+    'Players',
+    'Moderation',
+    'Rooms',
+    'Economy',
+    'Progression',
+    'Prizes',
+    'Content',
+    'System',
+  ];
 
   const routeIcons = {
     '/overview': Activity,
@@ -107,14 +129,30 @@
     '/targeted-offers-stats': BarChart3,
     '/config': SlidersHorizontal,
     '/performance': Gauge,
+    // Every entry below used to fall through to the generic Activity icon, which made a dozen rows
+    // look identical in a sidebar you scan rather than read.
+    '/chatlogs': MessageSquareText,
+    '/songs': Music,
+    '/fishing': Fish,
+    '/polls': ClipboardList,
+    '/articles': Newspaper,
+    '/gamedata': FileCode,
+    '/habbicons': Sticker,
+    '/reward-tracks': Route,
+    '/benchmark': Zap,
+    '/console': SquareTerminal,
+    '/achievement-resolutions': Medal,
   };
 
   let query = $state('');
 
   // Which nav groups are collapsed, keyed by the stable GROUP_ORDER id (not the translated label,
   // which changes with $locale and would silently reset saved state on a language switch).
-  // Persisted so a collapse choice survives reloads.
-  const COLLAPSE_STORAGE_KEY = 'vortex-dashboard-nav-collapsed';
+  // Persisted so a collapse choice survives reloads. The key carries a version: the v1 sets were
+  // written against the old seven groups, and replaying one after the Content split would leave
+  // Progression and Prizes expanded for every returning operator (an id absent from the saved set
+  // reads as "not collapsed"). Bumping it re-seeds instead.
+  const COLLAPSE_STORAGE_KEY = 'vortex-dashboard-nav-collapsed.v2';
 
   function loadCollapsedGroups() {
     try {
@@ -171,16 +209,18 @@
     }
   }
 
+  // Matches the label, the short AND the route's `keywords` (routes.js), so the box answers what an
+  // operator wants to DO -- "ban", "ducats", "jukebox" -- and not only the name of the page they
+  // would have to know already. Everything is accent-folded on both sides.
   function filterItems(list, q) {
-    const needle = q.trim().toLowerCase();
+    const needle = foldSearch(q.trim());
 
     if (!needle) {
       return list;
     }
 
-    return list.filter(
-      (item) =>
-        item.label.toLowerCase().includes(needle) || item.short.toLowerCase().includes(needle),
+    return list.filter((item) =>
+      foldSearch(`${item.label} ${item.short} ${item.keywords || ''}`).includes(needle),
     );
   }
 
@@ -206,10 +246,12 @@
   let groupLabels = $derived({
     Live: $t('nav.groupLive'),
     Players: $t('nav.groupPlayers'),
+    Moderation: $t('nav.groupModeration'),
     Rooms: $t('nav.groupRooms'),
     Economy: $t('nav.groupEconomy'),
+    Progression: $t('nav.groupProgression'),
+    Prizes: $t('nav.groupPrizes'),
     Content: $t('nav.groupContent'),
-    Social: $t('nav.groupSocial'),
     System: $t('nav.groupSystem'),
   });
   // Navigating into a folded group -- a deep link, a search result, the access-denied redirect --

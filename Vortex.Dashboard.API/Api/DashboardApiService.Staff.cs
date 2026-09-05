@@ -221,6 +221,17 @@ internal sealed partial class DashboardApiService
                             )
                             .OrderBy(name => name, StringComparer.Ordinal)
                             .ToList(),
+                        // The ids, not just the names: the roster revokes a role in place now, and
+                        // an assignment is addressed by (accountId, roleId). Resolving a name back
+                        // to an id in the browser breaks the moment two roles are renamed alike.
+                        roleIds = holders
+                            .Where(h => h.PlayerAccountEntityId == a.Id)
+                            .Select(h => h.RoleEntityId)
+                            .OrderBy(
+                                id => roleNameById.GetValueOrDefault(id, $"#{id}"),
+                                StringComparer.Ordinal
+                            )
+                            .ToList(),
                     })
                     .OrderBy(a => a.Email, StringComparer.OrdinalIgnoreCase)
                     .ToList();

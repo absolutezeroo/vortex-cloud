@@ -21,7 +21,7 @@
   import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
-  import { ShieldCheck, KeyRound, Users, Gavel, User } from '@lucide/svelte';
+  import { ShieldCheck, KeyRound, Users, Gavel, User, Check } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   let loading = $state(false);
@@ -54,15 +54,35 @@
     presetDraft = null;
     roleForm = { key: '', name: '' };
     presetForm = emptyPreset();
+    // The wizard closes on a successful grant: its three answers are spent, and leaving it open on
+    // step 3 invites a second identical grant.
+    wizard = null;
     await refresh();
-    if (accountResults.length > 0) await searchAccounts();
   });
 
 
   let accountQuery = $state('');
   let accountResults = $state([]);
   let accountSearching = $state(false);
-  let assignRoleId = $state(0);
+
+  // Granting a role is three decisions -- which account, which role, and is that really what you
+  // meant -- and they were laid out as three controls in one row with the actual grant button in a
+  // table further down. As a wizard each decision gets the whole panel, and the last step states the
+  // outcome in a sentence before anything is written.
+  const WIZARD_STEPS = ['staff.wizardStepAccount', 'staff.wizardStepRole', 'staff.wizardStepConfirm'];
+  let wizard = $state(null); // { step: 1..3, account, roleId }
+
+  function openWizard() {
+    accountQuery = '';
+    accountResults = [];
+    wizard = { step: 1, account: null, roleId: 0 };
+  }
+
+  // A step is reachable only once the one before it has an answer, so Next is the single gate and no
+  // button anywhere else has to be disabled-without-explanation.
+  let wizardCanAdvance = $derived(
+    wizard?.step === 1 ? Boolean(wizard.account) : wizard?.step === 2 ? Boolean(wizard.roleId) : true,
+  );
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsStaffManage));
 
@@ -338,8 +358,19 @@
   {/if}
 
   {#if tab === 'people'}
+  <!-- One surface, not two. The roster used to be a read-only list of who is staff, and granting a
+       role was a separate panel underneath with its own search and its own copy of the same table:
+       you looked at a member here and edited them there, matching the rows by eye. The roster is now
+       where roles are read AND revoked, and adding one goes through the drawer, the way every other
+       create in this dashboard does. -->
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('staff.staffTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('staff.staffTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={openWizard}>{$t('staff.addMember')}</button>
+      {/if}
+    </div>
+    <p class="muted">{$t('staff.staffDescription')}</p>
     <div class="table-wrap">
       <table>
         <thead>
@@ -364,7 +395,31 @@
                   <span class="muted">—</span>
                 {/each}
               </td>
-              <td>{(account.roles || []).join(', ')}</td>
+              <td>
+                {#each account.roleIds || [] as id}
+                  <span class="chip">
+                    {roleName(id)}
+                    {#if canManage}
+                      <button
+                        type="button"
+                        class="chip-x"
+                        title={$t('staff.revokeSummary', { role: roleName(id), email: account.email })}
+                        onclick={() =>
+                          ask(
+                            '/api/v1/operations/staff/assignments/delete',
+                            { accountId: account.id, roleId: id },
+                            $t('staff.revoke'),
+                            $t('staff.revokeSummary', { role: roleName(id), email: account.email })
+                          )}
+                      >
+                        ×
+                      </button>
+                    {/if}
+                  </span>
+                {:else}
+                  <span class="muted">—</span>
+                {/each}
+              </td>
               <td>{formatDate(account.createdAt)}</td>
             </tr>
           {:else}
@@ -373,101 +428,17 @@
         </tbody>
       </table>
     </div>
-
   </section>
-
-  {#if canManage}
-    <section class="panel" style="margin-top: 12px;">
-      <div class="panel-head"><h2>{$t('staff.assignTitle')}</h2></div>
-      <p class="muted">{$t('staff.assignDescription')}</p>
-      <form class="inline-form" onsubmit={(event) => { event.preventDefault(); searchAccounts(); }}>
-        <label>
-          {$t('staff.searchAccount')}
-          <input autocomplete="off" spellcheck="false" bind:value={accountQuery} placeholder={$t('staff.searchAccountPlaceholder')} />
-        </label>
-        <button type="submit" disabled={accountSearching}>{$t('staff.search')}</button>
-        <label>
-          {$t('staff.colRole')}
-          <select bind:value={assignRoleId}>
-            <option value={0}>{$t('staff.pickRole')}</option>
-            {#each data.roles || [] as role}
-              <option value={role.id}>{role.name}</option>
-            {/each}
-          </select>
-        </label>
-      </form>
-
-      {#if accountResults.length > 0}
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>{$t('staff.colEmail')}</th>
-                <th>{$t('staff.colPlayers')}</th>
-                <th>{$t('staff.colRoles')}</th>
-                <th>{$t('common.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each accountResults as account}
-                <tr>
-                  <td>{account.email}</td>
-                  <td>{(account.playerNames || []).join(', ') || '—'}</td>
-                  <td>
-                    {#each account.roleIds || [] as id}
-                      <span class="chip">
-                        {roleName(id)}
-                        <button
-                          type="button"
-                          class="chip-x"
-                          title={$t('staff.revoke')}
-                          onclick={() =>
-                            ask(
-                              '/api/v1/operations/staff/assignments/delete',
-                              { accountId: account.id, roleId: id },
-                              $t('staff.revoke'),
-                              $t('staff.revokeSummary', { role: roleName(id), email: account.email })
-                            )}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    {:else}
-                      <span class="muted">—</span>
-                    {/each}
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="ghost-button"
-                      disabled={!assignRoleId || (account.roleIds || []).includes(assignRoleId)}
-                      onclick={() =>
-                        ask(
-                          '/api/v1/operations/staff/assignments',
-                          { accountId: account.id, roleId: assignRoleId },
-                          $t('staff.assign'),
-                          $t('staff.assignSummary', {
-                            role: roleName(assignRoleId),
-                            email: account.email,
-                          })
-                        )}
-                    >
-                      {$t('staff.assign')}
-                    </button>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-      {/if}
-    </section>
-  {/if}
   {/if}
 
   {#if tab === 'presets'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('staff.presetsTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('staff.presetsTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={() => (addingPreset = true)}>{$t('staff.addPreset')}</button>
+      {/if}
+    </div>
     <p class="muted">{$t('staff.presetsDescription')}</p>
     <div class="table-wrap">
       <table>
@@ -528,10 +499,6 @@
         </tbody>
       </table>
     </div>
-
-    {#if canManage}
-      <button type="button" class="success" onclick={() => (addingPreset = true)}>{$t('staff.addPreset')}</button>
-    {/if}
   </section>
   {/if}
 {/if}
@@ -691,6 +658,165 @@
 />
 
 <style>
+  /* The wizard rail. Every colour is a theme token, so it follows blue/dark/white like the rest of
+     the dashboard rather than being one hardcoded accent that only looked right in one of them. */
+  .wiz-rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 0;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wiz-rail li {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  /* The connector is drawn by each step except the first, running left from its own dot, so the
+     rail cannot end in a line pointing at nothing. */
+  .wiz-rail li:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    right: 50%;
+    left: -50%;
+    height: 2px;
+    background: var(--line-strong);
+  }
+
+  .wiz-rail li.done::before,
+  .wiz-rail li.current::before {
+    background: var(--accent);
+  }
+
+  .wiz-dot {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 2px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+
+  .wiz-rail li.current .wiz-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.18);
+  }
+
+  .wiz-rail li.done .wiz-dot {
+    border-color: var(--ok);
+    background: var(--ok);
+    color: #fff;
+  }
+
+  .wiz-rail li.current .wiz-label {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .wiz-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+    max-height: 46vh;
+    overflow: auto;
+  }
+
+  /* One row per choice, the whole row clickable: a radio you can only hit on a 14px circle is the
+     other way this panel wasted the operator's time.
+     Also tagged `.pick-row` in the markup -- styles.css gives every button inside a panel or drawer
+     the uppercase, letter-spaced button chrome, and that list of row-shaped exceptions is how this
+     dashboard opts out. Without it an account row renders as CTUTO37@GMAIL.COM. */
+  .wiz-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--surface-strong);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .wiz-option:hover:not(:disabled) {
+    border-color: rgba(var(--accent-rgb), 0.55);
+  }
+
+  .wiz-option.picked {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.14);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .wiz-option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .wiz-option-main {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .wiz-option-main small {
+    color: var(--muted);
+  }
+
+  .wiz-option-side {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .wiz-recap {
+    margin: 0;
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    background: var(--surface-strong);
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+
+  .wiz-recap-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 16px;
+    margin: 14px 0 0;
+  }
+
+  .wiz-recap-grid dt {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .wiz-recap-grid dd {
+    margin: 0;
+  }
+
   .habbo-cell {
     display: inline-flex;
     align-items: center;
@@ -861,6 +987,152 @@
         {$t('staff.addPreset')}
       </button>
       <button type="button" class="ghost-button" onclick={() => (addingPreset = false)}>{$t('staff.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
+{#if wizard}
+  <Drawer title={$t('staff.addMember')} eyebrow={$t('staff.title')} width={620} onclose={() => (wizard = null)}>
+    <ol class="wiz-rail">
+      {#each WIZARD_STEPS as stepKey, index}
+        {@const number = index + 1}
+        <li class:done={wizard.step > number} class:current={wizard.step === number}>
+          <span class="wiz-dot" aria-hidden="true">
+            {#if wizard.step > number}<Check size={13} strokeWidth={3} />{:else}{number}{/if}
+          </span>
+          <span class="wiz-label">{$t(stepKey)}</span>
+        </li>
+      {/each}
+    </ol>
+
+    {#if wizard.step === 1}
+      <p class="muted">{$t('staff.wizardAccountHelp')}</p>
+      <form
+        class="inline-form"
+        onsubmit={(event) => {
+          event.preventDefault();
+          searchAccounts();
+        }}
+      >
+        <label>
+          {$t('staff.searchAccount')}
+          <input
+            autocomplete="off"
+            spellcheck="false"
+            bind:value={accountQuery}
+            placeholder={$t('staff.searchAccountPlaceholder')}
+          />
+        </label>
+        <button type="submit" disabled={accountSearching}>{$t('staff.search')}</button>
+      </form>
+
+      <div class="wiz-list">
+        {#each accountResults as account}
+          <button
+            type="button"
+            class="wiz-option pick-row"
+            class:picked={wizard.account?.id === account.id}
+            onclick={() => (wizard = { ...wizard, account, roleId: 0 })}
+          >
+            <span class="wiz-option-main">
+              <strong>{account.email}</strong>
+              <small>{(account.playerNames || []).join(', ') || $t('staff.noPlayers')}</small>
+            </span>
+            <span class="wiz-option-side">
+              {#each account.roleIds || [] as id}
+                <span class="chip">{roleName(id)}</span>
+              {:else}
+                <span class="muted">{$t('staff.noRoleYet')}</span>
+              {/each}
+            </span>
+          </button>
+        {:else}
+          <p class="muted">
+            {accountSearching ? $t('common.loading') : $t('staff.wizardNoAccounts')}
+          </p>
+        {/each}
+      </div>
+    {/if}
+
+    {#if wizard.step === 2}
+      <p class="muted">{$t('staff.wizardRoleHelp', { email: wizard.account.email })}</p>
+      <div class="wiz-list">
+        {#each data.roles || [] as role}
+          {@const held = (wizard.account.roleIds || []).includes(role.id)}
+          <button
+            type="button"
+            class="wiz-option pick-row"
+            class:picked={wizard.roleId === role.id}
+            disabled={held}
+            title={held ? $t('staff.assignAlreadyHeld', { role: role.name }) : ''}
+            onclick={() => (wizard = { ...wizard, roleId: role.id })}
+          >
+            <span class="wiz-option-main">
+              <strong>{role.name}</strong>
+              <small>{role.key}</small>
+            </span>
+            <span class="wiz-option-side">
+              {#if held}
+                <span class="muted">{$t('staff.alreadyHeldShort')}</span>
+              {:else}
+                {#if role.wildcard}
+                  <span class="status-badge status-badge--warn">{$t('staff.wildcard')}</span>
+                {/if}
+                <span class="chip">{$t('staff.capabilityCount', { count: role.capabilityCount ?? 0 })}</span>
+              {/if}
+            </span>
+          </button>
+        {/each}
+      </div>
+    {/if}
+
+    {#if wizard.step === 3}
+      <!-- The last thing between an operator and a permission grant should be a sentence, not a
+           button whose effect you infer from which row it sits on. -->
+      <p class="wiz-recap">
+        {$t('staff.assignSummary', { role: roleName(wizard.roleId), email: wizard.account.email })}
+      </p>
+      <dl class="wiz-recap-grid">
+        <dt>{$t('staff.colEmail')}</dt>
+        <dd>{wizard.account.email}</dd>
+        <dt>{$t('staff.colPlayers')}</dt>
+        <dd>{(wizard.account.playerNames || []).join(', ') || '—'}</dd>
+        <dt>{$t('staff.colRole')}</dt>
+        <dd>{roleName(wizard.roleId)}</dd>
+      </dl>
+    {/if}
+
+    {#snippet actions()}
+      {#if wizard.step > 1}
+        <button type="button" class="ghost-button" onclick={() => (wizard = { ...wizard, step: wizard.step - 1 })}>
+          {$t('staff.wizardBack')}
+        </button>
+      {/if}
+      {#if wizard.step < 3}
+        <button
+          type="button"
+          class="success"
+          disabled={!wizardCanAdvance}
+          onclick={() => (wizard = { ...wizard, step: wizard.step + 1 })}
+        >
+          {$t('staff.wizardNext')}
+        </button>
+      {:else}
+        <button
+          type="button"
+          class="success"
+          onclick={() =>
+            ask(
+              '/api/v1/operations/staff/assignments',
+              { accountId: wizard.account.id, roleId: wizard.roleId },
+              $t('staff.assign'),
+              $t('staff.assignSummary', { role: roleName(wizard.roleId), email: wizard.account.email })
+            )}
+        >
+          {$t('staff.assign')}
+        </button>
+      {/if}
+      <button type="button" class="ghost-button" onclick={() => (wizard = null)}>{$t('staff.cancel')}</button>
     {/snippet}
   </Drawer>
 {/if}

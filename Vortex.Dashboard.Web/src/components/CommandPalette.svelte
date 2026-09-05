@@ -7,7 +7,7 @@
   import { push } from 'svelte-spa-router';
   import { Search, CornerDownLeft, House, User, Package, Compass } from '@lucide/svelte';
   import { apiGet } from '../lib/api.js';
-  import { NAV } from '../lib/routes.js';
+  import { NAV, foldSearch } from '../lib/routes.js';
   import { identity, openItem } from '../lib/session.js';
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { t, translate } from '../lib/i18n.js';
@@ -25,19 +25,40 @@
 
   const KIND_ICONS = { nav: Compass, player: User, room: House, furniture: Package };
 
-  // Nav entries are matched locally against the label the operator actually reads, and filtered by
-  // the same capabilities the sidebar uses -- the palette must not offer a page it cannot open.
-  let navMatches = $derived.by(() => {
-    const term = query.trim().toLowerCase();
-    if (!term) return [];
+  // Nav entries are matched locally against the label, the short and the route's `keywords`
+  // (routes.js) -- "ban", "ducats", "jukebox" reach the right page without knowing its name -- and
+  // filtered by the same capabilities the sidebar uses: the palette must not offer a page it cannot
+  // open. With no term typed it lists every page the operator may open, because a palette that
+  // answers nothing until you already know what to type is a palette for people who do not need it.
+  let navPages = $derived(
+    NAV.filter((item) => hasDashboardCapability($identity, item.caps)).map((item) => ({
+      kind: 'nav',
+      id: item.path,
+      label: translate(item.labelKey),
+      hint: translate(`nav.group${item.group}`),
+      haystack: foldSearch(
+        `${translate(item.labelKey)} ${translate(item.shortKey)} ${item.keywords || ''} ${item.path}`,
+      ),
+    })),
+  );
 
-    return NAV.filter((item) => hasDashboardCapability($identity, item.caps))
-      .map((item) => ({ kind: 'nav', id: item.path, label: translate(item.labelKey), hint: item.group }))
-      .filter((item) => item.label.toLowerCase().includes(term) || item.id.includes(term))
-      .slice(0, 5);
+  let navMatches = $derived.by(() => {
+    const term = foldSearch(query.trim());
+    if (!term) return navPages;
+
+    return navPages.filter((item) => item.haystack.includes(term)).slice(0, 6);
   });
 
   let results = $derived([...navMatches, ...remote]);
+
+  let resultsEl = $state();
+
+  // The empty palette now lists every page, so the arrow keys can walk the cursor well past the
+  // 54vh the panel shows. Without this the selection is simply invisible from row nine on.
+  $effect(() => {
+    void cursor;
+    resultsEl?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+  });
 
   $effect(() => {
     // Re-clamp rather than reset: the list shrinks as results arrive and a stale cursor would
@@ -180,7 +201,7 @@
         <kbd>esc</kbd>
       </div>
 
-      <div class="cp-results" role="listbox" aria-label={$t('palette.title')}>
+      <div bind:this={resultsEl} class="cp-results" role="listbox" aria-label={$t('palette.title')}>
         {#each results as entry, index (entry.kind + entry.id)}
           {@const Icon = KIND_ICONS[entry.kind]}
           <button
