@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:21e6e1f59138ea9d3ba1143e606a9bf0c88cc7208ae6043cb5df0124c7027959"
+generated_digest: "sha256:368d5dae3ce89c4a9d6c92e2d23347612dc293ed4a9e783bbc1e957b926bc48e"
 generated:
   feature: marketplace.make_offer
   scenarios:
@@ -183,6 +183,34 @@ generated:
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
   - scenario: marketplace.make_offer.guard_6
+    title: "make offer: the guard 'sellersRow is null' holds"
+    given:
+      guard: sellersRow is null
+      guard_holds: "true"
+    when:
+      packet: MakeOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MakeOffer sent while 'sellersRow is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_db53958cdf3b
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MarketplaceMakeOfferResult
+      - PurchaseError
+      - PurchaseError
+      - MarketplaceMakeOfferResult
+      - MarketplaceMakeOfferResult
+      evidence: ev_1ad66ef63462
+  - scenario: marketplace.make_offer.guard_7
     title: "make offer: the guard '!await _furniModule.RemoveFurnitureAsync(itemId, ct)' holds"
     given:
       guard: "!await _furniModule.RemoveFurnitureAsync(itemId, ct)"
@@ -210,7 +238,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_7
+  - scenario: marketplace.make_offer.guard_8
     title: "make offer: the guard '!_state.FurnitureById.Remove(itemId, out IFurnitureItem? ...' holds"
     given:
       guard: "!_state.FurnitureById.Remove(itemId, out IFurnitureItem? item)"
@@ -238,7 +266,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_8
+  - scenario: marketplace.make_offer.guard_9
     title: "make offer: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -331,13 +359,13 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 114
+    line: 117
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 54
+    line: 55
 verified: {}
 manual: {}

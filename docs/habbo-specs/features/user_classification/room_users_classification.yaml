@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1088c58e0ecfb13b62eb76fce955d728c619b33a1eca96b2f871a0ed617e4ea4"
+generated_digest: "sha256:d10b102e784452485e012e8bae840eb180c72b08f8c8cfb762d12e43fe70454b"
 generated:
   id: user_classification.room_users_classification
   domain: user_classification
@@ -64,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 265
+    line: 247
   - id: ev_9d8421b6228f
     kind: emulator_flow
     authority: vortex_emulator
@@ -78,14 +78,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 438
+    line: 465
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 313
+    line: 402
   - id: ev_eea7d1d057e7
     kind: emulator_flow
     authority: vortex_emulator

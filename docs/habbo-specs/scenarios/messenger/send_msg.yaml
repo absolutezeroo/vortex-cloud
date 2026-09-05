@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c34b3c02da2d66f450ded8cdfce0f4fba4cf3d6353f5c4ea84921ebc9c0cf7fe"
+generated_digest: "sha256:7e203e4e1e0eecbb980e8308bc306afa41d9e82ad8b753a5d9a7763cac46faff"
 generated:
   feature: messenger.send_msg
   scenarios:
@@ -129,6 +129,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_17b79ddcc56e
+  - scenario: messenger.send_msg.guard_5
+    title: "send msg: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: SendMsg
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SendMsg sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_17b79ddcc56e
   - scenario: messenger.send_msg.success
     title: "send msg: the request is accepted"
     given:
@@ -147,7 +170,7 @@ generated:
       emits:
       - InstantMessageError
       - NewConsoleMessage
-      evidence: ev_373e76aa8a80
+      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -162,20 +185,20 @@ generated:
     symbol: SendMsgMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_373e76aa8a80
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
-    symbol: PlayerPresenceGrain
-    line: 112
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_564bd0580d41
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
-    line: 33
+    line: 35
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator

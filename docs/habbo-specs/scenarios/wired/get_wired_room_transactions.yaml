@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:636ca3bca78df58da4b122a31f7245b5ef78036bc0007d8041cb96849db3d3fd"
+generated_digest: "sha256:f57d19cfe5e742f0c1528f67b313204ef17ded2c128dec82721efcd2aa8a63cd"
 generated:
   feature: wired.get_wired_room_transactions
   scenarios:
@@ -51,6 +51,24 @@ generated:
       emits: []
       evidence: ev_de740dbf9104
   - scenario: wired.get_wired_room_transactions.guard_10
+    title: "get wired room transactions: the guard 'group.IsAdmin' holds"
+    given:
+      guard: group.IsAdmin
+      guard_holds: "true"
+    when:
+      packet: GetWiredRoomTransactions
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.get_wired_room_transactions.guard_11
     title: "get wired room transactions: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
       guard: group.IsMember && group.MembersCanDecorate
@@ -61,24 +79,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.get_wired_room_transactions.guard_11
-    title: "get wired room transactions: the guard 'hasExplicitRights' holds"
-    given:
-      guard: hasExplicitRights
-      guard_holds: "true"
-    when:
-      packet: GetWiredRoomTransactions
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'hasExplicitRights' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -141,6 +141,24 @@ generated:
       emits: []
       evidence: ev_82c2d2746361
   - scenario: wired.get_wired_room_transactions.guard_5
+    title: "get wired room transactions: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: GetWiredRoomTransactions
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.get_wired_room_transactions.guard_6
     title: "get wired room transactions: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -158,7 +176,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.get_wired_room_transactions.guard_6
+  - scenario: wired.get_wired_room_transactions.guard_7
     title: "get wired room transactions: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -176,7 +194,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.get_wired_room_transactions.guard_7
+  - scenario: wired.get_wired_room_transactions.guard_8
     title: "get wired room transactions: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
       guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
@@ -194,7 +212,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.get_wired_room_transactions.guard_8
+  - scenario: wired.get_wired_room_transactions.guard_9
     title: "get wired room transactions: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -205,24 +223,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.get_wired_room_transactions.guard_9
-    title: "get wired room transactions: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: GetWiredRoomTransactions
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of GetWiredRoomTransactions sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -262,7 +262,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 56
+    line: 58
   - id: ev_7acf056f220a
     kind: emulator_flow
     authority: vortex_emulator
@@ -276,7 +276,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_de740dbf9104
     kind: emulator_flow
     authority: vortex_emulator

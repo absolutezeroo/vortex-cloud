@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b277a5233dcea894786932889dfe1d92ed0ac752426e1120b87d4c058c2cf8bc"
+generated_digest: "sha256:cb7b7d1697c724e256f570c16d221d52a85acefc5082e171b9e7b403c0a2a491"
 generated:
   id: room.drop_carry_item
   domain: room
@@ -90,7 +90,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 217
+    line: 234
   - id: ev_dae6a9f8ee83
     kind: emulator_flow
     authority: vortex_emulator

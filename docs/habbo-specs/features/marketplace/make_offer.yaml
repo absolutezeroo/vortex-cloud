@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1b353d349b9b4fc4bf6fa89084990a388a1b2eb22b1eebd28bb0f55391d1cb18"
+generated_digest: "sha256:c11865955bf30aa1811ab72f5ffe32de8b4191237af4a70b7b6a50d27af338fa"
 generated:
   id: marketplace.make_offer
   domain: marketplace
@@ -97,6 +97,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_db53958cdf3b
+  - expression: sellersRow is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_db53958cdf3b
   - expression: "!await _furniModule.RemoveFurnitureAsync(itemId, ct)"
     on_fail: return
     observed_in: vortex
@@ -120,6 +124,10 @@ generated:
     evidence: ev_c6396662000a
   - target: inventoryGrain
     value: inventoryGrain .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
+    observed_in: vortex
+    evidence: ev_db53958cdf3b
+  - target: sellersRow.DeletedAt
+    value: DateTime.UtcNow
     observed_in: vortex
     evidence: ev_db53958cdf3b
   outgoing:
@@ -155,7 +163,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -197,7 +205,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 812
+    line: 815
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -211,7 +219,7 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 48
+    line: 49
   scenarios:
   - marketplace.make_offer.guard_0
   - marketplace.make_offer.guard_1
@@ -222,6 +230,7 @@ generated:
   - marketplace.make_offer.guard_6
   - marketplace.make_offer.guard_7
   - marketplace.make_offer.guard_8
+  - marketplace.make_offer.guard_9
   - marketplace.make_offer.success
   conflicts:
   - cf_38b88d4432

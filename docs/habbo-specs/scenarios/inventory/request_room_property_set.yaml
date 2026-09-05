@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f4e0fa0e5df01972d9727b5de837090c9b716b71449aaf786fb251660220f993"
+generated_digest: "sha256:f9a8e3426de086b7a0733c1a4c72ce8ed5af1db6bab0b200a0b46a11b3406967"
 generated:
   feature: inventory.request_room_property_set
   scenarios:
@@ -81,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_fc75e6123bc2
     kind: emulator_flow
     authority: vortex_emulator

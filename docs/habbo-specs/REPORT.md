@@ -15,15 +15,15 @@ actually produced against the trees listed under Sources.
 
 | Direction | Count |
 |---|---:|
-| Incoming (client to server) | 604 |
-| Outgoing (server to client) | 840 |
+| Incoming (client to server) | 620 |
+| Outgoing (server to client) | 859 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
-| Features | 499 |
-| Scenarios | 1883 |
+| Features | 515 |
+| Scenarios | 1983 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -31,21 +31,21 @@ actually produced against the trees listed under Sources.
 
 | Level | Packets | Share |
 |---|---:|---:|
-| confirmed | 51 | 3.5% |
-| client_confirmed | 608 | 42.1% |
-| multi_reference_confirmed | 87 | 6% |
-| reference_observed | 242 | 16.8% |
-| implementation_observed | 305 | 21.1% |
-| unknown | 151 | 10.5% |
+| confirmed | 51 | 3.4% |
+| client_confirmed | 625 | 42.3% |
+| multi_reference_confirmed | 87 | 5.9% |
+| reference_observed | 240 | 16.2% |
+| implementation_observed | 326 | 22% |
+| unknown | 150 | 10.1% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 367 |
-| Critical unknowns | 129 |
-| Unknowns in total | 710 |
-| Fields with no attested name | 1882 of 6027 |
+| Conflicts | 376 |
+| Critical unknowns | 130 |
+| Unknowns in total | 717 |
+| Fields with no attested name | 1866 of 6203 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,41 +54,44 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 0
-- unchanged: 3528
+- written: 640
+- unchanged: 2971
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 119 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- as3:WIN63-202607011411-782849652: 97 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- catalog.get_flat_categories: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- catalog.get_flat_categories: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - inventory.redeem_purchasable_clothing: 24 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- messenger.follow_friend: 25 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- messenger.open_room_for_player_id: 41 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- messenger.follow_friend: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- messenger.open_room_for_player_id: 42 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - moderation.publish: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- moderation.resolve_for_player: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.answer_doorbell: 20 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- moderation.resolve_for_player: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.answer_doorbell: 21 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.ban_user_with_duration: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.get_room_entry_data: 22 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.get_room_entry_data: 23 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.look_to: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.move_floor_item_in_room: 24 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.move_wall_item_in_room: 17 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.open_room_for_player_id: 34 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.open_room_for_player_id: 35 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.pickup_item_in_room: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.place_wall_item_in_room: 45 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.present_open: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.try_get_definition: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.deposit_to_wired_chest: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.get_wired_transaction_details: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.open_wired_chest: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.set_all_wired_chest_locks: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.wired_trade_accept: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.withdraw_all_from_wired_chest: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.withdraw_wired_chest_credits: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- wired.withdraw_wired_chest_items: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.deposit_to_wired_chest: 17 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.get_wired_chest_transactions: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.get_wired_room_transactions: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.get_wired_transaction_details: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.open_wired_chest: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.set_all_wired_chest_locks: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.wired_set_object_variable_value: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.wired_trade_accept: 21 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_all_from_wired_chest: 20 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_wired_chest_credits: 20 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_wired_chest_items: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - 'packets/incoming/handshake/UniqueId.yaml' collides with 'packets/incoming/handshake/UniqueID.yaml' on a case-insensitive file system; written as 'packets/incoming/handshake/UniqueId~3a3b55.yaml'
 - 'packets/outgoing/navigator/NavigatorMetadata.yaml' collides with 'packets/outgoing/navigator/NavigatorMetaData.yaml' on a case-insensitive file system; written as 'packets/outgoing/navigator/NavigatorMetadata~1beb94.yaml'
 - 'packets/outgoing/handshake/UniqueMachineId.yaml' collides with 'packets/outgoing/handshake/UniqueMachineID.yaml' on a case-insensitive file system; written as 'packets/outgoing/handshake/UniqueMachineId~9e4d65.yaml'

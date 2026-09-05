@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c166221964cc134484713c3726edc33fc2aa3c648d23fd7c967f2e05e4cb9f1e"
+generated_digest: "sha256:d77a15e55e6c0bec6dfbb4578851ffde24a637346caa4eec99e2b9bd594adc48"
 generated:
   id: cf_597b03759f
   kind: field_count
@@ -64,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Revisions/Revision20260701/Serializers/Handshake/UserObjectMessageSerializer.cs
     symbol: UserObjectMessageSerializer
-    line: 7
+    line: 8
   official:
     status: unknown
 verified: {}

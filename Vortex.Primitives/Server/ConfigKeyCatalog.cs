@@ -424,6 +424,27 @@ public static class ConfigKeyCatalog
             "Football: how long the ball sits in the goal before returning to the kickoff spot (0 leaves it in the net)",
             "Football"
         ),
+        new(
+            "habbicons.recent_limit",
+            "10",
+            ConfigValueKind.Int,
+            "How many recently-used Habbicons the client's quick row keeps. The client caps its own list at 10; sending more is harmless but never shown.",
+            "Habbicons"
+        ),
+        new(
+            "habbicons.use_cooldown_ms",
+            "500",
+            ConfigValueKind.Int,
+            "Minimum gap between one player's Habbicon uses. Separate from chat flood control, which already gates the room half — this also covers private conversations.",
+            "Habbicons"
+        ),
+        new(
+            "reward_tracks.enabled",
+            "true",
+            ConfigValueKind.Bool,
+            "Master switch. Off sends the client the feature's own disabled flag, which hides every track rather than showing an empty list.",
+            "Reward tracks"
+        ),
     ];
 
     /// <summary>The descriptor for <paramref name="key"/>, or null if the key is not a known config key.</summary>

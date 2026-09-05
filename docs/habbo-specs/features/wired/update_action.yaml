@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e44a68197dc6a539d551d22f94b54827d94011157886dfaff7a08bb2c9f43546"
+generated_digest: "sha256:c8dba1e19088233ae75222d171417aceb1e918890815c736423321de44cb5ca0"
 generated:
   id: wired.update_action
   domain: wired
@@ -110,7 +110,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 225
+    line: 222
   scenarios:
   - wired.update_action.guard_0
   - wired.update_action.guard_1

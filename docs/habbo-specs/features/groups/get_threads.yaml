@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:098c2d8fb355065d2ddc5a822be5a6626d9214088f03dc5e267430063921da0e"
+generated_digest: "sha256:865c1e3d9f6bbb7c9ff6840ec6633e5994781fe702ea2fd73ac149aa8093a36d"
 generated:
   id: groups.get_threads
   domain: groups
@@ -73,7 +73,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
-    line: 217
+    line: 223
   - id: ev_74338246ce2a
     kind: emulator_handler
     authority: vortex_emulator

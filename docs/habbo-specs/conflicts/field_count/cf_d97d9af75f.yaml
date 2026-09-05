@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:1f680663d0ae7d0149819e308baea236427cc88c52a19c352014ac43e9290324"
+generated_digest: "sha256:3d66ee81b95a6bae239898a6e8b06a7a0d82b18d8d01a1459afe6c1d8624fe27"
 generated:
   id: cf_d97d9af75f
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "10 fields: int32, int32, int32, int32, int32, int32, int32, int32, int32, int32"
     evidence: ev_991f7155ac72
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "5 fields: int32, int32, int32, int32, int32"
+    evidence: ev_d9820d417185
   evidence:
   - id: ev_68ba38324449
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: NowPlayingMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
+  - id: ev_d9820d417185
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/NowPlayingMessageComposerSerializer.cs
+    symbol: NowPlayingMessageComposerSerializer
+    line: 6
   official:
     status: unknown
 verified: {}

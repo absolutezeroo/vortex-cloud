@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3a3927d9db9ea3747e74422989e43b46db918ee3bd04ff8076225a351834c547"
+generated_digest: "sha256:6f07d57942875c644b29673c51e4e1c22c917f6a58baa0c911351e5991252211"
 generated:
   feature: room.breed_pets
   scenarios:
@@ -106,29 +106,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a78a45b7847f
-  - scenario: room.breed_pets.guard_4
-    title: "breed pets: the guard 'effectIds.Count == 0' holds"
-    given:
-      guard: effectIds.Count == 0
-      guard_holds: "true"
-    when:
-      packet: BreedPets
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of BreedPets sent while 'effectIds.Count == 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_fe1afccfe33a
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_a78a45b7847f
   - scenario: room.breed_pets.success
     title: "breed pets: the request is accepted"
     given:
@@ -175,13 +152,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 81
-  - id: ev_fe1afccfe33a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Wired/WiredUnseenCycle.cs
-    symbol: WiredUnseenCycle
-    line: 23
+    line: 82
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0569a8b3e96c59787b01b6b11db135a3a51a9c56d5e6a406f1d657b010a10c92"
+generated_digest: "sha256:784d3c39953d072e0f79d1dea339100fea5d3454e24f366b7c60b71339a84bb1"
 generated:
   id: sound.get_now_playing
   domain: sound
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - GetNowPlaying
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,24 +28,40 @@ generated:
     layer: handler
     symbol: GetNowPlayingMessageHandler.HandleAsync
     evidence: ev_c65d069ade81
-  checks: []
+  checks:
+  - expression: ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_25999e608f14
   state_changes: []
   outgoing:
     ordering: unknown
-    packets: []
+    packets:
+    - packet: NowPlaying
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_25999e608f14
   reaches_persistence: false
   evidence:
+  - id: ev_25999e608f14
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/GetNowPlayingMessageHandler.cs
+    symbol: GetNowPlayingMessageHandler
+    line: 31
   - id: ev_c65d069ade81
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetNowPlayingMessageHandler.cs
     symbol: GetNowPlayingMessageHandler
-    line: 8
+    line: 20
   scenarios:
+  - sound.get_now_playing.guard_0
   - sound.get_now_playing.success
-  unknowns:
-  - uk_cc22d643e4
+  conflicts:
+  - cf_a805f25c04
 verified:
   playback_is_a_looping_clock:
     confidence: assumed
@@ -59,4 +75,4 @@ verified:
       source: com/sulake/habbo/sound/music/JukeboxPlayListController.as
       symbol: onNowPlayingMessage
 manual:
-  field_meanings: "currentPosition and nextPosition are positions in the playlist, not in the track - the client exposes the first as playPosition. Time is carried by syncCount alone, in milliseconds, which the client divides by 1000."
+  field_meanings: currentPosition and nextPosition are positions in the playlist, not in the track - the client exposes the first as playPosition. Time is carried by syncCount alone, in milliseconds, which the client divides by 1000.

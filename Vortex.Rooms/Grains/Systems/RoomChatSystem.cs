@@ -16,6 +16,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Habbicons;
 using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Rooms.Object.Avatars.Player;
 
@@ -112,6 +113,14 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             targetPlayerId
         );
 
+        // Said, and seen. PlayerChattingEvent above is a *pre* event a handler can cancel, so it
+        // is not evidence anybody heard the line; progression hangs off this one instead, which is
+        // raised only once the room has actually sent it.
+        await _roomGrain._events.PublishAsync(
+            new PlayerChattedEvent(playerId, _roomGrain.RoomId.Value, targetPlayerId is not null),
+            CancellationToken.None
+        );
+
         // A public line may also be an order to one of the speaker's pets.
         if (targetPlayerId is null)
         {
@@ -197,6 +206,49 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
 
             return;
         }
+    }
+
+    /// <summary>
+    /// Shows a Habbicon over a player's avatar for everyone in the room.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A Habbicon in a room is a communication act, not a decoration, so it lives here and goes
+    /// through the gate a line of chat goes through: the player has to be in the room, not muted,
+    /// and not flooding. That is what stops the selector from being a mute bypass, and it is the
+    /// reason this is not a system of its own — a second gate could disagree with this one.
+    /// </para>
+    /// <para>
+    /// Ownership is deliberately not checked here. The room knows who is standing in it and nothing
+    /// about what they own; the Habbicon grain establishes that before calling, which keeps an
+    /// inventory query out of the room's turn.
+    /// </para>
+    /// </remarks>
+    /// <returns>False when the room refused it, so the caller does not record a use nobody saw.</returns>
+    public async Task<bool> UseHabbiconAsync(PlayerId playerId, int habbiconId)
+    {
+        if (
+            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+        )
+        {
+            return false;
+        }
+
+        if (IsUserMuted(playerId, out int _) || IsFloodGated(playerId, avatar, out int _))
+        {
+            return false;
+        }
+
+        await _roomGrain.SendComposerToRoomAsync(
+            new RoomUseHabbiconMessageComposer
+            {
+                RoomIndex = objectId.Value,
+                HabbiconId = habbiconId,
+            }
+        );
+
+        return true;
     }
 
     private async Task SendChatAsync(

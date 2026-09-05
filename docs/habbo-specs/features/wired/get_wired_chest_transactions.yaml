@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:63fadfb6f5aaf7db52507e8280db2dae332ea3e9e8f7ca7770d7eb8d7e1ea526"
+generated_digest: "sha256:25da7153ab1ef053c324ed921ac4cb75680f290a2a321ef07ac27c27c3422077"
 generated:
   id: wired.get_wired_chest_transactions
   domain: wired
@@ -76,6 +76,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -141,7 +145,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_a5b6bd4690bb
     kind: emulator_handler
     authority: vortex_emulator

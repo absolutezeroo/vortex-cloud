@@ -9,6 +9,7 @@ using Vortex.Database.Entities.Fishing;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Gamedata;
 using Vortex.Database.Entities.Groups;
+using Vortex.Database.Entities.Habbicons;
 using Vortex.Database.Entities.Help;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Database.Entities.Messenger;
@@ -21,6 +22,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Polls;
 using Vortex.Database.Entities.Prizes;
 using Vortex.Database.Entities.Quests;
+using Vortex.Database.Entities.RewardTracks;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
 using Vortex.Database.Entities.Server;
@@ -333,6 +335,28 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<DailyTaskRewardEntity> DailyTaskRewards { get; init; } = null!;
 
     public DbSet<PlayerDailyTaskEntity> PlayerDailyTasks { get; init; } = null!;
+
+    public DbSet<HabbiconCollectionEntity> HabbiconCollections { get; init; } = null!;
+
+    public DbSet<HabbiconEntity> Habbicons { get; init; } = null!;
+
+    public DbSet<PlayerHabbiconEntity> PlayerHabbicons { get; init; } = null!;
+
+    public DbSet<RewardTrackEntity> RewardTracks { get; init; } = null!;
+
+    public DbSet<RewardTrackTaskEntity> RewardTrackTasks { get; init; } = null!;
+
+    public DbSet<RewardTrackTaskLevelEntity> RewardTrackTaskLevels { get; init; } = null!;
+
+    public DbSet<RewardTrackPrizeEntity> RewardTrackPrizes { get; init; } = null!;
+
+    public DbSet<RewardTrackPrizeRewardEntity> RewardTrackPrizeRewards { get; init; } = null!;
+
+    public DbSet<PlayerRewardTrackEntity> PlayerRewardTracks { get; init; } = null!;
+
+    public DbSet<PlayerRewardTrackTaskEntity> PlayerRewardTrackTasks { get; init; } = null!;
+
+    public DbSet<PlayerRewardTrackClaimEntity> PlayerRewardTrackClaims { get; init; } = null!;
 
     public DbSet<CommunityGoalEntity> CommunityGoals { get; init; } = null!;
 

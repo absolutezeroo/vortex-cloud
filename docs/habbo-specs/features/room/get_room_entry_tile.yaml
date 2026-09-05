@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e1fc4820bba68c25b3fe790461bbe2d87db8c1b8670e358509d5a46c4eb2cef7"
+generated_digest: "sha256:f530c9908c77003e849733b91c759afac89137500ed84363d35eb9e39522c15b"
 generated:
   id: room.get_room_entry_tile
   domain: room
@@ -78,7 +78,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 458
+    line: 612
   scenarios:
   - room.get_room_entry_tile.guard_0
   - room.get_room_entry_tile.success

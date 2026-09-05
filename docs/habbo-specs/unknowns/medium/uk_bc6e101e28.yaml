@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8d6cda18f4bf1703554effa57b5ba946837660fdeaa4126ad13ffd7ad01a4055"
+generated_digest: "sha256:6b1dfba2f4b90c0bab1cdca79ad3497505aca0b91f2d20587dbd37a07a5e0b5f"
 generated:
   id: uk_bc6e101e28
   subject: "register.update_figure_data: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 61
+    line: 65
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

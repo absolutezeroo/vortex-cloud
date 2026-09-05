@@ -22,6 +22,15 @@ public class MessengerMessageEntity : VortexEntity
     [MaxLength(512)]
     public required string Message { get; set; }
 
+    /// <summary>
+    /// The Habbicon this message is, or 0 when it is text. The client's console body is a tagged
+    /// union — an int discriminator, then a string or a Habbicon id — so a Habbicon in a
+    /// conversation is a message rather than an ornament on one, and it is stored as one.
+    /// </summary>
+    [Column("habbicon_id")]
+    [DefaultValue(0)]
+    public int HabbiconId { get; set; }
+
     [Column("timestamp")]
     public required DateTime Timestamp { get; set; }
 

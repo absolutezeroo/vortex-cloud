@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:979cabded2f7b617fda1c867cb4601b971fd8d6f7ddc002180d952e080ba5ba0"
+generated_digest: "sha256:a5116a6302384e3ca13a6f740586023990276b26077d437286a74251a330e3cf"
 generated:
   id: room.mute_user
   domain: room
@@ -139,7 +139,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 29
+    line: 39
   - id: ev_c6ca9325686a
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cee3ee838f4e36a477da1387dc9ae16c6d20f4c43a2e4f40b5f9a2347d04bd03"
+generated_digest: "sha256:d4c6832be12b933b105f5c403ccf93d17937a936ab712345150f9c44016ecc5c"
 generated:
   name: GetOfficialSongId
   direction: incoming
@@ -48,9 +48,10 @@ generated:
     evidence: ev_3d1f09715c85
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - string
     evidence: ev_8d2dbedd663c
   evidence:
   - id: ev_e48efa855b4a

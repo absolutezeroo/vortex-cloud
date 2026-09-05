@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c6ea8357c409aa9ae750a23e5c658c459f9aa0f8a431261de339968eacef501b"
+generated_digest: "sha256:1c968fcbd3fb0b3937c9d2e2c171ff0bc4413f0f834051025c03e6342a5fce60"
 generated:
   id: inventory.redeem_purchasable_clothing
   domain: inventory
@@ -124,46 +124,50 @@ generated:
     symbol: FurnitureItem.GetSnapshot
     evidence: ev_7e970abb71a4
   - order: 25
+    layer: grain
+    symbol: RoomGrain.PublishDetached
+    evidence: ev_b46938ec853d
+  - order: 26
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 26
+  - order: 27
     layer: grain
     symbol: PlayerClothingGrain.RedeemAsync
     evidence: ev_436a48c84f84
-  - order: 27
+  - order: 28
     layer: grain
     symbol: InventoryGrain.GetItemSnapshotAsync
     evidence: ev_c6396662000a
-  - order: 28
+  - order: 29
     layer: module
     symbol: InventoryFurniModule.GetItemSnapshotAsync
     evidence: ev_48fa24e8d4a2
-  - order: 29
+  - order: 30
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 30
+  - order: 31
     layer: grain
     symbol: InventoryGrain.GrantFurnitureDefinitionAsync
     evidence: ev_c6396662000a
-  - order: 31
+  - order: 32
     layer: grain
     symbol: InventoryGrain.RemoveFurnitureAsync
     evidence: ev_c6396662000a
-  - order: 32
+  - order: 33
     layer: module
     symbol: InventoryFurniModule.RemoveFurnitureAsync
     evidence: ev_48fa24e8d4a2
-  - order: 33
+  - order: 34
     layer: grain
     symbol: PlayerPresenceGrain.OnFurnitureRemovedAsync
     evidence: ev_3a5a694b9376
-  - order: 34
+  - order: 35
     layer: module
     symbol: PlayerInventoryModule.OnFurnitureRemovedAsync
     evidence: ev_d720d639bd09
-  - order: 35
+  - order: 36
     layer: grain
     symbol: PlayerClothingGrain.GetUnlockedAsync
     evidence: ev_436a48c84f84
@@ -390,7 +394,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 124
+    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -418,7 +422,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -446,7 +450,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -516,14 +520,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -537,14 +541,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 84
+    line: 87
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -558,21 +562,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e439cab6b248
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 346
+    line: 435
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b04814bddc58e48f3881e2fcf3f862d780e0602a201435d3a49f7b402daaf4dd"
+generated_digest: "sha256:42889f668bd686d34a7cd9af709b1d8ee357c5df21985e8e8edc238b7d649902"
 generated:
   feature: wired.open_wired_chest
   scenarios:
@@ -51,6 +51,24 @@ generated:
       emits: []
       evidence: ev_4233fe32dbae
   - scenario: wired.open_wired_chest.guard_10
+    title: "open wired chest: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
+    given:
+      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
+      guard_holds: "true"
+    when:
+      packet: OpenWiredChest
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenWiredChest sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.open_wired_chest.guard_11
     title: "open wired chest: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -61,24 +79,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of OpenWiredChest sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.open_wired_chest.guard_11
-    title: "open wired chest: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: OpenWiredChest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of OpenWiredChest sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -178,6 +178,24 @@ generated:
       emits: []
       evidence: ev_82c2d2746361
   - scenario: wired.open_wired_chest.guard_7
+    title: "open wired chest: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: OpenWiredChest
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenWiredChest sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.open_wired_chest.guard_8
     title: "open wired chest: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -195,7 +213,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.open_wired_chest.guard_8
+  - scenario: wired.open_wired_chest.guard_9
     title: "open wired chest: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -206,24 +224,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of OpenWiredChest sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.open_wired_chest.guard_9
-    title: "open wired chest: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
-    given:
-      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
-      guard_holds: "true"
-    when:
-      packet: OpenWiredChest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of OpenWiredChest sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -270,14 +270,14 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 43
+    line: 45
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator

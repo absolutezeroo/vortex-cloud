@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9068ea9d6aa2eabfcd4b5791fb93137e38875a59cb48eec3b6dc7a3bd0bc596f"
+generated_digest: "sha256:a52539af13c4500d163fcbbf28f4421b123ccd608db8cef71cbb4d2f113abe87"
 generated:
   feature: wired.wired_set_object_variable_value
   scenarios:
@@ -33,6 +33,78 @@ generated:
       emits: []
       evidence: ev_bab2d1516daf
   - scenario: wired.wired_set_object_variable_value.guard_1
+    title: "wired set object variable value: the guard 'level == RoomControllerType.None' holds"
+    given:
+      guard: level == RoomControllerType.None
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'level == RoomControllerType.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4b42983a07ff
+  - scenario: wired.wired_set_object_variable_value.guard_10
+    title: "wired set object variable value: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
+    given:
+      guard: permissions.Has(Capabilities.Room.BuildAny)
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.wired_set_object_variable_value.guard_11
+    title: "wired set object variable value: the guard 'group.IsAdmin' holds"
+    given:
+      guard: group.IsAdmin
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.wired_set_object_variable_value.guard_2
+    title: "wired set object variable value: the guard 'targetType == WiredVariableTargetType.Furni && await GetF...' holds"
+    given:
+      guard: targetType == WiredVariableTargetType.Furni && await GetFloorItemSnapshotByIdAsync(new RoomObjectId(targetId), ct) is null
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'targetType == WiredVariableTargetType.Furni && await GetFloorItemSnapshotByIdAsync(new RoomObjectId(targetId), ct) is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4b42983a07ff
+  - scenario: wired.wired_set_object_variable_value.guard_3
     title: "wired set object variable value: the guard 'action == WiredPermanentVariableActionDelete' holds"
     given:
       guard: action == WiredPermanentVariableActionDelete
@@ -50,7 +122,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4b42983a07ff
-  - scenario: wired.wired_set_object_variable_value.guard_2
+  - scenario: wired.wired_set_object_variable_value.guard_4
     title: "wired set object variable value: the guard 'existing is null' holds"
     given:
       guard: existing is null
@@ -68,6 +140,96 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4b42983a07ff
+  - scenario: wired.wired_set_object_variable_value.guard_5
+    title: "wired set object variable value: the guard 'ctx.Origin == ActionOrigin.System' holds"
+    given:
+      guard: ctx.Origin == ActionOrigin.System
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'ctx.Origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_82c2d2746361
+  - scenario: wired.wired_set_object_variable_value.guard_6
+    title: "wired set object variable value: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.wired_set_object_variable_value.guard_7
+    title: "wired set object variable value: the guard 'origin == ActionOrigin.System' holds"
+    given:
+      guard: origin == ActionOrigin.System
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.wired_set_object_variable_value.guard_8
+    title: "wired set object variable value: the guard 'isExplicitOwner' holds"
+    given:
+      guard: isExplicitOwner
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.wired_set_object_variable_value.guard_9
+    title: "wired set object variable value: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
+    given:
+      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
+      guard_holds: "true"
+    when:
+      packet: WiredSetObjectVariableValue
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WiredSetObjectVariableValue sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
   - scenario: wired.wired_set_object_variable_value.success
     title: "wired set object variable value: the request is accepted"
     given:
@@ -85,15 +247,36 @@ generated:
       outcome: success
       emits:
       - WiredSetUserPermanentVariableResult
-      evidence: ev_4b42983a07ff
+      evidence: ev_3fdb23ee39cd
   evidence:
+  - id: ev_3fdb23ee39cd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/PermissionSet.cs
+    symbol: PermissionSet
+    line: 33
   - id: ev_4b42983a07ff
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Wired.PermanentVariables.cs
     symbol: RoomGrain
-    line: 103
+    line: 104
+  - id: ev_7aa1dee31dfd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
+    symbol: RoomSecurityPolicy
+    line: 50
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 196
   - id: ev_bab2d1516daf
     kind: emulator_flow
     authority: vortex_emulator

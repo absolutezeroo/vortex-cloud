@@ -10,10 +10,35 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8e0618db4f3f081fc8b5715364b67be4b00295bfce995c100ce3ffd27c571039"
+generated_digest: "sha256:7f8fc45301324344c6ac3be90a156ecdba0a39e9aef475bc4a56ee6ca2c90b37"
 generated:
   feature: sound.get_now_playing
   scenarios:
+  - scenario: sound.get_now_playing.guard_0
+    title: "get now playing: the guard 'ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: GetNowPlaying
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetNowPlaying sent while 'ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_25999e608f14
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - JukeboxSongDisks
+      - UserSongDisksInventory
+      evidence: ev_0c29e0399130
   - scenario: sound.get_now_playing.success
     title: "get now playing: the request is accepted"
     given:
@@ -28,9 +53,10 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_c65d069ade81
+      outcome: success
+      emits:
+      - NowPlaying
+      evidence: ev_25999e608f14
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -47,12 +73,12 @@ generated:
     symbol: GetNowPlayingMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_c65d069ade81
-    kind: emulator_handler
+  - id: ev_25999e608f14
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetNowPlayingMessageHandler.cs
     symbol: GetNowPlayingMessageHandler
-    line: 8
+    line: 31
 verified: {}
 manual: {}

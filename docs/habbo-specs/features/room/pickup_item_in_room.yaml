@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:607901a97a6f412247bef41f6c003e2a3f100dcc11e16907c0251c042086d65a"
+generated_digest: "sha256:f96b784c17c70c106059f2e5d8fad88f5e1a7e8cd88c66474a00a294996fbae3"
 generated:
   id: room.pickup_item_in_room
   domain: room
@@ -129,6 +129,10 @@ generated:
     symbol: FurnitureItem.GetSnapshot
     evidence: ev_7e970abb71a4
   - order: 26
+    layer: grain
+    symbol: RoomGrain.PublishDetached
+    evidence: ev_b46938ec853d
+  - order: 27
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -311,7 +315,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 124
+    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -339,7 +343,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -360,7 +364,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
   - id: ev_63942211c9b3
     kind: emulator_handler
     authority: vortex_emulator
@@ -388,7 +392,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 329
+    line: 361
   - id: ev_7e970abb71a4
     kind: emulator_flow
     authority: vortex_emulator
@@ -430,14 +434,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -451,14 +455,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 84
+    line: 87
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -472,7 +476,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_dd7bbabb2990
     kind: emulator_flow
     authority: vortex_emulator
@@ -486,14 +490,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 346
+    line: 435
   scenarios:
   - room.pickup_item_in_room.guard_0
   - room.pickup_item_in_room.guard_1

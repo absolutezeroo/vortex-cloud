@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a800ae44d634a0dc9ef62381dc3668a4ef92347a92c7886d0e5210f878482445"
+generated_digest: "sha256:c4a566575e287760bde2b3b0d5c9d5757d5b297e7b0e827190234bb21ef5ac83"
 generated:
   feature: room.toggle_pet_breeding_permission
   scenarios:
@@ -138,6 +138,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 53
+    line: 54
 verified: {}
 manual: {}

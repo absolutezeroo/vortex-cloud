@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0e31fa904244fa574d949504d06c18eb24f14afadb1c2fe3e27d8275b59839ce"
+generated_digest: "sha256:940ba593f4df10ef093f660bdb927e08b3137e8b1c14469c162c43dedbb36806"
 generated:
   id: uk_c9fc6ae781
   subject: "room.unmute_user: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 46
+    line: 56
   - id: ev_c66fa500332c
     kind: emulator_flow
     authority: vortex_emulator

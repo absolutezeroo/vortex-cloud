@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:77a463bc2c24dcad20bf7bc22df6f0a280674e22bae248c32fdb0210dcdda4ac"
+generated_digest: "sha256:f2709348b5cb086016487424f92b1f1b7cce8998738eaf9b89b7b8f5d91304e9"
 generated:
   id: wired.wired_get_variable_owners_page
   domain: wired
@@ -52,7 +52,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Wired.PermanentVariables.cs
     symbol: RoomGrain
-    line: 139
+    line: 169
   - id: ev_67d974c99e74
     kind: emulator_handler
     authority: vortex_emulator

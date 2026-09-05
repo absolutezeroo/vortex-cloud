@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:75afa36e10927d86c1eb6227b0156fa0363aa7857b35bea206a6df2664451320"
+generated_digest: "sha256:48a07e52c620f9cac79cfbf1f11bef2d81a7b7f607bc5c06e03bff7657814395"
 generated:
   feature: inventory.redeem_purchasable_clothing
   scenarios:
@@ -260,7 +260,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 124
+    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -274,7 +274,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 56
+    line: 65
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -316,7 +316,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 356
+    line: 374
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -330,6 +330,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 350
+    line: 439
 verified: {}
 manual: {}

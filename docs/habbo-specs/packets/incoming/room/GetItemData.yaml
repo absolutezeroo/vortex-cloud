@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f7fe10b6ad9541942a2db55aaa63835fdbdbd346bbe0af8aa86bd2a5de705d8e"
+generated_digest: "sha256:aec26d5e6d126c298e24756f2cb6207f905c61e0d3660c2a0026fc9b41e957d0"
 generated:
   name: GetItemData
   direction: incoming
@@ -50,9 +50,10 @@ generated:
     evidence: ev_550c8b7bbfce
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - int32
     evidence: ev_b1462374e471
   evidence:
   - id: ev_336ecc6ff35d

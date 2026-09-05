@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c4db05ab669ae197ccacc967ec616991b351fcbc3f459a8199a23f05d878347f"
+generated_digest: "sha256:cf3ada141f24967c71d31fbe2c8038ed6df6e40b2244126823b7a41a24e469db"
 generated:
   name: JukeboxPlayListFull
   direction: outgoing
   domain: sound
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -31,6 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_55276ff112c4
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_4b46b9a01c51
   evidence:
   - id: ev_f7adabe8f3cb
     kind: client_parser
@@ -48,5 +54,12 @@ generated:
     symbol: JukeboxPlayListFullMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  - id: ev_4b46b9a01c51
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/JukeboxPlayListFullMessageComposerSerializer.cs
+    symbol: JukeboxPlayListFullMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d80b3842cf3eaa06c17c7749eead9e79ecb8f975c08c1f6e33ae0b4084d1a8bb"
+generated_digest: "sha256:ab2ecf62c2741c2ac33db849e7e4d0fa3af950dc2e20199c057ca8125ca6a454"
 generated:
   id: uk_7d0d1edda5
   subject: "nux.create_room: what the server sends when it refuses"
   severity: medium
-  question: nux.create_room changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: nux.create_room changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: nux.create_room
   known_evidence:
@@ -33,6 +33,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 29
+  - id: ev_86f81f4f919c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/ServerConfigGrain.cs
+    symbol: ServerConfigGrain
+    line: 43
   - id: ev_aa7fca1e0066
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,6 +47,13 @@ generated:
     source: Vortex.PacketHandlers/Nux/SelectInitialRoomMessageHandler.cs
     symbol: SelectInitialRoomMessageHandler
     line: 49
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_cf270ab5d440
     kind: emulator_handler
     authority: vortex_emulator
@@ -60,6 +74,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 19
+    line: 22
 verified: {}
 manual: {}

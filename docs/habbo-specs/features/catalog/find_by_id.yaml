@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:313735d31a0b861a623a9b99eb385223968a7e596999b0c66e52cbd9d9b169e9"
+generated_digest: "sha256:dacbe27c2f399d45262300df9c603a2b8f867a005a05d70d9b02d39e8d77be1a"
 generated:
   id: catalog.find_by_id
   domain: catalog
@@ -66,6 +66,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_1f83e61934ca
+  - expression: "!result.Succeeded"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_1f83e61934ca
   - expression: offer is null || !offer.IsVip
     on_fail: return
     observed_in: vortex
@@ -90,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 433
+    line: 469
   - id: ev_26b8e7ba2af5
     kind: emulator_handler
     authority: vortex_emulator
@@ -133,6 +137,7 @@ generated:
   - catalog.find_by_id.guard_3
   - catalog.find_by_id.guard_4
   - catalog.find_by_id.guard_5
+  - catalog.find_by_id.guard_6
   - catalog.find_by_id.success
   conflicts:
   - cf_f117ba9bad

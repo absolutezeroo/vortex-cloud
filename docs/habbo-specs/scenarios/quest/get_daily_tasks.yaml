@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e02707ba3b3351af42b1a3b9e0fac5baffd761823c1e1f82f7849a159583474c"
+generated_digest: "sha256:8df67b8ad191285282763ebb458671b9dfccceaf097a95c333093e64d8352792"
 generated:
   feature: quest.get_daily_tasks
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 45
+    line: 48
   - id: ev_a434a66e0e14
     kind: emulator_flow
     authority: vortex_emulator

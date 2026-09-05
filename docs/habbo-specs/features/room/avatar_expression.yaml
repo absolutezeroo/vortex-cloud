@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:59a854c499ad0c04926e3464d991bf1f89736b0ae62115b336b2283e05df6534"
+generated_digest: "sha256:193ac644e0c59fd22640e0ce82ecc2dd91dd50a1e49b1df106054103eece4f20"
 generated:
   id: room.avatar_expression
   domain: room
@@ -40,6 +40,10 @@ generated:
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.ExpressionId < 0
     on_fail: return
@@ -53,6 +57,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_e6fef545a42a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: AvatarModule
     value: AvatarModule.SetAvatarExpressionAsync(objectId, expressionType, ct)
@@ -78,6 +86,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Avatar/AvatarExpressionMessageHandler.cs
     symbol: AvatarExpressionMessageHandler
     line: 24
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_a659927dbfdd
     kind: emulator_handler
     authority: vortex_emulator
@@ -91,25 +106,26 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 258
+    line: 275
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 563
+    line: 652
   scenarios:
   - room.avatar_expression.guard_0
   - room.avatar_expression.guard_1
   - room.avatar_expression.guard_2
+  - room.avatar_expression.guard_3
   - room.avatar_expression.success
   unknowns:
   - uk_20f66a2220

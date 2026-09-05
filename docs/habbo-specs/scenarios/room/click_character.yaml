@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c28fbc1e90757cdc98d1a73bbe1c475c9b204cc33cf3fa5e526c7917a9358d21"
+generated_digest: "sha256:e1ac54994ad21dfcb47650c4c362e5eddab782102041fa7d1bfccfef54625188"
 generated:
   feature: room.click_character
   scenarios:
@@ -106,6 +106,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 80
+    line: 81
 verified: {}
 manual: {}

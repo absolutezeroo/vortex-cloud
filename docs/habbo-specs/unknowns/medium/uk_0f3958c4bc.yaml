@@ -10,29 +10,36 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e9a496ce816b9c563a2123ed2f7dfadee26ad34a782eb7417acc9326dbbf88dc"
+generated_digest: "sha256:b7b6ba466d479a95109425517f5186943a9f5c8c9763e466bde72e9f00206471"
 generated:
   id: uk_0f3958c4bc
   subject: "messenger.send_msg: what the server sends when it refuses"
   severity: medium
-  question: messenger.send_msg changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: messenger.send_msg changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: messenger.send_msg
   known_evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_564bd0580d41
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
-    line: 25
+    line: 26
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator

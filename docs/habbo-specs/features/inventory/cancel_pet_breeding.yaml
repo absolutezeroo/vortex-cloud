@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5360da2074395cda02d89c29e3599f7d3ab8a67183b353fca3cd0e0b57b247e1"
+generated_digest: "sha256:a7a47a72992fe32136786a221d17f4dbd5f53de45ac220961ec8e81df94bbacf"
 generated:
   id: inventory.cancel_pet_breeding
   domain: inventory
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 268
+    line: 260
   scenarios:
   - inventory.cancel_pet_breeding.guard_0
   - inventory.cancel_pet_breeding.success

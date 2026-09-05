@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6ada88c68ba317927f2b808efd83ca03b7e0097dbdfaa1137afbccfbdfa812ca"
+generated_digest: "sha256:d7734657c18152f70c4fde81b69f34a68c5ccc0e6a8f5892ab7bea5c39f8d90e"
 generated:
   id: wired.withdraw_wired_chest_items
   domain: wired
@@ -53,77 +53,73 @@ generated:
     evidence: ev_3fdb23ee39cd
   - order: 7
     layer: domain
-    symbol: WiredChestStore.ReadAsync
+    symbol: WiredChestStore.ToChestItemSnapshot
     evidence: ev_d3a71568179c
   - order: 8
     layer: domain
-    symbol: WiredChestStore.ToChestItemSnapshot
-    evidence: ev_d3a71568179c
-  - order: 9
-    layer: domain
     symbol: FurnitureDefinitionProvider.TryGetDefinition
     evidence: ev_2ec03446aa2a
-  - order: 10
+  - order: 9
     layer: domain
     symbol: StuffDataBase.GetSnapshot
     evidence: ev_98ec231f8eca
-  - order: 11
+  - order: 10
     layer: domain
     symbol: StuffDataFactory.CreateStuffDataFromJson
     evidence: ev_7a660921f135
-  - order: 12
+  - order: 11
     layer: domain
     symbol: WiredChestStore.IsSameKind
     evidence: ev_d3a71568179c
-  - order: 13
+  - order: 12
     layer: domain
     symbol: WiredChestLedger.NewManualTransaction
     evidence: ev_7acf056f220a
-  - order: 14
+  - order: 13
     layer: grain
     symbol: InventoryGrain.ReloadFurnitureAsync
     evidence: ev_c6396662000a
-  - order: 15
+  - order: 14
     layer: module
     symbol: InventoryFurniModule.ReloadAsync
     evidence: ev_48fa24e8d4a2
-  - order: 16
+  - order: 15
     layer: domain
     symbol: WiredChestStore.ApplyChestSettingsToStuffDataAsync
     evidence: ev_d3a71568179c
-  - order: 17
+  - order: 16
     layer: module
     symbol: RoomWiredTradingSystem.IsBeingLookedInto
     evidence: ev_84ee82d9d8e2
-  - order: 18
+  - order: 17
     layer: domain
     symbol: WiredChestStuffData.ApplyState
     evidence: ev_120b08c78fe9
-  - order: 19
+  - order: 18
     layer: domain
     symbol: WiredChestStuffData.ApplyPreview
     evidence: ev_120b08c78fe9
-  - order: 20
+  - order: 19
     layer: domain
     symbol: FurnitureLogic.PersistStuffDataAsync
     evidence: ev_61677fae15af
-  - order: 21
+  - order: 20
     layer: domain
     symbol: StuffDataBase.MarkDirty
     evidence: ev_98ec231f8eca
-  - order: 22
+  - order: 21
     layer: domain
     symbol: RoomItemContext.RefreshStuffDataAsync
     evidence: ev_acb5e282c8b3
-  - order: 23
+  - order: 22
     layer: module
     symbol: RoomWiredTradingSystem.NotifyOtherChestViewersAsync
     evidence: ev_84ee82d9d8e2
-  - order: 24
+  - order: 23
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 25
+  - order: 24
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -156,6 +152,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -327,7 +327,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -362,7 +362,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 61
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

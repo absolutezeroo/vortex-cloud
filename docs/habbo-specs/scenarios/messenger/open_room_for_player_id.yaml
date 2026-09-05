@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f8b20a576716d4931b986c43cc93de71de5b1de2878ba1beb58e536d489de34c"
+generated_digest: "sha256:aeb99cab2cfa2bed9dce32c2517ff149eb95a2f07d06c9cd1dcc53a6b0fba74a"
 generated:
   feature: messenger.open_room_for_player_id
   scenarios:
@@ -418,7 +418,7 @@ generated:
       - OpenConnection
       - UserRemove
       - Users
-      evidence: ev_0e5bd3223d28
+      evidence: ev_1337aa94b186
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -439,13 +439,6 @@ generated:
     symbol: VisitUserMessageEvent
     line: 16
     note: third-party server implementation; evidence, not authority
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_1337aa94b186
     kind: emulator_flow
     authority: vortex_emulator
@@ -466,7 +459,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 133
+    line: 136
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5523059b753caa59302a0c8d0a10cfc3e4cf3bdc64aa871364506c6ede049d13"
+generated_digest: "sha256:3c092f186e53c592e74fef401a107a0c61aff2b314fc4039fa3f55d2477aa4f5"
 generated:
   id: catalog.get_flat_categories
   domain: catalog
@@ -89,6 +89,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -153,7 +157,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.RoomAd.cs
     symbol: CatalogPurchaseGrain
-    line: 20
+    line: 21
   - id: ev_234fbe9c2c98
     kind: emulator_flow
     authority: vortex_emulator
@@ -195,7 +199,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator

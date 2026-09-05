@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e281f33021285d04a1754b2043dd101cc58e802b21a6c8bd93098c83959ff470"
+generated_digest: "sha256:f576317c50460da696f67a0f9e64397fd16876d00fba53e9cabbd22d3d00cab0"
 generated:
   feature: room.customize_pet_with_furni
   scenarios:
@@ -107,6 +107,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Plants.cs
     symbol: RoomPetSystem
-    line: 285
+    line: 281
 verified: {}
 manual: {}

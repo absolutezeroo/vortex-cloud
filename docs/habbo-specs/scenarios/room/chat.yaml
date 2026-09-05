@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:11581b752732bfe5adafe843a0edc63af2da169078e410b1948af48b4b200df6"
+generated_digest: "sha256:76d5dbb099c3b051f7a10d0afa1aa8ee0f4fd0380ee0339365e6d64834cdabd2"
 generated:
   feature: room.chat
   scenarios:
@@ -133,6 +133,52 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_87cfcd3253bb
+  - scenario: room.chat.guard_5
+    title: "chat: the guard 'chatting.Cancel' holds"
+    given:
+      guard: chatting.Cancel
+      guard_holds: "true"
+    when:
+      packet: Chat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Chat sent while 'chatting.Cancel' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_87cfcd3253bb
+  - scenario: room.chat.guard_6
+    title: "chat: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: Chat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Chat sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_87cfcd3253bb
   - scenario: room.chat.success
     title: "chat: the request is accepted"
     given:
@@ -151,7 +197,7 @@ generated:
       emits:
       - FloodControl
       - RemainingMutePeriod
-      evidence: ev_3dfe9ba800df
+      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -166,13 +212,13 @@ generated:
     symbol: ChatMessageEvent
     line: 18
     note: third-party server implementation; evidence, not authority
-  - id: ev_3dfe9ba800df
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
-    symbol: RoomEventModule
-    line: 27
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_740a128ba258
     kind: emulator_flow
     authority: vortex_emulator
@@ -186,6 +232,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 42
+    line: 45
 verified: {}
 manual: {}

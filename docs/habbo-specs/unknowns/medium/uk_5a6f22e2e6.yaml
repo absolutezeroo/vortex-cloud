@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2e508716c3d263117217d76c250f1e957ea83d1b52327c4e1b9e15a8b40c2bbf"
+generated_digest: "sha256:00b27c8b1b404d7e34ba64127b8c6e2e5e9ed8bc29daf7a0e885204fb389eff6"
 generated:
   id: uk_5a6f22e2e6
   subject: "room.enter_one_way_door: what the server sends when it refuses"
   severity: medium
-  question: room.enter_one_way_door changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.enter_one_way_door changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.enter_one_way_door
   known_evidence:
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 285
+    line: 352
   - id: ev_6307e5751d5d
     kind: emulator_flow
     authority: vortex_emulator
@@ -46,21 +46,28 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 60
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 34
+    line: 35
   - id: ev_db615f36b20b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 173
+    line: 323
+  - id: ev_e6fef545a42a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
+    symbol: RoomAvatarModule
+    line: 421
   - id: ev_ec05fa1b0194
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4191695ca9f21fad4676a9c7106ae7cf441b339a8ed0990dc63567567dd0e9b9"
+generated_digest: "sha256:f39924a14e364bc9f314b974911f33549de1c612ca1a12159b707a5243f63c4c"
 generated:
   feature: room.get_rentable_space_config
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
-    line: 331
+    line: 389
   - id: ev_7cc987ce7b01
     kind: emulator_flow
     authority: vortex_emulator

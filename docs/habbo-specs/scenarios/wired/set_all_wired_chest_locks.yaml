@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c528f3f705e1f517c33c8501e31017882feb09e7205f7687963b1095ab64c0e9"
+generated_digest: "sha256:76261c4691ccbc25780c29882e9eebabe754e4b30a60b4ef79155a930c5a5b00"
 generated:
   feature: wired.set_all_wired_chest_locks
   scenarios:
@@ -51,6 +51,24 @@ generated:
       emits: []
       evidence: ev_84ee82d9d8e2
   - scenario: wired.set_all_wired_chest_locks.guard_10
+    title: "set all wired chest locks: the guard 'group.IsAdmin' holds"
+    given:
+      guard: group.IsAdmin
+      guard_holds: "true"
+    when:
+      packet: SetAllWiredChestLocks
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.set_all_wired_chest_locks.guard_11
     title: "set all wired chest locks: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
       guard: group.IsMember && group.MembersCanDecorate
@@ -61,24 +79,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.set_all_wired_chest_locks.guard_11
-    title: "set all wired chest locks: the guard 'hasExplicitRights' holds"
-    given:
-      guard: hasExplicitRights
-      guard_holds: "true"
-    when:
-      packet: SetAllWiredChestLocks
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'hasExplicitRights' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -141,6 +141,24 @@ generated:
       emits: []
       evidence: ev_82c2d2746361
   - scenario: wired.set_all_wired_chest_locks.guard_5
+    title: "set all wired chest locks: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: SetAllWiredChestLocks
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.set_all_wired_chest_locks.guard_6
     title: "set all wired chest locks: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -158,7 +176,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.set_all_wired_chest_locks.guard_6
+  - scenario: wired.set_all_wired_chest_locks.guard_7
     title: "set all wired chest locks: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -176,7 +194,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.set_all_wired_chest_locks.guard_7
+  - scenario: wired.set_all_wired_chest_locks.guard_8
     title: "set all wired chest locks: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
       guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
@@ -194,7 +212,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.set_all_wired_chest_locks.guard_8
+  - scenario: wired.set_all_wired_chest_locks.guard_9
     title: "set all wired chest locks: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -205,24 +223,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.set_all_wired_chest_locks.guard_9
-    title: "set all wired chest locks: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: SetAllWiredChestLocks
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of SetAllWiredChestLocks sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -268,14 +268,14 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 56
+    line: 58
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator

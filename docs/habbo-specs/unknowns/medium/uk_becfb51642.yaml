@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8f068a541373049485daaceb9619308318c555fd45d4890058cf656a918d4918"
+generated_digest: "sha256:de182d64cd14fad5be8edb2e129149b4d7beb3200b80df4f3fd6a9ad66ffae2b"
 generated:
   id: uk_becfb51642
   subject: "room.drop_carry_item: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 217
+    line: 234
   - id: ev_dae6a9f8ee83
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4775d1757c1155ccdc83949d7afdf154d82877393f9fca113dcde007e895c9c3"
+generated_digest: "sha256:940842125b903306b8ee8835383f2c6bd08a5553ae5d2634194815a0658fc2c4"
 generated:
   id: room.click_item_in_room
   domain: room
@@ -86,14 +86,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 363
+    line: 395
   - id: ev_8a097ef973ee
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.cs
     symbol: RoomActionModule
-    line: 109
+    line: 108
   - id: ev_d149de059595
     kind: emulator_handler
     authority: vortex_emulator
@@ -107,7 +107,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomFurniModule.cs
     symbol: RoomFurniModule
-    line: 101
+    line: 99
   scenarios:
   - room.click_item_in_room.guard_0
   - room.click_item_in_room.guard_1

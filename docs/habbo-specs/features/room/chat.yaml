@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:61f258978f5ffab488cccd729b38250c2f4d92e66025f0bee7207ef1e4507fbb"
+generated_digest: "sha256:be2925647657071864e87cf8279e47f53e20faafed72e0b2f72beaef725d3941"
 generated:
   id: room.chat
   domain: room
@@ -37,14 +37,22 @@ generated:
     symbol: RoomChatSystem.SendChatFromPlayerAsync
     evidence: ev_f0fbc7d68cc3
   - order: 3
+    layer: module
+    symbol: EventSystem.PublishCancellableAsync
+    evidence: ev_34bf3ac088e2
+  - order: 4
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
+  - order: 5
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 4
+  - order: 6
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
-  - order: 5
+  - order: 7
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -69,6 +77,14 @@ generated:
     on_fail: send_and_return
     observed_in: vortex
     evidence: ev_f0fbc7d68cc3
+  - expression: chatting.Cancel
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_f0fbc7d68cc3
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: avatar.LastChatStyleId
     value: styleId
@@ -87,13 +103,20 @@ generated:
       evidence: ev_f0fbc7d68cc3
   reaches_persistence: false
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 24
   - id: ev_3dfe9ba800df
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_740a128ba258
     kind: emulator_flow
     authority: vortex_emulator
@@ -114,21 +137,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 419
+    line: 446
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 32
+    line: 35
   - id: ev_f5b4cba2f556
     kind: emulator_flow
     authority: vortex_emulator
@@ -142,6 +165,8 @@ generated:
   - room.chat.guard_2
   - room.chat.guard_3
   - room.chat.guard_4
+  - room.chat.guard_5
+  - room.chat.guard_6
   - room.chat.success
   conflicts:
   - cf_3cd42900cc

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:762d34d10f819e5e9d66c2f6af8d92c9484f495406803e6c552b18edbad30da3"
+generated_digest: "sha256:887f12484a2660d62cae1a3b57b315b81a8355fb0844b67c6ea2c01b0558a89b"
 generated:
   feature: wired.update_trigger
   scenarios:
@@ -242,6 +242,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 232
+    line: 229
 verified: {}
 manual: {}

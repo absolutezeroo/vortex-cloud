@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6bf51269b7ce071c2d5b07ed89cc611893391c92be5693a4a2c7661f88c822ea"
+generated_digest: "sha256:61b604f7f36b276f4b832df75c845812d7d129c8b49db3c3fd2fd8281b53e121"
 generated:
   id: messenger.get_messenger_history
   domain: messenger
@@ -60,7 +60,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
-    line: 217
+    line: 223
   - id: ev_1ba6b8990a1e
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
-    line: 125
+    line: 140
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator

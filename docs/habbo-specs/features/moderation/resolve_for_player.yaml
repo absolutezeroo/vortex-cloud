@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2196395223cb462a78c7706846cff508c23241ac5778f64a56697d1471182f53"
+generated_digest: "sha256:3b9fb0b4aad22132cf6320ad2609b1a136ffe39f4798aa8aeea33e95b6bcdc94"
 generated:
   id: moderation.resolve_for_player
   domain: moderation
@@ -108,8 +108,8 @@ generated:
     evidence: ev_b46938ec853d
   - order: 19
     layer: module
-    symbol: RoomModerationSystem.ApplyStaffRoomActionsAsync
-    evidence: ev_9eb84a2a2088
+    symbol: RoomSecurityModule.HasCapabilityAsync
+    evidence: ev_82c2d2746361
   - order: 20
     layer: service
     symbol: CfhTicketService.PickTicketsAsync
@@ -131,22 +131,26 @@ generated:
     symbol: PlayerPresenceGrain.IsOnlineAsync
     evidence: ev_373e76aa8a80
   - order: 25
-    layer: domain
-    symbol: ActionContext.CreateForWired
-    evidence: ev_f5b4cba2f556
-  - order: 26
     layer: module
     symbol: RoomAvatarModule.GetAllAvatarSnapshotsAsync
     evidence: ev_e6fef545a42a
-  - order: 27
+  - order: 26
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
+  - order: 27
+    layer: module
+    symbol: RoomModerationSystem.ApplyStaffRoomActionsAsync
+    evidence: ev_9eb84a2a2088
   - order: 28
     layer: module
     symbol: RoomPetSystem.GetPlacedPetAvatarSnapshotsAsync
     evidence: ev_7327c7799f5f
   - order: 29
+    layer: domain
+    symbol: ActionContext.CreateForWired
+    evidence: ev_f5b4cba2f556
+  - order: 30
     layer: module
     symbol: RoomBotSystem.GetPlacedBotAvatarSnapshotsAsync
     evidence: ev_9d8421b6228f
@@ -203,6 +207,14 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_9e2f0b96a363
+  - expression: "!await SecurityModule .HasCapabilityAsync(actorPlayerId, Capabilities.Room.ModerateAny) .ConfigureAwait(true)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_bb859d4f21b2
+  - expression: actor <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_82c2d2746361
   - expression: actorPlayerId <= 0 || (!unlockDoor && !resetNameAndDescription && !kickUsers)
     on_fail: return
     observed_in: vortex
@@ -217,7 +229,7 @@ generated:
     evidence: ev_9c67ce52dae5
   state_changes:
   - target: ModerationSystem
-    value: ModerationSystem.ApplyStaffRoomActionsAsync( actorPlayerId, unlockDoor, resetNameAndDescription, kickUsers, ct )
+    value: ModerationSystem .ApplyStaffRoomActionsAsync( actorPlayerId, unlockDoor, resetNameAndDescription, kickUsers, ct )
     observed_in: vortex
     evidence: ev_bb859d4f21b2
   - target: entity.WindowHeight
@@ -335,7 +347,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 107
+    line: 118
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -356,7 +368,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 265
+    line: 247
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -371,6 +383,13 @@ generated:
     source: Vortex.PacketHandlers/Moderator/GetModeratorRoomInfoMessageHandler.cs
     symbol: GetModeratorRoomInfoMessageHandler
     line: 24
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 259
   - id: ev_85ba71af2c41
     kind: emulator_flow
     authority: vortex_emulator
@@ -419,21 +438,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 438
+    line: 465
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 219
+    line: 252
   - id: ev_bb859d4f21b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 58
+    line: 68
   - id: ev_bbe082cf14ca
     kind: emulator_handler
     authority: vortex_emulator
@@ -468,7 +487,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Moderator/ModerateRoomMessageHandler.cs
     symbol: ModerateRoomMessageHandler
-    line: 28
+    line: 29
   - id: ev_d1b57b1deb61
     kind: emulator_handler
     authority: vortex_emulator
@@ -482,14 +501,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Moderator/ModerateRoomMessageHandler.cs
     symbol: ModerateRoomMessageHandler
-    line: 17
+    line: 18
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 313
+    line: 402
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

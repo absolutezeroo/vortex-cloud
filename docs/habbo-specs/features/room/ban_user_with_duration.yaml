@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a2974f7ddb1bc0fb6367a232a927e03ce9aef906e11468521784138e9e1ca81d"
+generated_digest: "sha256:0cebf6f940ca05a3258278244afb0cbc693ff3588521fd0a7acbf32c8753b68d"
 generated:
   id: room.ban_user_with_duration
   domain: room
@@ -105,13 +105,13 @@ generated:
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
   - order: 20
-    layer: module
-    symbol: RoomGameSystem.OnPlayerLeftAsync
-    evidence: ev_7db64e908d04
+    layer: domain
+    symbol: RoomGameRuntime.OnPlayerLeftAsync
+    evidence: ev_8f4d446a6466
   - order: 21
     layer: domain
-    symbol: GameTeamState.OnPlayerLeft
-    evidence: ev_0e5bd3223d28
+    symbol: TeamBook.OnPlayerLeft
+    evidence: ev_556d41376c6f
   - order: 22
     layer: module
     symbol: EventSystem.PublishAsync
@@ -273,13 +273,6 @@ generated:
       evidence: ev_761b76967e2f
   reaches_persistence: false
   evidence:
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_2747c101d5f4
     kind: emulator_flow
     authority: vortex_emulator
@@ -314,7 +307,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
+  - id: ev_556d41376c6f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamBook.cs
+    symbol: TeamBook
+    line: 166
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -329,13 +329,6 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
     line: 86
-  - id: ev_7db64e908d04
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/RoomGameSystem.cs
-    symbol: RoomGameSystem
-    line: 209
   - id: ev_82aaf63b45c1
     kind: emulator_flow
     authority: vortex_emulator
@@ -343,6 +336,13 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.MysteryBox.cs
     symbol: RoomGrain
     line: 41
+  - id: ev_8f4d446a6466
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
+    symbol: RoomGameRuntime
+    line: 906
   - id: ev_9eb84a2a2088
     kind: emulator_flow
     authority: vortex_emulator
@@ -363,28 +363,28 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_bb859d4f21b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 36
+    line: 46
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_c6ca9325686a
     kind: emulator_flow
     authority: vortex_emulator
@@ -398,21 +398,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e439cab6b248
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 155
+    line: 156
   - id: ev_ede1461ee378
     kind: emulator_flow
     authority: vortex_emulator

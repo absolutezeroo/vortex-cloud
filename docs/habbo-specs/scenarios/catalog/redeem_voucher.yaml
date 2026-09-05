@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ed1eb0111e851fd389291478c3a8704d6c3343b2f0eb318df22fc93b0f92ed92"
+generated_digest: "sha256:0142d2f0d1674450972424786639df670569eb913e02b48458e756d0952fed9e"
 generated:
   feature: catalog.redeem_voucher
   scenarios:
@@ -80,7 +80,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_539488477073
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:74478da5a6ca0f993d9246e9746f10e3e6bba6da9bc8deada03877192df8e493"
+generated_digest: "sha256:c45e2addfc002d55025446d072f61994f6f9e8e95462bb2354f46c6fef28c501"
 generated:
   id: uk_48d1626f4e
   subject: "wired.wired_trade_accept: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,7 +60,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.cs
     symbol: RoomWiredTradingSystem
-    line: 275
+    line: 286
   - id: ev_61677fae15af
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,14 +95,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
-    line: 95
-  - id: ev_a32cbda3f96b
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WiredTradeUpdateItemsMessageHandler.cs
-    symbol: WiredTradeTable
-    line: 66
+    line: 96
   - id: ev_acb5e282c8b3
     kind: emulator_flow
     authority: vortex_emulator
@@ -110,20 +103,27 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItemContext.cs
     symbol: RoomItemContext
     line: 37
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 61
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a291338ddc69ede24c077ff302aeca0b052941e98fffdb5a9503f6b5a89a4ba6"
+generated_digest: "sha256:eb93015f0a78212b7ca7a169308780d968f59aaa20290bc3dbd2a6a3d949ec75"
 generated:
   feature: catalog.find_by_id
   scenarios:
@@ -107,6 +107,24 @@ generated:
       emits: []
       evidence: ev_1f83e61934ca
   - scenario: catalog.find_by_id.guard_5
+    title: "find by id: the guard '!result.Succeeded' holds"
+    given:
+      guard: "!result.Succeeded"
+      guard_holds: "true"
+    when:
+      packet: PurchaseBasicMembershipExtension
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while '!result.Succeeded' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_1f83e61934ca
+  - scenario: catalog.find_by_id.guard_6
     title: "find by id: the guard 'offer is null || !offer.IsVip' holds"
     given:
       guard: offer is null || !offer.IsVip
@@ -150,7 +168,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 440
+    line: 476
   - id: ev_4e6c8266ce94
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5f35cb8b35e5579f9067a6e38d4d8f2cc39cefeb146f01da93a42ab7077195e9"
+generated_digest: "sha256:de8994dcf6c9b26a0616c5f60a289451f04ff214ed82b6a004a46a5597073a5d"
 generated:
   id: sound.remove_jukebox_disk
   domain: sound
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - RemoveJukeboxDisk
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,8 +28,16 @@ generated:
     layer: handler
     symbol: RemoveJukeboxDiskMessageHandler.HandleAsync
     evidence: ev_02cdf81d88ef
-  checks: []
-  state_changes: []
+  checks:
+  - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_38f1244eb4b0
+  state_changes:
+  - target: _grainFactory .GetRoomJukebox(ctx.RoomId)
+    value: _grainFactory .GetRoomJukebox(ctx.RoomId) .RemoveDiskAsync(ctx.AsActionContext(), message.Index, ct)
+    observed_in: vortex
+    evidence: ev_38f1244eb4b0
   outgoing:
     ordering: unknown
     packets: []
@@ -41,16 +49,24 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Sound/RemoveJukeboxDiskMessageHandler.cs
     symbol: RemoveJukeboxDiskMessageHandler
-    line: 8
+    line: 13
+  - id: ev_38f1244eb4b0
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/RemoveJukeboxDiskMessageHandler.cs
+    symbol: RemoveJukeboxDiskMessageHandler
+    line: 24
   scenarios:
+  - sound.remove_jukebox_disk.guard_0
   - sound.remove_jukebox_disk.success
   unknowns:
-  - uk_6a9c15cd67
+  - uk_4d89bb47a2
 verified:
   stale_index_is_a_no_op:
     confidence: assumed
     claim: The index names a position in the playlist the client was last sent. An index outside the current playlist removes nothing.
-    reason: "The client has no disk id to send - JukeboxPlayListController keeps entries by position - so the index is the only handle it has, and it can be stale by the time it arrives. What the official server does with a stale one is unknown; guessing at what was meant would hand back a disk nobody asked for."
+    reason: The client has no disk id to send - JukeboxPlayListController keeps entries by position - so the index is the only handle it has, and it can be stale by the time it arrives. What the official server does with a stale one is unknown; guessing at what was meant would hand back a disk nobody asked for.
     evidence:
     - kind: client_code
       source: com/sulake/habbo/sound/music/JukeboxPlayListController.as

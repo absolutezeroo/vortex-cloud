@@ -86,6 +86,20 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     );
 
     public Task<bool> TryConsumeClubGiftAsync(string productCode, CancellationToken ct);
+
+    /// <summary>
+    /// Turns a perk on for this account, persisted. Returns false when the player already had it,
+    /// which is what makes it safe to call from a reward that may be claimed after a retry.
+    /// </summary>
+    /// <remarks>
+    /// Perks are the hotel's entitlement mechanism — <see cref="PlayerPerkFlags.Trade"/> is the
+    /// trading pass — so anything that unlocks a capability rather than handing over an object goes
+    /// through here rather than growing a second notion of "this account may now do X".
+    /// </remarks>
+    public Task<bool> GrantPerkAsync(PlayerPerkFlags perk, CancellationToken ct);
+
+    /// <summary>The perks this account holds.</summary>
+    public Task<PlayerPerkFlags> GetPerksAsync(CancellationToken ct);
     public Task TrackCreditSpendAsync(int credits, CancellationToken ct);
 
     /// <summary>

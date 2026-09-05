@@ -662,6 +662,28 @@ internal static class MessageEvent
     public const int UpdateVariableMessageEvent = 2475; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() VariableDefinition branch -> _SafeCls_3053 @2475 (old _SafeCls_3715@1160)
     #endregion
 
+    #region Habbicons
+    // Every id read from the WIN63 registry (_SafeCls_2046.as, _composers[<id>]) and confirmed at
+    // its call site in com/sulake/habbo/catalog/habbicons/HabbiconController.as, the chat-input
+    // selector and the messenger. Nothing here is inferred from another emulator.
+    public const int GetHabbiconShopDataMessageEvent = 272; // _composers[272] = _SafeCls_2718(), HabbiconController::getShopData()
+    public const int GetHabbiconInfoMessageEvent = 1494; // _composers[1494] = _SafeCls_3805(int), HabbiconController::getHabbiconInfo(id)
+    public const int BuyHabbiconMessageEvent = 3980; // _composers[3980] = _SafeCls_3471(int), HabbiconController::buyHabbicon(id)
+    public const int BuyHabbiconCollectionMessageEvent = 3036; // _composers[3036] = _SafeCls_2394(int), HabbiconController::buyHabbiconCollection(id)
+    public const int ClaimHabbiconMessageEvent = 662; // _composers[662] = _SafeCls_2848(int), HabbiconController::claimHabbicon(id)
+    public const int FavouriteHabbiconMessageEvent = 1808; // _composers[1808] = _SafeCls_3482(int), HabbiconController::favoriteHabbicon(id)
+    public const int UnfavouriteHabbiconMessageEvent = 75; // _composers[75] = _SafeCls_3712(int), HabbiconController::unfavoriteHabbicon(id)
+    public const int TriggerHabbiconMessageEvent = 1176; // _composers[1176] = _SafeCls_3701(int), HabbiconSelector::sendTriggerHabbicon(id)
+    public const int SendHabbiconMessageEvent = 1163; // _composers[1163] = _SafeCls_2591(int,int,int), messenger/MainView::onHabbiconSelected -> (chatId, habbiconId, confirmationId)
+    #endregion
+
+    #region Reward tracks
+    // Only two: the client never asks for the track list, it is pushed. Both read from the WIN63
+    // registry and confirmed in quest/rewardtrack/RewardTrackController.as.
+    public const int ClaimRewardTrackPrizeMessageEvent = 1376; // _composers[1376] = _SafeCls_2794(String,String), RewardTrackController::claimPrize(trackId, rewardId)
+    public const int PurchaseRewardTrackPremiumMessageEvent = 1789; // _composers[1789] = _SafeCls_3341(String), RewardTrackController::purchasePremium(trackId)
+    #endregion
+
     #region Vortex-specific (no AS3 backing)
     // These headers do NOT exist in any Habbo client. They belong to the in-client furni editor, a
     // Vortex-only staff tool, and are matched by hand against vortex-modern-client's
@@ -1328,6 +1350,27 @@ internal static class MessageComposer
     public const int WiredRewardResultMessageComposer = 2997; // AS3-verified (old-revision trace): _SafeCls_3012 -> onReward() still exists in current revision at 2997
     public const int WiredSaveSuccessComposer = 1192; // AS3-verified (direct read, both revisions): roomevents handler::onSaveSuccess() -> _SafeCls_2958 @1192 (old _SafeCls_3773@1875)
     public const int WiredValidationErrorComposer = 3201; // AS3-verified (direct read, both revisions): roomevents handler::onValidationError() -> _SafeCls_2398 @3201 (old _SafeCls_3434@367)
+    #endregion
+
+    #region Habbicons
+    // Read from the WIN63 registry's incoming table (_SafeCls_2046.as, _SafeStr_4546[<id>]) and
+    // confirmed at the handler HabbiconController registers for each.
+    public const int UserHabbiconsMessageComposer = 3728; // _SafeStr_4546[3728] = _SafeCls_3640 -> HabbiconController::onUserHabbicons
+    public const int UserHabbiconStatusChangedMessageComposer = 2019; // _SafeStr_4546[2019] = _SafeCls_3736 -> onUserHabbiconStatusChanged
+    public const int HabbiconShopDataMessageComposer = 3765; // _SafeStr_4546[3765] = _SafeCls_3936 -> onHabbiconShopData
+    public const int HabbiconInfoMessageComposer = 3714; // _SafeStr_4546[3714] = _SafeCls_3969 -> onHabbiconInfo
+    public const int RoomUseHabbiconMessageComposer = 1547; // _SafeStr_4546[1547] = _SafeCls_2836 -> onRoomUseHabbicon; payload is (roomIndex, habbiconId), in that order
+    // A Habbicon purchase is answered with the catalogue's own PurchaseOK / PurchaseError /
+    // PurchaseNotAllowed (1570 / 1029 / 2493), which HabbiconController subscribes to alongside
+    // them. There is no Habbicon-specific purchase result and inventing one would be answered by
+    // nothing.
+    #endregion
+
+    #region Reward tracks
+    public const int RewardTracksMessageComposer = 3794; // _SafeStr_4546[3794] = _SafeCls_2743 -> RewardTrackController::onRewardTracks
+    public const int RewardTrackProgressMessageComposer = 2017; // _SafeStr_4546[2017] = _SafeCls_3829 -> onRewardTrackProgress
+    public const int RewardTrackClaimResultMessageComposer = 522; // _SafeStr_4546[522] = _SafeCls_3381 -> onRewardTrackClaimResult
+    public const int RewardTrackPremiumPurchaseResultMessageComposer = 58; // _SafeStr_4546[58] = _SafeCls_3753 -> onRewardTrackPremiumPurchaseResult
     #endregion
 
     #region Vortex-specific (no AS3 backing)

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d8316600f167a3805012b5d4e746eec64110f82155a53f370c74fa095f24fdb2"
+generated_digest: "sha256:01750ff90f11d244d7acad3edc98f8dd8cab3cae571c378b12e1c05852348e4a"
 generated:
   id: moderation.chat_review_guide_decides_on_offer
   domain: moderation
@@ -86,7 +86,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/ChatReviewDispatch.cs
     symbol: ChatReviewDispatch
-    line: 92
+    line: 89
   scenarios:
   - moderation.chat_review_guide_decides_on_offer.guard_0
   - moderation.chat_review_guide_decides_on_offer.guard_1

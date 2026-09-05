@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:92886def23cc8d98cb75a5464e7de005b724031833894850901b827adb51f990"
+generated_digest: "sha256:e98aa66a9a87d321b3d1bcf4be5fe3e14859fd255e58a35c6440d2fd093e0cfe"
 generated:
   id: quest.get_concurrent_users_reward
   domain: quest
@@ -59,7 +59,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 76
+    line: 79
   - id: ev_7dfdc26947ad
     kind: emulator_handler
     authority: vortex_emulator

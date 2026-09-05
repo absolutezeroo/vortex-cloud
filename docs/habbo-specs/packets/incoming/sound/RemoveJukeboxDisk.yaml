@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ed8a38d121ff738dccdd49fb897b241be7a9affa435a51644dc3600b5b87b299"
+generated_digest: "sha256:c4cd887b4fb99cebad8456e05c71fa77a9786e4a9b7e56d5c7a856567ec97137"
 generated:
   name: RemoveJukeboxDisk
   direction: incoming
@@ -48,9 +48,10 @@ generated:
     evidence: ev_0ecd99b6bb70
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - int32
     evidence: ev_aba85a6a6b38
   evidence:
   - id: ev_44ed54684c80

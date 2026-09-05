@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:44bd404af563a5faf8423cd211ebd2a4490c98e139e21e6cb3aa5fc074ed165f"
+generated_digest: "sha256:9c6144f0ef5b8f02bddde9277f62e75af577d58c9e7776807b8c13377647ea7a"
 generated:
   id: uk_1310dc5b11
   subject: "marketplace.redeem_marketplace_offer_credits: what the server sends when it refuses"
@@ -46,13 +46,13 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 443
+    line: 462
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 449
+    line: 499
 verified: {}
 manual: {}

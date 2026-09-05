@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:fc395100e72d547c582318d4c6bfed35a93c177ff0994c4129a9280c9a4a95b7"
+generated_digest: "sha256:2452cec6d9c62618ffc380366d3f66419a09bf294b571653f7681110ad338cdf"
 generated:
   id: handshake.get_subscription
   domain: handshake
@@ -116,6 +116,10 @@ generated:
     layer: domain
     symbol: PermissionSet.Has
     evidence: ev_3fdb23ee39cd
+  - order: 23
+    layer: grain
+    symbol: PlayerGrain.GetPerksAsync
+    evidence: ev_1f83e61934ca
   checks:
   - expression: playerId <= 0
     on_fail: return
@@ -264,7 +268,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 802
+    line: 900
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -299,7 +303,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 81
+    line: 83
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -327,7 +331,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 43
+    line: 45
   - id: ev_bc6808a835e1
     kind: emulator_flow
     authority: vortex_emulator

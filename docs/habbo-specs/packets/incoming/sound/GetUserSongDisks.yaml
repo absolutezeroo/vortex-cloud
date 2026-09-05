@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b6b5ce83503e59bd784fd5dd779cc09fed38fd35dcf9ed2137346aeda7cb790"
+generated_digest: "sha256:0b27f7c377df9e3f21bb4a50677472494e600bed36ae56d5f35fe24ddd88a2c4"
 generated:
   name: GetUserSongDisks
   direction: incoming
@@ -76,5 +76,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Sound/GetUserSongDisksMessageParser.cs
     symbol: GetUserSongDisksMessageParser
     line: 7
+  conflicts:
+  - cf_b97214b1ab
 verified: {}
 manual: {}

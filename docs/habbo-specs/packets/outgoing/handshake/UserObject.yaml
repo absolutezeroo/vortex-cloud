@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ece490b46af8f8eb8561181cd2064b6e48c28122474825b1c821ea59c099b06f"
+generated_digest: "sha256:511616427b02bd28f1b93099cdfe9dbfd1cff881b94bf362f9c76980108c548a"
 generated:
   name: UserObject
   direction: outgoing
@@ -277,7 +277,7 @@ generated:
     origin: vortex
     source: Vortex.Revisions/Revision20260701/Serializers/Handshake/UserObjectMessageSerializer.cs
     symbol: UserObjectMessageSerializer
-    line: 7
+    line: 8
   conflicts:
   - cf_597b03759f
   unknowns:

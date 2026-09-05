@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a3600c0168cdb3d2989612b4109fd5dd866e5695fa28acfe9c9b022ccd747fbb"
+generated_digest: "sha256:3d0175ef513f6cb2cf81bf45f7707155989ca9baaed7d56434aebcba21486831"
 generated:
   id: uk_c801a7b6c8
   subject: "room.pick_up_pet_in_room: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 193
+    line: 181
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,6 +60,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
 verified: {}
 manual: {}

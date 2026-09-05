@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d4fef5c3d97246639d8407aa5105728b23e383940b6e1f04ff7ffe77a1973ed2"
+generated_digest: "sha256:f2ba1fc8346b141e7d6fad5857d6419589bcc28d6c334b76e84056c45d4c388a"
 generated:
   feature: room.save_room_settings
   scenarios:
@@ -202,6 +202,7 @@ generated:
       emits:
       - RoomChatSettings
       - RoomSettingsSavedEvent
+      - RoomVisualizationSettings
       evidence: ev_18cbc2dedbc1
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -241,7 +242,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 55
+    line: 57
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

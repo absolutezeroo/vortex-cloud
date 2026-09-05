@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b034a6180feea055a0e6ede0a06dd9d98e476d87c8e2dca3f014a145a9765957"
+generated_digest: "sha256:0777d3a1cdb5d6df21d0f42c4b259f613d4363d2f0cf69a382a2b71428afb840"
 generated:
   id: collectibles.purchase_mint_token
   domain: collectibles
@@ -36,17 +36,9 @@ generated:
     symbol: NftMintingGrain.FindTokenOfferAsync
     evidence: ev_920ca1682c21
   - order: 3
-    layer: grain
-    symbol: PlayerWalletGrain.TryDebitAsync
-    evidence: ev_d0cb8ee11644
-  - order: 4
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 5
-    layer: grain
-    symbol: PlayerWalletGrain.CreditBackAsync
-    evidence: ev_d0cb8ee11644
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -56,7 +48,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_a376b354a3ae
-  - expression: "!debit.Succeeded"
+  - expression: "!result.Succeeded"
     on_fail: return
     observed_in: vortex
     evidence: ev_a376b354a3ae
@@ -101,14 +93,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 66
-  - id: ev_d0cb8ee11644
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 61
+    line: 69
   - id: ev_ee343dece6c3
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5370b85fb80d7b85669aef8541ce2df69f0c3fc47a30cca754029e7d94bd29fb"
+generated_digest: "sha256:e28e4d0ba925b9069d7ddbfbd9676195688b6dcfd86756e4f38335ec3249aff2"
 generated:
   id: uk_4048d65186
   subject: "room.respect_pet: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 219
+    line: 255
   - id: ev_27dc49cff260
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:38460bb37394d818339ba38485586d11c02c1e9ecab1464b5c9b9f8295b89eca"
+generated_digest: "sha256:0391432b6fa0b1d22dd91dd04046042e6ee4133e75e2a6a974cb1597fef15925"
 generated:
   id: uk_d1f0b89ad3
   subject: "room.change_posture: what the server sends when it refuses"
@@ -39,20 +39,20 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 315
+    line: 342
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 597
+    line: 686
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:509b24eb392cccab9bccfccd4aaa49bb2817f13bcc7c4c1f69d1ebcdf5638e17"
+generated_digest: "sha256:8f2d19390f14696e08e1dbebc70b1fde156a8f5ab091754baaeda1a1b3e1a98c"
 generated:
   feature: nux.create_room
   scenarios:
@@ -69,6 +69,42 @@ generated:
       emits: []
       evidence: ev_7f41f2bdde62
   - scenario: nux.create_room.guard_3
+    title: "create room: the guard 'ownedRooms >= maxRooms' holds"
+    given:
+      guard: ownedRooms >= maxRooms
+      guard_holds: "true"
+    when:
+      packet: SelectInitialRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SelectInitialRoom sent while 'ownedRooms >= maxRooms' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits: []
+      evidence: ev_f8d4827f4b8f
+  - scenario: nux.create_room.guard_4
+    title: "create room: the guard 'categoryId > 0 && !await dbCtx .NavigatorFlatCategories.A...' holds"
+    given:
+      guard: categoryId > 0 && !await dbCtx .NavigatorFlatCategories.AnyAsync(c => c.Id == categoryId, ct) .ConfigureAwait(false)
+      guard_holds: "true"
+    when:
+      packet: SelectInitialRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SelectInitialRoom sent while 'categoryId > 0 && !await dbCtx .NavigatorFlatCategories.AnyAsync(c => c.Id == categoryId, ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits: []
+      evidence: ev_f8d4827f4b8f
+  - scenario: nux.create_room.guard_5
     title: "create room: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -126,5 +162,12 @@ generated:
     source: Vortex.PacketHandlers/Nux/SelectInitialRoomMessageHandler.cs
     symbol: SelectInitialRoomMessageHandler
     line: 49
+  - id: ev_f8d4827f4b8f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/RoomService.Create.cs
+    symbol: RoomService
+    line: 52
 verified: {}
 manual: {}

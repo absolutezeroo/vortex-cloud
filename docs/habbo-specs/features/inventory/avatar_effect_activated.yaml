@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a708592700e70234a5f2d1aaece03c1eeeb96fa5f83051ea043a90851b742ba5"
+generated_digest: "sha256:8e07eed5c18a140130ca2334fd48a7bf93057202ca1ca8fcfe21ea51207d0a91"
 generated:
   id: inventory.avatar_effect_activated
   domain: inventory
@@ -88,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_68cdef56bfcd
     kind: emulator_handler
     authority: vortex_emulator

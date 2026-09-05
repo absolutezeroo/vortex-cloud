@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:51eb3bbbe9461bbdc661c3d028f004650850aa77b1f213292fceacd8078c3c0e"
+generated_digest: "sha256:035b63477f3f8bde31bc563ed416ab359fef40a6029b45ca25b57df67252100b"
 generated:
   feature: room.whisper
   scenarios:
@@ -55,6 +55,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_8916c8b3a33e
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_1d49dc969016
+  - scenario: room.whisper.guard_10
+    title: "whisper: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: Whisper
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Whisper sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -225,6 +248,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d49dc969016
+  - scenario: room.whisper.guard_9
+    title: "whisper: the guard 'chatting.Cancel' holds"
+    given:
+      guard: chatting.Cancel
+      guard_holds: "true"
+    when:
+      packet: Whisper
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Whisper sent while 'chatting.Cancel' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_1d49dc969016
   - scenario: room.whisper.success
     title: "whisper: the request is accepted"
     given:
@@ -265,6 +311,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Chat/WhisperMessageHandler.cs
     symbol: WhisperMessageHandler
     line: 13
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -285,6 +338,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 42
+    line: 45
 verified: {}
 manual: {}

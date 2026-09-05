@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c043c35f1fb36dbe753e8aee45493ee304c19ece73f3ee838ec8a6ffefd4ced1"
+generated_digest: "sha256:9a75545eaa721ee39d6b944cd73b07aacf0390e2e2771bb52fb3cb227bb3ac21"
 generated:
   id: room.rentable_space_rent
   domain: room
@@ -150,14 +150,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
-    line: 84
+    line: 88
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 381
+    line: 400
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

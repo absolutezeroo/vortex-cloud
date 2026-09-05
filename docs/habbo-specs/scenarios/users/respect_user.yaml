@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1ce8c533c7d035346e18f4927b1787cec55cb7169456f96cd8bb84150af90856"
+generated_digest: "sha256:b04ac40eb13abd665559c845b1ec6b3b708e8448d258ab22a24eaddd36fb7fbe"
 generated:
   feature: users.respect_user
   scenarios:
@@ -190,7 +190,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 91
+    line: 95
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -211,6 +211,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 45
+    line: 46
 verified: {}
 manual: {}

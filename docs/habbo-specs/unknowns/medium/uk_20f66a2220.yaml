@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f00fd7ecc8cca71b1c497ce943a744cb902bc9ff0f7471c60a30d64634e70455"
+generated_digest: "sha256:542bc5c5528849ecd5e84ba923c8c19f91b63e9dda3508b79edc62863e30dcce"
 generated:
   id: uk_20f66a2220
   subject: "room.avatar_expression: what the server sends when it refuses"
   severity: medium
-  question: room.avatar_expression changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.avatar_expression changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.avatar_expression
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Avatar/AvatarExpressionMessageHandler.cs
     symbol: AvatarExpressionMessageHandler
     line: 24
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_a659927dbfdd
     kind: emulator_handler
     authority: vortex_emulator
@@ -39,20 +46,20 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 258
+    line: 275
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 563
+    line: 652
 verified: {}
 manual: {}

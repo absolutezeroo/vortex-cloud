@@ -10,10 +10,33 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:70890beb077d14df726dc0bd81d28b90838318a7c2143f10f21d2fb97e3b7f06"
+generated_digest: "sha256:d1754dfb0b2182723b029bb7cc266d0d7b4a557adfd5100abc1b5c19bc296221"
 generated:
   feature: sound.add_jukebox_disk
   scenarios:
+  - scenario: sound.add_jukebox_disk.guard_0
+    title: "add jukebox disk: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: AddJukeboxDisk
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of AddJukeboxDisk sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9bb5203f8d83
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_8ca52059ecf8
   - scenario: sound.add_jukebox_disk.success
     title: "add jukebox disk: the request is accepted"
     given:
@@ -28,8 +51,9 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
+      outcome: success
+      emits:
+      - JukeboxPlayListFull
       evidence: ev_2a13c19722fd
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -51,6 +75,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Sound/AddJukeboxDiskMessageHandler.cs
     symbol: AddJukeboxDiskMessageHandler
-    line: 8
+    line: 21
+  - id: ev_9bb5203f8d83
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/AddJukeboxDiskMessageHandler.cs
+    symbol: AddJukeboxDiskMessageHandler
+    line: 32
 verified: {}
 manual: {}

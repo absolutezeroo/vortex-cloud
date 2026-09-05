@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a6bae8c11124bda14c63b9d9139ecf57bc4590434086ffe6489a2226660a9cd7"
+generated_digest: "sha256:4a05c14c547ce7e11d5fdd33ff0f7fad98662573e4f9c00d9857318401b60282"
 generated:
   feature: room.answer_doorbell
   scenarios:
@@ -61,16 +61,16 @@ generated:
       emits: []
       evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_10
-    title: "answer doorbell: the guard 'origin == ActionOrigin.System' holds"
+    title: "answer doorbell: the guard 'origin == ActionOrigin.None' holds"
     given:
-      guard: origin == ActionOrigin.System
+      guard: origin == ActionOrigin.None
       guard_holds: "true"
     when:
       packet: LetUserIn
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of LetUserIn sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of LetUserIn sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -84,16 +84,16 @@ generated:
       emits: []
       evidence: ev_ef036baa527e
   - scenario: room.answer_doorbell.guard_11
-    title: "answer doorbell: the guard 'isExplicitOwner' holds"
+    title: "answer doorbell: the guard 'origin == ActionOrigin.System' holds"
     given:
-      guard: isExplicitOwner
+      guard: origin == ActionOrigin.System
       guard_holds: "true"
     when:
       packet: LetUserIn
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of LetUserIn sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of LetUserIn sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -340,7 +340,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 25
+    line: 27
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -354,7 +354,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_93b2d0946619
     kind: emulator_flow
     authority: vortex_emulator

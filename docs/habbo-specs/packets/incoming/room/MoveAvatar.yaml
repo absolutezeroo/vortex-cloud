@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc29d1d2a4dd45e45c69d81ce1075fbe18c72b490b4d0711d4add325de721dd1"
+generated_digest: "sha256:c38b149c191ddd284a27ed0c3a9fe55ce673837551bc41ea2a2df7fd72ac0ccb"
 generated:
   name: MoveAvatar
   direction: incoming
@@ -62,9 +62,10 @@ generated:
     evidence: ev_f034e257c0f5
   - origin: vortex
     authority: vortex_emulator
-    field_count: 2
+    field_count: 3
     partial: false
     types:
+    - int32
     - int32
     - int32
     evidence: ev_09c33faf0d89
@@ -100,5 +101,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Room/Engine/MoveAvatarMessageParser.cs
     symbol: MoveAvatarMessageParser
     line: 7
+  conflicts:
+  - cf_6e94fff5b9
 verified: {}
 manual: {}

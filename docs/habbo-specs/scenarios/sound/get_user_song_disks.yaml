@@ -10,10 +10,35 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:aba721e6ded6086f669a140c5b8bbb6c8dfe011d2f52ad736105f5e2b44727ca"
+generated_digest: "sha256:0351ffef394cc5053d4230cf2139c42ab62ad65564a2a551e207f993c918f136"
 generated:
   feature: sound.get_user_song_disks
   scenarios:
+  - scenario: sound.get_user_song_disks.guard_0
+    title: "get user song disks: the guard 'ctx.PlayerId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0
+      guard_holds: "true"
+    when:
+      packet: GetUserSongDisks
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetUserSongDisks sent while 'ctx.PlayerId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4a53aaff4f3b
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - JukeboxSongDisks
+      - UserSongDisksInventory
+      evidence: ev_5c2fb0a0e101
   - scenario: sound.get_user_song_disks.success
     title: "get user song disks: the request is accepted"
     given:
@@ -28,9 +53,10 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_625cd7ed9c35
+      outcome: success
+      emits:
+      - UserSongDisksInventory
+      evidence: ev_22a4c945253e
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -47,12 +73,19 @@ generated:
     symbol: GetUserSongDisksMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_625cd7ed9c35
-    kind: emulator_handler
+  - id: ev_22a4c945253e
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Sound/SongDiskExtraData.cs
+    symbol: SongDiskExtraData
+    line: 15
+  - id: ev_4a53aaff4f3b
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetUserSongDisksMessageHandler.cs
     symbol: GetUserSongDisksMessageHandler
-    line: 8
+    line: 25
 verified: {}
 manual: {}

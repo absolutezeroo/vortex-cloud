@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9e43ca4bd695c850ed9d1a14d3b8af486711c21bd7e792b99e7af1ad13d3a8f8"
+generated_digest: "sha256:4811de81025e5421d8329e525e130fca516823509e72fa86444147c23ce1bd48"
 generated:
   id: room.get_occupied_tiles
   domain: room
@@ -75,7 +75,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 433
+    line: 443
   - id: ev_e2deeb4cc8ed
     kind: emulator_handler
     authority: vortex_emulator

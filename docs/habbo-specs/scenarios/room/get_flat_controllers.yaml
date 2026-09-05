@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4780ca18008524cc498c578fe4f63608d97ce0551591447eb0a0320aec231591"
+generated_digest: "sha256:5e7e2428b0bf2a486f34f9f2e4730465453e21ba8905e0c03a051fc030ba0c14"
 generated:
   feature: room.get_flat_controllers
   scenarios:
@@ -77,7 +77,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 248
+    line: 266
   - id: ev_392abf549ae0
     kind: emulator_flow
     authority: vortex_emulator

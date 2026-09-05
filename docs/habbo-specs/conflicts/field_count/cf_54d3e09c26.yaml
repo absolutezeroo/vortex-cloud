@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:bc6b1e1768ac39f837f02af5986f24687e4d1ca35fe7ca8ff9566b7aa16b809d"
+generated_digest: "sha256:198061c7de4ce74c2bf7539aedfbe1caa0af627522505f1d23cc6238de57ba95"
 generated:
   id: cf_54d3e09c26
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "4 fields: int32, int32, int32, int32"
     evidence: ev_48567cc9fa3e
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, int32, array"
+    evidence: ev_8cfcea6bc8c4
   evidence:
   - id: ev_f085e8bc7add
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: JukeboxSongDisksMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
+  - id: ev_8cfcea6bc8c4
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/JukeboxSongDisksMessageComposerSerializer.cs
+    symbol: JukeboxSongDisksMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

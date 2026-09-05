@@ -1,5 +1,6 @@
 using System;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Players.Grains;
@@ -12,6 +13,13 @@ public sealed class PlayerLiveState
     public string Figure { get; set; } = string.Empty;
     public AvatarGenderType Gender { get; set; } = AvatarGenderType.Male;
     public int RoomChatStyleId { get; set; } = 0;
+
+    /// <summary>
+    /// The account's entitlements. Cached here as well as stored because a perk gates what the
+    /// player may do, and an authorization flag that only exists in the database is one a live
+    /// session never sees change.
+    /// </summary>
+    public PlayerPerkFlags Perks { get; set; } = PlayerPerkFlags.None;
     public int AchievementScore { get; set; } = 0;
     public int RespectReceived { get; set; } = 0;
     public int RespectGivenToday { get; set; } = 0;

@@ -10,10 +10,140 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:697686c95fa48df50e631ec9358dc0cf11b92dda1ebd3ad259832bc0759eac70"
+generated_digest: "sha256:a86a020e99715833af4a9bcce43baf681d3ae9ee736f621051c67c1cce9ef047"
 generated:
   feature: room.update_floor_properties
   scenarios:
+  - scenario: room.update_floor_properties.guard_0
+    title: "update floor properties: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: UpdateFloorProperties
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateFloorProperties sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_5805eeb00254
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HabboBroadcast
+      - NotificationDialog
+      - NotificationDialog
+      evidence: ev_51043efee81b
+  - scenario: room.update_floor_properties.guard_1
+    title: "update floor properties: the guard '!await IsRoomOwnerAsync(actor).ConfigureAwait(true)' holds"
+    given:
+      guard: "!await IsRoomOwnerAsync(actor).ConfigureAwait(true)"
+      guard_holds: "true"
+    when:
+      packet: UpdateFloorProperties
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateFloorProperties sent while '!await IsRoomOwnerAsync(actor).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ac47b27dfd9e
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HabboBroadcast
+      - NotificationDialog
+      - NotificationDialog
+      evidence: ev_51043efee81b
+  - scenario: room.update_floor_properties.guard_2
+    title: "update floor properties: the guard 'previous is null || string.IsNullOrWhiteSpace(update.Model)' holds"
+    given:
+      guard: previous is null || string.IsNullOrWhiteSpace(update.Model)
+      guard_holds: "true"
+    when:
+      packet: UpdateFloorProperties
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateFloorProperties sent while 'previous is null || string.IsNullOrWhiteSpace(update.Model)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ac47b27dfd9e
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HabboBroadcast
+      - NotificationDialog
+      - NotificationDialog
+      evidence: ev_51043efee81b
+  - scenario: room.update_floor_properties.guard_3
+    title: "update floor properties: the guard '!IsUsableFloorPlan(compiled)' holds"
+    given:
+      guard: "!IsUsableFloorPlan(compiled)"
+      guard_holds: "true"
+    when:
+      packet: UpdateFloorProperties
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateFloorProperties sent while '!IsUsableFloorPlan(compiled)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ac47b27dfd9e
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HabboBroadcast
+      - NotificationDialog
+      - NotificationDialog
+      evidence: ev_51043efee81b
+  - scenario: room.update_floor_properties.guard_4
+    title: "update floor properties: the guard 'modelId <= 0' holds"
+    given:
+      guard: modelId <= 0
+      guard_holds: "true"
+    when:
+      packet: UpdateFloorProperties
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateFloorProperties sent while 'modelId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ac47b27dfd9e
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HabboBroadcast
+      - NotificationDialog
+      - NotificationDialog
+      evidence: ev_51043efee81b
   - scenario: room.update_floor_properties.success
     title: "update floor properties: the request is accepted"
     given:
@@ -30,7 +160,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_6d059742f0bd
+      evidence: ev_5805eeb00254
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -48,12 +178,19 @@ generated:
     symbol: UpdateFloorPropertiesMessageEvent
     line: 26
     note: third-party server implementation; evidence, not authority
-  - id: ev_6d059742f0bd
-    kind: emulator_handler
+  - id: ev_5805eeb00254
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Layout/UpdateFloorPropertiesMessageHandler.cs
     symbol: UpdateFloorPropertiesMessageHandler
-    line: 8
+    line: 29
+  - id: ev_ac47b27dfd9e
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.FloorPlan.cs
+    symbol: RoomGrain
+    line: 37
 verified: {}
 manual: {}

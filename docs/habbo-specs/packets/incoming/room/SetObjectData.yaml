@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d707ca7bcf9eea8171f5ff9937d90283b1d14beba4f254d14c129e70418a05ff"
+generated_digest: "sha256:eca0e8df87e2202b5708775af9b4d90a238edb4782ef52f61ec6d1b6b2916c30"
 generated:
   name: SetObjectData
   direction: incoming
@@ -72,9 +72,12 @@ generated:
     evidence: ev_92eca25ad89b
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 3
     partial: false
-    types: []
+    types:
+    - int32
+    - int32
+    - array
     evidence: ev_a9dca95c7d3f
   evidence:
   - id: ev_f82994e29753
@@ -107,6 +110,8 @@ generated:
     origin: vortex
     source: Vortex.Revisions/Revision20260701/Parsers/Room/Engine/SetObjectDataMessageParser.cs
     symbol: SetObjectDataMessageParser
-    line: 7
+    line: 9
+  conflicts:
+  - cf_85d2777b5c
 verified: {}
 manual: {}

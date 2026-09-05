@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:35e05f9c7f4ada78dff91b6baa1a9829bb76681a247796cea1a34de7649c987c"
+generated_digest: "sha256:5922b3245ea32e2c1843962e01d6905a2390d547f96283be5174151104288fbf"
 generated:
   id: uk_cc778e8225
   subject: "navigator.create_room: what the server sends when it refuses"
   severity: medium
-  question: navigator.create_room changes state and has 2 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.create_room changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.create_room
   known_evidence:
@@ -33,6 +33,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_86f81f4f919c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/ServerConfigGrain.cs
+    symbol: ServerConfigGrain
+    line: 43
   - id: ev_b72e5f3cc941
     kind: emulator_flow
     authority: vortex_emulator
@@ -40,12 +47,19 @@ generated:
     source: Vortex.PacketHandlers/Navigator/CreateFlatMessageHandler.cs
     symbol: CreateFlatMessageHandler
     line: 38
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_f8d4827f4b8f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 19
+    line: 22
 verified: {}
 manual: {}

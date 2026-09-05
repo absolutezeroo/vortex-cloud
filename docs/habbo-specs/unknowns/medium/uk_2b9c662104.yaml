@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a3d4497c4dfcb2052e103d1cb399afadcbf7caf190f67cc2109d9e7c809c3a5d"
+generated_digest: "sha256:cac56bfed0a2ea93cf3625e3a2ddb65c8cce645f179115a8a30aef0ff5a69e27"
 generated:
   id: uk_2b9c662104
   subject: "quest.claim_daily_task: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: quest.claim_daily_task
   known_evidence:
+  - id: ev_0ea5d10808d1
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Commerce/CommerceOperation.cs
+    symbol: CommerceOperationId
+    line: 33
   - id: ev_25e3c0ce70c6
     kind: emulator_flow
     authority: vortex_emulator
@@ -32,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 157
+    line: 160
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -46,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_752778d6f862
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6a661656ffe4c9058e06c96a26fc121200913d7d341e19d66879aee9a9f47fac"
+generated_digest: "sha256:fc16184c540731922eed1bd5c544c7311b2b8147cbb1e893aafc3c1d65a38fcb"
 generated:
   feature: room.get_room_entry_data
   scenarios:
@@ -65,6 +65,31 @@ generated:
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_10
+    title: "get room entry data: the guard 'hasExplicitRights' holds"
+    given:
+      guard: hasExplicitRights
+      guard_holds: "true"
+    when:
+      packet: GetRoomEntryData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetRoomEntryData sent while 'hasExplicitRights' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HeightMap
+      - FloorHeightMap
+      evidence: ev_fd4c50c7f66d
+  - scenario: room.get_room_entry_data.guard_11
     title: "get room entry data: the guard '_state.ActiveRoomId == roomId' holds"
     given:
       guard: _state.ActiveRoomId == roomId
@@ -82,31 +107,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b44ef304d36a
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HeightMap
-      - FloorHeightMap
-      evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_11
-    title: "get room entry data: the guard '!flags.Has(RoomTileFlags.AvatarOccupied)' holds"
-    given:
-      guard: "!flags.Has(RoomTileFlags.AvatarOccupied)"
-      guard_holds: "true"
-    when:
-      packet: GetRoomEntryData
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of GetRoomEntryData sent while '!flags.Has(RoomTileFlags.AvatarOccupied)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_c26714967e6b
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -140,6 +140,31 @@ generated:
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
   - scenario: room.get_room_entry_data.guard_3
+    title: "get room entry data: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: GetRoomEntryData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetRoomEntryData sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HeightMap
+      - FloorHeightMap
+      evidence: ev_fd4c50c7f66d
+  - scenario: room.get_room_entry_data.guard_4
     title: "get room entry data: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -164,7 +189,7 @@ generated:
       - HeightMap
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_4
+  - scenario: room.get_room_entry_data.guard_5
     title: "get room entry data: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -189,7 +214,7 @@ generated:
       - HeightMap
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_5
+  - scenario: room.get_room_entry_data.guard_6
     title: "get room entry data: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
       guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
@@ -214,7 +239,7 @@ generated:
       - HeightMap
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_6
+  - scenario: room.get_room_entry_data.guard_7
     title: "get room entry data: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -239,7 +264,7 @@ generated:
       - HeightMap
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_7
+  - scenario: room.get_room_entry_data.guard_8
     title: "get room entry data: the guard 'group.IsAdmin' holds"
     given:
       guard: group.IsAdmin
@@ -264,7 +289,7 @@ generated:
       - HeightMap
       - FloorHeightMap
       evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_8
+  - scenario: room.get_room_entry_data.guard_9
     title: "get room entry data: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
       guard: group.IsMember && group.MembersCanDecorate
@@ -275,31 +300,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of GetRoomEntryData sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HeightMap
-      - FloorHeightMap
-      evidence: ev_fd4c50c7f66d
-  - scenario: room.get_room_entry_data.guard_9
-    title: "get room entry data: the guard 'hasExplicitRights' holds"
-    given:
-      guard: hasExplicitRights
-      guard_holds: "true"
-    when:
-      packet: GetRoomEntryData
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of GetRoomEntryData sent while 'hasExplicitRights' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -372,14 +372,14 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 25
+    line: 68
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_873d3938edba
     kind: emulator_flow
     authority: vortex_emulator
@@ -394,12 +394,5 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Room.cs
     symbol: PlayerPresenceGrain
     line: 52
-  - id: ev_c26714967e6b
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
-    symbol: RoomMapModule
-    line: 183
 verified: {}
 manual: {}

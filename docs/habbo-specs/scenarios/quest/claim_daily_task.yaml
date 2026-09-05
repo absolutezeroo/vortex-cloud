@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9b4f3f5a341cffe0234973922bf068d36ca455eb822692bfa872ab54d6d906ee"
+generated_digest: "sha256:00129c115e2b8222a50eab00c04aeff71361d26e8865ae7d36dff0699521e598"
 generated:
   feature: quest.claim_daily_task
   scenarios:
@@ -85,8 +85,15 @@ generated:
       outcome: success
       emits:
       - DailyTasksTaskUpdate
-      evidence: ev_25e3c0ce70c6
+      evidence: ev_0ea5d10808d1
   evidence:
+  - id: ev_0ea5d10808d1
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Commerce/CommerceOperation.cs
+    symbol: CommerceOperationId
+    line: 33
   - id: ev_25e3c0ce70c6
     kind: emulator_flow
     authority: vortex_emulator
@@ -100,7 +107,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 172
+    line: 175
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

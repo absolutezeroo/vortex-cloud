@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1c928ba3e2631179cf4cd5d024cfafdd33a798dd5fd534a0dc30da6e26ac3b81"
+generated_digest: "sha256:b278c75964a4f337d75e1f632c8a46f1d2547200e1d45eccc9631daeaa9c1822"
 generated:
   feature: wired.wired_trade_accept
   scenarios:
@@ -51,41 +51,41 @@ generated:
       emits: []
       evidence: ev_efd94632a3ea
   - scenario: wired.wired_trade_accept.guard_10
-    title: "wired trade accept: the guard 'chest is not null' holds"
+    title: "wired trade accept: the guard 'settled' holds"
     given:
-      guard: chest is not null
+      guard: settled
       guard_holds: "true"
     when:
       packet: WiredTradeAccept
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WiredTradeAccept sent while 'chest is not null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WiredTradeAccept sent while 'settled' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d3a71568179c
+      evidence: ev_9924df9c15a9
   - scenario: wired.wired_trade_accept.guard_11
-    title: "wired trade accept: the guard 'contract.YouGiveRules is not { } rules || rules.IsEmpty' holds"
+    title: "wired trade accept: the guard 'pivoted' holds"
     given:
-      guard: contract.YouGiveRules is not { } rules || rules.IsEmpty
+      guard: pivoted
       guard_holds: "true"
     when:
       packet: WiredTradeAccept
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WiredTradeAccept sent while 'contract.YouGiveRules is not { } rules || rules.IsEmpty' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WiredTradeAccept sent while 'pivoted' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_f7dd5a8d0419
+      evidence: ev_9924df9c15a9
   - scenario: wired.wired_trade_accept.guard_2
     title: "wired trade accept: the guard '!deposit.Completed' holds"
     given:
@@ -219,14 +219,14 @@ generated:
   - scenario: wired.wired_trade_accept.guard_9
     title: "wired trade accept: the guard 'payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.Playe...' holds"
     given:
-      guard: payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, ct).ConfigureAwait(true)
+      guard: payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, operation, ct) .ConfigureAwait(true)
       guard_holds: "true"
     when:
       packet: WiredTradeAccept
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WiredTradeAccept sent while 'payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, ct).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WiredTradeAccept sent while 'payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, operation, ct) .ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -269,21 +269,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.cs
     symbol: RoomWiredTradingSystem
-    line: 285
+    line: 296
   - id: ev_9924df9c15a9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
-    line: 105
-  - id: ev_d3a71568179c
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
-    symbol: WiredChestStore
-    line: 122
+    line: 386
   - id: ev_efd94632a3ea
     kind: emulator_flow
     authority: vortex_emulator
@@ -291,12 +284,5 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WiredTradeAcceptMessageHandler.cs
     symbol: WiredTradeAcceptMessageHandler
     line: 38
-  - id: ev_f7dd5a8d0419
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Wired/WiredContractSettlement.cs
-    symbol: WiredContractSettlement
-    line: 65
 verified: {}
 manual: {}

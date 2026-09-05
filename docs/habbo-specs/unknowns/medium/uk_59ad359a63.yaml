@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:681e6bf4f559160a6db7183b1153fd606556ce70a50c3d6b4e5df9097ea443ac"
+generated_digest: "sha256:e09a5c8b9c06c124c25ec2fbf3af2cee3f884849025a6c4dd31aedfb593cda8d"
 generated:
   id: uk_59ad359a63
   subject: "handshake.get_subscription: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 802
+    line: 900
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 81
+    line: 83
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,7 +95,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 43
+    line: 45
   - id: ev_bc6808a835e1
     kind: emulator_flow
     authority: vortex_emulator

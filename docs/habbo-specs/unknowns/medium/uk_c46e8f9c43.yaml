@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5788b9d3f611f662f0c443d40f7449c5d764a24881ca0e880626305a763184da"
+generated_digest: "sha256:00804e5625e5d33d715695371b9a136f5e842702df643370c2d7cfd135084f44"
 generated:
   id: uk_c46e8f9c43
   subject: "room.unban_user_from_room: what the server sends when it refuses"
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 52
+    line: 62
   - id: ev_c6ca9325686a
     kind: emulator_flow
     authority: vortex_emulator

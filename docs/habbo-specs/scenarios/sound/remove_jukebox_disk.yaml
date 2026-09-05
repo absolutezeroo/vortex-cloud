@@ -10,10 +10,33 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ce25b58f71e153f53ea040038e5ed490f6db3b473d4b0a01629246e1f52d04ed"
+generated_digest: "sha256:4e2c5bec2dbd149fe9bae938441e5dbfadfb1a1230223bba103289db51e3dfa6"
 generated:
   feature: sound.remove_jukebox_disk
   scenarios:
+  - scenario: sound.remove_jukebox_disk.guard_0
+    title: "remove jukebox disk: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: RemoveJukeboxDisk
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of RemoveJukeboxDisk sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_38f1244eb4b0
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0ecd99b6bb70
   - scenario: sound.remove_jukebox_disk.success
     title: "remove jukebox disk: the request is accepted"
     given:
@@ -51,6 +74,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Sound/RemoveJukeboxDiskMessageHandler.cs
     symbol: RemoveJukeboxDiskMessageHandler
-    line: 8
+    line: 13
+  - id: ev_38f1244eb4b0
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/RemoveJukeboxDiskMessageHandler.cs
+    symbol: RemoveJukeboxDiskMessageHandler
+    line: 24
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6b5b26da5a2c77b62daa45f5417d67b5b04bd4af624417674b8a4641258be814"
+generated_digest: "sha256:bb6ad73c81431733d749d09ef9c86bc8370f885cd75d64ef28db958edbed15a6"
 generated:
   id: uk_178f0b2a69
   subject: "room.dance: what the server sends when it refuses"
   severity: medium
-  question: room.dance changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.dance changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.dance
   known_evidence:
@@ -26,27 +26,34 @@ generated:
     source: Vortex.PacketHandlers/Room/Avatar/DanceMessageHandler.cs
     symbol: DanceMessageHandler
     line: 12
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/Player/RoomPlayerAvatar.cs
     symbol: RoomPlayerAvatar
-    line: 91
+    line: 130
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 185
+    line: 190
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e202f0e0c1a0
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,6 +67,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 459
+    line: 548
 verified: {}
 manual: {}

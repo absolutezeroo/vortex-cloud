@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:91427810540f18efb62470205fe62290f40d0bcc494e6209b964e37b4911589e"
+generated_digest: "sha256:65ae84398d68a01c2a11c6f3759c92b075b2f2b119c03addc41ac53a0f02f3b2"
 generated:
   id: room.change_motto
   domain: room
@@ -109,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 178
+    line: 182
   - id: ev_2aec8f9f5aa3
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,21 +137,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/Player/RoomPlayerAvatar.cs
     symbol: RoomPlayerAvatar
-    line: 32
+    line: 45
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 165
+    line: 167
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_bb34de375f7e
     kind: emulator_handler
     authority: vortex_emulator
@@ -165,7 +165,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 420
+    line: 509
   scenarios:
   - room.change_motto.guard_0
   - room.change_motto.guard_1

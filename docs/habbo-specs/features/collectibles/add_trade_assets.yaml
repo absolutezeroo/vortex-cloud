@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8b86162bc656938032ee8d1446c1974166f9ac8e5bae26d7e6e1a5e4a7263ee8"
+generated_digest: "sha256:b98eb5dfff1f88f8b60d294aba971562c9c66e275ab96c99c62bbcf62c8ff51b"
 generated:
   id: collectibles.add_trade_assets
   domain: collectibles
@@ -161,7 +161,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 321
+    line: 389
   - id: ev_a8707f5e7b6c
     kind: emulator_flow
     authority: vortex_emulator

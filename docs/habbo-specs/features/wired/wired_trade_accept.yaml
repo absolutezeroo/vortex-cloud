@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dd8e22de44ed6319fe0f9bcab5e69c2cb188b8b9608b3202eda92817782faa9e"
+generated_digest: "sha256:96827f99d67afe0fd770d0153980fcabd78e1afebee7392ee4a19496ef15dbce"
 generated:
   id: wired.wired_trade_accept
   domain: wired
@@ -49,84 +49,84 @@ generated:
     evidence: ev_d3a71568179c
   - order: 6
     layer: domain
-    symbol: WiredContractSettlement.MatchStake
-    evidence: ev_f7dd5a8d0419
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
   - order: 7
     layer: domain
-    symbol: WiredContractSettlement.TryReserveReward
+    symbol: WiredContractSettlement.MatchStake
     evidence: ev_f7dd5a8d0419
   - order: 8
     layer: domain
+    symbol: WiredContractSettlement.TryReserveReward
+    evidence: ev_f7dd5a8d0419
+  - order: 9
+    layer: domain
     symbol: WiredChestLedger.NewContractTransaction
     evidence: ev_7acf056f220a
-  - order: 9
+  - order: 10
     layer: module
     symbol: RoomWiredTradingSystem.CompleteTransactionAsync
     evidence: ev_50116836f822
-  - order: 10
+  - order: 11
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 11
+  - order: 12
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
-  - order: 12
+  - order: 13
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
-  - order: 13
+  - order: 14
     layer: grain
     symbol: InventoryGrain.ReloadFurnitureAsync
     evidence: ev_c6396662000a
-  - order: 14
+  - order: 15
     layer: module
     symbol: InventoryFurniModule.ReloadAsync
     evidence: ev_48fa24e8d4a2
-  - order: 15
+  - order: 16
     layer: domain
     symbol: WiredChestStore.ApplyChestSettingsToStuffDataAsync
     evidence: ev_d3a71568179c
-  - order: 16
+  - order: 17
     layer: module
     symbol: RoomWiredTradingSystem.IsBeingLookedInto
     evidence: ev_84ee82d9d8e2
-  - order: 17
+  - order: 18
     layer: domain
     symbol: WiredChestStuffData.ApplyState
     evidence: ev_120b08c78fe9
-  - order: 18
+  - order: 19
     layer: domain
     symbol: WiredChestStuffData.ApplyPreview
     evidence: ev_120b08c78fe9
-  - order: 19
+  - order: 20
     layer: domain
     symbol: FurnitureLogic.PersistStuffDataAsync
     evidence: ev_61677fae15af
-  - order: 20
+  - order: 21
     layer: domain
     symbol: StuffDataBase.MarkDirty
     evidence: ev_98ec231f8eca
-  - order: 21
+  - order: 22
     layer: domain
     symbol: RoomItemContext.RefreshStuffDataAsync
     evidence: ev_acb5e282c8b3
-  - order: 22
+  - order: 23
     layer: module
     symbol: RoomWiredTradingSystem.NotifyOtherChestViewersAsync
     evidence: ev_84ee82d9d8e2
-  - order: 23
+  - order: 24
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 24
+  - order: 25
     layer: domain
     symbol: WiredTradeSettlement.SnapshotContractAsync
     evidence: ev_9924df9c15a9
-  - order: 25
-    layer: domain
-    symbol: WiredChestStore.ReadAsync
-    evidence: ev_d3a71568179c
   - order: 26
     layer: domain
     symbol: WiredChestLedger.NewManualTransaction
@@ -135,10 +135,6 @@ generated:
     layer: domain
     symbol: FurnitureDefinitionProvider.TryGetDefinition
     evidence: ev_2ec03446aa2a
-  - order: 28
-    layer: domain
-    symbol: WiredTradeTable.For
-    evidence: ev_a32cbda3f96b
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -176,7 +172,15 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_9924df9c15a9
-  - expression: payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, ct).ConfigureAwait(true)
+  - expression: payment.Coins > 0 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, operation, ct) .ConfigureAwait(true)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9924df9c15a9
+  - expression: settled
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9924df9c15a9
+  - expression: pivoted
     on_fail: return
     observed_in: vortex
     evidence: ev_9924df9c15a9
@@ -318,7 +322,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
@@ -332,7 +336,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.cs
     symbol: RoomWiredTradingSystem
-    line: 275
+    line: 286
   - id: ev_61677fae15af
     kind: emulator_flow
     authority: vortex_emulator
@@ -367,14 +371,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
-    line: 95
-  - id: ev_a32cbda3f96b
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WiredTradeUpdateItemsMessageHandler.cs
-    symbol: WiredTradeTable
-    line: 66
+    line: 96
   - id: ev_acb5e282c8b3
     kind: emulator_flow
     authority: vortex_emulator
@@ -382,20 +379,27 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItemContext.cs
     symbol: RoomItemContext
     line: 37
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 61
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

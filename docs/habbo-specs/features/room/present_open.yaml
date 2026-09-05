@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6a16c515b2eaaa5ff74c1eb53448e0ca0827e3795b9b686c4ddcd40eaa775a91"
+generated_digest: "sha256:01a58168e4604c2223ea9a7d40ab03e301836ad8c241787360ed65836eb28969"
 generated:
   id: room.present_open
   domain: room
@@ -113,7 +113,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_5e51a330c801
-  - expression: "!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)"
+  - expression: "!await ConsumeItemAsync(ctx, item, ItemDeletionReason.PresentOpened, ct) .ConfigureAwait(true)"
     on_fail: return
     observed_in: vortex
     evidence: ev_5e51a330c801
@@ -224,7 +224,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -238,7 +238,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 422
+    line: 496
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -273,14 +273,14 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.Gift.cs
     symbol: CatalogPurchaseGrain
-    line: 180
+    line: 230
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 158
+    line: 161
   - id: ev_d0f936c872c4
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:324cca403d0b9d42d432b567a9c1e2cdfd0c9ea3cc56294f5894dd4a7d34a3e9"
+generated_digest: "sha256:ac87421e8043044da91e2a0a838685ae9a09eeca85b2e545883238324927659e"
 generated:
   id: collectibles.mint_item
   domain: collectibles
@@ -171,7 +171,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -213,7 +213,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 150
+    line: 211
   - id: ev_aaad5abd1665
     kind: emulator_handler
     authority: vortex_emulator
@@ -227,7 +227,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 812
+    line: 815
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

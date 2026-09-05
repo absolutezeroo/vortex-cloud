@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:cd607dd119a8ab4afe445045727bd0dfc3749d105e935de15cdbf9b099631a0a"
+generated_digest: "sha256:55ea5dbce34f4f53c6731608fe33283ea6d2f288980e085e8d149aca97fa58eb"
 generated:
   id: uk_a4e9e80e5a
   subject: "room.remove_item: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 252
+    line: 318
   - id: ev_82360c6e1b80
     kind: emulator_handler
     authority: vortex_emulator

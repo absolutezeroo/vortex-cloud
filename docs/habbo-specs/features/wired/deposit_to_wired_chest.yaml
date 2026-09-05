@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:795fcc0c7cef6ff1f4132c14670a7f2d9018525946f922732cffc070179119ef"
+generated_digest: "sha256:e59d09259632bb0b409b96af705805ded74463189f7fdf9efb0894ef216396e1"
 generated:
   id: wired.deposit_to_wired_chest
   domain: wired
@@ -44,22 +44,18 @@ generated:
     symbol: WiredChestStore.IsCoinChestLogic
     evidence: ev_d3a71568179c
   - order: 5
-    layer: domain
-    symbol: WiredChestStore.ReadAsync
-    evidence: ev_d3a71568179c
-  - order: 6
     layer: module
     symbol: RoomSecurityModule.GetControllerLevelAsync
     evidence: ev_82c2d2746361
-  - order: 7
+  - order: 6
     layer: domain
     symbol: RoomSecurityPolicy.ResolveControllerLevel
     evidence: ev_7aa1dee31dfd
-  - order: 8
+  - order: 7
     layer: domain
     symbol: PermissionSet.Has
     evidence: ev_3fdb23ee39cd
-  - order: 9
+  - order: 8
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -100,6 +96,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -183,7 +183,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

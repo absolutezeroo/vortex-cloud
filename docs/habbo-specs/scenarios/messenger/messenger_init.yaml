@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fc966e4d127757e704c43a9398ebb260a4b560afe50f31b22e38e15bba022c75"
+generated_digest: "sha256:8c2a03279fe5e8014fd6df42cc6ef8da972cc786725acb121124df1f99124f9e"
 generated:
   feature: messenger.messenger_init
   scenarios:
@@ -146,7 +146,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e163e92383238e4b41895753497b053800f814b24b1887c384d15fee376f7c91"
+generated_digest: "sha256:f4c3a94ac0830898eb65d3fc8c9631fa3eb7bdcf7fab8662e6a470e10fd0c96c"
 generated:
   id: uk_6d84f42163
   subject: "room.whisper: what the server sends when it refuses"
   severity: medium
-  question: room.whisper changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.whisper changes state and has 12 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.whisper
   known_evidence:
@@ -26,13 +26,20 @@ generated:
     source: Vortex.PacketHandlers/Room/Chat/WhisperMessageHandler.cs
     symbol: WhisperMessageHandler
     line: 13
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 24
   - id: ev_3dfe9ba800df
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -53,21 +60,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 419
+    line: 446
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 32
+    line: 35
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9f4353f8bde3a741d0070bf2417ca363d8de9c4feb001975278dd33fd59920b5"
+generated_digest: "sha256:4cf66f0cd9bb0e70922a446f070b3fa93e3fca983449a825ef74c31e9261019a"
 generated:
   id: uk_f7a76b4d41
   subject: "moderation.mod_trading_lock: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 736
+    line: 834
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

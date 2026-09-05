@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:26da0e7a9f3997decfa24ae6e8b6607b74fe68674f057a0d8c3f0b777db1e14e"
+generated_digest: "sha256:69238f741d4d6b4ea63dc766e8f94f8c9542a15686ba4341e5207b31aaa59fff"
 generated:
   name: NewConsoleMessage
   direction: outgoing
@@ -109,9 +109,11 @@ generated:
     evidence: ev_a217987f380a
   - origin: vortex
     authority: vortex_emulator
-    field_count: 9
+    field_count: 11
     partial: false
     types:
+    - int32
+    - int32
     - int32
     - int32
     - string

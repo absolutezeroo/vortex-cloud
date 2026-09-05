@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7ecbd5d67daad0aa3cd13866bc941dcda1bbef3ded212ff92a16617ade631558"
+generated_digest: "sha256:5c658d1a0147ba343b57028fd6769c8f8bffefd45ceb5357d8c7d32ce7733dab"
 generated:
   id: navigator.resolve_for_player
   domain: navigator
@@ -40,6 +40,10 @@ generated:
     layer: grain
     symbol: RoomGrain.SetStaffPickAsync
     evidence: ev_329537530b13
+  - order: 4
+    layer: module
+    symbol: RoomSecurityModule.HasCapabilityAsync
+    evidence: ev_82c2d2746361
   checks:
   - expression: ctx.PlayerId <= 0 || message.RoomId <= 0
     on_fail: return
@@ -53,10 +57,18 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_743940bb69f7
+  - expression: "!await SecurityModule .HasCapabilityAsync(actor, Capabilities.Navigator.StaffPick) .ConfigureAwait(true)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_329537530b13
   - expression: entity is null
     on_fail: return
     observed_in: vortex
     evidence: ev_329537530b13
+  - expression: actor <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_82c2d2746361
   state_changes:
   - target: _state.RoomSnapshot
     value: _state.RoomSnapshot with { StaffPick = staffPick, LastUpdatedUtc = DateTime.UtcNow, }
@@ -67,7 +79,7 @@ generated:
     observed_in: vortex
     evidence: ev_329537530b13
   - target: roomGrain
-    value: roomGrain.SetStaffPickAsync(message.IsStaffPicked, ct)
+    value: roomGrain .SetStaffPickAsync(ctx.PlayerId, message.IsStaffPicked, ct)
     observed_in: vortex
     evidence: ev_234b77f4e823
   outgoing:
@@ -88,7 +100,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 746
+    line: 764
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -110,11 +122,20 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ToggleStaffPickMessageHandler.cs
     symbol: ToggleStaffPickMessageHandler
     line: 12
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 259
   scenarios:
   - navigator.resolve_for_player.guard_0
   - navigator.resolve_for_player.guard_1
   - navigator.resolve_for_player.guard_2
   - navigator.resolve_for_player.guard_3
+  - navigator.resolve_for_player.guard_4
+  - navigator.resolve_for_player.guard_5
   - navigator.resolve_for_player.success
   conflicts:
   - cf_3726e6a2d6

@@ -42,6 +42,36 @@ public sealed record PlayerChattingEvent(
     PlayerId? TargetPlayerId
 ) : IEvent;
 
+/// <summary>
+/// A chat line was accepted and sent to the room. The <em>after</em> to
+/// <see cref="PlayerChattingEvent"/>'s before, and the one anything that rewards talking must hang
+/// off: the pre-event fires for a line a behaviour then cancels, so counting it would pay for words
+/// nobody heard.
+/// </summary>
+/// <param name="Whisper">True for a whisper, which reaches one person rather than the room.</param>
+public sealed record PlayerChattedEvent(PlayerId PlayerId, int RoomId, bool Whisper) : IEvent;
+
+/// <summary>
+/// An avatar performed a gesture the room accepted — a dance, a wave. Raised by the room after the
+/// avatar actually changed, so a dance refused because the player is sitting is not one.
+/// </summary>
+/// <param name="Gesture">
+/// <c>dance</c> or <c>wave</c>. One event with a discriminator rather than one per gesture: they
+/// are the same act, and the next one added should not need a new type.
+/// </param>
+public sealed record PlayerGesturedEvent(PlayerId PlayerId, int RoomId, string Gesture) : IEvent;
+
+/// <summary>
+/// A private message was accepted and delivered. After the friend and block rules, so a message
+/// refused for either is not one.
+/// </summary>
+/// <param name="HabbiconId">The Habbicon it was, or 0 for a text message.</param>
+public sealed record MessengerMessageSentEvent(
+    PlayerId PlayerId,
+    PlayerId ReceiverId,
+    int HabbiconId
+) : IEvent;
+
 /// <summary>Player left a room for a tracked user journey.</summary>
 public sealed record PlayerLeftRoomEvent(
     PlayerId PlayerId,

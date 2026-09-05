@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5f461afdc0baf79d0d1fe100c673439f08803cb960e2f521ba4419d6177aabb2"
+generated_digest: "sha256:9c651308bfff13f7750442c9074b0041fcf152a8e8dd3411f097098ce37a2d83"
 generated:
   feature: quest.open_quest_tracker
   scenarios:
@@ -104,7 +104,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 235
+    line: 238
   - id: ev_7dca240b5281
     kind: emulator_flow
     authority: vortex_emulator

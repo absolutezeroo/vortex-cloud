@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:df5594817521b09c1586ca84ba913886d6993e08bd7ca67020a159d2c4426bd5"
+generated_digest: "sha256:33c89298a202c8bbb840c948ff057ace675a555fe1cbcea68991fa7955bb828f"
 generated:
   id: uk_d231da2687
   subject: "messenger.remove_friend: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_5d9f7e9315fc
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a7a0b3bdace7a9c9b39a80de1b7099e63bee654ff80dcb6d300d6d3a382ab76b"
+generated_digest: "sha256:7be4c914ae8cd2fd95f5e82472a6671063650712299709a9f51ee0ae6222487a"
 generated:
   id: uk_b851f48f39
   subject: "inventory.redeem_purchasable_clothing: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 124
+    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -81,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -151,14 +151,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -172,14 +172,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 84
+    line: 87
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -193,21 +193,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e439cab6b248
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 346
+    line: 435
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

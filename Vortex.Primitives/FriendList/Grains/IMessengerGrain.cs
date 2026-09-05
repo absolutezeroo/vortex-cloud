@@ -60,11 +60,18 @@ public partial interface IMessengerGrain : IGrainWithIntegerKey
     Task UnignoreUserAsync(PlayerId targetId, CancellationToken ct);
 
     // ── Messaging ────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Sends one private message. Set <paramref name="habbiconId"/> to make it a Habbicon rather
+    /// than a line of text — the client models a Habbicon in a conversation as a message of its own,
+    /// so it takes the same path and the same friend, block and persistence rules rather than a
+    /// parallel one that could differ from them.
+    /// </summary>
     Task<InstantMessageErrorCodeType?> SendMessageAsync(
         PlayerId receiverId,
         string message,
         int chatId,
         int confirmationId,
+        int habbiconId,
         CancellationToken ct
     );
     Task ReceiveMessageAsync(
@@ -74,6 +81,7 @@ public partial interface IMessengerGrain : IGrainWithIntegerKey
         string message,
         DateTime timestamp,
         int messageId,
+        int habbiconId,
         CancellationToken ct
     );
     Task<List<MessageHistoryEntrySnapshot>> GetMessageHistoryAsync(

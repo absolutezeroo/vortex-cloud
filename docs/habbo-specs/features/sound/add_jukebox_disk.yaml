@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:937068ca42514a134bafca799b8637964c6445ce40e3f692bb8356cfa1601e53"
+generated_digest: "sha256:188a1c9bbbd7b5eb7a0c5f95eccb0e71df388e910d9048721cfcdb4f7cbb21f0"
 generated:
   id: sound.add_jukebox_disk
   domain: sound
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - AddJukeboxDisk
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,11 +28,23 @@ generated:
     layer: handler
     symbol: AddJukeboxDiskMessageHandler.HandleAsync
     evidence: ev_2a13c19722fd
-  checks: []
-  state_changes: []
+  checks:
+  - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9bb5203f8d83
+  state_changes:
+  - target: _grainFactory .GetRoomJukebox(ctx.RoomId)
+    value: _grainFactory .GetRoomJukebox(ctx.RoomId) .AddDiskAsync(ctx.AsActionContext(), message.DiskItemId, ct)
+    observed_in: vortex
+    evidence: ev_9bb5203f8d83
   outgoing:
     ordering: unknown
-    packets: []
+    packets:
+    - packet: JukeboxPlayListFull
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_9bb5203f8d83
   reaches_persistence: false
   evidence:
   - id: ev_2a13c19722fd
@@ -41,11 +53,19 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Sound/AddJukeboxDiskMessageHandler.cs
     symbol: AddJukeboxDiskMessageHandler
-    line: 8
+    line: 21
+  - id: ev_9bb5203f8d83
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/AddJukeboxDiskMessageHandler.cs
+    symbol: AddJukeboxDiskMessageHandler
+    line: 32
   scenarios:
+  - sound.add_jukebox_disk.guard_0
   - sound.add_jukebox_disk.success
   unknowns:
-  - uk_bcf6f2fa53
+  - uk_e67e59520d
 verified:
   slot_number_is_not_honoured:
     confidence: assumed
@@ -61,7 +81,7 @@ verified:
   capacity_refusal:
     confidence: assumed
     claim: A disk offered to a full jukebox is refused with JukeboxPlayListFull to the sender alone, and nothing moves.
-    reason: "The client has a dialog for exactly this message and reads no fields from it, so the refusal is the whole answer. Whether the official server also re-sends the playlist afterwards is unknown; it is not sent here, because nothing changed."
+    reason: The client has a dialog for exactly this message and reads no fields from it, so the refusal is the whole answer. Whether the official server also re-sends the playlist afterwards is unknown; it is not sent here, because nothing changed.
     evidence:
     - kind: client_code
       source: com/sulake/habbo/sound/music/JukeboxPlayListController.as

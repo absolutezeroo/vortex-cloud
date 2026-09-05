@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2cd714787cc9b7c17de3a057a72e0540bffcd21f224d83e372d136ef01efabe2"
+generated_digest: "sha256:5c647e3e43296683cb8911cebb6fbd6afe72a64b890ed9941532031a23d1ae47"
 generated:
   id: room.customize_pet_with_furni
   domain: room
@@ -78,7 +78,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Plants.cs
     symbol: RoomPetSystem
-    line: 271
+    line: 267
   scenarios:
   - room.customize_pet_with_furni.guard_0
   - room.customize_pet_with_furni.guard_1

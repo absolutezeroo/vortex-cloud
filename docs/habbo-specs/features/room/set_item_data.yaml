@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ca9ca7acd4fac3bdd229f3ec98efd1b652d1838f6bdc95140b4d422dde67f909"
+generated_digest: "sha256:41db78fe4c7e7cac13d43caa97ca99ce67bbe31a34d535d7adc0e7cbcec4a150"
 generated:
   id: room.set_item_data
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - SetItemData
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,24 +28,60 @@ generated:
     layer: handler
     symbol: SetItemDataMessageHandler.HandleAsync
     evidence: ev_2c6f62ada260
-  checks: []
-  state_changes: []
+  - order: 1
+    layer: grain
+    symbol: RoomGrain.SetPostItAsync
+    evidence: ev_5e51a330c801
+  checks:
+  - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_05ee5133fcd7
+  - expression: item?.Logic.StuffData is not ILegacyStuffData legacy
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_5e51a330c801
+  state_changes:
+  - target: grainFactory .GetRoomFurni(ctx.RoomId)
+    value: grainFactory .GetRoomFurni(ctx.RoomId) .SetPostItAsync( ctx.AsActionContext(), message.ItemId, message.ColorHex, message.Text, ct )
+    observed_in: vortex
+    evidence: ev_05ee5133fcd7
+  - target: legacy
+    value: "legacy.SetState($\"{colorHex} {text}\")"
+    observed_in: vortex
+    evidence: ev_5e51a330c801
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: false
   evidence:
+  - id: ev_05ee5133fcd7
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Room/Engine/SetItemDataMessageHandler.cs
+    symbol: SetItemDataMessageHandler
+    line: 23
   - id: ev_2c6f62ada260
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/SetItemDataMessageHandler.cs
     symbol: SetItemDataMessageHandler
-    line: 8
+    line: 14
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 695
   scenarios:
+  - room.set_item_data.guard_0
+  - room.set_item_data.guard_1
   - room.set_item_data.success
   unknowns:
-  - uk_6f75f7f1a0
+  - uk_0f353a874d
 verified:
   colour_and_text_are_one_string:
     confidence: assumed
@@ -61,10 +97,10 @@ verified:
   colour_is_not_validated:
     confidence: assumed
     claim: Any colour string is stored as sent; the server does not restrict it to the client's eight papers.
-    reason: "What the official server accepts is unknown. The client already fails safe -- FurnitureStickieLogic matches the value against its own eight hex codes and falls back to yellow on anything else -- so refusing here would only replace a wrong-coloured note with a note that cannot be saved, and the value is never interpreted as anything but a colour."
+    reason: What the official server accepts is unknown. The client already fails safe -- FurnitureStickieLogic matches the value against its own eight hex codes and falls back to yellow on anything else -- so refusing here would only replace a wrong-coloured note with a note that cannot be saved, and the value is never interpreted as anything but a colour.
     evidence:
     - kind: client_code
       source: com/sulake/habbo/room/object/logic/furniture/FurnitureStickieLogic.as
       symbol: setColorIndexFromItemData
 manual:
-  rights: "Room rights, not ownership -- the same rule the bin button already uses. A room owner expects to be able to rewrite a sticky a visitor left on their wall."
+  rights: Room rights, not ownership -- the same rule the bin button already uses. A room owner expects to be able to rewrite a sticky a visitor left on their wall.

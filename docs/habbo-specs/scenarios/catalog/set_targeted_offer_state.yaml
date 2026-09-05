@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f8f9060e4560931ff14959247afc30b8eeef928f58dedc22a0bfdd4232c10473"
+generated_digest: "sha256:f06a198be67ae21f8010ad664e1fac30b899f22ff4c587672e1dfd9c4d1914d5"
 generated:
   feature: catalog.set_targeted_offer_state
   scenarios:
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/PlayerTargetedOfferGrain.cs
     symbol: PlayerTargetedOfferGrain
-    line: 207
+    line: 208
   - id: ev_164aaa724c27
     kind: emulator_flow
     authority: vortex_emulator

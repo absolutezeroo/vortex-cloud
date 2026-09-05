@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bb681ea0021f192085304f584a32ee85ffc647bdec5e543bb005cfedb7ef9e08"
+generated_digest: "sha256:394ebe77bd812966f88240ed5630e0dfc7b71aef39b387d28c45f0509c4a00d8"
 generated:
   feature: marketplace.buy_marketplace_offer
   scenarios:
@@ -158,6 +158,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 271
+    line: 320
 verified: {}
 manual: {}

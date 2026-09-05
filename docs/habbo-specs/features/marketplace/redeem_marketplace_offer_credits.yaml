@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:30e7e1fe2988b3d1c3c8e3656aabe89524c399df08d8ca01730b0cd94e0901c4"
+generated_digest: "sha256:ae3457f2a014a099ac654af23fe791eeb3478bf5cb172a406a4a69297d0653a7"
 generated:
   id: marketplace.redeem_marketplace_offer_credits
   domain: marketplace
@@ -94,14 +94,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 443
+    line: 462
   - id: ev_db53958cdf3b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 449
+    line: 499
   scenarios:
   - marketplace.redeem_marketplace_offer_credits.guard_0
   - marketplace.redeem_marketplace_offer_credits.guard_1

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8273ddf87c29b3784c42bb967437a587d169da29e88bb6ca672f96959e92be4e"
+generated_digest: "sha256:dcdfa0441d5f0950564a808aa0b9c51ec49d206b0445010bf23d824ca042ce88"
 generated:
   name: NowPlaying
   direction: outgoing
   domain: sound
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: current_song_id
@@ -87,6 +87,17 @@ generated:
     - int32
     - int32
     evidence: ev_991f7155ac72
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 5
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_d9820d417185
   evidence:
   - id: ev_68ba38324449
     kind: client_parser
@@ -112,6 +123,13 @@ generated:
     symbol: NowPlayingMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
+  - id: ev_d9820d417185
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/NowPlayingMessageComposerSerializer.cs
+    symbol: NowPlayingMessageComposerSerializer
+    line: 6
   conflicts:
   - cf_d97d9af75f
 verified: {}

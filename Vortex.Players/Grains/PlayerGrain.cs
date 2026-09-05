@@ -196,6 +196,38 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             .ConfigureAwait(true);
     }
 
+    public Task<PlayerPerkFlags> GetPerksAsync(CancellationToken ct) =>
+        Task.FromResult(_state.Perks);
+
+    public async Task<bool> GrantPerkAsync(PlayerPerkFlags perk, CancellationToken ct)
+    {
+        // Already held is not a failure. Every caller is a reward that may be retried, and the
+        // right answer to "grant it again" is that they have it.
+        if (perk == PlayerPerkFlags.None || _state.Perks.HasFlag(perk))
+        {
+            return false;
+        }
+
+        _state.Perks |= perk;
+
+        // The live flag and the row move together, in this method. A perk gates what the account
+        // may do, and persisting one while the session still reads the old value is the exact shape
+        // of the room-rights bug the contract calls out.
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        await dbCtx
+            .Players.Where(x => x.Id == (int)_state.PlayerId)
+            .ExecuteUpdateAsync(up => up.SetProperty(p => p.PlayerPerks, _state.Perks), ct);
+
+        _logger.LogInformation(
+            "Granted perk {Perk} to player {PlayerId}.",
+            perk,
+            (int)_state.PlayerId
+        );
+
+        return true;
+    }
+
     public async Task SetChatStylePreferenceAsync(int chatStyle, CancellationToken ct)
     {
         // No-op when unchanged so a repeated toggle from the client never touches the database.
@@ -1036,6 +1068,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.Figure = entity.Figure;
         _state.Gender = entity.Gender;
         _state.RoomChatStyleId = entity.RoomChatStyleId ?? 0;
+        _state.Perks = entity.PlayerPerks;
         _state.AchievementScore = entity.AchievementScore;
         _state.RespectReceived = entity.RespectReceived;
         _state.RespectGivenToday = entity.RespectGivenToday;

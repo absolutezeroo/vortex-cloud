@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8f4921af31d414fba09e1182ca5b01649bf7a9c9856274d6c401b3f7b2a0c966"
+generated_digest: "sha256:00c0d9844e72465f9dd4f4fd06b5d3544619a4dcfdb96ead5cfc6be7cc26ddcf"
 generated:
   id: uk_fa420809d8
   subject: "moderation.chat_review_guide_decides_on_offer: who receives ChatReviewSessionStarted"
@@ -25,6 +25,6 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/ChatReviewDispatch.cs
     symbol: ChatReviewDispatch
-    line: 100
+    line: 97
 verified: {}
 manual: {}

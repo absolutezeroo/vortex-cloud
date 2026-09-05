@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d6833f38bf819ae09b68ccbc691b929ef5491deb323610e923178a9b9ecde6f0"
+generated_digest: "sha256:0aabfe8e64b8a41587e7e2504b1ed757d1801148b5081ec9dcb0f6facaca431e"
 generated:
   feature: collectibles.purchase_mint_token
   scenarios:
@@ -51,16 +51,16 @@ generated:
       emits: []
       evidence: ev_a376b354a3ae
   - scenario: collectibles.purchase_mint_token.guard_2
-    title: "purchase mint token: the guard '!debit.Succeeded' holds"
+    title: "purchase mint token: the guard '!result.Succeeded' holds"
     given:
-      guard: "!debit.Succeeded"
+      guard: "!result.Succeeded"
       guard_holds: "true"
     when:
       packet: PurchaseMintToken
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseMintToken sent while '!debit.Succeeded' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseMintToken sent while '!result.Succeeded' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -118,7 +118,7 @@ generated:
     origin: vortex
     source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
-    line: 76
+    line: 79
   - id: ev_ee343dece6c3
     kind: emulator_flow
     authority: vortex_emulator

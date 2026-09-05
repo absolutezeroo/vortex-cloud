@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f9ca08eed30b36bfb147ee16046d5f8ba1529e15fa4f08cf320791b162e6e751"
+generated_digest: "sha256:b2ca92e88a7cbd301ce27dfcd7d33da464afd3fe9fbca6d9aaf756d9b2f812e1"
 generated:
   id: uk_328a216877
   subject: "catalog.get_flat_categories: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.RoomAd.cs
     symbol: CatalogPurchaseGrain
-    line: 20
+    line: 21
   - id: ev_234fbe9c2c98
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator

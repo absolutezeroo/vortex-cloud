@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:69ec3213a1097ce6acc0eccd6278e43053484cf29ed198873559aea0d97330f8"
+generated_digest: "sha256:974c6a6e46ba5829cceee5b71542835ec264c08a523488ce08ef5fb0d4e48abf"
 generated:
   id: cf_4aa77c57cd
   kind: field_count
@@ -27,7 +27,7 @@ generated:
     evidence: ev_a217987f380a
   - origin: vortex
     authority: vortex_emulator
-    claim: "9 fields: int32, int32, string, int32, string, int32, int32, string, string"
+    claim: "11 fields: int32, int32, int32, int32, string, int32, string, int32, int32, string, string"
     evidence: ev_db8afcedc274
   evidence:
   - id: ev_7a0440d85a72

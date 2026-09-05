@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:02c3e31a51196508d77a20cb26db6b4a59357bcd90a1ddf661c08c334542aa2d"
+generated_digest: "sha256:d944d559197daa333a0c9301f7bb95d59ed37ebef461e11e73c7269e37422064"
 generated:
   id: uk_d15076ca7c
   subject: "room.ban_user_with_duration: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: room.ban_user_with_duration
   known_evidence:
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_2747c101d5f4
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,7 +53,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
+  - id: ev_556d41376c6f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamBook.cs
+    symbol: TeamBook
+    line: 166
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,13 +75,6 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
     line: 86
-  - id: ev_7db64e908d04
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/RoomGameSystem.cs
-    symbol: RoomGameSystem
-    line: 209
   - id: ev_82aaf63b45c1
     kind: emulator_flow
     authority: vortex_emulator
@@ -89,6 +82,13 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.MysteryBox.cs
     symbol: RoomGrain
     line: 41
+  - id: ev_8f4d446a6466
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
+    symbol: RoomGameRuntime
+    line: 906
   - id: ev_9eb84a2a2088
     kind: emulator_flow
     authority: vortex_emulator
@@ -109,28 +109,28 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_bb859d4f21b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 36
+    line: 46
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_c6ca9325686a
     kind: emulator_flow
     authority: vortex_emulator
@@ -144,21 +144,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e439cab6b248
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 155
+    line: 156
   - id: ev_ede1461ee378
     kind: emulator_flow
     authority: vortex_emulator

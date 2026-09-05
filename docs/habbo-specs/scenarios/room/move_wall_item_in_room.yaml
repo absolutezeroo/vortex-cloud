@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:58a39bc72269992a769ed948571b9162a883d81c823c3fbb816dc9fb0f44f7dd"
+generated_digest: "sha256:92b84d1eb8e08a27183eed1915d4b81d60f5901ab67314d0146f4aea82fd59a8"
 generated:
   feature: room.move_wall_item_in_room
   scenarios:
@@ -356,7 +356,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Wall.cs
     symbol: RoomActionModule
-    line: 115
+    line: 113
   - id: ev_d59e9d4b0b48
     kind: emulator_flow
     authority: vortex_emulator

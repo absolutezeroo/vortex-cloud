@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ae8847cc025b284f3a153eaec5768a5c495947e7e8bb0d355f263647c53baba9"
+generated_digest: "sha256:1683ac2658dd279587d3e9d82e3e6d3d2b770ae252d97d2eeef5c5b1609aa746"
 generated:
   id: quest.claim_daily_task
   domain: quest
@@ -32,10 +32,14 @@ generated:
     symbol: PlayerDailyTaskGrain.ClaimAsync
     evidence: ev_2abb3cf8a990
   - order: 2
+    layer: domain
+    symbol: CommerceOperationId.Deterministic
+    evidence: ev_0ea5d10808d1
+  - order: 3
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 3
+  - order: 4
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -70,6 +74,13 @@ generated:
       evidence: ev_2abb3cf8a990
   reaches_persistence: true
   evidence:
+  - id: ev_0ea5d10808d1
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Commerce/CommerceOperation.cs
+    symbol: CommerceOperationId
+    line: 33
   - id: ev_25e3c0ce70c6
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 157
+    line: 160
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -97,7 +108,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_752778d6f862
     kind: emulator_handler
     authority: vortex_emulator

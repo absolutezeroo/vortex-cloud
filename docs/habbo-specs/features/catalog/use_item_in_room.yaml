@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d4b2f3203dd8081c878088a462c2e5fbcb42a7dfaf37815fb59e94b05fe9a219"
+generated_digest: "sha256:62fe5641e5c0fade9586f2cda5b1a0ef3a1dc02a5c1e555c6a855547c8e441a4"
 generated:
   id: catalog.use_item_in_room
   domain: catalog
@@ -60,14 +60,18 @@ generated:
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
   - order: 9
+    layer: domain
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
+  - order: 10
     layer: module
     symbol: RoomFurniModule.UseItemByIdAsync
     evidence: ev_e4165c982e0e
-  - order: 10
+  - order: 11
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 11
+  - order: 12
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
@@ -138,14 +142,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 346
+    line: 378
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
@@ -159,21 +163,28 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.cs
     symbol: RoomActionModule
-    line: 78
+    line: 77
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 227
+    line: 228
   - id: ev_e1105bc46abc
     kind: emulator_flow
     authority: vortex_emulator

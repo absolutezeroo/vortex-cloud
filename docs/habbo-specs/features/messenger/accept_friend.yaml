@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:95677a390c1e9125166f757d2f1801293f9d5523aa6cd044f679216affa770c9"
+generated_digest: "sha256:09bca3fba4882063299bcac0e06536690bf91b9f5b914410aa55cfb1725f3e91"
 generated:
   id: messenger.accept_friend
   domain: messenger
@@ -116,7 +116,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
-    line: 217
+    line: 223
   - id: ev_1fe1271d1def
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 107
+    line: 118
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -158,7 +158,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Presence.cs
     symbol: MessengerGrain
-    line: 82
+    line: 107
   - id: ev_bc65e4b1ddef
     kind: emulator_handler
     authority: vortex_emulator

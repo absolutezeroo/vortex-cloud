@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c579a7ac526ddff8a729294c773828063650414e7e2fb821adb687997d18361"
+generated_digest: "sha256:eecc3ad92949c43315d855c468dc4df20b5f7b1109c60d946224203ca61f0e5b"
 generated:
   feature: catalog.get_flat_categories
   scenarios:
@@ -70,16 +70,16 @@ generated:
       - PurchaseError
       evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_10
-    title: "get flat categories: the guard 'group.IsMember && group.MembersCanDecorate' holds"
+    title: "get flat categories: the guard 'group.IsAdmin' holds"
     given:
-      guard: group.IsMember && group.MembersCanDecorate
+      guard: group.IsAdmin
       guard_holds: "true"
     when:
       packet: PurchaseRoomAd
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -96,16 +96,16 @@ generated:
       - PurchaseError
       evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_11
-    title: "get flat categories: the guard 'hasExplicitRights' holds"
+    title: "get flat categories: the guard 'group.IsMember && group.MembersCanDecorate' holds"
     given:
-      guard: hasExplicitRights
+      guard: group.IsMember && group.MembersCanDecorate
       guard_holds: "true"
     when:
       packet: PurchaseRoomAd
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'hasExplicitRights' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -206,6 +206,32 @@ generated:
       - PurchaseError
       evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_5
+    title: "get flat categories: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_6
     title: "get flat categories: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -231,7 +257,7 @@ generated:
       - RoomPromotion
       - PurchaseError
       evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_6
+  - scenario: catalog.get_flat_categories.guard_7
     title: "get flat categories: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -257,7 +283,7 @@ generated:
       - RoomPromotion
       - PurchaseError
       evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_7
+  - scenario: catalog.get_flat_categories.guard_8
     title: "get flat categories: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
       guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
@@ -283,7 +309,7 @@ generated:
       - RoomPromotion
       - PurchaseError
       evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_8
+  - scenario: catalog.get_flat_categories.guard_9
     title: "get flat categories: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -294,32 +320,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of PurchaseRoomAd sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_9
-    title: "get flat categories: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -378,7 +378,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.RoomAd.cs
     symbol: CatalogPurchaseGrain
-    line: 20
+    line: 21
   - id: ev_234fbe9c2c98
     kind: emulator_flow
     authority: vortex_emulator
@@ -392,13 +392,13 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 56
+    line: 58
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
 verified: {}
 manual: {}

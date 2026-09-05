@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f97b17e4a607fc40fa6b2b485455b0f91352285593f90924a4e8ccc289e1fb3a"
+generated_digest: "sha256:a81cb6ab6bf708b389aae0ff29843fc7cb60fa36ce4b8505d84a3c0a7adb1569"
 generated:
   id: catalog.builders_club_place_room_item
   domain: catalog
@@ -193,6 +193,10 @@ generated:
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
   - order: 42
+    layer: grain
+    symbol: RoomGrain.PublishDetached
+    evidence: ev_b46938ec853d
+  - order: 43
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -489,7 +493,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -580,7 +584,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Logic/Furniture/Floor/FurnitureFloorLogic.cs
     symbol: FurnitureFloorLogic
-    line: 55
+    line: 66
   - id: ev_a5bea35cc772
     kind: emulator_flow
     authority: vortex_emulator
@@ -594,7 +598,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -608,14 +612,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 227
+    line: 228
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 693
+    line: 696
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
@@ -629,7 +633,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e1105bc46abc
     kind: emulator_flow
     authority: vortex_emulator
@@ -657,7 +661,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 379
+    line: 468
   - id: ev_e81f0934fd67
     kind: emulator_flow
     authority: vortex_emulator

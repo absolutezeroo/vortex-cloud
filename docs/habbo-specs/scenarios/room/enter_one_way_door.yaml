@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:14394ef5d7a5c33ec3c932cbcf9fb2c5f8c19bfb0154cad8709b116a10f587bf"
+generated_digest: "sha256:87c175d43e71e3a7e3ced16b914139783fe9b3a064f24a47c80df0172cabb21d"
 generated:
   feature: room.enter_one_way_door
   scenarios:
@@ -55,6 +55,52 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_5e51a330c801
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_112d38b3f51d
+  - scenario: room.enter_one_way_door.guard_10
+    title: "enter one way door: the guard 'Rotation == rot' holds"
+    given:
+      guard: Rotation == rot
+      guard_holds: "true"
+    when:
+      packet: EnterOneWayDoor
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EnterOneWayDoor sent while 'Rotation == rot' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9f45a8c43da8
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_112d38b3f51d
+  - scenario: room.enter_one_way_door.guard_11
+    title: "enter one way door: the guard 'HeadRotation == rot' holds"
+    given:
+      guard: HeadRotation == rot
+      guard_holds: "true"
+    when:
+      packet: EnterOneWayDoor
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EnterOneWayDoor sent while 'HeadRotation == rot' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9f45a8c43da8
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -130,6 +176,75 @@ generated:
       emits: []
       evidence: ev_112d38b3f51d
   - scenario: room.enter_one_way_door.guard_5
+    title: "enter one way door: the guard 'tileId == -1' holds"
+    given:
+      guard: tileId == -1
+      guard_holds: "true"
+    when:
+      packet: EnterOneWayDoor
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EnterOneWayDoor sent while 'tileId == -1' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9f45a8c43da8
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_112d38b3f51d
+  - scenario: room.enter_one_way_door.guard_6
+    title: "enter one way door: the guard '_goalTries == 3' holds"
+    given:
+      guard: _goalTries == 3
+      guard_holds: "true"
+    when:
+      packet: EnterOneWayDoor
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EnterOneWayDoor sent while '_goalTries == 3' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9f45a8c43da8
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_112d38b3f51d
+  - scenario: room.enter_one_way_door.guard_7
+    title: "enter one way door: the guard 'types.Length == 0' holds"
+    given:
+      guard: types.Length == 0
+      guard_holds: "true"
+    when:
+      packet: EnterOneWayDoor
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of EnterOneWayDoor sent while 'types.Length == 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9f45a8c43da8
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_112d38b3f51d
+  - scenario: room.enter_one_way_door.guard_8
     title: "enter one way door: the guard '!InBounds(tileIdx)' holds"
     given:
       guard: "!InBounds(tileIdx)"
@@ -152,7 +267,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_112d38b3f51d
-  - scenario: room.enter_one_way_door.guard_6
+  - scenario: room.enter_one_way_door.guard_9
     title: "enter one way door: the guard 'Z == z' holds"
     given:
       guard: Z == z
@@ -163,52 +278,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of EnterOneWayDoor sent while 'Z == z' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_9f45a8c43da8
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_112d38b3f51d
-  - scenario: room.enter_one_way_door.guard_7
-    title: "enter one way door: the guard 'Rotation == rot' holds"
-    given:
-      guard: Rotation == rot
-      guard_holds: "true"
-    when:
-      packet: EnterOneWayDoor
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of EnterOneWayDoor sent while 'Rotation == rot' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_9f45a8c43da8
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_112d38b3f51d
-  - scenario: room.enter_one_way_door.guard_8
-    title: "enter one way door: the guard 'HeadRotation == rot' holds"
-    given:
-      guard: HeadRotation == rot
-      guard_holds: "true"
-    when:
-      packet: EnterOneWayDoor
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of EnterOneWayDoor sent while 'HeadRotation == rot' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -267,7 +336,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 291
+    line: 358
   - id: ev_6307e5751d5d
     kind: emulator_flow
     authority: vortex_emulator
@@ -281,13 +350,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 92
+    line: 110
   - id: ev_db615f36b20b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 175
+    line: 325
 verified: {}
 manual: {}

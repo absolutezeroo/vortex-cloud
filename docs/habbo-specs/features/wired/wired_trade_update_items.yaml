@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:84ab010f80ce0638cf829b07d4eee27b8c5d264f26280576b858bad82768c83b"
+generated_digest: "sha256:9fa957b1dd7014a91d235e0fc53de0a7378320bbd449ab3c4236663b58d54ca7"
 generated:
   id: wired.wired_trade_update_items
   domain: wired
@@ -53,8 +53,8 @@ generated:
     evidence: ev_9924df9c15a9
   - order: 7
     layer: domain
-    symbol: WiredChestStore.ReadAsync
-    evidence: ev_d3a71568179c
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
   - order: 8
     layer: domain
     symbol: WiredContractSettlement.MatchStake
@@ -67,10 +67,6 @@ generated:
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
-  - order: 11
-    layer: domain
-    symbol: WiredTradeTable.For
-    evidence: ev_a32cbda3f96b
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -153,14 +149,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
-    line: 376
-  - id: ev_a32cbda3f96b
+    line: 488
+  - id: ev_b261d7a833b8
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WiredTradeUpdateItemsMessageHandler.cs
-    symbol: WiredTradeTable
-    line: 66
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

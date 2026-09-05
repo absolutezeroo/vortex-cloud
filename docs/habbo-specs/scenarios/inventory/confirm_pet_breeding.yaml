@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a8f685ba1723ec5f54fc7aa0873b0aaf87f79cb3ac10712ebd7bf05f796750d3"
+generated_digest: "sha256:77c7254f64461f4e2975b9b7817650ba1bf3fa7b8f31418314fc766fbfaa9722"
 generated:
   feature: inventory.confirm_pet_breeding
   scenarios:
@@ -107,7 +107,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 158
+    line: 157
   - id: ev_fcb551496df6
     kind: emulator_flow
     authority: vortex_emulator

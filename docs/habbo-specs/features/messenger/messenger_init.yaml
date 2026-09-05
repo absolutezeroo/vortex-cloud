@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e56bf32a28fe55bce3d2f693fc2f0f48e81716570dad09fc7ea5e1625e67055e"
+generated_digest: "sha256:1632061d85408bb5cf6a31fd57261cb5a3b852edfbdf623aedee42bee4d006e0"
 generated:
   id: messenger.messenger_init
   domain: messenger
@@ -101,7 +101,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator

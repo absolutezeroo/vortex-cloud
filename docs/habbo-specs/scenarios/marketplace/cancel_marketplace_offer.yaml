@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:60a263c5ef18adb6595a5b72b481efa707361e91d96b15da0f6a30a7a66a1a44"
+generated_digest: "sha256:dc0a0ebf549cc0a56235d52c55dffd7d5a6b57de2c34229b80e41e05ee8bd94e"
 generated:
   feature: marketplace.cancel_marketplace_offer
   scenarios:
@@ -158,6 +158,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 188
+    line: 237
 verified: {}
 manual: {}

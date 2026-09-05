@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8c24bb9eb92262668b95392647ef453f21e861106e63d0c9c123ae1eeac4cec5"
+generated_digest: "sha256:1309f06fbb2ee5ab3e477eb792361321429fb6e5ea334ddf2e8828e979f2162b"
 generated:
   id: quest.get_seasonal_quests_only
   domain: quest
@@ -52,7 +52,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 201
+    line: 204
   - id: ev_cfce1049cc44
     kind: emulator_flow
     authority: vortex_emulator

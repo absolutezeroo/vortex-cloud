@@ -10,10 +10,35 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bdd2e839dab0c93410e5710d64a2032f2f4961ce6b975ab7595c4e5adc36fca1"
+generated_digest: "sha256:cbb170dee8998976b08c4a1e838c4d25a6918cc409e33fa92c6b9c71fd6490f3"
 generated:
   feature: sound.get_jukebox_play_list
   scenarios:
+  - scenario: sound.get_jukebox_play_list.guard_0
+    title: "get jukebox play list: the guard 'ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: GetJukeboxPlayList
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetJukeboxPlayList sent while 'ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_003d070777b7
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - JukeboxSongDisks
+      - UserSongDisksInventory
+      evidence: ev_3d8adc6239e7
   - scenario: sound.get_jukebox_play_list.success
     title: "get jukebox play list: the request is accepted"
     given:
@@ -28,9 +53,10 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_a452a691fccf
+      outcome: success
+      emits:
+      - JukeboxSongDisks
+      evidence: ev_003d070777b7
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -47,12 +73,12 @@ generated:
     symbol: GetJukeboxPlayListMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_a452a691fccf
-    kind: emulator_handler
+  - id: ev_003d070777b7
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetJukeboxPlayListMessageHandler.cs
     symbol: GetJukeboxPlayListMessageHandler
-    line: 8
+    line: 31
 verified: {}
 manual: {}

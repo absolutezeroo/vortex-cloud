@@ -454,90 +454,27 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+            PlayerPerkFlags perks = await _grainFactory
+                .GetPlayerGrain(playerId)
+                .GetPerksAsync(ct)
+                .ConfigureAwait(false);
+
             await ctx.SendComposerAsync(
-                    new PerkAllowancesMessageComposer
-                    {
-                        Perks =
-                        [
-                            new PerkAllowanceItem
-                            {
-                                Code = "NAVIGATOR_ROOM_THUMBNAIL_CAMERA",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "JUDGE_CHAT_REVIEWS",
-                                ErrorMessage = "requirement.unfulfilled.helper_level_6",
-                                IsAllowed = false,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "MOUSE_ZOOM",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "HABBO_CLUB_OFFER_BETA",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "TRADE",
-                                ErrorMessage = "requirement.unfulfilled.citizenship_level_3",
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "CAMERA",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "NAVIGATOR_PHASE_TWO_2014",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "BUILDER_AT_WORK",
-                                ErrorMessage = "requirement.unfulfilled.group_membership",
-                                IsAllowed = false,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "CALL_ON_HELPERS",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "CITIZEN",
-                                ErrorMessage = string.Empty,
-                                IsAllowed = true,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "USE_GUIDE_TOOL",
-                                ErrorMessage = "requirement.unfulfilled.helper_level_4",
-                                IsAllowed = false,
-                            },
-                            new PerkAllowanceItem
-                            {
-                                Code = "VOTE_IN_COMPETITIONS",
-                                ErrorMessage = "requirement.unfulfilled.helper_level_2",
-                                IsAllowed = false,
-                            },
-                        ],
-                    },
+                    new PerkAllowancesMessageComposer { Perks = BuildPerkAllowances(perks) },
                     ct
                 )
                 .ConfigureAwait(false);
 
             await SendFishingBootstrapAsync(ctx, playerId, ct).ConfigureAwait(false);
+
+            // Habbicons and reward tracks are both push-only: neither client controller ever asks
+            // for its state, they build their whole model from what arrives. The two are
+            // independent, so they go out together rather than one waiting on the other.
+            await Task.WhenAll(
+                    _grainFactory.GetPlayerHabbiconGrain(playerId).PushInventoryAsync(ct),
+                    _grainFactory.GetPlayerRewardTrackGrain(playerId).PushTracksAsync(false, ct)
+                )
+                .ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -579,6 +516,88 @@ public class SSOTicketMessageHandler(
     /// player -1 behind, which is how it was caught.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// The hotel's perk defaults, with anything this account has been granted turned on over the
+    /// top.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The defaults are what every account gets without earning anything, and they are unchanged
+    /// from when this list was written out by hand. What is new is the second half: a perk the
+    /// player holds on their account is allowed even when the default says no, which is what makes
+    /// <see cref="PlayerPerkFlags"/> an entitlement rather than a column nobody reads. A reward
+    /// track handing out <c>USE_GUIDE_TOOL</c> now unlocks the guide tool.
+    /// </para>
+    /// <para>
+    /// A granted perk never turns one off — the flags are additive by construction, so an operator
+    /// cannot revoke a default here by accident.
+    /// </para>
+    /// </remarks>
+    private static ImmutableArray<PerkAllowanceItem> BuildPerkAllowances(PlayerPerkFlags perks)
+    {
+        (string Code, PlayerPerkFlags Flag, string Error, bool AllowedByDefault)[] defaults =
+        [
+            (
+                "NAVIGATOR_ROOM_THUMBNAIL_CAMERA",
+                PlayerPerkFlags.NavigatorRoomThumbnailCamera,
+                "",
+                true
+            ),
+            (
+                "JUDGE_CHAT_REVIEWS",
+                PlayerPerkFlags.JudgeChatReviews,
+                "requirement.unfulfilled.helper_level_6",
+                false
+            ),
+            ("MOUSE_ZOOM", PlayerPerkFlags.MouseZoom, "", true),
+            ("HABBO_CLUB_OFFER_BETA", PlayerPerkFlags.HabboClubOfferBeta, "", true),
+            ("TRADE", PlayerPerkFlags.Trade, "requirement.unfulfilled.citizenship_level_3", true),
+            ("CAMERA", PlayerPerkFlags.Camera, "", true),
+            ("NAVIGATOR_PHASE_TWO_2014", PlayerPerkFlags.NavigatorPhaseTwo2014, "", true),
+            (
+                "BUILDER_AT_WORK",
+                PlayerPerkFlags.BuilderAtWork,
+                "requirement.unfulfilled.group_membership",
+                false
+            ),
+            ("CALL_ON_HELPERS", PlayerPerkFlags.CallOnHelpers, "", true),
+            ("CITIZEN", PlayerPerkFlags.Citizen, "", true),
+            (
+                "USE_GUIDE_TOOL",
+                PlayerPerkFlags.UseGuideTool,
+                "requirement.unfulfilled.helper_level_4",
+                false
+            ),
+            (
+                "VOTE_IN_COMPETITIONS",
+                PlayerPerkFlags.VoteInCompetitions,
+                "requirement.unfulfilled.helper_level_2",
+                false
+            ),
+        ];
+
+        ImmutableArray<PerkAllowanceItem>.Builder builder =
+            ImmutableArray.CreateBuilder<PerkAllowanceItem>(defaults.Length);
+
+        foreach (
+            (string code, PlayerPerkFlags flag, string error, bool allowedByDefault) in defaults
+        )
+        {
+            bool allowed = allowedByDefault || perks.HasFlag(flag);
+
+            builder.Add(
+                new PerkAllowanceItem
+                {
+                    Code = code,
+                    ErrorMessage = allowed ? string.Empty : error,
+                    IsAllowed = allowed,
+                }
+            );
+        }
+
+        return builder.MoveToImmutable();
+    }
+
     private async Task SendFishingBootstrapAsync(
         MessageContext ctx,
         int playerId,

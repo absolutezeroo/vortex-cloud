@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1597730781af0f98834d12e6912414e58b61b61cac8195da1dac04f22cf47c03"
+generated_digest: "sha256:d14b69925027c049a06c421d23986efc0efc0eedbcb1ae3bbc2c3e84d828da81"
 generated:
   id: uk_12c27ae4c1
   subject: "nft.save_user_nft_wardrobe: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 219
+    line: 255
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

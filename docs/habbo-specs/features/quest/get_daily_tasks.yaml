@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:60b981be9ae8f7902d746a7ceecd45bc31c0082834beddcc4485b6262fa65c02"
+generated_digest: "sha256:98dbfb9e5caf80053435a6d9f14effd6bc62f6955e5173060818c8dc96b29829"
 generated:
   id: quest.get_daily_tasks
   domain: quest
@@ -56,14 +56,14 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerDailyTaskGrain.cs
     symbol: PlayerDailyTaskGrain
-    line: 45
+    line: 48
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_854c95d04a71
     kind: emulator_handler
     authority: vortex_emulator

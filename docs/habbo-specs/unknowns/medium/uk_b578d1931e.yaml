@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:da448699b6c674cbfe379b8460e207ed9aab806966356068e736c33adf804714"
+generated_digest: "sha256:8e059a315da5a872c7a323cbd0a6685ee0f6fe0ced83bdfab4c1626c8f9546b3"
 generated:
   id: uk_b578d1931e
   subject: "room.answer_doorbell: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_93b2d0946619
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:33db4e5f740d479f6abf3f7bee122f25c42e91244c215ba3a3f66539e87b9532"
+generated_digest: "sha256:e9a3a0c8665ece19705742cfd0980e59e8e3e8a980b525fff172e09e941e7ca6"
 generated:
   id: room.dance
   domain: room
@@ -44,6 +44,10 @@ generated:
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
+  - order: 5
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -69,6 +73,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7fd0730f7cca
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: AvatarModule
     value: AvatarModule.SetAvatarDanceAsync(objectId, danceType, ct)
@@ -98,27 +106,34 @@ generated:
     source: Vortex.PacketHandlers/Room/Avatar/DanceMessageHandler.cs
     symbol: DanceMessageHandler
     line: 12
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/Player/RoomPlayerAvatar.cs
     symbol: RoomPlayerAvatar
-    line: 91
+    line: 130
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 185
+    line: 190
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e202f0e0c1a0
     kind: emulator_flow
     authority: vortex_emulator
@@ -132,7 +147,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 459
+    line: 548
   scenarios:
   - room.dance.guard_0
   - room.dance.guard_1
@@ -140,6 +155,7 @@ generated:
   - room.dance.guard_3
   - room.dance.guard_4
   - room.dance.guard_5
+  - room.dance.guard_6
   - room.dance.success
   conflicts:
   - cf_f551be9676

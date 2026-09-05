@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:30acf0b6185458d412fc3f84bab33b99abf21598eef07c82af0de0aeaaf65b66"
+generated_digest: "sha256:2197ec6e09056048880c47f6e81ac6ebcf929f262104e88229102d6081a6e357"
 generated:
   id: cf_da240e7476
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "6 fields: int32, int32, int32, int32, string, string"
     evidence: ev_15c39f75eda3
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, int32, array"
+    evidence: ev_eec17e13dda0
   evidence:
   - id: ev_52d8949667cb
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: PlayListMessageComposer
     line: 24
     note: third-party server implementation; evidence, not authority
+  - id: ev_eec17e13dda0
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/PlayListMessageComposerSerializer.cs
+    symbol: PlayListMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

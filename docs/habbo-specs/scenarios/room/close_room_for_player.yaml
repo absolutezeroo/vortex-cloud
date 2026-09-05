@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee668b86721d4a3f0d71d4cd12008247b903a698f1d8a0c16ebcd3be10543107"
+generated_digest: "sha256:f52f6f900087c426c26ebfc4a808e373d2f709f8f931836e24f2e68b3c10b67a"
 generated:
   feature: room.close_room_for_player
   scenarios:
@@ -250,7 +250,7 @@ generated:
       - ItemRemove
       - ObjectRemove
       - UserRemove
-      evidence: ev_0e5bd3223d28
+      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -266,13 +266,6 @@ generated:
     symbol: QuitMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -286,7 +279,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 56
+    line: 65
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -307,7 +300,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 279
+    line: 310
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator
@@ -321,6 +314,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 163
+    line: 164
 verified: {}
 manual: {}

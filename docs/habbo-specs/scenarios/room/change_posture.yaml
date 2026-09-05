@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ef6758bb5cccb95ee94b0ea767c1fb14f91cc90886d14ba517a4144fa1b76fe5"
+generated_digest: "sha256:96c549ee2e77425baa92c1654f443fbeb0bad37b0900157662b3701620be3e33"
 generated:
   feature: room.change_posture
   scenarios:
@@ -135,13 +135,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 323
+    line: 350
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 603
+    line: 692
 verified: {}
 manual: {}

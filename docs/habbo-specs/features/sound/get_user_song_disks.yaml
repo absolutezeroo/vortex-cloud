@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:941bf84de608c994b3a43af8f6e14f582e382c4c49abbd6565e5443e386948e1"
+generated_digest: "sha256:d5033788697ef61145aa5cd13771f2345ee625fc72cd6183c574de4fb9453fbe"
 generated:
   id: sound.get_user_song_disks
   domain: sound
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - GetUserSongDisks
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,23 +28,83 @@ generated:
     layer: handler
     symbol: GetUserSongDisksMessageHandler.HandleAsync
     evidence: ev_625cd7ed9c35
-  checks: []
+  - order: 1
+    layer: grain
+    symbol: InventoryGrain.GetSongDisksAsync
+    evidence: ev_c6396662000a
+  - order: 2
+    layer: module
+    symbol: InventoryFurniModule.GetAllItemSnapshotsAsync
+    evidence: ev_48fa24e8d4a2
+  - order: 3
+    layer: domain
+    symbol: WiredActionBranch.Select
+    evidence: ev_f13d6bcce744
+  - order: 4
+    layer: domain
+    symbol: SongDiskExtraData.ReadSongId
+    evidence: ev_22a4c945253e
+  checks:
+  - expression: ctx.PlayerId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_4a53aaff4f3b
   state_changes: []
   outgoing:
     ordering: unknown
-    packets: []
+    packets:
+    - packet: UserSongDisksInventory
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_4a53aaff4f3b
   reaches_persistence: false
   evidence:
+  - id: ev_22a4c945253e
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Sound/SongDiskExtraData.cs
+    symbol: SongDiskExtraData
+    line: 15
+  - id: ev_48fa24e8d4a2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/Modules/InventoryFurniModule.cs
+    symbol: InventoryFurniModule
+    line: 81
+  - id: ev_4a53aaff4f3b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/GetUserSongDisksMessageHandler.cs
+    symbol: GetUserSongDisksMessageHandler
+    line: 25
   - id: ev_625cd7ed9c35
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetUserSongDisksMessageHandler.cs
     symbol: GetUserSongDisksMessageHandler
-    line: 8
+    line: 14
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 830
+  - id: ev_f13d6bcce744
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredActionBranch.cs
+    symbol: WiredActionBranch
+    line: 23
   scenarios:
+  - sound.get_user_song_disks.guard_0
   - sound.get_user_song_disks.success
-  unknowns:
-  - uk_464b39d275
+  conflicts:
+  - cf_b97214b1ab
 verified: {}
 manual: {}

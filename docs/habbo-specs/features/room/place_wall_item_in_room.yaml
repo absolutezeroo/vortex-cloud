@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9226a6b115eedfe227b76eabfc83ed582e380d68be75d2fe77ce40c663d78dd4"
+generated_digest: "sha256:a03d7a884e5e6244ce4f5997bc1d4ec62f76863397f3829f5e2cb7c9988d6655"
 generated:
   id: room.place_wall_item_in_room
   domain: room
@@ -158,54 +158,58 @@ generated:
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
   - order: 33
+    layer: grain
+    symbol: RoomGrain.PublishDetached
+    evidence: ev_b46938ec853d
+  - order: 34
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 34
+  - order: 35
     layer: service
     symbol: RoomService.PlaceFloorItemInRoomAsync
     evidence: ev_b5421f4e64cb
-  - order: 35
+  - order: 36
     layer: grain
     symbol: RoomGrain.PlaceFloorItemAsync
     evidence: ev_0080929ab318
-  - order: 36
+  - order: 37
     layer: module
     symbol: RoomActionModule.PlaceFloorItemAsync
     evidence: ev_e1599f76ae95
-  - order: 37
+  - order: 38
     layer: module
     symbol: RoomSecurityModule.CanManipulateFurniAsync
     evidence: ev_82c2d2746361
-  - order: 38
+  - order: 39
     layer: module
     symbol: RoomFurniModule.ValidateNewFloorItemPlacementAsync
     evidence: ev_e1105bc46abc
-  - order: 39
+  - order: 40
     layer: module
     symbol: RoomMapModule.GetTileIdForSize
     evidence: ev_c26714967e6b
-  - order: 40
+  - order: 41
     layer: module
     symbol: RoomSecurityModule.FindRentedSpaceForPlayerAsync
     evidence: ev_82c2d2746361
-  - order: 41
+  - order: 42
     layer: module
     symbol: RoomFurniModule.ValidateNewFloorItemPlacementInRentedSpaceAsync
     evidence: ev_e1105bc46abc
-  - order: 42
+  - order: 43
     layer: module
     symbol: RoomFurniModule.PlaceFloorItemAsync
     evidence: ev_e1105bc46abc
-  - order: 43
+  - order: 44
     layer: module
     symbol: RoomMapModule.InBounds
     evidence: ev_c26714967e6b
-  - order: 44
+  - order: 45
     layer: module
     symbol: RoomMapModule.PlaceFloorItem
     evidence: ev_407ccfd7d8f8
-  - order: 45
+  - order: 46
     layer: domain
     symbol: RoomFloorItem.GetAddComposer
     evidence: ev_e3750914a5a1
@@ -581,7 +585,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3a5a694b9376
     kind: emulator_flow
     authority: vortex_emulator
@@ -665,7 +669,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -686,14 +690,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 267
+    line: 268
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 812
+    line: 815
   - id: ev_c716d5e1bc87
     kind: emulator_flow
     authority: vortex_emulator
@@ -735,7 +739,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e1105bc46abc
     kind: emulator_flow
     authority: vortex_emulator
@@ -763,7 +767,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 379
+    line: 468
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

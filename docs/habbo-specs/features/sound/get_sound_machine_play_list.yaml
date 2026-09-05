@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:91f8b1ec739067688b2d797ed89c057b9393897e978f3cb6cce39c9274c89548"
+generated_digest: "sha256:3b9f014b12ae35918c9256e92af726d5f1f15c761e82b5c246880e800198d508"
 generated:
   id: sound.get_sound_machine_play_list
   domain: sound
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - GetSoundMachinePlayList
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -32,20 +32,29 @@ generated:
   state_changes: []
   outgoing:
     ordering: unknown
-    packets: []
+    packets:
+    - packet: PlayList
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_027e768d5a36
   reaches_persistence: false
   evidence:
+  - id: ev_027e768d5a36
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Sound/GetSoundMachinePlayListMessageHandler.cs
+    symbol: GetSoundMachinePlayListMessageHandler
+    line: 27
   - id: ev_b95f1041c033
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Sound/GetSoundMachinePlayListMessageHandler.cs
     symbol: GetSoundMachinePlayListMessageHandler
-    line: 8
+    line: 19
   scenarios:
   - sound.get_sound_machine_play_list.success
-  unknowns:
-  - uk_e785cff4a8
 verified:
   answered_empty:
     confidence: assumed

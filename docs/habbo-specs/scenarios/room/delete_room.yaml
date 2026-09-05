@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1432bc1e7345907e7a5531fd7e3a7c952783b66ba6930d43ad79076083cb1103"
+generated_digest: "sha256:14e18e64649bba1d1967df768341f5d0608c8f8a8c36d94018ff66edba732c68"
 generated:
   feature: room.delete_room
   scenarios:
@@ -309,7 +309,7 @@ generated:
       - ItemRemove
       - ObjectRemove
       - UserRemove
-      evidence: ev_0e5bd3223d28
+      evidence: ev_329537530b13
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -324,20 +324,13 @@ generated:
     symbol: DeleteRoomMessageEvent
     line: 27
     note: third-party server implementation; evidence, not authority
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_329537530b13
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 190
+    line: 208
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -351,7 +344,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 56
+    line: 65
   - id: ev_7601ba13c0f4
     kind: emulator_flow
     authority: vortex_emulator
@@ -379,13 +372,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 356
+    line: 374
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 163
+    line: 164
 verified: {}
 manual: {}

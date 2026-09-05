@@ -120,6 +120,18 @@ public enum CommerceOperationKind
     /// <summary>What an achievement level pays: its badge, its currency and its score. Same shape —
     /// the level is persisted before any of it is handed over.</summary>
     AchievementReward = 16,
+
+    /// <summary>Buying a Habbicon, singly or as a whole collection.</summary>
+    HabbiconPurchase = 17,
+
+    /// <summary>Buying premium on one reward track. May cost credits and diamonds together.</summary>
+    RewardTrackPremium = 18,
+
+    /// <summary>
+    /// What a claimed reward-track prize hands over. The claim row is written first, so the bundle
+    /// is owed from before any of it is granted.
+    /// </summary>
+    RewardTrackPrize = 19,
 }
 
 /// <summary>
@@ -188,6 +200,19 @@ public static class CommerceStepKeys
     /// <summary>Paying the contract's reward coins out of the chest. Undoes itself into the chest
     /// when the wallet refuses, which is why the books are written after it and not before.</summary>
     public const string CHEST_PAYOUT = "chest-payout";
+
+    /// <summary>Writing the Habbicon ownership rows a purchase bought.</summary>
+    public const string HABBICON_GRANT = "habbicon-grant";
+
+    /// <summary>Turning premium on for one reward track, and crediting its instant points.</summary>
+    public const string REWARD_TRACK_PREMIUM = "reward-track-premium";
+
+    /// <summary>
+    /// One reward of a claimed prize's bundle, suffixed by index. Strictly after the pivot — the
+    /// claim row is written first, so a reward that fails here is owed rather than rolled back, and
+    /// an operator can see exactly which one.
+    /// </summary>
+    public const string REWARD_TRACK_GRANT = "reward-track-grant";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";

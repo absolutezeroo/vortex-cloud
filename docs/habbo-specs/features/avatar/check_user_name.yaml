@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3a607ccdefa1fbbdf5e26887d3dc603ff85ca6947733cc8a839911e94d5dea7d"
+generated_digest: "sha256:227da7de406a2c68b3deee51f470e384c020c296e5b576b82ebb801cfa2abce7"
 generated:
   id: avatar.check_user_name
   domain: avatar
@@ -98,7 +98,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Players/NameChangePolicy.cs
     symbol: NameChangePolicy
-    line: 65
+    line: 76
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

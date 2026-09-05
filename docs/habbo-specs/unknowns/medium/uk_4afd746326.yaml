@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7a9b7769b64319bc645f43853457ab9e2cc9ac1be5be05ada5479d5affda28c6"
+generated_digest: "sha256:05c4b678ed431411611aca00e75b6a702f0d4db663f0c174aa779bec0bc2d59b"
 generated:
   id: uk_4afd746326
   subject: "messenger.follow_friend: who receives AvatarEffect"
@@ -25,6 +25,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 42
+    line: 43
 verified: {}
 manual: {}

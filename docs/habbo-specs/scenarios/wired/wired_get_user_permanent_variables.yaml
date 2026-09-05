@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3851d1adc44c29f557bf0584014f4bc6f12934f7460f81a0924a1e5a5c6abfa3"
+generated_digest: "sha256:b155a63fb6084b339e414cd902fabca0bc7a8657ed879203eb48e15d28ed613b"
 generated:
   feature: wired.wired_get_user_permanent_variables
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Wired.PermanentVariables.cs
     symbol: RoomGrain
-    line: 26
+    line: 28
   - id: ev_c37fb632fa77
     kind: emulator_flow
     authority: vortex_emulator

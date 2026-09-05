@@ -4,6 +4,7 @@ using Vortex.Primitives.Collectibles.Grains;
 using Vortex.Primitives.Fishing.Grains;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Groups.Grains;
+using Vortex.Primitives.Habbicons.Grains;
 using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Marketplace.Grains;
@@ -14,6 +15,7 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Polls.Grains;
 using Vortex.Primitives.Prizes.Grains;
 using Vortex.Primitives.Quests.Grains;
+using Vortex.Primitives.RewardTracks.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Server.Grains;
@@ -245,6 +247,26 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerAchievementResolutionGrain>(playerId);
+
+    public static IPlayerHabbiconGrain GetPlayerHabbiconGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerHabbiconGrain>(playerId);
+
+    public static IPlayerHabbiconGrain GetPlayerHabbiconGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerHabbiconGrain>(playerId.Value);
+
+    public static IPlayerRewardTrackGrain GetPlayerRewardTrackGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerRewardTrackGrain>(playerId);
+
+    public static IPlayerRewardTrackGrain GetPlayerRewardTrackGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerRewardTrackGrain>(playerId.Value);
 
     public static IQuestManagerGrain GetQuestManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IQuestManagerGrain>(SingletonGrainId.GLOBAL);

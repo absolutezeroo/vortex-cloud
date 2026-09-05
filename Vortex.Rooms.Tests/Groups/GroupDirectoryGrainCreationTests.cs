@@ -504,6 +504,16 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<bool> GrantPerkAsync(PlayerPerkFlags perk, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<PlayerPerkFlags> GetPerksAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<bool> ApplyAccountBanAsync(
             int actorPlayerId,
             DateTime? bannedUntil,

@@ -10,10 +10,56 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:10c0e240f667d3aa248571d8228d960ffcf51bb1906ea590e2b5f23cea214d47"
+generated_digest: "sha256:2ad44f5078a3d4dca916310a47fc80a1564355f3ab8d4a7b1f45564b17f1e270"
 generated:
   feature: room.set_object_data
   scenarios:
+  - scenario: room.set_object_data.guard_0
+    title: "set object data: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Pairs.IsD...' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Pairs.IsDefaultOrEmpty
+      guard_holds: "true"
+    when:
+      packet: SetObjectData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetObjectData sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Pairs.IsDefaultOrEmpty' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ead081b2ea17
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_92eca25ad89b
+  - scenario: room.set_object_data.guard_1
+    title: "set object data: the guard 'item?.Logic.StuffData is not IMapStuffData map' holds"
+    given:
+      guard: item?.Logic.StuffData is not IMapStuffData map
+      guard_holds: "true"
+    when:
+      packet: SetObjectData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetObjectData sent while 'item?.Logic.StuffData is not IMapStuffData map' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_5e51a330c801
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_92eca25ad89b
   - scenario: room.set_object_data.success
     title: "set object data: the request is accepted"
     given:
@@ -30,7 +76,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_c8aef3ad40e6
+      evidence: ev_5e51a330c801
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -45,12 +91,19 @@ generated:
     symbol: SetObjectDataMessageEvent
     line: 13
     note: third-party server implementation; evidence, not authority
-  - id: ev_c8aef3ad40e6
-    kind: emulator_handler
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 675
+  - id: ev_ead081b2ea17
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/SetObjectDataMessageHandler.cs
     symbol: SetObjectDataMessageHandler
-    line: 8
+    line: 23
 verified: {}
 manual: {}

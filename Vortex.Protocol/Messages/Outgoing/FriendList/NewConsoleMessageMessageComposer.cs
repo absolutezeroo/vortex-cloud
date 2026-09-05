@@ -12,6 +12,14 @@ public sealed record NewConsoleMessageMessageComposer : IComposer
     [Id(1)]
     public required string Message { get; init; }
 
+    /// <summary>
+    /// The Habbicon this message is, or 0 for a text message. The client reads the body as a tagged
+    /// union and takes one or the other, never both, so setting this makes
+    /// <see cref="Message"/> unread rather than combining with it.
+    /// </summary>
+    [Id(8)]
+    public int HabbiconId { get; init; }
+
     [Id(2)]
     public required int SecondsSinceSent { get; init; }
 

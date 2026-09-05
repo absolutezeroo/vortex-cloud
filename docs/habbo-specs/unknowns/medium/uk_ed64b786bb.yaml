@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bd39623ef4c89e3b600d6b3fc68538bbeed701c266554811ea78247589717d13"
+generated_digest: "sha256:efe70809b47e5fc7c562ac5fddc866ccf9d6e6135ee799926416904d7b60e1f1"
 generated:
   id: uk_ed64b786bb
   subject: "wired.withdraw_all_from_wired_chest: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -88,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -109,7 +109,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
-    line: 611
+    line: 630
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

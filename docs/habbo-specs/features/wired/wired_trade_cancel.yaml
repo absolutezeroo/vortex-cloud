@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6255bef860e6450c549596533657a8f415620d71c6dc3722eb22f1f291030120"
+generated_digest: "sha256:083f06ccc7e6a42f328c924d3c49898421cb616c72bd5565e4e40364494248f0"
 generated:
   id: wired.wired_trade_cancel
   domain: wired
@@ -82,7 +82,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.cs
     symbol: RoomWiredTradingSystem
-    line: 421
+    line: 462
   - id: ev_df80e54657de
     kind: emulator_flow
     authority: vortex_emulator

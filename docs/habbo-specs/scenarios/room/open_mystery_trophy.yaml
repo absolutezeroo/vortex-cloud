@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4c04e47328aca2ac042e97d186f9d878f873951d51e7f18283790cad39a93c66"
+generated_digest: "sha256:6fa2448cde971392b90a3b53cefdbfd7118668269025f97fb4f50e2fd9f8559f"
 generated:
   feature: room.open_mystery_trophy
   scenarios:
@@ -50,6 +50,42 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_b2d21836a70a
+  - scenario: room.open_mystery_trophy.guard_10
+    title: "open mystery trophy: the guard '!avatar.IsWalking' holds"
+    given:
+      guard: "!avatar.IsWalking"
+      guard_holds: "true"
+    when:
+      packet: OpenMysteryTrophy
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while '!avatar.IsWalking' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_e6fef545a42a
+  - scenario: room.open_mystery_trophy.guard_11
+    title: "open mystery trophy: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: OpenMysteryTrophy
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: room.open_mystery_trophy.guard_2
     title: "open mystery trophy: the guard 'trophy.OwnerId != ctx.PlayerId' holds"
     given:
@@ -87,16 +123,16 @@ generated:
       emits: []
       evidence: ev_b2d21836a70a
   - scenario: room.open_mystery_trophy.guard_4
-    title: "open mystery trophy: the guard '!await ConsumeMysteryFurnitureAsync(ctx, trophy, ct).Conf...' holds"
+    title: "open mystery trophy: the guard '!await _roomGrain .ConsumeItemAsync(ctx, trophy, ItemDele...' holds"
     given:
-      guard: "!await ConsumeMysteryFurnitureAsync(ctx, trophy, ct).ConfigureAwait(true)"
+      guard: "!await _roomGrain .ConsumeItemAsync(ctx, trophy, ItemDeletionReason.MysteryTrophyOpened, ct) .ConfigureAwait(true)"
       guard_holds: "true"
     when:
       packet: OpenMysteryTrophy
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of OpenMysteryTrophy sent while '!await ConsumeMysteryFurnitureAsync(ctx, trophy, ct).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while '!await _roomGrain .ConsumeItemAsync(ctx, trophy, ItemDeletionReason.MysteryTrophyOpened, ct) .ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -141,23 +177,59 @@ generated:
       emits: []
       evidence: ev_7f41f2bdde62
   - scenario: room.open_mystery_trophy.guard_7
-    title: "open mystery trophy: the guard '_registry is null' holds"
+    title: "open mystery trophy: the guard 'entity is null' holds"
     given:
-      guard: _registry is null
+      guard: entity is null
       guard_holds: "true"
     when:
       packet: OpenMysteryTrophy
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of OpenMysteryTrophy sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while 'entity is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_34bf3ac088e2
+      evidence: ev_5e51a330c801
+  - scenario: room.open_mystery_trophy.guard_8
+    title: "open mystery trophy: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
+    given:
+      guard: "!_roomGrain.MapModule.RemoveItem(item)"
+      guard_holds: "true"
+    when:
+      packet: OpenMysteryTrophy
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while '!_roomGrain.MapModule.RemoveItem(item)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_761b76967e2f
+  - scenario: room.open_mystery_trophy.guard_9
+    title: "open mystery trophy: the guard 'item.Logic is null' holds"
+    given:
+      guard: item.Logic is null
+      guard_holds: "true"
+    when:
+      packet: OpenMysteryTrophy
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenMysteryTrophy sent while 'item.Logic is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4c36667ce9b9
   - scenario: room.open_mystery_trophy.success
     title: "open mystery trophy: the request is accepted"
     given:
@@ -172,8 +244,11 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
+      outcome: success
+      emits:
+      - ItemRemove
+      - ObjectRemove
+      - UserRemove
       evidence: ev_199c551380d8
   evidence:
   - id: ev_199c551380d8
@@ -190,6 +265,27 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
+  - id: ev_4c36667ce9b9
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomItemIndex.cs
+    symbol: RoomItemIndex
+    line: 65
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 215
+  - id: ev_761b76967e2f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
+    symbol: RoomObjectModule
+    line: 97
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -211,5 +307,12 @@ generated:
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
     line: 188
+  - id: ev_e6fef545a42a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
+    symbol: RoomAvatarModule
+    line: 439
 verified: {}
 manual: {}

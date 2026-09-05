@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5c835ccc95e17535643ba2d48a9d8ab469c93e450f061c22d10256de16973dbe"
+generated_digest: "sha256:1fdb3d44a635ef4026701553ffbe6c99dad00c7c3e924dced6a7cc39d84cad89"
 generated:
   id: nux.create_room
   domain: nux
@@ -40,6 +40,14 @@ generated:
     symbol: RoomService.CreateRoomAsync
     evidence: ev_f8d4827f4b8f
   - order: 4
+    layer: grain
+    symbol: ServerConfigGrain.GetIntAsync
+    evidence: ev_86f81f4f919c
+  - order: 5
+    layer: domain
+    symbol: WiredVariableArithmetic.Clamp
+    evidence: ev_c70390fca34b
+  - order: 6
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -56,6 +64,14 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7f41f2bdde62
+  - expression: ownedRooms >= maxRooms
+    on_fail: throw
+    observed_in: vortex
+    evidence: ev_f8d4827f4b8f
+  - expression: categoryId > 0 && !await dbCtx .NavigatorFlatCategories.AnyAsync(c => c.Id == categoryId, ct) .ConfigureAwait(false)
+    on_fail: throw
+    observed_in: vortex
+    evidence: ev_f8d4827f4b8f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -84,6 +100,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 29
+  - id: ev_86f81f4f919c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/ServerConfigGrain.cs
+    symbol: ServerConfigGrain
+    line: 43
   - id: ev_aa7fca1e0066
     kind: emulator_flow
     authority: vortex_emulator
@@ -91,6 +114,13 @@ generated:
     source: Vortex.PacketHandlers/Nux/SelectInitialRoomMessageHandler.cs
     symbol: SelectInitialRoomMessageHandler
     line: 49
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_cf270ab5d440
     kind: emulator_handler
     authority: vortex_emulator
@@ -111,12 +141,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 19
+    line: 22
   scenarios:
   - nux.create_room.guard_0
   - nux.create_room.guard_1
   - nux.create_room.guard_2
   - nux.create_room.guard_3
+  - nux.create_room.guard_4
+  - nux.create_room.guard_5
   - nux.create_room.success
   unknowns:
   - uk_7d0d1edda5

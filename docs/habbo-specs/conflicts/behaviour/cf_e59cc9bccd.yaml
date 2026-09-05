@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:434d073cec4a48d0a0095f8148b05644db68ccddee6417e26abae13397e165aa"
+generated_digest: "sha256:ca876649234124d4daf39cfa0ddd93a4833698067245aa36f4ec2c1a04457462"
 generated:
   id: cf_e59cc9bccd
   kind: behaviour
@@ -40,7 +40,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 43
+    line: 45
   official:
     status: unknown
 verified: {}

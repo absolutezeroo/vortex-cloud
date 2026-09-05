@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4bcddfd717073d3eeb9b19d20155e155f8d4cd8fb297ce97dbb3b36ace78eb15"
+generated_digest: "sha256:721155e57411e9e29310ff2e643033bc8c775bb89f5a6790a57728824dc72585"
 generated:
   feature: quest.get_seasonal_quests_only
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 201
+    line: 204
   - id: ev_cfce1049cc44
     kind: emulator_flow
     authority: vortex_emulator

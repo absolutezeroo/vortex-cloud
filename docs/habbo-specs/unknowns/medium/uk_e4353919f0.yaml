@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:915f203bfa87f96f3be3fa9a4bceeca1a8dfd951ed8015b8dfdd284a1b71f18a"
+generated_digest: "sha256:1b5da61c8bd34fa9a986f23d39ed13f0886a52f59a323958e3e3c6d70835ed53"
 generated:
   id: uk_e4353919f0
   subject: "room.move_wall_item_in_room: what the server sends when it refuses"
@@ -53,14 +53,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Wall.cs
     symbol: RoomActionModule
-    line: 104
+    line: 102
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_c716d5e1bc87
     kind: emulator_flow
     authority: vortex_emulator

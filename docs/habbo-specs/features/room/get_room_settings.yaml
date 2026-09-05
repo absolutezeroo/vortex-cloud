@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:170f526f326cb8e5f6a13d0560f686bddb3b7351042a206e3c4c105f8188cb52"
+generated_digest: "sha256:162d1730b1219da13e97129b82547ad9c52b34d0974597d2251eff55106216e0"
 generated:
   id: room.get_room_settings
   domain: room
@@ -68,7 +68,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 39
+    line: 41
   - id: ev_41f50501910b
     kind: emulator_handler
     authority: vortex_emulator

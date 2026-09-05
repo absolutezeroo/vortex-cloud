@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9d55318f76e19a1800c0a370d95f6de7e007b3d3539f476065582266d6e103e6"
+generated_digest: "sha256:201128d3b71bab9a44702fc7ae672d7b5ff5f6aaf373095be1a229d50eae8977"
 generated:
   id: room.pick_up_pet_in_room
   domain: room
@@ -122,7 +122,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 193
+    line: 181
   - id: ev_7e53d81cbdc8
     kind: emulator_flow
     authority: vortex_emulator
@@ -136,7 +136,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   scenarios:
   - room.pick_up_pet_in_room.guard_0
   - room.pick_up_pet_in_room.guard_1

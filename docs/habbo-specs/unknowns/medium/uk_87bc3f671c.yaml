@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:767b87b030fee87a056c7e6c968864335f20241235fabcc3d1be433f8f3cf952"
+generated_digest: "sha256:190ebddc44c850cc60327d6bfed7a2845284d656d7405d20a1d3c5ef97c730ed"
 generated:
   id: uk_87bc3f671c
   subject: "quest.activate_quest: what the server sends when it refuses"
@@ -32,14 +32,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3e19f38401db
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 244
+    line: 247
   - id: ev_56c775d65c26
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:f7164f01e2ec56f965b220cd54aedf77f7ba689022bb8c8663e53d32cea5dde6"
+generated_digest: "sha256:501eede59802aa7c4941d31871669d5f173bb762326801b4fc343f807b8105c2"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -54,6 +54,8 @@ generated:
     BuildersClubPlaceRoomItem: 3849
     BuildersClubPlaceWallItem: 2740
     BuildersClubQueryFurniCount: 1739
+    BuyHabbicon: 3980
+    BuyHabbiconCollection: 3036
     BuyMarketplaceOffer: 252
     BuyMarketplaceTokens: 3419
     CallForHelp: 732
@@ -80,8 +82,10 @@ generated:
     ChatReviewSessionCreate: 3970
     CheckUserName: 413
     ClaimDailyTask: 4101
+    ClaimHabbicon: 662
     ClaimNewUserName: 879
     ClaimNftClaims: 2898
+    ClaimRewardTrackPrize: 1376
     ClickCharacter: 3244
     ClickFurni: 443
     ClientHello: 4000
@@ -123,6 +127,7 @@ generated:
     EventLog: 3809
     ExtendRentOrBuyoutFurni: 1427
     ExtendRentOrBuyoutStripItem: 1029
+    FavouriteHabbicon: 1808
     FindNewFriends: 546
     FollowFriend: 886
     ForwardToACompetitionRoom: 431
@@ -203,6 +208,8 @@ generated:
     GetGuildFurniContextMenuInfo: 826
     GetGuildMembers: 1337
     GetGuildMemberships: 3918
+    GetHabbiconInfo: 1494
+    GetHabbiconShopData: 272
     GetHabboClubExtendOffer: 2931
     GetHabboGroupBadges: 3346
     GetHabboGroupDetails: 1683
@@ -389,13 +396,13 @@ generated:
     PostMessage: 2811
     PostQuizAnswers: 1387
     PresentOpen: 2485
-    ProgressTreasureHunt: 762
     PublishPhoto: 375
     PurchaseBasicMembershipExtension: 3561
     PurchaseFromCatalog: 1706
     PurchaseFromCatalogAsGift: 2909
     PurchaseMintToken: 67
     PurchasePhoto: 753
+    PurchaseRewardTrackPremium: 1789
     PurchaseRoomAd: 2928
     PurchaseSnowWarGameTokensOffer: 3243
     PurchaseTargetedOffer: 2497
@@ -466,6 +473,7 @@ generated:
     SelectClubGift: 2087
     SelectFavouriteHabboGroup: 1887
     SelectInitialRoom: 3267
+    SendHabbicon: 1163
     SendMsg: 3357
     SendRoomInvite: 617
     SetActivatedBadges: 2764
@@ -505,11 +513,13 @@ generated:
     TogglePetRidingPermission: 3713
     ToggleStaffPick: 2985
     TransferNftAssets: 1749
+    TriggerHabbicon: 1176
     TryPhoneNumber: 2890
     UnacceptTrading: 1030
     UnbanUserFromRoom: 2804
     UnblockGroupMember: 2580
     UnblockUser: 2512
+    UnfavouriteHabbicon: 75
     UnignoreUser: 3542
     UniqueID: 2309
     UnmuteUser: 498
@@ -539,8 +549,13 @@ generated:
     VisitUser: 1515
     VortexApplyFurniDefinition: 8007
     VortexApplyFurniEdit: 8003
+    VortexFishingJoinDerby: 8105
+    VortexFishingMountCatch: 8103
     VortexGetFurniDefinition: 8005
     VortexGetFurniEditorData: 8001
+    VortexHookHavocInput: 8109
+    VortexStartFishing: 8101
+    VortexStopFishing: 8107
     VoteForRoom: 2615
     Whisper: 1697
     WiredClearErrorLogs: 2386
@@ -562,7 +577,6 @@ generated:
     WiredTradeAccept: 2818
     WiredTradeCancel: 2646
     WiredTradeUpdateItems: 3111
-    WiredUpdateRoom: 3814
     WithdrawAllFromWiredChest: 3611
     WithdrawCreditVault: 1105
     WithdrawWiredChestCredits: 2843
@@ -771,6 +785,8 @@ generated:
     GuildMembershipRejected: 595
     GuildMembershipUpdated: 3477
     GuildMemberships: 3994
+    HabbiconInfo: 3714
+    HabbiconShopData: 3765
     HabboAchievementNotification: 639
     HabboActivityPointNotification: 2046
     HabboBroadcast: 334
@@ -886,7 +902,7 @@ generated:
     ObjectsDataUpdate: 632
     OfferRewardDelivered: 2621
     OfficialRooms: 2211
-    OfficialSongId: 2264
+    OfficialSongId: 3050
     OneWayDoorStatus: 1778
     Open: 2635
     OpenConnection: 611
@@ -950,6 +966,10 @@ generated:
     RequestSpamWallPostIt: 2816
     RespectNotification: 2686
     RestoreClient: 3345
+    RewardTrackClaimResult: 522
+    RewardTrackPremiumPurchaseResult: 58
+    RewardTrackProgress: 2017
+    RewardTracks: 3794
     RoomAdError: 2396
     RoomAdPurchaseInfo: 3787
     RoomChatSettings: 594
@@ -974,6 +994,7 @@ generated:
     RoomSettingsError: 3715
     RoomSettingsSaveError: 879
     RoomSettingsSaved: 1783
+    RoomUseHabbicon: 1547
     RoomVisits: 497
     RoomVisualizationSettings: 2986
     SanctionInfo: 1634
@@ -1032,6 +1053,8 @@ generated:
     UserClassification: 543
     UserEventCats: 1370
     UserFlatCats: 837
+    UserHabbiconStatusChanged: 2019
+    UserHabbicons: 3728
     UserNameChanged: 2319
     UserNftChatStyles: 2996
     UserNftWardrobe: 2116
@@ -1041,13 +1064,24 @@ generated:
     UserPurchasableChatStyles: 3774
     UserRemove: 3693
     UserRights: 3599
+    UserSongDisksInventory: 1930
     UserTyping: 206
     UserUnbannedFromRoom: 2089
     UserUpdate: 2613
     Users: 996
+    VortexFishSighted: 8106
+    VortexFishingCatchResult: 8108
+    VortexFishingDefinitions: 8102
+    VortexFishingDerbyStanding: 8112
+    VortexFishingError: 8114
+    VortexFishingPlayerState: 8104
+    VortexFishingRecords: 8116
+    VortexFishingSpotDepleted: 8110
     VortexFurniDefinition: 8006
     VortexFurniEditorData: 8002
     VortexFurniEditorRights: 8004
+    VortexHookHavocResult: 8120
+    VortexHookHavocStarted: 8118
     VoucherRedeemError: 133
     VoucherRedeemOk: 1771
     Wardrobe: 1484

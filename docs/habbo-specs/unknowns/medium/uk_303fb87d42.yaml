@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:96c9d84eea40c2839ef10b39d79f918f2270af5c16d365641b0d76a2f96f3748"
+generated_digest: "sha256:dba2e564a1efe3dc708d18097260e8bd23b4d0d33d94276eb63a7cbebb4a5bc3"
 generated:
   id: uk_303fb87d42
   subject: "wired.close_wired_chest: what the server sends when it refuses"
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
     symbol: WiredChestStore
-    line: 91
+    line: 235
   - id: ev_df80e54657de
     kind: emulator_flow
     authority: vortex_emulator

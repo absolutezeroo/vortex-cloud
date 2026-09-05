@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:499fe709b4a087aa3bec036d499ca1af27d5c64aeb9cafcf3c60cb1370d4c120"
+generated_digest: "sha256:7845a58e4b5494fd6606926aa95ef5711cb99bcb10ed152f444bbdbf245ff4ae"
 generated:
   feature: wired.withdraw_wired_chest_credits
   scenarios:
@@ -51,6 +51,24 @@ generated:
       emits: []
       evidence: ev_1129046a0be9
   - scenario: wired.withdraw_wired_chest_credits.guard_10
+    title: "withdraw wired chest credits: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
+    given:
+      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
+      guard_holds: "true"
+    when:
+      packet: WithdrawWiredChestCredits
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.withdraw_wired_chest_credits.guard_11
     title: "withdraw wired chest credits: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -61,24 +79,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.withdraw_wired_chest_credits.guard_11
-    title: "withdraw wired chest credits: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: WithdrawWiredChestCredits
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -177,6 +177,24 @@ generated:
       emits: []
       evidence: ev_82c2d2746361
   - scenario: wired.withdraw_wired_chest_credits.guard_7
+    title: "withdraw wired chest credits: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: WithdrawWiredChestCredits
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.withdraw_wired_chest_credits.guard_8
     title: "withdraw wired chest credits: the guard 'origin == ActionOrigin.System' holds"
     given:
       guard: origin == ActionOrigin.System
@@ -194,7 +212,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_7aa1dee31dfd
-  - scenario: wired.withdraw_wired_chest_credits.guard_8
+  - scenario: wired.withdraw_wired_chest_credits.guard_9
     title: "withdraw wired chest credits: the guard 'isExplicitOwner' holds"
     given:
       guard: isExplicitOwner
@@ -205,24 +223,6 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-  - scenario: wired.withdraw_wired_chest_credits.guard_9
-    title: "withdraw wired chest credits: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
-    given:
-      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
-      guard_holds: "true"
-    when:
-      packet: WithdrawWiredChestCredits
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of WithdrawWiredChestCredits sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -280,14 +280,14 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 43
+    line: 45
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 188
+    line: 196
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dcc013a09d9e58d2e33ef90d46086b265d5e59b7cf25d22151f344244db4e123"
+generated_digest: "sha256:4fe0bf202fb1e2a2dc63277eb976519256606a6e7da35c31c5db84db5a306d5f"
 generated:
   feature: navigator.rate_flat
   scenarios:
@@ -166,7 +166,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 681
+    line: 699
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6a8ce9766f2b6bea60e67445508174dfe94b23092b9093a6aa512b696e78f11d"
+generated_digest: "sha256:13eb90b43ee84ffe7d3c6469d90e5800d313441a72566cbe271bdf0c29e775ff"
 generated:
   feature: moderation.mod_trading_lock
   scenarios:
@@ -198,7 +198,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 748
+    line: 846
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

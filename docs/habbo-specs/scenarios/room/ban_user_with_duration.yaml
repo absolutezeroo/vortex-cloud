@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bf811820f5556f78d394da1559f80701b4fa893ee2ed7227042dec9234c97413"
+generated_digest: "sha256:0261e0a9410b8ac01a262e2a9c793674f3f5631b84d532a770b3fc006b21c0aa"
 generated:
   feature: room.ban_user_with_duration
   scenarios:
@@ -309,7 +309,7 @@ generated:
       - ItemRemove
       - ObjectRemove
       - UserRemove
-      evidence: ev_0e5bd3223d28
+      evidence: ev_2747c101d5f4
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -324,13 +324,13 @@ generated:
     symbol: BanUserWithDurationMessageEvent
     line: 9
     note: third-party server implementation; evidence, not authority
-  - id: ev_0e5bd3223d28
+  - id: ev_2747c101d5f4
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
+    source: Vortex.Rooms/RoomModerationStore.cs
+    symbol: RoomModerationStore
+    line: 53
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -358,14 +358,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 356
+    line: 374
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 163
+    line: 164
   - id: ev_ede1461ee378
     kind: emulator_flow
     authority: vortex_emulator

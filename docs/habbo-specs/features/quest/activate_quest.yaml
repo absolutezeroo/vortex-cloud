@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6b8a04a05164222cf9111419f6933f1e591077f4e1df84e9d9e7157007b99672"
+generated_digest: "sha256:2c4a576c131e0d747640da7785e2b0cbbf1d898351bbdf2cf1b62ff115c58117"
 generated:
   id: quest.activate_quest
   domain: quest
@@ -62,7 +62,7 @@ generated:
     observed_in: vortex
     evidence: ev_3e19f38401db
   - target: row.AcceptedAt
-    value: DateTime.Now
+    value: DateTime.UtcNow
     observed_in: vortex
     evidence: ev_3e19f38401db
   outgoing:
@@ -95,14 +95,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3e19f38401db
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 244
+    line: 247
   - id: ev_56c775d65c26
     kind: emulator_flow
     authority: vortex_emulator

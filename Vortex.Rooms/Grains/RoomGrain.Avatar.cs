@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
@@ -183,6 +184,9 @@ public sealed partial class RoomGrain
         }
     }
 
+    public Task<bool> UseHabbiconAsync(PlayerId playerId, int habbiconId) =>
+        ChatSystem.UseHabbiconAsync(playerId, habbiconId);
+
     public async Task<bool> SetAvatarDanceAsync(
         ActionContext ctx,
         AvatarDanceType danceType,
@@ -197,6 +201,18 @@ public sealed partial class RoomGrain
             )
             {
                 return false;
+            }
+
+            // Stopping is not dancing. Anything that rewards a dance would otherwise be satisfied
+            // by pressing the button twice.
+            if (danceType != AvatarDanceType.None)
+            {
+                await _events
+                    .PublishAsync(
+                        new PlayerGesturedEvent(ctx.PlayerId, _state.RoomId.Value, "dance"),
+                        ct
+                    )
+                    .ConfigureAwait(true);
             }
 
             return true;
@@ -270,6 +286,16 @@ public sealed partial class RoomGrain
             )
             {
                 return false;
+            }
+
+            if (expressionType == AvatarExpressionType.Wave)
+            {
+                await _events
+                    .PublishAsync(
+                        new PlayerGesturedEvent(ctx.PlayerId, _state.RoomId.Value, "wave"),
+                        ct
+                    )
+                    .ConfigureAwait(true);
             }
 
             return true;

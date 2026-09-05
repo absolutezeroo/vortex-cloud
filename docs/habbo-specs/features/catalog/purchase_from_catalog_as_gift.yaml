@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:30608333c1bebe3f69d62dd1c7153119402ce335f3f4b735b297e81b0d3a8649"
+generated_digest: "sha256:b496cd09c17736f91cba36b960cf94e742c9b453f17e79cc18afd558892d739f"
 generated:
   id: catalog.purchase_from_catalog_as_gift
   domain: catalog
@@ -125,7 +125,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 656
+    line: 754
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -167,7 +167,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.Gift.cs
     symbol: CatalogPurchaseGrain
-    line: 24
+    line: 25
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

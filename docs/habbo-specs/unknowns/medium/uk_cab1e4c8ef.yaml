@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e49c5d3ac36fcd461f97501968dcf3b88fdf6573fb11cd7f2ef344e21d244027"
+generated_digest: "sha256:73fd8fd1bdd848d3c6ed134f1f9e38fc07b2532772e27cea7036a5af6256ae05"
 generated:
   id: uk_cab1e4c8ef
   subject: "moderation.resolve_for_player: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 107
+    line: 118
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 265
+    line: 247
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -89,6 +89,13 @@ generated:
     source: Vortex.PacketHandlers/Moderator/GetModeratorRoomInfoMessageHandler.cs
     symbol: GetModeratorRoomInfoMessageHandler
     line: 24
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 259
   - id: ev_85ba71af2c41
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,21 +144,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 438
+    line: 465
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 219
+    line: 252
   - id: ev_bb859d4f21b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 58
+    line: 68
   - id: ev_bbe082cf14ca
     kind: emulator_handler
     authority: vortex_emulator
@@ -186,7 +193,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Moderator/ModerateRoomMessageHandler.cs
     symbol: ModerateRoomMessageHandler
-    line: 28
+    line: 29
   - id: ev_d1b57b1deb61
     kind: emulator_handler
     authority: vortex_emulator
@@ -200,14 +207,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Moderator/ModerateRoomMessageHandler.cs
     symbol: ModerateRoomMessageHandler
-    line: 17
+    line: 18
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 313
+    line: 402
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

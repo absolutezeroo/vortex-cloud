@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5f19509f84471583aa324974147e674fd6facb88349ac64d44e5f07896b21fda"
+generated_digest: "sha256:ac8a86a0b6f4fb646915406b174c11a447c25f0f03e2481167f9a6a83824f94e"
 generated:
   id: messenger.send_msg
   domain: messenger
@@ -44,6 +44,10 @@ generated:
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
+  - order: 5
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -65,6 +69,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_564bd0580d41
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -79,20 +87,27 @@ generated:
       evidence: ev_564bd0580d41
   reaches_persistence: true
   evidence:
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
   - id: ev_373e76aa8a80
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_564bd0580d41
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
-    line: 25
+    line: 26
   - id: ev_bfa8681ffc27
     kind: emulator_flow
     authority: vortex_emulator
@@ -120,6 +135,7 @@ generated:
   - messenger.send_msg.guard_2
   - messenger.send_msg.guard_3
   - messenger.send_msg.guard_4
+  - messenger.send_msg.guard_5
   - messenger.send_msg.success
   conflicts:
   - cf_9b2bc02215

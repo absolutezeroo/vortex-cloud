@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:95489b0ec035e7bc120a05004289b11d65759c88e8f130614adeb620fa4a6de8"
+generated_digest: "sha256:6b3bcc138f4d69f21f92e23395a9448ce833d800807f0ad49ff1f9e91e1136a7"
 generated:
   id: uk_db4e922d36
   subject: "room.toggle_pet_breeding_permission: what the server sends when it refuses"
@@ -46,6 +46,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 45
+    line: 46
 verified: {}
 manual: {}

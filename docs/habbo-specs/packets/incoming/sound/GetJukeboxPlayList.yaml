@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:df4db08fb796b1f9b6c8e6c91b3e020aa416f2617b57b99262e549bfd509daaf"
+generated_digest: "sha256:9c877b8e353093bbc96497bcc44d7e246945b16adc13dc1fadda0dcb21a4dd44"
 generated:
   name: GetJukeboxPlayList
   direction: incoming
@@ -76,5 +76,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Sound/GetJukeboxPlayListMessageParser.cs
     symbol: GetJukeboxPlayListMessageParser
     line: 7
+  conflicts:
+  - cf_a47144a65a
 verified: {}
 manual: {}

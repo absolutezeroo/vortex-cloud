@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1023173b7358bfeb7b6cc8e3d860aaf3baf811b3afc75043a5a02a1b749fccf0"
+generated_digest: "sha256:fc7603789ab761c02c1484b14c94008a393256bf8d63c4d543d892f0e0efb8a2"
 generated:
   id: room.get_item_data
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - GetItemData
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,24 +28,54 @@ generated:
     layer: handler
     symbol: GetItemDataMessageHandler.HandleAsync
     evidence: ev_961bf28d8436
-  checks: []
+  - order: 1
+    layer: grain
+    symbol: RoomGrain.GetItemDataAsync
+    evidence: ev_5e51a330c801
+  checks:
+  - expression: ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c3e9abc54f38
+  - expression: data is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c3e9abc54f38
   state_changes: []
   outgoing:
     ordering: unknown
-    packets: []
+    packets:
+    - packet: ItemDataUpdate
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_c3e9abc54f38
   reaches_persistence: false
   evidence:
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 630
   - id: ev_961bf28d8436
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetItemDataMessageHandler.cs
     symbol: GetItemDataMessageHandler
-    line: 8
+    line: 19
+  - id: ev_c3e9abc54f38
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Room/Engine/GetItemDataMessageHandler.cs
+    symbol: GetItemDataMessageHandler
+    line: 28
   scenarios:
+  - room.get_item_data.guard_0
+  - room.get_item_data.guard_1
   - room.get_item_data.success
-  unknowns:
-  - uk_69d9472773
 verified:
   answered_to_the_asker_only:
     confidence: assumed
@@ -56,4 +86,4 @@ verified:
       source: com/sulake/habbo/room/_SafeCls_1821.as
       symbol: ROFCAE_STICKIE
 manual:
-  blank_vs_absent: "An item that exists but carries nothing answers with an empty string; an item that is gone, or that the caller may not touch, is not answered at all. The client draws the first as a blank note and leaves the dialog closed on the second."
+  blank_vs_absent: An item that exists but carries nothing answers with an empty string; an item that is gone, or that the caller may not touch, is not answered at all. The client draws the first as a blank note and leaves the dialog closed on the second.

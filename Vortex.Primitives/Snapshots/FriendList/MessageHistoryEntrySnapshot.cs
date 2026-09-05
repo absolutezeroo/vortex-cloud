@@ -23,4 +23,11 @@ public record MessageHistoryEntrySnapshot
 
     [Id(5)]
     public required string MessageId { get; init; }
+
+    /// <summary>
+    /// The Habbicon this entry is, or 0 for a text entry. <see cref="Message"/> is not read when
+    /// this is set — the client's console body is one or the other.
+    /// </summary>
+    [Id(6)]
+    public int HabbiconId { get; init; }
 }

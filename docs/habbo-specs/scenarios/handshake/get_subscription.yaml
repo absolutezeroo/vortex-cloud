@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1c4adccdea80cc495bcfc4539ed1d32e2edb2de819dcbdf54c4abb179733046b"
+generated_digest: "sha256:017b2133203e7eed2fa69c112ce4236b0e425633169952b860a5ca054b2ada49"
 generated:
   feature: handshake.get_subscription
   scenarios:
@@ -349,7 +349,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 808
+    line: 906
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -363,7 +363,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs
     symbol: SSOTicketMessageHandler
-    line: 81
+    line: 83
   - id: ev_e81f0934fd67
     kind: emulator_flow
     authority: vortex_emulator

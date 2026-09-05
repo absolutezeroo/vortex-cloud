@@ -10,10 +10,56 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:448ef35a9907de5035a0f23261ffca3cfd459f1833f5b06415374325d81bad2b"
+generated_digest: "sha256:a7c3843a00972aae87655dcec921bd9abefeb6b623f5eacc856ba7d06392d45c"
 generated:
   feature: room.set_item_data
   scenarios:
+  - scenario: room.set_item_data.guard_0
+    title: "set item data: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: SetItemData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetItemData sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_05ee5133fcd7
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f64ee2c8a2d4
+  - scenario: room.set_item_data.guard_1
+    title: "set item data: the guard 'item?.Logic.StuffData is not ILegacyStuffData legacy' holds"
+    given:
+      guard: item?.Logic.StuffData is not ILegacyStuffData legacy
+      guard_holds: "true"
+    when:
+      packet: SetItemData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of SetItemData sent while 'item?.Logic.StuffData is not ILegacyStuffData legacy' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_5e51a330c801
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f64ee2c8a2d4
   - scenario: room.set_item_data.success
     title: "set item data: the request is accepted"
     given:
@@ -30,7 +76,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2c6f62ada260
+      evidence: ev_05ee5133fcd7
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -45,12 +91,19 @@ generated:
     symbol: SetItemDataMessageEvent
     line: 18
     note: third-party server implementation; evidence, not authority
-  - id: ev_2c6f62ada260
-    kind: emulator_handler
+  - id: ev_05ee5133fcd7
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/SetItemDataMessageHandler.cs
     symbol: SetItemDataMessageHandler
-    line: 8
+    line: 23
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 705
 verified: {}
 manual: {}

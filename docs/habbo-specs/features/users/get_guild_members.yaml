@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c3ffdd8e5122f03e032965593ef569e7f94f73096358d09300942af56f69c904"
+generated_digest: "sha256:cc3541b789b4ae36596363773d71b5bdeded598d6400cac2c68ba9ccb0761b19"
 generated:
   id: users.get_guild_members
   domain: users
@@ -42,9 +42,13 @@ generated:
     evidence: ev_09932710687b
   - order: 4
     layer: domain
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
+  - order: 5
+    layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 5
+  - order: 6
     layer: domain
     symbol: GroupMemberMapper.FromMember
     evidence: ev_40034f33a6de
@@ -81,7 +85,7 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Orleans/GrainFactoryExtensions.cs
     symbol: GrainFactoryExtensions
-    line: 217
+    line: 223
   - id: ev_25e7df53e794
     kind: emulator_flow
     authority: vortex_emulator
@@ -117,6 +121,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

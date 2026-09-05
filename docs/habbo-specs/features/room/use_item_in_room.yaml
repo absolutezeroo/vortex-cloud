@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:58d16cdf90d1acea6b34e100a67059ec8d2eb4198d7cf336db493a767a819aeb"
+generated_digest: "sha256:abb0edd739a8bbe2fefe7db89018c77b3ae0f2e4179fef6222ae71403ace1878"
 generated:
   id: room.use_item_in_room
   domain: room
@@ -86,14 +86,18 @@ generated:
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
   - order: 14
+    layer: domain
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
+  - order: 15
     layer: module
     symbol: RoomFurniModule.UseItemByIdAsync
     evidence: ev_e4165c982e0e
-  - order: 15
+  - order: 16
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 16
+  - order: 17
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
@@ -164,7 +168,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_3fd83d5a3a62
     kind: emulator_handler
     authority: vortex_emulator
@@ -192,7 +196,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 346
+    line: 378
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
@@ -206,14 +210,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.cs
     symbol: RoomActionModule
-    line: 78
+    line: 77
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_bf99721ffa39
     kind: emulator_handler
     authority: vortex_emulator
@@ -227,7 +238,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 227
+    line: 228
   - id: ev_d2f603d99b5f
     kind: emulator_handler
     authority: vortex_emulator

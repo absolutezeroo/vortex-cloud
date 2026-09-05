@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:107877e81dcf1d342b2602c794c0a9d096f984d5457488574e27d2ed59d82e1c"
+generated_digest: "sha256:993d4f4b7f6a894f46d4a503c7a57b31651e6fd38ce4508917aecd7f768c9fed"
 generated:
   feature: room.room_dimmer_change_state
   scenarios:
@@ -135,6 +135,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 496
+    line: 573
 verified: {}
 manual: {}

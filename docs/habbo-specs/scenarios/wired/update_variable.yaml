@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4d83f4664a9dbfc9d71348041fcc1f7ad852c4dcdb92a59223bd5a167be207d9"
+generated_digest: "sha256:bb30d8c208c91924184e6378a35510be9394923e4390d5e17c7ecd9bd60aaa17"
 generated:
   feature: wired.update_variable
   scenarios:
@@ -154,7 +154,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 232
+    line: 229
   - id: ev_e87b09ae933e
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a7a90405c0065218510b4b436c445d2f115d5fb53510d206a7a89daab7a0e89d"
+generated_digest: "sha256:9dc7908f62791afcbb7f6ae6711c7487488b2971972664e91e55d6d12d0fa711"
 generated:
   feature: room.avatar_expression
   scenarios:
@@ -86,6 +86,30 @@ generated:
       emits:
       - Expression
       evidence: ev_009baa8cac5c
+  - scenario: room.avatar_expression.guard_3
+    title: "avatar expression: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: AvatarExpression
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of AvatarExpression sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - Expression
+      evidence: ev_009baa8cac5c
   - scenario: room.avatar_expression.success
     title: "avatar expression: the request is accepted"
     given:
@@ -126,19 +150,26 @@ generated:
     source: Vortex.PacketHandlers/Room/Avatar/AvatarExpressionMessageHandler.cs
     symbol: AvatarExpressionMessageHandler
     line: 24
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 266
+    line: 283
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 569
+    line: 658
 verified: {}
 manual: {}

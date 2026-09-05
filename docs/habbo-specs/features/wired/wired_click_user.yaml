@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:11c0b1b76ddc8644c7e1d5c73e640b2a249d3a1547ff67f1f77eacc4618b6b00"
+generated_digest: "sha256:78d9a846f8db2e0503375feee139aeb911be68e875917789ed2634c25d900460"
 generated:
   id: wired.wired_click_user
   domain: wired
@@ -93,7 +93,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Wired/Engine/RoomGrainWiredHost.cs
     symbol: RoomGrainWiredHost
-    line: 91
+    line: 93
   - id: ev_6fb0fe66500b
     kind: emulator_flow
     authority: vortex_emulator

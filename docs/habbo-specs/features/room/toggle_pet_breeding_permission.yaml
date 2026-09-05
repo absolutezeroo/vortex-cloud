@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e3aca746ac2ce3a047779fc6cec43aabf51277e119aa628b07be4ecdf9d78bef"
+generated_digest: "sha256:565e9900abe908683f4b1a19cfbe981160da04ba53384753daadb7d68101bdac"
 generated:
   id: room.toggle_pet_breeding_permission
   domain: room
@@ -94,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Breeding.cs
     symbol: RoomPetSystem
-    line: 45
+    line: 46
   scenarios:
   - room.toggle_pet_breeding_permission.guard_0
   - room.toggle_pet_breeding_permission.guard_1

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:feb86365c5f26124217828f10f0d43f4efd19df256261e22d5c9fb1a3dbacfab"
+generated_digest: "sha256:79a5cd48e212b9df007a06d466dcf8bd28a9043c94ba1c7245e06b36284698b2"
 generated:
   feature: quest.start_campaign
   scenarios:
@@ -76,14 +76,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3e19f38401db
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Progression/Grains/PlayerQuestGrain.cs
     symbol: PlayerQuestGrain
-    line: 180
+    line: 183
   - id: ev_e80416fbe3e6
     kind: emulator_flow
     authority: vortex_emulator

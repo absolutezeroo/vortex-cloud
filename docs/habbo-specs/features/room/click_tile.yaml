@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b9838effabb667eb980670d3ca777ddb7ab571ca1287207e287605f30b5d43b3"
+generated_digest: "sha256:6e4063942d96addb33474f177cacd66bd9205c9b24d9e5bf2a1cc95fed3baf19"
 generated:
   id: room.click_tile
   domain: room
@@ -61,11 +61,15 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7c6cea3bc17b
+  - expression: "!InBounds(x, y)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c26714967e6b
   - expression: "!tile.Has(RoomTileFlags.TileClickListener)"
     on_fail: return
     observed_in: vortex
     evidence: ev_c26714967e6b
-  - expression: ctx.PlayerId <= 0 || !_roomGrain._state.AvatarsByPlayerId.TryGetValue( ctx.PlayerId, out RoomObjectId objectIdValue ) || !_roomGrain._state.AvatarsByObjectId.TryGetValue( objectIdValue, out IRoomAvatar? avatar ) || !await WalkAvatarToAsync(avatar, targetX, targetY, ct)
+  - expression: ctx.PlayerId <= 0 || !_roomGrain._state.AvatarsByPlayerId.TryGetValue( ctx.PlayerId, out RoomObjectId objectIdValue ) || !_roomGrain._state.AvatarsByObjectId.TryGetValue( objectIdValue, out IRoomAvatar? avatar ) || !await WalkAvatarToAsync(avatar, targetX, targetY, ct, targetZKey)
     on_fail: return
     observed_in: vortex
     evidence: ev_e6fef545a42a
@@ -81,7 +85,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomEventModule.cs
     symbol: RoomEventModule
-    line: 27
+    line: 29
   - id: ev_5eb94974f51d
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,46 +99,49 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 307
+    line: 338
   - id: ev_8badf22bc1c3
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/MoveAvatarMessageHandler.cs
     symbol: MoveAvatarMessageHandler
-    line: 9
+    line: 11
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 143
+    line: 144
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 250
+    line: 273
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 287
+    line: 288
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 200
+    line: 220
   scenarios:
   - room.click_tile.guard_0
   - room.click_tile.guard_1
   - room.click_tile.guard_2
+  - room.click_tile.guard_3
   - room.click_tile.success
+  conflicts:
+  - cf_6e94fff5b9
 verified: {}
 manual: {}

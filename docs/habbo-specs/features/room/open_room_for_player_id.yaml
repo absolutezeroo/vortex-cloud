@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b66c918e7bff69aff26a942f5282f333d13d18b2fb102c75a21e914e58beb5d1"
+generated_digest: "sha256:3d1d120865635d60bf58dbd6bd686ee60432ce667c06add3e653f5e35ecfe0e6"
 generated:
   id: room.open_room_for_player_id
   domain: room
@@ -101,13 +101,13 @@ generated:
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
   - order: 19
-    layer: module
-    symbol: RoomGameSystem.OnPlayerLeftAsync
-    evidence: ev_7db64e908d04
+    layer: domain
+    symbol: RoomGameRuntime.OnPlayerLeftAsync
+    evidence: ev_8f4d446a6466
   - order: 20
     layer: domain
-    symbol: GameTeamState.OnPlayerLeft
-    evidence: ev_0e5bd3223d28
+    symbol: TeamBook.OnPlayerLeft
+    evidence: ev_556d41376c6f
   - order: 21
     layer: module
     symbol: EventSystem.PublishAsync
@@ -349,6 +349,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -617,13 +621,6 @@ generated:
       evidence: ev_761b76967e2f
   reaches_persistence: false
   evidence:
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
   - id: ev_24b2cc225747
     kind: emulator_handler
     authority: vortex_emulator
@@ -651,7 +648,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -672,14 +669,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.cs
     symbol: RoomPetSystem
-    line: 90
+    line: 88
   - id: ev_4c36667ce9b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 54
+    line: 63
   - id: ev_50c83ecf3d31
     kind: emulator_flow
     authority: vortex_emulator
@@ -687,13 +684,20 @@ generated:
     source: Vortex.Rooms/Providers/RoomItemsProvider.cs
     symbol: RoomItemsProvider
     line: 43
+  - id: ev_556d41376c6f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamBook.cs
+    symbol: TeamBook
+    line: 166
   - id: ev_7327c7799f5f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Placement.cs
     symbol: RoomPetSystem
-    line: 265
+    line: 247
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -728,14 +732,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 55
-  - id: ev_7db64e908d04
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Systems/RoomGameSystem.cs
-    symbol: RoomGameSystem
-    line: 209
+    line: 58
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -756,7 +753,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
+  - id: ev_8f4d446a6466
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
+    symbol: RoomGameRuntime
+    line: 906
   - id: ev_9d8421b6228f
     kind: emulator_flow
     authority: vortex_emulator
@@ -777,21 +781,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Logic/Furniture/Floor/FurnitureFloorLogic.cs
     symbol: FurnitureFloorLogic
-    line: 55
+    line: 66
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 106
+    line: 107
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 340
+    line: 358
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator
@@ -805,7 +809,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -819,7 +823,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 277
+    line: 278
   - id: ev_d55e02c7465d
     kind: emulator_flow
     authority: vortex_emulator
@@ -833,7 +837,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 212
+    line: 362
   - id: ev_e4165c982e0e
     kind: emulator_flow
     authority: vortex_emulator
@@ -847,14 +851,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 35
+    line: 38
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 155
+    line: 156
   - id: ev_ec0b4c2b0a97
     kind: emulator_flow
     authority: vortex_emulator

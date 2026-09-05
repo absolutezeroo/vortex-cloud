@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6c76a391b94a4502c9f462af41ab2f733a816e67a3b6a25dbde0ed8969913e1b"
+generated_digest: "sha256:abe6f95a63ee8bf37c3703af4513dacdedad12f801c1699391b6f9e002ad0a3a"
 generated:
   feature: room.open_room_for_player_id
   scenarios:
@@ -327,7 +327,7 @@ generated:
       - OpenConnection
       - UserRemove
       - Users
-      evidence: ev_0e5bd3223d28
+      evidence: ev_24b2cc225747
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -342,13 +342,13 @@ generated:
     symbol: OpenFlatConnectionMessageEvent
     line: 10
     note: third-party server implementation; evidence, not authority
-  - id: ev_0e5bd3223d28
-    kind: emulator_flow
+  - id: ev_24b2cc225747
+    kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Systems/GameTeamState.cs
-    symbol: GameTeamState
-    line: 147
+    source: Vortex.PacketHandlers/Room/Session/OpenFlatConnectionMessageHandler.cs
+    symbol: OpenFlatConnectionMessageHandler
+    line: 9
   - id: ev_2747c101d5f4
     kind: emulator_flow
     authority: vortex_emulator
@@ -369,7 +369,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 56
+    line: 65
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
@@ -390,7 +390,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 68
+    line: 71
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator
@@ -404,6 +404,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 163
+    line: 164
 verified: {}
 manual: {}

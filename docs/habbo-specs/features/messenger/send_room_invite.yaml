@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:61b93b4781a4324fb7349a0573641944c60385ba7520d6dbb9d58b77d639ca9c"
+generated_digest: "sha256:b6cc40f351eeb7fcaab5dfa3bec1ab9ef313153526fd87c13b4912b5b63ab7bd"
 generated:
   id: messenger.send_room_invite
   domain: messenger
@@ -61,7 +61,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_4d6548f76fef
     kind: emulator_flow
     authority: vortex_emulator
@@ -82,7 +82,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/MessengerGrain.Presence.cs
     symbol: MessengerGrain
-    line: 145
+    line: 170
   scenarios:
   - messenger.send_room_invite.guard_0
   - messenger.send_room_invite.guard_1

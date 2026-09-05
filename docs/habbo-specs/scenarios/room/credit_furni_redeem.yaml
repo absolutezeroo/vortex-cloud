@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ac41fa92f141ee5aa0711677228ed6b5f0ca9b757ebdb42b4fadb20257717533"
+generated_digest: "sha256:ad38bb03846d1800edf40b15f70b76fa9f8268ce227de220d07d75c685124043"
 generated:
   feature: room.credit_furni_redeem
   scenarios:
@@ -160,7 +160,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 396
+    line: 467
   - id: ev_95434ff15887
     kind: emulator_flow
     authority: vortex_emulator

@@ -35,6 +35,7 @@ public class SendMsgMessageHandler(IGrainFactory grainFactory) : IMessageHandler
                 message.Message,
                 message.ChatId,
                 message.ConfirmationId,
+                habbiconId: 0,
                 ct
             )
             .ConfigureAwait(false);

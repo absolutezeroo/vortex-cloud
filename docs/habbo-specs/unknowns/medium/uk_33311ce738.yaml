@@ -10,22 +10,43 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:cf274968f07a471e7068a0da57985ae015160a211d0651a10ea8d1822186f97f"
+generated_digest: "sha256:c4df3fb898f475a2770f57e4e8495d2a6edd2984e81c1a0099683d33487a0ac1"
 generated:
   id: uk_33311ce738
   subject: "wired.wired_set_object_variable_value: what the server sends when it refuses"
   severity: medium
-  question: wired.wired_set_object_variable_value changes state and has 4 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: wired.wired_set_object_variable_value changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: wired.wired_set_object_variable_value
   known_evidence:
+  - id: ev_3fdb23ee39cd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/PermissionSet.cs
+    symbol: PermissionSet
+    line: 33
   - id: ev_4b42983a07ff
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Wired.PermanentVariables.cs
     symbol: RoomGrain
-    line: 83
+    line: 85
+  - id: ev_7aa1dee31dfd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
+    symbol: RoomSecurityPolicy
+    line: 17
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 194
   - id: ev_9ad843db6303
     kind: emulator_handler
     authority: vortex_emulator

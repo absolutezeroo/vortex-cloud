@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3edd05485a0367f8ce0933018cebed2c58ee000c875b04cad8f1649ad2067a62"
+generated_digest: "sha256:df0db27f578c3b013c1928cef6f9c4aa2627849c5b09f7309399e24d04c4215b"
 generated:
   id: handshake.info_retrieve
   domain: handshake
@@ -49,7 +49,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 219
+    line: 255
   - id: ev_bc151838dd5f
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d7773768a4d63131b92a015947b8843ae9ee639dffbb2da86c10e81de65e1975"
+generated_digest: "sha256:fcc14a7ee6b91e66ce808196fc3da1d6af143de504ee3dddb0dabeba37a4ba8d"
 generated:
   id: room.change_posture
   domain: room
@@ -91,21 +91,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 315
+    line: 342
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 597
+    line: 686
   scenarios:
   - room.change_posture.guard_0
   - room.change_posture.guard_1

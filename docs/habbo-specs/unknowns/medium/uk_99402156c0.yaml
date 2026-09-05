@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8d0bd3b66684091b76d219809ddaad23264d56a65619d1cfe4197a7865be735c"
+generated_digest: "sha256:35ab9511645e6410fcbe1ac93646a920a6be7e160cd84b533e8f3780b0e291f3"
 generated:
   id: uk_99402156c0
   subject: "preferences.set_chat_style_preference: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 195
+    line: 231
   - id: ev_43fea8875098
     kind: emulator_flow
     authority: vortex_emulator

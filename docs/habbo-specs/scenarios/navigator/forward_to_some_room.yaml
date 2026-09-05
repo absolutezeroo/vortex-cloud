@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:898a9e9fb25b9a9aa2615c75f2dbb200c8e304763313f459630af95b10d7608d"
+generated_digest: "sha256:9b5cfb07a1ab029f2dec1bd50d8eed81f35b45c6906bd7ce40c3a003d4834fe1"
 generated:
   feature: navigator.forward_to_some_room
   scenarios:
@@ -58,32 +58,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_9ad422e8891e
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - RoomForward
-      - RoomForward
-      - NavigatorSettings
-      evidence: ev_bdf4a449395f
-  - scenario: navigator.forward_to_some_room.guard_2
-    title: "forward to some room: the guard 'effectIds.Count == 0' holds"
-    given:
-      guard: effectIds.Count == 0
-      guard_holds: "true"
-    when:
-      packet: ForwardToSomeRoom
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ForwardToSomeRoom sent while 'effectIds.Count == 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_fe1afccfe33a
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -142,12 +116,5 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ForwardToSomeRoomMessageHandler.cs
     symbol: ForwardToSomeRoomMessageHandler
     line: 29
-  - id: ev_fe1afccfe33a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Wired/WiredUnseenCycle.cs
-    symbol: WiredUnseenCycle
-    line: 23
 verified: {}
 manual: {}

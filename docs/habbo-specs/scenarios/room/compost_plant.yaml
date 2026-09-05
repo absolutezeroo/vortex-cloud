@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b24ba16422e958701ce0c85d9063510ec34b74290f262836b999474c14e15dac"
+generated_digest: "sha256:7d39c7273512d55488b1d8b964cbc87d6dafc882cf0c901d69e11d7ab9124c0f"
 generated:
   feature: room.compost_plant
   scenarios:
@@ -156,6 +156,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.Plants.cs
     symbol: RoomPetSystem
-    line: 221
+    line: 220
 verified: {}
 manual: {}

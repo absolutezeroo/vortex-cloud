@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e349e22bea79f435e8d2d160321c5fa164c264ccee4f747f47517ef95d9a8e04"
+generated_digest: "sha256:6affc7aba59747c7a7e0cd54096ed79ed048873f5b88335df05c5366aed896d2"
 generated:
   id: catalog.redeem_voucher
   domain: catalog
@@ -61,7 +61,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
-    line: 112
+    line: 123
   - id: ev_539488477073
     kind: emulator_flow
     authority: vortex_emulator

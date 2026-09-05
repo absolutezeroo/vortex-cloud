@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:048e341e62801f0e6484b6546695cf517e5ff0055bad1926f3f382d06c4229c3"
+generated_digest: "sha256:0c3b74587bbca6bd804e2aa84a9ccb68ee7d22513adb5b62edb9861f7b6be0fa"
 generated:
   id: uk_e828eb233e
   subject: "room.resolve_for_player: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/RentableSpaceGrain.cs
     symbol: RentableSpaceGrain
-    line: 353
+    line: 411
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d77a349071e916cbae8a13a6e4af4b1bdfd2305410bd575e8df0e91529af4847"
+generated_digest: "sha256:5566c38de37ab8625309b7788552517c83152a78cf24b6d54f81d7ef9f6a826a"
 generated:
   id: avatar.change_user_name
   domain: avatar
@@ -166,7 +166,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 124
+    line: 128
   - id: ev_26f996b19e2c
     kind: emulator_flow
     authority: vortex_emulator
@@ -208,35 +208,35 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/Player/RoomPlayerAvatar.cs
     symbol: RoomPlayerAvatar
-    line: 32
+    line: 45
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 165
+    line: 167
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 255
+    line: 278
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 420
+    line: 509
   - id: ev_ede91c591c8c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Primitives/Players/NameChangePolicy.cs
     symbol: NameChangePolicy
-    line: 65
+    line: 76
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

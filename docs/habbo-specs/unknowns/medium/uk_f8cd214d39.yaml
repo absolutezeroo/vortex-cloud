@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:425d06d2d5e5a2354e75a7f5ed049951e6ee4ad68c6ab3295d233015039dced4"
+generated_digest: "sha256:74d8cefbf05571bd933fc5e41b3761250c29370807fd04ac7d520dd6f40958cc"
 generated:
   id: uk_f8cd214d39
   subject: "room.open_mystery_trophy: what the server sends when it refuses"
   severity: medium
-  question: room.open_mystery_trophy changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.open_mystery_trophy changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.open_mystery_trophy
   known_evidence:
@@ -33,6 +33,27 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_4c36667ce9b9
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomItemIndex.cs
+    symbol: RoomItemIndex
+    line: 63
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 190
+  - id: ev_761b76967e2f
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
+    symbol: RoomObjectModule
+    line: 86
   - id: ev_7bc4f7ccb5ef
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,6 +82,13 @@ generated:
     source: Vortex.Rooms/RoomService.MysteryBox.cs
     symbol: RoomService
     line: 32
+  - id: ev_9f45a8c43da8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
+    symbol: RoomAvatar
+    line: 60
   - id: ev_ac1d7d4655f5
     kind: emulator_handler
     authority: vortex_emulator
@@ -75,6 +103,13 @@ generated:
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
     line: 181
+  - id: ev_b46938ec853d
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.cs
+    symbol: RoomGrain
+    line: 278
   - id: ev_b533730b6457
     kind: emulator_flow
     authority: vortex_emulator
@@ -82,13 +117,41 @@ generated:
     source: Vortex.Furniture/ExtraDataWriter.cs
     symbol: ExtraDataWriter
     line: 31
+  - id: ev_c26714967e6b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
+    symbol: RoomMapModule
+    line: 278
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 679
+    line: 682
+  - id: ev_db615f36b20b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
+    symbol: RoomMapModule
+    line: 362
+  - id: ev_e439cab6b248
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
+    symbol: RoomPersistenceGrain
+    line: 38
+  - id: ev_e6fef545a42a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
+    symbol: RoomAvatarModule
+    line: 435
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

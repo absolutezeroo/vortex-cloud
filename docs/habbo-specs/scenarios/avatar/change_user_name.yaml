@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0e3f2bd798b7c5d4851a55e448a584e55cb75774408276a1e85d098058e7b825"
+generated_digest: "sha256:0d383619c2f91c9986662ffc1c2a2e9120c2dd2a7ccdc3c1eff9bf2e02839279"
 generated:
   feature: avatar.change_user_name
   scenarios:
@@ -291,7 +291,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 161
+    line: 165
   - id: ev_26f996b19e2c
     kind: emulator_flow
     authority: vortex_emulator
@@ -319,13 +319,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 425
+    line: 514
   - id: ev_ede91c591c8c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Primitives/Players/NameChangePolicy.cs
     symbol: NameChangePolicy
-    line: 67
+    line: 78
 verified: {}
 manual: {}

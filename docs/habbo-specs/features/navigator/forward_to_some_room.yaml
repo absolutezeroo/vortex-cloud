@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7ab439c9e8aef69752f9d2832972211d9f90e096d44a40d481d1dc10868e6327"
+generated_digest: "sha256:7c273e7f1e2bb2ec02b199d2d75c07d8131593e4c50006cb3be8e53a0125f728"
 generated:
   id: navigator.forward_to_some_room
   domain: navigator
@@ -38,21 +38,17 @@ generated:
     evidence: ev_f13d6bcce744
   - order: 3
     layer: domain
-    symbol: WiredUnseenCycle.Next
-    evidence: ev_fe1afccfe33a
-  - order: 4
-    layer: domain
     symbol: RoomForwardHelper.SendGuestRoomResultAsync
     evidence: ev_d0f38522a03a
-  - order: 5
+  - order: 4
     layer: grain
     symbol: RoomGrain.GetSnapshotAsync
     evidence: ev_b46938ec853d
-  - order: 6
+  - order: 5
     layer: grain
     symbol: GroupGrain.GetMemberRankAsync
     evidence: ev_25e7df53e794
-  - order: 7
+  - order: 6
     layer: domain
     symbol: MessageContext.SendComposerAsync
     evidence: ev_f4c4c4ae6ace
@@ -65,10 +61,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_9ad422e8891e
-  - expression: effectIds.Count == 0
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_fe1afccfe33a
   state_changes: []
   outgoing:
     ordering: unknown
@@ -118,7 +110,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 214
+    line: 247
   - id: ev_d0f38522a03a
     kind: emulator_flow
     authority: vortex_emulator
@@ -140,17 +132,9 @@ generated:
     source: Vortex.Messages/Registry/MessageContext.cs
     symbol: MessageContext
     line: 33
-  - id: ev_fe1afccfe33a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Wired/WiredUnseenCycle.cs
-    symbol: WiredUnseenCycle
-    line: 21
   scenarios:
   - navigator.forward_to_some_room.guard_0
   - navigator.forward_to_some_room.guard_1
-  - navigator.forward_to_some_room.guard_2
   - navigator.forward_to_some_room.success
   conflicts:
   - cf_5ef8337d97

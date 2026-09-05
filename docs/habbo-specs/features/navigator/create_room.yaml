@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d26060ba5fbf51f65af1b55ec9a34fbd85ae51455dcbc05a886783c2e0bd0d2c"
+generated_digest: "sha256:4eff8ef9e5c52efccd07b077a44d8bd246fda933f37d5af8418ecefc9468e7db"
 generated:
   id: navigator.create_room
   domain: navigator
@@ -33,10 +33,26 @@ generated:
     symbol: RoomService.CreateRoomAsync
     evidence: ev_f8d4827f4b8f
   - order: 2
+    layer: grain
+    symbol: ServerConfigGrain.GetIntAsync
+    evidence: ev_86f81f4f919c
+  - order: 3
+    layer: domain
+    symbol: WiredVariableArithmetic.Clamp
+    evidence: ev_c70390fca34b
+  - order: 4
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
   checks:
+  - expression: ownedRooms >= maxRooms
+    on_fail: throw
+    observed_in: vortex
+    evidence: ev_f8d4827f4b8f
+  - expression: categoryId > 0 && !await dbCtx .NavigatorFlatCategories.AnyAsync(c => c.Id == categoryId, ct) .ConfigureAwait(false)
+    on_fail: throw
+    observed_in: vortex
+    evidence: ev_f8d4827f4b8f
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -69,6 +85,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
+  - id: ev_86f81f4f919c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/ServerConfigGrain.cs
+    symbol: ServerConfigGrain
+    line: 43
   - id: ev_b72e5f3cc941
     kind: emulator_flow
     authority: vortex_emulator
@@ -76,15 +99,24 @@ generated:
     source: Vortex.PacketHandlers/Navigator/CreateFlatMessageHandler.cs
     symbol: CreateFlatMessageHandler
     line: 38
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_f8d4827f4b8f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.Create.cs
     symbol: RoomService
-    line: 19
+    line: 22
   scenarios:
   - navigator.create_room.guard_0
+  - navigator.create_room.guard_1
+  - navigator.create_room.guard_2
   - navigator.create_room.success
   conflicts:
   - cf_2e7e3bbb3c

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:89e0c3295f80fba8fb8aef461847340f3ccce8009e077775350b4730beb612aa"
+generated_digest: "sha256:740d9363c17e71f0d430cbbd4e838b35327ff57c803a7100df00557c2a9ededa"
 generated:
   id: uk_4a7473a1ea
   subject: "navigator.resolve_for_player: what the server sends when it refuses"
   severity: medium
-  question: navigator.resolve_for_player changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: navigator.resolve_for_player changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: navigator.resolve_for_player
   known_evidence:
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 746
+    line: 764
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,5 +54,12 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ToggleStaffPickMessageHandler.cs
     symbol: ToggleStaffPickMessageHandler
     line: 12
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 259
 verified: {}
 manual: {}

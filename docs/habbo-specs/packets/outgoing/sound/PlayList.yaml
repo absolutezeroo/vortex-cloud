@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2e31d2c388c9e5e8994e9c992cf3e1b95a178d8ca6e19f78cd5d3c0215f6cd3b"
+generated_digest: "sha256:e43433b7d067ef717dab0c980d2cc29b704cf6ad6cd4059d47fbd99474a37253"
 generated:
   name: PlayList
   direction: outgoing
   domain: sound
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: synchronization_count
@@ -26,49 +26,49 @@ generated:
     evidence:
     - ev_52d8949667cb
   - index: 1
-    name: unknown_1
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_52d8949667cb
+    - ev_eec17e13dda0
   - index: 2
-    name: unknown_2
+    name: id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_52d8949667cb
+    - ev_eec17e13dda0
   - index: 3
-    name: unknown_3
+    name: length_ms
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_52d8949667cb
+    - ev_eec17e13dda0
   - index: 4
-    name: unknown_4
+    name: name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_52d8949667cb
+    - ev_eec17e13dda0
   - index: 5
-    name: unknown_5
+    name: creator
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_52d8949667cb
+    - ev_eec17e13dda0
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -100,6 +100,15 @@ generated:
     - string
     - string
     evidence: ev_15c39f75eda3
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - array
+    evidence: ev_eec17e13dda0
   evidence:
   - id: ev_52d8949667cb
     kind: client_parser
@@ -125,9 +134,14 @@ generated:
     symbol: PlayListMessageComposer
     line: 24
     note: third-party server implementation; evidence, not authority
+  - id: ev_eec17e13dda0
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Sound/PlayListMessageComposerSerializer.cs
+    symbol: PlayListMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_da240e7476
-  unknowns:
-  - uk_057b7f2ece
 verified: {}
 manual: {}

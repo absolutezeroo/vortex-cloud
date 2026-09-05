@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:72f523d5f6e6378cd028fc306d29c0a93218986743d7c26b3c22643450187c46"
+generated_digest: "sha256:ef90c835df0a6bbc811511841c07b5e3584fa27517ed3cd301ab710aef823c32"
 generated:
   name: SetClothingChangeData
   direction: incoming
@@ -70,9 +70,12 @@ generated:
     evidence: ev_514c5f13d28b
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 3
     partial: false
-    types: []
+    types:
+    - int32
+    - string
+    - string
     evidence: ev_d8755b3656fb
   evidence:
   - id: ev_62b62f643cca

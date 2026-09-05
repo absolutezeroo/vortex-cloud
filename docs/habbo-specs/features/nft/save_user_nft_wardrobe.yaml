@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:01c5999903e2f91d8076653cbe132fc2d2ace541d82b688b10b31d6d26521074"
+generated_digest: "sha256:dffd5153f117b4edad9a2c25096a32bfba04f59508f5f2824a6366ec9c72b6bf"
 generated:
   id: nft.save_user_nft_wardrobe
   domain: nft
@@ -104,7 +104,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 219
+    line: 255
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

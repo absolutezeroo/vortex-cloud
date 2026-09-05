@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b13c85a05acc12222730c79cfdbd7bc148b762df2b11cc40d159b2da4c2d224b"
+generated_digest: "sha256:a2cca9abe2d5cd69bbb131d1b406fb581ed4dc781b410adc6e448be875a1b3b0"
 generated:
   id: wired.open_wired_chest
   domain: wired
@@ -103,10 +103,6 @@ generated:
     layer: domain
     symbol: WiredChestStore.CanUseChestAsync
     evidence: ev_d3a71568179c
-  - order: 20
-    layer: domain
-    symbol: WiredChestStore.ReadAsync
-    evidence: ev_d3a71568179c
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -136,6 +132,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.None
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -254,7 +254,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 186
+    line: 194
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator

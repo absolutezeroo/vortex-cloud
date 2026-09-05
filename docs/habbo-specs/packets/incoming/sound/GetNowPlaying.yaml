@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:78720e0189233f1823ceb9079e591283a74bdc1877658a45f78e1d0ade42946b"
+generated_digest: "sha256:e42beaf45fa26b5b9a4386984e0c034261ae4a430369a21868071bc9de1d4b0d"
 generated:
   name: GetNowPlaying
   direction: incoming
@@ -76,5 +76,7 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Sound/GetNowPlayingMessageParser.cs
     symbol: GetNowPlayingMessageParser
     line: 7
+  conflicts:
+  - cf_a805f25c04
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f228db0f006524bb1924f454438a23384a0fabc6657e1e26792fa9cd931f64fa"
+generated_digest: "sha256:9c8a96f2209d5b6f8555c07531aa0f02665e7eee2f342b8cfd12ab9b23a34273"
 generated:
   feature: room.present_open
   scenarios:
@@ -189,16 +189,16 @@ generated:
       - HeightMapUpdate
       evidence: ev_c4fa7e863527
   - scenario: room.present_open.guard_4
-    title: "present open: the guard '!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)' holds"
+    title: "present open: the guard '!await ConsumeItemAsync(ctx, item, ItemDeletionReason.Pre...' holds"
     given:
-      guard: "!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)"
+      guard: "!await ConsumeItemAsync(ctx, item, ItemDeletionReason.PresentOpened, ct) .ConfigureAwait(true)"
       guard_holds: "true"
     when:
       packet: PresentOpen
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PresentOpen sent while '!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PresentOpen sent while '!await ConsumeItemAsync(ctx, item, ItemDeletionReason.PresentOpened, ct) .ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -428,7 +428,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 431
+    line: 505
   - id: ev_845cc9ed930f
     kind: emulator_flow
     authority: vortex_emulator
@@ -442,7 +442,7 @@ generated:
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.Gift.cs
     symbol: CatalogPurchaseGrain
-    line: 190
+    line: 240
   - id: ev_d53218d99bdd
     kind: emulator_flow
     authority: vortex_emulator

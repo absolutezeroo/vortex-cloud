@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:32ccba4dcab6473735e231238ca31e3df8e0cf60f162a64e45e8c494a55008e0"
+generated_digest: "sha256:810a8a9d00dde5959f9d304f8d22289d7856c73819713505fbbff9a6017da36f"
 generated:
   id: room.enter_one_way_door
   domain: room
@@ -46,17 +46,29 @@ generated:
     evidence: ev_c26714967e6b
   - order: 5
     layer: module
-    symbol: RoomMapModule.RollAvatar
-    evidence: ev_db615f36b20b
+    symbol: RoomAvatarModule.CancelWalk
+    evidence: ev_e6fef545a42a
   - order: 6
     layer: domain
-    symbol: RoomAvatar.SetHeight
+    symbol: RoomAvatar.SetGoalTileId
     evidence: ev_9f45a8c43da8
   - order: 7
     layer: domain
-    symbol: RoomAvatar.SetBodyRotation
+    symbol: RoomAvatar.RemoveStatus
     evidence: ev_9f45a8c43da8
   - order: 8
+    layer: module
+    symbol: RoomMapModule.RollAvatar
+    evidence: ev_db615f36b20b
+  - order: 9
+    layer: domain
+    symbol: RoomAvatar.SetHeight
+    evidence: ev_9f45a8c43da8
+  - order: 10
+    layer: domain
+    symbol: RoomAvatar.SetBodyRotation
+    evidence: ev_9f45a8c43da8
+  - order: 11
     layer: domain
     symbol: RoomAvatar.SetHeadRotation
     evidence: ev_9f45a8c43da8
@@ -81,6 +93,18 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_5e51a330c801
+  - expression: tileId == -1
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9f45a8c43da8
+  - expression: _goalTries == 3
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9f45a8c43da8
+  - expression: types.Length == 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9f45a8c43da8
   - expression: "!InBounds(tileIdx)"
     on_fail: throw
     observed_in: vortex
@@ -107,6 +131,14 @@ generated:
     observed_in: vortex
     evidence: ev_5e51a330c801
   - target: avatar
+    value: avatar.SetGoalTileId(-1)
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar
+    value: avatar.RemoveStatus(AvatarStatusType.Move)
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar
     value: avatar.SetPosition(GetX(tileIdx), GetY(tileIdx))
     observed_in: vortex
     evidence: ev_db615f36b20b
@@ -114,6 +146,30 @@ generated:
     value: avatar.SetHeight(z)
     observed_in: vortex
     evidence: ev_db615f36b20b
+  - target: avatar.IsWalking
+    value: "false"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar.NeedsInvoke
+    value: "true"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar.NextMoveStepAtMs
+    value: "0"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar.NextMoveUpdateAtMs
+    value: "0"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar.NextTileId
+    value: "-1"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
+  - target: avatar.PendingStopAtMs
+    value: "0"
+    observed_in: vortex
+    evidence: ev_e6fef545a42a
   outgoing:
     ordering: unknown
     packets:
@@ -140,7 +196,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 285
+    line: 352
   - id: ev_6307e5751d5d
     kind: emulator_flow
     authority: vortex_emulator
@@ -154,21 +210,28 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 60
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 34
+    line: 35
   - id: ev_db615f36b20b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Avatar.cs
     symbol: RoomMapModule
-    line: 173
+    line: 323
+  - id: ev_e6fef545a42a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
+    symbol: RoomAvatarModule
+    line: 421
   - id: ev_ec05fa1b0194
     kind: emulator_flow
     authority: vortex_emulator
@@ -179,6 +242,8 @@ generated:
   scenarios:
   - room.enter_one_way_door.guard_0
   - room.enter_one_way_door.guard_1
+  - room.enter_one_way_door.guard_10
+  - room.enter_one_way_door.guard_11
   - room.enter_one_way_door.guard_2
   - room.enter_one_way_door.guard_3
   - room.enter_one_way_door.guard_4
@@ -186,6 +251,7 @@ generated:
   - room.enter_one_way_door.guard_6
   - room.enter_one_way_door.guard_7
   - room.enter_one_way_door.guard_8
+  - room.enter_one_way_door.guard_9
   - room.enter_one_way_door.success
   unknowns:
   - uk_107ee78c86

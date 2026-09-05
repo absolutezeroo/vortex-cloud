@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:47697f6aa978b882c340e7f6eac7e25a6fd3ac76d19a4b4cd2651203d848f798"
+generated_digest: "sha256:e394fd25d49d0de1dab673ad5f4c2e5516b608ef424b975addc36b4ee17bd7a7"
 generated:
   feature: avatar.check_user_name
   scenarios:
@@ -194,6 +194,6 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Players/NameChangePolicy.cs
     symbol: NameChangePolicy
-    line: 67
+    line: 78
 verified: {}
 manual: {}

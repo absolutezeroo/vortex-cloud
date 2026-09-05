@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:40cde7746a5627a83d87b9e454fa3e325e012ff0e8bfc345ecd281e711046243"
+generated_digest: "sha256:798283f352cdf4a809f8cc2bdd6655ec34da6d4efae01e0359025cbc8709dcf6"
 generated:
   feature: navigator.resolve_for_player
   scenarios:
@@ -87,6 +87,30 @@ generated:
       - GetGuestRoomResult
       evidence: ev_984fd91a97b7
   - scenario: navigator.resolve_for_player.guard_3
+    title: "resolve for player: the guard '!await SecurityModule .HasCapabilityAsync(actor, Capabili...' holds"
+    given:
+      guard: "!await SecurityModule .HasCapabilityAsync(actor, Capabilities.Navigator.StaffPick) .ConfigureAwait(true)"
+      guard_holds: "true"
+    when:
+      packet: ToggleStaffPick
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of ToggleStaffPick sent while '!await SecurityModule .HasCapabilityAsync(actor, Capabilities.Navigator.StaffPick) .ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_329537530b13
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - GetGuestRoomResult
+      evidence: ev_984fd91a97b7
+  - scenario: navigator.resolve_for_player.guard_4
     title: "resolve for player: the guard 'entity is null' holds"
     given:
       guard: entity is null
@@ -104,6 +128,30 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_329537530b13
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - GetGuestRoomResult
+      evidence: ev_984fd91a97b7
+  - scenario: navigator.resolve_for_player.guard_5
+    title: "resolve for player: the guard 'actor <= 0' holds"
+    given:
+      guard: actor <= 0
+      guard_holds: "true"
+    when:
+      packet: ToggleStaffPick
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of ToggleStaffPick sent while 'actor <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_82c2d2746361
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -155,7 +203,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 758
+    line: 769
   - id: ev_743940bb69f7
     kind: emulator_flow
     authority: vortex_emulator
@@ -163,5 +211,12 @@ generated:
     source: Vortex.Authentication/Permissions/PermissionService.cs
     symbol: PermissionService
     line: 62
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 261
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:656be2e30bc9479d472ae52db08c3dbbdb200496dd72fb2417de82ac8a0de368"
+generated_digest: "sha256:25ffe7d5c03fcceca6184ffbef5d9edab1f9a35a3a8889d79e6317ad5a57f6bb"
 generated:
   id: messenger.habbo_search
   domain: messenger
@@ -41,6 +41,10 @@ generated:
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
   - order: 4
+    layer: domain
+    symbol: TeamSet.Contains
+    evidence: ev_b261d7a833b8
+  - order: 5
     layer: grain
     symbol: PlayerDirectoryGrain.SearchPlayersAsync
     evidence: ev_7f41f2bdde62
@@ -84,6 +88,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 43
+  - id: ev_b261d7a833b8
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Games/Teams/TeamSet.cs
+    symbol: TeamSet
+    line: 92
   - id: ev_e805723a88fe
     kind: emulator_flow
     authority: vortex_emulator

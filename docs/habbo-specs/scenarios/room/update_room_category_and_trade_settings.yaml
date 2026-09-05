@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:83be18a8c57b9e84154a3198441041742b621801086ed96fbad6357de0244eea"
+generated_digest: "sha256:c2ae2feb2571b6e5568192e3818d8ed3c1f0c58c211c13f89c2f7fefb7e72ffb"
 generated:
   feature: room.update_room_category_and_trade_settings
   scenarios:
@@ -111,7 +111,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Settings.cs
     symbol: RoomGrain
-    line: 323
+    line: 341
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

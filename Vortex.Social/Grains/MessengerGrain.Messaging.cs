@@ -8,6 +8,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Orleans;
@@ -27,6 +28,7 @@ internal sealed partial class MessengerGrain
         string message,
         int chatId,
         int confirmationId,
+        int habbiconId,
         CancellationToken ct
     )
     {
@@ -57,6 +59,7 @@ internal sealed partial class MessengerGrain
             SenderEntityId = SelfId,
             ReceiverEntityId = receiverId.Value,
             Message = message,
+            HabbiconId = habbiconId,
             Timestamp = now,
             Delivered = false,
             SenderEntity = selfEntity,
@@ -76,9 +79,19 @@ internal sealed partial class MessengerGrain
                 message,
                 now,
                 msgEntity.Id,
+                habbiconId,
                 CancellationToken.None
             )
         );
+
+        // Accepted and on its way. Raised after the friend and block rules rather than when the
+        // packet arrived, so a message either of them refused is not one anything can reward.
+        await events
+            .PublishAsync(
+                new MessengerMessageSentEvent(SelfId, receiverId, habbiconId),
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
 
         return null;
     }
@@ -90,6 +103,7 @@ internal sealed partial class MessengerGrain
         string message,
         DateTime timestamp,
         int messageId,
+        int habbiconId,
         CancellationToken ct
     )
     {
@@ -107,6 +121,7 @@ internal sealed partial class MessengerGrain
                 {
                     ChatId = senderId.Value,
                     Message = message,
+                    HabbiconId = habbiconId,
                     SecondsSinceSent = secondsSinceSent,
                     MessageId = messageId.ToString(),
                     ConfirmationId = 0,
@@ -162,6 +177,7 @@ internal sealed partial class MessengerGrain
                 SenderName = m.SenderEntity.Name,
                 SenderFigure = m.SenderEntity.Figure,
                 Message = m.Message,
+                HabbiconId = m.HabbiconId,
                 SecondsSinceSent = (int)(now - m.Timestamp).TotalSeconds,
                 MessageId = m.Id.ToString(),
             })

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fb51d77ce1cfadd373115b68c5a00a8a66f9e72a02544ce745292a5f0b247149"
+generated_digest: "sha256:67d38ca3ed1df946b0797db23ec5014a595ac59d2541c4a183f59d10f94191ed"
 generated:
   feature: room.pickup_item_in_room
   scenarios:
@@ -331,7 +331,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 124
+    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -345,7 +345,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomItemIndex.cs
     symbol: RoomItemIndex
-    line: 56
+    line: 65
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -359,7 +359,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 336
+    line: 368
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
@@ -380,7 +380,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
     symbol: RoomMysteryBoxSystem
-    line: 356
+    line: 374
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -401,6 +401,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
     symbol: RoomAvatarModule
-    line: 350
+    line: 439
 verified: {}
 manual: {}

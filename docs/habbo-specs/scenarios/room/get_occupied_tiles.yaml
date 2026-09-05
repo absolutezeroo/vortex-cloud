@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ae133fa281abb23bbf6f4fad8a97a0f4e3fefe31ff943ea7f3a5776ddca080e6"
+generated_digest: "sha256:86c439631efc04af9849d802fadf06a6574037991e36a4a1c247680a92e3c106"
 generated:
   feature: room.get_occupied_tiles
   scenarios:
@@ -115,6 +115,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
-    line: 437
+    line: 447
 verified: {}
 manual: {}

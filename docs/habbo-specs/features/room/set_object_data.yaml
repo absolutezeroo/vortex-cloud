@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:33b4ade03b107f7253d89b32d2f7217cd3aed8d852958066a847006a81894321"
+generated_digest: "sha256:d8b5dc9633e002d8f03e947185a8eec3eee0c54d15d5e8d81e5af23a50e93233"
 generated:
   id: room.set_object_data
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - SetObjectData
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,24 +28,58 @@ generated:
     layer: handler
     symbol: SetObjectDataMessageHandler.HandleAsync
     evidence: ev_c8aef3ad40e6
-  checks: []
-  state_changes: []
+  - order: 1
+    layer: grain
+    symbol: RoomGrain.SetObjectDataAsync
+    evidence: ev_5e51a330c801
+  checks:
+  - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Pairs.IsDefaultOrEmpty
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_ead081b2ea17
+  - expression: item?.Logic.StuffData is not IMapStuffData map
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_5e51a330c801
+  state_changes:
+  - target: grainFactory .GetRoomFurni(ctx.RoomId)
+    value: grainFactory .GetRoomFurni(ctx.RoomId) .SetObjectDataAsync(ctx.AsActionContext(), message.ItemId, message.Pairs, ct)
+    observed_in: vortex
+    evidence: ev_ead081b2ea17
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: false
   evidence:
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 666
   - id: ev_c8aef3ad40e6
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/SetObjectDataMessageHandler.cs
     symbol: SetObjectDataMessageHandler
-    line: 8
+    line: 14
+  - id: ev_ead081b2ea17
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Room/Engine/SetObjectDataMessageHandler.cs
+    symbol: SetObjectDataMessageHandler
+    line: 23
   scenarios:
+  - room.set_object_data.guard_0
+  - room.set_object_data.guard_1
   - room.set_object_data.success
+  conflicts:
+  - cf_85d2777b5c
   unknowns:
-  - uk_6d8fbb6978
+  - uk_3bd9f9844b
 verified:
   the_count_is_strings_not_pairs:
     confidence: assumed
@@ -60,4 +94,4 @@ verified:
     claim: The pairs are merged into the furni's existing data key by key; keys not mentioned are left alone.
     reason: "The client sends the fields its editor showed, and a furni's data generally carries more than one editor writes. Replacing the whole map would clear whatever another dialog had set. What the official server does is unknown. An empty key is dropped: it round-trips as a nameless field and shows up as a blank row in every editor that reads the furni afterwards."
 manual:
-  applies_to: "Only furniture whose stuff data is a map. A furni carrying legacy or typed data is refused rather than converted."
+  applies_to: Only furniture whose stuff data is a map. A furni carrying legacy or typed data is refused rather than converted.

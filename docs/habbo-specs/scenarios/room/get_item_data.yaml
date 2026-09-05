@@ -10,10 +10,58 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a0b0167d4bf5ad79e08ce29bebc91597b5e8d352b4bb9a58267ee29f58335b2b"
+generated_digest: "sha256:4bb24e69443a2db155e3c3ec0cd6a495a2527c8b021c71cfbc80c70a2c3c5a37"
 generated:
   feature: room.get_item_data
   scenarios:
+  - scenario: room.get_item_data.guard_0
+    title: "get item data: the guard 'ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: GetItemData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetItemData sent while 'ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c3e9abc54f38
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - ItemDataUpdate
+      evidence: ev_550c8b7bbfce
+  - scenario: room.get_item_data.guard_1
+    title: "get item data: the guard 'data is null' holds"
+    given:
+      guard: data is null
+      guard_holds: "true"
+    when:
+      packet: GetItemData
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetItemData sent while 'data is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c3e9abc54f38
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - ItemDataUpdate
+      evidence: ev_550c8b7bbfce
   - scenario: room.get_item_data.success
     title: "get item data: the request is accepted"
     given:
@@ -28,9 +76,10 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_961bf28d8436
+      outcome: success
+      emits:
+      - ItemDataUpdate
+      evidence: ev_5e51a330c801
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -46,12 +95,19 @@ generated:
     symbol: GetItemDataMessageEvent
     line: 11
     note: third-party server implementation; evidence, not authority
-  - id: ev_961bf28d8436
-    kind: emulator_handler
+  - id: ev_5e51a330c801
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
+    symbol: RoomGrain
+    line: 630
+  - id: ev_c3e9abc54f38
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Engine/GetItemDataMessageHandler.cs
     symbol: GetItemDataMessageHandler
-    line: 8
+    line: 28
 verified: {}
 manual: {}
