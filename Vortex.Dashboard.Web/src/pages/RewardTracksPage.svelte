@@ -90,7 +90,11 @@
   );
 
   let items = $derived(tracks.data?.items ?? []);
-  let actions = $derived(tracks.data?.actions ?? []);
+  // NOT `actions`: every Drawer footer here is an `{#snippet actions()}`, and a snippet is hoisted
+  // to its enclosing block -- so inside `{#if taskDraft}` the name resolved to the footer snippet
+  // instead of this array. Iterating a function yields nothing and throws nothing, which is how the
+  // action picker shipped as an empty menu.
+  let actionOptions = $derived(tracks.data?.actions ?? []);
   let kinds = $derived(tracks.data?.kinds ?? []);
   let live = $derived(items.filter((it) => it.status === 'Active').length);
   let participants = $derived(items.reduce((sum, it) => sum + it.participants, 0));
@@ -121,7 +125,7 @@
     return {
       trackRowId,
       taskId: '',
-      actionCode: actions[0]?.name ?? '',
+      actionCode: actionOptions[0]?.name ?? '',
       parameter: '',
       mode: 0,
       premium: false,
@@ -912,7 +916,7 @@
     <label>
       {$t('rewardTracks.action')}
       <select bind:value={taskDraft.form.actionCode}>
-        {#each actions as action (action.name)}
+        {#each actionOptions as action (action.name)}
           <option value={action.name}>
             {action.name}{action.wired ? '' : ` — ${translate('rewardTracks.notWired')}`}
           </option>
