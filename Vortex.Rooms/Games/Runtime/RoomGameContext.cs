@@ -211,6 +211,14 @@ internal sealed class RoomGameContext(
             return;
         }
 
+        // Before the move, never after: the walk tick steps through TilePath, and that path was
+        // routed from the tile the avatar is being taken off. Left in place it walks them straight
+        // back towards the old goal with the move status still on — which reads as the teleport
+        // being undone, with the avatar stuck in its walk animation. The wired move-user path has
+        // always cancelled here; this one, which every game teleport goes through (the Banzai random
+        // teleporter, the Freeze exit), did not.
+        _roomGrain.AvatarModule.CancelWalk(avatar);
+
         _roomGrain.MapModule.RollAvatar(avatar, tileIdx, _roomGrain._state.TileHeights[tileIdx]);
 
         await _roomGrain.SendComposerToRoomAsync(

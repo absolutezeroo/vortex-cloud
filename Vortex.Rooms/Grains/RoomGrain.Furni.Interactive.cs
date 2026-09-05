@@ -407,6 +407,10 @@ public sealed partial class RoomGrain
             )
             .ConfigureAwait(true);
 
+        // Same reason as every other relocation: a queued path routed from the tile in front of the
+        // door walks the avatar back out of it.
+        AvatarModule.CancelWalk(avatar);
+
         MapModule.RollAvatar(avatar, exitIdx, _state.TileHeights[exitIdx]);
 
         Rotation facing = gate.Rotation;
