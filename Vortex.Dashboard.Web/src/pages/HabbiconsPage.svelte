@@ -17,6 +17,7 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import Drawer from '../components/Drawer.svelte';
   import EmptyState from '../components/EmptyState.svelte';
+  import HabbiconSprite from '../components/HabbiconSprite.svelte';
   import OpResult from '../components/OpResult.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -53,6 +54,13 @@
   );
 
   let items = $derived(collections.data?.items ?? []);
+  // Null until an asset pack is installed; every sprite then falls back to a placeholder tile.
+  let artwork = $derived(collections.data?.artwork ?? null);
+  // The ownership tab reads ids out of a different endpoint, so it borrows the collection list's
+  // frames rather than shipping the pack twice.
+  let spriteById = $derived(
+    new Map(items.flatMap((c) => c.habbicons.map((h) => [h.id, h.sprite ?? null])))
+  );
   let totalHabbicons = $derived(items.reduce((sum, c) => sum + c.entryCount + (c.rewardHabbiconId ? 1 : 0), 0));
   let setsWithReward = $derived(items.filter((c) => c.rewardHabbiconId > 0).length);
 
@@ -316,8 +324,18 @@
               {#each items as collection (collection.id)}
                 <tr>
                   <td>
-                    <strong>{collection.code}</strong>
-                    <div class="muted small">{collection.localizationKey}</div>
+                    <div class="named">
+                      <HabbiconSprite
+                        sheet={artwork?.collectionSpritesheetUrl}
+                        sprite={collection.sprite}
+                        size={artwork?.collectionIconSize ?? 18}
+                        alt={collection.code}
+                      />
+                      <div>
+                        <strong>{collection.code}</strong>
+                        <div class="muted small">{collection.localizationKey}</div>
+                      </div>
+                    </div>
                   </td>
                   <td>{formatNumber(collection.entryCount)}</td>
                   <td>
@@ -411,11 +429,21 @@
                             <tr>
                               <td>{habbicon.id}</td>
                               <td>
-                                {habbicon.code}
-                                {#if habbicon.isCollectionReward}
-                                  <span class="op-chip">{$t('habbicons.setReward')}</span>
-                                {/if}
-                                <div class="muted small">{habbicon.localizationKey}</div>
+                                <div class="named">
+                                  <HabbiconSprite
+                                    sheet={artwork?.spritesheetUrl}
+                                    sprite={habbicon.sprite}
+                                    size={artwork?.frameSize ?? 40}
+                                    alt={habbicon.code}
+                                  />
+                                  <div>
+                                    {habbicon.code}
+                                    {#if habbicon.isCollectionReward}
+                                      <span class="op-chip">{$t('habbicons.setReward')}</span>
+                                    {/if}
+                                    <div class="muted small">{habbicon.localizationKey}</div>
+                                  </div>
+                                </div>
                               </td>
                               <td>
                                 {#if habbicon.priceCredits}{formatNumber(habbicon.priceCredits)} c{/if}
@@ -515,7 +543,17 @@
                 {#each ownership.data.items as row (row.habbiconId)}
                   <tr>
                     <td>{row.habbiconId}</td>
-                    <td>{row.code}</td>
+                    <td>
+                      <div class="named">
+                        <HabbiconSprite
+                          sheet={artwork?.spritesheetUrl}
+                          sprite={spriteById.get(row.habbiconId) ?? null}
+                          size={artwork?.frameSize ?? 40}
+                          alt={row.code}
+                        />
+                        <span>{row.code}</span>
+                      </div>
+                    </td>
                     <td>{row.state}</td>
                     <td>{row.source}</td>
                     <td>{formatDate(row.acquiredAt)}</td>
@@ -700,5 +738,12 @@
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+  }
+
+  /* Picture beside its name, the way `.bot-cell` and `.badge-cell` do it elsewhere. */
+  .named {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 </style>

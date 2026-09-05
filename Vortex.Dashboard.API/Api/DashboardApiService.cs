@@ -35,6 +35,7 @@ internal sealed partial class DashboardApiService(
     ISessionGateway sessionGateway,
     DashboardAssetUrls assetUrls,
     GamedataDocumentStore gamedata,
+    HabbiconArtwork habbiconArtwork,
     RoomPerformanceAggregator roomPerformance,
     IBenchmarkService benchmark,
     IOptions<ObservabilityConfig> options
@@ -44,6 +45,7 @@ internal sealed partial class DashboardApiService(
     private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly GamedataDocumentStore _gamedata = gamedata;
+    private readonly HabbiconArtwork _habbiconArtwork = habbiconArtwork;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IBenchmarkService _benchmark = benchmark;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Habbicons;
 using Vortex.Primitives.Habbicons;
@@ -66,6 +67,10 @@ internal sealed partial class DashboardApiService
                     .ToDictionaryAsync(x => x.HabbiconId, x => x.Owners, ct)
                     .ConfigureAwait(false);
 
+                // The client resolves a Habbicon's picture by id off its own spritesheet, so the
+                // dashboard does too. Null when no pack is installed: the page then lists codes.
+                HabbiconArtworkView? artwork = _habbiconArtwork.Read();
+
                 List<object> items = [];
 
                 foreach (HabbiconCollectionEntity collection in collections)
@@ -112,19 +117,33 @@ internal sealed partial class DashboardApiService
                             rewardHabbiconId = reward?.Id ?? 0,
                             rewardCode = reward?.Code ?? string.Empty,
                             completedBy,
+                            sprite = Sprite(artwork?.Collections, collection.Id),
                             habbicons = entries
-                                .Select(h => Describe(h, ownersByHabbicon))
+                                .Select(h => Describe(h, ownersByHabbicon, artwork))
                                 .Concat(
                                     reward is null
                                         ? []
-                                        : new[] { Describe(reward, ownersByHabbicon) }
+                                        : new[] { Describe(reward, ownersByHabbicon, artwork) }
                                 )
                                 .ToList(),
                         }
                     );
                 }
 
-                return new { count = items.Count, items };
+                return new
+                {
+                    count = items.Count,
+                    items,
+                    artwork = artwork is null
+                        ? null
+                        : new
+                        {
+                            spritesheetUrl = artwork.SpritesheetUrl,
+                            collectionSpritesheetUrl = artwork.CollectionSpritesheetUrl,
+                            frameSize = artwork.FrameSize,
+                            collectionIconSize = artwork.CollectionIconSize,
+                        },
+                };
             },
             ct
         );
@@ -181,9 +200,24 @@ internal sealed partial class DashboardApiService
         return new { count = items.Count, items };
     }
 
-    private static object Describe(HabbiconEntity habbicon, IReadOnlyDictionary<int, int> owners) =>
+    /// <summary>
+    /// Where an id sits on its sheet, or null when the pack does not carry it. Null rather than a
+    /// zero offset on purpose: (0,0) is a real frame, so a missing entry that defaulted there would
+    /// draw the first Habbicon under every id the pack forgot.
+    /// </summary>
+    private static object? Sprite(IReadOnlyDictionary<int, HabbiconFrame>? frames, int id) =>
+        frames is not null && frames.TryGetValue(id, out HabbiconFrame frame)
+            ? new { x = frame.X, y = frame.Y }
+            : null;
+
+    private static object Describe(
+        HabbiconEntity habbicon,
+        IReadOnlyDictionary<int, int> owners,
+        HabbiconArtworkView? artwork
+    ) =>
         new
         {
+            sprite = Sprite(artwork?.Icons, habbicon.Id),
             id = habbicon.Id,
             code = habbicon.Code,
             localizationKey = $"habbicon_{habbicon.Code}_name",

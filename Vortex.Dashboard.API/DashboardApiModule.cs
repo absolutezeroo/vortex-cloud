@@ -57,6 +57,9 @@ public sealed class DashboardApiModule : IHostPluginModule
         // Singleton because it caches a 38 MB parsed furnidata; a per-request instance would parse it
         // again on every keystroke of a search.
         services.TryAddSingleton<GamedataDocumentStore>();
+        // Reads the Habbicon spritesheet's metadata off the same asset pack, and caches it until the
+        // operator swaps the pack.
+        services.TryAddSingleton<HabbiconArtwork>();
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardMonitoringReads>();
