@@ -2294,6 +2294,7 @@ export default {
     noReward: 'Aucun',
     setPrice: 'Prix du set',
     notSoldAsSet: 'Pas vendu en set',
+    notSold: 'Pas vendu',
     completedBy: 'Complété par',
     state: 'État',
     disabled: 'Désactivé',

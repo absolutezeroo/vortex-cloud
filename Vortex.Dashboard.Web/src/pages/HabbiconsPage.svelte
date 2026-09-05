@@ -10,11 +10,18 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { identity } from '../lib/session.js';
   import { formatDate, formatNumber } from '../lib/format.js';
+  import {
+    CURRENCY_KIND,
+    currencyChipClass,
+    currencyKindFromRewardType,
+  } from '../lib/currency.js';
   import { t, translate } from '../lib/i18n.js';
   import { Smile, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import CurrencyIcon from '../components/CurrencyIcon.svelte';
+  import CurrencySelect from '../components/CurrencySelect.svelte';
   import Drawer from '../components/Drawer.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import HabbiconSprite from '../components/HabbiconSprite.svelte';
@@ -240,6 +247,36 @@
   }
 </script>
 
+<!--
+  A Habbicon carries both prices at once -- credits in one column, activity points in another with
+  their own type -- so the chip is per price, not per row. Same `cost-chip` the catalogue and the
+  quests use: the colour says which money before the number is read, and the icon is a third carrier
+  behind the colour and the written amount, never the only one.
+-->
+{#snippet priceChips(row, emptyLabel)}
+  <div class="chips">
+    {#if row.priceCredits}
+      <span class={currencyChipClass(CURRENCY_KIND.credits)}>
+        <CurrencyIcon kind={CURRENCY_KIND.credits} />
+        {formatNumber(row.priceCredits)}
+      </span>
+    {/if}
+    {#if row.priceActivityPoints}
+      {@const kind = currencyKindFromRewardType(row.activityPointType)}
+      <span class={currencyChipClass(kind)}>
+        <CurrencyIcon {kind} />
+        {formatNumber(row.priceActivityPoints)}
+        <!-- A seasonal currency nobody has tinted keeps its raw type, so the number is still
+             identifiable rather than silently blending into the neutral chip. -->
+        {#if kind === CURRENCY_KIND.points}#{row.activityPointType}{/if}
+      </span>
+    {/if}
+    {#if !row.priceCredits && !row.priceActivityPoints}
+      <span class="muted">{emptyLabel}</span>
+    {/if}
+  </div>
+{/snippet}
+
 <section class="panel">
   <PageHeader title={$t('habbicons.title')} description={$t('habbicons.subtitle')}>
     {#snippet actions()}
@@ -345,17 +382,7 @@
                       <span class="muted">{$t('habbicons.noReward')}</span>
                     {/if}
                   </td>
-                  <td>
-                    {#if collection.priceCredits}
-                      {formatNumber(collection.priceCredits)} c
-                    {/if}
-                    {#if collection.priceActivityPoints}
-                      {formatNumber(collection.priceActivityPoints)} p{collection.activityPointType}
-                    {/if}
-                    {#if !collection.priceCredits && !collection.priceActivityPoints}
-                      <span class="muted">{$t('habbicons.notSoldAsSet')}</span>
-                    {/if}
-                  </td>
+                  <td>{@render priceChips(collection, $t('habbicons.notSoldAsSet'))}</td>
                   <td>{formatNumber(collection.completedBy)}</td>
                   <td>
                     <div class="chips">
@@ -446,10 +473,13 @@
                                 </div>
                               </td>
                               <td>
-                                {#if habbicon.priceCredits}{formatNumber(habbicon.priceCredits)} c{/if}
-                                {#if habbicon.priceActivityPoints}
-                                  {formatNumber(habbicon.priceActivityPoints)} p{habbicon.activityPointType}
-                                {/if}
+                                <!-- A set reward is claimed, never sold, whatever its price says. -->
+                                {@render priceChips(
+                                  habbicon,
+                                  habbicon.isCollectionReward
+                                    ? $t('habbicons.setReward')
+                                    : $t('habbicons.notSold')
+                                )}
                               </td>
                               <td>{formatNumber(habbicon.owners)}</td>
                               <td>
@@ -605,10 +635,14 @@
       {$t('habbicons.pricePoints')}
       <input type="number" bind:value={collectionDraft.form.priceActivityPoints} />
     </label>
-    <label>
-      {$t('habbicons.activityPointType')}
-      <input type="number" bind:value={collectionDraft.form.activityPointType} />
-    </label>
+    <!-- Typed by hand this is a guess: nothing says 5 is diamonds, and a type with no
+         `currency_types` row makes the whole purchase a silent no-op. The list is the wallet's own. -->
+    <label for="collection-point-type">{$t('habbicons.activityPointType')}</label>
+    <CurrencySelect
+      id="collection-point-type"
+      bind:value={collectionDraft.form.activityPointType}
+      credits={false}
+    />
     <label>
       {$t('habbicons.availableFrom')}
       <input type="datetime-local" bind:value={collectionDraft.form.availableFrom} />
@@ -663,10 +697,12 @@
       {$t('habbicons.pricePoints')}
       <input type="number" bind:value={habbiconDraft.form.priceActivityPoints} />
     </label>
-    <label>
-      {$t('habbicons.activityPointType')}
-      <input type="number" bind:value={habbiconDraft.form.activityPointType} />
-    </label>
+    <label for="habbicon-point-type">{$t('habbicons.activityPointType')}</label>
+    <CurrencySelect
+      id="habbicon-point-type"
+      bind:value={habbiconDraft.form.activityPointType}
+      credits={false}
+    />
     <label>
       {$t('habbicons.availableFrom')}
       <input type="datetime-local" bind:value={habbiconDraft.form.availableFrom} />

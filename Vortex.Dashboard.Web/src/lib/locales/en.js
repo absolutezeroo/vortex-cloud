@@ -2285,6 +2285,7 @@ export default {
     noReward: 'None',
     setPrice: 'Set price',
     notSoldAsSet: 'Not sold as a set',
+    notSold: 'Not sold',
     completedBy: 'Completed by',
     state: 'State',
     disabled: 'Disabled',
