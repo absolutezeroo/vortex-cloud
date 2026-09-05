@@ -2877,7 +2877,7 @@ export default {
     wizardStepConfirm: 'Confirmer',
     wizardAccountHelp:
       "Les rôles sont portés par le compte, pas par le joueur : cherchez par e-mail ou par un des pseudos du compte, puis choisissez-le dans la liste.",
-    wizardRoleHelp: 'Quel rôle donner à {email} ? Les rôles qu\'il a déjà sont grisés.',
+    wizardRoleHelp: 'Quel rôle donner à {email} ? Les rôles déjà attribués sont grisés.',
     wizardNoAccounts: 'Lancez une recherche pour choisir un compte.',
     wizardBack: 'Retour',
     wizardNext: 'Suivant',
