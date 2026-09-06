@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Plugins.Exports;
 
@@ -31,6 +32,16 @@ public sealed class TestPlugin : IVortexPlugin
     {
         services.AddSingleton<TrackedResource>();
         services.AddSingleton<IPluginDbModule, TestDbModule>();
+
+        // Borrowing a host service, which is the thing a plugin of any size has to be able to do:
+        // its container starts empty, so without this it cannot constructor-inject anything the
+        // hotel owns. IReferenceDataReloader is used because it lives in Vortex.Primitives, which
+        // the ALC shares with the host — so both sides mean the same type, which is the whole
+        // point.
+        if (FailureSwitch.BorrowsHostService)
+        {
+            services.UseHostService<IReferenceDataReloader>();
+        }
 
         // Two hosted services: the tests need "the first started, the second failed" to prove the
         // rollback stops the first one rather than leaving it running.
@@ -66,6 +77,17 @@ public sealed class TestPlugin : IVortexPlugin
     public Task StartAsync(IServiceProvider services, CancellationToken ct)
     {
         FailureSwitch.Trace("plugin-start");
+
+        // Traced rather than asserted here: the plugin's statics are its own copy, so the trace
+        // environment variable is the only channel the test on the other side of the ALC can read.
+        if (FailureSwitch.BorrowsHostService)
+        {
+            FailureSwitch.Trace(
+                services.GetService<IReferenceDataReloader>() is null
+                    ? "host-service-missing"
+                    : "host-service-resolved"
+            );
+        }
 
         if (FailureSwitch.Current == FailurePoint.PluginStart)
         {

@@ -601,7 +601,52 @@ public sealed class PluginManager(
 
         plugin.ConfigureServices(services, manifest);
 
-        return services.BuildServiceProvider(SP_OPTIONS);
+        ServiceProvider provider = services.BuildServiceProvider(SP_OPTIONS);
+
+        VerifyHostServices(provider, manifest);
+
+        return provider;
+    }
+
+    /// <summary>
+    /// Checks every host service the plugin declared with <c>UseHostService&lt;T&gt;</c> is actually
+    /// there.
+    /// </summary>
+    /// <remarks>
+    /// The registration those calls produce is a factory, so without this a service the host does
+    /// not have fails at the moment it is first resolved. For anything request-driven — a plugin
+    /// serving HTTP, say — that is the first request that happens to need it, long after the load
+    /// that should have refused. Failing here instead makes it an activation error, which the
+    /// rollback then unwinds like any other.
+    /// </remarks>
+    private void VerifyHostServices(IServiceProvider plugin, PluginManifest manifest)
+    {
+        List<string> missing = [];
+
+        foreach (
+            HostServiceExtensions.HostServiceRequirement requirement in plugin.GetServices<HostServiceExtensions.HostServiceRequirement>()
+        )
+        {
+            if (host.GetService(requirement.ServiceType) is null)
+            {
+                missing.Add(requirement.ServiceType.FullName ?? requirement.ServiceType.Name);
+            }
+        }
+
+        if (missing.Count == 0)
+        {
+            return;
+        }
+
+        _logger.LogError(
+            "Plugin {Key} borrows host services this host does not provide: {Missing}",
+            manifest.Key,
+            string.Join(", ", missing)
+        );
+
+        throw new InvalidOperationException(
+            $"Plugin '{manifest.Key}' requires host service(s) not registered: {string.Join(", ", missing)}."
+        );
     }
 
     private async Task StartPluginAsync(
