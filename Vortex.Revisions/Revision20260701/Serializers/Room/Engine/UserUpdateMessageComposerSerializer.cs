@@ -20,10 +20,12 @@ internal class UserUpdateMessageComposerSerializer(int header)
                 .WriteString(avatar.Z.ToString())
                 .WriteInteger((int)avatar.HeadRotation)
                 .WriteInteger((int)avatar.BodyRotation)
-                // jumpingPower — WIN63 reads a plain int here, before the status string
-                // (_SafePkg_2184/_SafeCls_2826.parse → _SafeCls_3690.jumpingPower). Omitting it
-                // shifted the status string into that int and mis-framed the whole packet.
-                .WriteInteger(avatar.JumpPower)
+                // NO jumpingPower int here. The two WIN63 builds disagree: 202607011411 reads one
+                // between the body rotation and the status
+                // (_SafePkg_2184/_SafeCls_2826.parse:85), 202601121721 does not
+                // (_SafePkg_2072/_SafeCls_3051.parse:82-84). Writing it killed the walk animation
+                // on the live hotel, which serves the January build, so the 8-field shape stays
+                // until the served build is settled. avatar.JumpPower is carried and unused.
                 .WriteString(avatar.Status);
         }
     }

@@ -201,10 +201,10 @@ generated:
   - cf_3814e339a4
 verified:
   fields:
-    - index: 7
-      name: jumping_power
-      type: int32
-      confidence: client_confirmed
-      note: "inside the repeated block, between body_rotation and status; present in WIN63, absent from the 2016 client, so the generated field list above is the 2016 shape. 0 means not jumping."
-      evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2826.as:85 — the third readInteger after the z string is passed as param15 to _SafeCls_3690, exposed there as jumpingPower (_SafeCls_3690.as:127) and read by AvatarLogic as figure_jumping_power"
+  - index: 7
+    name: jumping_power
+    type: int32
+    confidence: client_confirmed
+    note: "inside the repeated block, between body_rotation and status. THE TWO WIN63 BUILDS DISAGREE and Vortex must NOT write this field: 202607011411 reads it, 202601121721 does not — its parser goes straight from the two rotations to the status string. The hotel serves the January build, and writing the int shifted the status and cost the walk animation on a live server. Do not re-add it without first establishing which SWF is actually served."
+    evidence: "present: WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2826.as:85, passed as param15 to _SafeCls_3690 and exposed as jumpingPower (:127), read by AvatarLogic as figure_jumping_power. ABSENT: WIN63-202601121721-391685409/scripts/_SafePkg_2072/_SafeCls_3051.as:82-84, two readIntegers then readString"
 manual: {}

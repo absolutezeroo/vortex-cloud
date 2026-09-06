@@ -205,10 +205,12 @@ public sealed class RoomAvatarWireTests
     ///     string lands in that int and every avatar after the first is garbage.
     /// </summary>
     [Fact]
-    public void UserUpdateBlock_WritesJumpingPowerBeforeTheStatus()
+    public void UserUpdateBlock_HasNoJumpingPowerBecauseTheServedClientReadsNone()
     {
-        // Second avatar jumps, so the assertion covers the plumbing and not just the slot: a
-        // hardcoded zero would pass a two-flat-avatar test.
+        // The January WIN63 build the hotel serves reads status straight after the body rotation
+        // (_SafePkg_2072/_SafeCls_3051.parse:82-84). The July build reads a jumpingPower int in
+        // between; writing it for the January client shifted the status string and cost the walk
+        // animation, so the block stays at eight fields and JumpPower rides along unused.
         UserUpdateMessageComposer composer = new()
         {
             Avatars = [NewPlayer(1), NewPlayer(2) with { JumpPower = 7 }],
@@ -226,7 +228,7 @@ public sealed class RoomAvatarWireTests
 
         body.PopInt().Should().Be(2); // avatar count
 
-        foreach ((int objectId, int expectedJump) in new[] { (1, 0), (2, 7) })
+        foreach (int objectId in new[] { 1, 2 })
         {
             body.PopInt()
                 .Should()
@@ -236,10 +238,9 @@ public sealed class RoomAvatarWireTests
             body.PopString(); // z
             body.PopInt(); // headRotation
             body.PopInt(); // bodyRotation
-            body.PopInt()
+            body.PopString()
                 .Should()
-                .Be(expectedJump, "the client reads jumpingPower here, not the status");
-            body.PopString().Should().Be("/");
+                .Be("/", "the status follows the body rotation with nothing in between");
         }
 
         body.End.Should().BeTrue("the block must consume exactly what the client reads");
