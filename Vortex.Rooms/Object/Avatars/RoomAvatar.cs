@@ -53,6 +53,8 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
     /// </summary>
     public long CarryItemUntilMs { get; private set; } = 0;
 
+    public int JumpPower { get; private set; } = 0;
+
     private int _goalTries = 0;
 
     protected RoomAvatarSnapshot? _snapshot;
@@ -246,6 +248,25 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         }
 
         CurrentEffectId = effectId;
+        _snapshot = null;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Sets the arc height of the avatar's slide. Goes out on the next <c>UserUpdate</c>, so a
+    /// caller must clear it once the jump is over or every later move keeps arcing.
+    /// </summary>
+    public bool SetJumpPower(int jumpPower)
+    {
+        jumpPower = jumpPower < 0 ? 0 : jumpPower;
+
+        if (JumpPower == jumpPower)
+        {
+            return false;
+        }
+
+        JumpPower = jumpPower;
         _snapshot = null;
 
         return true;

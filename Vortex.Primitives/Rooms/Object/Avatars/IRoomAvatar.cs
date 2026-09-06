@@ -53,6 +53,11 @@ public interface IRoomAvatar : IRoomObject
     /// <summary>Room-clock time the held item leaves the hand.</summary>
     public long CarryItemUntilMs { get; }
 
+    /// <summary>Arc height of the avatar's next slide (0 = flat). Broadcast on every
+    /// <c>UserUpdateMessageComposer</c>; the client applies it only while the avatar is moving.
+    /// Nothing sets it yet — the gameplay behind it is a mounted pet clearing a jump obstacle.</summary>
+    public int JumpPower { get; }
+
     /// <summary>True while the avatar may not start walking — a wired freeze-user box or a Freeze
     /// hit holds it. Activation-scoped, so it dies with the avatar and can never leak between
     /// rooms or sessions.</summary>

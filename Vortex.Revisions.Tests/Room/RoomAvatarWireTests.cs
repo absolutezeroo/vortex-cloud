@@ -207,7 +207,12 @@ public sealed class RoomAvatarWireTests
     [Fact]
     public void UserUpdateBlock_WritesJumpingPowerBeforeTheStatus()
     {
-        UserUpdateMessageComposer composer = new() { Avatars = [NewPlayer(1), NewPlayer(2)] };
+        // Second avatar jumps, so the assertion covers the plumbing and not just the slot: a
+        // hardcoded zero would pass a two-flat-avatar test.
+        UserUpdateMessageComposer composer = new()
+        {
+            Avatars = [NewPlayer(1), NewPlayer(2) with { JumpPower = 7 }],
+        };
 
         byte[] bytes = Revision
             .Serializers[typeof(UserUpdateMessageComposer)]
@@ -221,15 +226,19 @@ public sealed class RoomAvatarWireTests
 
         body.PopInt().Should().Be(2); // avatar count
 
-        for (int i = 1; i <= 2; i++)
+        foreach ((int objectId, int expectedJump) in new[] { (1, 0), (2, 7) })
         {
-            body.PopInt().Should().Be(i, "the block before this one must have ended exactly here");
+            body.PopInt()
+                .Should()
+                .Be(objectId, "the block before this one must have ended exactly here");
             body.PopInt(); // x
             body.PopInt(); // y
             body.PopString(); // z
             body.PopInt(); // headRotation
             body.PopInt(); // bodyRotation
-            body.PopInt().Should().Be(0, "the client reads jumpingPower here, not the status");
+            body.PopInt()
+                .Should()
+                .Be(expectedJump, "the client reads jumpingPower here, not the status");
             body.PopString().Should().Be("/");
         }
 

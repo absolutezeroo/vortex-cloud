@@ -23,8 +23,7 @@ internal class UserUpdateMessageComposerSerializer(int header)
                 // jumpingPower — WIN63 reads a plain int here, before the status string
                 // (_SafePkg_2184/_SafeCls_2826.parse → _SafeCls_3690.jumpingPower). Omitting it
                 // shifted the status string into that int and mis-framed the whole packet.
-                // Nothing in Vortex produces a jump yet; 0 is "not jumping".
-                .WriteInteger(0)
+                .WriteInteger(avatar.JumpPower)
                 .WriteString(avatar.Status);
         }
     }
