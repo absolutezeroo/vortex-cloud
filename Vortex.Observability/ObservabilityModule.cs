@@ -11,6 +11,7 @@ using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Plugins;
+using Vortex.Primitives.Signals;
 
 namespace Vortex.Observability;
 
@@ -46,6 +47,7 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<ILiveStatsAggregator, LiveStatsAggregator>();
         services.TryAddSingleton<IVortexMetrics, VortexMetrics>();
         services.TryAddSingleton<ClubMetrics>();
+        services.TryAddSingleton<ISignalMetrics, SignalMetrics>();
         services.AddHostedService<ClubMetricsRefreshService>();
         services.AddHostedService<ForensicsRetentionService>();
         services.AddSingleton<IForensicsPurgeService, ForensicsPurgeService>();

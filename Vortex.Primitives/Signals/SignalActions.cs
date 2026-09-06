@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Immutable;
 using Vortex.Primitives.RewardTracks;
 
 namespace Vortex.Primitives.Signals;
@@ -107,4 +109,38 @@ public static class SignalActions
 
     /// <inheritdoc cref="RewardTrackActions.Wired"/>
     public const string Wired = RewardTrackActions.Wired;
+
+    /// <summary>
+    /// Every core action. The governance test freezes this list, and the translator processor uses
+    /// it to tell a core action from one a plugin must qualify with its own key.
+    /// </summary>
+    public static readonly ImmutableHashSet<string> All = ImmutableHashSet.Create(
+        StringComparer.Ordinal,
+        EnterOtherUsersRoom,
+        CreateRoom,
+        PlaceItem,
+        MoveItem,
+        RotateItem,
+        PickUpItem,
+        WalkOnFurni,
+        Teleport,
+        ChatWithSomeone,
+        RequestFriend,
+        GiveRespect,
+        SendMessengerMessage,
+        Dance,
+        Wave,
+        ChangeFigure,
+        ChangeMotto,
+        WearBadge,
+        BuyFromCatalogue,
+        PetLevel,
+        UseHabbicon,
+        CompleteTrade,
+        SpendCredits,
+        CompleteHabbiconCollection,
+        CompleteQuest,
+        AchievementLevel,
+        Wired
+    );
 }
