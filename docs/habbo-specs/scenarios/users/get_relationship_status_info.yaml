@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3033912cc787fd739142d6fa99f6cbc2cfbfb020ba67ea38b91c17e0493f0942"
+generated_digest: "sha256:aa64392160338fe1a525d10cca860e0d990638367bf7de43d863d8e12f0b2efe"
 generated:
   feature: users.get_relationship_status_info
   scenarios:
@@ -55,7 +55,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RelationshipStatusInfoEvent
+      - RelationshipStatusInfo
       evidence: ev_bf22cc5b6280
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

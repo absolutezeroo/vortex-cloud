@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2bcb61fd3fb8ef19c3f406085b11333a051e5a3521626e5d8dc758de120b91dd"
+generated_digest: "sha256:dd7a92bac261424749be7ce3a94bdedf8971fec697e3afc5dbd33d768cdd61e9"
 generated:
   id: uk_49fe014f56
   subject: "room.delete_room: what the server sends when it refuses"
@@ -95,7 +95,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator

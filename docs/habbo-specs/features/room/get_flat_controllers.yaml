@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0c833ceed0adb14fd08d3127bab6af6e0c4b6bb64d964817a03bbc1390b6ba47"
+generated_digest: "sha256:7fa90f773532b98d068b3495ee98b4acf372423b8f931d50016c6d3b02934580"
 generated:
   id: room.get_flat_controllers
   domain: room
@@ -45,7 +45,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FlatControllersEvent
+    - packet: FlatControllers
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_392abf549ae0
@@ -82,7 +82,5 @@ generated:
   scenarios:
   - room.get_flat_controllers.guard_0
   - room.get_flat_controllers.success
-  conflicts:
-  - cf_36135d6ab7
 verified: {}
 manual: {}

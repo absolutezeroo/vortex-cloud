@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c435d50c54390bc757394264cac2aacbaf2656e8be4a41e301c27d9e93115150"
+generated_digest: "sha256:d7e4764c6e26c80a3063fafdf7cf47d708422d2ec6a1f658586fe3565d8d6b1e"
 generated:
   name: PollErrorEvent
   direction: outgoing
   domain: poll
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -25,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_d027537a9df4
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_a088ab94e1e1
   evidence:
   - id: ev_d027537a9df4
     kind: client_parser
@@ -40,12 +34,5 @@ generated:
     symbol: PollErrorEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a088ab94e1e1
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Poll/PollErrorEventMessageComposerSerializer.cs
-    symbol: PollErrorEventMessageComposerSerializer
-    line: 10
 verified: {}
 manual: {}

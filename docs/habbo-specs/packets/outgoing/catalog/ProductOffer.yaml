@@ -10,131 +10,200 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:063c60dafee93289812cfaa79fb32905f3665dd05aa9f11ea14513c7fe6e2b98"
+generated_digest: "sha256:80db646f84dc3ce97f80a464a916a6f5fadd80405030840d54fe11de5ec2f34b"
 generated:
   name: ProductOffer
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
+    name: catalog_offer
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_4bf467f6effb
-  - index: 1
-    name: unknown_1
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 2
-    name: unknown_2
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 4
-    name: unknown_4
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 5
-    name: unknown_5
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 7
-    name: unknown_7
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 8
-    name: unknown_8
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 10
-    name: unknown_10
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 11
-    name: unknown_11
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
-  - index: 12
-    name: unknown_12
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_1923
-    evidence:
-    - ev_4bf467f6effb
+    - ev_12110154f520
+    fields:
+    - index: 0
+      name: id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 1
+      name: localization_id
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 2
+      name: rentable
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 3
+      name: cost_credits
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 4
+      name: cost_currency
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 5
+      name: unknown_5
+      type: int32
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 6
+      name: cost_silver
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 7
+      name: can_gift
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 8
+      name: length
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 9
+      name: products
+      type: array
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: repeated block; the element count is the int written immediately before it"
+      evidence:
+      - ev_12110154f520
+      fields:
+      - index: 0
+        name: catalog_product
+        type: block
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_12110154f520
+        fields:
+        - index: 0
+          name: product_type
+          type: string
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_12110154f520
+        - index: 1
+          name: sprite_id
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_12110154f520
+        - index: 2
+          name: unknown_2
+          type: string
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_12110154f520
+        - index: 3
+          name: quantity
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_12110154f520
+        - index: 4
+          name: unknown_4
+          type: boolean
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_12110154f520
+        - index: 5
+          name: unique_size
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.UniqueSize > 0
+          evidence:
+          - ev_12110154f520
+        - index: 6
+          name: unique_remaining
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: only when product.UniqueSize > 0
+          evidence:
+          - ev_12110154f520
+        - index: 7
+          name: unknown_7
+          type: string
+          name_is_placeholder: true
+          name_confidence: unknown
+          type_confidence: implementation_observed
+          note: only when product.ProductType is not ProductType.Badge
+          evidence:
+          - ev_12110154f520
+    - index: 10
+      name: club_level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 11
+      name: can_bundle
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_12110154f520
+    - index: 12
+      name: unknown_12
+      type: boolean
+      name_is_placeholder: true
+      name_confidence: unknown
+      type_confidence: implementation_observed
+      note: "written as the constant false; source comment: unknownBoolean"
+      evidence:
+      - ev_12110154f520
+    - index: 13
+      name: empty
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      note: "source comment: previewImage"
+      evidence:
+      - ev_12110154f520
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -161,6 +230,13 @@ generated:
     partial: true
     types: []
     evidence: ev_6d793891a155
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - block
+    evidence: ev_12110154f520
   evidence:
   - id: ev_4bf467f6effb
     kind: client_parser
@@ -178,7 +254,12 @@ generated:
     symbol: ProductOfferMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_bddaa0d750
+  - id: ev_12110154f520
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/ProductOfferEventMessageComposerSerializer.cs
+    symbol: ProductOfferEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

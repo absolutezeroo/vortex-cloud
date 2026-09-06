@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4214abfc7c6a5646cbf69ad29e4e16297b80c7c8ecd02909d522de58ecb9fefa"
+generated_digest: "sha256:b1633b5b57e34fe670b9aebc7e7286c9336f263fccf0f48854feff305f4d3842"
 generated:
   id: uk_36928f0605
   subject: "room.pass_carry_item_to_pet: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 217
+    line: 219
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator

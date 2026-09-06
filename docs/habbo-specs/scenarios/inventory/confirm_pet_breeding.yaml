@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:77c7254f64461f4e2975b9b7817650ba1bf3fa7b8f31418314fc766fbfaa9722"
+generated_digest: "sha256:aa84bfbac8fd2bbde0f874772899f0c16e7fbf241d0330994c7c5dc4bdfc1fd7"
 generated:
   feature: inventory.confirm_pet_breeding
   scenarios:
@@ -76,9 +76,9 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - ConfirmBreedingResultEvent
-      - NestBreedingSuccessEvent
-      - PetBreedingResultEvent
+      - ConfirmBreedingResult
+      - NestBreedingSuccess
+      - PetBreedingResult
       evidence: ev_7e53d81cbdc8
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

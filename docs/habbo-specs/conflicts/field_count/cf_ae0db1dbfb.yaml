@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e24736072a50c0ff4d558fc05f112508bbf27f0b1716e706f010975c7646191e"
+generated_digest: "sha256:c2ad94d8f1f9c0620ac84e9b51d90697b650661d3410c3a161c5ef70c12a72fa"
 generated:
   id: cf_ae0db1dbfb
   kind: field_count
@@ -27,8 +27,16 @@ generated:
     evidence: ev_d7f8443a46e2
   - origin: habbo-arcturus-daybreak
     authority: reference_emulator
+    claim: "2 fields: boolean, int32"
+    evidence: ev_db95d8bf249f
+  - origin: habbo-arcturus-daybreak
+    authority: reference_emulator
     claim: "2 fields: int32, int32"
     evidence: ev_807ceb1d22c7
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "2 fields: boolean, int32"
+    evidence: ev_1350e97a5e9c
   - origin: vortex
     authority: vortex_emulator
     claim: "2 fields: int32, int32"
@@ -58,6 +66,21 @@ generated:
     symbol: CanCreateRoomMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  - id: ev_db95d8bf249f
+    kind: reference_composer
+    authority: reference_emulator
+    origin: habbo-arcturus-daybreak
+    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/outgoing/navigator/CanCreateRoomEventMessageComposer.java
+    symbol: CanCreateRoomEventMessageComposer
+    line: 9
+    note: third-party server implementation; evidence, not authority
+  - id: ev_1350e97a5e9c
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/CanCreateRoomEventMessageComposerSerializer.cs
+    symbol: CanCreateRoomEventMessageComposerSerializer
+    line: 6
   - id: ev_ad8005126f04
     kind: emulator_serializer
     authority: vortex_emulator

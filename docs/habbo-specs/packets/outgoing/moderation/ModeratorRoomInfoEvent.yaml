@@ -10,93 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9a2e47eb1694a198c977d0f83d0c1d43e85bea34c407f055149140d59417f1af"
+generated_digest: "sha256:e420a7f139f342045a9fe64df96fbab262d8d8012cbe08774a26d63f742f23b9"
 generated:
   name: ModeratorRoomInfoEvent
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: room_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 1
-    name: user_count
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 2
-    name: owner_in_room
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 3
-    name: owner_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 4
-    name: owner_name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 5
-    name: room_exists
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 6
-    name: room_name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 7
-    name: room_description
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 8
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_beb1a37b6225
-  - index: 9
-    name: tags
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_beb1a37b6225
-    fields:
-    - index: 0
-      name: tag
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_beb1a37b6225
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -104,22 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_e5a25d7e94ba
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 10
-    partial: false
-    types:
-    - int32
-    - int32
-    - boolean
-    - int32
-    - string
-    - boolean
-    - string
-    - string
-    - int32
-    - array
-    evidence: ev_beb1a37b6225
   evidence:
   - id: ev_e5a25d7e94ba
     kind: client_parser
@@ -129,12 +34,5 @@ generated:
     symbol: ModeratorRoomInfoEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_beb1a37b6225
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorRoomInfoEventMessageComposerSerializer.cs
-    symbol: ModeratorRoomInfoEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

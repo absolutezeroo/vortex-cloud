@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a03d7a884e5e6244ce4f5997bc1d4ec62f76863397f3829f5e2cb7c9988d6655"
+generated_digest: "sha256:44661c0f176786ae006212f3d333acb14e04090de2634a90275b23adbfc4c353"
 generated:
   id: room.place_wall_item_in_room
   domain: room
@@ -518,7 +518,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FurniListRemoveEvent
+    - packet: FurniListRemove
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09

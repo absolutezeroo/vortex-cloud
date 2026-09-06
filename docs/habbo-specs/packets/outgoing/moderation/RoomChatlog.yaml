@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:54e2cecff3c765184735ac75452f6e11c87884c1cf9cbe7219e9a47c08053cbb"
+generated_digest: "sha256:3db5f71529381b5d1ac4f4e74e76c3c3184b379dd8adeb79c551c0237794f314"
 generated:
   name: RoomChatlog
   direction: outgoing
   domain: moderation
   structure_confidence: reference_observed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: record_type_room
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 1
     name: unknown_1
     type: short
@@ -43,13 +43,13 @@ generated:
     evidence:
     - ev_cc8b650f6290
   - index: 3
-    name: unknown_3
+    name: context_value_type_int
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 4
     name: unknown_4
     type: string
@@ -67,13 +67,13 @@ generated:
     evidence:
     - ev_cc8b650f6290
   - index: 6
-    name: unknown_6
+    name: context_value_type_string
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 7
     name: unknown_7
     type: int32
@@ -83,45 +83,45 @@ generated:
     evidence:
     - ev_cc8b650f6290
   - index: 8
-    name: unknown_8
+    name: length
     type: short
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 9
-    name: unknown_9
+    name: time_stamp_utc
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 10
-    name: unknown_10
+    name: chatter_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 11
-    name: unknown_11
+    name: chatter_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 12
-    name: unknown_12
+    name: message
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_cc8b650f6290
+    - ev_dd73bc2fb566
   - index: 13
     name: unknown_13
     type: boolean
@@ -165,6 +165,13 @@ generated:
     - string
     - boolean
     evidence: ev_cc8b650f6290
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - block
+    evidence: ev_dd73bc2fb566
   evidence:
   - id: ev_17bbd22aa99f
     kind: client_parser
@@ -182,6 +189,15 @@ generated:
     symbol: RoomChatlogMessageComposer
     line: 23
     note: third-party server implementation; evidence, not authority
+  - id: ev_dd73bc2fb566
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/RoomChatlogEventMessageComposerSerializer.cs
+    symbol: RoomChatlogEventMessageComposerSerializer
+    line: 6
+  conflicts:
+  - cf_a445cc3bbb
   unknowns:
   - uk_47d4d71fd5
 verified: {}

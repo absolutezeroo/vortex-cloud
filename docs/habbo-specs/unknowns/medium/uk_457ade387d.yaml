@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4160167f17b77bd73fcfe06270a591ae38fb65bbae43fbe4f884dd28390247be"
+generated_digest: "sha256:2d7ae16844067142fbdaeff6483518b7e368f130c2d1de21191d92e64f15eff6"
 generated:
   id: uk_457ade387d
-  subject: "room.remove_rights: who receives FlatControllersEvent, WiredPermissionsEvent, YouAreController, YouAreNotController, YouAreOwner"
+  subject: "room.remove_rights: who receives FlatControllers, WiredPermissions, YouAreController, YouAreNotController, YouAreOwner"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

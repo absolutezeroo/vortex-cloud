@@ -10,185 +10,185 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67668aa3dc42522d337ca216bee91c21dde52243f3e7733e13d6286cb2a31247"
+generated_digest: "sha256:4d3d043abb4851d138c5df7d4439be34b0491a1c79a0b8a966ea0cf9daf6273d"
 generated:
   name: ModeratorUserInfo
   direction: outgoing
   domain: moderation
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 1
-    name: unknown_1
+    name: user_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 2
-    name: unknown_2
+    name: figure
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 3
-    name: unknown_3
+    name: registration_age_in_minutes
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 4
-    name: unknown_4
+    name: minutes_since_last_login
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 5
-    name: unknown_5
+    name: online
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 6
-    name: unknown_6
+    name: cfh_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 7
-    name: unknown_7
+    name: abusive_cfh_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 8
-    name: unknown_8
+    name: caution_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 9
-    name: unknown_9
+    name: ban_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 10
-    name: unknown_10
+    name: trading_lock_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 11
-    name: unknown_11
+    name: trading_expiry_date
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 12
-    name: unknown_12
+    name: last_purchase_date
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 13
-    name: unknown_13
+    name: identity_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 14
-    name: unknown_14
+    name: identity_related_ban_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 15
-    name: unknown_15
+    name: primary_email_address
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 16
-    name: unknown_16
+    name: user_classification
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 17
-    name: unknown_17
+    name: last_sanction_time
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   - index: 18
-    name: unknown_18
+    name: sanction_age_hours
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: read by _SafeCls_4131
     evidence:
     - ev_435e9b5347bf
+    - ev_2e9cff29882d
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -240,6 +240,31 @@ generated:
     - string
     - int32
     evidence: ev_7b37e042b652
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 19
+    partial: false
+    types:
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - int32
+    - int32
+    - string
+    - string
+    - string
+    - int32
+    evidence: ev_2e9cff29882d
   evidence:
   - id: ev_435e9b5347bf
     kind: client_parser
@@ -257,7 +282,12 @@ generated:
     symbol: ModeratorUserInfoMessageComposer
     line: 27
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_72db2087b5
+  - id: ev_2e9cff29882d
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorUserInfoEventMessageComposerSerializer.cs
+    symbol: ModeratorUserInfoEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

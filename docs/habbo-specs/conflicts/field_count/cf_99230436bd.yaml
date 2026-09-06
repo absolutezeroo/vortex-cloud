@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:4a80c5fdef875f8119c0cc1083ecff4ccb4d433ddc109d11f6b9906bd6ef7e5e"
+generated_digest: "sha256:0dde02ee12f702837cb36debf6c18525608c5f4514f8fdeb47dc5a5cff0a711d"
 generated:
   id: cf_99230436bd
   kind: field_count
@@ -29,6 +29,10 @@ generated:
     authority: reference_emulator
     claim: "13 fields: int32, int32, string, int32, int32, int32, int32, int32, boolean, string, string, int32, int32"
     evidence: ev_56399cd3efb5
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "1 fields: block"
+    evidence: ev_9a68299cabc7
   evidence:
   - id: ev_7361095241ab
     kind: client_parser
@@ -54,7 +58,17 @@ generated:
     symbol: AchievementMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
+  - id: ev_9a68299cabc7
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Achievements/AchievementEventMessageComposerSerializer.cs
+    symbol: AchievementEventMessageComposerSerializer
+    line: 6
   official:
     status: unknown
-verified: {}
+verified:
+  resolution: "Counting artifact, not drift. Both sides delegate the whole body to a data class the extractor cannot see through: the client's parse is a single `new _SafeCls_3764(param1)` and ours hands off to the AchievementData writer, which is why we are counted as 1 field against the client's flattened 14."
+  confidence: client_confirmed
+  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_3023.as — parse body is one constructor call"
 manual: {}

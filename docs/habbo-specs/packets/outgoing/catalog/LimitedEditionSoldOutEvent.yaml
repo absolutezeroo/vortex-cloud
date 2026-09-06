@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d0cfe06f319e68ace8c6dec7963e38879e49f7914e845ebffb12a0ab08e0645a"
+generated_digest: "sha256:4e34058d4b3a935fb29eee6667b90c5306b7272f483c8331b80c386034a3f680"
 generated:
   name: LimitedEditionSoldOutEvent
   direction: outgoing
   domain: catalog
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -25,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_1a0197e26c33
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_5ef97d0abff6
   evidence:
   - id: ev_1a0197e26c33
     kind: client_parser
@@ -40,12 +34,5 @@ generated:
     symbol: LimitedEditionSoldOutEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5ef97d0abff6
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/LimitedEditionSoldOutEventMessageComposerSerializer.cs
-    symbol: LimitedEditionSoldOutEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

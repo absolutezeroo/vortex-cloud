@@ -10,22 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0e84b3af00f2990fe8ecac2d1eae4058f6bc25d7b0c706cfe06668fd2dec5310"
+generated_digest: "sha256:71e1cfeb8256fa5c9a65cafb2fc289816083b55d05f76337dda267235931e5f0"
 generated:
   name: TradingAccept
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_e57dea2efc01
+    - ev_d316e6a74fbf
   - index: 1
     name: unknown_1
     type: int32
@@ -51,6 +51,14 @@ generated:
     - int32
     - int32
     evidence: ev_8cc53aa2df75
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_d316e6a74fbf
   evidence:
   - id: ev_e57dea2efc01
     kind: client_parser
@@ -68,6 +76,13 @@ generated:
     symbol: TradingAcceptMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_d316e6a74fbf
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingAcceptEventMessageComposerSerializer.cs
+    symbol: TradingAcceptEventMessageComposerSerializer
+    line: 6
   unknowns:
   - uk_df3cf77cee
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3452a6d68873b6d514fc4141a99ffc6a7eb6a9712c5ed146c7067807d4933a2b"
+generated_digest: "sha256:674a48cca346f58f4cc7afd8100b19568ea86628957743de79065d7aef323cdd"
 generated:
   id: cf_427ea03d72
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_d521e68ab4b1
   - origin: vortex
     authority: vortex_emulator
-    claim: WiredValidationErrorEvent then WiredSaveSuccessEvent
+    claim: WiredValidationError then WiredSaveSuccess
     evidence: ev_ba6b00f67db8
   evidence:
   - id: ev_d521e68ab4b1

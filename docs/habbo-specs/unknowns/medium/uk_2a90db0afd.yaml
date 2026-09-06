@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0602f0315a1a69183b2a8baf5ce2ab237d2029c8617d16b43b2760c304beaf49"
+generated_digest: "sha256:f7ae26ee92fc445e3dc4bd9065a91bdf245a94b288427a50d4332f811a833b55"
 generated:
   id: uk_2a90db0afd
   subject: "room.sign: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 180
+    line: 182
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator

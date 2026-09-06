@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9c8a96f2209d5b6f8555c07531aa0f02665e7eee2f342b8cfd12ab9b23a34273"
+generated_digest: "sha256:1983cea2a62f1648f37c22088f6b8cba76e31fc747e38475386be0dd1fc3a857"
 generated:
   feature: room.present_open
   scenarios:
@@ -378,7 +378,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - BadgeReceivedEvent
+      - BadgeReceived
       - PresentOpened
       evidence: ev_0c987f4ea07c
     - origin: habbo-arcturus-daybreak

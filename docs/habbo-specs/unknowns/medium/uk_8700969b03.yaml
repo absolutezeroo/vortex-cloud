@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4811b1c6a188653b5b70fe6a4f4d237b5be2039be6a1fc81801f50ef14fa6fcc"
+generated_digest: "sha256:9c3cb32a4e04ca38b0680b3638e64cb255f89929c445d0e5f8731eb0bc710653"
 generated:
   id: uk_8700969b03
   subject: "preferences.set_sound_settings: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 43
+    line: 53
   - id: ev_e17180df8c22
     kind: emulator_handler
     authority: vortex_emulator

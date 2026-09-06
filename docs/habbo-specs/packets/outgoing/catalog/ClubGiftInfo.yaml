@@ -10,197 +10,274 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:91acca7a546dcb860142424c31d8cac4dbfd374cfdf7886880c70938ac6969e1"
+generated_digest: "sha256:6cfac35f680d1445fdadd49518a17e27daa9da5bf7907af663e2517d7217fe09"
 generated:
   name: ClubGiftInfo
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: days_until_next_gift
     type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
   - index: 1
     name: gifts_available
     type: int32
-    name_confidence: client_confirmed
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
   - index: 2
-    name: unknown_2
+    name: count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
   - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
+    name: offers
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
     evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
+    fields:
+    - index: 0
+      name: catalog_offer
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_69171afe9918
+      fields:
+      - index: 0
+        name: id
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 1
+        name: localization_id
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 2
+        name: rentable
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 3
+        name: cost_credits
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 4
+        name: cost_currency
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 5
+        name: unknown_5
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 6
+        name: cost_silver
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 7
+        name: can_gift
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 8
+        name: length
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 9
+        name: products
+        type: array
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: repeated block; the element count is the int written immediately before it"
+        evidence:
+        - ev_69171afe9918
+        fields:
+        - index: 0
+          name: catalog_product
+          type: block
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_69171afe9918
+          fields:
+          - index: 0
+            name: product_type
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_69171afe9918
+          - index: 1
+            name: sprite_id
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_69171afe9918
+          - index: 2
+            name: unknown_2
+            type: string
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_69171afe9918
+          - index: 3
+            name: quantity
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_69171afe9918
+          - index: 4
+            name: unknown_4
+            type: boolean
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_69171afe9918
+          - index: 5
+            name: unique_size
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.UniqueSize > 0
+            evidence:
+            - ev_69171afe9918
+          - index: 6
+            name: unique_remaining
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            note: only when product.UniqueSize > 0
+            evidence:
+            - ev_69171afe9918
+          - index: 7
+            name: unknown_7
+            type: string
+            name_is_placeholder: true
+            name_confidence: unknown
+            type_confidence: implementation_observed
+            note: only when product.ProductType is not ProductType.Badge
+            evidence:
+            - ev_69171afe9918
+      - index: 10
+        name: club_level
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 11
+        name: can_bundle
+        type: boolean
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_69171afe9918
+      - index: 12
+        name: unknown_12
+        type: boolean
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: "written as the constant false; source comment: unknownBoolean"
+        evidence:
+        - ev_69171afe9918
+      - index: 13
+        name: empty
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        note: "source comment: previewImage"
+        evidence:
+        - ev_69171afe9918
   - index: 4
-    name: unknown_4
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
+    name: count
+    type: int32
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
   - index: 5
-    name: unknown_5
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
+    name: gift_data
+    type: array
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    note: "source comment: repeated block; the element count is the int written immediately before it"
     evidence:
-    - ev_5d160d36590f
-  - index: 6
-    name: unknown_6
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 7
-    name: unknown_7
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 8
-    name: unknown_8
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 9
-    name: unknown_9
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 10
-    name: unknown_10
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 11
-    name: unknown_11
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 12
-    name: unknown_12
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 13
-    name: unknown_13
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 14
-    name: unknown_14
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 15
-    name: unknown_15
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 16
-    name: unknown_16
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    evidence:
-    - ev_5d160d36590f
-  - index: 17
-    name: unknown_17
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 18
-    name: unknown_18
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 19
-    name: unknown_19
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
-  - index: 20
-    name: unknown_20
-    type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: inside a repeated block
-    evidence:
-    - ev_5d160d36590f
+    - ev_69171afe9918
+    fields:
+    - index: 0
+      name: offer_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_69171afe9918
+    - index: 1
+      name: is_vip
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_69171afe9918
+    - index: 2
+      name: days_required
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_69171afe9918
+    - index: 3
+      name: is_selectable
+      type: boolean
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_69171afe9918
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -245,6 +322,18 @@ generated:
     - int32
     - int32
     evidence: ev_a6f32a8197d5
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - array
+    - int32
+    - array
+    evidence: ev_69171afe9918
   evidence:
   - id: ev_5d160d36590f
     kind: client_parser
@@ -262,7 +351,12 @@ generated:
     symbol: ClubGiftInfoMessageComposer
     line: 28
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_02b44b8df1
+  - id: ev_69171afe9918
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/ClubGiftInfoEventMessageComposerSerializer.cs
+    symbol: ClubGiftInfoEventMessageComposerSerializer
+    line: 9
 verified: {}
 manual: {}

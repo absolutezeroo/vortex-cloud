@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:2cc91f629d717f389392d35cb2ce6aa3f02bf9f8254b09499417c9badfd47675"
+generated_digest: "sha256:84b5a7f49d83b5c442c019b2b9b968d7edd9d990e30ff7574e03d97497b7d52b"
 generated:
   name: FurniListAddOrUpdate
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: unknown_0
@@ -186,6 +186,14 @@ generated:
     - string
     - int32
     evidence: ev_2c27ac6d29f0
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - block
+    evidence: ev_a4563df8eba7
   evidence:
   - id: ev_2c27ac6d29f0
     kind: client_parser
@@ -203,6 +211,13 @@ generated:
     symbol: FurniListAddOrUpdateParser
     line: 14
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a4563df8eba7
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListAddOrUpdateEventMessageComposerSerializer.cs
+    symbol: FurniListAddOrUpdateEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_541b1ce3f8
   unknowns:

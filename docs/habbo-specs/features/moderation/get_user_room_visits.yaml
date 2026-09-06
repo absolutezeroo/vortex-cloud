@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2092dd1032cd45292385d41ddfcf59c074320dbfdde9607e009799a8e32b2410"
+generated_digest: "sha256:a456a2f2bfc7e5942e6732f2bbb35f64097d9658e61614b4453e0657da1dc3f5"
 generated:
   id: moderation.get_user_room_visits
   domain: moderation
@@ -65,7 +65,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RoomVisitsEvent
+    - packet: RoomVisits
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_a11449b6dbcb

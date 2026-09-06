@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cca48eca565296bc10eaa4fa5b437e859113a4536b1f5403b73ab7c46a95356b"
+generated_digest: "sha256:82f5e6bf99c9d09d960b80b6e3e4ecd318f5b3e1ee4dfe952e2cf44f688d97c8"
 generated:
   id: room.open_mystery_trophy
   domain: room
@@ -321,7 +321,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_ac1d7d4655f5
     kind: emulator_handler
     authority: vortex_emulator

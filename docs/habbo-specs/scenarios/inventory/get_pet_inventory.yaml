@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fadc706c376e92ae10c5e32af6a920319e1a79d80750edb4c48d68efa0ee89af"
+generated_digest: "sha256:b0c51573f398d4724808fc6f00a15ac971f3af994f990e7a57508a6b80f28eb7"
 generated:
   feature: inventory.get_pet_inventory
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - PetInventoryEvent
+      - PetInventory
       evidence: ev_55d55f5c1d10
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

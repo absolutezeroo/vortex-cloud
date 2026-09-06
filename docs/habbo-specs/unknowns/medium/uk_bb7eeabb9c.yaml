@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a5484ddb62eaa3e8c71c179e7e1666afe2b7589d5d3e251f8994fd5d4cc2fc4c"
+generated_digest: "sha256:968bd47a06a3f54da61dcc756d0696303a3e7b7e67d1e7f10091afb37166b028"
 generated:
   id: uk_bb7eeabb9c
-  subject: "inventory.get_achievements: who receives AchievementsEvent"
+  subject: "inventory.get_achievements: who receives Achievements"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

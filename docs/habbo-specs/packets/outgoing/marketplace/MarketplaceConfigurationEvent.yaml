@@ -10,91 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:02ac3686bff27cec87b89967fba699df214eb62bea5f876165bf9d55cd0040d9"
+generated_digest: "sha256:41583f40549961c3794284e35c2be1f0bc185abdb912b78f9d6fdb4256f6ce6b"
 generated:
   name: MarketplaceConfigurationEvent
   direction: outgoing
   domain: marketplace
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: enabled
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 1
-    name: commission
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 2
-    name: credits
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 3
-    name: advertisements
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 4
-    name: minimum_price
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 5
-    name: maximum_price
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 6
-    name: offer_time
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 7
-    name: display_time
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 8
-    name: selling_fee_percentage
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 9
-    name: revenue_limit
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
-  - index: 10
-    name: half_tax_limit
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_2acb356b960c
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -102,23 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_dda9311d1396
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 11
-    partial: false
-    types:
-    - boolean
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    evidence: ev_2acb356b960c
   evidence:
   - id: ev_dda9311d1396
     kind: client_parser
@@ -128,12 +34,5 @@ generated:
     symbol: MarketplaceConfigurationEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_2acb356b960c
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketplaceConfigurationEventMessageComposerSerializer.cs
-    symbol: MarketplaceConfigurationEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

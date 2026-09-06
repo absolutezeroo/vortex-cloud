@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f510be8a5a2739690b0841607cd752a5a7d53acec58d3c55a577893c684060c9"
+generated_digest: "sha256:584ad3bf9fec725c66b0db7e454d18758b5025b2f8b6c83bc3b8b55b7f010854"
 generated:
   name: GetProductOffer
   direction: incoming
@@ -87,7 +87,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Catalog/GetProductOfferMessageParser.cs
     symbol: GetProductOfferMessageParser
     line: 7
-  conflicts:
-  - cf_34095bd33f
 verified: {}
 manual: {}

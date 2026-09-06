@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:fb7dfc7ef60c5a7ba7aeeee40eeca4c35320cae050e03b325154839d6cfd59fd"
+generated_digest: "sha256:dd1c43f3cf1870b9715967087bd7c342934448057c5fc43ebca68bb54963e9c6"
 generated:
   id: uk_6a2740b1d2
-  subject: "collectibles.mint_item: who receives FurniListRemoveEvent"
+  subject: "collectibles.mint_item: who receives FurniListRemove"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

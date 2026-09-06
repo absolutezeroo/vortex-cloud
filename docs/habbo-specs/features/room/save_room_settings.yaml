@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:58c9f11e09c287e375225bb22b700166400d5684786ffa718c4795420d32cea1"
+generated_digest: "sha256:fe42a9947f2b48b117af0c0e4abc042e1bd746afacd704af3bb6985e6724e640"
 generated:
   id: room.save_room_settings
   domain: room
@@ -173,7 +173,7 @@ generated:
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_329537530b13
-    - packet: RoomSettingsSavedEvent
+    - packet: RoomSettingsSaved
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_329537530b13

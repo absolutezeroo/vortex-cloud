@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5e7e2428b0bf2a486f34f9f2e4730465453e21ba8905e0c03a051fc030ba0c14"
+generated_digest: "sha256:0380f17b1786fb6ca2aa12b977ba69ac150e02647eef3601edb70a57c9f27ffb"
 generated:
   feature: room.get_flat_controllers
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FlatControllersEvent
+      - FlatControllers
       evidence: ev_329537530b13
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

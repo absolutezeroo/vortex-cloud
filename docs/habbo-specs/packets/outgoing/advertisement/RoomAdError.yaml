@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e0038f25c125fade18d4262522dd7b5d98d7b797c8ea6321de8ae281f8e90e2"
+generated_digest: "sha256:7188bb4da7adc2d75677453caffcca7f0efc4d2843ae65b1577320303d48aa5d"
 generated:
   name: RoomAdError
   direction: outgoing
   domain: advertisement
   structure_confidence: confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: error_code
@@ -59,6 +59,14 @@ generated:
     - int32
     - string
     evidence: ev_74fc94988b29
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - string
+    evidence: ev_7534e1255095
   evidence:
   - id: ev_194a98152b7b
     kind: client_parser
@@ -84,5 +92,12 @@ generated:
     symbol: RoomAdErrorMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  - id: ev_7534e1255095
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Advertisement/RoomAdErrorEventMessageComposerSerializer.cs
+    symbol: RoomAdErrorEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

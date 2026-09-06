@@ -10,21 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1bb55be85d2a0bedd8f28e80af1b181c5ced1dc146dd516c89a24214ed5e50fb"
+generated_digest: "sha256:a02da8c6e885ac043e253c03ef269a0b051dcb5d9d1e34b521f1d887c3bf164c"
 generated:
   name: FurniListRemoveEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: item_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_7b817858caee
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -32,13 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_5a7eb9794861
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - int32
-    evidence: ev_7b817858caee
   evidence:
   - id: ev_5a7eb9794861
     kind: client_parser
@@ -48,12 +34,5 @@ generated:
     symbol: FurniListRemoveEventMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7b817858caee
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListRemoveEventMessageComposerSerializer.cs
-    symbol: FurniListRemoveEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

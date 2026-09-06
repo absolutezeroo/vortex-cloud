@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:011e8368182025aef90e4821ec509e40fa3a44c85f1fb14538520427f48ded53"
+generated_digest: "sha256:ef1f7cb82a48a3e068122b50d982e7701cbcd69d77073a56d8628ea8b67e9d85"
 generated:
   id: inventory.get_badge_point_limits
   domain: inventory
@@ -45,7 +45,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: BadgePointLimitsEvent
+    - packet: BadgePointLimits
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_18c3506bd65f
@@ -82,8 +82,6 @@ generated:
   scenarios:
   - inventory.get_badge_point_limits.guard_0
   - inventory.get_badge_point_limits.success
-  conflicts:
-  - cf_65450db9df
   unknowns:
   - uk_de9f8491e4
 verified: {}

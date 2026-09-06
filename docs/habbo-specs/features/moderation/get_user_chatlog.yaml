@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:28505846ef3c4370a71dc51aedc39a8e37ab60af83ca65c62b4563901d92f62e"
+generated_digest: "sha256:806ad42512867e32aacc0929b4eead948fa09d80b91044d9a0c5df18ff872b85"
 generated:
   id: moderation.get_user_chatlog
   domain: moderation
@@ -69,7 +69,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: UserChatlogEvent
+    - packet: UserChatlog
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_6d9300437b68
@@ -136,8 +136,6 @@ generated:
   - moderation.get_user_chatlog.guard_1
   - moderation.get_user_chatlog.guard_2
   - moderation.get_user_chatlog.success
-  conflicts:
-  - cf_d6ee3d8ca6
   unknowns:
   - uk_87f607cecb
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f94dfc91919b95f92ec056a64c1a6c61bea9de0dbf460f7d40bbe57fbb227e3e"
+generated_digest: "sha256:a3b88b479833da2fc5d057b43a0e14fab1e85d27cc0ce6c6abbf03eacab30b3f"
 generated:
   feature: catalog.get_catalog_snapshot
   scenarios:
@@ -132,8 +132,8 @@ generated:
       emits:
       - CatalogIndex
       - CatalogPage
-      - IsOfferGiftableEvent
-      - ProductOfferEvent
+      - IsOfferGiftable
+      - ProductOffer
       evidence: ev_42689782a458
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

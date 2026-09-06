@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a574176016333738bb09244d833e9a64716272f29f8cc36b32c5b37c3d889a7b"
+generated_digest: "sha256:2180558ece9dcf8147a9671cf5e427544433a1eb914990e5def5e0e56a461f6e"
 generated:
   name: GetCreditsInfo
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Inventory/Purse/GetCreditsInfoMessageParser.cs
     symbol: GetCreditsInfoMessageParser
     line: 8
-  conflicts:
-  - cf_a1aed94e79
 verified: {}
 manual: {}

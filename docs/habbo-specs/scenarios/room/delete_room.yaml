@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:14e18e64649bba1d1967df768341f5d0608c8f8a8c36d94018ff66edba732c68"
+generated_digest: "sha256:bca4f793dd0e6a3099373c499bde10c863b8176c0a48bb51f8f373772235b19b"
 generated:
   feature: room.delete_room
   scenarios:
@@ -365,7 +365,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 191
+    line: 193
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,60 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0336629884253e24d29b5c84d1fdad9a713d04da483c3b3309caa83b1f8855e2"
+generated_digest: "sha256:f9c9d117d4f43c00e6437878818dce8cc345948f696e0d7fafb2a9dd6864ad0c"
 generated:
   name: MarketplaceItemStatsEvent
   direction: outgoing
   domain: marketplace
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: avg_price
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_be56b683e34e
-  - index: 1
-    name: offer_count
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_be56b683e34e
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    note: written as the constant 0
-    evidence:
-    - ev_be56b683e34e
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    note: written as the constant 0
-    evidence:
-    - ev_be56b683e34e
-  - index: 4
-    name: category_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_be56b683e34e
-  - index: 5
-    name: type_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_be56b683e34e
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -71,18 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_18e476c61eeb
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 6
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    - int32
-    evidence: ev_be56b683e34e
   evidence:
   - id: ev_18e476c61eeb
     kind: client_parser
@@ -92,14 +34,5 @@ generated:
     symbol: MarketplaceItemStatsEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_be56b683e34e
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketplaceItemStatsEventMessageComposerSerializer.cs
-    symbol: MarketplaceItemStatsEventMessageComposerSerializer
-    line: 6
-  unknowns:
-  - uk_6902d4d251
 verified: {}
 manual: {}

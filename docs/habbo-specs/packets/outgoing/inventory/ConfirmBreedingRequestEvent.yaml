@@ -10,123 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a90990ad10a38f67d79ca604a7d21a05344911c93fcbf32159bf275d084d8fd4"
+generated_digest: "sha256:48861da32f1bd207ddaa036acbe00747b0a07119cc1f61dfc86dab28b7682fe7"
 generated:
   name: ConfirmBreedingRequestEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: nest_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_5f3bbedb1d22
-  - index: 1
-    name: confirm_breeding_request_event_message_composer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_5f3bbedb1d22
-    fields:
-    - index: 0
-      name: web_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 1
-      name: name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 2
-      name: level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 3
-      name: figure
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 4
-      name: owner
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-  - index: 2
-    name: confirm_breeding_request_event_message_composer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_5f3bbedb1d22
-    fields:
-    - index: 0
-      name: web_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 1
-      name: name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 2
-      name: level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 3
-      name: figure
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-    - index: 4
-      name: owner
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_5f3bbedb1d22
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    note: written as the constant 0
-    evidence:
-    - ev_5f3bbedb1d22
-  - index: 4
-    name: result_pet_type
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_5f3bbedb1d22
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -134,17 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_7b7384d08c24
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 5
-    partial: false
-    types:
-    - int32
-    - block
-    - block
-    - int32
-    - int32
-    evidence: ev_5f3bbedb1d22
   evidence:
   - id: ev_7b7384d08c24
     kind: client_parser
@@ -154,14 +34,5 @@ generated:
     symbol: ConfirmBreedingRequestEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5f3bbedb1d22
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/ConfirmBreedingRequestEventMessageComposerSerializer.cs
-    symbol: ConfirmBreedingRequestEventMessageComposerSerializer
-    line: 7
-  unknowns:
-  - uk_03abd92f5f
 verified: {}
 manual: {}

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:559fb3faadc8803b2a4daf44e8e637c3ce658241d0109b06e8ed1d8cb012c0dd"
+generated_digest: "sha256:a8599f8c0c083a4a4c739094df950dcb1fe16af5e74c1150aa10e5eb54bb799c"
 generated:
   id: uk_ab5b708694
   subject: "outgoing/ClubGiftSelected: unnamed fields"
   severity: low
-  question: Fields 1, 2, 3, 4, 5, 6, 7, 8, 9 carry no name from any source. What are they?
+  question: Fields 4, 6, 9 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: ClubGiftSelected
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: ClubGiftSelectedMessageComposer
     line: 20
     note: third-party server implementation; evidence, not authority
+  - id: ev_4e5d85289fce
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/ClubGiftSelectedEventMessageComposerSerializer.cs
+    symbol: ClubGiftSelectedEventMessageComposerSerializer
+    line: 8
 verified: {}
 manual: {}

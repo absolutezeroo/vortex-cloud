@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:bb0c99d57e9a9f479ae6a72c23e5a8fab9fa65d9c47bee23f9bcab53c3799a75"
+generated_digest: "sha256:d7f3fce17ea7ce22123689b5f9fee08337ae81d8ff041ed8fb5e9e38cb73e3ac"
 generated:
   feature: inventory.get_badge_point_limits
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - BadgePointLimitsEvent
+      - BadgePointLimits
       evidence: ev_18c3506bd65f
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

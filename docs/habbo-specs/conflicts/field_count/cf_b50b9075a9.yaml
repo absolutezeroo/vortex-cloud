@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ca2a44a8322a3098d9778e9947c6535da4c55c0a86f295a8383646fc594e52af"
+generated_digest: "sha256:b1c8d9759735be81057a8dc54fc30d56721599ca6713b782d931415d5b575c72"
 generated:
   id: cf_b50b9075a9
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "2 fields: int32, string"
     evidence: ev_0118153d8e2f
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "4 fields: int32, string, int32, int32"
+    evidence: ev_dc0879ff06bd
   evidence:
   - id: ev_3fe2647238f0
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: BadgeReceivedMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_dc0879ff06bd
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgeReceivedEventMessageComposerSerializer.cs
+    symbol: BadgeReceivedEventMessageComposerSerializer
+    line: 6
   official:
     status: unknown
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bcd04514c2fea4f149262e6ea38ae6d6a84dcaa2950d03f841c0b423fa4a5713"
+generated_digest: "sha256:44afcfc2b5dc0f2cc9bba47c5b651383fcb5d84d1e974a416670788dd045748d"
 generated:
   id: wired.wired_get_variables_for_object
   domain: wired
@@ -44,7 +44,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredVariablesForObjectEvent
+    - packet: WiredVariablesForObject
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_aed50979a0d3

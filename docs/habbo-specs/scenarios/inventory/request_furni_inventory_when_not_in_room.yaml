@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e5765bee32cd6f7cb55afd1f9d5c34751e442cc2669b84ed0f621ba69fbe2bd2"
+generated_digest: "sha256:1f2af2e7d5dbdf0320478c2d05b10bf33f22d3cdd550c0a57641a975c97ad14b"
 generated:
   feature: inventory.request_furni_inventory_when_not_in_room
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FurniListEvent
+      - FurniList
       evidence: ev_0c8ec94a79b8
   evidence:
   - id: ev_0c8ec94a79b8

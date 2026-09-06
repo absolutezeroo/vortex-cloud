@@ -10,128 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:11e333ee7901cd4f7bc85df61bc2c229ea4636c55085f7ff1d24ec12445af9c5"
+generated_digest: "sha256:ac3775cb2393e46620277c71566bcee1b02c2092ee5c4844e26e8e19a99fd0cd"
 generated:
   name: PetBreedingResultEvent
   direction: outgoing
   domain: room
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: pet_breeding_result_event_message_composer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_a6f1c2b970f5
-    fields:
-    - index: 0
-      name: stuff_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 1
-      name: class_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 2
-      name: product_code
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 3
-      name: user_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 4
-      name: user_name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 5
-      name: rarity_level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 6
-      name: has_mutation
-      type: boolean
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-  - index: 1
-    name: pet_breeding_result_event_message_composer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_a6f1c2b970f5
-    fields:
-    - index: 0
-      name: stuff_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 1
-      name: class_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 2
-      name: product_code
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 3
-      name: user_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 4
-      name: user_name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 5
-      name: rarity_level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
-    - index: 6
-      name: has_mutation
-      type: boolean
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_a6f1c2b970f5
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -139,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_39ee54a36f31
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - block
-    - block
-    evidence: ev_a6f1c2b970f5
   evidence:
   - id: ev_39ee54a36f31
     kind: client_parser
@@ -156,12 +34,5 @@ generated:
     symbol: PetBreedingResultEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a6f1c2b970f5
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Room/Pets/PetBreedingResultEventMessageComposerSerializer.cs
-    symbol: PetBreedingResultEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

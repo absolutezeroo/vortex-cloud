@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:84910c1aa742d4d2bd02b152a7021a8a3e90622ca413a2f42e79c5337e6c14a5"
+generated_digest: "sha256:633dc13467b5d5afc5f6fee089a4e78743b383deb592b7e2fd16fb67a316e0d5"
 generated:
   name: BotRemovedFromInventory
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: item_id
@@ -40,6 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_6acdfaabcfac
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_078433135f38
   evidence:
   - id: ev_a1ecce48d1a0
     kind: client_parser
@@ -57,5 +64,12 @@ generated:
     symbol: BotRemovedFromInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_078433135f38
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotRemovedFromInventoryEventMessageComposerSerializer.cs
+    symbol: BotRemovedFromInventoryEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

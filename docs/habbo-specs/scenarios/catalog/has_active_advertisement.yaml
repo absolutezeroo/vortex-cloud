@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5a1f2967c9e8c10fc9d11e453456a7770328177097fa90f3dfa151d2379c1780"
+generated_digest: "sha256:5c49d497112623c8ae5fe407ca00fa6981539e1f57fe93280d55c772e7ba913a"
 generated:
   feature: catalog.has_active_advertisement
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RoomAdPurchaseInfoEvent
+      - RoomAdPurchaseInfo
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

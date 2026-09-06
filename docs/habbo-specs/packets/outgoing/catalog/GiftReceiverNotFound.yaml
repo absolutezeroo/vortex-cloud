@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:27b7ef3ca46b3ae256ac14a0da271292fe13ff4eae52d394ac5859e9fd5784f5"
+generated_digest: "sha256:66bffd56a6293f9423a3f86d465314e61647c6208972551ed42e6c5b58667272"
 generated:
   name: GiftReceiverNotFound
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -31,6 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_e1e2abf24a56
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_804e9f84c265
   evidence:
   - id: ev_cb66dba54004
     kind: client_parser
@@ -48,5 +54,12 @@ generated:
     symbol: GiftReceiverNotFoundMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
+  - id: ev_804e9f84c265
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/GiftReceiverNotFoundEventMessageComposerSerializer.cs
+    symbol: GiftReceiverNotFoundEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

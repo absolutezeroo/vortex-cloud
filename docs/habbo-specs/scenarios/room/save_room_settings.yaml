@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f2ba1fc8346b141e7d6fad5857d6419589bcc28d6c334b76e84056c45d4c388a"
+generated_digest: "sha256:1f2cb76adb7deb111ab0a65138ad2221d57b478c0f901f10f53f041c326b7662"
 generated:
   feature: room.save_room_settings
   scenarios:
@@ -201,7 +201,7 @@ generated:
       outcome: success
       emits:
       - RoomChatSettings
-      - RoomSettingsSavedEvent
+      - RoomSettingsSaved
       - RoomVisualizationSettings
       evidence: ev_18cbc2dedbc1
     - origin: habbo-arcturus-daybreak

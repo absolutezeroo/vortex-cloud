@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bbb4bea20acd0137757cb837f3796947ebfc3c151d5adf6e13d13b8e1573744c"
+generated_digest: "sha256:6f1cc06783eab1061dc883cb0e4b0f3d296a7da12269e2b1463ded5b1bcb8728"
 generated:
   name: TradingCompletedEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -25,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_4987fade9337
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_45bc5cae3d7d
   evidence:
   - id: ev_4987fade9337
     kind: client_parser
@@ -40,12 +34,5 @@ generated:
     symbol: TradingCompletedEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_45bc5cae3d7d
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingCompletedEventMessageComposerSerializer.cs
-    symbol: TradingCompletedEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:214d9745d0caa9ed9ec70ac030ead64a5494140d8eccc640241b5b13b1444ca0"
+generated_digest: "sha256:f0d8db8e1c9f24231af25cfcfa8c5e45e69a71e1b5b96d6d36da3a38a70d1f37"
 generated:
   name: BadgePointLimits
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: unknown_0
@@ -65,6 +65,14 @@ generated:
     - int32
     - int32
     evidence: ev_d54ee7f5b3d1
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - array
+    evidence: ev_1b89142a6276
   evidence:
   - id: ev_2cf3d7f0d3d9
     kind: client_parser
@@ -82,6 +90,13 @@ generated:
     symbol: BadgePointLimitsMessageComposer
     line: 14
     note: third-party server implementation; evidence, not authority
+  - id: ev_1b89142a6276
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgePointLimitsEventMessageComposerSerializer.cs
+    symbol: BadgePointLimitsEventMessageComposerSerializer
+    line: 6
   conflicts:
   - cf_cf8c19706e
   unknowns:

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:de07623b5d7ab68530755a45bc2a220c1a562b973e784a5631073a2195b71df5"
+generated_digest: "sha256:69b6f0d7e13ef7900c0e38656ec021136397ee75fe9c779cfab5285fe8772f30"
 generated:
   id: uk_f3692bc060
   subject: "outgoing/MarketplaceItemStats: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: MarketplaceItemStatsMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_be56b683e34e
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketplaceItemStatsEventMessageComposerSerializer.cs
+    symbol: MarketplaceItemStatsEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

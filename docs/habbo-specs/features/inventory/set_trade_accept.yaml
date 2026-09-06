@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0c83426bc859153236aa5cf326a8eff54cd3e7f032bd7e9abbcbbb56a04726ba"
+generated_digest: "sha256:72a9cda11ea76e34a434d3d621d8498722e6b82ecae28ba0f79517f43cc975e9"
 generated:
   id: inventory.set_trade_accept
   domain: inventory
@@ -94,11 +94,11 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: TradingAcceptEvent
+    - packet: TradingAccept
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_1d91c4a1b72c
-    - packet: TradingConfirmationEvent
+    - packet: TradingConfirmation
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_1d91c4a1b72c

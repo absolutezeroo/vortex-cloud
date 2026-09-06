@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b9ff0e7d2e419d665f54abe5eb6df203995cf87c6686643a7fb96d3366ca9786"
+generated_digest: "sha256:7c0e1d74dde3a853037f064fe0c3d7444e58d810401de7066aa65bdafff022d6"
 generated:
   name: AccountPreferencesEvent
   direction: outgoing
   domain: preferences
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: u_i_volume
@@ -124,27 +124,6 @@ generated:
     - boolean
     - int32
     evidence: ev_41ea3f6090b8
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 15
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - boolean
-    - boolean
-    - boolean
-    - int32
-    - int32
-    - boolean
-    - boolean
-    - boolean
-    - int32
-    - boolean
-    - boolean
-    - string
-    evidence: ev_240ba694019e
   evidence:
   - id: ev_41ea3f6090b8
     kind: client_parser
@@ -154,14 +133,5 @@ generated:
     symbol: AccountPreferencesEventMessage
     line: 22
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_240ba694019e
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Preferences/AccountPreferencesEventMessageComposerSerializer.cs
-    symbol: AccountPreferencesEventMessageComposerSerializer
-    line: 6
-  conflicts:
-  - cf_e1e2668d75
 verified: {}
 manual: {}

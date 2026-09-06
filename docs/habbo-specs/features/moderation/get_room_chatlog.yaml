@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0e7c757eaf0006cf52c915308da5efde6a77dc3e931c2873b8a63128836d48ba"
+generated_digest: "sha256:a6e609143cd300e1e5337d9c36b401bedfd51b05c07e7cc260ee3d628e3ec65c"
 generated:
   id: moderation.get_room_chatlog
   domain: moderation
@@ -65,7 +65,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RoomChatlogEvent
+    - packet: RoomChatlog
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_0b68e4953420
@@ -125,8 +125,6 @@ generated:
   - moderation.get_room_chatlog.guard_1
   - moderation.get_room_chatlog.guard_2
   - moderation.get_room_chatlog.success
-  conflicts:
-  - cf_8f2e06fb3d
   unknowns:
   - uk_78a4bae643
 verified: {}

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0bb948a7c6dd14cc7dd4c96e774e75b98500f7028279085ad71e702c80ba9a2b"
+generated_digest: "sha256:e9b50de46bb78f2128a928ed1e8c19b4f41f6fcc00deb6574206761ebc48d90e"
 generated:
   name: FurniList
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: total_fragments
@@ -199,6 +199,16 @@ generated:
     - int32
     - int32
     evidence: ev_306594cbd14c
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - array
+    evidence: ev_f7857a349d6b
   evidence:
   - id: ev_5376a3252d4b
     kind: client_parser
@@ -216,6 +226,13 @@ generated:
     symbol: FurniListMessageComposer
     line: 31
     note: third-party server implementation; evidence, not authority
+  - id: ev_f7857a349d6b
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListEventMessageComposerSerializer.cs
+    symbol: FurniListEventMessageComposerSerializer
+    line: 8
   conflicts:
   - cf_0678b43ee5
   unknowns:

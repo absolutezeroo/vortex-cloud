@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:746da8d021072edd58f82932474a92e163ed7d9364dcc6daf3b4a3cfd82b0f1c"
+generated_digest: "sha256:25c7ec931d9468609f770f85d154d331fdbba04b983a2b3955998e0961e18230"
 generated:
   revision: WIN63-202607011411-782849652
   origin: "as3:WIN63-202607011411-782849652"
@@ -70,8 +70,8 @@ generated:
     Game2StopCounter: 2747
     Game2UserBlocked: 1145
     Game2UserLeftGame: 606
-    GetCustomFilterResultMessageEvent: 2231
-    ModifyCustomFilterResultMessageEvent: 3622
+    GetCustomFilterResultMessage: 2231
+    ModifyCustomFilterResultMessage: 3622
     SnowWarGameTokens: 904
     UserGameAchievements: 3949
 verified: {}

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:aa5a9883f8a0a015a18c1ed52369140a7978039cfa8884469a54fc159a6faadd"
+generated_digest: "sha256:8caa1c5d2af255cdce3399f65bf20fb685c8e10129818d33d2aca93c6f38e1a4"
 generated:
   id: uk_741e1b1c55
-  subject: "sound.get_sound_settings: who receives AccountPreferencesEvent"
+  subject: "sound.get_sound_settings: who receives AccountPreferences"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

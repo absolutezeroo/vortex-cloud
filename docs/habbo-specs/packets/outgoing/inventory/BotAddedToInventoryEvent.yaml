@@ -10,65 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4f15f7ab218ee5df7fb23d91d01354c2f03515998fe224386960bf93f99ca018"
+generated_digest: "sha256:89d8d3311457e7501f925d94fd526225dde4a20bc36a33d057df5f4150290f1f"
 generated:
   name: BotAddedToInventoryEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: bot_serialization
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1da96d855244
-    fields:
-    - index: 0
-      name: bot_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1da96d855244
-    - index: 1
-      name: name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1da96d855244
-    - index: 2
-      name: motto
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1da96d855244
-    - index: 3
-      name: unknown_3
-      type: string
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1da96d855244
-    - index: 4
-      name: figure
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1da96d855244
-  - index: 1
-    name: open_inventory
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1da96d855244
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -76,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_3c02dd429f9b
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - block
-    - boolean
-    evidence: ev_1da96d855244
   evidence:
   - id: ev_3c02dd429f9b
     kind: client_parser
@@ -93,12 +34,5 @@ generated:
     symbol: BotAddedToInventoryEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1da96d855244
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotAddedToInventoryEventMessageComposerSerializer.cs
-    symbol: BotAddedToInventoryEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

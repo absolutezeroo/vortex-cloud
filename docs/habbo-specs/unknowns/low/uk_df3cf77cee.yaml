@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:482adea449654d1c21a8a91be5ba0dcec2e30dda6b456ee61165e025d3f23554"
+generated_digest: "sha256:d3afc073aeccd61c7b50718c92a72ac9347f9b79983dc57075a56365b2a47aab"
 generated:
   id: uk_df3cf77cee
   subject: "outgoing/TradingAccept: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradingAccept
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: TradingAcceptMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_d316e6a74fbf
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingAcceptEventMessageComposerSerializer.cs
+    symbol: TradingAcceptEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

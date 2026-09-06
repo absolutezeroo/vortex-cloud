@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1df440dd6fedf406eb94f69654fb76eae3cd2c534b5d5665543724dcfd00dbcc"
+generated_digest: "sha256:549a60208fe6cd294bb155540837fe98e319b101e8040204ae549181c8e7318b"
 generated:
   feature: room.get_banned_users_from_room
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - BannedUsersFromRoomEvent
+      - BannedUsersFromRoom
       evidence: ev_170d536d3818
   evidence:
   - id: ev_170d536d3818

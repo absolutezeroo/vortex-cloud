@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0ccfd36a191a28a73ad7d7e4c2dad5c9d79a994a8402e2a31a9e1d002acd60ee"
+generated_digest: "sha256:33d58b72fd4cb34fcb8a7e973a480d29461e2a679edf7894316249574d2e2f01"
 generated:
   id: wired.wired_set_room_settings
   domain: wired
@@ -68,7 +68,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredRoomSettingsEvent
+    - packet: WiredRoomSettings
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_023f0d16afe7

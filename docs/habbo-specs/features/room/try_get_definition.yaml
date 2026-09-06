@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:097052fff29d8b5442b6ba0f1ec73e29958cd22476db716a3c06d977c9823024"
+generated_digest: "sha256:feda247fac1f9259dcfa11792397b6569345de277dcfa1458b02e13307b91650"
 generated:
   id: room.try_get_definition
   domain: room
@@ -266,9 +266,15 @@ generated:
   outgoing:
     ordering: unknown
     packets:
+    - packet: DiscordPreferences
+      recipient: actor
+      recipient_confidence: inferred
+      note: one of several composers the call can return, depending on the item type
+      evidence: ev_d0d32519d32e
     - packet: VortexFurniDefinition
       recipient: actor
-      recipient_confidence: implementation_observed
+      recipient_confidence: inferred
+      note: one of several composers the call can return, depending on the item type
       evidence: ev_d0d32519d32e
   reaches_persistence: true
   evidence:

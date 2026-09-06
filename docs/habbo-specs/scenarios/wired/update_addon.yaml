@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cc34967be38e14f8e1453ee781b2acfc1a2f45fa6a0619ab147dbf887aa3999b"
+generated_digest: "sha256:8d64f64f0848e3bd54eda6e1c5db1d34ba78b9e902b4a20869b15ffc9fb1371b"
 generated:
   feature: wired.update_addon
   scenarios:
@@ -138,7 +138,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredSaveSuccessEvent
+      - WiredSaveSuccess
       evidence: ev_0080929ab318
   evidence:
   - id: ev_0080929ab318
@@ -161,6 +161,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 229
+    line: 240
 verified: {}
 manual: {}

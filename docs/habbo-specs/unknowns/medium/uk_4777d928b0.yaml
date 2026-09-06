@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0c72389cf5574d0ccd177830ea61d2881a53f56670ae89f36e1b6a7215145520"
+generated_digest: "sha256:79f3b5478fc967a79c2be44f63a2636012087a1523c7201225894cdb04e7370e"
 generated:
   id: uk_4777d928b0
-  subject: "moderation.resolve_for_player: who receives IssueCloseNotification, IssueDeleted, IssuePickFailed, ModeratorUserInfoEvent"
+  subject: "moderation.resolve_for_player: who receives IssueCloseNotification, IssueDeleted, IssuePickFailed, ModeratorUserInfo"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

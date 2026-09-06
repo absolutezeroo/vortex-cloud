@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:de182d64cd14fad5be8edb2e129149b4d7beb3200b80df4f3fd6a9ad66ffae2b"
+generated_digest: "sha256:37e4c21813ee82706a9f566a6b3d07b5be150ff6402601b30e51dd0d51a70feb"
 generated:
   id: uk_becfb51642
   subject: "room.drop_carry_item: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 217
+    line: 219
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator

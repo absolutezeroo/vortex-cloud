@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d0f6e71b536aea4733a48906dfca86f920155e7a07299cafeccf623f4a528632"
+generated_digest: "sha256:50c519b408f7d365ae004de7c6a53f3eaae91a8ecb9aa6f57dd67f7ee9a2c714"
 generated:
   id: uk_454b0156a7
   subject: "catalog.builders_club_place_wall_item: what the server sends when it refuses"
@@ -137,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 90
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

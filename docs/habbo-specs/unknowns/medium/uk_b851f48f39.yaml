@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7be4c914ae8cd2fd95f5e82472a6671063650712299709a9f51ee0ae6222487a"
+generated_digest: "sha256:fe5de7a3f68aa46d8e08d60dfe672406ef99256a6593bc0e2dc2d15548ea561e"
 generated:
   id: uk_b851f48f39
   subject: "inventory.redeem_purchasable_clothing: what the server sends when it refuses"
@@ -137,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_acbb2191dd7f
     kind: emulator_flow
     authority: vortex_emulator

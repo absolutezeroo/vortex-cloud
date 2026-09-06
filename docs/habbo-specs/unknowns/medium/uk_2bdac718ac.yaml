@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f9f0825e0d020af18f33353e69711d931b3331275aa53cc795d647a905f7aa7b"
+generated_digest: "sha256:e20382bffe23e43b09abc1659670fbec8b20893e892566510420d32de124709b"
 generated:
   id: uk_2bdac718ac
-  subject: "moderation.get_user_room_visits: who receives RoomVisitsEvent"
+  subject: "moderation.get_user_room_visits: who receives RoomVisits"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

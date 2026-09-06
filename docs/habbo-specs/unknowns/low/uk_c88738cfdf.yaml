@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bc1c8557526165742530cd440401dff114a425b7f3000fca37c72b8691e0f6be"
+generated_digest: "sha256:9de068a56abaf68cc8cc61dc3f063688ba5bfab0779e1dc8ccf834a24c84742a"
 generated:
   id: uk_c88738cfdf
   subject: "outgoing/BadgePointLimits: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: BadgePointLimitsMessageComposer
     line: 14
     note: third-party server implementation; evidence, not authority
+  - id: ev_1b89142a6276
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgePointLimitsEventMessageComposerSerializer.cs
+    symbol: BadgePointLimitsEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

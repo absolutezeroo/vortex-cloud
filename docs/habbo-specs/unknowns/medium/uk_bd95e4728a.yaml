@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:db57ebc9b784f4ff3b6eb714b00bd925fdc8bd18d455c82e6f53afe30e133802"
+generated_digest: "sha256:d4c7eb89c8d82e1e3346dd2263b5889577c89fc6500701cea6a247996fa582c8"
 generated:
   id: uk_bd95e4728a
-  subject: "users.scr_get_user_info: who receives AccountPreferencesEvent"
+  subject: "users.scr_get_user_info: who receives AccountPreferences"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

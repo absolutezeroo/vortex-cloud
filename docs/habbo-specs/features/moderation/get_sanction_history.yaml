@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b34c0787e9d1c02bdd40f5ea6134602b73e4661339d60414845d3d943abb93fd"
+generated_digest: "sha256:c7dec422e8c7277b3c21f61ba0d490234d17ab05c13275ac7fccf67b682dc59b"
 generated:
   id: moderation.get_sanction_history
   domain: moderation
@@ -49,7 +49,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: SanctionStatusEvent
+    - packet: SanctionStatus
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_db89bf8dd730
@@ -87,7 +87,5 @@ generated:
   - moderation.get_sanction_history.guard_0
   - moderation.get_sanction_history.guard_1
   - moderation.get_sanction_history.success
-  conflicts:
-  - cf_d516648802
 verified: {}
 manual: {}

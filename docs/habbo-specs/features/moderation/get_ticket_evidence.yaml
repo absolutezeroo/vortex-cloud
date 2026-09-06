@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ce43fdac9730e6c25267e5071af2daae40aeef3f5720d1b00a2077465ff5f352"
+generated_digest: "sha256:ade709726f3c930897ef7db98710e69a1e9176f3102a17bd67e8a338ebd43e15"
 generated:
   id: moderation.get_ticket_evidence
   domain: moderation
@@ -85,7 +85,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CfhChatlogEvent
+    - packet: CfhChatlog
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_6a49ee9ae8d7
@@ -155,8 +155,6 @@ generated:
   - moderation.get_ticket_evidence.guard_4
   - moderation.get_ticket_evidence.guard_5
   - moderation.get_ticket_evidence.success
-  conflicts:
-  - cf_e9b0229d84
   unknowns:
   - uk_baad30cb29
 verified: {}

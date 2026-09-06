@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:13eb90b43ee84ffe7d3c6469d90e5800d313441a72566cbe271bdf0c29e775ff"
+generated_digest: "sha256:4974f109fe717f105e80e6124f1961df910d3f65723678d42c9b853aa1589c8d"
 generated:
   feature: moderation.mod_trading_lock
   scenarios:
@@ -175,7 +175,7 @@ generated:
       outcome: success
       emits:
       - ModeratorActionResult
-      - ModeratorCautionEvent
+      - ModeratorCaution
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

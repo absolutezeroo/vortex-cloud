@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d68031aa8f62d2765a477c61f82e619ce031c446df5d479a1193b5cd0cf6a7bb"
+generated_digest: "sha256:945d52df9739b72fe331937d14df95cc6761ffcc0768ff5472964f21e4fa45ea"
 generated:
   feature: navigator.edit
   scenarios:
@@ -102,7 +102,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RoomEvent
+      - Room
       evidence: ev_065fa12e16db
   evidence:
   - id: ev_065fa12e16db

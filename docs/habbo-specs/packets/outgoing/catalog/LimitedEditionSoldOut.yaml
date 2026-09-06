@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ee4774c68e8e93490d066fd02e69c5f7ba82bb750720add8830bf80a0234e954"
+generated_digest: "sha256:29212ff9bca3f2b8287b3bd1e60bb308032400b23063d4f58024cebfe1cdb74b"
 generated:
   name: LimitedEditionSoldOut
   direction: outgoing
   domain: catalog
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields: []
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
@@ -31,6 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_77e4a5233bcb
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_5ef97d0abff6
   evidence:
   - id: ev_6657b3553d42
     kind: client_parser
@@ -48,5 +54,12 @@ generated:
     symbol: LimitedEditionSoldOutMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
+  - id: ev_5ef97d0abff6
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/LimitedEditionSoldOutEventMessageComposerSerializer.cs
+    symbol: LimitedEditionSoldOutEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:80f1f1f4e7aaa2af9fdb2c48dfe01ae37a380417b3e333a8083a22c7ba8db292"
+generated_digest: "sha256:6fbec57d5404b7b4633af0e5dfc5fe0ce74e22eb321c87952714f19725e7e78c"
 generated:
   id: uk_bb4843f327
   subject: "room.pickup_item_in_room: what the server sends when it refuses"
@@ -137,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator

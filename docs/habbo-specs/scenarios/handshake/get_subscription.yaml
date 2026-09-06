@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:017b2133203e7eed2fa69c112ce4236b0e425633169952b860a5ca054b2ada49"
+generated_digest: "sha256:6b98ba6d254e7ccf97153ca5d6cd3e4185f772224a2b1f9df6908d3f7ee17f5a"
 generated:
   feature: handshake.get_subscription
   scenarios:
@@ -59,16 +59,16 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits:
-      - AchievementsScoreEvent
+      - AchievementsScore
       - ActivityPoints
       - AvailabilityStatus
       - AvatarEffects
       - BuildersClubSubscriptionStatus
-      - ClubGiftNotificationEvent
-      - CreditBalanceEvent
+      - ClubGiftNotification
+      - CreditBalance
       - EmeraldBalance
       - Favourites
-      - FigureSetIdsEvent
+      - FigureSetIds
       - InfoFeedEnable
       - MysteryBoxKeys
       - NavigatorSettings
@@ -299,16 +299,16 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AchievementsScoreEvent
+      - AchievementsScore
       - ActivityPoints
       - AvailabilityStatus
       - AvatarEffects
       - BuildersClubSubscriptionStatus
-      - ClubGiftNotificationEvent
-      - CreditBalanceEvent
+      - ClubGiftNotification
+      - CreditBalance
       - EmeraldBalance
       - Favourites
-      - FigureSetIdsEvent
+      - FigureSetIds
       - InfoFeedEnable
       - MysteryBoxKeys
       - NavigatorSettings

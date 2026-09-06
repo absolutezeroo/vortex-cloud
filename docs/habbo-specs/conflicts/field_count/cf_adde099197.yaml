@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:8e2c6e30b3b962dac0940389074651a6fa94a933865da0d6d1cca568e669fd1e"
+generated_digest: "sha256:b0691a1d2560d010d111271fd14cc267c9cf66048caf0eb4952c400a4ba9055e"
 generated:
   id: cf_adde099197
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "7 fields: int32, string, int32, string, int32, string, int32"
     evidence: ev_e9eea4970d25
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "4 fields: int32, string, int32, array"
+    evidence: ev_bc3aca65d70a
   evidence:
   - id: ev_10d5056ef7a9
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: QuestionAnsweredMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
+  - id: ev_bc3aca65d70a
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Poll/QuestionAnsweredEventMessageComposerSerializer.cs
+    symbol: QuestionAnsweredEventMessageComposerSerializer
+    line: 8
   official:
     status: unknown
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b026db4e284116ec68af4e4606d212fa96c764f84ee8c6586add557475d099d5"
+generated_digest: "sha256:ea1ef3c9a9ac9de466fafef2a6082812bc245170ad236239ab3ca765b94416be"
 generated:
   feature: users.get_motd
   scenarios:
@@ -76,7 +76,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - MOTDNotificationEvent
+      - MOTDNotification
       evidence: ev_86f81f4f919c
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

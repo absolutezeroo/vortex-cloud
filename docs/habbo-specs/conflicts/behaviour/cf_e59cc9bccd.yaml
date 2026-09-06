@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ca876649234124d4daf39cfa0ddd93a4833698067245aa36f4ec2c1a04457462"
+generated_digest: "sha256:06736f33d490dfe43c13947034d040670584e1804ac5a9476f5a5ce44d67eb40"
 generated:
   id: cf_e59cc9bccd
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_1111fd915cdf
   - origin: vortex
     authority: vortex_emulator
-    claim: UserBanned then AvatarEffects then NavigatorSettings then Favourites then FigureSetIdsEvent then VortexFurniEditorRights then ClubGiftNotificationEvent then CreditBalanceEvent then ActivityPoints then SilverBalance then EmeraldBalance then AvailabilityStatus then InfoFeedEnable then AchievementsScoreEvent then MysteryBoxKeys then BuildersClubSubscriptionStatus then PerkAllowances
+    claim: UserBanned then AvatarEffects then NavigatorSettings then Favourites then FigureSetIds then VortexFurniEditorRights then ClubGiftNotification then CreditBalance then ActivityPoints then SilverBalance then EmeraldBalance then AvailabilityStatus then InfoFeedEnable then AchievementsScore then MysteryBoxKeys then BuildersClubSubscriptionStatus then PerkAllowances
     evidence: ev_a189cc3925be
   evidence:
   - id: ev_1111fd915cdf

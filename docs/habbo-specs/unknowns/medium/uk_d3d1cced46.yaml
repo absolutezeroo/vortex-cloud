@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:30146cfad08709f90c1743c952477f042435a2309083a90a0b263e81049f484c"
+generated_digest: "sha256:61d51ce2609591cf0fc07b8fd219ca00d5937cb21abd4d283824ea3428c1def4"
 generated:
   id: uk_d3d1cced46
   subject: "wired.update_selector: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 222
+    line: 233
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator

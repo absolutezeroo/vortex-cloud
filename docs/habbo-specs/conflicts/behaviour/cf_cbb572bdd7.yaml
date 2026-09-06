@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:5c31f6933715ba9e114d87b604eb3bb42d3089d16237e310c84ed09e5dfc970f"
+generated_digest: "sha256:3f7af9031afb6bc6adfbea5446b81920519a79a0cd75e64d7bfa4632a32ed3e4"
 generated:
   id: cf_cbb572bdd7
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_d94132821a78
   - origin: vortex
     authority: vortex_emulator
-    claim: RoomVisitsEvent
+    claim: RoomVisits
     evidence: ev_b48b47abc4e6
   evidence:
   - id: ev_d94132821a78

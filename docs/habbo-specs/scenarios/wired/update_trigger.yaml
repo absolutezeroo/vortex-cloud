@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:887f12484a2660d62cae1a3b57b315b81a8355fb0844b67c6ea2c01b0558a89b"
+generated_digest: "sha256:747e218c0a19c07849b1835f36dcca79360a8b20957188ebf7afb622942b1357"
 generated:
   feature: wired.update_trigger
   scenarios:
@@ -59,8 +59,8 @@ generated:
       authority: vortex_emulator
       outcome: rejected
       emits:
-      - WiredSaveSuccessEvent
-      - WiredValidationErrorEvent
+      - WiredSaveSuccess
+      - WiredValidationError
       evidence: ev_b0dd7db943f4
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -200,8 +200,8 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredSaveSuccessEvent
-      - WiredValidationErrorEvent
+      - WiredSaveSuccess
+      - WiredValidationError
       evidence: ev_0080929ab318
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -242,6 +242,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 229
+    line: 240
 verified: {}
 manual: {}

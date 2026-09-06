@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e7a44285a36c9ba7038faedef8823927f58aacbcd2558af2d9a423ce6d33e2f1"
+generated_digest: "sha256:348b468e9ecbf9b83a9c4a7984167ba12c4964356b031b5a69a917fb5cd6b331"
 generated:
   feature: wired.wired_clear_error_logs
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredErrorLogsEvent
+      - WiredErrorLogs
       evidence: ev_0c839ee50b3c
   evidence:
   - id: ev_0c839ee50b3c

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f00411ae51f4bfc50c59c9478aa389ec9ac86d791a58908366d593f989496b94"
+generated_digest: "sha256:4eb46c9f26421854e0366d17248a28377a64cb0967dece4e380e20607a899450"
 generated:
   id: cf_0bcd51a55d
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_24d5bc76ecea
   - origin: vortex
     authority: vortex_emulator
-    claim: GiftReceiverNotFoundEvent then PurchaseOK
+    claim: GiftReceiverNotFound then PurchaseOK
     evidence: ev_75da769fdeac
   evidence:
   - id: ev_24d5bc76ecea

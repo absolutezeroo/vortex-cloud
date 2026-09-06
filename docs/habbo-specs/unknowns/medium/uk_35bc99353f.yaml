@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:415ebc1a3eee3a14a528a57e5f850f6489b2fa50b83690f4f75c7f95a1845bf5"
+generated_digest: "sha256:e9d94a39c800699dbdf85e99430213a5c897e8562e35699acdcbb1f649fd8471"
 generated:
   id: uk_35bc99353f
   subject: "messenger.follow_friend: what the server sends when it refuses"
@@ -144,7 +144,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 90
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

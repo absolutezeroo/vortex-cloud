@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1b071baeb2c722e8f2f599bf7f968440376f1e4bb2030d008579dbc73a44cf85"
+generated_digest: "sha256:94a720a0dfe29709cd7010d50f106c1f0691b033df1e58a292f806550d706156"
 generated:
   name: GetAchievements
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Inventory/Achievements/GetAchievementsMessageParser.cs
     symbol: GetAchievementsMessageParser
     line: 7
-  conflicts:
-  - cf_6c8f3c965e
 verified: {}
 manual: {}

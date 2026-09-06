@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e3c0df0fa9f5a35d5ce3831f6e3d4706704f2936a273f9496b425832d3177e82"
+generated_digest: "sha256:9fcb758f598974723b3d8320af61186ec8315f72502d041c14dc2fb57f0b150a"
 generated:
   feature: moderation.get_user_room_visits
   scenarios:
@@ -102,7 +102,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RoomVisitsEvent
+      - RoomVisits
       evidence: ev_3939b030ad18
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

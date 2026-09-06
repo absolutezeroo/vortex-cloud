@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:459ff6a5f4f44790d3d3dc9fdc7b8959abef1f4c5dff262af306d3de5568c1a4"
+generated_digest: "sha256:e6e5ab95e47862ae110a774c73f8c0cc30fa70998ab4afcb9977bc25a14c8430"
 generated:
   id: uk_9692c150e2
   subject: "outgoing/PetRespectNotification: unnamed fields"
   severity: low
-  question: Fields 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 8 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetRespectNotification
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: PetRespectNotificationMessageComposer
     line: 26
     note: third-party server implementation; evidence, not authority
+  - id: ev_cec2552dbc27
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Users/PetRespectNotificationEventMessageComposerSerializer.cs
+    symbol: PetRespectNotificationEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

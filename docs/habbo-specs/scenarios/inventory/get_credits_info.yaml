@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:15446a3aede560ca3e387c731f287ef01f49c15442bd80ce3daee74f59340299"
+generated_digest: "sha256:d002c3322eb7d3f102f79b8ddd411ba8032e910dbd49e13ebb980503a539e0e2"
 generated:
   feature: inventory.get_credits_info
   scenarios:
@@ -56,7 +56,7 @@ generated:
       outcome: success
       emits:
       - ActivityPoints
-      - CreditBalanceEvent
+      - CreditBalance
       evidence: ev_0a5d3f47e95a
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

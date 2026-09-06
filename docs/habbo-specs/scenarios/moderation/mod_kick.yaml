@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dcf477b9b3625541193d3912893989ed51fd1ff904f7befd302df1333bc516e0"
+generated_digest: "sha256:a8c1cf9d12c29281cbd83d7b5a0ecfafde7e2f36d2990ae0028399594a867407"
 generated:
   feature: moderation.mod_kick
   scenarios:
@@ -169,7 +169,7 @@ generated:
       outcome: success
       emits:
       - ModeratorActionResult
-      - ModeratorCautionEvent
+      - ModeratorCaution
       evidence: ev_1d5fb3a1b3a4
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:780013168dd25cfe31f7f754416a3e76cf20509de56dd59dca24a128146b4a7a"
+generated_digest: "sha256:809f4b984bef789e85d27b235218a428947c385bced2ab089c75ce6ffcb54848"
 generated:
   id: moderation.mod_trading_lock
   domain: moderation
@@ -109,7 +109,7 @@ generated:
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_dd4e77d6bf65
-    - packet: ModeratorCautionEvent
+    - packet: ModeratorCaution
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_dd4e77d6bf65

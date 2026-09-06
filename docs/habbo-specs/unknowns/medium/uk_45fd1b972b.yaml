@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3529752fa75e39bc6cea4f1051a1a48cd3efa6f23ecddc7928e21b1a5c31a105"
+generated_digest: "sha256:bffea4faeca5ff70b5c92701f300848e896551100d8c82893449cbac46609c43"
 generated:
   id: uk_45fd1b972b
-  subject: "inventory.request_furni_inventory_when_not_in_room: who receives FurniListEvent"
+  subject: "inventory.request_furni_inventory_when_not_in_room: who receives FurniList"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a81cb6ab6bf708b389aae0ff29843fc7cb60fa36ce4b8505d84a3c0a7adb1569"
+generated_digest: "sha256:d1833a64df70edbe502ce39bc503b0fbdded03e8ccced6274b311490c0d42a4a"
 generated:
   id: catalog.builders_club_place_room_item
   domain: catalog
@@ -441,7 +441,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FurniListRemoveEvent
+    - packet: FurniListRemove
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
@@ -577,7 +577,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 90
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

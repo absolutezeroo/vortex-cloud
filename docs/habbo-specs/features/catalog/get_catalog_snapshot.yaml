@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7df54dd3f2498f0645ff1a9d7166762aae9b2912804c135823da593f8ec7f037"
+generated_digest: "sha256:098c17d3382b06fb763d669388bdb82c5a5743b6f6ce82bc6c91a6a2517e3a93"
 generated:
   id: catalog.get_catalog_snapshot
   domain: catalog
@@ -81,11 +81,11 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_86e1c100879d
-    - packet: IsOfferGiftableEvent
+    - packet: IsOfferGiftable
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_9fc3f902c0fe
-    - packet: ProductOfferEvent
+    - packet: ProductOffer
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_514edc70e9d7
@@ -175,7 +175,6 @@ generated:
   - catalog.get_catalog_snapshot.guard_3
   - catalog.get_catalog_snapshot.success
   conflicts:
-  - cf_34095bd33f
   - cf_b3ac1a1c9b
 verified: {}
 manual: {}

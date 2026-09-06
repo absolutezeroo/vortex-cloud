@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:007ffffff5319f5dd5919a17fc39ca6a77319233ca2ced469cb3332b79b5393e"
+generated_digest: "sha256:59f5764f16b2e7513a9c6a367fbef19269f71925dc90ece0113253ea5ae3e18a"
 generated:
   id: marketplace.get_marketplace_item_stats
   domain: marketplace
@@ -45,7 +45,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: MarketplaceItemStatsEvent
+    - packet: MarketplaceItemStats
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_f68085d67443
@@ -76,7 +76,5 @@ generated:
   - marketplace.get_marketplace_item_stats.guard_0
   - marketplace.get_marketplace_item_stats.guard_1
   - marketplace.get_marketplace_item_stats.success
-  conflicts:
-  - cf_f817541c1e
 verified: {}
 manual: {}

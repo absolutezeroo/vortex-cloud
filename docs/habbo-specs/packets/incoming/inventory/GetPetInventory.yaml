@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:250728a8afd16bdc4e5890f28fa7aa2d7c25546f89625042df906035ff874101"
+generated_digest: "sha256:be8f3a88e4f81c02b6d6278fa133b5dea3f4d4dd0f6b9ea2223973a12edeb4cd"
 generated:
   name: GetPetInventory
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Inventory/Pets/GetPetInventoryMessageParser.cs
     symbol: GetPetInventoryMessageParser
     line: 7
-  conflicts:
-  - cf_101d5cd1f2
 verified: {}
 manual: {}

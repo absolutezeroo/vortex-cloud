@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3c9858130c99a75689720f34d4cfa134c99d13f40c5dde8e3e77387759a60cd5"
+generated_digest: "sha256:d6d7339fdae3d69214a514beaefcdbf4e3edccc91df5b38fcf4e7f0c644264db"
 generated:
   id: uk_47d4d71fd5
   subject: "outgoing/RoomChatlog: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 carry no name from any source. What are they?
+  question: Fields 1, 2, 4, 5, 7, 13 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomChatlog
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: RoomChatlogMessageComposer
     line: 23
     note: third-party server implementation; evidence, not authority
+  - id: ev_dd73bc2fb566
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/RoomChatlogEventMessageComposerSerializer.cs
+    symbol: RoomChatlogEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

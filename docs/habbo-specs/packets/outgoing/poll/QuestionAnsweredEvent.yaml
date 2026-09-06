@@ -10,58 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d306a54721e1f475449cfa0a6fae156f6e1059798105f90acad24d02c1d4db70"
+generated_digest: "sha256:7d6ac5a07f98b0104e1732737835930bcb3c2783530a5f48b96f52180982cfab"
 generated:
   name: QuestionAnsweredEvent
   direction: outgoing
   domain: poll
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_bc3aca65d70a
-  - index: 1
-    name: value
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_bc3aca65d70a
-  - index: 2
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_bc3aca65d70a
-  - index: 3
-    name: answer_counts
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_bc3aca65d70a
-    fields:
-    - index: 0
-      name: answer
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_bc3aca65d70a
-    - index: 1
-      name: count
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_bc3aca65d70a
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -69,16 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_be01f8569790
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - string
-    - int32
-    - array
-    evidence: ev_bc3aca65d70a
   evidence:
   - id: ev_be01f8569790
     kind: client_parser
@@ -88,12 +34,5 @@ generated:
     symbol: QuestionAnsweredEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_bc3aca65d70a
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Poll/QuestionAnsweredEventMessageComposerSerializer.cs
-    symbol: QuestionAnsweredEventMessageComposerSerializer
-    line: 8
 verified: {}
 manual: {}

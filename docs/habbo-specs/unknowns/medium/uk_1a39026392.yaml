@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:be2a7ff29c163e6d8a8fe52888ac2a5eb4885db644e8b016263f4e4dcda407c2"
+generated_digest: "sha256:51faa70da93e4159d476927e25b504cfc50205bfb0fd7c7ccf35fa405ec0350f"
 generated:
   id: uk_1a39026392
-  subject: "inventory.confirm_pet_breeding: who receives ConfirmBreedingResultEvent, NestBreedingSuccessEvent"
+  subject: "inventory.confirm_pet_breeding: who receives ConfirmBreedingResult, NestBreedingSuccess"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

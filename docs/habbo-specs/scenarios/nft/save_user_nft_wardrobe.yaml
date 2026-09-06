@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d66b173961f9211ed1bc1afece1103d0ed2fb9949be807b60d8c1d807ac64bd9"
+generated_digest: "sha256:993e421ad552b9fdd9d22c22cc45f3a4709b69bc0b2030a4c1e579f289723529"
 generated:
   feature: nft.save_user_nft_wardrobe
   scenarios:
@@ -102,7 +102,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FigureUpdateEvent
+      - FigureUpdate
       - UserNftWardrobeSelection
       evidence: ev_1f83e61934ca
   evidence:

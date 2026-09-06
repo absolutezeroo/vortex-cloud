@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4afe8d70faeb9a34cb775ff5ee9c9c41c65d30fe258c3d7479b96c885bd96427"
+generated_digest: "sha256:84e2682caff7bcb4a9ffe4f752e9447f5d86f89ab4ad4741a37a826fa349a5d6"
 generated:
   name: FigureUpdateEvent
   direction: outgoing
   domain: avatar
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: figure
@@ -43,14 +43,6 @@ generated:
     - string
     - string
     evidence: ev_02a3eeafe598
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - string
-    - string
-    evidence: ev_12e3af4b69b2
   evidence:
   - id: ev_02a3eeafe598
     kind: client_parser
@@ -60,14 +52,5 @@ generated:
     symbol: FigureUpdateEventMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_12e3af4b69b2
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Avatar/FigureUpdateEventMessageComposerSerializer.cs
-    symbol: FigureUpdateEventMessageComposerSerializer
-    line: 7
-  conflicts:
-  - cf_2b929bb7d5
 verified: {}
 manual: {}

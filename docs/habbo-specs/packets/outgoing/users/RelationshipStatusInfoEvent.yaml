@@ -10,65 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:eaa56af4de18b49f62d4908265deccf4f403a912c100dcf85902b54bd907d72e"
+generated_digest: "sha256:d2e7d6d27da3abf4f642b2ea9c2ec61858902b316fda80acc3796b8b6712592a"
 generated:
   name: RelationshipStatusInfoEvent
   direction: outgoing
   domain: users
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_d6d283ec61de
-  - index: 1
-    name: count
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_d6d283ec61de
-  - index: 2
-    name: relations
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_d6d283ec61de
-    fields:
-    - index: 0
-      name: relation_type
-      type: short
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d6d283ec61de
-    - index: 1
-      name: count
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d6d283ec61de
-    - index: 2
-      name: name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d6d283ec61de
-    - index: 3
-      name: figure
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_d6d283ec61de
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -76,15 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_c48ee701f58a
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 3
-    partial: false
-    types:
-    - int32
-    - int32
-    - array
-    evidence: ev_d6d283ec61de
   evidence:
   - id: ev_c48ee701f58a
     kind: client_parser
@@ -94,12 +34,5 @@ generated:
     symbol: RelationshipStatusInfoEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d6d283ec61de
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Users/RelationshipStatusInfoEventMessageComposerSerializer.cs
-    symbol: RelationshipStatusInfoEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

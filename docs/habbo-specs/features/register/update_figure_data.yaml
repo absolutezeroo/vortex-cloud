@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6e4ef7438e222fc854aa9d7eb66def25a9da185b55a5cd47df0d2f402fb04a6b"
+generated_digest: "sha256:cb6429518fabe48b9bcd448b9c69aa8d53d433ce69980a3d200bfc5acfb9dd9e"
 generated:
   id: register.update_figure_data
   domain: register
@@ -81,7 +81,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FigureUpdateEvent
+    - packet: FigureUpdate
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_6d94b7c1bb77
@@ -135,8 +135,6 @@ generated:
   - register.update_figure_data.guard_2
   - register.update_figure_data.guard_3
   - register.update_figure_data.success
-  conflicts:
-  - cf_819510832d
   unknowns:
   - uk_31cd972303
   - uk_bc6e101e28

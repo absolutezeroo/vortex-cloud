@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:db9923b2003397661f44704b7fdb747b6005d992adb08457f116ede3d776b2bb"
+generated_digest: "sha256:639d9542739b402611e9914b78447ae69834bde4ba15af767d7a8c64c4619ff8"
 generated:
   id: cf_a8b057acc2
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "6 fields: int32, int32, string, string, string, string"
     evidence: ev_85bb9a090488
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "2 fields: int32, array"
+    evidence: ev_f96b9945bfe4
   evidence:
   - id: ev_7dd2f7225ab1
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: BotInventoryMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_f96b9945bfe4
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotInventoryEventMessageComposerSerializer.cs
+    symbol: BotInventoryEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

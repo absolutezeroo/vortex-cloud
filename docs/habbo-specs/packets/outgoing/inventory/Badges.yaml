@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:42978e354e7ae2ab031e6fe33b7107373d310a3839dcbdf86cff593c928aec41"
+generated_digest: "sha256:8bdfce4a7c49990c4dfa57e842336a9def80cedc3ddc6e6034f5e10585617c29"
 generated:
   name: Badges
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: total_fragments
@@ -33,49 +33,49 @@ generated:
     evidence:
     - ev_3f7c158d32c9
   - index: 2
-    name: unknown_2
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_3f7c158d32c9
+    - ev_3dfe79e87add
   - index: 3
-    name: unknown_3
+    name: slot_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_3f7c158d32c9
+    - ev_3dfe79e87add
   - index: 4
-    name: unknown_4
+    name: badge_code
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_3f7c158d32c9
+    - ev_3dfe79e87add
   - index: 5
-    name: unknown_5
+    name: owner_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_3f7c158d32c9
+    - ev_3dfe79e87add
   - index: 6
-    name: unknown_6
+    name: badge_rarity_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_3f7c158d32c9
+    - ev_3dfe79e87add
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -102,6 +102,16 @@ generated:
     - int32
     - string
     evidence: ev_e0a2d9141c5c
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - array
+    evidence: ev_3dfe79e87add
   evidence:
   - id: ev_3f7c158d32c9
     kind: client_parser
@@ -119,9 +129,14 @@ generated:
     symbol: BadgesMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_3dfe79e87add
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgesEventMessageComposerSerializer.cs
+    symbol: BadgesEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_d2a90b4b9d
-  unknowns:
-  - uk_f6e0880180
 verified: {}
 manual: {}

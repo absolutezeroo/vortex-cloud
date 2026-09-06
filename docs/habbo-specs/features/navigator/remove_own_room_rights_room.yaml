@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6eb7848d283600f75beee2e5c8b54149450ca8c15ba7d65cc5b5a8b09606b3d6"
+generated_digest: "sha256:3ad881311c9b5beadb125ffcecf0956f1ca42157578caf02dddaf46d865d5688"
 generated:
   id: navigator.remove_own_room_rights_room
   domain: navigator
@@ -89,11 +89,11 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FlatControllersEvent
+    - packet: FlatControllers
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_329537530b13
-    - packet: WiredPermissionsEvent
+    - packet: WiredPermissions
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b44ef304d36a
@@ -145,7 +145,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 180
+    line: 182
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

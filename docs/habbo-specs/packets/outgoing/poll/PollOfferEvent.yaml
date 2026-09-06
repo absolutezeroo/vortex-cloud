@@ -10,42 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bd939b9890aae4fbd59c5276043081a1f54e0670114c1ffcf927605b119fecf7"
+generated_digest: "sha256:aec724133c2f681d32b9f94d02298c6351f0e13fadae2045f7632031e945bd5e"
 generated:
   name: PollOfferEvent
   direction: outgoing
   domain: poll
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: poll_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_347d1bb2ef36
-  - index: 1
-    name: poll_type
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_347d1bb2ef36
-  - index: 2
-    name: headline
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_347d1bb2ef36
-  - index: 3
-    name: summary
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_347d1bb2ef36
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -53,16 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_1909ee694b52
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - string
-    - string
-    - string
-    evidence: ev_347d1bb2ef36
   evidence:
   - id: ev_1909ee694b52
     kind: client_parser
@@ -72,12 +34,5 @@ generated:
     symbol: PollOfferEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_347d1bb2ef36
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Poll/PollOfferEventMessageComposerSerializer.cs
-    symbol: PollOfferEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

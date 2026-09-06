@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e0427d6398e00311cd3a917daa95fce0ae257d6a3381a21ce9eab5423b01a364"
+generated_digest: "sha256:6cf699d2c4e2a706455eabc7e7697356e286760c56198949db0bad1732252ac3"
 generated:
   id: uk_48ac5b0bde
-  subject: "catalog.find_by_product_code: who receives BadgeReceivedEvent"
+  subject: "catalog.find_by_product_code: who receives BadgeReceived"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

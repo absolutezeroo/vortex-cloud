@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b999a19be6a35a6c7836398b8e5fe4d73dcd2e50678430eeff438942dfa55b04"
+generated_digest: "sha256:5c873f3947d48f09790466f95566844d01a00829d3de731fa18cae1aaa2afbf2"
 generated:
   feature: room.drop_carry_item
   scenarios:
@@ -131,7 +131,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 221
+    line: 223
   - id: ev_dae6a9f8ee83
     kind: emulator_flow
     authority: vortex_emulator

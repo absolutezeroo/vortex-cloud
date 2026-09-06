@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:41b76095db62b45d495f7416c542bdab66e2ea9f10e89785e251bf5fce8d70aa"
+generated_digest: "sha256:8c798fa595129160034aab82d26d57489663d4384092ef8497e3ff649592f2a5"
 generated:
   name: RoomSettingsSaved
   direction: outgoing
   domain: room
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: room_id
@@ -40,6 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_77ad8f27bd14
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_3d340e33ec92
   evidence:
   - id: ev_b683f7c3aa84
     kind: client_parser
@@ -57,5 +64,12 @@ generated:
     symbol: RoomSettingsSavedMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_3d340e33ec92
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/RoomSettingsSavedEventMessageComposerSerializer.cs
+    symbol: RoomSettingsSavedEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

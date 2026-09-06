@@ -16,22 +16,40 @@ namespace Vortex.Specs.Naming;
 /// </remarks>
 public static class PacketNaming
 {
-    // Ordered longest first so the longest match wins: "ObjectUpdateMessageComposerSerializer" must
-    // lose all of "MessageComposerSerializer", not just the "Serializer" tail.
-    private static readonly string[] Suffixes =
+    // Suffixes that name an implementation role rather than the packet. Vortex and Nitro both put
+    // an "Event" in front of these on outgoing messages — ours is
+    // "MarketplaceItemStatsEventMessageComposer", Nitro's is
+    // "CommunityVoteReceivedEventComposer" — while the client calls the packet
+    // "MarketplaceItemStats". Left unstripped, each of those becomes its own phantom packet that
+    // never lines up with the client's, which is how 101 live outgoing packets ended up with no
+    // Vortex layout and no possible wire conflict.
+    private static readonly string[] RoleSuffixes =
     [
         "MessageComposerSerializer",
         "ComposerSerializer",
         "MessageComposer",
         "MessageHandler",
         "MessageParser",
-        "MessageEvent",
         "Serializer",
         "Composer",
         "Handler",
         "Parser",
-        "Message",
-        "Event",
+    ];
+
+    // "Message", "Event" and "MessageEvent" are deliberately NOT role suffixes: prefixing them
+    // would produce "EventMessage", and "RoomEventMessage" would then strip to "Room" and collide
+    // with an unrelated packet. "Event" only comes off when it sits directly in front of a role.
+    private static readonly string[] BareSuffixes = ["MessageEvent", "Message", "Event"];
+
+    // Ordered longest first so the longest match wins: "ObjectUpdateMessageComposerSerializer" must
+    // lose all of "MessageComposerSerializer", not just the "Serializer" tail.
+    private static readonly string[] Suffixes =
+    [
+        .. RoleSuffixes
+            .Select(s => "Event" + s)
+            .Concat(RoleSuffixes)
+            .Concat(BareSuffixes)
+            .OrderByDescending(s => s.Length),
     ];
 
     /// <summary>

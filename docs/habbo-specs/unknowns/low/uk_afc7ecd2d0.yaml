@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:93abc1aaed32dc3fc9d13bff5c6d8b9eca43cbf8afbdc781cf7ffea72a9d66a0"
+generated_digest: "sha256:991860b2dfe998d9af8321c0c39f4e944a571f7633be61b73b2b4e2eea9ce643"
 generated:
   id: uk_afc7ecd2d0
   subject: "outgoing/UserChatlog: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 carry no name from any source. What are they?
+  question: Fields 4, 5, 7, 8, 10, 16 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: UserChatlog
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: UserChatlogMessageComposer
     line: 25
     note: third-party server implementation; evidence, not authority
+  - id: ev_7d23ae008ea9
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/UserChatlogEventMessageComposerSerializer.cs
+    symbol: UserChatlogEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

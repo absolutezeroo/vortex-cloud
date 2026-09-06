@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:90237557bdbe54b93d8bfcfd1273384f96b1b6340d475cc57968642cd370a66c"
+generated_digest: "sha256:27a56ae7760dcd427f3ddcdef08c65a7c175a9e561be1c271291b7676324f118"
 generated:
   id: uk_1210d5ece2
   subject: "outgoing/ConfirmBreedingRequest: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: ConfirmBreedingRequestMessageComposer
     line: 30
     note: third-party server implementation; evidence, not authority
+  - id: ev_5f3bbedb1d22
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/ConfirmBreedingRequestEventMessageComposerSerializer.cs
+    symbol: ConfirmBreedingRequestEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:00b27c8b1b404d7e34ba64127b8c6e2e5e9ed8bc29daf7a0e885204fb389eff6"
+generated_digest: "sha256:aae7977ba3410e1ef0a7841c7b499c26ee1ffaf7782634d7f653b0df166220f6"
 generated:
   id: uk_5a6f22e2e6
   subject: "room.enter_one_way_door: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator

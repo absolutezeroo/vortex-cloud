@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e1c8546757d11acd2aef0ede7045f6d441f2f9bb23f476e18cbcd5a52af02102"
+generated_digest: "sha256:9d35cc81dc481e878441fa8010d2a9cdedacfd4950fb2f2c8a912bdf4416426c"
 generated:
   id: uk_31064e1893
   subject: "outgoing/BotInventory: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5 carry no name from any source. What are they?
+  question: Fields 4 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: BotInventory
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: BotInventoryMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_f96b9945bfe4
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotInventoryEventMessageComposerSerializer.cs
+    symbol: BotInventoryEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

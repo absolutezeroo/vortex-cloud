@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e890144ff655d08aea5f8166154beaeffffa4f41cc5f8624d5e31c9fa4e7ed75"
+generated_digest: "sha256:c7f28ae0d877048551a01601515b8a320d7309be362e95e84928a2540f72c8db"
 generated:
   name: GetClubGiftInfo
   direction: incoming
@@ -48,7 +48,5 @@ generated:
     symbol: GetClubGiftInfoEvent
     line: 8
     note: third-party server implementation; evidence, not authority
-  conflicts:
-  - cf_fa0754a76c
 verified: {}
 manual: {}

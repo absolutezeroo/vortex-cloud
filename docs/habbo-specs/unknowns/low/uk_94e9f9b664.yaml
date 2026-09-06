@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:74e3a680eed97b26271b61d0bf786e784706ea51f6355fe39e115b9ae5e31566"
+generated_digest: "sha256:be42ce6764b8c5d562d15e046265294bf72223021c37306b62798696a522bbb7"
 generated:
   id: uk_94e9f9b664
   subject: "outgoing/WiredVariablesForObject: unnamed fields"
@@ -27,5 +27,12 @@ generated:
     symbol: _SafeCls_4143
     line: 23
     note: official client build WIN63-202607011411-782849652
+  - id: ev_1d864e21229f
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/UserDefinedRoomEvents/Wiredmenu/WiredVariablesForObjectEventMessageComposerSerializer.cs
+    symbol: WiredVariablesForObjectEventMessageComposerSerializer
+    line: 8
 verified: {}
 manual: {}

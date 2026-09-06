@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7eb53c510169bbff6fd83339b17affe247b055769b824bb74c46f9e79a012853"
+generated_digest: "sha256:34cb611e3cd904f1f22d60eddca62eb2fade64f9075a4b56cbec3699a2e1b7ba"
 generated:
   id: uk_a9f91ec12d
   subject: "room.remove_rights: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 180
+    line: 182
   - id: ev_b0c6819b754b
     kind: emulator_flow
     authority: vortex_emulator

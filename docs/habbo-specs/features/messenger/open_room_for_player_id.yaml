@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3b8cea5464591b41f7376907fafa7874cbc9c244b8b13406e523749058e90113"
+generated_digest: "sha256:93b9e6b3a804df6c6158d6ec87a1a3bfd9d099fd1ba37073724dddb4e340c903"
 generated:
   id: messenger.open_room_for_player_id
   domain: messenger
@@ -825,7 +825,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

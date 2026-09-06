@@ -43,6 +43,37 @@ public class PacketNamingTests
         PacketNaming.Canonical("RoomEventMessage").Should().Be("RoomEvent");
     }
 
+    [Theory]
+    // Vortex names outgoing composers with an "Event" in front of the role; the client calls the
+    // packet "MarketplaceItemStats", so leaving the Event on forked the packet in two and no wire
+    // conflict could ever be raised against the client.
+    [InlineData("MarketplaceItemStatsEventMessageComposer", "MarketplaceItemStats")]
+    [InlineData("MarketplaceItemStatsEventMessageComposerSerializer", "MarketplaceItemStats")]
+    [InlineData("PetInventoryEventMessageComposer", "PetInventory")]
+    // Nitro does the same with its own role suffix.
+    [InlineData("CommunityVoteReceivedEventComposer", "CommunityVoteReceived")]
+    [InlineData("DisconnectReasonEventComposer", "DisconnectReason")]
+    public void An_Event_in_front_of_a_role_suffix_is_not_part_of_the_packet_name(
+        string typeName,
+        string expected
+    )
+    {
+        PacketNaming.Canonical(typeName).Should().Be(expected);
+    }
+
+    [Theory]
+    // ...but "Event" in front of anything that is not a role stays put, which is what keeps
+    // RoomEventMessage off Room.
+    [InlineData("RoomEventMessage", "RoomEvent")]
+    [InlineData("CommunityVoteReceivedEvent", "CommunityVoteReceived")]
+    public void Event_survives_when_it_is_not_sitting_on_a_role_suffix(
+        string typeName,
+        string expected
+    )
+    {
+        PacketNaming.Canonical(typeName).Should().Be(expected);
+    }
+
     [Fact]
     public void A_name_with_no_suffix_is_left_alone()
     {

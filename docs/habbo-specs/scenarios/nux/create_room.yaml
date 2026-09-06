@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8f2d19390f14696e08e1dbebc70b1fde156a8f5ab091754baaeda1a1b3e1a98c"
+generated_digest: "sha256:027fcd447da67243e48861a6a75bd370b141a76fb03eeef896ada45c214dc115"
 generated:
   feature: nux.create_room
   scenarios:
@@ -138,7 +138,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - SelectInitialRoomEvent
+      - SelectInitialRoom
       evidence: ev_34bf3ac088e2
   evidence:
   - id: ev_34bf3ac088e2

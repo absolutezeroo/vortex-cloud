@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:87c175d43e71e3a7e3ced16b914139783fe9b3a064f24a47c80df0172cabb21d"
+generated_digest: "sha256:5e091e690b56589500a65c3a6b5d172a83375125e4d06c106cba482ba603417f"
 generated:
   feature: room.enter_one_way_door
   scenarios:
@@ -350,7 +350,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 110
+    line: 112
   - id: ev_db615f36b20b
     kind: emulator_flow
     authority: vortex_emulator

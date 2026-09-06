@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6d8126e3dd7e47162ddda78c42e7009917408df68e0e4bd6cb70da7663d7a8f9"
+generated_digest: "sha256:963e952e569f57f74fd19144ce6168d3298efb8f963a29124995a8bc9c538561"
 generated:
   id: uk_8f4198bb63
   subject: "outgoing/TradingOpenFailed: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: TradingOpenFailed
   known_evidence:
+  - id: ev_30ea5459d520
+    kind: client_parser
+    authority: client_code
+    origin: "as3:PRODUCTION-201601012205-226667486"
+    source: ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/communication/messages/parser/inventory/trading/TradingOpenFailedEventParser.as
+    symbol: TradingOpenFailedEventParser
+    line: 20
+    note: official client build PRODUCTION-201601012205-226667486
   - id: ev_fb0f1c3252a2
     kind: reference_composer
     authority: reference_emulator

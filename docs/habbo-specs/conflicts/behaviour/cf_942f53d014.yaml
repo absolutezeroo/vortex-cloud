@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e5dd0ed3a695b98e28301c465fbe5b361e76bbd4251a748b7f52471abbb77627"
+generated_digest: "sha256:922cd707a766313cb5b8b6d93f7e6be6a038f589fc84e5bbeafffa198eb3b387"
 generated:
   id: cf_942f53d014
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_62338d616f96
   - origin: vortex
     authority: vortex_emulator
-    claim: ObjectAdd then Users then ObjectAdd then FurniListRemoveEvent
+    claim: ObjectAdd then Users then ObjectAdd then FurniListRemove
     evidence: ev_214dd6defa9c
   evidence:
   - id: ev_62338d616f96

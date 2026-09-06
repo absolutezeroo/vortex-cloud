@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b6fc9f4d6f99c58f72d780870c09eb4acb03f97231edff040db9217b6ad5d93c"
+generated_digest: "sha256:1463a538d68a66310b790910ba6fad63a1cde13256528133fd89bd66d221eeaf"
 generated:
   id: uk_98d8ffaed1
-  subject: "moderation.mod_trading_lock: who receives ModeratorActionResult, ModeratorCautionEvent"
+  subject: "moderation.mod_trading_lock: who receives ModeratorActionResult, ModeratorCaution"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7235607fe462669b0be192129f1fe3e6c999b50a4ac7ff037e506440fd5a6194"
+generated_digest: "sha256:c4cbf1eace97920a356e6a1349fabe9b4c743a13616bc7b461ffba9ef4bfd390"
 generated:
   name: TradingOtherNotAllowed
   direction: outgoing
   domain: inventory
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields: []
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
@@ -31,6 +31,12 @@ generated:
     partial: true
     types: []
     evidence: ev_7772e10698cb
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_4b41e6aab4e6
   evidence:
   - id: ev_7812f7dacb81
     kind: client_parser
@@ -48,5 +54,12 @@ generated:
     symbol: TradingOtherNotAllowedMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
+  - id: ev_4b41e6aab4e6
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingOtherNotAllowedEventMessageComposerSerializer.cs
+    symbol: TradingOtherNotAllowedEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

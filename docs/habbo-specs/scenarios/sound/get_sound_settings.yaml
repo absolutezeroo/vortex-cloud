@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f229e93c947c7ab46edfb465ba863a9c656c807564f24192af1433e8546c05eb"
+generated_digest: "sha256:278ac180fcbbd0fecc97ec237e0795521d0342dac9e728b6188c5610d3ed2126"
 generated:
   feature: sound.get_sound_settings
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AccountPreferencesEvent
+      - AccountPreferences
       - unresolved
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak

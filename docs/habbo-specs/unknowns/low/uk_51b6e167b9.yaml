@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:86de3ff781fe84872e8b288af7b82715df4d4a33640f4b32347608bca0e2fa1e"
+generated_digest: "sha256:14d208a7268cf5f1d699450f2a594a9c01deb0de3d726694913f8c5dda526ec1"
 generated:
   id: uk_51b6e167b9
   subject: "outgoing/MarketPlaceOwnOffers: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: MarketPlaceOwnOffersMessageComposer
     line: 23
     note: third-party server implementation; evidence, not authority
+  - id: ev_85636bf12027
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketPlaceOwnOffersEventMessageComposerSerializer.cs
+    symbol: MarketPlaceOwnOffersEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

@@ -10,46 +10,46 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7a0a2defc2971c85d2f0b226fe0f1673295cbc92e40dad33229bbc1df9f3bfa0"
+generated_digest: "sha256:1af36f1404c35081d363572561635d347527869bbc4ef396e83b860da7287436"
 generated:
   name: UserChatlog
   direction: outgoing
   domain: moderation
   structure_confidence: reference_observed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 1
-    name: unknown_1
+    name: user_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 2
-    name: unknown_2
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 3
-    name: unknown_3
+    name: record_type_room
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 4
     name: unknown_4
     type: short
@@ -67,13 +67,13 @@ generated:
     evidence:
     - ev_9228834115a8
   - index: 6
-    name: unknown_6
+    name: context_value_type_int
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 7
     name: unknown_7
     type: string
@@ -91,13 +91,13 @@ generated:
     evidence:
     - ev_9228834115a8
   - index: 9
-    name: unknown_9
+    name: context_value_type_string
     type: byte
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 10
     name: unknown_10
     type: int32
@@ -107,45 +107,45 @@ generated:
     evidence:
     - ev_9228834115a8
   - index: 11
-    name: unknown_11
+    name: length
     type: short
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 12
-    name: unknown_12
+    name: time_stamp_utc
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 13
-    name: unknown_13
+    name: chatter_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 14
-    name: unknown_14
+    name: chatter_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 15
-    name: unknown_15
+    name: message
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_9228834115a8
+    - ev_7d23ae008ea9
   - index: 16
     name: unknown_16
     type: boolean
@@ -187,6 +187,16 @@ generated:
     - string
     - boolean
     evidence: ev_9228834115a8
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - string
+    - int32
+    - array
+    evidence: ev_7d23ae008ea9
   evidence:
   - id: ev_2a878ef04c60
     kind: client_parser
@@ -204,6 +214,15 @@ generated:
     symbol: UserChatlogMessageComposer
     line: 25
     note: third-party server implementation; evidence, not authority
+  - id: ev_7d23ae008ea9
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/UserChatlogEventMessageComposerSerializer.cs
+    symbol: UserChatlogEventMessageComposerSerializer
+    line: 7
+  conflicts:
+  - cf_ee7e2c1495
   unknowns:
   - uk_afc7ecd2d0
 verified: {}

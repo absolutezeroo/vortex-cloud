@@ -15,15 +15,15 @@ actually produced against the trees listed under Sources.
 
 | Direction | Count |
 |---|---:|
-| Incoming (client to server) | 620 |
-| Outgoing (server to client) | 859 |
+| Incoming (client to server) | 624 |
+| Outgoing (server to client) | 860 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
-| Features | 515 |
-| Scenarios | 1983 |
+| Features | 517 |
+| Scenarios | 1987 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -32,20 +32,20 @@ actually produced against the trees listed under Sources.
 | Level | Packets | Share |
 |---|---:|---:|
 | confirmed | 51 | 3.4% |
-| client_confirmed | 625 | 42.3% |
-| multi_reference_confirmed | 87 | 5.9% |
-| reference_observed | 240 | 16.2% |
-| implementation_observed | 326 | 22% |
-| unknown | 150 | 10.1% |
+| client_confirmed | 624 | 42% |
+| multi_reference_confirmed | 88 | 5.9% |
+| reference_observed | 239 | 16.1% |
+| implementation_observed | 268 | 18.1% |
+| unknown | 214 | 14.4% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 376 |
+| Conflicts | 364 |
 | Critical unknowns | 130 |
-| Unknowns in total | 717 |
-| Fields with no attested name | 1866 of 6203 |
+| Unknowns in total | 686 |
+| Fields with no attested name | 1591 of 5612 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,14 +54,14 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 640
-- unchanged: 2971
+- written: 2
+- unchanged: 3575
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 97 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- as3:WIN63-202607011411-782849652: 95 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.get_flat_categories: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
@@ -102,6 +102,7 @@ Listed so the gaps are visible; each one is a piece of the sources this scan
 did not manage to read.
 
 - as3:PRODUCTION-201601012205-226667486: registry ../vortex-modern-client/sources/PRODUCTION-201601012205-226667486/src/com/sulake/habbo/communication/HabboMessages.as yielded 0 composer and 994 event bindings; one side is missing
+- habbo-arcturus-daybreak: CanCreateRoom: CanCreateRoomEventMessageComposer=2599 and CanCreateRoomMessageComposer=378 both reduce to the same symbolic name; kept 2599
 - habbo-arcturus-daybreak: MessengerError: MessengerErrorComposer=896 and MessengerErrorMessageComposer=892 both reduce to the same symbolic name; kept 896
 - habbo-arcturus-daybreak: RoomEntryInfo: RoomEntryInfoComposer=-1 and RoomEntryInfoMessageComposer=749 both reduce to the same symbolic name; kept -1
 - nitro: unresolved field-block reader GetObjectDataFromWrapper

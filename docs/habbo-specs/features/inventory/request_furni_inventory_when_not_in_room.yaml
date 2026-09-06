@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c712764b79ae66b04ecca8faebb930bc3138dbd5c1d77818af3c3f9325976ef7"
+generated_digest: "sha256:91b6992f5c58d36194b840cff8e5b7a70d7bb3cf0b723f49acf8a9fde59ea508"
 generated:
   id: inventory.request_furni_inventory_when_not_in_room
   domain: inventory
@@ -60,7 +60,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FurniListEvent
+    - packet: FurniList
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09

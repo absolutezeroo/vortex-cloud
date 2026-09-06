@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7c2a2d65fbf71b2fd2d3ad24df232b5ca356e4e6de4d50e63d34ea29bdeb9c3d"
+generated_digest: "sha256:d5559656949d235879d4b51a8fe2ea4d9df6179159813e4cc73f3fe8811014d5"
 generated:
   id: uk_d310fe654f
-  subject: "inventory.get_is_badge_request_fulfilled: who receives IsBadgeRequestFulfilledEvent"
+  subject: "inventory.get_is_badge_request_fulfilled: who receives IsBadgeRequestFulfilled"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

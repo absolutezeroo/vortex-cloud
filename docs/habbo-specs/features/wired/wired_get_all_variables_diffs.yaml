@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c552070fe3c3231243c78209be0faa65bbc018142e89c77901e95d7cac3582af"
+generated_digest: "sha256:7ae7bf708beb2fd225f709c3e85f7757b83513d743e27878ce3c95e164c9399c"
 generated:
   id: wired.wired_get_all_variables_diffs
   domain: wired
@@ -44,7 +44,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredAllVariablesDiffsEvent
+    - packet: WiredAllVariablesDiffs
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_eb70f454ffab

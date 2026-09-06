@@ -10,165 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:470ecb3f785bb1bb32bade6a58b7a3fc2f243884ae6003726fbe96c6139e6356"
+generated_digest: "sha256:fa43b724bd19b54765facdfadb636ef564ddccaaaba33a690757e179c9274cdb"
 generated:
   name: CfhChatlogEvent
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: call_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1a1d879b2bb8
-  - index: 1
-    name: caller_user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1a1d879b2bb8
-  - index: 2
-    name: reported_user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1a1d879b2bb8
-  - index: 3
-    name: chat_record_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1a1d879b2bb8
-  - index: 4
-    name: chatlog_serialization
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1a1d879b2bb8
-    fields:
-    - index: 0
-      name: record_type_room
-      type: byte
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 1
-      name: unknown_1
-      type: short
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      note: written as the constant 2
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 2
-      name: unknown_2
-      type: string
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      note: written as the constant roomId
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 3
-      name: context_value_type_int
-      type: byte
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 4
-      name: room_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 5
-      name: unknown_5
-      type: string
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      note: written as the constant roomName
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 6
-      name: context_value_type_string
-      type: byte
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 7
-      name: room_name
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 8
-      name: length
-      type: short
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1a1d879b2bb8
-    - index: 9
-      name: records
-      type: array
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      note: "source comment: repeated block; the element count is the int written immediately before it"
-      evidence:
-      - ev_1a1d879b2bb8
-      fields:
-      - index: 0
-        name: time_stamp_utc
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_1a1d879b2bb8
-      - index: 1
-        name: chatter_id
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_1a1d879b2bb8
-      - index: 2
-        name: chatter_name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_1a1d879b2bb8
-      - index: 3
-        name: message
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_1a1d879b2bb8
-      - index: 4
-        name: unknown_4
-        type: boolean
-        name_is_placeholder: true
-        name_confidence: unknown
-        type_confidence: implementation_observed
-        note: written as the constant false
-        evidence:
-        - ev_1a1d879b2bb8
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -176,17 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_13153c83c1ee
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 5
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - int32
-    - block
-    evidence: ev_1a1d879b2bb8
   evidence:
   - id: ev_13153c83c1ee
     kind: client_parser
@@ -196,12 +34,5 @@ generated:
     symbol: CfhChatlogEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1a1d879b2bb8
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/CfhChatlogEventMessageComposerSerializer.cs
-    symbol: CfhChatlogEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

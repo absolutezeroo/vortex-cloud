@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a10fbb84f70f998824f3ab57764efbd87dc8d40c1d3a51e8f30f649b0a33d6e2"
+generated_digest: "sha256:4070e6097f80fe19ffc565c06ba082e9450d3802fb948f28c41fa87a7a54667a"
 generated:
   id: users.get_motd
   domain: users
@@ -45,7 +45,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: MOTDNotificationEvent
+    - packet: MOTDNotification
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_c140f572d164

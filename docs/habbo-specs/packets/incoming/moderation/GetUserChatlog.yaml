@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c42ae9ad892eab8f4e5cddfdb4f9de78e6a4b528b9be611a67d01e83a0382764"
+generated_digest: "sha256:b6d3cfd5826a183785e5a541d693410f7fc897c96c14765ed3375a8582cb45fa"
 generated:
   name: GetUserChatlog
   direction: incoming
@@ -85,7 +85,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Moderator/GetUserChatlogMessageParser.cs
     symbol: GetUserChatlogMessageParser
     line: 7
-  conflicts:
-  - cf_d6ee3d8ca6
 verified: {}
 manual: {}

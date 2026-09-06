@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1fb7db828b57b8b3b59a2fbe48bcd6b890d817d3617d398d5eed6a2a679e708d"
+generated_digest: "sha256:1e9d4c404a8c7eb650aaf110acbcfcdfacfa60f203d8edb389d15cf586ad9695"
 generated:
   id: uk_5b50e09f36
-  subject: "room.pickup_item_in_room: who receives FurniListAddOrUpdateEvent"
+  subject: "room.pickup_item_in_room: who receives FurniListAddOrUpdate"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

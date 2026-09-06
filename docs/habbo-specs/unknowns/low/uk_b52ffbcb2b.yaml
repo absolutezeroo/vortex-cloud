@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:45e5e713738a09972482d5ed9a368b3bbbe22ae3b1b73607808f4c36ea1bdb12"
+generated_digest: "sha256:d806bdfa6ec4587885e0822895b5c94aae5e66eeab0a39e6a72f7367c90b9936"
 generated:
   id: uk_b52ffbcb2b
   subject: "outgoing/PetLevelNotification: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: PetLevelNotificationMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_66ee834b92e0
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Notifications/PetLevelNotificationEventMessageComposerSerializer.cs
+    symbol: PetLevelNotificationEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

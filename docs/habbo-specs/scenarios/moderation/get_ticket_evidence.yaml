@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3b408b6b059e9972e9fcb4cc25511fc8e934a505e21e22067f29aedb108d70e1"
+generated_digest: "sha256:27d4d06bafa291b880eb2e98806ae354b66847a2e69d4159234afb1b3cfc5f72"
 generated:
   feature: moderation.get_ticket_evidence
   scenarios:
@@ -174,7 +174,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CfhChatlogEvent
+      - CfhChatlog
       evidence: ev_055f4068589c
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

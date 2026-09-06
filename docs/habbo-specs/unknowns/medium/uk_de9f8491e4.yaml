@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:31309b15c908732644278449eb43d77a0e85fe8f31cb97b2eadf2fea5d157b76"
+generated_digest: "sha256:3e50dc778e209fc46c147e1f906cd9c20b83e58b991feee788189007a4f3ac5e"
 generated:
   id: uk_de9f8491e4
-  subject: "inventory.get_badge_point_limits: who receives BadgePointLimitsEvent"
+  subject: "inventory.get_badge_point_limits: who receives BadgePointLimits"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

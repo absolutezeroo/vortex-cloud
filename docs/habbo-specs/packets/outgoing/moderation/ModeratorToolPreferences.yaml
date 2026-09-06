@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8b583522328c7c46ad135c6e15f6e93e7c1e163d9e713d6960cb41da5552b379"
+generated_digest: "sha256:ea76ef15b7041b3e079020afddd8b7feaa68561bc763077bfcbcd1e5ff9dd033"
 generated:
   name: ModeratorToolPreferences
   direction: outgoing
   domain: moderation
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: window_x
@@ -67,6 +67,16 @@ generated:
     - int32
     - int32
     evidence: ev_08f5cfdd47c9
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_c65243d57f46
   evidence:
   - id: ev_86034322ef13
     kind: client_parser
@@ -84,5 +94,12 @@ generated:
     symbol: ModeratorToolPreferencesMessageComposer
     line: 21
     note: third-party server implementation; evidence, not authority
+  - id: ev_c65243d57f46
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorToolPreferencesEventMessageComposerSerializer.cs
+    symbol: ModeratorToolPreferencesEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

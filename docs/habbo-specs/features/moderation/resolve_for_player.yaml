@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3b9fb0b4aad22132cf6320ad2609b1a136ffe39f4798aa8aeea33e95b6bcdc94"
+generated_digest: "sha256:303c17f57c9be9551024844c2ed80ee4bdcdf07c8c648ac3178520a8d375d9b7"
 generated:
   id: moderation.resolve_for_player
   domain: moderation
@@ -303,11 +303,11 @@ generated:
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_9c67ce52dae5
-    - packet: ModeratorRoomInfoEvent
+    - packet: ModeratorRoomInfo
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_21f62951b010
-    - packet: ModeratorUserInfoEvent
+    - packet: ModeratorUserInfo
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_c5b92385037c
@@ -549,7 +549,6 @@ generated:
   - cf_8fda90dd57
   - cf_c0163ba2e8
   - cf_e4140d57ea
-  - cf_f4d6f2dabe
   unknowns:
   - uk_4777d928b0
   - uk_cab1e4c8ef

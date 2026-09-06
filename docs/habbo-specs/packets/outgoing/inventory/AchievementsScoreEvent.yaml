@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:295a4989d6a953f52d13a74e94cc2c97e7fe407cee358a185e53c9a254007fca"
+generated_digest: "sha256:231e328aec93298e84c942a51cd9f239ab6380f14ab0105414cedb90cd872a57"
 generated:
   name: AchievementsScoreEvent
   direction: outgoing
   domain: inventory
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: score
@@ -34,13 +34,6 @@ generated:
     types:
     - int32
     evidence: ev_03c154c2376b
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - int32
-    evidence: ev_888b9da7cabc
   evidence:
   - id: ev_03c154c2376b
     kind: client_parser
@@ -50,12 +43,5 @@ generated:
     symbol: AchievementsScoreEventMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_888b9da7cabc
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Achievements/AchievementsScoreEventMessageComposerSerializer.cs
-    symbol: AchievementsScoreEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:86e0f589b94a5046b816bef55d388065049b399bdd9b200b985ae56abcfbd2fa"
+generated_digest: "sha256:c645cda5fd5bfd61f3d0cd9aa5cfc9e178d4b114423a6d165d16a56d882c1b21"
 generated:
   id: cf_4c70ad2da2
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_d9bdd3e8c230
   - origin: vortex
     authority: vortex_emulator
-    claim: FlatControllersEvent then YouAreController then WiredPermissionsEvent then YouAreOwner then YouAreNotController
+    claim: FlatControllers then YouAreController then WiredPermissions then YouAreOwner then YouAreNotController
     evidence: ev_235aa2ae57eb
   evidence:
   - id: ev_d9bdd3e8c230

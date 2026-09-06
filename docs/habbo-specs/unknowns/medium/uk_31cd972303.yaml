@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:178da0d886e08e22f66b3de2ca7230ab750ba68108f6193ead7a5b8135a9e9db"
+generated_digest: "sha256:3a9ce2effc12911163a95c1d40e5af0f086c8a648cf2a4298573510e58acdbd2"
 generated:
   id: uk_31cd972303
-  subject: "register.update_figure_data: who receives FigureUpdateEvent"
+  subject: "register.update_figure_data: who receives FigureUpdate"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

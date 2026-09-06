@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:11a6b08fd6d3571aba05b6c4cdee86491bd227d0b456b4c4ceed671358e4e0b8"
+generated_digest: "sha256:5a4c1352b20896e2c0d0f34be57cd5f543e1e60dcf6176a8af9bd32fc22d6122"
 generated:
   id: preferences.set_chat_preferences
   domain: preferences
@@ -64,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 60
+    line: 70
   - id: ev_f66e1f1e3612
     kind: emulator_handler
     authority: vortex_emulator

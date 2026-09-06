@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a80a7597c3ce00c5b7690161f343cceb08fdd56640c80ad157039a0185e5278b"
+generated_digest: "sha256:180c2c5fa3be70f3cdbb7c725de43b863f9c42218639cc7362690c4a5c51bb05"
 generated:
   id: uk_91fc7e0d6b
   subject: "wired.update_action: what the server sends when it refuses"
@@ -46,6 +46,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 222
+    line: 233
 verified: {}
 manual: {}

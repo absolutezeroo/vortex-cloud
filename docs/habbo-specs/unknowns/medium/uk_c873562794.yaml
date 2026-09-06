@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8ce70b030c7697d60dbc96fbceec100d6411a7435ff67c4f3abb3679d6338a5e"
+generated_digest: "sha256:cd533fba864476e27e3ca4cdb6016d66a6b7e94a8f4569ad4f6e2ec04616c659"
 generated:
   id: uk_c873562794
-  subject: "inventory.open_trade: who receives TradingOpenEvent"
+  subject: "inventory.open_trade: who receives TradingOpen"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

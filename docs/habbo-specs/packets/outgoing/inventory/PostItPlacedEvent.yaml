@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:546349d0400bbf5907abd7416281805736887000457f176b43c5f60ed146727f"
+generated_digest: "sha256:907a2aae72a1b65c66d9d2824139e723c63bdadcd95ece9be6e834698c34c513"
 generated:
   name: PostItPlacedEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: item_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_a1ca4d534348
-  - index: 1
-    name: items_left
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_a1ca4d534348
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_5536674354fc
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - int32
-    evidence: ev_a1ca4d534348
   evidence:
   - id: ev_5536674354fc
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: PostItPlacedEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a1ca4d534348
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/PostItPlacedEventMessageComposerSerializer.cs
-    symbol: PostItPlacedEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

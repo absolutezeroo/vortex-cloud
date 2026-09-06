@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:43f84962729eb995a1b4bc58283907529a8cbdd58f7257f75a9afbb1d95dfc35"
+generated_digest: "sha256:e09cdd8070b4a9ef5866305824c8f6d9ce9e95f0a94eb56ebbe43ee35c3883a0"
 generated:
   name: RelationshipStatusInfo
   direction: outgoing
   domain: users
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: user_id
@@ -115,6 +115,15 @@ generated:
     - string
     - string
     evidence: ev_1c57eefaa21e
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - array
+    evidence: ev_d6d283ec61de
   evidence:
   - id: ev_e0e763d32d46
     kind: client_parser
@@ -132,6 +141,13 @@ generated:
     symbol: RelationshipStatusInfoMessageComposer
     line: 60
     note: third-party server implementation; evidence, not authority
+  - id: ev_d6d283ec61de
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Users/RelationshipStatusInfoEventMessageComposerSerializer.cs
+    symbol: RelationshipStatusInfoEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_c3efdae549
   unknowns:

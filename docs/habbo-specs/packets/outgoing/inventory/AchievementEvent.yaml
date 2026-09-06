@@ -10,120 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:379c7c29167c841bfd0b3ebd4bcc4db1a3d00a9a46ca161a87b8226bc7f1d13f"
+generated_digest: "sha256:532628f2e183acfc496d7da4281ff46217a8b298298f76b076834daa25a2dfbf"
 generated:
   name: AchievementEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: achievement_data_writer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_9a68299cabc7
-    fields:
-    - index: 0
-      name: achievement_id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 1
-      name: level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 2
-      name: badge_code
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 3
-      name: score_at_start_of_level
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 4
-      name: level_max_score
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 5
-      name: level_reward_amount
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 6
-      name: level_reward_type
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 7
-      name: current_progress
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 8
-      name: final_level
-      type: boolean
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 9
-      name: category
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 10
-      name: sub_category
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 11
-      name: level_count
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 12
-      name: display_method
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
-    - index: 13
-      name: state
-      type: short
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_9a68299cabc7
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -131,13 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_2db032d67eb3
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - block
-    evidence: ev_9a68299cabc7
   evidence:
   - id: ev_2db032d67eb3
     kind: client_parser
@@ -147,12 +34,5 @@ generated:
     symbol: AchievementEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9a68299cabc7
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Achievements/AchievementEventMessageComposerSerializer.cs
-    symbol: AchievementEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

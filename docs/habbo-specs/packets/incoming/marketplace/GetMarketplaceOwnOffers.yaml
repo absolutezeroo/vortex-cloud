@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5f4b462c05f621b2dd1a3362b57a7cbaeed54e526a27cd3fdc61276d8de053b1"
+generated_digest: "sha256:821f8018feeb3c45acdcccfdf36abaec9e6bd8d1a524743762755d879cda0148"
 generated:
   name: GetMarketplaceOwnOffers
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Marketplace/GetMarketplaceOwnOffersMessageParser.cs
     symbol: GetMarketplaceOwnOffersMessageParser
     line: 7
-  conflicts:
-  - cf_9664991fa8
 verified: {}
 manual: {}

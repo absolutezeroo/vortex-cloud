@@ -10,58 +10,104 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d354590f2f045a7d6aebb761b0c6287f658ea5fd3315a4f4d773f1c93a3a7cda"
+generated_digest: "sha256:8cee9fd8230eca80bffb60f593c48375c23fb23fd6ea88fa8b61c71ba8c50669"
 generated:
   name: PetAddedToInventory
   direction: outgoing
   domain: inventory
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_2577
+    name: pet_data
+    type: block
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
     evidence:
-    - ev_c08075515603
+    - ev_0f2926bb1df6
+    fields:
+    - index: 0
+      name: pet_id
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_0f2926bb1df6
+    - index: 1
+      name: name
+      type: string
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_0f2926bb1df6
+    - index: 2
+      name: pet_figure_data
+      type: block
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_0f2926bb1df6
+      fields:
+      - index: 0
+        name: type
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_0f2926bb1df6
+      - index: 1
+        name: race
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_0f2926bb1df6
+      - index: 2
+        name: color
+        type: string
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_0f2926bb1df6
+      - index: 3
+        name: race
+        type: int32
+        name_confidence: implementation_observed
+        type_confidence: implementation_observed
+        evidence:
+        - ev_0f2926bb1df6
+      - index: 4
+        name: unknown_4
+        type: int32
+        name_is_placeholder: true
+        name_confidence: unknown
+        type_confidence: implementation_observed
+        note: written as the constant 0
+        evidence:
+        - ev_0f2926bb1df6
+    - index: 3
+      name: level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_0f2926bb1df6
+    - index: 4
+      name: rarity_level
+      type: int32
+      name_confidence: implementation_observed
+      type_confidence: implementation_observed
+      evidence:
+      - ev_0f2926bb1df6
   - index: 1
     name: unknown_1
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_2577
-    evidence:
-    - ev_c08075515603
-  - index: 2
-    name: unknown_2
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_2577
-    evidence:
-    - ev_c08075515603
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: client_confirmed
-    note: read by _SafeCls_2577
-    evidence:
-    - ev_c08075515603
-  - index: 4
-    name: unknown_4
     type: boolean
     name_is_placeholder: true
     name_confidence: unknown
-    type_confidence: client_confirmed
+    type_confidence: implementation_observed
+    note: written as the constant true
     evidence:
-    - ev_c08075515603
+    - ev_0f2926bb1df6
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -81,6 +127,14 @@ generated:
     types:
     - boolean
     evidence: ev_4d5e25065a16
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - block
+    - boolean
+    evidence: ev_0f2926bb1df6
   evidence:
   - id: ev_c08075515603
     kind: client_parser
@@ -98,6 +152,13 @@ generated:
     symbol: PetAddedToInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_0f2926bb1df6
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/PetAddedToInventoryEventMessageComposerSerializer.cs
+    symbol: PetAddedToInventoryEventMessageComposerSerializer
+    line: 7
   unknowns:
   - uk_bfc1fc7089
 verified: {}

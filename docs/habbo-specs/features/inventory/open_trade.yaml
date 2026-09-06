@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:72a7286f7995ac116c314dc36fb6df862e956648a574fb71100306923c2184b0"
+generated_digest: "sha256:ddb0f75b786985c2a6143f469a30f4a320b332475acafefd071c3247c5d26d26"
 generated:
   id: inventory.open_trade
   domain: inventory
@@ -73,7 +73,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: TradingOpenEvent
+    - packet: TradingOpen
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_1d91c4a1b72c

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cc50b2171b14dff5546716ea8a5a9533ead4dc8775a4a0e9109277ed4074820f"
+generated_digest: "sha256:3472c7c3ee6e47703f04834a528befde7a3151f2d11c11d4c3efb461880ca3f0"
 generated:
   feature: room.try_get_definition
   scenarios:
@@ -246,6 +246,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
+      - DiscordPreferences
       - VortexFurniDefinition
       evidence: ev_0b98da256559
   evidence:

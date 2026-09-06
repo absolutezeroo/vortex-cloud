@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:88f8d57af22b858bae2aba44e8ff1ec76a659c06727bcfccd5558a150f4b9250"
+generated_digest: "sha256:7b280019f534a6d773829986a8c2794571b34056b68db4ea54f57272447c453a"
 generated:
   id: marketplace.get_marketplace_own_offers
   domain: marketplace
@@ -41,7 +41,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: MarketPlaceOwnOffersEvent
+    - packet: MarketPlaceOwnOffers
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_d271c933118b
@@ -71,7 +71,5 @@ generated:
   scenarios:
   - marketplace.get_marketplace_own_offers.guard_0
   - marketplace.get_marketplace_own_offers.success
-  conflicts:
-  - cf_9664991fa8
 verified: {}
 manual: {}

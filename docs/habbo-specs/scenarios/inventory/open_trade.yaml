@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:403d73d40443e39aa51471e60d5cbbd4392af6923320f49cf703cf873be3a2e5"
+generated_digest: "sha256:c0392d6286a65838e3ad430e4f7738921224b69bccd613dfbb365fef3248d821"
 generated:
   feature: inventory.open_trade
   scenarios:
@@ -204,7 +204,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - TradingOpenEvent
+      - TradingOpen
       evidence: ev_1d91c4a1b72c
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

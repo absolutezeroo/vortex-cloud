@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9dd3da2e8537e716cef08c116734a84ff220a0774ebc6c38c7ad015d275ebda6"
+generated_digest: "sha256:18167c0f9471f76b997aeabe6bdf5c4d7af2f6026cb6a6e20b90a7f183bb0ba8"
 generated:
   feature: marketplace.get_marketplace_offers
   scenarios:
@@ -53,7 +53,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - MarketPlaceOffersEvent
+      - MarketPlaceOffers
       evidence: ev_751f57157329
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

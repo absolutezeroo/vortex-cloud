@@ -10,44 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:04039b2c26ec921e6f50f01fcb22d78bed777b11f98ee98bd23e1f4e5c9f0a05"
+generated_digest: "sha256:6b81893f698c923459c640e90915c21b2431e688ec3a6e652524ecd346b93f8c"
 generated:
   name: TradingOpenEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e27b84a8e24c
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e27b84a8e24c
-  - index: 2
-    name: other_user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e27b84a8e24c
-  - index: 3
-    name: unknown_3
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    evidence:
-    - ev_e27b84a8e24c
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -55,16 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_521f23b4c29b
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - int32
-    evidence: ev_e27b84a8e24c
   evidence:
   - id: ev_521f23b4c29b
     kind: client_parser
@@ -74,14 +34,5 @@ generated:
     symbol: TradingOpenEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_e27b84a8e24c
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingOpenEventMessageComposerSerializer.cs
-    symbol: TradingOpenEventMessageComposerSerializer
-    line: 6
-  unknowns:
-  - uk_a176764f1a
 verified: {}
 manual: {}

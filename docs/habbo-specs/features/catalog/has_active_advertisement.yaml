@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8df91ff91f94d2ab3b90e7013f13e4c252cf07f97213fe53b7501ff86c71ed62"
+generated_digest: "sha256:4ab0604dbceb66fcd836a1a5549b4e936dec11ce430f42e0352c28a875382a6f"
 generated:
   id: catalog.has_active_advertisement
   domain: catalog
@@ -65,7 +65,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RoomAdPurchaseInfoEvent
+    - packet: RoomAdPurchaseInfo
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_614cdf3234fd
@@ -130,7 +130,5 @@ generated:
   scenarios:
   - catalog.has_active_advertisement.guard_0
   - catalog.has_active_advertisement.success
-  conflicts:
-  - cf_3a6dd74546
 verified: {}
 manual: {}

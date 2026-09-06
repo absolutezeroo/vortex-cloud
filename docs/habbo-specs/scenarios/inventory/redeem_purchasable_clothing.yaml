@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:48a07e52c620f9cac79cfbf1f11bef2d81a7b7f607bc5c06e03bff7657814395"
+generated_digest: "sha256:abcfbe76695cdd1428c0ae2b872d959571cded58517a271c5e608844238ed91c"
 generated:
   feature: inventory.redeem_purchasable_clothing
   scenarios:
@@ -246,9 +246,9 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FigureSetIdsEvent
-      - FurniListAddOrUpdateEvent
-      - FurniListRemoveEvent
+      - FigureSetIds
+      - FurniListAddOrUpdate
+      - FurniListRemove
       - ItemRemove
       - ObjectRemove
       - UserRemove
@@ -302,7 +302,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 62
+    line: 64
   - id: ev_acbb2191dd7f
     kind: emulator_flow
     authority: vortex_emulator

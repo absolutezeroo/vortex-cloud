@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8e8df9b90df53e27c87fca82930250435243ebff2b0f6c135be81a086f1018ba"
+generated_digest: "sha256:03d475c5e9e27b52b409022761dfbcee4b79d7f9ab190b442866e37acc99ff74"
 generated:
   name: GiftWrappingConfiguration
   direction: outgoing
   domain: catalog
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: is_wrapping_enabled
@@ -33,13 +33,13 @@ generated:
     evidence:
     - ev_830fa8a25011
   - index: 2
-    name: unknown_2
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_830fa8a25011
+    - ev_1ec149c90c15
   - index: 3
     name: stuff_types
     type: int32
@@ -49,13 +49,13 @@ generated:
     evidence:
     - ev_830fa8a25011
   - index: 4
-    name: unknown_4
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_830fa8a25011
+    - ev_1ec149c90c15
   - index: 5
     name: box_types
     type: int32
@@ -65,13 +65,13 @@ generated:
     evidence:
     - ev_830fa8a25011
   - index: 6
-    name: unknown_6
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_830fa8a25011
+    - ev_1ec149c90c15
   - index: 7
     name: ribbon_types
     type: int32
@@ -81,13 +81,13 @@ generated:
     evidence:
     - ev_830fa8a25011
   - index: 8
-    name: unknown_8
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_830fa8a25011
+    - ev_1ec149c90c15
   - index: 9
     name: default_stuff_types
     type: int32
@@ -129,6 +129,22 @@ generated:
     - int32
     - int32
     evidence: ev_7d81e197dc01
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 10
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - array
+    - int32
+    - array
+    - int32
+    - array
+    - int32
+    - array
+    evidence: ev_1ec149c90c15
   evidence:
   - id: ev_830fa8a25011
     kind: client_parser
@@ -146,7 +162,17 @@ generated:
     symbol: GiftWrappingConfigurationMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_e338fbf6e0
+  - id: ev_1ec149c90c15
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/GiftWrappingConfigurationEventMessageComposerSerializer.cs
+    symbol: GiftWrappingConfigurationEventMessageComposerSerializer
+    line: 7
+  conflicts:
+  - cf_8c3cde75c1
+  - cf_8f201553ec
+  - cf_ba5d3d2ec9
+  - cf_891e74d3e7
 verified: {}
 manual: {}

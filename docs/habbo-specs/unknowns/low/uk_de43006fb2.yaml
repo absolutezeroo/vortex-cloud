@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8c6d5a801e268df7261994181785ed1f836a76f6a744869496964d84f25695a2"
+generated_digest: "sha256:379fe7a5e2bc272629be7891aafc43a2e1d6080f10fdfc3beaba98ee9b50b952"
 generated:
   id: uk_de43006fb2
   subject: "outgoing/WiredAllVariableHolders: unnamed fields"
   severity: low
-  question: Fields 0, 1 carry no name from any source. What are they?
+  question: Fields 0 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: WiredAllVariableHolders
   known_evidence:
@@ -27,5 +27,12 @@ generated:
     symbol: _SafeCls_4177
     line: 23
     note: official client build WIN63-202607011411-782849652
+  - id: ev_a8703e4b0f1a
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/UserDefinedRoomEvents/Wiredmenu/WiredAllVariableHoldersEventMessageComposerSerializer.cs
+    symbol: WiredAllVariableHoldersEventMessageComposerSerializer
+    line: 8
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:501eede59802aa7c4941d31871669d5f173bb762326801b4fc343f807b8105c2"
+generated_digest: "sha256:0b7fb8293c6ac2708779195752ffa9e49b6f4ea083cb1508a39c99bb35be5ffc"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -191,6 +191,7 @@ generated:
     GetCustomRoomFilter: 790
     GetDailyQuest: 397
     GetDailyTasks: 4100
+    GetDiscordPreferences: 2883
     GetEmailStatus: 2306
     GetExtendedProfile: 847
     GetExtendedProfileByName: 321
@@ -483,6 +484,7 @@ generated:
     SetChatStylePreference: 2634
     SetClothingChangeData: 1220
     SetCustomStackingHeight: 3045
+    SetDiscordPreferences: 2304
     SetIgnoreRoomInvites: 1332
     SetItemData: 3498
     SetMannequinFigure: 2301
@@ -632,7 +634,6 @@ generated:
     CampaignCalendarData: 1028
     CampaignCalendarDoorOpened: 2164
     CanCreateRoom: 2831
-    CanCreateRoomEvent: 853
     CancelMysteryBoxWait: 3840
     CantConnect: 2430
     CarryObject: 2850
@@ -690,6 +691,7 @@ generated:
     Dance: 2217
     DiceValue: 264
     DisconnectReason: 4000
+    DiscordPreferences: 2767
     Doorbell: 466
     ElementPointer: 1807
     EmailStatusResult: 2343
@@ -819,7 +821,7 @@ generated:
     Interstitial: 3898
     IsBadgeRequestFulfilled: 2121
     IsFirstLoginOfDay: 2313
-    IsOfferGiftableEvent: 1750
+    IsOfferGiftable: 1750
     IssueCloseNotification: 3943
     IssueDeleted: 122
     IssueInfo: 3585
@@ -970,6 +972,7 @@ generated:
     RewardTrackPremiumPurchaseResult: 58
     RewardTrackProgress: 2017
     RewardTracks: 3794
+    Room: 2481
     RoomAdError: 2396
     RoomAdPurchaseInfo: 3787
     RoomChatSettings: 594
@@ -977,7 +980,6 @@ generated:
     RoomDimmerPresets: 1093
     RoomEntryInfo: 2914
     RoomEntryTile: 2792
-    RoomEvent: 2481
     RoomEventCancel: 894
     RoomFilterSettings: 3208
     RoomForward: 3339

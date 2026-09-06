@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7845a58e4b5494fd6606926aa95ef5711cb99bcb10ed152f444bbdbf245ff4ae"
+generated_digest: "sha256:35c5b2d2c5d1d2b159303bb3045d9fd7411de57a745319351191ae584d9cce4b"
 generated:
   feature: wired.withdraw_wired_chest_credits
   scenarios:
@@ -246,7 +246,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CreditBalanceEvent
+      - CreditBalance
       - EmeraldBalance
       - HabboActivityPointNotification
       - SilverBalance

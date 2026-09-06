@@ -10,93 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8da0f8a687db0ddd577edde44ec68f9d306fb25a7ed90f778eb3e0e009692f1d"
+generated_digest: "sha256:0e5b1072489e516b01d6b24e5e6400194c8453d8b1e85f7a95932fc781cecb6c"
 generated:
   name: RoomEvent
   direction: outgoing
   domain: navigator
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: room_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_fa71000c09a2
-  - index: 1
-    name: name
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_fa71000c09a2
-  - index: 2
-    name: unknown_2
-    type: string
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    evidence:
-    - ev_fa71000c09a2
-  - index: 3
-    name: category_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_fa71000c09a2
-  - index: 4
-    name: minutes_remaining
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_fa71000c09a2
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
-  - origin: "as3:WIN63-202607011411-782849652"
-    authority: client_code
-    field_count: 10
-    partial: true
-    types:
-    - int32
-    - int32
-    - string
-    - int32
-    - int32
-    - string
-    - string
-    - int32
-    - int32
-    - int32
-    evidence: ev_f88af2e6efba
   - origin: nitro
     authority: multi_implementation
     field_count: 0
     partial: true
     types: []
     evidence: ev_5ad47a35a160
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 5
-    partial: false
-    types:
-    - int32
-    - string
-    - string
-    - int32
-    - int32
-    evidence: ev_fa71000c09a2
   evidence:
-  - id: ev_f88af2e6efba
-    kind: client_parser
-    authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2064/_SafeCls_3636.as
-    symbol: _SafeCls_3636
-    line: 23
-    note: official client build WIN63-202607011411-782849652
   - id: ev_5ad47a35a160
     kind: client_parser
     authority: multi_implementation
@@ -105,14 +34,5 @@ generated:
     symbol: RoomEventMessage
     line: 11
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_fa71000c09a2
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Navigator/RoomEventMessageComposerSerializer.cs
-    symbol: RoomEventMessageComposerSerializer
-    line: 6
-  unknowns:
-  - uk_58bdb21740
 verified: {}
 manual: {}

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:2e5496bd28a6e951e4fc9ac5c85b82221129e7a4777ef2a2e1d1a7a6c72943b6"
+generated_digest: "sha256:cc7d6746a7382e9cab6a26d3801193850cae2e4dc01247d9c2402de87329555a"
 generated:
   id: uk_87f607cecb
-  subject: "moderation.get_user_chatlog: who receives UserChatlogEvent"
+  subject: "moderation.get_user_chatlog: who receives UserChatlog"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

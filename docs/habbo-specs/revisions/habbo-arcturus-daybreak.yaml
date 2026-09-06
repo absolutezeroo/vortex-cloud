@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:4d0eda319ab29a8f2fa0cf4d07bf1ca0ef7c9e548f767a40f2d2da6ab2cb91e1"
+generated_digest: "sha256:315d00598f3498aa598f4e415f485bf861b2b00d43e5e614ded27ff93edd6e63"
 generated:
   revision: habbo-arcturus-daybreak
   origin: habbo-arcturus-daybreak
@@ -463,8 +463,7 @@ generated:
     CameraStorageUrl: 3696
     CampaignCalendarData: 2531
     CampaignCalendarDoorOpened: 2551
-    CanCreateRoom: 378
-    CanCreateRoomEvent: 2599
+    CanCreateRoom: 2599
     CantConnect: 899
     CarryObject: 1474
     CatalogPage: 804
@@ -755,6 +754,7 @@ generated:
     RentableSpaceStatus: 3559
     RequestSpamWallPostIt: 2366
     RestoreClient: 426
+    Room: 1840
     RoomAdError: 1759
     RoomAdPurchaseInfo: 2468
     RoomChatSettings: 1191
@@ -762,7 +762,6 @@ generated:
     RoomDimmerPresets: 2710
     RoomEntryInfo: -1
     RoomEntryTile: 1664
-    RoomEvent: 1840
     RoomEventCancel: 3479
     RoomFilterSettings: 2937
     RoomFloorThicknessUpdated: 3786

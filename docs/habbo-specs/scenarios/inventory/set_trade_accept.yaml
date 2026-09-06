@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0798bc84e4588a251d602a6cdbfb0111d9b9da8ffa9b288246978b203d5b626e"
+generated_digest: "sha256:81218962932948b9c4cfcd085736dcb1a95276981a74d1d06b297a3237670124"
 generated:
   feature: inventory.set_trade_accept
   scenarios:
@@ -99,8 +99,8 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - TradingAcceptEvent
-      - TradingConfirmationEvent
+      - TradingAccept
+      - TradingConfirmation
       evidence: ev_17349bcc2f7a
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

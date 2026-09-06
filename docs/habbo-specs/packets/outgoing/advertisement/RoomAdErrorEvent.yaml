@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:61324b14529ca37ee479a5055dfae0dc11f9e70b77b45a50c07a39d1c9a302dd"
+generated_digest: "sha256:27c64528b3b5914836f2fdf123a83dd7904ad9f07b6cbc1d4e9a40f34bea21dd"
 generated:
   name: RoomAdErrorEvent
   direction: outgoing
   domain: advertisement
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: error_code
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_7534e1255095
-  - index: 1
-    name: filtered_text
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_7534e1255095
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_48bdea6a2d40
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - string
-    evidence: ev_7534e1255095
   evidence:
   - id: ev_48bdea6a2d40
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: RoomAdErrorEventMessage
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_7534e1255095
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Advertisement/RoomAdErrorEventMessageComposerSerializer.cs
-    symbol: RoomAdErrorEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:034795f2a1a4eda80a8c8de51abeccf522e6cc6ed1004655a18925454bed892b"
+generated_digest: "sha256:5e98430d9d6470733294375afaedb50e4808b1491a2f45b6cefaf30e9d414b0a"
 generated:
   feature: inventory.get_bot_inventory
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - BotInventoryEvent
+      - BotInventory
       evidence: ev_90ba9eeb98e7
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

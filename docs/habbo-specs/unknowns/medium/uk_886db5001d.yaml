@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:433e7d32f1361c60c58cd98983d87a99adbe9474bd6a54e0198986b7c8768a06"
+generated_digest: "sha256:7d5aa668ad3d2c559414365f7433f8096d1a6fb061de74834055b0c14c4967cb"
 generated:
   id: uk_886db5001d
-  subject: "inventory.redeem_purchasable_clothing: who receives FurniListAddOrUpdateEvent, FurniListRemoveEvent"
+  subject: "inventory.redeem_purchasable_clothing: who receives FurniListAddOrUpdate, FurniListRemove"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

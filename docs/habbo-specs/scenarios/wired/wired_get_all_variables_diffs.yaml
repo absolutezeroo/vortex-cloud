@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5c01371a2fa727922fce162639d5afd71f157e0b6dbfea5eafd4f8abaec31d64"
+generated_digest: "sha256:92bf050639c7d285de722bfee421c2fd12eebc1c59f6ebe07f6cb1c299e007fb"
 generated:
   feature: wired.wired_get_all_variables_diffs
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredAllVariablesDiffsEvent
+      - WiredAllVariablesDiffs
       evidence: ev_0080929ab318
   evidence:
   - id: ev_0080929ab318

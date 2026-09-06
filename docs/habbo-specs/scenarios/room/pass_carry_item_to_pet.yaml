@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3f748db4bc82598b319634bcba5a80e475bfddc7fabc822da1d7b8acc201d7ee"
+generated_digest: "sha256:c56525102badf0b39f9d9a7d01dee0dcd84ca837369642bd6d96701070c715a5"
 generated:
   feature: room.pass_carry_item_to_pet
   scenarios:
@@ -160,7 +160,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 221
+    line: 223
   - id: ev_b835c9e727ff
     kind: emulator_flow
     authority: vortex_emulator

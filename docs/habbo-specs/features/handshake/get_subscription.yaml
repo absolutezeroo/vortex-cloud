@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2452cec6d9c62618ffc380366d3f66419a09bf294b571653f7681110ad338cdf"
+generated_digest: "sha256:f5e05746ad4431bbdcfc109ab2cba255eff64d06714cb1c9ca811795b791902a"
 generated:
   id: handshake.get_subscription
   domain: handshake
@@ -185,7 +185,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: AchievementsScoreEvent
+    - packet: AchievementsScore
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6
@@ -205,11 +205,11 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6
-    - packet: ClubGiftNotificationEvent
+    - packet: ClubGiftNotification
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6
-    - packet: CreditBalanceEvent
+    - packet: CreditBalance
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6
@@ -221,7 +221,7 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6
-    - packet: FigureSetIdsEvent
+    - packet: FigureSetIds
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6b9eba14eea6

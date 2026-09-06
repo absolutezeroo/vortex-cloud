@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:368d5dae3ce89c4a9d6c92e2d23347612dc293ed4a9e783bbc1e957b926bc48e"
+generated_digest: "sha256:ee9731dc5bfcd500e40a6a824737bdddb3246bae42c6ef3b52d5f8c79079c522"
 generated:
   feature: marketplace.make_offer
   scenarios:
@@ -310,7 +310,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FurniListRemoveEvent
+      - FurniListRemove
       - MarketplaceMakeOfferResult
       evidence: ev_0d41314ab8c9
     - origin: habbo-arcturus-daybreak

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a48da911ec829fe953a94da0425eea404ae1243eabce2b5e27b3f713c038f1b3"
+generated_digest: "sha256:377fa5cf923994e96f04a6b111a26311aca170cb977c4f81ec4e1a5648ff03eb"
 generated:
   feature: room.pass_carry_item
   scenarios:
@@ -134,6 +134,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 221
+    line: 223
 verified: {}
 manual: {}

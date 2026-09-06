@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f30504c9a66f867f7234bce94468534bda390d7c5eb10c5cd78bbe17a341108f"
+generated_digest: "sha256:1351beed795cb509fa15b01051bc2bfa94c4282381bca68e7008ea4f34d15719"
 generated:
   id: marketplace.get_marketplace_offers
   domain: marketplace
@@ -49,7 +49,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: MarketPlaceOffersEvent
+    - packet: MarketPlaceOffers
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_98dee09f7440

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:279b31e50b733fda60a12c2846fd452b7bc107a713b8856b751254a10c517827"
+generated_digest: "sha256:98e77b8967a34a8fc382318680dbf47090f064d494279c29bde45b02b5083776"
 generated:
   id: uk_24312e7595
-  subject: "moderation.publish: who receives IssueCloseNotification, IssueDeleted, Moderator, ModeratorActionResult, ModeratorCautionEvent, UserBanned"
+  subject: "moderation.publish: who receives IssueCloseNotification, IssueDeleted, Moderator, ModeratorActionResult, ModeratorCaution, UserBanned"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

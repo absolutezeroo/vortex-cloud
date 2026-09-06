@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0b93ed609653e07ad0b9c3a21a1c4dd97ed436f2c6b3ce0dbc25053dfdeb585b"
+generated_digest: "sha256:bc87ed78c7ac5e723c9bc78151264d85e8dc84d976426a196b9e6583317714fd"
 generated:
   feature: inventory.request_a_badge
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - IsBadgeRequestFulfilledEvent
+      - IsBadgeRequestFulfilled
       evidence: ev_cb07d3019d09
   evidence:
   - id: ev_cb07d3019d09

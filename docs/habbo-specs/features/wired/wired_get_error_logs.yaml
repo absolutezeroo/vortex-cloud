@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ef3be27456cb689a1c450f1230049c2248a48b79b7eb20048f5bddf8063c3d1e"
+generated_digest: "sha256:f48db23e7dceb785794fc951782b326880defe6d674e9a370c6d91ac3f6d7746"
 generated:
   id: wired.wired_get_error_logs
   domain: wired
@@ -44,7 +44,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredErrorLogsEvent
+    - packet: WiredErrorLogs
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6c991cec82d5

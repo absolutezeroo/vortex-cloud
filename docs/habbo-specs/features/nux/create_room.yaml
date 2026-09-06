@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1fdb3d44a635ef4026701553ffbe6c99dad00c7c3e924dced6a7cc39d84cad89"
+generated_digest: "sha256:4e08be22e07a985f07d3b4e668179a92b5a4f79925565ec9165f17b0d385702a"
 generated:
   id: nux.create_room
   domain: nux
@@ -80,7 +80,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: SelectInitialRoomEvent
+    - packet: SelectInitialRoom
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_aa7fca1e0066

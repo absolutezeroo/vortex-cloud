@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f2e64c740f47f84ca28c7b438307c008017bd2f5f0bd51730f642aa90ef98552"
+generated_digest: "sha256:413fa3f8eabdddda89e65284a248bd7a6f508a48599425893e73fe4801768787"
 generated:
   feature: moderation.get_sanction_history
   scenarios:
@@ -78,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - SanctionStatusEvent
+      - SanctionStatus
       evidence: ev_055f4068589c
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

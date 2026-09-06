@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:38671537f59c4c2719017d65ad733bad72c0131ac8e7af2fd1711bdb7d8b481b"
+generated_digest: "sha256:e03197257f1e822bcc5a5faeda4e7b2600ddda57109ae29a4e7fe944a92d777d"
 generated:
   id: uk_7f085dd163
   subject: "outgoing/TradingOpen: unnamed fields"
@@ -27,5 +27,12 @@ generated:
     symbol: TradingOpenMessageComposer
     line: 24
     note: third-party server implementation; evidence, not authority
+  - id: ev_e27b84a8e24c
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingOpenEventMessageComposerSerializer.cs
+    symbol: TradingOpenEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

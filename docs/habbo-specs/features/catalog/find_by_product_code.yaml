@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:57ec332e6661bbf9ef7a80b4b499cd5df9cc29949e68d505eccfb9a156f17ba9"
+generated_digest: "sha256:2b0d37e9feec662673bdad896c01bc2e42612ba86f5d70177fd6326f1cc663f6"
 generated:
   id: catalog.find_by_product_code
   domain: catalog
@@ -149,11 +149,11 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: BadgeReceivedEvent
+    - packet: BadgeReceived
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
-    - packet: ClubGiftSelectedEvent
+    - packet: ClubGiftSelected
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_db00239c6a21

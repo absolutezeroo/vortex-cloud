@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:f897794cec4435fb348f6e2f9f93d35b4a855b0a875bcb984e4746a30759f9d6"
+generated_digest: "sha256:65ce5baf85ee4dddd092edf8e6cc136f3ef3a6cd52ed011ebeb4054c82356bae"
 generated:
   id: cf_6c54111500
   kind: field_count
@@ -29,6 +29,10 @@ generated:
     authority: reference_emulator
     claim: "8 fields: string, int32, int32, int32, int32, int32, int32, string"
     evidence: ev_22e83fd61faf
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "5 fields: string, int32, int32, int32, block"
+    evidence: ev_6dcb3fd1c460
   evidence:
   - id: ev_7c5b544f06ce
     kind: client_parser
@@ -54,7 +58,17 @@ generated:
     symbol: QuestionMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_6dcb3fd1c460
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Poll/QuestionEventMessageComposerSerializer.cs
+    symbol: QuestionEventMessageComposerSerializer
+    line: 10
   official:
     status: unknown
-verified: {}
+verified:
+  resolution: "Counting artifact, not drift. The client reads pollType, pollId, questionId, duration and then builds the question dictionary (id, number, type, content, plus an optional selection block with its own loop); we write the same four and hand the question off to PollQuestionWriter. The delegated question body is one field on our side and flattened on the client's."
+  confidence: client_confirmed
+  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3271.as — string, int, int, int, then the question dictionary"
 manual: {}

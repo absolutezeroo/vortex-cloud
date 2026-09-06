@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c64e8a4b640a2b7c81e973c8510906fcfe4ef4fa980cad33fea01f50f908b2e9"
+generated_digest: "sha256:9f26c16311bf062e92724172cf8a324667505842e40ab58d1b2d3a5ff7d4c7fb"
 generated:
   id: uk_3875e039a4
-  subject: "wired.open: who receives WiredFurniActionEvent, WiredFurniAddonEvent, WiredFurniConditionEvent, WiredFurniSelectorEvent, WiredFurniTriggerEvent, WiredFurniVariableEvent"
+  subject: "wired.open: who receives WiredFurniAction, WiredFurniAddon, WiredFurniCondition, WiredFurniSelector, WiredFurniTrigger, WiredFurniVariable"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

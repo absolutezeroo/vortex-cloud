@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:262f260acef27161ff77b1121340cd1ee0e1d4650b1bc4a5a257eb473423bfd9"
+generated_digest: "sha256:c9075b0cda28422115868952086e20200810e4bee129a97756c740c5903aa5de"
 generated:
   id: navigator.edit
   domain: navigator
@@ -64,7 +64,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RoomEvent
+    - packet: Room
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_065fa12e16db

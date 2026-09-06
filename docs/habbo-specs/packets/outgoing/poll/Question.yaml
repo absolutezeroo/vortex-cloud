@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:06b74c3ddde8d796ebefcebe87939914be3548b4a818a68d371071bd0d617ef0"
+generated_digest: "sha256:c1df92940d8ec099c59fdd6ec27e9788f0528501a14626f43bf5ba3f9f309c81"
 generated:
   name: Question
   direction: outgoing
   domain: poll
   structure_confidence: confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: poll_type
@@ -169,6 +169,17 @@ generated:
     - int32
     - string
     evidence: ev_22e83fd61faf
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 5
+    partial: false
+    types:
+    - string
+    - int32
+    - int32
+    - int32
+    - block
+    evidence: ev_6dcb3fd1c460
   evidence:
   - id: ev_7c5b544f06ce
     kind: client_parser
@@ -194,6 +205,13 @@ generated:
     symbol: QuestionMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_6dcb3fd1c460
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Poll/QuestionEventMessageComposerSerializer.cs
+    symbol: QuestionEventMessageComposerSerializer
+    line: 10
   conflicts:
   - cf_6c54111500
   unknowns:

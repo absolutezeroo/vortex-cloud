@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3a3584c5e8fdaf1d7004d6f062123a622d2cd3c1df877d79b9ced2605988c9ef"
+generated_digest: "sha256:54803b0bb0ae15971030f9f251a72b0622ecf1d045bf430d1e4447272d70e15e"
 generated:
   feature: wired.wired_get_room_stats
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredRoomStatsEvent
+      - WiredRoomStats
       evidence: ev_5194e55eaa8f
   evidence:
   - id: ev_5194e55eaa8f

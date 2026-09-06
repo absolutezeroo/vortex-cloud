@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:69bc4bfa94a5a27acee91df753b16944101b49cb2ae76b940ae801099cc846b9"
+generated_digest: "sha256:b7ff776d49e440d7ea0c31aac292f2e9352edaa86ad8a633cfdc65cdf8a5cb06"
 generated:
   name: CanCreateRoom
   direction: incoming
@@ -78,5 +78,6 @@ generated:
     line: 7
   conflicts:
   - cf_ae0db1dbfb
+  - cf_5ab0704ec3
 verified: {}
 manual: {}

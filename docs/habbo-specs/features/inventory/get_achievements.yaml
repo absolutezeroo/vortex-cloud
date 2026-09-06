@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9ebbf8f3d977dc07465637ba03844357db606e9b0bba449272982d0f2489561f"
+generated_digest: "sha256:4c02b23fbc3cb5ab2454ebc6a2ad3fbe3a4beaa37344f75fbc5ec8be770f8673"
 generated:
   id: inventory.get_achievements
   domain: inventory
@@ -61,7 +61,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: AchievementsEvent
+    - packet: Achievements
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_a7798658d9db
@@ -94,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Progression/Achievements/AchievementProgressCalculator.cs
     symbol: AchievementProgressCalculator
-    line: 159
+    line: 162
   - id: ev_c70390fca34b
     kind: emulator_flow
     authority: vortex_emulator
@@ -113,8 +113,6 @@ generated:
   - inventory.get_achievements.guard_0
   - inventory.get_achievements.guard_1
   - inventory.get_achievements.success
-  conflicts:
-  - cf_6c8f3c965e
   unknowns:
   - uk_bb7eeabb9c
 verified: {}

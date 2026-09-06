@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:927798e238b056b83e4896c207cd307b466b6a48fdedf9ae6477169647c7787c"
+generated_digest: "sha256:f90b7abd880250fc26bd48a9652e474423da6dc95e988849480078d297e0724e"
 generated:
   id: uk_9629b9da77
   subject: "room.get_room_entry_data: what the server sends when it refuses"
@@ -200,7 +200,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 90
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

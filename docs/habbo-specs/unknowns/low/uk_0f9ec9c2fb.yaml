@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:635b9647fbbd030fe1de041b1d842c48e4bf7c50c00edfb4f4f3fc32a2fabb81"
+generated_digest: "sha256:b5155efa10c3f9ce0e2f133a449a80eda6ed09aecd107fa905854fd8c7c9c8bb"
 generated:
   id: uk_0f9ec9c2fb
   subject: "outgoing/CfhChatlog: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: CfhChatlogMessageComposer
     line: 35
     note: third-party server implementation; evidence, not authority
+  - id: ev_1a1d879b2bb8
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/CfhChatlogEventMessageComposerSerializer.cs
+    symbol: CfhChatlogEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

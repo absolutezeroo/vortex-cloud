@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8c0b82492b7a37539e961680cd835586378cd046011c096f2c9d1e947e441006"
+generated_digest: "sha256:20811cb47852690f353a71e1eacea4c546d6de2b2d8eeacaf5f31be40bea51c5"
 generated:
   id: users.scr_get_user_info
   domain: users
@@ -57,7 +57,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: AccountPreferencesEvent
+    - packet: AccountPreferences
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_6314772596f2
@@ -81,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 21
+    line: 26
   - id: ev_6314772596f2
     kind: emulator_flow
     authority: vortex_emulator

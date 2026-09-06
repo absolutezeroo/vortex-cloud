@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:14a85cba10c288d47538d79b3ea31606edca49461f36c41e96247299020156ca"
+generated_digest: "sha256:1fb6c56f189b4321d640f63307c0d07ce355c3f6c4962c46d059a804e9176359"
 generated:
   id: wired.update_trigger
   domain: wired
@@ -77,11 +77,11 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredSaveSuccessEvent
+    - packet: WiredSaveSuccess
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_b0dd7db943f4
-    - packet: WiredValidationErrorEvent
+    - packet: WiredValidationError
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_b0dd7db943f4
@@ -114,7 +114,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 222
+    line: 233
   scenarios:
   - wired.update_trigger.guard_0
   - wired.update_trigger.guard_1

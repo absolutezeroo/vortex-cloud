@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1c968fcbd3fb0b3937c9d2e2c171ff0bc4413f0f834051025c03e6342a5fce60"
+generated_digest: "sha256:df485076477b3386721d4a827392be90f940dfeecabe75f4107a0005ed982afc"
 generated:
   id: inventory.redeem_purchasable_clothing
   domain: inventory
@@ -360,15 +360,15 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FigureSetIdsEvent
+    - packet: FigureSetIds
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_acbb2191dd7f
-    - packet: FurniListAddOrUpdateEvent
+    - packet: FurniListAddOrUpdate
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
-    - packet: FurniListRemoveEvent
+    - packet: FurniListRemove
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
@@ -506,7 +506,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_acbb2191dd7f
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1b8755ef8547a939b8d5219f3ab1e62cf3dec6212a691e253a3c5e83dc17dd3f"
+generated_digest: "sha256:5e3a5dbaaad6f285c7a66714ca9af1e46f85303709e144bb20b51cfd1d6860c9"
 generated:
   id: uk_5c4fd93197
-  subject: "catalog.builders_club_place_wall_item: who receives FurniListRemoveEvent, ItemAdd"
+  subject: "catalog.builders_club_place_wall_item: who receives FurniListRemove, ItemAdd"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8dec30bb5d2731ce8a6f9e44a79ff69a2b1c71b9fcd1f3a530a506957635fdb5"
+generated_digest: "sha256:0e85374a1546932a09d32f022f49674953ccabcfaafb9693ff0bcc682c82ef83"
 generated:
   id: wired.withdraw_all_from_wired_chest
   domain: wired
@@ -184,7 +184,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CreditBalanceEvent
+    - packet: CreditBalance
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_432f3c2b73af

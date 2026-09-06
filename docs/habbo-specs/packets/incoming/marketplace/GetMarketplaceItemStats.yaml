@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:207111490891ca9ccf25006932305d5e45936e0f9612ced2aa96e560b47a5241"
+generated_digest: "sha256:840db2e9a8151ebf01822c4bfeb7788277c9c899529eb466e377b670b3edf167"
 generated:
   name: GetMarketplaceItemStats
   direction: incoming
@@ -95,7 +95,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Marketplace/GetMarketplaceItemStatsMessageParser.cs
     symbol: GetMarketplaceItemStatsMessageParser
     line: 7
-  conflicts:
-  - cf_f817541c1e
 verified: {}
 manual: {}

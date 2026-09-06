@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:acfe63e025ef0a52a4c2e8fd8d3e864659b195e5cf4d91f5a88db46ddc95601a"
+generated_digest: "sha256:5cc3fce67672e89fd65579fd4a5811d372f6966a8955e86bf4b228ac238f0948"
 generated:
   feature: register.update_figure_data
   scenarios:
@@ -126,7 +126,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FigureUpdateEvent
+      - FigureUpdate
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e4f2bda11ef25d4ec9c9645fb0f85d38dc486dc4b3576c7a5169012fda590b93"
+generated_digest: "sha256:3a9f556b934a606d8f05674e5d9e61501bedea1b1137b7aba069accb98d94a50"
 generated:
   id: uk_1b8b993382
   subject: "outgoing/RoomSettingsData: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 carry no name from any source. What are they?
+  question: Fields 10, 11, 12, 13, 26 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: RoomSettingsData
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: RoomSettingsDataMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_5ec07d3e24bf
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/RoomSettingsDataEventMessageComposerSerializer.cs
+    symbol: RoomSettingsDataEventMessageComposerSerializer
+    line: 15
 verified: {}
 manual: {}

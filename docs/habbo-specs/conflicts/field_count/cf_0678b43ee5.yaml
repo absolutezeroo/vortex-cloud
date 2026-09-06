@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d1b59a7c33ded11be8968616c8d8be35fb06c2a2828351e7e574c96f6873726c"
+generated_digest: "sha256:f074a8d5bae74a76877fb19ec02fc1ca4636103aa5a43cb7d3f28fe0c2963a97"
 generated:
   id: cf_0678b43ee5
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "3 fields: int32, int32, int32"
     evidence: ev_306594cbd14c
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "4 fields: int32, int32, int32, array"
+    evidence: ev_f7857a349d6b
   evidence:
   - id: ev_5376a3252d4b
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: FurniListMessageComposer
     line: 31
     note: third-party server implementation; evidence, not authority
+  - id: ev_f7857a349d6b
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListEventMessageComposerSerializer.cs
+    symbol: FurniListEventMessageComposerSerializer
+    line: 8
   official:
     status: unknown
 verified: {}

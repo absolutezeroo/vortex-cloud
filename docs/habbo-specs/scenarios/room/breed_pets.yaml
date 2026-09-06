@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6f07d57942875c644b29673c51e4e1c22c917f6a58baa0c911351e5991252211"
+generated_digest: "sha256:4356434cb1af93fa65567c2e1efea7f0084b69afbc803b087327cd8af55dae56"
 generated:
   feature: room.breed_pets
   scenarios:
@@ -122,8 +122,8 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - ConfirmBreedingRequestEvent
-      - PetBreedingEvent
+      - ConfirmBreedingRequest
+      - PetBreeding
       evidence: ev_01eee9e5476a
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

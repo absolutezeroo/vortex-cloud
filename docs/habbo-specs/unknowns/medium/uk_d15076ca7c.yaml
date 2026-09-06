@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d944d559197daa333a0c9301f7bb95d59ed37ebef461e11e73c7269e37422064"
+generated_digest: "sha256:591e290993994d19c17b715bfc01dc0760f6f0a9106a531e5f2700a41b9c97ae"
 generated:
   id: uk_d15076ca7c
   subject: "room.ban_user_with_duration: what the server sends when it refuses"
@@ -102,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator

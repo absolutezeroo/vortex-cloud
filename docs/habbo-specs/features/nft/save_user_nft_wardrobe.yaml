@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dffd5153f117b4edad9a2c25096a32bfba04f59508f5f2824a6366ec9c72b6bf"
+generated_digest: "sha256:a6635e3c82e67d00ee477f6bd78b9af4dea1ba35a518aedf8421033deecf7e26"
 generated:
   id: nft.save_user_nft_wardrobe
   domain: nft
@@ -88,7 +88,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FigureUpdateEvent
+    - packet: FigureUpdate
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_6d94b7c1bb77

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:acfebe997b5caec6308ab2892182ed5e6a79e76c3c64cf13e24c9847c449f974"
+generated_digest: "sha256:677ada36cc90c2f2ae1484ffae8a0fc8b9f36edcce5fda43a67690b39927ae80"
 generated:
   id: uk_5bd86bddf1
-  subject: "inventory.set_trade_accept: who receives TradingAcceptEvent, TradingConfirmationEvent"
+  subject: "inventory.set_trade_accept: who receives TradingAccept, TradingConfirmation"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

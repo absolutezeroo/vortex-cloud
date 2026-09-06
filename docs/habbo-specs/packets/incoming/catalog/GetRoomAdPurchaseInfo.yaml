@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:13c1426f7f50f261048f0748ccf6f473b68a70388fc1323baa11d42953e6a81f"
+generated_digest: "sha256:d7ec91631259a3516c12f8b57d2a8aa519e1db38212279f27f09ff6bb63615e4"
 generated:
   name: GetRoomAdPurchaseInfo
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Catalog/GetRoomAdPurchaseInfoMessageParser.cs
     symbol: GetRoomAdPurchaseInfoMessageParser
     line: 7
-  conflicts:
-  - cf_3a6dd74546
 verified: {}
 manual: {}

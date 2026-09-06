@@ -10,30 +10,30 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:113c4a86230aa4b8f758c94647fd94fccd523f97f3eee1f019014e102529adf0"
+generated_digest: "sha256:bcab66902b47cc2da3286f7e745dcfb9dcd7bd2ab0be8cbb4edd660c3ec1b9a8"
 generated:
   name: TradingClose
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: user_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_dab925598745
+    - ev_4f03887a96e9
   - index: 1
-    name: unknown_1
+    name: reason
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_dab925598745
+    - ev_4f03887a96e9
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
@@ -43,6 +43,14 @@ generated:
     - int32
     - int32
     evidence: ev_dab925598745
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_4f03887a96e9
   evidence:
   - id: ev_dab925598745
     kind: client_parser
@@ -52,7 +60,12 @@ generated:
     symbol: TradingCloseParser
     line: 19
     note: official client build PRODUCTION-201601012205-226667486
-  unknowns:
-  - uk_4a4bd3dac5
+  - id: ev_4f03887a96e9
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingCloseEventMessageComposerSerializer.cs
+    symbol: TradingCloseEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

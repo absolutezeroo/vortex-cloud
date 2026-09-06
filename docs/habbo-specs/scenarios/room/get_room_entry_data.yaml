@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fc16184c540731922eed1bd5c544c7311b2b8147cbb1e893aafc3c1d65a38fcb"
+generated_digest: "sha256:247fdd8acec3939a3e2241045efef925ab5950eb5dab4fa6059b894888a5706b"
 generated:
   feature: room.get_room_entry_data
   scenarios:
@@ -338,7 +338,7 @@ generated:
       - UserUpdate
       - Users
       - WiredEnvironment
-      - WiredPermissionsEvent
+      - WiredPermissions
       - YouAreController
       - YouAreOwner
       - unresolved

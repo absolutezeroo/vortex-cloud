@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:3890aa539b43298009f46a4d56e817d89082ca25f2ee331d7dec967c9f0e4101"
+generated_digest: "sha256:db130d0194bee755fec101cba8f8886006552def5b90161f6341cc9eab0c131e"
 generated:
   id: cf_38dc241d2d
   kind: field_count
@@ -29,6 +29,10 @@ generated:
     authority: reference_emulator
     claim: "15 fields: int32, int32, int32, string, int32, int32, int32, int32, int32, boolean, string, string, int32, int32, string"
     evidence: ev_0b0db7eba757
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, array, string"
+    evidence: ev_bf07c24f9afd
   evidence:
   - id: ev_c8dbd634e2f1
     kind: client_parser
@@ -54,6 +58,13 @@ generated:
     symbol: AchievementsMessageComposer
     line: 24
     note: third-party server implementation; evidence, not authority
+  - id: ev_bf07c24f9afd
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Achievements/AchievementsEventMessageComposerSerializer.cs
+    symbol: AchievementsEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

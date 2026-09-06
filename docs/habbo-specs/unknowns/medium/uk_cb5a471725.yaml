@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b65199915a778945c160965826a14b84605be711571524d3cf569dc49447c4f4"
+generated_digest: "sha256:516c6a44937fc78ba567af7bab0562eb03e7dab83cf3d87726bb4a45ebfbb3ab"
 generated:
   id: uk_cb5a471725
   subject: "inventory.avatar_effect_selected: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 239
+    line: 241
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bdf21aa3ba7267d413adf5b20806ed94b8934958720e592b79ea3ec8392b4b90"
+generated_digest: "sha256:bf60eea8f1ba7d433ff9d40b4af3e6c15406581b9199732ef9336825e9106c88"
 generated:
   id: uk_367bc6e855
-  subject: "moderation.mod_kick: who receives ModeratorActionResult, ModeratorCautionEvent"
+  subject: "moderation.mod_kick: who receives ModeratorActionResult, ModeratorCaution"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

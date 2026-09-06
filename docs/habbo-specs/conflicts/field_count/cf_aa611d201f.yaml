@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:922cc56c6eac5d2868a9c3c6badd8c1d5faebacf3922e3ceade5e730777c7c0c"
+generated_digest: "sha256:bd86af9ae3e390c63f275b4c74027cd81ed089441ccb8a4f78cf1bb81dd60ddc"
 generated:
   id: cf_aa611d201f
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "5 fields: boolean, int32, int32, string, boolean"
     evidence: ev_086b0c4947ea
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: boolean, int32, array"
+    evidence: ev_ec2fc9fcfc05
   evidence:
   - id: ev_4e0f638a4229
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: RoomAdPurchaseInfoMessageComposer
     line: 22
     note: third-party server implementation; evidence, not authority
+  - id: ev_ec2fc9fcfc05
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/RoomAdPurchaseInfoEventMessageComposerSerializer.cs
+    symbol: RoomAdPurchaseInfoEventMessageComposerSerializer
+    line: 6
   official:
     status: unknown
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:34e0dce6b68e428c774561459f7d0f84e519811237ad884ed9e58fb42b8576ac"
+generated_digest: "sha256:4af9b291955918c5521d1d7b7249a7ec7e7a6d0c5bfdf4b36c3bf29423149551"
 generated:
   id: room.breed_pets
   domain: room
@@ -57,11 +57,11 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: ConfirmBreedingRequestEvent
+    - packet: ConfirmBreedingRequest
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_e3aeea05728f
-    - packet: PetBreedingEvent
+    - packet: PetBreeding
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_e3aeea05728f

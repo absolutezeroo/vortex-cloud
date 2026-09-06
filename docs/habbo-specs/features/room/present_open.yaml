@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:01a58168e4604c2223ea9a7d40ab03e301836ad8c241787360ed65836eb28969"
+generated_digest: "sha256:d45405f2ee963763b71e4b139c6ea1066753345faf8e9c44e61791cd41095842"
 generated:
   id: room.present_open
   domain: room
@@ -173,7 +173,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: BadgeReceivedEvent
+    - packet: BadgeReceived
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09

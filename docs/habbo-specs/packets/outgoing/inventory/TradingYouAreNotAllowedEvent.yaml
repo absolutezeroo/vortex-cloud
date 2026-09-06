@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:57bc6232c95f800391e023e599365b0b6b38bbf8ede743e0497b6adb3406381e"
+generated_digest: "sha256:3f8ebe0548d971ac51244399f282f7c103dcb32b0591eac8017057990b7a6922"
 generated:
   name: TradingYouAreNotAllowedEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -25,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_34c4222385e7
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_c8014663779b
   evidence:
   - id: ev_34c4222385e7
     kind: client_parser
@@ -40,12 +34,5 @@ generated:
     symbol: TradingYouAreNotAllowedEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c8014663779b
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingYouAreNotAllowedEventMessageComposerSerializer.cs
-    symbol: TradingYouAreNotAllowedEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

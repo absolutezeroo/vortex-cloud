@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cf5f19bc90b44644a44d17e111e1b6cc4883170488fc34962059d2e84415c715"
+generated_digest: "sha256:e8b8cfa1f609c6188015b7a27d17089f9bdde214ddba210e98ade54eb8ac8ae4"
 generated:
   feature: users.scr_get_user_info
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AccountPreferencesEvent
+      - AccountPreferences
       - unresolved
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:688b6b1bdba84d337153743e92a16fc58eb42110e63f7e68c03fd0b47b3932c4"
+generated_digest: "sha256:005f06b532efbced7387a1531e7685e4ecefc311d10583e1fbd4d14036da2ded"
 generated:
   id: navigator.get_room_count_by_owner
   domain: navigator
@@ -78,6 +78,7 @@ generated:
   scenarios:
   - navigator.get_room_count_by_owner.success
   conflicts:
+  - cf_5ab0704ec3
   - cf_ae0db1dbfb
 verified: {}
 manual: {}

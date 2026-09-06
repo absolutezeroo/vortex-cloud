@@ -10,42 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:42c3a7f2fc85cd1c130c1e3f27a92bd9b5bda5d71a0c6b29dba0581bb05b04f7"
+generated_digest: "sha256:5b10c89e324cfc45f13bceb560ae5c395a14de6c0a19e47f09b8a2891ae123ec"
 generated:
   name: ModeratorToolPreferencesEvent
   direction: outgoing
   domain: moderation
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: window_x
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_c65243d57f46
-  - index: 1
-    name: window_y
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_c65243d57f46
-  - index: 2
-    name: window_width
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_c65243d57f46
-  - index: 3
-    name: window_height
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_c65243d57f46
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -53,16 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_ff09aa3dfc49
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - int32
-    evidence: ev_c65243d57f46
   evidence:
   - id: ev_ff09aa3dfc49
     kind: client_parser
@@ -72,12 +34,5 @@ generated:
     symbol: ModeratorToolPreferencesEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c65243d57f46
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorToolPreferencesEventMessageComposerSerializer.cs
-    symbol: ModeratorToolPreferencesEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

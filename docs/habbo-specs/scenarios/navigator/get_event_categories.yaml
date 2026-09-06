@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:125eaf056018d35ae8e5569f2486d40e118bdff0298d1cfe9b2b9e902f7c3ab2"
+generated_digest: "sha256:f721185b098e8a8349e65f55a3199ee0319ab8fc5432f54cc4c629fc8b71d8d0"
 generated:
   feature: navigator.get_event_categories
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - CanCreateRoomEvent
+      - CanCreateRoom
       - UserEventCats
       evidence: ev_b46938ec853d
     - origin: habbo-arcturus-daybreak

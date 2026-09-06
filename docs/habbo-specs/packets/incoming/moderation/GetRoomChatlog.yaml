@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:027104227f6a67a139efed240b3589133aad68cdebda3ad38bd35c9fe0797864"
+generated_digest: "sha256:04767efcebe348b22001cb64e0404436cf6b58804e9e324c209092d73a5c1e4d"
 generated:
   name: GetRoomChatlog
   direction: incoming
@@ -95,7 +95,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Moderator/GetRoomChatlogMessageParser.cs
     symbol: GetRoomChatlogMessageParser
     line: 7
-  conflicts:
-  - cf_8f2e06fb3d
 verified: {}
 manual: {}

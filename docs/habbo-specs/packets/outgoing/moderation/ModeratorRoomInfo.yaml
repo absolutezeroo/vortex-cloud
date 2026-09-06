@@ -10,94 +10,94 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e5e85f5b5a5f7c790add175a43aca6ff9703a88a5d547bb8fffa10fd124ced20"
+generated_digest: "sha256:afbab516fb7a76e997ac13f561c5a5e2a61d001a08d0608d525a224c6aafcebe"
 generated:
   name: ModeratorRoomInfo
   direction: outgoing
   domain: moderation
   structure_confidence: reference_observed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: room_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 1
-    name: unknown_1
+    name: user_count
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 2
-    name: unknown_2
+    name: owner_in_room
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 3
-    name: unknown_3
+    name: owner_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 4
-    name: unknown_4
+    name: owner_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 5
-    name: unknown_5
+    name: room_exists
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 6
-    name: unknown_6
+    name: room_name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 7
-    name: unknown_7
+    name: room_description
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 8
-    name: unknown_8
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   - index: 9
-    name: unknown_9
+    name: tag
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: reference_observed
     evidence:
     - ev_96b54b537d97
+    - ev_beb1a37b6225
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -126,6 +126,22 @@ generated:
     - int32
     - string
     evidence: ev_96b54b537d97
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 10
+    partial: false
+    types:
+    - int32
+    - int32
+    - boolean
+    - int32
+    - string
+    - boolean
+    - string
+    - string
+    - int32
+    - array
+    evidence: ev_beb1a37b6225
   evidence:
   - id: ev_4f329235aba0
     kind: client_parser
@@ -143,7 +159,14 @@ generated:
     symbol: ModeratorRoomInfoMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_936c3cd00b
+  - id: ev_beb1a37b6225
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Moderation/ModeratorRoomInfoEventMessageComposerSerializer.cs
+    symbol: ModeratorRoomInfoEventMessageComposerSerializer
+    line: 6
+  conflicts:
+  - cf_1e9203c4f5
 verified: {}
 manual: {}

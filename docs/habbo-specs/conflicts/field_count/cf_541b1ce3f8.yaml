@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:e5ccbddb73f9f3f7805dbe5325bb61fb62f23c897fd862b29a9eae359ca232ed"
+generated_digest: "sha256:39fd75b8c2d07ed8d3a5ff89f7aab87968f2ac9ed3281c79605c05471f553f77"
 generated:
   id: cf_541b1ce3f8
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: client_code
     claim: "2 fields: int32, int32, string, int32, int32, int32, boolean, boolean, boolean, boolean, int32, boolean, int32, string, int32"
     evidence: ev_2c27ac6d29f0
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "2 fields: int32, block"
+    evidence: ev_a4563df8eba7
   evidence:
   - id: ev_2c27ac6d29f0
     kind: client_parser
@@ -42,7 +46,17 @@ generated:
     symbol: FurniListAddOrUpdateParser
     line: 14
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a4563df8eba7
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListAddOrUpdateEventMessageComposerSerializer.cs
+    symbol: FurniListAddOrUpdateEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
-verified: {}
+verified:
+  resolution: "We agree with the client we target. WIN63 reads 2 fields and so do we; the disagreement is between the 2016 build (14) and WIN63 (2), which is a client-vs-client change, not our drift."
+  confidence: client_confirmed
+  evidence: "as3:WIN63-202607011411-782849652 field_count 2 == vortex field_count 2"
 manual: {}

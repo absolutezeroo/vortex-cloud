@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:7ebe7e0ed8dff751e11965f682bafa82cf2f578d4f1cf70e1561f913caabdeb5"
+generated_digest: "sha256:ab12e2b3d4dffaee85be609e6c856a73c597d4976eb292ffead27545c2ee0a93"
 generated:
   id: room.get_room_entry_data
   domain: room
@@ -457,7 +457,7 @@ generated:
       recipient: target_user
       recipient_confidence: inferred
       evidence: ev_873d3938edba
-    - packet: WiredPermissionsEvent
+    - packet: WiredPermissions
       recipient: target_user
       recipient_confidence: inferred
       evidence: ev_873d3938edba
@@ -657,7 +657,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 88
+    line: 90
   - id: ev_a2be027c2714
     kind: emulator_flow
     authority: vortex_emulator

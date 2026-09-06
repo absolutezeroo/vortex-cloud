@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2d483930e07399fea521efd9c18a2d4bea474f8a9a216251c790713ffb7b246e"
+generated_digest: "sha256:3400bd1df55d52c99153a516dd9fc187b4fd33d4346eb2947c7a16110b697053"
 generated:
   feature: room.place_wall_item_in_room
   scenarios:
@@ -414,7 +414,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FurniListRemoveEvent
+      - FurniListRemove
       - ItemAdd
       - ObjectAdd
       - Users

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:981520c11e14d7aa8d6f9d9ea2227a4c03a2d5b372a7d583d9bbbe91f5c5f4f6"
+generated_digest: "sha256:abdc327b19e3af4e48e0b4a256ded58cea53b70c38e7b7c8fc0cc26569308cb4"
 generated:
   id: uk_dcb542b552
-  subject: "nft.save_user_nft_wardrobe: who receives FigureUpdateEvent"
+  subject: "nft.save_user_nft_wardrobe: who receives FigureUpdate"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:415e632c7ace337a325af9d0dff5e72d051093e89d854d1316dc58d40a8ac3a5"
+generated_digest: "sha256:b2eb04bb1596e7ff0ee1629537e2fb074145ea215ae3e5cedae53d5c5919a448"
 generated:
   name: FurniListInvalidateEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -25,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_6e947dc1b58e
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_81db6deb16ab
   evidence:
   - id: ev_6e947dc1b58e
     kind: client_parser
@@ -40,12 +34,5 @@ generated:
     symbol: FurniListInvalidateEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_81db6deb16ab
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListInvalidateEventMessageComposerSerializer.cs
-    symbol: FurniListInvalidateEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

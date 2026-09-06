@@ -10,120 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c255542a86e856e1b33ed9023037a25d2c27846e438bc03837b3a140997b487d"
+generated_digest: "sha256:f581f95d3a53fafa29fda26ce0be8fc835dafaa77252a58f74bbf9ad62cd717e"
 generated:
   name: GiftWrappingConfigurationEvent
   direction: outgoing
   domain: catalog
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: is_wrapping_enabled
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 1
-    name: wrapping_price
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 2
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 3
-    name: stuff_types
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_1ec149c90c15
-    fields:
-    - index: 0
-      name: id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1ec149c90c15
-  - index: 4
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 5
-    name: box_types
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_1ec149c90c15
-    fields:
-    - index: 0
-      name: id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1ec149c90c15
-  - index: 6
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 7
-    name: ribbon_types
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_1ec149c90c15
-    fields:
-    - index: 0
-      name: id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1ec149c90c15
-  - index: 8
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_1ec149c90c15
-  - index: 9
-    name: default_stuff_types
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_1ec149c90c15
-    fields:
-    - index: 0
-      name: id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_1ec149c90c15
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -131,22 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_a2c9d5c042c8
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 10
-    partial: false
-    types:
-    - boolean
-    - int32
-    - int32
-    - array
-    - int32
-    - array
-    - int32
-    - array
-    - int32
-    - array
-    evidence: ev_1ec149c90c15
   evidence:
   - id: ev_a2c9d5c042c8
     kind: client_parser
@@ -156,12 +34,5 @@ generated:
     symbol: GiftWrappingConfigurationEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_1ec149c90c15
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Catalog/GiftWrappingConfigurationEventMessageComposerSerializer.cs
-    symbol: GiftWrappingConfigurationEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

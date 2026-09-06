@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ac87421e8043044da91e2a0a838685ae9a09eeca85b2e545883238324927659e"
+generated_digest: "sha256:2be63a57294a57c10b18211f7ffd1afc95f31a7161b94c9ae67771bb7fcb8848"
 generated:
   id: collectibles.mint_item
   domain: collectibles
@@ -152,7 +152,7 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_65f8c2fb0e45
-    - packet: FurniListRemoveEvent
+    - packet: FurniListRemove
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:67c6b9758dbcf0477be9e20d81ed42a1576f69df8cc22537323691f99660a144"
+generated_digest: "sha256:6c3e5dadb545f855f8e6538a60cd0d74980d879ca3989074c734c3a050cc4a8e"
 generated:
   name: EmailStatusResultEvent
   direction: outgoing
   domain: users
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: email
@@ -52,15 +52,6 @@ generated:
     - boolean
     - boolean
     evidence: ev_64e68faf8225
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 3
-    partial: false
-    types:
-    - string
-    - boolean
-    - boolean
-    evidence: ev_a0be35748e6e
   evidence:
   - id: ev_64e68faf8225
     kind: client_parser
@@ -70,14 +61,5 @@ generated:
     symbol: EmailStatusResultEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a0be35748e6e
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Users/EmailStatusResultEventMessageComposerSerializer.cs
-    symbol: EmailStatusResultEventMessageComposerSerializer
-    line: 6
-  conflicts:
-  - cf_529e2fd30b
 verified: {}
 manual: {}

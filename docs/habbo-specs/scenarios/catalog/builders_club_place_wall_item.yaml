@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4262c38a858aa950c9de7c5ca88e5575ebf5aadbbad1e2a475737983700a3258"
+generated_digest: "sha256:53889cf5c9bb38a16d57ac2728c34320c58556fddb5e57dd3f774c59524c86d3"
 generated:
   feature: catalog.builders_club_place_wall_item
   scenarios:
@@ -354,7 +354,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FurniListRemoveEvent
+      - FurniListRemove
       - ItemAdd
       - Users
       evidence: ev_07b1995558b2

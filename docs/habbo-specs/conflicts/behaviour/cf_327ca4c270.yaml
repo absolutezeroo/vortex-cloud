@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:187628db34c84ae315d715015effc100cf8363db1b17b199368aa6991fc4a32e"
+generated_digest: "sha256:1dc424aafa35f5cf500bb6591322ce6e8c6d0104e1951e424a439b19726616c5"
 generated:
   id: cf_327ca4c270
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_bc9212ef4356
   - origin: vortex
     authority: vortex_emulator
-    claim: TradingOpenEvent
+    claim: TradingOpen
     evidence: ev_85b465241faf
   evidence:
   - id: ev_bc9212ef4356

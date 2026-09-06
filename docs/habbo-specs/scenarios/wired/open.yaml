@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1cb3afb0243d1f62239911738861e97dfadbd848d9ce5bb1ce3bd448eec7ff9b"
+generated_digest: "sha256:ae0d9f6d7d7892b2213edeee6b1a1f1abec01aadfdead052e2fc84c41673349a"
 generated:
   feature: wired.open
   scenarios:
@@ -102,12 +102,12 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredFurniActionEvent
-      - WiredFurniAddonEvent
-      - WiredFurniConditionEvent
-      - WiredFurniSelectorEvent
-      - WiredFurniTriggerEvent
-      - WiredFurniVariableEvent
+      - WiredFurniAction
+      - WiredFurniAddon
+      - WiredFurniCondition
+      - WiredFurniSelector
+      - WiredFurniTrigger
+      - WiredFurniVariable
       - unresolved
       evidence: ev_0080929ab318
   evidence:

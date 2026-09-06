@@ -10,49 +10,49 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:0cd50d8780db8679916b5ad55da9c7be2a5d7adde026582a3931ea1cb3e3443f"
+generated_digest: "sha256:3cf46f1688eaa763e330c51a5fe3a9402c924c8ab5834385d4735b6a0bb3340a"
 generated:
   name: BotInventory
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_7dd2f7225ab1
+    - ev_f96b9945bfe4
   - index: 1
-    name: unknown_1
+    name: bot_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_7dd2f7225ab1
+    - ev_f96b9945bfe4
   - index: 2
-    name: unknown_2
+    name: name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_7dd2f7225ab1
+    - ev_f96b9945bfe4
   - index: 3
-    name: unknown_3
+    name: motto
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_7dd2f7225ab1
+    - ev_f96b9945bfe4
   - index: 4
     name: unknown_4
     type: string
@@ -63,14 +63,14 @@ generated:
     evidence:
     - ev_7dd2f7225ab1
   - index: 5
-    name: unknown_5
+    name: figure
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_7dd2f7225ab1
+    - ev_f96b9945bfe4
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -96,6 +96,14 @@ generated:
     - string
     - string
     evidence: ev_85bb9a090488
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - array
+    evidence: ev_f96b9945bfe4
   evidence:
   - id: ev_7dd2f7225ab1
     kind: client_parser
@@ -113,6 +121,13 @@ generated:
     symbol: BotInventoryMessageComposer
     line: 18
     note: third-party server implementation; evidence, not authority
+  - id: ev_f96b9945bfe4
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotInventoryEventMessageComposerSerializer.cs
+    symbol: BotInventoryEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_a8b057acc2
   unknowns:

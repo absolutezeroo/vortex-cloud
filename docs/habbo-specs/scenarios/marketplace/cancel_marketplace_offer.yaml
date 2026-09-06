@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dc0a0ebf549cc0a56235d52c55dffd7d5a6b57de2c34229b80e41e05ee8bd94e"
+generated_digest: "sha256:683d4cd2fe34372ecdbf32076e81fa7343cc28cab50acc13ac95c70e405803cb"
 generated:
   feature: marketplace.cancel_marketplace_offer
   scenarios:
@@ -122,7 +122,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - MarketplaceCancelOfferResultEvent
+      - MarketplaceCancelOfferResult
       evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

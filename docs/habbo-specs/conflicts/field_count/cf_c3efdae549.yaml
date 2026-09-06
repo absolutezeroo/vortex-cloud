@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:0b7237fd7bb22b170a796363629178b031dcaab71bbba5ae92332fe9457eaf0f"
+generated_digest: "sha256:4fb03bcdfa0fef6a3bce950330c944b294fb8bb8409f2670615126e64982a0c3"
 generated:
   id: cf_c3efdae549
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "17 fields: int32, int32, int32, int32, int32, string, string, int32, int32, int32, string, string, int32, int32, int32, string, string"
     evidence: ev_1c57eefaa21e
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, int32, array"
+    evidence: ev_d6d283ec61de
   evidence:
   - id: ev_e0e763d32d46
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: RelationshipStatusInfoMessageComposer
     line: 60
     note: third-party server implementation; evidence, not authority
+  - id: ev_d6d283ec61de
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Users/RelationshipStatusInfoEventMessageComposerSerializer.cs
+    symbol: RelationshipStatusInfoEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

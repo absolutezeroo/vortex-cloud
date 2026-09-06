@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e3418ca89b24139ca280a0953c15ffd95b066ce2fb105368e922bda4c9e895d1"
+generated_digest: "sha256:762a8c5df0e6144cd6942c67925e875c38c2dd6025be9075110b77ab8d27b8cc"
 generated:
   feature: room.get_room_settings
   scenarios:
@@ -102,7 +102,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RoomSettingsDataEvent
+      - RoomSettingsData
       evidence: ev_2f074d4ea877
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

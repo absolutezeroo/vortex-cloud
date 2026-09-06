@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:565a1403d6faf4cfba199981ed76979624e6fea198cc77294f84986db925e38f"
+generated_digest: "sha256:a46e0482344cf9a587d94f3f2cf37720d1fe3da0747ebba08494cc4ae0dc1d50"
 generated:
   name: GetRoomSettings
   direction: incoming
@@ -88,7 +88,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/RoomSettings/GetRoomSettingsMessageParser.cs
     symbol: GetRoomSettingsMessageParser
     line: 7
-  conflicts:
-  - cf_a53bc597e6
 verified: {}
 manual: {}

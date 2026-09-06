@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:98a73f4e0f84b4a006facf03e0f2c6c25ec648ae60db233543e83c30422ed72a"
+generated_digest: "sha256:5e78506bc533f344d8cf9039c9d906867be35bf178671059b00963a880490550"
 generated:
   name: FlatControllers
   direction: outgoing
   domain: room
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: room_id
@@ -26,31 +26,31 @@ generated:
     evidence:
     - ev_27ae4d371f1b
   - index: 1
-    name: unknown_1
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_27ae4d371f1b
+    - ev_dc65c292f584
   - index: 2
-    name: unknown_2
+    name: player_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_27ae4d371f1b
+    - ev_dc65c292f584
   - index: 3
-    name: unknown_3
+    name: name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_27ae4d371f1b
+    - ev_dc65c292f584
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -72,6 +72,15 @@ generated:
     - int32
     - string
     evidence: ev_ad9d9fc89389
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - array
+    evidence: ev_dc65c292f584
   evidence:
   - id: ev_27ae4d371f1b
     kind: client_parser
@@ -89,9 +98,14 @@ generated:
     symbol: FlatControllersMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  - id: ev_dc65c292f584
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/FlatControllersEventMessageComposerSerializer.cs
+    symbol: FlatControllersEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_265f4d0987
-  unknowns:
-  - uk_c20aae9e34
 verified: {}
 manual: {}

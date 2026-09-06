@@ -10,35 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c273e375d3c8a2f91cce822b12dc937eda9973f15de9673055d4897878c55baa"
+generated_digest: "sha256:ac9106fc709b4c13c4c1294bbbe95afb690cc5619e8605c41992532998c413e7"
 generated:
   name: PetBreedingEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: state
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dd1d390ceda2
-  - index: 1
-    name: own_pet_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dd1d390ceda2
-  - index: 2
-    name: other_pet_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dd1d390ceda2
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -46,15 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_e0eae0105f48
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 3
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    evidence: ev_dd1d390ceda2
   evidence:
   - id: ev_e0eae0105f48
     kind: client_parser
@@ -64,12 +34,5 @@ generated:
     symbol: PetBreedingEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dd1d390ceda2
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/PetBreedingEventMessageComposerSerializer.cs
-    symbol: PetBreedingEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

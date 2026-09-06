@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:62fbf193afe1ec4b730b483248849a4da81cf4fe781fe5833a3875a826d7487c"
+generated_digest: "sha256:832ceb44a3208e3e6ba72e65e21d8eb80737ec4da2ef7b23c2f2ceee29c123c0"
 generated:
   id: inventory.get_pet_inventory
   domain: inventory
@@ -41,7 +41,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: PetInventoryEvent
+    - packet: PetInventory
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_fdfd185d7468
@@ -71,8 +71,6 @@ generated:
   scenarios:
   - inventory.get_pet_inventory.guard_0
   - inventory.get_pet_inventory.success
-  conflicts:
-  - cf_101d5cd1f2
   unknowns:
   - uk_7cbcaeeb8d
 verified: {}

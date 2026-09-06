@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:39e196dca677266aa50236313ac360512b636bab89cb8c3c009214c16fd2b1c9"
+generated_digest: "sha256:0a8ccc665a102fdf13d570aae8060f29b7fa4f54a39fbe2a9b9c9c0ff91dd5fd"
 generated:
   id: cf_f644964686
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_940f8a9b5ec1
   - origin: vortex
     authority: vortex_emulator
-    claim: UserEventCats then CanCreateRoomEvent
+    claim: UserEventCats then CanCreateRoom
     evidence: ev_ddc2f0edc348
   evidence:
   - id: ev_940f8a9b5ec1

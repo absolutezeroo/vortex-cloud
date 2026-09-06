@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:777beba86a01174b3899f33f9774e12da7523f93a00833cdc972009f4b58029e"
+generated_digest: "sha256:bd0694d2fa1a8b3bac0dfecb3f304c9c9454c2140bf55a8a60d454dd532e8195"
 generated:
   id: marketplace.cancel_marketplace_offer
   domain: marketplace
@@ -61,7 +61,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: MarketplaceCancelOfferResultEvent
+    - packet: MarketplaceCancelOfferResult
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_d5cd2720508e

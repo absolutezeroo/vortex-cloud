@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:b96cbf5798d387b36b0e4b188fadb19b17bc69c613ad378166b671d0b6923cf0"
+generated_digest: "sha256:e895f6269d79c292ddbaacbb7eb1e432287d25ccb7f387ce7eb93b59c69b3875"
 generated:
   revision: nitro
   origin: nitro
@@ -64,7 +64,7 @@ generated:
     CallForHelpFromPhoto: 3045
     CallForHelpFromSelfie: 3693
     CanCreateRoom: 3584
-    CancelEvent: 3860
+    Cancel: 3860
     CancelMarketplaceOffer: 2656
     CancelPetBreeding: 447
     CancelQuest: 2391
@@ -118,7 +118,7 @@ generated:
     DiceOff: 1558
     Disconnect: 1863
     DropCarryItem: 3401
-    EditEvent: 289
+    Edit: 289
     EnterOneWayDoor: 3293
     EventLog: 849
     ExtendRentOrBuyoutFurni: 3724

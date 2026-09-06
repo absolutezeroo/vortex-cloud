@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f96b784c17c70c106059f2e5d8fad88f5e1a7e8cd88c66474a00a294996fbae3"
+generated_digest: "sha256:75818579632c5e73246f22598bc1a719c29e4651cba787cc918277931384baa1"
 generated:
   id: room.pickup_item_in_room
   domain: room
@@ -289,7 +289,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FurniListAddOrUpdateEvent
+    - packet: FurniListAddOrUpdate
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09
@@ -427,7 +427,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_b2d21836a70a
     kind: emulator_flow
     authority: vortex_emulator

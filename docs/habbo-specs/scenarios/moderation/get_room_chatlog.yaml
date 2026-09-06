@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e2999b01e023605c28d1723f90a68184315da8e1fbc930e7a2c0e7746978fb8e"
+generated_digest: "sha256:61f71642e2d1211ffdb9d5ff60924ba912ba332006623fc18312b2c0da848792"
 generated:
   feature: moderation.get_room_chatlog
   scenarios:
@@ -102,7 +102,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - RoomChatlogEvent
+      - RoomChatlog
       evidence: ev_0b68e4953420
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

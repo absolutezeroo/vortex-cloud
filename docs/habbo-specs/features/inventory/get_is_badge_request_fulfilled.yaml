@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:19ad91085dffb96c94161d45f0d46582b7ca70e4b3629097e18cf224c986c809"
+generated_digest: "sha256:0fb873329dfc80f608679e9d98846c3546026d461fe539a455f7cb48222e672b"
 generated:
   id: inventory.get_is_badge_request_fulfilled
   domain: inventory
@@ -36,7 +36,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: IsBadgeRequestFulfilledEvent
+    - packet: IsBadgeRequestFulfilled
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_7f08fc156914

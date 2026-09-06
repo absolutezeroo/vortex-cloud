@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:dc1598f4c34ac767f55edfe2c46ddf04a3e6df0c181d373db085963cabc3740d"
+generated_digest: "sha256:a248ab535019890dc94b1f271e2d51b1927954186916871b5a58c1a2e40b60ca"
 generated:
   feature: room.assign_rights
   scenarios:
@@ -191,8 +191,8 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - FlatControllersEvent
-      - WiredPermissionsEvent
+      - FlatControllers
+      - WiredPermissions
       - YouAreController
       - YouAreNotController
       - YouAreOwner

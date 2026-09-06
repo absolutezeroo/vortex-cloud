@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59a6305ed5d97635e744683eb99b456f36d4c04d4bb48cc7c9f40b452c181db3"
+generated_digest: "sha256:7ea15c76e8a8b043cf3b6c04b5690631b518c188e7f1a73635b74360d139a422"
 generated:
   name: BadgesEvent
   direction: outgoing
   domain: inventory
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: total_fragments
@@ -69,16 +69,6 @@ generated:
     - int32
     - string
     evidence: ev_c0b9dcee053e
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - int32
-    - int32
-    - array
-    evidence: ev_3dfe79e87add
   evidence:
   - id: ev_c0b9dcee053e
     kind: client_parser
@@ -88,14 +78,5 @@ generated:
     symbol: BadgesEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_3dfe79e87add
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgesEventMessageComposerSerializer.cs
-    symbol: BadgesEventMessageComposerSerializer
-    line: 7
-  conflicts:
-  - cf_18cc6583f9
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ce36cc2bfb917f3f9cae4b4f6cd0b159319481409961de6a595a408343b95e64"
+generated_digest: "sha256:f5eef72913d4a66bf90240ec14642c5c6b0fddbc84bcbdc8bd755b85b90f321a"
 generated:
   id: users.get_relationship_status_info
   domain: users
@@ -45,7 +45,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RelationshipStatusInfoEvent
+    - packet: RelationshipStatusInfo
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_bf22cc5b6280

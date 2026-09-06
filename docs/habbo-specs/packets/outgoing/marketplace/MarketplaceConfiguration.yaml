@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:594f71d4baf5f5c15ba479750855acdaa6a90f1d0a934a7b5be9cf90d3511b68"
+generated_digest: "sha256:04a5696c00249adc3753cd9036d946758b344cf8c1f0284da446703003fad606"
 generated:
   name: MarketplaceConfiguration
   direction: outgoing
   domain: marketplace
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: unknown_0
@@ -128,6 +128,23 @@ generated:
     - int32
     - int32
     evidence: ev_912089d66928
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 11
+    partial: false
+    types:
+    - boolean
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_2acb356b960c
   evidence:
   - id: ev_21b81594e0dd
     kind: client_parser
@@ -153,6 +170,13 @@ generated:
     symbol: MarketplaceConfigurationMessageComposer
     line: 9
     note: third-party server implementation; evidence, not authority
+  - id: ev_2acb356b960c
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketplaceConfigurationEventMessageComposerSerializer.cs
+    symbol: MarketplaceConfigurationEventMessageComposerSerializer
+    line: 6
   conflicts:
   - cf_dfd8ef8cfe
   unknowns:

@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59e70a0d2b09ae3d646e7cc3c57b5eefc813df423f135e6a99015d0050112b17"
+generated_digest: "sha256:fff78c30cc399e35ffc55985057d07b1dc267b20804cb3e6e27aa56e70cb2756"
 generated:
   name: TradingNotOpen
   direction: outgoing
   domain: inventory
-  structure_confidence: unknown
-  mapped_in_vortex: false
+  structure_confidence: implementation_observed
+  mapped_in_vortex: true
   fields: []
   layouts_by_source:
   - origin: "as3:PRODUCTION-201601012205-226667486"
@@ -25,6 +25,12 @@ generated:
     partial: true
     types: []
     evidence: ev_1375ac7938b2
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_a8a74571f4bd
   evidence:
   - id: ev_1375ac7938b2
     kind: client_parser
@@ -34,5 +40,12 @@ generated:
     symbol: TradingNotOpenParser
     line: 15
     note: official client build PRODUCTION-201601012205-226667486
+  - id: ev_a8a74571f4bd
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingNotOpenEventMessageComposerSerializer.cs
+    symbol: TradingNotOpenEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

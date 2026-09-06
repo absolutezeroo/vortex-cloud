@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:06b30e41db01f61b02835acf772846f3a021d8aa4ceffb0020c3eb4ec1915eec"
+generated_digest: "sha256:c66bc4b021772b3b54ba04607b00aa27c4eaba56b99d817c3ef7ecabdeaa2cd3"
 generated:
   id: catalog.get_all
   domain: catalog
@@ -79,7 +79,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: ClubGiftInfoEvent
+    - packet: ClubGiftInfo
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_1c38d76a1be8

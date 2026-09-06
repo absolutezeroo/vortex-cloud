@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4e5de6e4d33e109cd5a723bffa152ced9ea1b1032f03ba720b1ecb3c7502e4a3"
+generated_digest: "sha256:e39da7ffeaa3a34dc9f7ee63618850b2859ac7ce90005e7fed7fcb81b5954d43"
 generated:
   feature: avatar.save_wardrobe_outfit
   scenarios:
@@ -38,16 +38,16 @@ generated:
       emits: []
       evidence: ev_3ccc9833c403
   - scenario: avatar.save_wardrobe_outfit.guard_1
-    title: "save wardrobe outfit: the guard 'slotId < 1 || slotId > MaxWardrobeSlotId' holds"
+    title: "save wardrobe outfit: the guard 'slotId < 1 || slotId > MaxWardrobeSlotId || string.IsNull...' holds"
     given:
-      guard: slotId < 1 || slotId > MaxWardrobeSlotId
+      guard: slotId < 1 || slotId > MaxWardrobeSlotId || string.IsNullOrWhiteSpace(figure) || figure.Length > 255 || gender.Length > 8
       guard_holds: "true"
     when:
       packet: SaveWardrobeOutfit
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of SaveWardrobeOutfit sent while 'slotId < 1 || slotId > MaxWardrobeSlotId' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of SaveWardrobeOutfit sent while 'slotId < 1 || slotId > MaxWardrobeSlotId || string.IsNullOrWhiteSpace(figure) || figure.Length > 255 || gender.Length > 8' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -134,6 +134,6 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.Wardrobe.cs
     symbol: PlayerGrain
-    line: 44
+    line: 46
 verified: {}
 manual: {}

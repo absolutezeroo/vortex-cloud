@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:56a637946eaf79ead4951535547f5ef1c93c474d470a61f05a88e0227b413551"
+generated_digest: "sha256:85c487292fdeab47632759f01f0551dc1c21a51ee7eb059d57206a59ecf28ffc"
 generated:
   name: SelectInitialRoom
   direction: outgoing
   domain: nux
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: status
@@ -41,6 +41,14 @@ generated:
     - short
     - int32
     evidence: ev_a20d5aa1c3a1
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 2
+    partial: false
+    types:
+    - short
+    - int32
+    evidence: ev_06926dd4d0fd
   evidence:
   - id: ev_a20d5aa1c3a1
     kind: client_parser
@@ -50,5 +58,12 @@ generated:
     symbol: _SafeCls_4315
     line: 24
     note: official client build WIN63-202607011411-782849652
+  - id: ev_06926dd4d0fd
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Nux/SelectInitialRoomEventMessageComposerSerializer.cs
+    symbol: SelectInitialRoomEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

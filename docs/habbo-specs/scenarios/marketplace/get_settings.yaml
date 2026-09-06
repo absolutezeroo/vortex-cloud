@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d81ca239870da343c1439657c98ceab795dc6a52694f836f1b537dd8468e6e61"
+generated_digest: "sha256:c96834cb1cfe3765ba872229a08f6c087d3b0cebafdc6652f53f76b3582c996f"
 generated:
   feature: marketplace.get_settings
   scenarios:
@@ -30,7 +30,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - MarketplaceConfigurationEvent
+      - MarketplaceConfiguration
       evidence: ev_3269baae7de7
   evidence:
   - id: ev_3269baae7de7

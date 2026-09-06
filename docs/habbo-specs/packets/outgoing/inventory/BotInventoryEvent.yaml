@@ -10,74 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c879cdc17b351bdb448135d38c293802ba075136c1e2829e6b9b8e6238596178"
+generated_digest: "sha256:e6d908efc2c6ee8cf1ab04fea9b352edaf59f54fd148a3be249973b26ac773d5"
 generated:
   name: BotInventoryEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: length
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_f96b9945bfe4
-  - index: 1
-    name: bots
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_f96b9945bfe4
-    fields:
-    - index: 0
-      name: bot_serialization
-      type: block
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_f96b9945bfe4
-      fields:
-      - index: 0
-        name: bot_id
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_f96b9945bfe4
-      - index: 1
-        name: name
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_f96b9945bfe4
-      - index: 2
-        name: motto
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_f96b9945bfe4
-      - index: 3
-        name: unknown_3
-        type: string
-        name_is_placeholder: true
-        name_confidence: unknown
-        type_confidence: implementation_observed
-        evidence:
-        - ev_f96b9945bfe4
-      - index: 4
-        name: figure
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_f96b9945bfe4
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -85,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_e613e20ad33b
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - array
-    evidence: ev_f96b9945bfe4
   evidence:
   - id: ev_e613e20ad33b
     kind: client_parser
@@ -102,12 +34,5 @@ generated:
     symbol: BotInventoryEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_f96b9945bfe4
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Bots/BotInventoryEventMessageComposerSerializer.cs
-    symbol: BotInventoryEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

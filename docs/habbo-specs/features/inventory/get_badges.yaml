@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3c3e21fdfa63dfe0f9189e4ee9f01a1ed972f1095a58f0b07e7250711daccd3d"
+generated_digest: "sha256:748286aacdd8fef3bb0f4c5f6104c9dabed366660e4e1ab794d446b0bee4db5a"
 generated:
   id: inventory.get_badges
   domain: inventory
@@ -37,7 +37,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: BadgesEvent
+    - packet: Badges
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_6d72f2969639

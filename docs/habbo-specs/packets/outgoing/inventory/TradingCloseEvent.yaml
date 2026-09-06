@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b5d9082d0145c18ee7241ab0041fc3397096743f30842b67c5d55f19b99735d8"
+generated_digest: "sha256:86d3e10c849906014cbb978f0141f17f77ea98a79ddd2150f112badd3ad683b1"
 generated:
   name: TradingCloseEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_4f03887a96e9
-  - index: 1
-    name: reason
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_4f03887a96e9
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_9ca02cb4d0fc
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - int32
-    evidence: ev_4f03887a96e9
   evidence:
   - id: ev_9ca02cb4d0fc
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: TradingCloseEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_4f03887a96e9
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingCloseEventMessageComposerSerializer.cs
-    symbol: TradingCloseEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

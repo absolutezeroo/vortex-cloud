@@ -10,37 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:b06b9a61bfa72f7a5b61f52aa90f7b21f275f95efec850914c5a0f179a51e7fd"
+generated_digest: "sha256:3219b360827196d431d80588826ad30569d7df5e6c864e75fe279b936a87ed32"
 generated:
   name: MOTDNotificationEvent
   direction: outgoing
   domain: notifications
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: count
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_0606eafb0c8f
-  - index: 1
-    name: messages
-    type: array
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    note: "source comment: repeated block; the element count is the int written immediately before it"
-    evidence:
-    - ev_0606eafb0c8f
-    fields:
-    - index: 0
-      name: motd
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_0606eafb0c8f
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -48,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_e23b2c7922ec
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - array
-    evidence: ev_0606eafb0c8f
   evidence:
   - id: ev_e23b2c7922ec
     kind: client_parser
@@ -65,12 +34,5 @@ generated:
     symbol: MOTDNotificationEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_0606eafb0c8f
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Notifications/MOTDNotificationEventMessageComposerSerializer.cs
-    symbol: MOTDNotificationEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

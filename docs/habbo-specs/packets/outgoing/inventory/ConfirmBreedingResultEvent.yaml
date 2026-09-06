@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:057756e72e3fb81d1a233aa0b1fc4405d04d9fe7dbd9bb92185f0e8d0990e552"
+generated_digest: "sha256:0dc017fbcc0085cffcd0f6aea2f6edc2176398609ff25576bab037deeada81b0"
 generated:
   name: ConfirmBreedingResultEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: breeding_nest_stuff_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_22ac3882a448
-  - index: 1
-    name: result
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_22ac3882a448
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_6d50d4312a45
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - int32
-    evidence: ev_22ac3882a448
   evidence:
   - id: ev_6d50d4312a45
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: ConfirmBreedingResultEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_22ac3882a448
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/ConfirmBreedingResultEventMessageComposerSerializer.cs
-    symbol: ConfirmBreedingResultEventMessageComposerSerializer
-    line: 7
 verified: {}
 manual: {}

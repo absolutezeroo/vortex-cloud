@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:2d1593ccd229ce362b09a9581c80dcfe084b6a62fa1bec84d7bdf9ffae1bc1c1"
+generated_digest: "sha256:71a635eb94b7e6cc615148cd5d9ecf6d2b974d392d31cb7ebc062aa1b837d3a1"
 generated:
   id: cf_caf06be921
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "4 fields: int32, int32, int32, string"
     evidence: ev_690bef591cac
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, int32, array"
+    evidence: ev_097d8ce1ff06
   evidence:
   - id: ev_55118e4903db
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: BannedUsersFromRoomMessageComposer
     line: 22
     note: third-party server implementation; evidence, not authority
+  - id: ev_097d8ce1ff06
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/BannedUsersFromRoomEventMessageComposerSerializer.cs
+    symbol: BannedUsersFromRoomEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:af7bb85fac992cdd60b675ad4201813eefb3208479055e4d35cd70ecc9752481"
+generated_digest: "sha256:2b4508647dbc868ff4e1e91e3f36d9ccff87bda148188c7687c5b67bd8e15c68"
 generated:
   id: uk_42069960b6
-  subject: "marketplace.make_offer: who receives FurniListRemoveEvent"
+  subject: "marketplace.make_offer: who receives FurniListRemove"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

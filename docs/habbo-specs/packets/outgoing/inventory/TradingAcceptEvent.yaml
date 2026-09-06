@@ -10,29 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4e07bcca5c01b7b99fb166e4a9e14607e84308dcf6e59096a322fef9ddbb1ade"
+generated_digest: "sha256:d77832f563ada5ece8ce206d9b94762f5a64db35cab0bcfb4f86bb868829e7ff"
 generated:
   name: TradingAcceptEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: user_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_d316e6a74fbf
-  - index: 1
-    name: unknown_1
-    type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: implementation_observed
-    evidence:
-    - ev_d316e6a74fbf
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -40,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_0616c36bd197
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - int32
-    evidence: ev_d316e6a74fbf
   evidence:
   - id: ev_0616c36bd197
     kind: client_parser
@@ -57,14 +34,5 @@ generated:
     symbol: TradingAcceptEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_d316e6a74fbf
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Trading/TradingAcceptEventMessageComposerSerializer.cs
-    symbol: TradingAcceptEventMessageComposerSerializer
-    line: 6
-  unknowns:
-  - uk_7ef6f2e6f9
 verified: {}
 manual: {}

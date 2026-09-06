@@ -10,21 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1e4a73483e000d3087b667f9df03a55acfbc0c2850620d7884507041dda2412b"
+generated_digest: "sha256:6c9d0b3d157b800bc8d094697ee3aab72f04a6a9535759869c92f86160b0170b"
 generated:
   name: ClubGiftNotificationEvent
   direction: outgoing
   domain: notifications
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: gifts_available
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_9437fbff48fa
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -32,13 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_01f058aae0f3
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - int32
-    evidence: ev_9437fbff48fa
   evidence:
   - id: ev_01f058aae0f3
     kind: client_parser
@@ -48,12 +34,5 @@ generated:
     symbol: ClubGiftNotificationEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9437fbff48fa
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Notifications/ClubGiftNotificationEventMessageComposerSerializer.cs
-    symbol: ClubGiftNotificationEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

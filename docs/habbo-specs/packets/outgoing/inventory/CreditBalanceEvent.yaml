@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:098e8cf4e4798fd57d8d1c55db67159589e65f92d10ae3335b89dac7cebcea7a"
+generated_digest: "sha256:22eb6ee104465b1f9e4cf1538b482896c575e4b642c32e1713b1e1ecbefd23f6"
 generated:
   name: CreditBalanceEvent
   direction: outgoing
   domain: inventory
   structure_confidence: multi_reference_confirmed
-  mapped_in_vortex: true
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: balance
@@ -34,13 +34,6 @@ generated:
     types:
     - string
     evidence: ev_6e88aec19bf9
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - string
-    evidence: ev_9ad84df20e93
   evidence:
   - id: ev_6e88aec19bf9
     kind: client_parser
@@ -50,12 +43,5 @@ generated:
     symbol: CreditBalanceEventMessage
     line: 9
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_9ad84df20e93
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Purse/CreditBalanceEventMessageComposerSerializer.cs
-    symbol: CreditBalanceEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

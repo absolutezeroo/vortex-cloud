@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3417eae94e7522b3ea9f7a12a5f77636e0374043491866b46a20c769b3ed7b4f"
+generated_digest: "sha256:1361c071857cb5069d3c563e953d01b5a51a5fb5a071f63c6e8128b04e49efcf"
 generated:
   id: navigator.get_event_categories
   domain: navigator
@@ -49,7 +49,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: CanCreateRoomEvent
+    - packet: CanCreateRoom
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_ccbd19c08c4a

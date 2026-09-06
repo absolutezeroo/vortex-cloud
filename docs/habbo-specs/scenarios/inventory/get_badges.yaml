@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:957c87aa61850b01aa3a73d3cd48378f2d2898107c922c2d1b7af4abfa79d686"
+generated_digest: "sha256:1a07957e4bce92ba6ed8ed1f14f84f23e7f9d69dc783a8b626f3e3a2cf21b941"
 generated:
   feature: inventory.get_badges
   scenarios:
@@ -54,7 +54,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - BadgesEvent
+      - Badges
       - HabboUserBadges
       evidence: ev_6d72f2969639
     - origin: habbo-arcturus-daybreak

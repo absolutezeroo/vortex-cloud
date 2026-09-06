@@ -10,42 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:aee946915048e2b40a939b8808d1221f38cc8f6338a5d6b06c143ff51ce0afbc"
+generated_digest: "sha256:3b8ca2568d371a69c19aa5fb98b435e8d7dd6dbad0f32b2e4852a01c91540bf2"
 generated:
   name: BadgeReceivedEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: badge_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dc0879ff06bd
-  - index: 1
-    name: badge_code
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dc0879ff06bd
-  - index: 2
-    name: owner_count
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dc0879ff06bd
-  - index: 3
-    name: badge_rarity_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_dc0879ff06bd
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -53,16 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_63b6c335f239
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 4
-    partial: false
-    types:
-    - int32
-    - string
-    - int32
-    - int32
-    evidence: ev_dc0879ff06bd
   evidence:
   - id: ev_63b6c335f239
     kind: client_parser
@@ -72,12 +34,5 @@ generated:
     symbol: BadgeReceivedEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_dc0879ff06bd
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/BadgeReceivedEventMessageComposerSerializer.cs
-    symbol: BadgeReceivedEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

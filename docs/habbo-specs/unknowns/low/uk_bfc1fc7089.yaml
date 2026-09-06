@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7aac0a526336835d2aac5a951de7830a6d837030bfa9f2f797a8945f77d25573"
+generated_digest: "sha256:1c06a37d3c99fd0bdcc0cd60c0d58307b3b4dbc311f592ca426f5537321e7399"
 generated:
   id: uk_bfc1fc7089
   subject: "outgoing/PetAddedToInventory: unnamed fields"
   severity: low
-  question: Fields 0, 1, 2, 3, 4 carry no name from any source. What are they?
+  question: Fields 1 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: PetAddedToInventory
   known_evidence:
@@ -35,5 +35,12 @@ generated:
     symbol: PetAddedToInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_0f2926bb1df6
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/PetAddedToInventoryEventMessageComposerSerializer.cs
+    symbol: PetAddedToInventoryEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1340c00545fb0e457ddab03a6c462effdc84408118afd065d5081516f0b928ad"
+generated_digest: "sha256:34e062f476895f723ed9cce570fb0ae2b612dacb24837345e0b20a662c6205be"
 generated:
   id: uk_2fb1ae8603
   subject: "outgoing/RelationshipStatusInfo: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: RelationshipStatusInfoMessageComposer
     line: 60
     note: third-party server implementation; evidence, not authority
+  - id: ev_d6d283ec61de
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Users/RelationshipStatusInfoEventMessageComposerSerializer.cs
+    symbol: RelationshipStatusInfoEventMessageComposerSerializer
+    line: 7
 verified: {}
 manual: {}

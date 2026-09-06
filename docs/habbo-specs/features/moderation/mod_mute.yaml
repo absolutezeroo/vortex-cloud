@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4c0a4878f3656c10ce4e7c2507daddbd1fea41fe0a90052a60715bd13fa1a531"
+generated_digest: "sha256:f145a7f8c528bd6d981ccdedf1f997fe80bd21253b191ca7f53626fd17b21bb9"
 generated:
   id: moderation.mod_mute
   domain: moderation
@@ -137,7 +137,7 @@ generated:
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_dd4e77d6bf65
-    - packet: ModeratorCautionEvent
+    - packet: ModeratorCaution
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_dd4e77d6bf65

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ac312e2eed2ddd57befe698e6fd7c4ff9adf1d5c2628e68809f35d8b5c9cad77"
+generated_digest: "sha256:4d88205f100b8a190722d5d1d239e7710aae52affbf0b33b09003e70649b8f2c"
 generated:
   id: room.pass_carry_item
   domain: room
@@ -98,7 +98,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 217
+    line: 219
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator

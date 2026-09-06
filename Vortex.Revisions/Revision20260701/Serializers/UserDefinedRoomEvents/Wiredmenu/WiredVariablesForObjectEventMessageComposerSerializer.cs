@@ -13,10 +13,18 @@ internal class WiredVariablesForObjectEventMessageComposerSerializer(int header)
         WiredVariablesForObjectEventMessageComposer message
     )
     {
-        packet
-            .WriteInteger((int)message.TargetType)
-            .WriteInteger(message.TargetId)
-            .WriteInteger(message.VariableValues.Count);
+        packet.WriteInteger((int)message.TargetType);
+
+        // The client reads the id only for Furni and User (WiredObjectInspectionData: `type == 0`
+        // and `type == 1`); for Global (-10) and the rest it reads none. TargetType is echoed
+        // straight back from the client's own request, so writing it unconditionally shifted every
+        // variable in the list whenever the menu asked about globals.
+        if (message.TargetType is WiredVariableTargetType.Furni or WiredVariableTargetType.User)
+        {
+            packet.WriteInteger(message.TargetId);
+        }
+
+        packet.WriteInteger(message.VariableValues.Count);
 
         foreach ((WiredVariableId id, WiredVariableValue value) in message.VariableValues)
         {

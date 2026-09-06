@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1d5cf0bd082213aea9d3146da226b653fba14d339829cfc8f42bfb82eea64dc6"
+generated_digest: "sha256:c2eeafdf615718fd8b58f62be30c6b245154d8795278ddcde30b8701af0d99f9"
 generated:
   name: IsBadgeRequestFulfilledEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: request_code
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_eb7bb7b5a9b2
-  - index: 1
-    name: fulfilled
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_eb7bb7b5a9b2
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_ccbea23bce6b
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - string
-    - boolean
-    evidence: ev_eb7bb7b5a9b2
   evidence:
   - id: ev_ccbea23bce6b
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: IsBadgeRequestFulfilledEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_eb7bb7b5a9b2
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Badges/IsBadgeRequestFulfilledEventMessageComposerSerializer.cs
-    symbol: IsBadgeRequestFulfilledEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

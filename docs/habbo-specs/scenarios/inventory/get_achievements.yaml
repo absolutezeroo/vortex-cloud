@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:90b67686d6df9f67526a117529986191fe572e6a5e20c4c761dba758c9f27e27"
+generated_digest: "sha256:3b1f20d00fd91a7dbdd5ad6e3da593c1d13bdc5044ffe3e52d59e3f94265c8da"
 generated:
   feature: inventory.get_achievements
   scenarios:
@@ -78,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - AchievementsEvent
+      - Achievements
       evidence: ev_6a825bb2f759
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c11865955bf30aa1811ab72f5ffe32de8b4191237af4a70b7b6a50d27af338fa"
+generated_digest: "sha256:747543a6487fa6b216bf043d1e695c77660023af32f1ec8e7d8f09ea40ddb6e6"
 generated:
   id: marketplace.make_offer
   domain: marketplace
@@ -133,7 +133,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: FurniListRemoveEvent
+    - packet: FurniListRemove
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_d720d639bd09

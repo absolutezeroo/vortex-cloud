@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f34907f993d552c5c41f98e1e020adf2b8f2a0afc0a6a91e854d4384d78e07ae"
+generated_digest: "sha256:a6be934744091ccc8bb55a5d2354c18cd41b560982524eb431d18a857a4cc6f7"
 generated:
   id: uk_437dfc0d74
   subject: "outgoing/AccountPreferences: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: AccountPreferencesMessageComposer
     line: 17
     note: third-party server implementation; evidence, not authority
+  - id: ev_240ba694019e
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Preferences/AccountPreferencesEventMessageComposerSerializer.cs
+    symbol: AccountPreferencesEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

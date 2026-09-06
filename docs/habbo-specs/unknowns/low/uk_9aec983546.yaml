@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8bade9bd6e37a113038ea16b0ecaf617ba6b9cf80cab4ba07686bb0bf10f382c"
+generated_digest: "sha256:2d8796270b4d563756d57e06df1a9013b4375611b24c3303c1e25ffd41a8edb6"
 generated:
   id: uk_9aec983546
   subject: "outgoing/FurniList: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: FurniListMessageComposer
     line: 31
     note: third-party server implementation; evidence, not authority
+  - id: ev_f7857a349d6b
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Furni/FurniListEventMessageComposerSerializer.cs
+    symbol: FurniListEventMessageComposerSerializer
+    line: 8
 verified: {}
 manual: {}

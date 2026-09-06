@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:c1b1587293797f6f236199e54f2d61d4822753cf1a05bf33a174982a4df6acc5"
+generated_digest: "sha256:1fd8d8d263b626a459e518facc5c1867e29ee137eb03d7319ae4960c1fd535b4"
 generated:
   id: cf_9aa55d6b1e
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_d72f1911f56e
   - origin: vortex
     authority: vortex_emulator
-    claim: ClubGiftSelectedEvent then BadgeReceivedEvent
+    claim: ClubGiftSelected then BadgeReceived
     evidence: ev_8dde45c38f16
   evidence:
   - id: ev_d72f1911f56e

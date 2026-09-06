@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4386d1ff3d42ac02856b6cb9cd3b71562da9b5bc892181649c5eb7225af054b8"
+generated_digest: "sha256:84f39d263fa11bf37b9bb2108527df6a35d2a6c5d4e844411962b03e558567cb"
 generated:
   name: PetRemovedFromInventory
   direction: outgoing
   domain: inventory
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: pet_id
@@ -40,6 +40,13 @@ generated:
     types:
     - int32
     evidence: ev_3deefc558424
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_e73bf6173960
   evidence:
   - id: ev_d82634610729
     kind: client_parser
@@ -57,5 +64,12 @@ generated:
     symbol: PetRemovedFromInventoryMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_e73bf6173960
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/PetRemovedFromInventoryEventMessageComposerSerializer.cs
+    symbol: PetRemovedFromInventoryEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

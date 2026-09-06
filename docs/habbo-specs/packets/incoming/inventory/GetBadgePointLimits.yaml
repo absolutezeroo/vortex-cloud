@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e7e82f6bba39527e1fe2c320ee982441c486821b2436a3b27d32c514386c7021"
+generated_digest: "sha256:59ba01fbf22693321c5d1523955cf86b5543e5b11fb4135f87b9e86a6723f852"
 generated:
   name: GetBadgePointLimits
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Inventory/Badges/GetBadgePointLimitsMessageParser.cs
     symbol: GetBadgePointLimitsMessageParser
     line: 7
-  conflicts:
-  - cf_65450db9df
 verified: {}
 manual: {}

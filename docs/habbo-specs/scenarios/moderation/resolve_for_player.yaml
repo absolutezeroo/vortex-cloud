@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:c57eb3fa081326003eaad71ba01f2e109c7979aff6b7ea14bbd6f675d887fa30"
+generated_digest: "sha256:4a83d5cd24c03ea8f34a4dfb396a919a663e3f8498d4acd4780b9d3bbcd32ced"
 generated:
   feature: moderation.resolve_for_player
   scenarios:
@@ -309,8 +309,8 @@ generated:
       - IssueCloseNotification
       - IssueDeleted
       - IssuePickFailed
-      - ModeratorRoomInfoEvent
-      - ModeratorUserInfoEvent
+      - ModeratorRoomInfo
+      - ModeratorUserInfo
       evidence: ev_01cd5117175c
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

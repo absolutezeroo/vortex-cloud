@@ -10,130 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:94071b40b5cb748be1dc49cfa9166362959b8e7fa18a30f87c73d143f94d72bb"
+generated_digest: "sha256:36afc32f204613e76a727023813bf8b5f0c4ea2c420c9000b2b49c39cdb4014d"
 generated:
   name: QuestionEvent
   direction: outgoing
   domain: poll
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: poll_type
-    type: string
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_6dcb3fd1c460
-  - index: 1
-    name: poll_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_6dcb3fd1c460
-  - index: 2
-    name: question_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_6dcb3fd1c460
-  - index: 3
-    name: duration
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_6dcb3fd1c460
-  - index: 4
-    name: poll_question_writer
-    type: block
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_6dcb3fd1c460
-    fields:
-    - index: 0
-      name: id
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 1
-      name: sort_order
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 2
-      name: question_type
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 3
-      name: question_text
-      type: string
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 4
-      name: question_category
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 5
-      name: question_answer_type
-      type: int32
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 6
-      name: unknown_6
-      type: int32
-      name_is_placeholder: true
-      name_confidence: unknown
-      type_confidence: implementation_observed
-      evidence:
-      - ev_6dcb3fd1c460
-    - index: 7
-      name: choices
-      type: array
-      name_confidence: implementation_observed
-      type_confidence: implementation_observed
-      note: "source comment: repeated block; the element count is the int written immediately before it"
-      evidence:
-      - ev_6dcb3fd1c460
-      fields:
-      - index: 0
-        name: value
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_6dcb3fd1c460
-      - index: 1
-        name: choice_text
-        type: string
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_6dcb3fd1c460
-      - index: 2
-        name: choice_type
-        type: int32
-        name_confidence: implementation_observed
-        type_confidence: implementation_observed
-        evidence:
-        - ev_6dcb3fd1c460
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -141,17 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_95708764394d
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 5
-    partial: false
-    types:
-    - string
-    - int32
-    - int32
-    - int32
-    - block
-    evidence: ev_6dcb3fd1c460
   evidence:
   - id: ev_95708764394d
     kind: client_parser
@@ -161,12 +34,5 @@ generated:
     symbol: QuestionEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6dcb3fd1c460
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Poll/QuestionEventMessageComposerSerializer.cs
-    symbol: QuestionEventMessageComposerSerializer
-    line: 10
 verified: {}
 manual: {}

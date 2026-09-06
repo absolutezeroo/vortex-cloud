@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:59ee9dcde56f28f8967dd30398326d0c4bb0ff231cc7421391a4d7a192676090"
+generated_digest: "sha256:c1c1afeefe8538b5e522313e0270041a21e50808f2e9e4718f5565c56967d86c"
 generated:
   name: GetCfhStatus
   direction: incoming
@@ -77,7 +77,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Help/GetCfhStatusMessageParser.cs
     symbol: GetCfhStatusMessageParser
     line: 7
-  conflicts:
-  - cf_d516648802
 verified: {}
 manual: {}

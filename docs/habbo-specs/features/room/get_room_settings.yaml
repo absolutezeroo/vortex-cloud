@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:162d1730b1219da13e97129b82547ad9c52b34d0974597d2251eff55106216e0"
+generated_digest: "sha256:ea37457a718be310afe6561a04737bd283f6d54d0f73ffdaec9580dd419a823d"
 generated:
   id: room.get_room_settings
   domain: room
@@ -49,7 +49,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: RoomSettingsDataEvent
+    - packet: RoomSettingsData
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_2f074d4ea877
@@ -81,7 +81,5 @@ generated:
   - room.get_room_settings.guard_1
   - room.get_room_settings.guard_2
   - room.get_room_settings.success
-  conflicts:
-  - cf_a53bc597e6
 verified: {}
 manual: {}

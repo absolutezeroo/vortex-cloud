@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:21f7ce75fff69cfa28a2304a035f7e36b03509400b73c3c6134e8ec1c6bb0914"
+generated_digest: "sha256:7033f11c9d65d0aeb29c4c7d1795e06ab83232b036fdf754d44cc91424502d56"
 generated:
   id: uk_6a88910505
   subject: "outgoing/SanctionStatus: unnamed fields"
@@ -35,5 +35,12 @@ generated:
     symbol: SanctionStatusMessageComposer
     line: 26
     note: third-party server implementation; evidence, not authority
+  - id: ev_b78787607ab2
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/CallForHelp/SanctionStatusEventMessageComposerSerializer.cs
+    symbol: SanctionStatusEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

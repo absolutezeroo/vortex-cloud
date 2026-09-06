@@ -10,21 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:34d261b4cd05011903b0143efba25470947358048b4553467e3c2bb3ba469874"
+generated_digest: "sha256:bc6e79e2e791660c42ea8a09735644322ac2bf158bb85e90e9ea2b6e5d9b1312"
 generated:
   name: GoToBreedingNestFailureEvent
   direction: outgoing
   domain: inventory
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: reason
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_c9a8af58db72
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -32,13 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_c4a54838ccfb
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 1
-    partial: false
-    types:
-    - int32
-    evidence: ev_c9a8af58db72
   evidence:
   - id: ev_c4a54838ccfb
     kind: client_parser
@@ -48,12 +34,5 @@ generated:
     symbol: GoToBreedingNestFailureEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_c9a8af58db72
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Inventory/Pets/GoToBreedingNestFailureEventMessageComposerSerializer.cs
-    symbol: GoToBreedingNestFailureEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

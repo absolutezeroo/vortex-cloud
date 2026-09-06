@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:be9923c06184b841a5466e46609ba1460088d48df903b3a4dffc823881dcde50"
+generated_digest: "sha256:eb0d5902d0da6211fed89de7a715fff0e67e1f2af1bdd2d0de64683c15c48b81"
 generated:
   id: inventory.confirm_pet_breeding
   domain: inventory
@@ -53,15 +53,15 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: ConfirmBreedingResultEvent
+    - packet: ConfirmBreedingResult
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_e3aeea05728f
-    - packet: NestBreedingSuccessEvent
+    - packet: NestBreedingSuccess
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_e3aeea05728f
-    - packet: PetBreedingResultEvent
+    - packet: PetBreedingResult
       recipient: room_users
       recipient_confidence: implementation_observed
       evidence: ev_e3aeea05728f

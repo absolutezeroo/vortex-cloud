@@ -10,13 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:cb20c0cefa56cea4ab14220fb493aec1c71e1d72b61c071b92175c606660d3e4"
+generated_digest: "sha256:fd084046eda1f53690835254b6d01fcaff6736ab2f0d3e4893ef0251f78b07c6"
 generated:
   name: BannedUsersFromRoom
   direction: outgoing
   domain: room
   structure_confidence: client_confirmed
-  mapped_in_vortex: false
+  mapped_in_vortex: true
   fields:
   - index: 0
     name: room_id
@@ -26,31 +26,31 @@ generated:
     evidence:
     - ev_55118e4903db
   - index: 1
-    name: unknown_1
+    name: length
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_55118e4903db
+    - ev_097d8ce1ff06
   - index: 2
-    name: unknown_2
+    name: player_id
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_55118e4903db
+    - ev_097d8ce1ff06
   - index: 3
-    name: unknown_3
+    name: name
     type: string
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
     - ev_55118e4903db
+    - ev_097d8ce1ff06
   layouts_by_source:
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
@@ -72,6 +72,15 @@ generated:
     - int32
     - string
     evidence: ev_690bef591cac
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 3
+    partial: false
+    types:
+    - int32
+    - int32
+    - array
+    evidence: ev_097d8ce1ff06
   evidence:
   - id: ev_55118e4903db
     kind: client_parser
@@ -89,9 +98,14 @@ generated:
     symbol: BannedUsersFromRoomMessageComposer
     line: 22
     note: third-party server implementation; evidence, not authority
+  - id: ev_097d8ce1ff06
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/BannedUsersFromRoomEventMessageComposerSerializer.cs
+    symbol: BannedUsersFromRoomEventMessageComposerSerializer
+    line: 7
   conflicts:
   - cf_caf06be921
-  unknowns:
-  - uk_f2002de925
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:fff6c65169ca90fbf8a6e19f376a0ecd97f7c5b34771828dac3075e6b956f6a1"
+generated_digest: "sha256:465f503cf0dd97d09969a93a247c0120de369a20683603112b867837bf5d607d"
 generated:
   feature: wired.wired_get_variables_for_object
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredVariablesForObjectEvent
+      - WiredVariablesForObject
       evidence: ev_0080929ab318
   evidence:
   - id: ev_0080929ab318

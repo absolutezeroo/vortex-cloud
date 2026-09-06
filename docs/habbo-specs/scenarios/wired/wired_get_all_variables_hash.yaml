@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f79fec455418c6acd72fc377c9632501457d1072023e0a2f6aed86e7e1d13862"
+generated_digest: "sha256:0f4c85f62c3148c3e9c5100551f41d14bc3a3abe0f29ac81f61192db432150e8"
 generated:
   feature: wired.wired_get_all_variables_hash
   scenarios:
@@ -48,7 +48,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
-      - WiredAllVariablesHashEvent
+      - WiredAllVariablesHash
       evidence: ev_0080929ab318
   evidence:
   - id: ev_0080929ab318

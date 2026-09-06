@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:94b92177420c5b4cbcf7807f3c61ef917ccd2fd4da2b13330aca2a3dfe7eb368"
+generated_digest: "sha256:b0032c15902f349d62fc557e14e69455f810642fea22c35bec0342915cecb6f9"
 generated:
   id: wired.update_selector
   domain: wired
@@ -76,7 +76,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredSaveSuccessEvent
+    - packet: WiredSaveSuccess
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_f463aa277a16
@@ -102,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 222
+    line: 233
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator

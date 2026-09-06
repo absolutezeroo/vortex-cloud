@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:39289e46b4dd206912e317805d52eb5c2222dfce88210c354373bfa12ebfe953"
+generated_digest: "sha256:ef2532f0fd3b174026a05d28f51a6d904340553b05fe841083be5bfe69111925"
 generated:
   id: uk_2d1de12d7b
-  subject: "room.save_room_settings: who receives RoomChatSettings, RoomSettingsSavedEvent, RoomVisualizationSettings"
+  subject: "room.save_room_settings: who receives RoomChatSettings, RoomSettingsSaved, RoomVisualizationSettings"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

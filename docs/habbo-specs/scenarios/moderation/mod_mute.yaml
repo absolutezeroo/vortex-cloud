@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7238bdce3ec2e31df4c6cf685ac34ddb4143e5117b7ae66004bb12195b9b4713"
+generated_digest: "sha256:7c964e9cea04ba1c5bac1dacc246855d897217292cf744f117209a65bac3ca5d"
 generated:
   feature: moderation.mod_mute
   scenarios:
@@ -199,7 +199,7 @@ generated:
       outcome: success
       emits:
       - ModeratorActionResult
-      - ModeratorCautionEvent
+      - ModeratorCaution
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bf7de1d6846007f99ac12b0d033998de16ccd752a90bf0ad898142e5417fbaaa"
+generated_digest: "sha256:75052e62a44baa99603e07d314f0786348a92a8a050a1025236f096ac38520c9"
 generated:
   id: wired.open
   domain: wired
@@ -56,27 +56,27 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: WiredFurniActionEvent
+    - packet: WiredFurniAction
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832
-    - packet: WiredFurniAddonEvent
+    - packet: WiredFurniAddon
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832
-    - packet: WiredFurniConditionEvent
+    - packet: WiredFurniCondition
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832
-    - packet: WiredFurniSelectorEvent
+    - packet: WiredFurniSelector
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832
-    - packet: WiredFurniTriggerEvent
+    - packet: WiredFurniTrigger
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832
-    - packet: WiredFurniVariableEvent
+    - packet: WiredFurniVariable
       recipient: unknown
       recipient_confidence: unknown
       evidence: ev_b1a051803832

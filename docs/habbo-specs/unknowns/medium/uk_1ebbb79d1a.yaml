@@ -10,10 +10,10 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9cc573439470d9ec52087c2424a7ad5b7d89412a7a520d7b294d72f5a65f95b7"
+generated_digest: "sha256:2495e63ff0a18973c4a2f73725b768dc982ed254a24e0230dfa006852d0873cb"
 generated:
   id: uk_1ebbb79d1a
-  subject: "room.breed_pets: who receives ConfirmBreedingRequestEvent, PetBreedingEvent"
+  subject: "room.breed_pets: who receives ConfirmBreedingRequest, PetBreeding"
   severity: medium
   question: "These composers are built on this feature's path but the send call that carries them could not be identified, so their audience is unknown. The recipient is part of the behaviour, not a detail."
   resolved_by: follow the composer to the send call in the emulator, or capture the same action from a second account in the room

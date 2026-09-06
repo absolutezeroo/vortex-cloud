@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:d1ba7e265f61cd174956ed6773b5057f363f06c0c604b690fb1db4cefcbede73"
+generated_digest: "sha256:621e9187603a003e86b66c851f328abf34468a1e425081461c73621fed2d8d8b"
 generated:
   id: cf_87d9f83c0a
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "15 fields: int32, int32, int32, int32, int32, int32, int32, string, int32, string, int32, int32, int32, int32, int32"
     evidence: ev_0dfdc7a35bcc
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "3 fields: int32, array, int32"
+    evidence: ev_32513cf06860
   evidence:
   - id: ev_0ef10c05af38
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: MarketPlaceOffersMessageComposer
     line: 19
     note: third-party server implementation; evidence, not authority
+  - id: ev_32513cf06860
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketPlaceOffersEventMessageComposerSerializer.cs
+    symbol: MarketPlaceOffersEventMessageComposerSerializer
+    line: 7
   official:
     status: unknown
 verified: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bc9eadb962ca9d8522eadaa09ad60d41f5fab57cd489921beebda8bfa0ffb75f"
+generated_digest: "sha256:b924f846ce14bc2588034e7022c3be6adeb9cc8be51d62c3317331f355755298"
 generated:
   id: room.get_banned_users_from_room
   domain: room
@@ -44,7 +44,7 @@ generated:
   outgoing:
     ordering: unknown
     packets:
-    - packet: BannedUsersFromRoomEvent
+    - packet: BannedUsersFromRoom
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_170d536d3818

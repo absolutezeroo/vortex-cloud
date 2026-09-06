@@ -10,28 +10,14 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1941c9f8e7f37133aad1d29cbfaade526f5402b197b82ee214fe8ad0fe776cc1"
+generated_digest: "sha256:1c23eb51c48ebdce1b0d0019917f8535cde7a41eabf57f56c25fd4704026f42c"
 generated:
   name: MarketplaceCancelOfferResultEvent
   direction: outgoing
   domain: marketplace
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  fields:
-  - index: 0
-    name: offer_id
-    type: int32
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_163a27e1997f
-  - index: 1
-    name: success
-    type: boolean
-    name_confidence: implementation_observed
-    type_confidence: implementation_observed
-    evidence:
-    - ev_163a27e1997f
+  structure_confidence: unknown
+  mapped_in_vortex: false
+  fields: []
   layouts_by_source:
   - origin: nitro
     authority: multi_implementation
@@ -39,14 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_b0cceb898bab
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 2
-    partial: false
-    types:
-    - int32
-    - boolean
-    evidence: ev_163a27e1997f
   evidence:
   - id: ev_b0cceb898bab
     kind: client_parser
@@ -56,12 +34,5 @@ generated:
     symbol: MarketplaceCancelOfferResultEventMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_163a27e1997f
-    kind: emulator_serializer
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Serializers/Marketplace/MarketplaceCancelOfferResultEventMessageComposerSerializer.cs
-    symbol: MarketplaceCancelOfferResultEventMessageComposerSerializer
-    line: 6
 verified: {}
 manual: {}

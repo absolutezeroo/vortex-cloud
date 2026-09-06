@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:74d8cefbf05571bd933fc5e41b3761250c29370807fd04ac7d520dd6f40958cc"
+generated_digest: "sha256:285f133422c9722d9c1388935c733aa9b2fbdd2a714c2cb3706394be9e72c8dd"
 generated:
   id: uk_f8cd214d39
   subject: "room.open_mystery_trophy: what the server sends when it refuses"
@@ -88,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
     symbol: RoomAvatar
-    line: 60
+    line: 62
   - id: ev_ac1d7d4655f5
     kind: emulator_handler
     authority: vortex_emulator

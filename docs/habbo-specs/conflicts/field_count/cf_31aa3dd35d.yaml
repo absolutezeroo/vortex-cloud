@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:b188897754359d8b37b142bfce5cfcf210af4b4d7d67ee6c2e47d4f0a2964639"
+generated_digest: "sha256:d36700c64793b078f8e4379180064fac3bc110c6c25cb4ae4e1221acd2ad4939"
 generated:
   id: cf_31aa3dd35d
   kind: field_count
@@ -25,6 +25,10 @@ generated:
     authority: reference_emulator
     claim: "26 fields: int32, string, string, int32, int32, int32, int32, int32, string, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, int32, boolean, int32, int32, int32"
     evidence: ev_5cf57048d2a0
+  - origin: vortex
+    authority: vortex_emulator
+    claim: "27 fields: int32, string, string, int32, int32, int32, int32, int32, array, int32, int32, int32, int32, int32, int32, int32, int32, boolean, boolean, int32, boolean, int32, boolean, int32, int32, int32, boolean"
+    evidence: ev_5ec07d3e24bf
   evidence:
   - id: ev_eed23671ec9e
     kind: client_parser
@@ -42,6 +46,13 @@ generated:
     symbol: RoomSettingsDataMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
+  - id: ev_5ec07d3e24bf
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/RoomSettingsDataEventMessageComposerSerializer.cs
+    symbol: RoomSettingsDataEventMessageComposerSerializer
+    line: 15
   official:
     status: unknown
 verified: {}
