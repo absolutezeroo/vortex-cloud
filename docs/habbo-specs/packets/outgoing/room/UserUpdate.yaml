@@ -199,5 +199,12 @@ generated:
     line: 7
   conflicts:
   - cf_3814e339a4
-verified: {}
+verified:
+  fields:
+    - index: 7
+      name: jumping_power
+      type: int32
+      confidence: client_confirmed
+      note: "inside the repeated block, between body_rotation and status; present in WIN63, absent from the 2016 client, so the generated field list above is the 2016 shape. 0 means not jumping."
+      evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2826.as:85 — the third readInteger after the z string is passed as param15 to _SafeCls_3690, exposed there as jumpingPower (_SafeCls_3690.as:127) and read by AvatarLogic as figure_jumping_power"
 manual: {}

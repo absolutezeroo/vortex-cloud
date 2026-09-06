@@ -79,5 +79,8 @@ generated:
     line: 7
   official:
     status: unknown
-verified: {}
+verified:
+  resolution: "Not a real disagreement: the two client builds parse different shapes. WIN63 reads a jumping_power int32 inside the repeated block, between body_rotation and status; the 2016 build does not. Vortex targets WIN63, so the block is 9 fields. The top-level count (2) is identical either way, which is why this cannot be decided from the field counts alone."
+  confidence: client_confirmed
+  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2184/_SafeCls_2826.as:85 → _SafeCls_3690.jumpingPower (_SafeCls_3690.as:127)"
 manual: {}

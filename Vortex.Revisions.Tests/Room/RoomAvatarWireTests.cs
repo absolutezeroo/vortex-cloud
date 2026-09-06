@@ -197,4 +197,42 @@ public sealed class RoomAvatarWireTests
 
         body.End.Should().BeTrue("the block must consume exactly what the client reads");
     }
+
+    /// <summary>
+    ///     UserUpdate has the same repeated-block failure mode: WIN63 reads a jumpingPower int
+    ///     between the body rotation and the status string
+    ///     (_SafePkg_2184/_SafeCls_2826.parse → _SafeCls_3690.jumpingPower). Without it the status
+    ///     string lands in that int and every avatar after the first is garbage.
+    /// </summary>
+    [Fact]
+    public void UserUpdateBlock_WritesJumpingPowerBeforeTheStatus()
+    {
+        UserUpdateMessageComposer composer = new() { Avatars = [NewPlayer(1), NewPlayer(2)] };
+
+        byte[] bytes = Revision
+            .Serializers[typeof(UserUpdateMessageComposer)]
+            .Serialize(composer)
+            .ToArray();
+
+        byte[] payload = new byte[bytes.Length - 6];
+        Array.Copy(bytes, 6, payload, 0, payload.Length);
+
+        ClientPacket body = new(0, payload);
+
+        body.PopInt().Should().Be(2); // avatar count
+
+        for (int i = 1; i <= 2; i++)
+        {
+            body.PopInt().Should().Be(i, "the block before this one must have ended exactly here");
+            body.PopInt(); // x
+            body.PopInt(); // y
+            body.PopString(); // z
+            body.PopInt(); // headRotation
+            body.PopInt(); // bodyRotation
+            body.PopInt().Should().Be(0, "the client reads jumpingPower here, not the status");
+            body.PopString().Should().Be("/");
+        }
+
+        body.End.Should().BeTrue("the block must consume exactly what the client reads");
+    }
 }

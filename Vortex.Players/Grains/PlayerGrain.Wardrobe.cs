@@ -41,7 +41,15 @@ internal sealed partial class PlayerGrain
         CancellationToken ct
     )
     {
-        if (slotId < 1 || slotId > MaxWardrobeSlotId)
+        // The columns are varchar(255)/varchar(8); a client that sends more would throw on the
+        // insert rather than be rejected here.
+        if (
+            slotId < 1
+            || slotId > MaxWardrobeSlotId
+            || string.IsNullOrWhiteSpace(figure)
+            || figure.Length > 255
+            || gender.Length > 8
+        )
         {
             return;
         }
