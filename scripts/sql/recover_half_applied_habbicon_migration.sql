@@ -67,6 +67,26 @@ ORDER BY t.table_name;
 -- 3. THE FIX. Children before parents: the foreign keys are real.
 -- ---------------------------------------------------------------------------------------------
 
+-- Step 1(a) as something that stops the script rather than something you have to read. Running
+-- this on a hotel where the migration completed drops a live schema and leaves the history rows
+-- claiming it is still there; `resync_habbicon_migration_history.sql` is the way back from that.
+SET @migration_applied := (
+    SELECT COUNT(*)
+    FROM `__EFMigrationsHistory`
+    WHERE MigrationId LIKE '%AddHabbiconsAndRewardTracks%'
+       OR MigrationId LIKE '%SeedHabbiconsAndIntroductionTrack%'
+);
+
+SET @guard := IF(
+    @migration_applied > 0,
+    'SELECT * FROM `STOP_migration_already_applied_this_script_would_drop_live_data`',
+    'SELECT ''no habbicon migration in history -- safe to drop the half-applied objects'' AS guard'
+);
+
+PREPARE guard FROM @guard;
+EXECUTE guard;
+DEALLOCATE PREPARE guard;
+
 DROP TABLE IF EXISTS `player_reward_track_claims`;
 DROP TABLE IF EXISTS `player_reward_track_tasks`;
 DROP TABLE IF EXISTS `player_reward_tracks`;
