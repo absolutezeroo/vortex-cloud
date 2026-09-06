@@ -133,4 +133,146 @@ public static class RewardTrackActions
     /// artwork.
     /// </summary>
     public const string Wired = "wired";
+
+    /// <summary>
+    /// Rated a room, up or down. No Habbo artwork exists for it, like the codes above it: this
+    /// hotel's own signal, and a task defined on it shows an empty icon rather than a borrowed one
+    /// that would lie about what it is.
+    /// </summary>
+    public const string RateRoom = "rate_room";
+
+    /// <summary>Left a room, with how long the stay lasted. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string LeaveRoom = "leave_room";
+
+    /// <summary>Saved a room's settings, tags or category. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string UpdateRoomSettings = "update_room_settings";
+
+    /// <summary>Answered the doorbell for someone. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string AnswerDoorbell = "answer_doorbell";
+
+    /// <summary>Accepted a friend request. The other half of request_friend. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string AcceptFriend = "accept_friend";
+
+    /// <summary>Was given respect by somebody else. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ReceiveRespect = "receive_respect";
+
+    /// <summary>Logged in. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string Login = "login";
+
+    /// <summary>Changed name. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ChangeName = "change_name";
+
+    /// <summary>Was granted a badge, however it arrived. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string EarnBadge = "earn_badge";
+
+    /// <summary>Accepted a quest. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string AcceptQuest = "accept_quest";
+
+    /// <summary>Activated an avatar effect. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ActivateEffect = "activate_effect";
+
+    /// <summary>Finished a poll. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string CompletePoll = "complete_poll";
+
+    /// <summary>Submitted a quiz. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string SubmitQuiz = "submit_quiz";
+
+    /// <summary>Claimed a finished daily task. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ClaimDailyTask = "claim_daily_task";
+
+    /// <summary>Saved an outfit to the wardrobe. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string SaveOutfit = "save_outfit";
+
+    /// <summary>Redeemed a clothing item. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string RedeemClothing = "redeem_clothing";
+
+    /// <summary>Changed an account preference. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ChangePreference = "change_preference";
+
+    /// <summary>Founded a guild. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string CreateGroup = "create_group";
+
+    /// <summary>Joined a guild. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string JoinGroup = "join_group";
+
+    /// <summary>Made a guild the favourite one. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string FavouriteGroup = "favourite_group";
+
+    /// <summary>Started a forum thread. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string CreateForumThread = "create_forum_thread";
+
+    /// <summary>Posted on a forum thread. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string CreateForumPost = "create_forum_post";
+
+    /// <summary>Adopted a pet. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string AdoptPet = "adopt_pet";
+
+    /// <summary>Put a pet down in a room. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string PlacePet = "place_pet";
+
+    /// <summary>Took a pet back out of a room. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string PickUpPet = "pick_up_pet";
+
+    /// <summary>Put an item up for sale. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ListOnMarketplace = "list_on_marketplace";
+
+    /// <summary>Bought an item from the marketplace. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyOnMarketplace = "buy_on_marketplace";
+
+    /// <summary>Collected what the marketplace owed. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string RedeemMarketplaceCredits = "redeem_marketplace_credits";
+
+    /// <summary>Bought or renewed a club membership. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyClub = "buy_club";
+
+    /// <summary>Claimed a club gift. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ClaimClubGift = "claim_club_gift";
+
+    /// <summary>Unwrapped a present. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string OpenPresent = "open_present";
+
+    /// <summary>Opened a mystery box. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string OpenMysteryBox = "open_mystery_box";
+
+    /// <summary>Opened a mystery trophy. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string OpenMysteryTrophy = "open_mystery_trophy";
+
+    /// <summary>Bought something for somebody else. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyGift = "buy_gift";
+
+    /// <summary>Bought a targeted offer. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyTargetedOffer = "buy_targeted_offer";
+
+    /// <summary>Entered an LTD raffle. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string EnterRaffle = "enter_raffle";
+
+    /// <summary>Won an LTD raffle. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string WinRaffle = "win_raffle";
+
+    /// <summary>Redeemed a voucher. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string RedeemVoucher = "redeem_voucher";
+
+    /// <summary>Minted a relic. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string MintRelic = "mint_relic";
+
+    /// <summary>Bought minting tokens. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyMintTokens = "buy_mint_tokens";
+
+    /// <summary>Bought from the collectibles store. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string BuyFromNftStore = "buy_from_nft_store";
+
+    /// <summary>Collected pending collectible claims. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string CollectNftClaims = "collect_nft_claims";
+
+    /// <summary>Claimed vault income. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ClaimVaultIncome = "claim_vault_income";
+
+    /// <summary>Wore a collectible as an avatar. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string WearNftAvatar = "wear_nft_avatar";
+
+    /// <summary>Was granted a Habbicon. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string EarnHabbicon = "earn_habbicon";
+
+    /// <summary>Claimed a completed collection's bonus. (no Habbo artwork: this hotel's own signal)</summary>
+    public const string ClaimHabbiconReward = "claim_habbicon_reward";
 }

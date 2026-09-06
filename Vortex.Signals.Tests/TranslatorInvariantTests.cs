@@ -23,12 +23,44 @@ public sealed class TranslatorInvariantTests
 {
     public static TheoryData<TranslatorUnderTest> Translators => TranslatorCatalog.AsTheoryData();
 
+    /// <summary>The 21 events that fed RewardTrackEventHandlers, named rather than counted.</summary>
+    /// <remarks>
+    /// A count would drift upwards with every new translator and stop meaning anything. These are
+    /// the ones the port had to carry over; losing any of them silently stops content that already
+    /// depends on it.
+    /// </remarks>
+    private static readonly string[] PortedFromHandlers =
+    [
+        "PlayerEnteredRoomEvent",
+        "RoomCreatedEvent",
+        "PlayerChattedEvent",
+        "PlayerGesturedEvent",
+        "ItemPlacedEvent",
+        "ItemMovedEvent",
+        "ItemPickedUpEvent",
+        "PlayerWalkedOnFurniEvent",
+        "FriendRequestSentEvent",
+        "RespectGivenEvent",
+        "MessengerMessageSentEvent",
+        "PlayerFigureChangedEvent",
+        "PlayerMottoChangedEvent",
+        "BadgesEquippedEvent",
+        "CatalogPurchasedEvent",
+        "TradeCompletedEvent",
+        "HabbiconUsedEvent",
+        "HabbiconCollectionCompletedEvent",
+        "PetLeveledUpEvent",
+        "QuestCompletedEvent",
+        "AchievementLevelUpEvent",
+    ];
+
     [Fact]
     public void Every_domain_event_that_fed_a_reward_track_still_has_a_translator()
     {
-        // The port is only complete if nothing was dropped on the way. Twenty-one distinct events
-        // fed RewardTrackEventHandlers -- two of its twenty-two handlers shared ItemMovedEvent.
-        TranslatorCatalog.All.Select(t => t.EventType).Distinct().Should().HaveCount(21);
+        TranslatorCatalog
+            .All.Select(t => t.EventType.Name)
+            .Should()
+            .Contain(PortedFromHandlers, "the port must not have dropped one on the way");
     }
 
     [Theory]

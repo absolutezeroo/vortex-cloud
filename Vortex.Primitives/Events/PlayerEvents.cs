@@ -57,7 +57,17 @@ public sealed record PlayerChattingEvent(
 /// nobody heard.
 /// </summary>
 /// <param name="Whisper">True for a whisper, which reaches one person rather than the room.</param>
-public sealed record PlayerChattedEvent(PlayerId PlayerId, int RoomId, bool Whisper) : IEvent;
+/// <param name="Text">
+/// What was actually said. Carried because "say something with the word X in it" is a task an
+/// operator writes and an id cannot express, and because the room already has the line in hand when
+/// it raises this — enriching here costs nothing, while reading it back later would cost everything.
+/// </param>
+public sealed record PlayerChattedEvent(
+    PlayerId PlayerId,
+    int RoomId,
+    bool Whisper,
+    string Text = ""
+) : IEvent;
 
 /// <summary>
 /// An avatar performed a gesture the room accepted — a dance, a wave. Raised by the room after the

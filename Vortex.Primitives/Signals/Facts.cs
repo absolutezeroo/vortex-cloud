@@ -146,6 +146,149 @@ public static class Facts
         "Badge"
     );
 
+    /// <summary>
+    /// What a chat line said.
+    /// </summary>
+    /// <remarks>
+    /// The one fact that is only useful with <c>Contains</c>. An exact match on a line a player
+    /// typed is a filter that never fires, which is why the operator existed before anything could
+    /// use it.
+    /// </remarks>
+    public static readonly FactKey ChatMessage = new(
+        RewardTrackFacts.ChatMessage,
+        FactKind.Text,
+        "rewardTracks.fact_message",
+        "What was said"
+    );
+
+    /// <summary>Which way a room rating went: <c>1</c> for a like, <c>-1</c> for a dislike.</summary>
+    public static readonly FactKey RatingPoints = new(
+        RewardTrackFacts.RatingPoints,
+        FactKind.Number,
+        "rewardTracks.fact_points",
+        "Rating"
+    );
+
+    /// <summary>A guild id.</summary>
+    public static readonly FactKey Group = new(
+        RewardTrackFacts.Group,
+        FactKind.OpaqueId,
+        "rewardTracks.fact_group",
+        "Guild"
+    );
+
+    /// <summary>A forum thread id.</summary>
+    public static readonly FactKey Thread = new(
+        RewardTrackFacts.Thread,
+        FactKind.OpaqueId,
+        "rewardTracks.fact_thread",
+        "Forum thread"
+    );
+
+    /// <summary>What it cost.</summary>
+    public static readonly FactKey Price = new(
+        RewardTrackFacts.Price,
+        FactKind.Number,
+        "rewardTracks.fact_price",
+        "Price"
+    );
+
+    /// <summary>How many.</summary>
+    public static readonly FactKey Quantity = new(
+        RewardTrackFacts.Quantity,
+        FactKind.Number,
+        "rewardTracks.fact_quantity",
+        "Quantity"
+    );
+
+    /// <summary>Which money moved.</summary>
+    public static readonly FactKey Currency = new(
+        RewardTrackFacts.Currency,
+        FactKind.Text,
+        "rewardTracks.fact_currency",
+        "Currency"
+    );
+
+    /// <summary>A content code: product, voucher, poll, quiz, campaign.</summary>
+    public static readonly FactKey Code = new(
+        RewardTrackFacts.Code,
+        FactKind.Text,
+        "rewardTracks.fact_code",
+        "Code"
+    );
+
+    /// <summary>A pet's species.</summary>
+    public static readonly FactKey PetType = new(
+        RewardTrackFacts.PetType,
+        FactKind.Number,
+        "rewardTracks.fact_pettype",
+        "Pet species"
+    );
+
+    /// <summary>A name the player typed.</summary>
+    public static readonly FactKey GivenName = new(
+        RewardTrackFacts.GivenName,
+        FactKind.Text,
+        "rewardTracks.fact_givenname",
+        "Given name"
+    );
+
+    /// <summary>An avatar effect.</summary>
+    public static readonly FactKey Effect = new(
+        RewardTrackFacts.Effect,
+        FactKind.OpaqueId,
+        "rewardTracks.fact_effect",
+        "Avatar effect"
+    );
+
+    /// <summary>How long, in seconds.</summary>
+    public static readonly FactKey DurationSeconds = new(
+        RewardTrackFacts.DurationSeconds,
+        FactKind.Number,
+        "rewardTracks.fact_durationseconds",
+        "Duration (s)"
+    );
+
+    /// <summary>A mystery-box colour.</summary>
+    public static readonly FactKey Colour = new(
+        RewardTrackFacts.Colour,
+        FactKind.Text,
+        "rewardTracks.fact_colour",
+        "Colour"
+    );
+
+    /// <summary>How many months.</summary>
+    public static readonly FactKey Months = new(
+        RewardTrackFacts.Months,
+        FactKind.Number,
+        "rewardTracks.fact_months",
+        "Months"
+    );
+
+    /// <summary>Serial number in a limited series.</summary>
+    public static readonly FactKey Serial = new(
+        RewardTrackFacts.Serial,
+        FactKind.Number,
+        "rewardTracks.fact_serial",
+        "Serial number"
+    );
+
+    /// <summary>An avatar figure string.</summary>
+    public static readonly FactKey Figure = new(
+        RewardTrackFacts.Figure,
+        FactKind.Text,
+        "rewardTracks.fact_figure",
+        "Figure"
+    );
+
+    /// <summary>Which setting or section was touched.</summary>
+    public static readonly FactKey Section = new(
+        RewardTrackFacts.Section,
+        FactKind.Text,
+        "rewardTracks.fact_section",
+        "Section"
+    );
+
     /// <summary>Every core fact, in declaration order. The governance test freezes this list.</summary>
     public static readonly ImmutableArray<FactKey> All =
     [
@@ -163,5 +306,22 @@ public static class Facts
         Collection,
         Pet,
         Badge,
+        ChatMessage,
+        RatingPoints,
+        Group,
+        Thread,
+        Price,
+        Quantity,
+        Currency,
+        Code,
+        PetType,
+        GivenName,
+        Effect,
+        DurationSeconds,
+        Colour,
+        Months,
+        Serial,
+        Figure,
+        Section,
     ];
 }

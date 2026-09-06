@@ -190,6 +190,52 @@ public sealed class TranslatorCaseTests
         signal.Target.Should().Be("7");
     }
 
+    [Fact]
+    public void Only_letting_somebody_in_counts_as_answering_the_door()
+    {
+        // Turning people away is not an act to reward, and a task that advanced either way would be
+        // farmed by refusing everyone.
+        new RoomDoorbellTranslator()
+            .Translate(new RoomDoorbellAnsweredEvent(11, 22, 7, Admitted: true))
+            .Should()
+            .ContainSingle()
+            .Which.Target.Should()
+            .Be("22");
+
+        new RoomDoorbellTranslator()
+            .Translate(new RoomDoorbellAnsweredEvent(11, 22, 7, Admitted: false))
+            .Should()
+            .BeEmpty();
+    }
+
+    [Fact]
+    public void Clearing_a_favourite_guild_is_not_choosing_one()
+    {
+        new GroupFavouriteTranslator()
+            .Translate(new GroupFavouriteChangedEvent(11, GroupId: 5))
+            .Should()
+            .ContainSingle();
+
+        new GroupFavouriteTranslator()
+            .Translate(new GroupFavouriteChangedEvent(11, GroupId: null))
+            .Should()
+            .BeEmpty();
+    }
+
+    [Fact]
+    public void Taking_off_a_collectible_avatar_is_not_wearing_one()
+    {
+        new NftAvatarTranslator()
+            .Translate(new NftAvatarWornEvent(11, CopyId: 9))
+            .Should()
+            .ContainSingle();
+
+        new NftAvatarTranslator()
+            .Translate(new NftAvatarWornEvent(11, CopyId: null))
+            .Should()
+            .BeEmpty();
+    }
+
     /// <summary>
     /// The net that keeps the matrix above honest.
     /// </summary>
@@ -287,6 +333,11 @@ public sealed class TranslatorCaseTests
         if (eventType == typeof(CatalogPurchasedEvent))
         {
             yield return new CatalogPurchasedEvent(4312, "furni", 99, 1, CreditCost: 50, "");
+        }
+
+        if (eventType == typeof(RoomDoorbellAnsweredEvent))
+        {
+            yield return new RoomDoorbellAnsweredEvent(11, 22, 7, Admitted: true);
         }
     }
 }

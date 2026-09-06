@@ -110,6 +110,144 @@ public static class SignalActions
     /// <inheritdoc cref="RewardTrackActions.Wired"/>
     public const string Wired = RewardTrackActions.Wired;
 
+    /// <inheritdoc cref="RewardTrackActions.RateRoom"/>
+    public const string RateRoom = RewardTrackActions.RateRoom;
+
+    /// <inheritdoc cref="RewardTrackActions.LeaveRoom"/>
+    public const string LeaveRoom = RewardTrackActions.LeaveRoom;
+
+    /// <inheritdoc cref="RewardTrackActions.UpdateRoomSettings"/>
+    public const string UpdateRoomSettings = RewardTrackActions.UpdateRoomSettings;
+
+    /// <inheritdoc cref="RewardTrackActions.AnswerDoorbell"/>
+    public const string AnswerDoorbell = RewardTrackActions.AnswerDoorbell;
+
+    /// <inheritdoc cref="RewardTrackActions.AcceptFriend"/>
+    public const string AcceptFriend = RewardTrackActions.AcceptFriend;
+
+    /// <inheritdoc cref="RewardTrackActions.ReceiveRespect"/>
+    public const string ReceiveRespect = RewardTrackActions.ReceiveRespect;
+
+    /// <inheritdoc cref="RewardTrackActions.Login"/>
+    public const string Login = RewardTrackActions.Login;
+
+    /// <inheritdoc cref="RewardTrackActions.ChangeName"/>
+    public const string ChangeName = RewardTrackActions.ChangeName;
+
+    /// <inheritdoc cref="RewardTrackActions.EarnBadge"/>
+    public const string EarnBadge = RewardTrackActions.EarnBadge;
+
+    /// <inheritdoc cref="RewardTrackActions.AcceptQuest"/>
+    public const string AcceptQuest = RewardTrackActions.AcceptQuest;
+
+    /// <inheritdoc cref="RewardTrackActions.ActivateEffect"/>
+    public const string ActivateEffect = RewardTrackActions.ActivateEffect;
+
+    /// <inheritdoc cref="RewardTrackActions.CompletePoll"/>
+    public const string CompletePoll = RewardTrackActions.CompletePoll;
+
+    /// <inheritdoc cref="RewardTrackActions.SubmitQuiz"/>
+    public const string SubmitQuiz = RewardTrackActions.SubmitQuiz;
+
+    /// <inheritdoc cref="RewardTrackActions.ClaimDailyTask"/>
+    public const string ClaimDailyTask = RewardTrackActions.ClaimDailyTask;
+
+    /// <inheritdoc cref="RewardTrackActions.SaveOutfit"/>
+    public const string SaveOutfit = RewardTrackActions.SaveOutfit;
+
+    /// <inheritdoc cref="RewardTrackActions.RedeemClothing"/>
+    public const string RedeemClothing = RewardTrackActions.RedeemClothing;
+
+    /// <inheritdoc cref="RewardTrackActions.ChangePreference"/>
+    public const string ChangePreference = RewardTrackActions.ChangePreference;
+
+    /// <inheritdoc cref="RewardTrackActions.CreateGroup"/>
+    public const string CreateGroup = RewardTrackActions.CreateGroup;
+
+    /// <inheritdoc cref="RewardTrackActions.JoinGroup"/>
+    public const string JoinGroup = RewardTrackActions.JoinGroup;
+
+    /// <inheritdoc cref="RewardTrackActions.FavouriteGroup"/>
+    public const string FavouriteGroup = RewardTrackActions.FavouriteGroup;
+
+    /// <inheritdoc cref="RewardTrackActions.CreateForumThread"/>
+    public const string CreateForumThread = RewardTrackActions.CreateForumThread;
+
+    /// <inheritdoc cref="RewardTrackActions.CreateForumPost"/>
+    public const string CreateForumPost = RewardTrackActions.CreateForumPost;
+
+    /// <inheritdoc cref="RewardTrackActions.AdoptPet"/>
+    public const string AdoptPet = RewardTrackActions.AdoptPet;
+
+    /// <inheritdoc cref="RewardTrackActions.PlacePet"/>
+    public const string PlacePet = RewardTrackActions.PlacePet;
+
+    /// <inheritdoc cref="RewardTrackActions.PickUpPet"/>
+    public const string PickUpPet = RewardTrackActions.PickUpPet;
+
+    /// <inheritdoc cref="RewardTrackActions.ListOnMarketplace"/>
+    public const string ListOnMarketplace = RewardTrackActions.ListOnMarketplace;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyOnMarketplace"/>
+    public const string BuyOnMarketplace = RewardTrackActions.BuyOnMarketplace;
+
+    /// <inheritdoc cref="RewardTrackActions.RedeemMarketplaceCredits"/>
+    public const string RedeemMarketplaceCredits = RewardTrackActions.RedeemMarketplaceCredits;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyClub"/>
+    public const string BuyClub = RewardTrackActions.BuyClub;
+
+    /// <inheritdoc cref="RewardTrackActions.ClaimClubGift"/>
+    public const string ClaimClubGift = RewardTrackActions.ClaimClubGift;
+
+    /// <inheritdoc cref="RewardTrackActions.OpenPresent"/>
+    public const string OpenPresent = RewardTrackActions.OpenPresent;
+
+    /// <inheritdoc cref="RewardTrackActions.OpenMysteryBox"/>
+    public const string OpenMysteryBox = RewardTrackActions.OpenMysteryBox;
+
+    /// <inheritdoc cref="RewardTrackActions.OpenMysteryTrophy"/>
+    public const string OpenMysteryTrophy = RewardTrackActions.OpenMysteryTrophy;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyGift"/>
+    public const string BuyGift = RewardTrackActions.BuyGift;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyTargetedOffer"/>
+    public const string BuyTargetedOffer = RewardTrackActions.BuyTargetedOffer;
+
+    /// <inheritdoc cref="RewardTrackActions.EnterRaffle"/>
+    public const string EnterRaffle = RewardTrackActions.EnterRaffle;
+
+    /// <inheritdoc cref="RewardTrackActions.WinRaffle"/>
+    public const string WinRaffle = RewardTrackActions.WinRaffle;
+
+    /// <inheritdoc cref="RewardTrackActions.RedeemVoucher"/>
+    public const string RedeemVoucher = RewardTrackActions.RedeemVoucher;
+
+    /// <inheritdoc cref="RewardTrackActions.MintRelic"/>
+    public const string MintRelic = RewardTrackActions.MintRelic;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyMintTokens"/>
+    public const string BuyMintTokens = RewardTrackActions.BuyMintTokens;
+
+    /// <inheritdoc cref="RewardTrackActions.BuyFromNftStore"/>
+    public const string BuyFromNftStore = RewardTrackActions.BuyFromNftStore;
+
+    /// <inheritdoc cref="RewardTrackActions.CollectNftClaims"/>
+    public const string CollectNftClaims = RewardTrackActions.CollectNftClaims;
+
+    /// <inheritdoc cref="RewardTrackActions.ClaimVaultIncome"/>
+    public const string ClaimVaultIncome = RewardTrackActions.ClaimVaultIncome;
+
+    /// <inheritdoc cref="RewardTrackActions.WearNftAvatar"/>
+    public const string WearNftAvatar = RewardTrackActions.WearNftAvatar;
+
+    /// <inheritdoc cref="RewardTrackActions.EarnHabbicon"/>
+    public const string EarnHabbicon = RewardTrackActions.EarnHabbicon;
+
+    /// <inheritdoc cref="RewardTrackActions.ClaimHabbiconReward"/>
+    public const string ClaimHabbiconReward = RewardTrackActions.ClaimHabbiconReward;
+
     /// <summary>
     /// Every core action. The governance test freezes this list, and the translator processor uses
     /// it to tell a core action from one a plugin must qualify with its own key.
@@ -141,6 +279,52 @@ public static class SignalActions
         CompleteHabbiconCollection,
         CompleteQuest,
         AchievementLevel,
-        Wired
+        Wired,
+        RateRoom,
+        LeaveRoom,
+        UpdateRoomSettings,
+        AnswerDoorbell,
+        AcceptFriend,
+        ReceiveRespect,
+        Login,
+        ChangeName,
+        EarnBadge,
+        AcceptQuest,
+        ActivateEffect,
+        CompletePoll,
+        SubmitQuiz,
+        ClaimDailyTask,
+        SaveOutfit,
+        RedeemClothing,
+        ChangePreference,
+        CreateGroup,
+        JoinGroup,
+        FavouriteGroup,
+        CreateForumThread,
+        CreateForumPost,
+        AdoptPet,
+        PlacePet,
+        PickUpPet,
+        ListOnMarketplace,
+        BuyOnMarketplace,
+        RedeemMarketplaceCredits,
+        BuyClub,
+        ClaimClubGift,
+        OpenPresent,
+        OpenMysteryBox,
+        OpenMysteryTrophy,
+        BuyGift,
+        BuyTargetedOffer,
+        EnterRaffle,
+        WinRaffle,
+        RedeemVoucher,
+        MintRelic,
+        BuyMintTokens,
+        BuyFromNftStore,
+        CollectNftClaims,
+        ClaimVaultIncome,
+        WearNftAvatar,
+        EarnHabbicon,
+        ClaimHabbiconReward
     );
 }

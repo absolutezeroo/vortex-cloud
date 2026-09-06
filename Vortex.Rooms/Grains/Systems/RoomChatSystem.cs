@@ -117,7 +117,12 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         // is not evidence anybody heard the line; progression hangs off this one instead, which is
         // raised only once the room has actually sent it.
         await _roomGrain._events.PublishAsync(
-            new PlayerChattedEvent(playerId, _roomGrain.RoomId.Value, targetPlayerId is not null),
+            new PlayerChattedEvent(
+                playerId,
+                _roomGrain.RoomId.Value,
+                targetPlayerId is not null,
+                text
+            ),
             CancellationToken.None
         );
 

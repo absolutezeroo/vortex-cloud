@@ -151,6 +151,10 @@ public static class EventFixture
             _ when type == typeof(ImmutableArray<string>) => ImmutableArray.Create("FIXTURE_BADGE"),
             _ when type == typeof(IReadOnlyList<int>) => new List<int> { 4312 },
             _ when Nullable.GetUnderlyingType(type) is Type inner => Value(inner, name),
+            // An enum's first declared value, not default(T): several of these enums have a
+            // "none"/"unknown" member at zero, and a translator branching on it would be fed the
+            // one input that makes it do nothing.
+            _ when type.IsEnum => System.Enum.GetValues(type).GetValue(0)!,
             _ => throw new NotSupportedException(
                 $"The event fixture does not know how to build a {type.Name} (parameter '{name}'). "
                     + "Add it rather than defaulting it: a defaulted field is a translator that "

@@ -84,6 +84,60 @@ public static class RewardTrackFacts
     /// <summary>A badge code.</summary>
     public const string Badge = "badge";
 
+    /// <summary>What a chat line actually said. Filtered with <c>Contains</c>, never equality.</summary>
+    public const string ChatMessage = "message";
+
+    /// <summary>A rating's direction: <c>+1</c> or <c>-1</c>.</summary>
+    public const string RatingPoints = "points";
+
+    // The vocabulary the wider coverage needs. Each is a fact some event already carries: nothing
+    // here costs a read, and anything that would have is left undeclared rather than faked.
+
+    /// <summary>A guild id.</summary>
+    public const string Group = "group";
+
+    /// <summary>A forum thread id.</summary>
+    public const string Thread = "thread";
+
+    /// <summary>What something cost, in whatever currency the action spends.</summary>
+    public const string Price = "price";
+
+    /// <summary>How many of a thing.</summary>
+    public const string Quantity = "quantity";
+
+    /// <summary>A currency name, as the wallet knows it.</summary>
+    public const string Currency = "currency";
+
+    /// <summary>A content code: a product, a voucher, a poll, a quiz, a campaign.</summary>
+    public const string Code = "code";
+
+    /// <summary>A pet's species number.</summary>
+    public const string PetType = "pet_type";
+
+    /// <summary>A name a player typed: a pet's, a guild's.</summary>
+    public const string GivenName = "given_name";
+
+    /// <summary>An avatar effect id.</summary>
+    public const string Effect = "effect";
+
+    /// <summary>A duration in seconds — a stay, an effect, a session.</summary>
+    public const string DurationSeconds = "seconds";
+
+    /// <summary>A colour name, as the mystery-box vocabulary uses it.</summary>
+    public const string Colour = "colour";
+
+    /// <summary>A count of months.</summary>
+    public const string Months = "months";
+
+    /// <summary>A serial number within a limited series.</summary>
+    public const string Serial = "serial";
+
+    /// <summary>An avatar figure string.</summary>
+    public const string Figure = "figure";
+
+    /// <summary>Which setting or section an edit touched.</summary>
+    public const string Section = "section";
+
     /// <summary>Value of <see cref="Placement"/> for a floor item.</summary>
     public const string PlacementFloor = "floor";
 
