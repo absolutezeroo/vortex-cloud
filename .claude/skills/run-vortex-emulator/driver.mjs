@@ -27,7 +27,10 @@ const COOKIE_FILE = path.join(STATE, 'dash-cookie.txt');
 // appsettings.Development.json moves the game sockets off the 30000/30001 of appsettings.json.
 const GAME_TCP = 40000;
 const WEBAPI = 8080;
-const DASH = 9000;
+// :9000 serves the copy of the SPA embedded in the assembly at its last build. While iterating on
+// the front end the live page is Vite's on :9001, and a cookie ignores the port, so the session
+// `login` writes works against either: VORTEX_DASH_PORT=9001 shoots the dev server.
+const DASH = Number(process.env.VORTEX_DASH_PORT) || 9000;
 
 // A throwaway owner used for the dashboard session. Kept at a fixed address so re-runs reuse the
 // row instead of littering player_accounts; `cleanup` deletes it.
@@ -460,10 +463,29 @@ async function cmdShot(route = '/', out = null) {
       });
       if (!set.success) die('CDP refused the dash_session cookie; re-run `login`.');
     }
+    // The theme is a localStorage preference, not an account setting, and a fresh profile has
+    // none -- so every screenshot came out in the default blue while the operator complaining
+    // about the page was looking at dark. Seed it before the SPA boots and reads it once.
+    if (process.env.VORTEX_DASH_THEME) {
+      await send('Page.addScriptToEvaluateOnNewDocument', {
+        source: `try { localStorage.setItem('turbo-dashboard-theme', ${JSON.stringify(process.env.VORTEX_DASH_THEME)}); } catch {}`,
+      });
+    }
     const loaded = new Promise((r) => events.set('Page.loadEventFired', r));
     await send('Page.navigate', { url: `http://127.0.0.1:${DASH}${route}` });
     await loaded;
     await sleep(2500); // the SPA hydrates and fetches after load; without this the shot is a skeleton
+    // Half the things worth photographing are behind a click -- an expanded row, an open editor --
+    // and they live in component state, not in the URL, so no route reaches them.
+    //   VORTEX_DASH_CLICK="[...document.querySelectorAll('button')].find(b => /Produits/i.test(b.textContent))?.click()"
+    if (process.env.VORTEX_DASH_CLICK) {
+      const r = await send('Runtime.evaluate', { expression: process.env.VORTEX_DASH_CLICK, awaitPromise: true, returnByValue: true });
+      // Logged, so the same hook answers "why is this button the wrong colour" with a
+      // getComputedStyle expression instead of another round of reading the stylesheet.
+      if (r?.result?.value !== undefined) log(`eval -> ${JSON.stringify(r.result.value)}`);
+      if (r?.exceptionDetails) log(`eval threw: ${r.exceptionDetails.text}`);
+      await sleep(1500);
+    }
     const shot = await send('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(outFile, Buffer.from(shot.data, 'base64'));
     ws.close();

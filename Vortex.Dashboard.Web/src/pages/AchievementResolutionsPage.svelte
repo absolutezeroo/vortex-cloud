@@ -6,6 +6,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import Pagination from '../components/Pagination.svelte';
   import PlayerCell from '../components/PlayerCell.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -97,73 +98,80 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('achievementResolutions.title')}</h2>
-    <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('achievementResolutions.lede')}</p>
+  <PageHeader title={$t('achievementResolutions.title')} description={$t('achievementResolutions.lede')}>
+    {#snippet actions()}
+      <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice />
   {:else if error}
     <EmptyState kind="error" message={error} />
-  {:else}
-    {#if totals}
-      <div class="stats">
-        <StatCard
-          label={$t('achievementResolutions.statOffers')}
-          value={formatNumber(totals.enabledOffers)}
-          sub={$t('achievementResolutions.statOffersSub', { total: totals.offers })}
-        />
-        <StatCard
-          label={$t('achievementResolutions.statTaken')}
-          value={formatNumber(totals.taken)}
-          sub={$t('achievementResolutions.statTakenSub', { players: totals.players })}
-        />
-        <StatCard
-          label={$t('achievementResolutions.statCompleted')}
-          value={formatNumber(totals.completed)}
-          sub={`${totals.completionRate}%`}
-          accent
-        />
-        <StatCard
-          label={$t('achievementResolutions.statLive')}
-          value={formatNumber(totals.live)}
-          sub={$t('achievementResolutions.statLiveSub', { expired: totals.expired })}
-        />
-      </div>
+  {/if}
+</section>
 
-      {#if totals.orphanedOffers > 0}
-        <!-- Worth its own line: the grain drops these silently, so the picker is quietly shorter
-             than the table says and nothing anywhere logs it. -->
-        <p class="warn">
-          {$t('achievementResolutions.orphanWarning', { count: totals.orphanedOffers })}
-        </p>
-      {/if}
+{#if !forbidden && !error}
+  {#if totals}
+    <div class="stats">
+      <StatCard
+        label={$t('achievementResolutions.statOffers')}
+        value={formatNumber(totals.enabledOffers)}
+        sub={$t('achievementResolutions.statOffersSub', { total: totals.offers })}
+      />
+      <StatCard
+        label={$t('achievementResolutions.statTaken')}
+        value={formatNumber(totals.taken)}
+        sub={$t('achievementResolutions.statTakenSub', { players: totals.players })}
+      />
+      <StatCard
+        label={$t('achievementResolutions.statCompleted')}
+        value={formatNumber(totals.completed)}
+        sub={`${totals.completionRate}%`}
+        accent
+      />
+      <StatCard
+        label={$t('achievementResolutions.statLive')}
+        value={formatNumber(totals.live)}
+        sub={$t('achievementResolutions.statLiveSub', { expired: totals.expired })}
+      />
+    </div>
+
+    {#if totals.orphanedOffers > 0}
+      <!-- Worth its own line: the grain drops these silently, so the picker is quietly shorter
+           than the table says and nothing anywhere logs it. -->
+      <p class="warn">
+        {$t('achievementResolutions.orphanWarning', { count: totals.orphanedOffers })}
+      </p>
     {/if}
+  {/if}
 
-    <Tabs
-      bind:active={tab}
-      storageKey="achievementResolutions"
-      tabs={[
-        {
-          id: 'offers',
-          label: $t('achievementResolutions.tabOffers'),
-          icon: ListChecks,
-          count: offers.length,
-        },
-        {
-          id: 'challenges',
-          label: $t('achievementResolutions.tabChallenges'),
-          icon: Trophy,
-          count: challenges.length,
-        },
-      ]}
-    />
+  <Tabs
+    bind:active={tab}
+    storageKey="achievementResolutions"
+    tabs={[
+      {
+        id: 'offers',
+        label: $t('achievementResolutions.tabOffers'),
+        icon: ListChecks,
+        count: offers.length,
+      },
+      {
+        id: 'challenges',
+        label: $t('achievementResolutions.tabChallenges'),
+        icon: Trophy,
+        count: challenges.length,
+      },
+    ]}
+  />
 
-    {#if loading}
+  {#if loading}
+    <section class="panel">
       <EmptyState kind="loading" message={$t('common.loading')} />
-    {:else if tab === 'offers'}
+    </section>
+  {:else if tab === 'offers'}
+    <section class="panel">
+      <div class="panel-head"><h2>{$t('achievementResolutions.tabOffers')}</h2></div>
       {#if offers.length === 0}
         <EmptyState message={$t('achievementResolutions.emptyOffers')} />
       {:else}
@@ -209,7 +217,10 @@
           </table>
         </div>
       {/if}
-    {:else}
+    </section>
+  {:else}
+    <section class="panel">
+      <div class="panel-head"><h2>{$t('achievementResolutions.tabChallenges')}</h2></div>
       <div class="filters">
         <input autocomplete="off" spellcheck="false"
           type="search"
@@ -292,31 +303,16 @@
           disabled={loading}
         />
       {/if}
-    {/if}
+    </section>
   {/if}
-</section>
+{/if}
 
 <style>
-  .head {
-    margin-bottom: 12px;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 1.35rem;
-  }
-
-  .lede {
-    margin: 4px 0 0;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-
+  /* Header, tiles, tab strip and each tab's table are separate blocks: the panel is the unit an
+     operator reads, so one panel holding all four read as a single undifferentiated wall.
+     Tabs already carries its own 10px/14px margins, so the tab panels need none of their own. */
   .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 10px;
-    margin-bottom: 12px;
+    margin: 12px 0;
   }
 
   .filters {

@@ -94,16 +94,18 @@
     <input autocomplete="off" spellcheck="false" {id} value={v} oninput={onFullUrlInput} placeholder="https://..." />
   {/if}
 
+  <!-- Thumbnail first and framed like every other asset cell on the dashboard: loose, it read as a
+       sticker dropped next to the button, and the word "Preview" beside a picture of the image says
+       nothing the picture does not. -->
   <div class="field-actions">
+    {#if v}
+      <span class="preview-thumb"><AssetImage src={v} alt={previewAlt} size={32} /></span>
+    {/if}
     {#if images.length}
       <button type="button" class="ghost-button" onclick={() => (browseOpen = true)}>
         <Image size={14} strokeWidth={2} aria-hidden="true" />
         {$t('targetedOffers.browseImages')}
       </button>
-    {/if}
-    {#if v}
-      <AssetImage src={v} alt={previewAlt} size={40} />
-      <small class="muted">{$t('targetedOffers.previewLabel')}</small>
     {/if}
   </div>
 </div>
@@ -175,11 +177,18 @@
     text-align: left;
   }
 
-  .preview-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
+  /* Same frame as .catalog-row-icon, so the preview reads as an asset cell rather than a loose
+     picture sitting next to a button. */
+  .preview-thumb {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--input-bg);
+    overflow: hidden;
   }
 
   .field-actions {

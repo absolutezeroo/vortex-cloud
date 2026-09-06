@@ -24,6 +24,7 @@
   import Drawer from '../components/Drawer.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
+  import PickerModal from '../components/PickerModal.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
@@ -89,6 +90,12 @@
   let newProduct = $state(emptyProductForm());
   let editProductId = $state(null);
   let editProductForm = $state(null);
+
+  // A product is a furniture, and the id of a furniture is not something anyone knows by heart --
+  // it was a bare number field, so the operator had to go find the id somewhere else first. The
+  // picker fills both halves at once: the code the offer is delivered under, and the definition it
+  // points at, which is the pair that has to agree.
+  let furniPicker = $state(null);
 
   // Nothing here asks the operator for a reason: createWriteOps builds the audited sentence from the
   // action itself and the confirm dialog takes an optional note. Two stores rather than one so
@@ -509,12 +516,16 @@
                               <span class="op-chip" title={$t('targetedOffers.quantity')}>x{product.quantity}</span>
                             </span>
                             {#if canManage}
-                              <button type="button" class="ghost-button" onclick={() => startEditProduct(product)}>
-                                {$t('targetedOffers.edit')}
-                              </button>
-                              <button type="button" class="ghost-button danger" onclick={() => openDeleteProduct(product)}>
-                                {$t('targetedOffers.deleteProduct')}
-                              </button>
+                              <!-- Same wrapper as the offer row above: loose in the row the pair
+                                   sat wherever the chips left them instead of at the row's end. -->
+                              <div class="op-actions offer-actions">
+                                <button type="button" class="ghost-button" onclick={() => startEditProduct(product)}>
+                                  {$t('targetedOffers.edit')}
+                                </button>
+                                <button type="button" class="ghost-button danger" onclick={() => openDeleteProduct(product)}>
+                                  {$t('targetedOffers.deleteProduct')}
+                                </button>
+                              </div>
                             {/if}
                           </div>
 
@@ -725,7 +736,16 @@
       </div>
       <div class="op-field">
         <label for="new-product-def">{$t('targetedOffers.furnitureDefIdOptional')}</label>
-        <input autocomplete="off" spellcheck="false" id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
+        <div class="op-pick">
+          <input autocomplete="off" spellcheck="false" id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
+          <button
+            type="button"
+            class="ghost-button"
+            onclick={() => (furniPicker = (item) => {
+              newProduct.furnitureDefinitionId = item.id;
+              newProduct.productCode = item.name;
+            })}>{$t('targetedOffers.pick')}</button>
+        </div>
       </div>
       <div class="op-field">
         <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
@@ -752,7 +772,16 @@
       </div>
       <div class="op-field">
         <label for={`edit-product-def-${editProductForm.id}`}>{$t('targetedOffers.furnitureDefIdOptional')}</label>
-        <input autocomplete="off" spellcheck="false" id={`edit-product-def-${editProductForm.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
+        <div class="op-pick">
+          <input autocomplete="off" spellcheck="false" id={`edit-product-def-${editProductForm.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
+          <button
+            type="button"
+            class="ghost-button"
+            onclick={() => (furniPicker = (item) => {
+              editProductForm.furnitureDefinitionId = item.id;
+              editProductForm.productCode = item.name;
+            })}>{$t('targetedOffers.pick')}</button>
+        </div>
       </div>
       <div class="op-field">
         <label for={`edit-product-qty-${editProductForm.id}`}>{$t('targetedOffers.quantity')}</label>
@@ -769,6 +798,19 @@
       <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
     {/snippet}
   </Drawer>
+{/if}
+
+{#if furniPicker}
+  <PickerModal
+    kind="furniture"
+    title={$t('targetedOffers.pickFurniture')}
+    onSelect={(item) => {
+      furniPicker(item);
+      furniPicker = null;
+    }}
+    onClose={() => (furniPicker = null)}
+    canSelect={canManage}
+  />
 {/if}
 
 <ConfirmReasonModal
@@ -801,9 +843,10 @@
     background: rgba(var(--accent-rgb), 0.12);
   }
 
-  .ghost-button,
   /* Offer card laid out as a column: a header line (thumbnail + title + actions) with the status
-     chips on their own line beneath, instead of everything crammed into one wrapping row. */
+     chips on their own line beneath, instead of everything crammed into one wrapping row.
+     `.ghost-button` used to be part of this selector, which handed `flex: 1 1 160px` to every
+     Edit/Delete button on the page: they grew to fill the row and wrapped onto a second line. */
   .offer-head .catalog-row-main {
     flex: 1 1 160px;
     min-width: 120px;

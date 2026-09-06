@@ -1829,6 +1829,15 @@ textarea {
   flex-wrap: wrap;
 }
 
+/* The field keeps `width: 100%` from the drawer's input rule, and a flex row WRAPS before it
+   shrinks -- so the basis was the whole row and "Pick" dropped under its own field in every
+   drawer. A 120px basis leaves room for the button; the input still grows into whatever is left,
+   and the row still wraps on a genuinely narrow panel. */
+.op-pick input {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
 .op-chip {
   display: inline-flex;
   align-items: center;
@@ -1898,21 +1907,27 @@ form > .op-actions,
   border-top: 1px solid var(--line);
 }
 
+/* Fill only. This rule predates the Habbo key construction and still carried the flat button it
+   replaced -- `border: 1px`, `border-radius: 8px`, `box-shadow: none` -- and at (0,1,1) it beat
+   the key rule's `.ghost-button` (0,1,0). So every button in an action row was a flat rectangle:
+   1px edge, 8px corners, no drop, sitting beside 2px/5px keys that press. The geometry belongs to
+   the key rules; what is left here is the primary fill an unclassed action button still wants. */
 .op-actions button {
-  border: 1px solid transparent;
-  border-radius: 8px;
+  border-color: transparent;
   background: var(--button-bg);
   color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
-  box-shadow: none;
 }
 
-.op-actions button.ghost-button {
+/* Neutral only. `.op-actions button.ghost-button` is (0,2,1) and beat `.ghost-button.danger`
+   (0,2,0), so a destructive action lost its red the moment it sat in an action row: "Delete
+   offer" was a grey key beside a solid red "Delete product" one row below, for the same
+   markup. The coloured variants own their own colour; this rule only ever meant the neutral. */
+.op-actions button.ghost-button:not(.danger, .success, .warning) {
   background: var(--surface-strong);
   color: var(--ink);
   border-color: var(--line-strong);
-  box-shadow: none;
 }
 
 .op-actions button:disabled {
