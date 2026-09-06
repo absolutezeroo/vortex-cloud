@@ -28,6 +28,15 @@
 -- réinstalle au prochain démarrage.
 --
 -- Idempotent : relançable sans créer de doublon. Le bloc 0 est une vérification à blanc.
+--
+-- APRÈS AVOIR PASSÉ CE SCRIPT — sinon rien n'apparaît côté client, et ce n'est pas une erreur :
+-- `RewardTrackCatalog` tient tout le catalogue EN MÉMOIRE. Il est chargé au démarrage et rechargé
+-- par `RewardTrackAdminService` après chaque écriture de contenu — écritures que ce script, par
+-- construction, contourne. Le silo continue donc de servir ce qu'il connaissait avant. Deux façons
+-- de le remettre à jour :
+--   • redémarrer `Vortex.Main` ; ou
+--   • ouvrir n'importe quelle piste dans la dashboard et l'enregistrer : la sauvegarde appelle
+--     `catalog.ReloadAsync`, qui relit TOUT le catalogue, celle-ci comprise. Pas de redémarrage.
 
 -- ---------------------------------------------------------------------------------------------
 -- 0) Vérification à blanc — la piste existe-t-elle déjà ?
