@@ -11,7 +11,7 @@ using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Admin;
 using Vortex.Primitives.Navigator.Enums;
 
-namespace Vortex.Navigator;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// CRUD for the navigator configuration tables. A plain singleton opening a short-lived

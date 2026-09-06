@@ -3,8 +3,8 @@ using FluentAssertions;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
 using Vortex.Progression.Grains;
-using Vortex.Progression.Polls;
 using Xunit;
+using Vortex.Dashboard.API.Admin.Content;
 
 namespace Vortex.Players.Tests.Polls;
 

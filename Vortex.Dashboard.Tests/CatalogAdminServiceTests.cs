@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Vortex.Catalog;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Database.Context;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Admin;
@@ -15,7 +15,7 @@ using Vortex.Primitives.Catalog.Tags;
 using Vortex.Primitives.Furniture.Enums;
 using Xunit;
 
-namespace Vortex.Database.Tests.Catalog;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// Covers the invariants <c>CatalogAdminService</c> is responsible for: the CatalogType boundary

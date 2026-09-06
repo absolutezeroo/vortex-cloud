@@ -17,6 +17,7 @@ public sealed class NavigatorModule : IHostPluginModule
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<INavigatorProvider>()
         );
-        services.AddSingleton<INavigatorAdminService, NavigatorAdminService>();
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

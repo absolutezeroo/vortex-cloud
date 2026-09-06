@@ -13,7 +13,7 @@ using Vortex.Primitives.Content;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Players.Content;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// The hotel's smaller editable tables: hand items, bots, the currency/builders-club/rental rows,

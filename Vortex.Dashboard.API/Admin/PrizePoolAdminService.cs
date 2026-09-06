@@ -13,7 +13,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Admin;
 
-namespace Vortex.Progression.Prizes;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// CRUD for the prize pool tables. A plain singleton (not a grain) opening a short-lived

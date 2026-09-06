@@ -15,6 +15,17 @@ namespace Vortex.Primitives.Habbicons;
 /// </remarks>
 public interface IHabbiconCatalog
 {
+    /// <summary>
+    /// The name this cache answers to in <see cref="Hosting.IReferenceDataReloader"/>.
+    /// </summary>
+    /// <remarks>
+    /// The admin service reloads through the reloader rather than by holding the concrete catalogue,
+    /// so it needs no reference to the assembly implementing it. A test pins this string against
+    /// that type's name: the reloader answers "no such cache" rather than throwing, so a rename
+    /// would leave every content write succeeding while quietly never taking effect.
+    /// </remarks>
+    public const string CacheName = "HabbiconCatalog";
+
     /// <summary>Every collection, in display order, with its entries and its bonus Habbicon.</summary>
     ImmutableArray<HabbiconCollectionSnapshot> Collections { get; }
 

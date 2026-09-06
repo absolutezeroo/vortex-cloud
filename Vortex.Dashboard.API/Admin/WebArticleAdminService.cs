@@ -9,7 +9,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
 using Vortex.Primitives.Content;
 
-namespace Vortex.WebApi.Services;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Every write to the website's editorial tables, and the only place that decides whether one is

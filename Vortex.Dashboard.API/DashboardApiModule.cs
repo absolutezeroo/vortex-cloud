@@ -13,6 +13,18 @@ using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
+using Vortex.Primitives.Catalog;
+using Vortex.Primitives.Content;
+using Vortex.Primitives.Fishing;
+using Vortex.Primitives.Furniture;
+using Vortex.Primitives.Habbicons;
+using Vortex.Primitives.MysteryBox;
+using Vortex.Primitives.Navigator;
+using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Polls;
+using Vortex.Primitives.Prizes;
+using Vortex.Primitives.Quests;
+using Vortex.Primitives.Sound;
 using Vortex.Primitives.RewardTracks;
 
 namespace Vortex.Dashboard.API;
@@ -73,6 +85,21 @@ public sealed class DashboardApiModule : IHostPluginModule
         // being an optional plugin means. It builds on what the domain publishes: the catalogue, the
         // content rules in Vortex.Primitives.RewardTracks.Content, and IReferenceDataReloader.
         services.TryAddSingleton<IRewardTrackAdminService, RewardTrackAdminService>();
+        services.TryAddSingleton<IStaffAdminService, StaffAdminService>();
+        services.TryAddSingleton<ICatalogAdminService, CatalogAdminService>();
+        services.TryAddSingleton<ITargetedOfferAdminService, TargetedOfferAdminService>();
+        services.TryAddSingleton<IFishingAdminService, FishingAdminService>();
+        services.TryAddSingleton<IFurnitureAdminService, FurnitureAdminService>();
+        services.TryAddSingleton<ISongAdminService, SongAdminService>();
+        services.TryAddSingleton<IHabbiconAdminService, HabbiconAdminService>();
+        services.TryAddSingleton<INavigatorAdminService, NavigatorAdminService>();
+        services.TryAddSingleton<IContentAdminService, ContentAdminService>();
+        services.TryAddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();
+        services.TryAddSingleton<IPollAdminService, PollAdminService>();
+        services.TryAddSingleton<IPrizePoolAdminService, PrizePoolAdminService>();
+        services.TryAddSingleton<IQuestAdminService, QuestAdminService>();
+        services.TryAddSingleton<IQuestContentAdminService, QuestContentAdminService>();
+        services.TryAddSingleton<IWebArticleAdminService, WebArticleAdminService>();
 
         // The dashboard runs as a self-contained ASP.NET Core (Kestrel) app inside the generic host.
         services.AddHostedService<DashboardWebHost>();

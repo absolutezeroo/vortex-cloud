@@ -10,7 +10,7 @@ using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Fishing.Admin;
 using Vortex.Primitives.Orleans;
 
-namespace Vortex.Fishing;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Writes to the four fishing content tables, each followed by a live reload.

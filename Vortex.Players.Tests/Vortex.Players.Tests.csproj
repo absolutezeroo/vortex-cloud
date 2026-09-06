@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -20,6 +20,12 @@
     <ProjectReference Include="..\Vortex.Social\Vortex.Social.csproj" />
     <ProjectReference Include="..\Vortex.Collectibles\Vortex.Collectibles.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <!--
+      The admin services moved to the dashboard, but these tests reach domain types the
+      dashboard does not reference — the poll grain, this project's own fakes — so they stay
+      here and borrow the service instead of the other way round.
+    -->
+    <ProjectReference Include="..\Vortex.Dashboard.API\Vortex.Dashboard.API.csproj" />
     <ProjectReference Include="..\Vortex.Tests.Support\Vortex.Tests.Support.csproj" />
   </ItemGroup>
 </Project>

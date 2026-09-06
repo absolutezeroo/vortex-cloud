@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Database.Context;
-using Vortex.Players.Content;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Providers;

@@ -29,8 +29,8 @@ public sealed class FurnitureModule : IHostPluginModule
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<ISongProvider>()
         );
-        services.AddSingleton<ISongAdminService, SongAdminService>();
-        services.AddSingleton<IFurnitureAdminService, FurnitureAdminService>();
         services.AddSingleton<IStuffDataFactory, StuffDataFactory>();
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

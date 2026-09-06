@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Furniture;
-using Vortex.Furniture;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Furniture.Admin;
@@ -18,7 +18,7 @@ using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 using Xunit;
 
-namespace Vortex.Database.Tests.Furniture;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// Covers the invariants <c>FurnitureAdminService</c> is responsible for: the (sprite_id,

@@ -12,8 +12,9 @@ using Vortex.Primitives.Habbicons;
 using Vortex.Primitives.Habbicons.Admin;
 using Vortex.Primitives.Habbicons.Snapshots;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Hosting;
 
-namespace Vortex.Habbicons.Admin;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Content CRUD for Habbicons, plus the two per-player operations an operator needs.
@@ -25,7 +26,8 @@ namespace Vortex.Habbicons.Admin;
 /// </remarks>
 internal sealed class HabbiconAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
-    HabbiconCatalog catalog,
+    IHabbiconCatalog catalog,
+    IReferenceDataReloader reloader,
     IGrainFactory grainFactory,
     ILogger<HabbiconAdminService> logger
 ) : IHabbiconAdminService
@@ -69,7 +71,7 @@ internal sealed class HabbiconAdminService(
 
         db.HabbiconCollections.Add(row);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         return HabbiconAdminResult.Ok(row.Id);
     }
@@ -118,7 +120,7 @@ internal sealed class HabbiconAdminService(
         row.CampaignCode = spec.CampaignCode;
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         return HabbiconAdminResult.Ok(row.Id);
     }
@@ -170,7 +172,7 @@ internal sealed class HabbiconAdminService(
         db.HabbiconCollections.Remove(row);
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         logger.LogInformation(
             "Deleted Habbicon collection {CollectionId} ({Code}) and its {Count} member(s).",
@@ -238,7 +240,7 @@ internal sealed class HabbiconAdminService(
 
         db.Habbicons.Add(row);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         return HabbiconAdminResult.Ok(row.Id);
     }
@@ -289,7 +291,7 @@ internal sealed class HabbiconAdminService(
         row.AvailableUntil = spec.AvailableUntil;
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         return HabbiconAdminResult.Ok(row.Id);
     }
@@ -320,7 +322,7 @@ internal sealed class HabbiconAdminService(
 
         db.Habbicons.Remove(row);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IHabbiconCatalog.CacheName, ct).ConfigureAwait(false);
 
         return HabbiconAdminResult.Ok(habbiconId);
     }

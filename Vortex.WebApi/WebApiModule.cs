@@ -47,8 +47,9 @@ public sealed class WebApiModule : IHostPluginModule
         // The website's write half. Registered here rather than in the dashboard module because the
         // rules it enforces (the block vocabulary, the allowed link schemes) belong to the site, and
         // the dashboard is only one screen calling them.
-        services.TryAddSingleton<IWebArticleAdminService, WebArticleAdminService>();
 
         services.AddHostedService<WebApiWebHost>();
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

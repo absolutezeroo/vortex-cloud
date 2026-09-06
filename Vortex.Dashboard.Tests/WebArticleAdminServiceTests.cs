@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
 using Vortex.Primitives.Content;
-using Vortex.WebApi.Services;
+using Vortex.Dashboard.API.Admin;
 using Xunit;
 
-namespace Vortex.WebApi.Tests;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// The rules that decide whether an article may be stored at all.

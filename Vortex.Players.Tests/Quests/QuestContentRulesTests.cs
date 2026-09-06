@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Vortex.Primitives.Quests.Admin;
 using Vortex.Progression.Grains;
-using Vortex.Progression.Quests;
 using Xunit;
+using Vortex.Dashboard.API.Admin.Content;
 
 namespace Vortex.Players.Tests.Quests;
 

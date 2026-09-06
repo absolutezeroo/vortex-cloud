@@ -8,3 +8,6 @@ using System.Runtime.CompilerServices;
 // are built on Vortex.Rewards.Tests' own snapshot builder, which reaches reward-track domain types
 // this project deliberately does not reference.
 [assembly: InternalsVisibleTo("Vortex.Rewards.Tests")]
+// Same shape: the poll and quest authoring rules moved here with their admin services, but their
+// tests reach the poll grain and this project's own fakes, which the dashboard does not reference.
+[assembly: InternalsVisibleTo("Vortex.Players.Tests")]

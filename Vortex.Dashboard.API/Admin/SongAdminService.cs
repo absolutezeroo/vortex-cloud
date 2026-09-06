@@ -10,7 +10,7 @@ using Vortex.Primitives.Sound;
 using Vortex.Primitives.Sound.Admin;
 using Vortex.Primitives.Sound.Providers;
 
-namespace Vortex.Furniture;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Song catalogue writes, each followed by a reload of the live catalogue.

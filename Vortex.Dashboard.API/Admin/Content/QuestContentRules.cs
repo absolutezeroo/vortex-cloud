@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Vortex.Primitives.Quests.Admin;
 
-namespace Vortex.Progression.Quests;
+namespace Vortex.Dashboard.API.Admin.Content;
 
 /// <summary>
 /// What the dashboard may save as quest content. Pure, because the mistakes these catch are ones

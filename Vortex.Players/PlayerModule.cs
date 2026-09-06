@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vortex.Players.Configuration;
-using Vortex.Players.Content;
-using Vortex.Players.MysteryBox;
 using Vortex.Players.Providers;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Hosting;
@@ -48,8 +46,8 @@ public sealed class PlayerModule : IHostPluginModule
             (IReferenceDataProvider)sp.GetRequiredService<IPetVocalProvider>()
         );
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
-        services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();
-        services.AddSingleton<IContentAdminService, ContentAdminService>();
         services.AddHostedService<BuildersClubTierSeederService>();
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

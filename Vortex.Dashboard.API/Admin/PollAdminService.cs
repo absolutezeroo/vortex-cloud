@@ -11,8 +11,9 @@ using Vortex.Database.Entities.Polls;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
+using Vortex.Dashboard.API.Admin.Content;
 
-namespace Vortex.Progression.Polls;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// CRUD for the survey tables. A plain singleton (not a grain) opening a short-lived

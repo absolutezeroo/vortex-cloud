@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Players;
@@ -18,7 +19,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Tests.Support;
 using Xunit;
 
-namespace Vortex.Navigator.Tests;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// Covers what <c>NavigatorAdminService</c> is responsible for beyond writing a row: the guards that

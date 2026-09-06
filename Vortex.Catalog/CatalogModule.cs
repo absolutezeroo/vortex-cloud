@@ -21,8 +21,6 @@ public sealed class CatalogModule : IHostPluginModule
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
         services.AddSingleton<ICatalogService, CatalogService>();
-        services.AddSingleton<ICatalogAdminService, CatalogAdminService>();
-        services.AddSingleton<ITargetedOfferAdminService, TargetedOfferAdminService>();
         services.AddSingleton<ILtdScheduleService, LtdScheduleService>();
         services.AddSingleton<ICatalogClubOfferProvider, CatalogClubOfferProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>
@@ -55,5 +53,7 @@ public sealed class CatalogModule : IHostPluginModule
             (IReferenceDataProvider)
                 sp.GetRequiredService<ICatalogSnapshotProvider<BuildersClubCatalog>>()
         );
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

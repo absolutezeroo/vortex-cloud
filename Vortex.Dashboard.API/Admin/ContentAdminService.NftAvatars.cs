@@ -7,7 +7,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Players.Avatar;
 
-namespace Vortex.Players.Content;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Writes for the whole avatars a player can wear, and for handing copies of them out.

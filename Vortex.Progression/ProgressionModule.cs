@@ -10,7 +10,6 @@ using Vortex.Primitives.Signals;
 using Vortex.Progression.Achievements.Events;
 using Vortex.Progression.Configuration;
 using Vortex.Progression.Polls;
-using Vortex.Progression.Prizes;
 using Vortex.Progression.Providers;
 using Vortex.Progression.Quests;
 using Vortex.Progression.Quests.Events;
@@ -40,10 +39,6 @@ public sealed class ProgressionModule : IHostPluginModule
             sp.GetRequiredService<AccountLevelProvider>()
         );
 
-        services.AddSingleton<IQuestAdminService, QuestAdminService>();
-        services.AddSingleton<IQuestContentAdminService, QuestContentAdminService>();
-        services.AddSingleton<IPollAdminService, PollAdminService>();
-        services.AddSingleton<IPrizePoolAdminService, PrizePoolAdminService>();
 
         // The interest gate for the three signal consumers. Singletons rather than the consumers
         // themselves, because handlers are not services: the feature processor builds one per
@@ -52,5 +47,7 @@ public sealed class ProgressionModule : IHostPluginModule
         services.AddSingleton<ISignalInterestSource, AchievementSignalInterest>();
         services.AddSingleton<ISignalInterestSource, DailyTaskSignalInterest>();
         services.AddSingleton<ISignalInterestSource, QuestSignalInterest>();
+        // The admin services moved to the dashboard: authoring content is its job, not the
+        // emulator's. A host without that module has no authoring path here, deliberately.
     }
 }

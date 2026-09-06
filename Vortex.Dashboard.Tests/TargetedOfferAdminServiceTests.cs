@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
-using Vortex.Catalog;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Primitives.Catalog.Admin;
@@ -15,7 +15,7 @@ using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
 using Xunit;
 
-namespace Vortex.Database.Tests.Catalog;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// Covers the invariants <c>TargetedOfferAdminService</c> is responsible for: identifier is required,
