@@ -20,6 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Habbicons\Vortex.Habbicons.csproj" />
     <ProjectReference Include="..\Vortex.RewardTracks\Vortex.RewardTracks.csproj" />
+    <!-- The sequence tests validate against the vocabulary the real translators declare. -->
+    <ProjectReference Include="..\Vortex.Signals\Vortex.Signals.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
   </ItemGroup>
 </Project>

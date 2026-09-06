@@ -12,8 +12,8 @@ namespace Vortex.Primitives.RewardTracks;
 /// <para>
 /// The vocabulary is closed on purpose. An operator picking a fact an action never emits would be
 /// writing a filter that silently never matches, so the dashboard offers only the facts the chosen
-/// action actually produces — see <c>RewardTrackActionFacts</c>, which is the same list read the
-/// other way round.
+/// action actually produces — see <c>ISignalVocabulary</c>, which is assembled from the translators
+/// that emit them rather than from a list kept in step by hand.
 /// </para>
 /// </remarks>
 public static class RewardTrackFacts
@@ -57,11 +57,12 @@ public static class RewardTrackFacts
     public const string Model = "model";
 
     /// <summary>
-    /// Who owns the room. Reserved, and NOT emitted by anything yet: it would make "join their
-    /// flat" expressible without a follow event, but <c>PlayerEnteredRoomEvent</c> does not carry
-    /// the owner and reading it per entry would be a grain call on an arrival path that has been
-    /// slow before. Left declared so the shape is obvious to whoever adds it, and left out of
-    /// <see cref="RewardTrackActionFacts"/> so nobody can pick it in the editor meanwhile.
+    /// Who owns the room. Reserved, and NOT emitted by anything yet, though it is now closer than
+    /// this note used to say: <c>PlayerEnteredRoomEvent</c> gained an <c>OwnerId</c> parameter so
+    /// that "join their flat" would be expressible without a follow event, but its only publish site
+    /// (<c>PlayerPresenceGrain.Room</c>) does not pass it, so it is always zero. Populating it there
+    /// is the two-line job that makes this fact honest; until then it stays out of the signal
+    /// vocabulary, because a fact that is always absent is a filter that silently never matches.
     /// </summary>
     public const string RoomOwner = "room_owner";
 

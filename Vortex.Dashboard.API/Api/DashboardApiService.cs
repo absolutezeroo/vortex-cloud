@@ -26,6 +26,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Primitives.Signals;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -38,6 +39,7 @@ internal sealed partial class DashboardApiService(
     HabbiconArtwork habbiconArtwork,
     RoomPerformanceAggregator roomPerformance,
     IBenchmarkService benchmark,
+    ISignalVocabulary signalVocabulary,
     IOptions<ObservabilityConfig> options
 )
 {
@@ -49,6 +51,7 @@ internal sealed partial class DashboardApiService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IBenchmarkService _benchmark = benchmark;
+    private readonly ISignalVocabulary _signalVocabulary = signalVocabulary;
     private readonly ObservabilityConfig _config = options.Value;
 
     private async Task<T> QueryAsync<T>(Func<VortexDbContext, Task<T>> work, CancellationToken ct)

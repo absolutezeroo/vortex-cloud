@@ -3,7 +3,9 @@ using Microsoft.Extensions.Hosting;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 using Vortex.Primitives.RewardTracks;
+using Vortex.Primitives.Signals;
 using Vortex.RewardTracks.Admin;
+using Vortex.RewardTracks.Events;
 using Vortex.RewardTracks.Rewards;
 
 namespace Vortex.RewardTracks;
@@ -30,6 +32,11 @@ public sealed class RewardTracksModule : IHostPluginModule
         services.AddSingleton<IReferenceDataProvider>(sp =>
             sp.GetRequiredService<RewardTrackCatalog>()
         );
+
+        // The signal interest gate. Without this registration every translator stops at the gate
+        // and no reward track ever advances -- which is the correct default for a hotel with no
+        // content, and a silent outage for one with content.
+        services.AddSingleton<ISignalInterestSource, RewardTrackSignalInterest>();
 
         services.AddSingleton<IRewardGranter, CurrencyRewardGranter>();
         services.AddSingleton<IRewardGranter, BadgeRewardGranter>();

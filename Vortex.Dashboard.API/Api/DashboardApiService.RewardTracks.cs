@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.RewardTracks;
+using Vortex.Primitives.Signals;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -28,31 +29,90 @@ internal sealed partial class DashboardApiService
     /// </remarks>
     public object RewardTrackActionOptions()
     {
+        // The action list is declared, not derived from the translators that exist: two actions
+        // have no producer today and content may already name them, so deriving would make a task
+        // written on one disappear from the editor instead of being flagged inert.
         List<object> items =
         [
-            .. typeof(RewardTrackActions)
-                .GetFields(
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
-                )
-                .Where(f => f.IsLiteral && f.FieldType == typeof(string))
-                .Select(f => (string)f.GetRawConstantValue()!)
-                .OrderBy(name => name, StringComparer.Ordinal)
+            .. SignalActions
+                .All.OrderBy(name => name, StringComparer.Ordinal)
                 .Select(name =>
                     (object)
                         new
                         {
                             name,
-                            wired = WiredRewardTrackActions.Contains(name),
+                            // Whether anything actually raises this action. Read from the loaded
+                            // translators, so it is a fact rather than a hand-kept list.
+                            wired = _signalVocabulary.ShapesFor(name).Length > 0,
                             // What a step on this action can filter on, and what a later step can
-                            // point back at. The editor offers only these: a fact the action never
-                            // emits would be a filter that silently never matches.
-                            facts = RewardTrackActionFacts.For(name),
+                            // point back at, typed so the editor knows which control to draw. The
+                            // shapes come from the translators themselves: a fact the action never
+                            // emits cannot be offered here.
+                            facts = FactsOf(name),
                         }
                 ),
         ];
 
         return new { count = items.Count, items };
     }
+
+    /// <summary>
+    /// Every fact a step on this action can be filtered on, typed.
+    /// </summary>
+    /// <remarks>
+    /// The kind is what lets one filter editor serve every action: it decides whether the operator
+    /// gets a picker, a select of declared values or a text box, and which operators are offered.
+    /// Before it, that mapping was hardcoded per page, which is why only this page had pickers.
+    /// <para>
+    /// <c>target</c> is included when the action has one, and typed by the action rather than
+    /// globally: the target of <c>create_room</c> is a room and the target of <c>give_respect</c> is
+    /// a player. It is a real fact -- the signal host republishes it -- it is simply not declared by
+    /// a translator among its facts.
+    /// </para>
+    /// </remarks>
+    private object[] FactsOf(string action)
+    {
+        Dictionary<string, object> byKey = new(StringComparer.Ordinal);
+
+        foreach (SignalShape shape in _signalVocabulary.ShapesFor(action))
+        {
+            if (shape.TargetKind is FactKind targetKind)
+            {
+                byKey[Facts.TargetKey] = Describe(
+                    new FactKey(Facts.TargetKey, targetKind, "rewardTracks.fact_target", "Target")
+                );
+            }
+
+            foreach (FactKey fact in shape.Facts)
+            {
+                byKey[fact.Key] = Describe(fact);
+            }
+        }
+
+        return [.. byKey.Values];
+    }
+
+    private static object Describe(FactKey fact) =>
+        new
+        {
+            key = fact.Key,
+            kind = fact.Kind.ToString(),
+            labelKey = fact.LabelKey,
+            fallbackLabel = fact.FallbackLabel,
+            values = fact.EnumValues.IsDefaultOrEmpty
+                ? []
+                : fact
+                    .EnumValues.Select(v =>
+                        (object)
+                            new
+                            {
+                                value = v.Value,
+                                labelKey = v.LabelKey,
+                                fallbackLabel = v.FallbackLabel,
+                            }
+                    )
+                    .ToArray(),
+        };
 
     /// <summary>The reward kinds, with the client's own product-type id and what the target field means.</summary>
     public object RewardTrackRewardKindOptions()

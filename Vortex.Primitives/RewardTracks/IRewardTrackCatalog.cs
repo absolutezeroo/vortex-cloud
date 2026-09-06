@@ -36,6 +36,16 @@ public interface IRewardTrackCatalog
     /// accepting progress are still listed — the caller knows the clock, this only knows content.
     /// </summary>
     ImmutableArray<RewardTrackTaskRef> TasksFor(string actionCode);
+
+    /// <summary>
+    /// Every action any content is defined on, for the signal interest gate.
+    /// </summary>
+    /// <remarks>
+    /// The same set <see cref="IsActionInteresting"/> answers from, exposed whole because the gate
+    /// asks about actions this catalogue has never heard of and must answer without allocating.
+    /// Read live rather than copied: a content write swaps the index, and the next event sees it.
+    /// </remarks>
+    ImmutableHashSet<string> Actions { get; }
 }
 
 /// <summary>A task addressed by its track. What the action index holds.</summary>

@@ -12,6 +12,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
+using Vortex.Primitives.Signals;
 using Vortex.RewardTracks.Content;
 using Vortex.RewardTracks.Progression;
 
@@ -36,6 +37,9 @@ internal sealed class RewardTrackAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
     RewardTrackCatalog catalog,
     IGrainFactory grainFactory,
+    // What a filter is allowed to say. Read from the loaded translators rather than from a map kept
+    // in step by hand, so the editor cannot offer a fact this action never emits.
+    ISignalVocabulary vocabulary,
     ILogger<RewardTrackAdminService> logger
 ) : IRewardTrackAdminService
 {
@@ -361,7 +365,7 @@ internal sealed class RewardTrackAdminService(
         // A condition that can never be true is worse than no condition: the task simply stops
         // advancing, with nothing on screen to say why. Refuse it here, where the operator is
         // still looking at the form.
-        if (RewardTrackSequenceRules.FirstProblem(spec.Steps) is string problem)
+        if (RewardTrackSequenceRules.FirstProblem(spec.Steps, vocabulary) is string problem)
         {
             return RewardTrackAdminResult.Fail(problem);
         }

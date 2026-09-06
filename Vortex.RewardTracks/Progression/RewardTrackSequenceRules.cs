@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
+using Vortex.Primitives.Signals;
 
 namespace Vortex.RewardTracks.Progression;
 
@@ -18,7 +19,7 @@ namespace Vortex.RewardTracks.Progression;
 /// <para>
 /// The rule that earns its keep is the fact check. <c>place_item</c> emits no <c>player</c>, so a
 /// step filtering it on one is a dead task — and there is nothing on any screen that would say so.
-/// <see cref="RewardTrackActionFacts"/> is the list, and it is also what the dashboard offers, so
+/// <c>ISignalVocabulary</c> is the list, and it is also what the dashboard offers, so
 /// the two cannot disagree.
 /// </para>
 /// </remarks>
@@ -28,7 +29,10 @@ public static class RewardTrackSequenceRules
     /// The first thing wrong with a sequence, as an error code, or <c>null</c> when it is saveable.
     /// One problem rather than all of them: the form shows one message.
     /// </summary>
-    public static string? FirstProblem(IReadOnlyList<RewardTrackTaskStepSpec>? steps)
+    public static string? FirstProblem(
+        IReadOnlyList<RewardTrackTaskStepSpec>? steps,
+        ISignalVocabulary vocabulary
+    )
     {
         if (steps is null || steps.Count == 0)
         {
@@ -48,7 +52,7 @@ public static class RewardTrackSequenceRules
 
             foreach (RewardTrackStepFilterSpec filter in step.Filters ?? [])
             {
-                if (Problem(steps, index, step, filter) is string problem)
+                if (Problem(steps, index, step, filter, vocabulary) is string problem)
                 {
                     return problem;
                 }
@@ -62,7 +66,8 @@ public static class RewardTrackSequenceRules
         IReadOnlyList<RewardTrackTaskStepSpec> steps,
         int index,
         RewardTrackTaskStepSpec step,
-        RewardTrackStepFilterSpec filter
+        RewardTrackStepFilterSpec filter,
+        ISignalVocabulary vocabulary
     )
     {
         string value = filter.Value?.Trim() ?? string.Empty;
@@ -72,7 +77,7 @@ public static class RewardTrackSequenceRules
             return "filter_incomplete";
         }
 
-        if (!RewardTrackActionFacts.Emits(step.ActionCode, filter.FactKey))
+        if (!vocabulary.Emits(step.ActionCode, filter.FactKey))
         {
             // The step's own action never reports this. Nothing would ever satisfy the filter.
             return "filter_fact_not_emitted_by_action";
@@ -93,7 +98,7 @@ public static class RewardTrackSequenceRules
             return "filter_reference_must_be_earlier";
         }
 
-        return RewardTrackActionFacts.Emits(steps[referenced].ActionCode, filter.FactKey)
+        return vocabulary.Emits(steps[referenced].ActionCode, filter.FactKey)
             ? null
             // The earlier step never recorded this fact, so there is nothing for $N to resolve to.
             // "The same furniture" only works between two steps that both talk about furniture.

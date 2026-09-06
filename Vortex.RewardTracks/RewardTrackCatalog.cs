@@ -51,6 +51,9 @@ internal sealed class RewardTrackCatalog(
 
     public bool IsActionInteresting(string actionCode) => _index.Actions.Contains(actionCode);
 
+    /// <inheritdoc />
+    public ImmutableHashSet<string> Actions => _index.Actions;
+
     public ImmutableArray<RewardTrackTaskRef> TasksFor(string actionCode) =>
         _index.TasksByAction.TryGetValue(actionCode, out ImmutableArray<RewardTrackTaskRef> refs)
             ? refs
@@ -371,14 +374,14 @@ internal sealed class RewardTrackCatalog(
     /// </summary>
     private sealed record Index(
         IReadOnlyDictionary<string, RewardTrackDefinitionSnapshot> ByTrackId,
-        IReadOnlySet<string> Actions,
+        ImmutableHashSet<string> Actions,
         IReadOnlyDictionary<string, ImmutableArray<RewardTrackTaskRef>> TasksByAction
     )
     {
         public static Index Empty { get; } =
             new(
                 new Dictionary<string, RewardTrackDefinitionSnapshot>(StringComparer.Ordinal),
-                new HashSet<string>(StringComparer.Ordinal),
+                ImmutableHashSet.Create<string>(StringComparer.Ordinal),
                 new Dictionary<string, ImmutableArray<RewardTrackTaskRef>>(StringComparer.Ordinal)
             );
 
@@ -436,7 +439,7 @@ internal sealed class RewardTrackCatalog(
 
             return new Index(
                 byTrackId,
-                new HashSet<string>(byAction.Keys, StringComparer.Ordinal),
+                byAction.Keys.ToImmutableHashSet(StringComparer.Ordinal),
                 frozen
             );
         }
