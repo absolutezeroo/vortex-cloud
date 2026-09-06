@@ -183,6 +183,30 @@ internal static partial class DashboardEndpoints
         );
         MapReadGet(
             app,
+            ApiDirectory + "/forum-threads",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.ForumThreadsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.SocialRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/avatar-effects",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.AvatarEffectsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.PlayersRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/placed-furniture",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.PlacedFurnitureDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.FurnitureRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
             ApiDirectory + "/entity/{id}",
             (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),

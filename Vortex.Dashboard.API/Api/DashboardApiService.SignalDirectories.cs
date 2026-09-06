@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Habbicons;
 using Vortex.Database.Entities.Navigator;
@@ -295,6 +296,157 @@ internal sealed partial class DashboardApiService
                 ),
             offers => offers.OrderBy(o => o.Identifier),
             o => new PickerRow(o.Id, o.Identifier, o.Title) { Value = o.Identifier },
+            ct
+        );
+
+    /// <summary>
+    /// Forum threads, by subject.
+    /// </summary>
+    /// <remarks>
+    /// A thread id looks like a live id and is not: threads outlive the conversation, so "post on
+    /// the announcements thread" is a task worth writing and a number nobody can be asked to recall.
+    /// </remarks>
+    public Task<object> ForumThreadsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        PickerPageAsync(
+            query,
+            db => db.GroupForumThreads.AsNoTracking(),
+            (threads, term, id) =>
+                threads.Where(t => t.Subject.Contains(term) || (id != null && t.Id == id)),
+            threads => threads.OrderByDescending(t => t.PostCount).ThenBy(t => t.Subject),
+            t => new PickerRow(t.Id, t.Subject, null),
+            ct
+        );
+
+    /// <summary>
+    /// Avatar effects in circulation.
+    /// </summary>
+    /// <remarks>
+    /// Like badges, there is no catalogue table: an effect exists here because a player holds one.
+    /// The distinct set is therefore the only honest list, and it is also the only useful one — an
+    /// effect nobody has is a filter nobody satisfies.
+    /// </remarks>
+    public Task<object> AvatarEffectsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        DistinctNumbersAsync(
+            query,
+            db => db.PlayerEffects.AsNoTracking().Select(e => e.EffectId),
+            id => $"Effect {id}",
+            ct
+        );
+
+    /// <summary>
+    /// Placed furniture, by the definition it is an instance of.
+    /// </summary>
+    /// <remarks>
+    /// The one directory whose rows are genuinely live: this is a specific sofa in a specific room,
+    /// not a kind of sofa. Useful for a hand-written task about one landmark object, and shown with
+    /// its room so two identical sofas can be told apart -- which an id alone never allows.
+    /// </remarks>
+    public Task<object> PlacedFurnitureDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 200);
+                int offset = int.TryParse(query["offset"], out int parsed)
+                    ? Math.Max(0, parsed)
+                    : 0;
+
+                // Placed only: an item in somebody's hand is not somewhere a task can point at.
+                IQueryable<FurnitureEntity> items = db
+                    .Furnitures.AsNoTracking()
+                    .Where(f => f.RoomEntityId != null);
+
+                if (term.Length > 0)
+                {
+                    items = int.TryParse(term, out int id)
+                        ? items.Where(f => f.Id == id || f.RoomEntityId == id)
+                        : items.Where(f => f.FurnitureDefinitionEntity!.Name.Contains(term));
+                }
+
+                int total = await items.CountAsync(ct).ConfigureAwait(false);
+
+                var page = await items
+                    .OrderBy(f => f.Id)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(f => new
+                    {
+                        f.Id,
+                        Name = f.FurnitureDefinitionEntity!.Name,
+                        f.RoomEntityId,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var items2 = page.Select(f => new
+                    {
+                        id = f.Id,
+                        value = f.Id.ToString(),
+                        name = f.Name,
+                        description = $"room #{f.RoomEntityId}",
+                    })
+                    .ToList();
+
+                return new
+                {
+                    count = items2.Count,
+                    total,
+                    offset,
+                    hasMore = offset + items2.Count < total,
+                    items = items2,
+                };
+            },
+            ct
+        );
+
+    /// <summary>Distinct numeric ids in circulation, named for a human.</summary>
+    private Task<object> DistinctNumbersAsync(
+        NameValueCollection query,
+        Func<Database.Context.VortexDbContext, IQueryable<int>> source,
+        Func<int, string> name,
+        CancellationToken ct
+    ) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                string term = (query["q"] ?? string.Empty).Trim();
+
+                List<int> ids = await source(db)
+                    .Distinct()
+                    .OrderBy(v => v)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var items = ids.Where(v =>
+                        term.Length == 0 || v.ToString().Contains(term, StringComparison.Ordinal)
+                    )
+                    .Select(v => new
+                    {
+                        id = v,
+                        value = v.ToString(),
+                        name = name(v),
+                        description = (string?)null,
+                    })
+                    .ToList();
+
+                return new
+                {
+                    count = items.Count,
+                    total = items.Count,
+                    offset = 0,
+                    hasMore = false,
+                    items,
+                };
+            },
             ct
         );
 

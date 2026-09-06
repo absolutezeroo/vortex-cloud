@@ -104,6 +104,9 @@
     club_gift: 'clubGift',
     nft_product: 'nftProduct',
     targeted_offer: 'targetedOffer',
+    thread: 'thread',
+    effect: 'effect',
+    item: 'placedItem',
   };
 
   /** The directory this filter can pick from, by fact first and kind second. */

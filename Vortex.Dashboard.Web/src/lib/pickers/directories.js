@@ -54,6 +54,9 @@ export const DIRECTORIES = {
   clubGift: { endpoint: '/api/v1/directory/club-gifts', row: 'plain' },
   nftProduct: { endpoint: '/api/v1/directory/nft-store', row: 'plain' },
   targetedOffer: { endpoint: '/api/v1/directory/targeted-offers', row: 'plain' },
+  thread: { endpoint: '/api/v1/directory/forum-threads', row: 'plain' },
+  effect: { endpoint: '/api/v1/directory/avatar-effects', row: 'plain' },
+  placedItem: { endpoint: '/api/v1/directory/placed-furniture', row: 'plain' },
 };
 
 /** The directory for a kind, or null. Null is a bug the picker reports rather than papers over. */
