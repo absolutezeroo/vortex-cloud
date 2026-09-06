@@ -6,11 +6,14 @@ using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Quests;
+using Vortex.Primitives.Signals;
+using Vortex.Progression.Achievements.Events;
 using Vortex.Progression.Configuration;
 using Vortex.Progression.Polls;
 using Vortex.Progression.Prizes;
 using Vortex.Progression.Providers;
 using Vortex.Progression.Quests;
+using Vortex.Progression.Quests.Events;
 
 namespace Vortex.Progression;
 
@@ -41,5 +44,13 @@ public sealed class ProgressionModule : IHostPluginModule
         services.AddSingleton<IQuestContentAdminService, QuestContentAdminService>();
         services.AddSingleton<IPollAdminService, PollAdminService>();
         services.AddSingleton<IPrizePoolAdminService, PrizePoolAdminService>();
+
+        // The interest gate for the three signal consumers. Singletons rather than the consumers
+        // themselves, because handlers are not services: the feature processor builds one per
+        // invocation, so there would be nothing for the gate to hold. Each publishes the keys of its
+        // own mapping table, so the gate cannot drift from what the consumer actually handles.
+        services.AddSingleton<ISignalInterestSource, AchievementSignalInterest>();
+        services.AddSingleton<ISignalInterestSource, DailyTaskSignalInterest>();
+        services.AddSingleton<ISignalInterestSource, QuestSignalInterest>();
     }
 }

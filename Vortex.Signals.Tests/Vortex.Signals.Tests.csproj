@@ -23,5 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
     <ProjectReference Include="..\Vortex.Signals\Vortex.Signals.csproj" />
+    <!-- The consumers' mapping tables, checked against the translators in the same suite. -->
+    <ProjectReference Include="..\Vortex.Progression\Vortex.Progression.csproj" />
   </ItemGroup>
 </Project>

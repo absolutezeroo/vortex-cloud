@@ -129,7 +129,9 @@ commerce_receipts (operation_id, step_key)  UNIQUE
 
 `CommerceReplayGuard.FirstDeliveryAsync(journal, operationId, consumer, ct)` writes a
 `relay:<consumer>` receipt, so **each consumer of a relayed event advances once, independently** —
-used by `QuestCatalogPurchaseHandler` and the daily-task equivalent.
+used by `QuestSignalConsumer`, `DailyTaskSignalConsumer` and `RewardTrackSignalConsumer`, each
+guarding **once per batch**: one purchase raises `buy_from_catalogue` and `spend_credits` together,
+and guarding per signal would have the second rejected by the receipt the first wrote.
 
 ## What this flow does not represent
 

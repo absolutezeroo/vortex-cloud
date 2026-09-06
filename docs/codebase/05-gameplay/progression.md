@@ -78,7 +78,8 @@ Progression consumes economy events, and a relayed event can arrive twice. The g
 ```
 
 Each consumer passes **its own name**, so two consumers of one event dedupe independently. Used by
-`QuestCatalogPurchaseHandler` and the daily-task equivalent.
+`QuestSignalConsumer` (`quest`), `DailyTaskSignalConsumer` (`daily-task`) and
+`RewardTrackSignalConsumer` (`reward-track`), each once per batch rather than once per signal.
 
 → [Catalog purchase](../flows/catalog-purchase.md)
 
@@ -135,7 +136,9 @@ CommunityGoalHallOfFameSize}` are read raw from `IConfiguration` and appear in n
 
 - `Vortex.Progression/Grains/PlayerAchievementGrain.cs` — the split-by-stakes doc, `ProgressCoreAsync`, `ApplyLevelUpsAsync`
 - `Vortex.Progression/Grains/{PlayerQuestGrain,PlayerDailyTaskGrain,CommunityGoalGrain,QuestManagerGrain,PollManagerGrain,PrizePoolManagerGrain}.cs`
-- `Vortex.Progression/Quests/Events/{QuestProgressEventHandlers,DailyTaskProgressEventHandlers}.cs`
+- `Vortex.Progression/Quests/Events/{QuestSignalConsumer,DailyTaskSignalConsumer,QuestRoomVisitHandler}.cs`
+- `Vortex.Progression/Achievements/Events/AchievementSignalConsumer.cs` — the three mapping tables
+  that replaced twenty-seven event handlers, and the interest gate derived from them
 - `Vortex.Primitives/Players/Wallet/CurrencyRewardRules.cs`
 - `Vortex.Primitives/Commerce/CommerceReplayGuard.cs`
 - `Vortex.Progression/Configuration/AchievementConfig.cs`
