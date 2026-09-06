@@ -8,7 +8,7 @@ using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;
 using Vortex.Primitives.Orleans;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Catalogue;
 
 /// <summary>
 /// Box-specific admin writes: handing a player a key or a box, and rebuilding the box definition

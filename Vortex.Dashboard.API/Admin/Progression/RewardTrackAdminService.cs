@@ -11,12 +11,12 @@ using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.RewardTracks;
-using Vortex.Dashboard.API.Admin.Content;
+using Vortex.Dashboard.API.Admin.Rules;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 using Vortex.Primitives.Signals;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Progression;
 
 /// <summary>
 /// Content CRUD for reward tracks, plus the per-player operations an operator needs.

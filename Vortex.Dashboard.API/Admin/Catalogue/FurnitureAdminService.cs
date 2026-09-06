@@ -11,7 +11,7 @@ using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.Admin;
 using Vortex.Primitives.Furniture.Providers;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Catalogue;
 
 /// <summary>
 /// CRUD for furniture_definitions. Not a grain -- definitions aren't grain-owned and there is no

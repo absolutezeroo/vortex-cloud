@@ -8,7 +8,9 @@ using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
 
-namespace Vortex.Dashboard.API.Hosting;
+using Vortex.Dashboard.API.Hosting;
+
+namespace Vortex.Dashboard.API.Security;
 
 /// <summary>
 ///     Marks a route as one that a valid login is not, by itself, enough to run.

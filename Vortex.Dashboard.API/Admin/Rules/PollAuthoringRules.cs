@@ -3,7 +3,7 @@ using System.Linq;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
 
-namespace Vortex.Dashboard.API.Admin.Content;
+namespace Vortex.Dashboard.API.Admin.Rules;
 
 /// <summary>
 /// What makes a survey and a question well-formed, as pure decisions returning the error code the

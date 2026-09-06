@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Furniture;
-using Vortex.Dashboard.API.Admin;
+using Vortex.Dashboard.API.Admin.Catalogue;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Furniture.Admin;

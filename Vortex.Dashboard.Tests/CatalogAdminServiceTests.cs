@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Vortex.Dashboard.API.Admin;
+using Vortex.Dashboard.API.Admin.Catalogue;
 using Vortex.Database.Context;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Admin;

@@ -9,7 +9,7 @@ using Vortex.Database.Entities.Permissions;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Permissions.Admin;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Hotel;
 
 /// <summary>
 /// Writes for roles, role capabilities, role assignments and sanction presets. A plain singleton

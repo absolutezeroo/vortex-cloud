@@ -7,7 +7,7 @@ using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 
-namespace Vortex.Dashboard.API.Admin.Content;
+namespace Vortex.Dashboard.API.Admin.Rules;
 
 /// <summary>
 /// Checks campaign content for the mistakes that make a track unplayable rather than merely wrong.

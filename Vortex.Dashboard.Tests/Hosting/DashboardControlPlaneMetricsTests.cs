@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Vortex.Dashboard.API.Hosting;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Observability;
 using Xunit;

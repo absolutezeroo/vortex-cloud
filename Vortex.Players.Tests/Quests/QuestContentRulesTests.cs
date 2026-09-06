@@ -4,7 +4,7 @@ using FluentAssertions;
 using Vortex.Primitives.Quests.Admin;
 using Vortex.Progression.Grains;
 using Xunit;
-using Vortex.Dashboard.API.Admin.Content;
+using Vortex.Dashboard.API.Admin.Rules;
 
 namespace Vortex.Players.Tests.Quests;
 

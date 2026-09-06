@@ -12,7 +12,7 @@ using Vortex.Primitives.Catalog.Admin;
 using Vortex.Primitives.Catalog.Providers;
 using Vortex.Primitives.Catalog.Tags;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Catalogue;
 
 /// <summary>
 /// CRUD for catalog_pages/catalog_offers/catalog_products. Not a grain — catalog rows aren't

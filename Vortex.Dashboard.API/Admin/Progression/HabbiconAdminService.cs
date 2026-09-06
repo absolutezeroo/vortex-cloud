@@ -14,7 +14,7 @@ using Vortex.Primitives.Habbicons.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Hosting;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Progression;
 
 /// <summary>
 /// Content CRUD for Habbicons, plus the two per-player operations an operator needs.

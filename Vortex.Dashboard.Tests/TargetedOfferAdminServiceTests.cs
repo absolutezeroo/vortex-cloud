@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
-using Vortex.Dashboard.API.Admin;
+using Vortex.Dashboard.API.Admin.Catalogue;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Primitives.Catalog.Admin;

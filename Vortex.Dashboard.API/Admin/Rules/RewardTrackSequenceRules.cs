@@ -5,7 +5,7 @@ using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.Signals;
 
-namespace Vortex.Dashboard.API.Admin.Content;
+namespace Vortex.Dashboard.API.Admin.Rules;
 
 /// <summary>
 /// Which sequence an operator is allowed to save.

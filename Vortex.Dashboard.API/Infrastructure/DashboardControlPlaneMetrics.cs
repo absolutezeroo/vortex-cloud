@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Hosting;
+namespace Vortex.Dashboard.API.Infrastructure;
 
 /// <summary>
 ///     Counts what the dashboard's request pipeline refuses.

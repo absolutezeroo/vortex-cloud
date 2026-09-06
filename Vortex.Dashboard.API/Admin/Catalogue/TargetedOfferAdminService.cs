@@ -10,7 +10,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Admin;
 using Vortex.Primitives.Orleans;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Catalogue;
 
 /// <summary>
 /// CRUD for targeted_offers/targeted_offer_products. Like <see cref="CatalogAdminService"/> this is a

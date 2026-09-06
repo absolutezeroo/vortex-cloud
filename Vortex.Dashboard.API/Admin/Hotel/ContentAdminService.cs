@@ -14,7 +14,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Hotel;
 
 /// <summary>
 /// Writes for the content the dashboard reads: achievement ladders and NFT collections here, the

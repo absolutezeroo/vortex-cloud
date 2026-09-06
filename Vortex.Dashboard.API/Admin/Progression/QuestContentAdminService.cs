@@ -13,9 +13,9 @@ using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
-using Vortex.Dashboard.API.Admin.Content;
+using Vortex.Dashboard.API.Admin.Rules;
 
-namespace Vortex.Dashboard.API.Admin;
+namespace Vortex.Dashboard.API.Admin.Progression;
 
 /// <summary>
 /// CRUD for community goals and daily-task definitions. A plain singleton opening a short-lived

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Vortex.Dashboard.API.Admin;
+using Vortex.Dashboard.API.Admin.Hotel;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Players;

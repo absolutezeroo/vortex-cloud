@@ -4,7 +4,7 @@ using FluentAssertions;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
-using Vortex.Dashboard.API.Admin.Content;
+using Vortex.Dashboard.API.Admin.Rules;
 using Xunit;
 
 namespace Vortex.Rewards.Tests;
