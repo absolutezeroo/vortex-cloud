@@ -153,7 +153,14 @@ public sealed class DirectorySearchTests
             null!,
             // The profile answers "is this player connected right now", which is the one thing the
             // search asks outside the database. Nobody is connected in a test.
-            FakeProxy.Create<ISessionGateway>(_ => Array.Empty<PlayerId>()),
+            FakeProxy.Create<ISessionGateway>(call =>
+                call.Method.Name switch
+                {
+                    nameof(ISessionGateway.IsOnline) => false,
+                    nameof(ISessionGateway.GetOnlinePlayerCount) => 0,
+                    _ => Array.Empty<PlayerId>(),
+                }
+            ),
             new DashboardAssetUrls(Options.Create(new ObservabilityConfig())),
             null!,
             null!,

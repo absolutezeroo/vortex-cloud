@@ -291,6 +291,10 @@ public sealed class VortexMetricsInstrumentTests
 
         public int GetActiveSessionCount() => _activeSessions;
 
+        public bool IsOnline(PlayerId playerId) => _online.Contains(playerId);
+
+        public int GetOnlinePlayerCount() => _online.Length;
+
         public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds() => _online;
 
         public ISessionContext? GetSession(SessionKey key) => null;

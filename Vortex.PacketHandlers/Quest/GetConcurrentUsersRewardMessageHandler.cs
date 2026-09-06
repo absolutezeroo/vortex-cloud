@@ -31,7 +31,7 @@ public class GetConcurrentUsersRewardMessageHandler(
 
         await grainFactory
             .GetPlayerQuestGrain(ctx.PlayerId)
-            .ClaimConcurrentUsersRewardAsync(sessionGateway.GetOnlinePlayerIds().Count, ct)
+            .ClaimConcurrentUsersRewardAsync(sessionGateway.GetOnlinePlayerCount(), ct)
             .ConfigureAwait(false);
     }
 }

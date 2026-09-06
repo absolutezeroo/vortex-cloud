@@ -31,7 +31,7 @@ public class GetConcurrentUsersGoalProgressMessageHandler(
 
         await grainFactory
             .GetPlayerQuestGrain(ctx.PlayerId)
-            .SendConcurrentUsersGoalAsync(sessionGateway.GetOnlinePlayerIds().Count, ct)
+            .SendConcurrentUsersGoalAsync(sessionGateway.GetOnlinePlayerCount(), ct)
             .ConfigureAwait(false);
     }
 }

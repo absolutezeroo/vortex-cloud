@@ -48,7 +48,7 @@ public sealed class ConnectionMetrics : IHostedService, IDisposable
 
         _meter.CreateObservableGauge(
             "Vortex.players.online",
-            () => sessions.GetOnlinePlayerIds().Count,
+            () => sessions.GetOnlinePlayerCount(),
             unit: "{player}",
             description: "Distinct players currently mapped to a session."
         );

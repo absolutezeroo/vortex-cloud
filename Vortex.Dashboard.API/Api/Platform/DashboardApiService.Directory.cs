@@ -357,9 +357,6 @@ internal sealed partial class DashboardApiService
                     page,
                     limit,
                     offset,
-                    auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
-                    ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
-                    itemTotal = await items.CountAsync(ct).ConfigureAwait(false),
                     audit = auditRowsWithNames,
                     ledger = ledgerRows,
                     items = itemRows,
@@ -643,9 +640,7 @@ internal sealed partial class DashboardApiService
                         // The player page gates "kick" on this: there is nothing to disconnect
                         // when the account is offline, and a button that always looks available
                         // teaches the operator to ignore its result.
-                        online = _sessionGateway
-                            .GetOnlinePlayerIds()
-                            .Any(p => p.Value == player.Id),
+                        online = _sessionGateway.IsOnline(player.Id),
                         createdAt = player.CreatedAt,
                         updatedAt = player.UpdatedAt,
                         player.gender,
@@ -897,7 +892,6 @@ internal sealed partial class DashboardApiService
                     offset,
                     asActor,
                     playerProfile,
-                    auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
                     ledger = await ledger
                         .OrderByDescending(l => l.OccurredAt)
                         .Skip(offset)
@@ -913,9 +907,7 @@ internal sealed partial class DashboardApiService
                         })
                         .ToListAsync(ct)
                         .ConfigureAwait(false),
-                    ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
                     itemHistory = itemHistoryWithNames,
-                    itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
                     chats = await chat.OrderByDescending(c => c.CreatedAt)
                         .Skip(offset)
                         .Take(limit)
@@ -932,7 +924,6 @@ internal sealed partial class DashboardApiService
                         })
                         .ToListAsync(ct)
                         .ConfigureAwait(false),
-                    chatTotal = await chat.CountAsync(ct).ConfigureAwait(false),
                     chestMoves = await chestMoves
                         .OrderByDescending(t => t.CreatedAt)
                         .Skip(offset)
@@ -952,7 +943,6 @@ internal sealed partial class DashboardApiService
                         })
                         .ToListAsync(ct)
                         .ConfigureAwait(false),
-                    chestTotal = await chestMoves.CountAsync(ct).ConfigureAwait(false),
                 };
     }
 

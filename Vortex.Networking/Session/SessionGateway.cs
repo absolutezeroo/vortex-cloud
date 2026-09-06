@@ -52,6 +52,10 @@ public sealed class SessionGateway(
 
     public int GetActiveSessionCount() => _sessions.Count;
 
+    public bool IsOnline(PlayerId playerId) => _playerToSession.ContainsKey(playerId);
+
+    public int GetOnlinePlayerCount() => _playerToSession.Count;
+
     public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds() => _playerToSession.Keys.ToArray();
 
     public Task AddSessionAsync(SessionKey key, ISessionContext ctx)
