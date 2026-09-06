@@ -425,6 +425,11 @@ Pour chaque type public concret implémentant `ISignalTranslator<TEvent>`, il :
    vocabulaire (§5) ;
 2. instancie le traducteur **une fois** (`Activator.CreateInstance`, constructeur sans paramètre —
    un traducteur avec un constructeur à paramètres est refusé avec un message clair, pas ignoré) ;
+   **un traducteur non public est refusé de la même façon**, et pas seulement signalé :
+   `AssemblyExplorer` ne retient que les types publics et se contente d'un avertissement
+   (`WarnNonPublic`), ce qui suffit pour un handler parmi trente mais pas pour une traduction dont
+   l'absence rend une action entièrement muette. Le processeur lève au chargement, avec le nom du
+   type — un silo qui ne démarre pas est un meilleur diagnostic qu'une action qui n'avance plus ;
 3. construit `SignalTranslatorHost<TEvent>(traducteur, IEventPublisher, ISignalInterest)` **une
    fois**, et l'enregistre via `EnvelopeHost.RegisterHandler(typeof(TEvent), sp, _ => host,
    invoker)` — les deux API sont publiques et `EnvelopeInvokerFactory.CreateHandlerInvoker` résout
@@ -457,7 +462,16 @@ tomber le dashboard entier au démarrage, fermé avant d'exister.
 ### 5.1 Un fait est typé
 
 ```csharp
-public sealed record FactKey(string Key, FactKind Kind, string LabelKey);
+public sealed record FactKey(
+    string Key,
+    FactKind Kind,
+    string LabelKey,                                  // clé de locale du dashboard
+    string FallbackLabel,                             // affiché si la clé n'existe pas (plugins)
+    ImmutableArray<EnumValue> EnumValues = default    // Kind == Enum uniquement
+);
+
+/// <summary>Une valeur autorisée d'un fait fermé : ce que le moteur compare, ce que l'opérateur lit.</summary>
+public readonly record struct EnumValue(string Value, string LabelKey, string FallbackLabel);
 
 public enum FactKind
 {
@@ -469,10 +483,23 @@ public enum FactKind
     CategoryId,     // → liste des catégories navigateur
     BadgeCode,      // → picker badge
     OfferId,        // → picker offre catalogue
-    Enum,           // valeurs fermées : sol/mur
+    Enum,           // valeurs fermées, énumérées dans EnumValues
     OpaqueId,       // un id vivant : objet posé, familier. Saisie libre, aucun annuaire.
 }
 ```
+
+Deux champs que la v3 supposait sans les déclarer, et sans lesquels l'éditeur ne peut pas être
+générique :
+
+- **`EnumValues`.** §5.2 promet « un select des valeurs déclarées » ; encore faut-il qu'elles soient
+  déclarées quelque part. `Facts.Placement` porte `[("floor", …), ("wall", …)]`, et le validateur
+  refuse une valeur hors liste — ce qui remplace le codage en dur `PLACEMENTS` du dashboard et la
+  paire de clés de locale ajoutée à la main. Un `Kind == Enum` avec `EnumValues` vide est refusé au
+  chargement : c'est un select sans options.
+- **`FallbackLabel`.** Un plugin ne peut pas ajouter de clé aux locales du dashboard (§8.1) ; sans
+  libellé de repli, ses faits s'afficheraient sous leur clé brute, `acme:trophy`. Le cœur le
+  renseigne aussi, ce qui donne un éditeur lisible même si une locale prend du retard — un cas déjà
+  vu ici, où une clé absente en `fr` retombe silencieusement sur l'anglais.
 
 `Facts` déclare les clés du cœur avec **les chaînes actuelles** (`room`, `def`, `item`, `kind`,
 `player`, `offer`, `habbicon`, `collection`, `pet`, `badge`, `name`, `desc`, `category`, `model`).
@@ -545,10 +572,14 @@ public sealed class RewardTrackSignalConsumer(IGrainFactory grains, IRewardTrack
 {
     public async ValueTask HandleAsync(ProgressSignalsRaised e, EventContext ctx, CancellationToken ct)
     {
-        // Trier d'abord : le garde de rejeu ne doit pas être dépensé pour un lot qui ne
-        // m'intéresse pas, et il ne doit être dépensé qu'UNE fois pour celui qui m'intéresse.
-        var mine = e.Signals.Where(s => s.PlayerId > 0 && catalog.IsActionInteresting(s.Action));
-        if (!mine.Any()) return;
+        // Trier d'abord, et MATÉRIALISER : le garde de rejeu ne doit pas être dépensé pour un lot
+        // qui ne m'intéresse pas, et il ne doit être dépensé qu'UNE fois pour celui qui m'intéresse.
+        ImmutableArray<ProgressSignal> mine =
+        [
+            .. e.Signals.Where(s => s.PlayerId > 0 && catalog.IsActionInteresting(s.Action)),
+        ];
+
+        if (mine.IsEmpty) return;
 
         if (!await CommerceReplayGuard.FirstDeliveryAsync(journal, e.DeliveryId, "reward-track", ct))
             return;
@@ -561,15 +592,37 @@ public sealed class RewardTrackSignalConsumer(IGrainFactory grains, IRewardTrack
 ```
 
 Un consommateur par système, découvert et isolé par le registre existant comme n'importe quel
-handler. **L'ordre compte** : filtrer, puis garder, puis traiter. Garder avant de filtrer
-consommerait le reçu d'un lot dont aucun signal ne concerne ce consommateur, et une republication
-ultérieure — après qu'un opérateur a publié du contenu qui, lui, s'y intéresse — serait rejetée.
+handler.
 
-> **Invariant : un consommateur fait exactement les mêmes appels de grain, avec les mêmes attributs,
-> que les handlers qu'il remplace.** `IPlayerDailyTaskGrain.ProgressAsync` et
-> `IPlayerAchievementGrain.ProgressAsync` sont `[OneWay]` pour une raison de réentrance documentée
-> (« le grain se bloquerait derrière son propre événement ») ; `IPlayerRewardTrackGrain.ProgressAsync`
-> ne l'est pas. Rien de tout ça ne bouge. Le traducteur, lui, **n'appelle aucun grain**.
+**L'ordre compte** : filtrer, puis garder, puis traiter. Garder avant de filtrer consommerait le
+reçu d'un lot dont aucun signal ne concerne ce consommateur, et une republication ultérieure —
+après qu'un opérateur a publié du contenu qui, lui, s'y intéresse — serait rejetée.
+
+**La matérialisation aussi.** Un `IEnumerable` paresseux serait ré-évalué après l'`await` du garde,
+et `IsActionInteresting` lit un index que `ReloadAsync` remplace atomiquement à chaque écriture de
+contenu : un rechargement pendant l'attente ferait diverger la liste gardée de la liste traitée. Le
+reçu serait alors dépensé pour un lot et la progression appliquée pour un autre. Deux crochets, et
+la fenêtre n'existe pas.
+
+> **Invariant : un consommateur fait exactement les mêmes appels de grain, avec les mêmes attributs
+> et dans le même nombre, que les handlers qu'il remplace.**
+> `IPlayerDailyTaskGrain.ProgressAsync` et `IPlayerAchievementGrain.ProgressAsync` sont `[OneWay]`
+> pour une raison de réentrance documentée (« le grain se bloquerait derrière son propre
+> événement ») ; `IPlayerRewardTrackGrain.ProgressAsync` ne l'est pas. Rien de tout ça ne bouge. Le
+> traducteur, lui, **n'appelle aucun grain**.
+
+**Ce que l'invariant ne couvre pas : le parallélisme entre grains.** La boucle ci-dessus sérialise ce
+que deux handlers font aujourd'hui en parallèle — `AchievementFriendCountHandler` appelle les deux
+joueurs par `Task.WhenAll`, et un lot d'amitié porte deux signaux visant deux grains différents.
+Sérialiser deux appels `[OneWay]` est presque gratuit (ils reviennent sans attendre le traitement),
+mais ce n'est pas *identique*, et un lot de vingt badges le rendrait visible.
+
+La règle est donc explicite : **un consommateur groupe par grain, puis émet les groupes
+concurremment** quand le handler qu'il remplace le faisait, exactement comme ce dernier —
+`Task.WhenAll` sur des grains distincts, séquentiel à l'intérieur d'un même grain (le grain
+sérialise de toute façon, et deux appels concurrents au même grain ne gagnent rien). Un test de la
+matrice §10.1 vérifie le compte d'appels par grain ; la concurrence, elle, se lit dans le code du
+consommateur, qui tient en dix lignes.
 
 ### 7.2 Correspondance des vocabulaires
 
@@ -813,24 +866,47 @@ Les deux tables de correspondance (§7.2) ont un test chacune : chaque action no
 `SignalActions`, chaque code existe dans `QuestTypes` / `AchievementNames`, et **aucune action de
 la table n'est produite par un événement du même système** (règle anti-boucle).
 
-### 10.3 La gouvernance
+### 10.3 La gouvernance — les deux vocabulaires
 
-Un test compare les `FactKey` déclarées à une liste de référence versionnée dans le dépôt et échoue
-si une clé disparaît ou change de `Kind`. Ajouter une clé met la liste à jour ; en retirer une
-demande de le vouloir explicitement.
+§5.3 fige les faits **et** les actions, parce que les deux sont stockés en chaînes dans le contenu.
+Le test fige donc les deux, contre deux listes de référence versionnées dans le dépôt :
+
+| Liste | Échoue si |
+| --- | --- |
+| `Facts` | une clé disparaît, ou change de `Kind`, ou perd une `EnumValue` |
+| `SignalActions` | un code disparaît ou change de chaîne |
+
+Ajouter une clé, une action ou une valeur d'énumération met la liste à jour ; en retirer une demande
+de le vouloir explicitement, dans le même commit, sous les yeux d'un relecteur. Une `EnumValue`
+retirée est traitée comme une clé retirée : du contenu la compare peut-être déjà.
 
 ### 10.4 Les chemins chauds
 
-`Vortex.Benchmark` et `Vortex.LoadGen` mesurent déjà les arrivées. Une passe avant/après sur
-l'entrée d'appart, dans les deux cas :
+`Vortex.Benchmark` et `Vortex.LoadGen` mesurent déjà les arrivées. **Deux chemins à mesurer, pas
+un**, chacun dans ses deux états :
 
-- **aucun contenu n'écoute** : la porte (§4.4) doit rendre ce cas au moins aussi rapide
-  qu'aujourd'hui — et il devrait l'être davantage, puisque deux appels de grain inconditionnels
-  disparaissent (§1.2) ;
-- **du contenu écoute** : trois handlers activés hier, un hôte singleton plus une enveloppe et trois
-  consommateurs activés demain.
+**L'entrée d'appart** — le chemin à trois traductions (§1.1) :
 
-On vérifie la mesure, on ne la suppose pas.
+- *aucun contenu n'écoute* : la porte (§4.4) doit rendre ce cas au moins aussi rapide qu'aujourd'hui
+  — et il devrait l'être davantage, puisque deux appels de grain inconditionnels disparaissent
+  (§1.2) ;
+- *du contenu écoute* : trois handlers activés hier ; un hôte singleton, une enveloppe et trois
+  consommateurs demain.
+
+**`walk_on_furni`** — et c'est le vrai test. C'est de loin le signal le plus fréquent du hall (une
+fois par case, pour chaque avatar de chaque appart, publié depuis le tick), il n'a **qu'un seul**
+consommateur, et le commentaire de `RoomAvatarTickSystem.cs:247` compte explicitement sur la porte
+d'en face. C'est donc le cas où cette conception ajoute le plus et gagne le moins :
+
+- *aucun contenu ne nomme `walk_on_furni`* — l'état normal d'un hôtel — : une recherche de hash sur
+  le thread appelant hier, une recherche de hash demain. **Le delta doit être indiscernable du
+  bruit ; si la mesure montre autre chose, la porte est mal placée.**
+- *du contenu le nomme* : une enveloppe et une publication imbriquée s'ajoutent par case marchée.
+  C'est le pire cas de toute la conception, et il faut connaître son coût avant ①, pas après.
+
+Le protocole : `LoadGen` avec N avatars en marche continue dans un appart meublé, les deux états du
+contenu, mesure avant/après sur le temps de tick et l'allocation par tick. On vérifie la mesure, on
+ne la suppose pas.
 
 ### 10.5 Observabilité
 
@@ -841,18 +917,32 @@ découvre par une plainte de joueur, jamais par une exception :
 | Métrique | Ce qu'elle répond |
 | --- | --- |
 | `signals_raised_total{action}` | quelles actions arrivent réellement, et lesquelles n'arrivent jamais |
-| `signals_gated_total{action}` | combien la porte d'intérêt a arrêté — la preuve qu'elle sert |
+| `signal_translations_gated_total{translator}` | combien d'événements la porte a arrêtés avant traduction — la preuve qu'elle sert |
+| `signal_batches_published_total{translator}` | combien d'événements ont franchi la porte : le dénominateur du précédent |
 | `signal_consumer_failures_total{consumer}` | quel consommateur tombe, sans lire les journaux |
 
-Le premier est aussi l'outil de couverture du §13 : une action déclarée dont le compteur reste à
-zéro sur une semaine est soit du contenu que personne ne déclenche, soit un traducteur qui ne
-traduit pas.
+> La porte s'exécute **avant** `Translate` (§4.4), donc il n'existe encore aucun signal et aucune
+> action à ce moment-là — un traducteur peut d'ailleurs en déclarer plusieurs. Une métrique
+> `{action}` sur la porte n'aurait pas eu de valeur à écrire. L'unité de la porte est l'événement,
+> et son étiquette naturelle le traducteur ; l'unité du signal reste l'action.
+
+Le premier compteur est aussi l'outil de couverture du §13 : une action déclarée dont le compteur
+reste à zéro sur une semaine est soit du contenu que personne ne déclenche, soit un traducteur qui
+ne traduit pas. Le rapport entre les deux suivants est la santé de la porte sur `walk_on_furni` :
+sur un hôtel sans campagne, il doit valoir 100 %.
 
 ### 10.6 L'hébergement
 
 Un test d'hébergement démarre le pipeline avec `Vortex.Signals` chargé et vérifie que le processeur
 a enregistré au moins un traducteur et une forme — parce qu'un projet oublié dans `Vortex.Main`
 est un système de progression entièrement muet, sans une seule exception.
+
+Et un test de visibilité, qui ne passe par aucune découverte : il balaye l'assembly par réflexion,
+**types non publics compris**, et échoue s'il trouve un `ISignalTranslator<>` que le processeur
+n'aurait pas retenu. Sans lui, le point 2 du §4.5 ne protège de rien contre le cas qui compte : un
+traducteur écrit sans `public` ne serait pas découvert, donc pas chargé, donc jamais refusé — et le
+test générique §10.1, qui découvre par le même chemin, ne le verrait pas non plus. Le trou est le
+même que celui du §1.3 : une absence ne lève rien.
 
 ---
 
@@ -960,7 +1050,7 @@ publication si la donnée y est libre, et **écarter explicitement** ce qui coû
 
 | Risque | Parade |
 | --- | --- |
-| **La porte d'intérêt est oubliée** ou évaluée après `Translate` : une enveloppe par action, une fois par case marchée | §4.4 : première instruction de l'hôte, avant toute allocation. Mesure du cas « aucun contenu » en §10.4, `signals_gated_total` en production. |
+| **La porte d'intérêt est oubliée** ou évaluée après `Translate` : une enveloppe par événement, une fois par case marchée | §4.4 : première instruction de l'hôte, avant toute allocation. Benchmark `walk_on_furni` dans ses deux états en §10.4, `signal_translations_gated_total` en production. |
 | +1 enveloppe par **événement traduit** quand du contenu écoute (§3.1 : un lot, pas un par action) | En face : traduction et enrichissement passent de trois fois à une, l'hôte est un singleton là où trois handlers étaient instanciés, et deux appels de grain inconditionnels disparaissent. Mesuré avant de livrer ①. |
 | Un consommateur dépense son reçu de rejeu sur un lot qui ne le concerne pas | Filtrer avant de garder, garder avant de traiter — l'ordre est écrit dans §7.1 et couvert par un test de la matrice §10.1 (achat catalogue). |
 | L'ancien handler et le nouveau consommateur tournent ensemble : **toute progression compte double**, sur des compteurs persistés | Livraison en un seul commit, pas de drapeau, retour arrière par revert (§11.2). |
@@ -1027,3 +1117,14 @@ Non mesuré non plus : le coût réel de la publication imbriquée sur l'entrée
   processeur **valide** le préfixe au lieu de réécrire — sinon le vocabulaire aurait porté
   `acme:trophy` pendant que l'hôte publiait `trophy`, et un plugin n'aurait pas pu réutiliser
   `room`.
+  Puis huit derniers points avant implémentation : les signaux filtrés sont **matérialisés** avant
+  le garde (un `IEnumerable` paresseux serait ré-évalué après l'`await`, contre un index que
+  `ReloadAsync` remplace) ; `FactKey` gagne `FallbackLabel` et `EnumValues`, sans lesquels l'éditeur
+  générique et les faits de plugins n'ont pas de quoi s'afficher ; §10.3 fige les actions comme les
+  faits, en cohérence avec §5.3 ; `signals_gated_total{action}` devient
+  `signal_translations_gated_total{translator}`, puisque la porte tourne avant `Translate` et n'a
+  donc aucune action sous la main ; §10.4 ajoute le benchmark `walk_on_furni`, le pire cas de la
+  conception, dans ses deux états ; l'invariant des consommateurs précise qu'il porte sur les appels
+  et leur nombre, **pas** sur le parallélisme entre grains, qui est rétabli explicitement là où il
+  existait ; et un test de visibilité échoue sur un `ISignalTranslator<>` non public, que ni le
+  processeur ni le test générique ne peuvent voir puisque tous deux passent par la découverte.
