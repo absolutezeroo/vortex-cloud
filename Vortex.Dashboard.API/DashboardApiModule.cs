@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Admin;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Dashboard.API.Http;
@@ -12,6 +13,7 @@ using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
+using Vortex.Primitives.RewardTracks;
 
 namespace Vortex.Dashboard.API;
 
@@ -64,6 +66,13 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardMonitoringReads>();
         services.TryAddSingleton<DashboardOperationsService>();
+
+        // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,
+        // it does not write them. So the admin service lives here and is registered here, and a
+        // host that does not load this module has no content-authoring path at all -- which is what
+        // being an optional plugin means. It builds on what the domain publishes: the catalogue, the
+        // content rules in Vortex.Primitives.RewardTracks.Content, and IReferenceDataReloader.
+        services.TryAddSingleton<IRewardTrackAdminService, RewardTrackAdminService>();
 
         // The dashboard runs as a self-contained ASP.NET Core (Kestrel) app inside the generic host.
         services.AddHostedService<DashboardWebHost>();

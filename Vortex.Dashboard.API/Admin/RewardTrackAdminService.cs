@@ -9,14 +9,14 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.RewardTracks;
+using Vortex.Primitives.RewardTracks.Content;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 using Vortex.Primitives.Signals;
-using Vortex.RewardTracks.Content;
-using Vortex.RewardTracks.Progression;
 
-namespace Vortex.RewardTracks.Admin;
+namespace Vortex.Dashboard.API.Admin;
 
 /// <summary>
 /// Content CRUD for reward tracks, plus the per-player operations an operator needs.
@@ -35,7 +35,8 @@ namespace Vortex.RewardTracks.Admin;
 /// </remarks>
 internal sealed class RewardTrackAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
-    RewardTrackCatalog catalog,
+    IRewardTrackCatalog catalog,
+    IReferenceDataReloader reloader,
     IGrainFactory grainFactory,
     // What a filter is allowed to say. Read from the loaded translators rather than from a map kept
     // in step by hand, so the editor cannot offer a fact this action never emits.
@@ -76,7 +77,7 @@ internal sealed class RewardTrackAdminService(
 
         db.RewardTracks.Add(row);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IRewardTrackCatalog.CacheName, ct).ConfigureAwait(false);
 
         return RewardTrackAdminResult.Ok(row.Id);
     }
@@ -178,7 +179,7 @@ internal sealed class RewardTrackAdminService(
         await ClonePrizesAsync(db, trackRowId, clone.Id, ct).ConfigureAwait(false);
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IRewardTrackCatalog.CacheName, ct).ConfigureAwait(false);
 
         logger.LogInformation(
             "Cloned reward track {Source} into {Target} as a draft.",
@@ -344,7 +345,7 @@ internal sealed class RewardTrackAdminService(
         db.RewardTracks.Remove(row);
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IRewardTrackCatalog.CacheName, ct).ConfigureAwait(false);
 
         logger.LogWarning("Deleted reward track {TrackId} and all its content.", row.TrackId);
 
@@ -1014,7 +1015,7 @@ internal sealed class RewardTrackAdminService(
     /// </remarks>
     private async Task ReloadAndNotifyAsync(string? trackId, CancellationToken ct)
     {
-        await catalog.ReloadAsync(ct).ConfigureAwait(false);
+        await reloader.ReloadAsync(IRewardTrackCatalog.CacheName, ct).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(trackId))
         {

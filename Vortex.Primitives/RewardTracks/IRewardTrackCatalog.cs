@@ -20,6 +20,17 @@ namespace Vortex.Primitives.RewardTracks;
 /// </remarks>
 public interface IRewardTrackCatalog
 {
+    /// <summary>
+    /// The name this cache answers to in <see cref="Hosting.IReferenceDataReloader"/>.
+    /// </summary>
+    /// <remarks>
+    /// The admin service reloads through the reloader rather than by holding the concrete catalogue,
+    /// so that it does not need a reference to the assembly that implements it. The reloader names
+    /// caches by their implementing type's name; a test pins that this string is still that name,
+    /// because the mismatch would otherwise only show as a reload that quietly did nothing.
+    /// </remarks>
+    public const string CacheName = "RewardTrackCatalog";
+
     /// <summary>Every track, published or not, in display order.</summary>
     ImmutableArray<RewardTrackDefinitionSnapshot> Tracks { get; }
 

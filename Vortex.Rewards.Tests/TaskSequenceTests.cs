@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using FluentAssertions;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
+using Vortex.Primitives.RewardTracks.Content;
 using Vortex.Primitives.RewardTracks.Snapshots;
 using Vortex.RewardTracks.Progression;
 using Xunit;
