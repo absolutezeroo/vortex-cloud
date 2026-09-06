@@ -79,7 +79,32 @@
     FurnitureId: 'furniture',
     RoomId: 'room',
     PlayerId: 'user',
+    CategoryId: 'category',
+    OfferId: 'offer',
+    BadgeCode: 'badge',
   };
+
+  /**
+   * Facts whose kind is generic but whose meaning is not.
+   * <p>
+   * A guild id, a Habbicon and a pet species are all OpaqueId as far as the engine is concerned --
+   * it only ever compares strings. The editor knows better, because it knows which fact it is
+   * looking at, and a value picked from a list cannot be misspelled.
+   * </p>
+   */
+  const PICKER_FOR_FACT = {
+    group: 'group',
+    habbicon: 'habbicon',
+    collection: 'collection',
+    pet_type: 'petSpecies',
+  };
+
+  /** The directory this filter can pick from, by fact first and kind second. */
+  function pickerFor(meta) {
+    if (!meta) return null;
+
+    return PICKER_FOR_FACT[meta.key] ?? PICKER_FOR_KIND[meta.kind] ?? null;
+  }
 
   /**
    * The facts a given action emits, straight from the server: each carries its kind, its label and
@@ -1128,7 +1153,7 @@
                     : 'rewardTracks.conditionValuePlaceholder'
                 )}
               />
-              {#if PICKER_FOR_KIND[meta?.kind]}
+              {#if pickerFor(meta)}
                 <button
                   type="button"
                   class="ghost-button block-pick"
@@ -1137,7 +1162,7 @@
                     (pickingFilter = {
                       stepIndex,
                       filterIndex,
-                      kind: PICKER_FOR_KIND[meta.kind],
+                      kind: pickerFor(meta),
                     })}
                 >
                   <Search size={14} />
@@ -1319,9 +1344,12 @@
     onSelect={(item) => {
       const { stepIndex, filterIndex } = pickingFilter;
       const filter = taskDraft.form.steps[stepIndex].filters[filterIndex];
+      // What the signal carries, which is not always the row's id: a Habbicon collection is
+      // filtered by its code, and a badge by the code itself.
+      const picked = String(item.value ?? item.id);
       // "One of" is a list, so a pick adds to it; the other operators hold a single value.
       filter.value =
-        Number(filter.op) === 2 && filter.value ? `${filter.value},${item.id}` : String(item.id);
+        Number(filter.op) === 2 && filter.value ? `${filter.value},${picked}` : picked;
       pickedLabels[`${stepIndex}:${filterIndex}`] = { name: item.name, iconUrl: item.iconUrl };
       pickingFilter = null;
     }}

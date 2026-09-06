@@ -66,6 +66,65 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.FurnitureRead,
             TagDirectory
         );
+        // The directories behind the reward-track filter pickers. Each replaces an id or a code an
+        // operator was expected to type from memory into a filter that saves cleanly and then never
+        // matches -- the failure this subsystem exists to prevent, reappearing at the last step.
+        MapReadGet(
+            app,
+            ApiDirectory + "/groups",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.GroupsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.SocialRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/habbicons",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.HabbiconsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.HabbiconsRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/habbicon-collections",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.HabbiconCollectionsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.HabbiconsRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/catalog-offers",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.CatalogOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.CatalogRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/navigator-categories",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.NavigatorCategoriesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.NavigatorRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/badges",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.BadgesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.PlayersRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/pet-species",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.PetSpeciesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.PetsRead,
+            TagDirectory
+        );
         MapReadGet(
             app,
             ApiDirectory + "/entity/{id}",

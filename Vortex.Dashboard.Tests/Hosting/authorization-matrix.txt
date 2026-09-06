@@ -26,8 +26,15 @@ GET /api/v1/config -> dashboard.config.read
 GET /api/v1/daily-tasks -> dashboard.quests.read
 GET /api/v1/database/backups -> dashboard.ops.database.backup
 GET /api/v1/directory/avatars -> dashboard.players.read
+GET /api/v1/directory/badges -> dashboard.players.read
+GET /api/v1/directory/catalog-offers -> dashboard.catalog.read
 GET /api/v1/directory/entity/{id} -> dashboard.audit.read
 GET /api/v1/directory/furniture -> dashboard.furniture.read
+GET /api/v1/directory/groups -> dashboard.social.read
+GET /api/v1/directory/habbicon-collections -> dashboard.habbicons.read
+GET /api/v1/directory/habbicons -> dashboard.habbicons.read
+GET /api/v1/directory/navigator-categories -> dashboard.navigator.read
+GET /api/v1/directory/pet-species -> dashboard.pets.read
 GET /api/v1/directory/players -> dashboard.players.read
 GET /api/v1/directory/rooms -> dashboard.audit.read
 GET /api/v1/directory/rooms/active -> dashboard.ops.rooms.manage

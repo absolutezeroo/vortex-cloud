@@ -39,6 +39,9 @@
   // operator actually knows a thing: the id they just read in a log, the sprite an asset folder is
   // named after, and -- for furniture -- what the thing *does*. The server owns the ordering (see
   // OrderDefinitions/OrderPlayers/OrderRooms); this is only the vocabulary it accepts.
+  /** The plain directories order themselves; offering a sort they ignore would be a dead control. */
+  const PLAIN_KINDS = ['group', 'habbicon', 'collection', 'offer', 'category', 'badge', 'petSpecies'];
+
   const SORTS = {
     furniture: ['relevance', 'name', 'id', 'idDesc', 'sprite', 'logic'],
     room: ['relevance', 'name', 'id', 'idDesc'],
@@ -273,6 +276,14 @@
                 max: row.playersMax,
               })}
             </small>
+          </span>
+        </button>
+      {:else if PLAIN_KINDS.includes(kind)}
+        <button type="button" class="pick-row" onclick={() => choose(row)}>
+          <span class="pick-icon" aria-hidden="true"></span>
+          <span class="pick-main">
+            <strong>{row.name}</strong>
+            <small>#{row.id}{row.description ? ` - ${row.description}` : ''}</small>
           </span>
         </button>
       {:else}
