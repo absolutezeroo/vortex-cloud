@@ -1,6 +1,6 @@
 # Signaux de progression — conception
 
-**Date** : 2026-09-06 (v3)
+**Date** : 2026-09-06 (v4)
 **État** : proposée, non implémentée
 **Périmètre** : reward tracks, tâches quotidiennes, succès. Le wired reçoit la grammaire, pas le
 bus (§7.4). Historique des révisions en §16.
@@ -109,11 +109,19 @@ traducteur (§4) :
 (`Vortex.Primitives/Commerce/CommerceReplayGuard.cs`) enregistre un pas `RELAY:<consumer>` dans le
 journal de commerce et répond `true` à la première livraison seulement. Les reward tracks passent
 `"reward-track"`, les tâches quotidiennes `"daily-task"`. La clé porte **le nom du consommateur**,
-et il faut le préserver : le relais livre au moins une fois, et un consommateur qui a échoué doit
-revoir la livraison même si les deux autres l'ont traitée.
+et il faut le préserver : sans elle, le premier des trois à traiter une republication priverait les
+deux autres de leur première livraison.
+
+Ce qu'il ne fait **pas** : garantir la reprise après échec. Le reçu est écrit *avant* l'appel
+métier, `InvokeOneAsync` avale l'exception du handler, et `CommerceRelayService` fait
+`PublishAsync` puis `MarkRelayedAsync` — l'opération est marquée relayée même si un consommateur a
+échoué dedans. C'est un garde contre la republication, pas un accusé de traitement (§7.3).
+
+`RewardTrackCatalogPurchaseHandler` l'appelle **une seule fois**, puis émet ses deux signaux. Cette
+cardinalité est ce que §3.1 préserve.
 
 Un `operationId` vide ou non-GUID répond `true` sans rien écrire : le garde est inoffensif pour un
-événement qui n'est pas rejouable.
+événement qui n'est pas rejouable — c'est-à-dire pour tous sauf l'achat catalogue.
 
 ### 1.6 Ce que le pipeline sait déjà faire — vérifié dans `Vortex.Pipeline`
 
@@ -180,31 +188,75 @@ public sealed record ProgressSignal(
     long PlayerId,
     string Action,          // SignalActions.*
     int Amount,             // 1 pour un acte ; N pour "a dépensé N crédits" ; le niveau pour pet_level
-    string? Target,         // de quoi le signal parle principalement (§3.1)
-    ImmutableArray<SignalFact> Facts,
-    string DeliveryId       // l'OperationId de l'événement source, ou vide s'il n'est pas rejouable
+    string? Target,         // de quoi le signal parle principalement (§3.3)
+    ImmutableArray<SignalFact> Facts
 );
 
 public readonly record struct SignalFact(string Key, string Value);
 
-/// <summary>Le signal sur le pipeline. Un événement comme les autres.</summary>
-public sealed record ProgressSignalRaised(ProgressSignal Signal) : IEvent;
+/// <summary>
+/// Ce qu'un événement du domaine a produit : un lot, pas un signal. Un événement source en produit
+/// souvent plusieurs (§4.1), et c'est le lot qui porte l'identité de livraison.
+/// </summary>
+public sealed record ProgressSignalsRaised(
+    string DeliveryId,      // l'OperationId de l'événement source, ou vide s'il n'est pas rejouable
+    ImmutableArray<ProgressSignal> Signals
+) : IEvent;
 ```
+
+### 3.1 Pourquoi le lot, et pas un événement par signal
+
+`DeliveryId` est sur l'enveloppe, pas sur le signal, et c'est **la seule forme qui préserve la
+sémantique actuelle**.
+
+`RewardTrackCatalogPurchaseHandler` appelle le garde de rejeu **une fois**, puis émet deux signaux
+(`buy_from_catalogue` et `spend_credits`). Un consommateur qui gardait par *signal* écrirait le reçu
+`RELAY:reward-track` sur le premier et **verrait le deuxième rejeté** : `TryRecordStepAsync` insère
+une ligne `(OperationId, StepKey)` sous contrainte d'unicité, donc le second appel avec la même clé
+répond `false`. Le crédit dépensé ne serait jamais compté. Un lot par événement source rétablit
+exactement le comportement d'aujourd'hui : **un garde, une fois, pour tout ce que l'événement a
+produit.**
+
+Deux effets secondaires, tous deux bons : le surcoût passe de **+1 enveloppe par action à +1 par
+événement traduit** (les vingt badges d'un `BadgesEquippedEvent` voyagent ensemble), et un
+consommateur voit d'un coup tout ce que l'acte a produit au lieu de le reconstituer.
+
+Le traducteur dit d'où vient l'identité, parce que lui seul sait quel champ de son événement la
+porte :
+
+```csharp
+public interface ISignalTranslator<TEvent> where TEvent : IEvent
+{
+    static abstract ImmutableArray<SignalShape> Shapes { get; }
+    ImmutableArray<ProgressSignal> Translate(TEvent e);
+
+    /// <summary>Vide par défaut : la plupart des événements ne sont pas rejouables.</summary>
+    string DeliveryIdOf(TEvent e) => string.Empty;
+}
+```
+
+Un seul traducteur le surcharge aujourd'hui, celui de l'achat catalogue.
+
+### 3.2 Les valeurs
 
 **Les valeurs restent des chaînes.** C'est déjà le cas (`RewardTrackFactSnapshot`), c'est ce que la
 capture inter-étapes sérialise sur la ligne du joueur, et un `object` typé forcerait chaque
 consommateur à connaître le type de chaque fait. Le **type** vit dans le registre (§5), pas dans la
 valeur : il sert à l'éditeur, pas au moteur.
 
-**Un fait sans valeur est omis, jamais émis à `0` ou `""`.** `HabbiconUsedEvent.RoomId` vaut 0 en
+**Un identifiant absent est omis, jamais émis à `0`.** `HabbiconUsedEvent.RoomId` vaut 0 en
 conversation privée, une catégorie absente vaut 0 : le traducteur n'émet alors pas le fait. Un
 filtre sur un fait absent échoue en fermé (§6), donc « n'importe quel appart sauf le 12 » ne matche
-pas une conversation privée — ce qui est ce qu'on veut, et ce que « room = 0 » aurait cassé.
+pas une conversation privée — ce que « room = 0 » aurait cassé.
+
+**La règle s'arrête aux identifiants et aux optionnels.** Un `FactKind.Number` a le droit de valoir
+zéro : « a reçu 0 respect au total » est une valeur, pas une absence. Le constructeur de faits le
+dit dans ses noms — `IdIfAny(...)` omet le zéro, `Number(...)` l'écrit.
 
 `SignalActions` reprend les constantes de `RewardTrackActions` **avec les mêmes chaînes** : du contenu
 les nomme en base.
 
-### 3.1 Pourquoi `Target` est un champ et pas seulement un fait
+### 3.3 `Target` : un champ, et un fait ajouté au même endroit pour tout le monde
 
 `Target` est déjà un paramètre de premier rang de `IPlayerRewardTrackGrain.ProgressAsync`, et il y
 fait **deux choses qu'aucun fait ne fait** :
@@ -214,9 +266,31 @@ fait **deux choses qu'aucun fait ne fait** :
 2. c'est **la clé de déduplication du mode distinct** : « visiter 20 apparts différents » compte 20
    `Target` distincts.
 
-Le noyer dans les faits obligerait chaque consommateur à connaître la clé conventionnelle `"target"`
-et casserait le mode distinct au premier oubli. Il reste dupliqué dans les faits — c'est déjà le cas
-aujourd'hui, et c'est ce qui permet de filtrer dessus comme sur les autres.
+Mais il est **aussi** un fait aujourd'hui : `RewardTrackSignal.SendAsync` fait
+`if (target is not null) facts = facts.Insert(0, new(RewardTrackFacts.Target, target));`, et
+`RewardTrackActionFacts` liste `Target` pour douze actions. Du contenu filtre donc dessus, et
+l'éditeur le propose sous le libellé « Cible ».
+
+> **Cette insertion est centralisée, jamais recopiée dans les traducteurs.** Un traducteur renseigne
+> `Target` et rien d'autre ; l'hôte (§4.5) ajoute le fait `target` avant de publier, exactement où
+> `SendAsync` le fait aujourd'hui. Laisser 21 traducteurs s'en souvenir, c'est écrire la prochaine
+> dérive du §1.3 — et la première version de cette spec l'avait déjà oubliée dans son propre exemple.
+
+Comme la cible change de nature selon l'action — un id d'appart ici, un joueur là, une offre pour le
+catalogue, un code de badge pour un badge — **`SignalShape` porte un `TargetKind`** :
+
+```csharp
+public sealed record SignalShape(
+    string Action,
+    ImmutableArray<FactKey> Facts,
+    FactKind? TargetKind = null   // null = cette action n'a pas de cible
+);
+```
+
+Le vocabulaire expose alors `target` comme un **fait virtuel typé par action** : picker d'apparts sur
+`create_room`, picker de joueurs sur `give_respect`, picker d'offres sur `buy_from_catalogue`. Ce
+qui répond au passage à la question restée ouverte deux tours plus tôt — pourquoi « Cible » n'avait
+pas de picker : parce que son type n'était écrit nulle part.
 
 ---
 
@@ -228,10 +302,12 @@ aujourd'hui, et c'est ce qui permet de filtrer dessus comme sur les autres.
 public sealed class RoomCreatedTranslator : ISignalTranslator<RoomCreatedEvent>
 {
     // Une forme par action produite -- l'achat catalogue en déclare deux.
+    // TargetKind dit ce qu'est la cible ; le fait "target" est ajouté par l'hôte (§3.3).
     public static ImmutableArray<SignalShape> Shapes { get; } =
     [
         new(SignalActions.CreateRoom,
-            [Facts.Room, Facts.RoomName, Facts.RoomDescription, Facts.Category, Facts.Model]),
+            [Facts.Room, Facts.RoomName, Facts.RoomDescription, Facts.Category, Facts.Model],
+            TargetKind: FactKind.RoomId),
     ];
 
     public ImmutableArray<ProgressSignal> Translate(RoomCreatedEvent e) =>
@@ -241,9 +317,8 @@ public sealed class RoomCreatedTranslator : ISignalTranslator<RoomCreatedEvent>
                 .Id(Facts.Room, e.RoomId)
                 .Text(Facts.RoomName, e.Name)
                 .Text(Facts.RoomDescription, e.Description)
-                .IdIfAny(Facts.Category, e.CategoryId)      // omis quand 0 (§3)
-                .Text(Facts.Model, e.ModelName),
-            DeliveryId: "")];
+                .IdIfAny(Facts.Category, e.CategoryId)      // omis quand 0 (§3.2)
+                .Text(Facts.Model, e.ModelName))];
 }
 ```
 
@@ -305,17 +380,29 @@ la moindre allocation.
 ```csharp
 public interface ISignalInterest { bool AnyConsumerCares(string action); }
 
-/// <summary>Implémenté par chaque consommateur ; l'ensemble est le sien, vivant, jamais copié.</summary>
-public interface ISignalConsumerInterest { ImmutableHashSet<string> Actions { get; } }
+/// <summary>Une source d'intérêt. Un singleton DI, PAS le consommateur lui-même.</summary>
+public interface ISignalInterestSource { ImmutableHashSet<string> Actions { get; } }
 ```
 
-`AnyConsumerCares` interroge **les ensembles vivants des consommateurs**, sans union mise en cache :
-trois recherches de hash, et aucun problème d'invalidation. Les reward tracks ont déjà leur ensemble
-(`_index.Actions`, remplacé atomiquement par `ReloadAsync` aux quatre sites d'écriture de
-`RewardTrackAdminService`) ; il suffit de l'exposer. Les succès ont un ensemble **statique** — les
-huit actions de leur table (§7.2). Les tâches quotidiennes n'ont **aucun index de contenu
-aujourd'hui** (§1.2) : l'étape ② leur en donne un, construit sur les `quest_type_code` des tâches
-publiées, ou à défaut l'ensemble statique de leur table.
+> **L'intérêt n'est pas porté par le handler.** `EnvelopeFeatureProcessor` ne fait pas des handlers
+> des services : il construit un activateur et l'enregistre dans le registre, et l'instance est
+> créée puis jetée à chaque invocation (§1.6). Faire implémenter `ISignalInterestSource` par
+> `RewardTrackSignalConsumer` ne rendrait donc **aucune instance** joignable par `ISignalInterest` —
+> la v3 le supposait, et c'était faux.
+
+Chaque système enregistre un **singleton dédié** — `RewardTrackSignalInterest`,
+`DailyTaskSignalInterest`, `AchievementSignalInterest` — dans son propre module, à côté de ses autres
+services. `SignalInterest` reçoit l'`IEnumerable<ISignalInterestSource>` par injection et interroge
+leurs ensembles vivants, sans union mise en cache : trois recherches de hash, et aucun problème
+d'invalidation. Le consommateur et sa source d'intérêt lisent le même index ; ils ne sont simplement
+pas le même objet.
+
+Ce que chacun expose : les reward tracks ont déjà l'ensemble (`_index.Actions`, remplacé
+atomiquement par `ReloadAsync` aux quatre sites d'écriture de `RewardTrackAdminService`) — la source
+le relit à chaque appel, donc un rechargement de contenu est vu immédiatement. Les succès ont un
+ensemble **statique** : les huit actions de leur table (§7.2). Les tâches quotidiennes n'ont **aucun
+index de contenu aujourd'hui** (§1.2) : l'étape ② leur en donne un, construit sur les
+`quest_type_code` des tâches publiées, ou à défaut l'ensemble statique de leur table.
 
 La porte se ferme sur l'**action**, et un traducteur peut en produire plusieurs : elle est évaluée
 sur l'union des actions de ses `Shapes`. Le tri fin — « cette action-ci n'intéresse personne » —
@@ -334,8 +421,8 @@ chaque plugin**, avec le même `IDisposable` de retrait au déchargement.
 
 Pour chaque type public concret implémentant `ISignalTranslator<TEvent>`, il :
 
-1. lit `Shapes` (statique) par réflexion et l'enregistre dans le vocabulaire (§5), préfixé par la
-   clé du plugin quand l'assembly en est un (§8.1) ;
+1. lit `Shapes` (statique) par réflexion, **valide** ses clés (§8.1) et l'enregistre dans le
+   vocabulaire (§5) ;
 2. instancie le traducteur **une fois** (`Activator.CreateInstance`, constructeur sans paramètre —
    un traducteur avec un constructeur à paramètres est refusé avec un message clair, pas ignoré) ;
 3. construit `SignalTranslatorHost<TEvent>(traducteur, IEventPublisher, ISignalInterest)` **une
@@ -344,9 +431,15 @@ Pour chaque type public concret implémentant `ISignalTranslator<TEvent>`, il :
    `HandleAsync` sur le type de l'hôte, qui implémente `IEventHandler<TEvent>` ;
 4. rend un disposable qui retire **le handler et les formes** ensemble.
 
-`SignalTranslatorHost<TEvent>.HandleAsync` fait, dans cet ordre : porte d'intérêt sur les actions
-des `Shapes` ; `Translate` ; publication de chaque signal. C'est le seul code non trivial du projet,
-et il est écrit une fois.
+`SignalTranslatorHost<TEvent>.HandleAsync` fait, dans cet ordre :
+
+1. **la porte d'intérêt** sur l'union des actions des `Shapes` — avant toute allocation ;
+2. `Translate` ;
+3. pour chaque signal, **l'insertion du fait `target`** quand `Target` est non nul (§3.3) ;
+4. `DeliveryIdOf`, puis **une** publication de `ProgressSignalsRaised` avec le lot.
+
+C'est le seul code non trivial du projet, et il est écrit une fois. Les points 1 et 3 sont les deux
+règles que la v3 confiait implicitement aux 21 traducteurs, c'est-à-dire à leur mémoire.
 
 Deux conséquences mesurables : **l'hôte est un singleton**, donc les traducteurs ne coûtent aucune
 activation par événement — là où chaque handler actuel est instancié et disposé à chaque
@@ -401,16 +494,17 @@ pickers sans écrire une ligne** le jour où ils gagnent des filtres.
 
 ### 5.3 Gouvernance : additif seulement
 
-Les clés de faits sont stockées **en chaînes dans le contenu**
-(`RewardTrackStepFilterEntity.FactKey`, et les tables équivalentes des futurs consommateurs).
+Les clés de faits **et les codes d'action** sont stockés en chaînes dans le contenu :
+`RewardTrackStepFilterEntity.FactKey` pour les unes, la colonne d'action des tâches pour les autres,
+et les tables équivalentes des futurs consommateurs.
 
-> **On ajoute des faits, on n'en renomme jamais, on n'en supprime jamais.** Un fait qui n'a plus de
-> sens est marqué `[Obsolete]`, disparaît de l'éditeur, et continue d'être évalué pour le contenu
-> qui l'utilise déjà.
+> **On ajoute des faits et des actions, on n'en renomme jamais, on n'en supprime jamais.** Ce qui
+> n'a plus de sens est marqué `[Obsolete]`, disparaît de l'éditeur, et continue d'être évalué pour
+> le contenu qui l'utilise déjà.
 
-Un test verrouille la règle : il compare les clés déclarées à une liste de référence versionnée, et
-échoue si une clé disparaît ou change de type (§10.3). C'est la discipline habituelle des registres
-de schémas ; sans elle, un renommage casse silencieusement des filtres déjà écrits en base.
+La règle vaut pour **les deux** vocabulaires. La v3 ne verrouillait que les faits, alors qu'elle
+écrivait elle-même que les chaînes d'actions sont en base : un `create_room` renommé casserait
+autant de contenu qu'un `room` renommé. Le test §10.3 fige les deux listes.
 
 ---
 
@@ -447,23 +541,29 @@ sans dépendance.
 
 ```csharp
 public sealed class RewardTrackSignalConsumer(IGrainFactory grains, IRewardTrackCatalog catalog, ICommerceJournal journal)
-    : IEventHandler<ProgressSignalRaised>, ISignalConsumerInterest
+    : IEventHandler<ProgressSignalsRaised>
 {
-    public ImmutableHashSet<string> Actions => catalog.Actions;
-
-    public async ValueTask HandleAsync(ProgressSignalRaised e, EventContext ctx, CancellationToken ct)
+    public async ValueTask HandleAsync(ProgressSignalsRaised e, EventContext ctx, CancellationToken ct)
     {
-        ProgressSignal s = e.Signal;
-        if (s.PlayerId <= 0 || !catalog.IsActionInteresting(s.Action)) return;
-        if (!await CommerceReplayGuard.FirstDeliveryAsync(journal, s.DeliveryId, "reward-track", ct)) return;
-        await grains.GetPlayerRewardTrackGrain(s.PlayerId)
-            .ProgressAsync(s.Action, s.Amount, s.Target, s.Facts.ToSnapshots(), ct);
+        // Trier d'abord : le garde de rejeu ne doit pas être dépensé pour un lot qui ne
+        // m'intéresse pas, et il ne doit être dépensé qu'UNE fois pour celui qui m'intéresse.
+        var mine = e.Signals.Where(s => s.PlayerId > 0 && catalog.IsActionInteresting(s.Action));
+        if (!mine.Any()) return;
+
+        if (!await CommerceReplayGuard.FirstDeliveryAsync(journal, e.DeliveryId, "reward-track", ct))
+            return;
+
+        foreach (ProgressSignal s in mine)
+            await grains.GetPlayerRewardTrackGrain(s.PlayerId)
+                .ProgressAsync(s.Action, s.Amount, s.Target, s.Facts.ToSnapshots(), ct);
     }
 }
 ```
 
 Un consommateur par système, découvert et isolé par le registre existant comme n'importe quel
-handler.
+handler. **L'ordre compte** : filtrer, puis garder, puis traiter. Garder avant de filtrer
+consommerait le reçu d'un lot dont aucun signal ne concerne ce consommateur, et une republication
+ultérieure — après qu'un opérateur a publié du contenu qui, lui, s'y intéresse — serait rejetée.
 
 > **Invariant : un consommateur fait exactement les mêmes appels de grain, avec les mêmes attributs,
 > que les handlers qu'il remplace.** `IPlayerDailyTaskGrain.ProgressAsync` et
@@ -517,12 +617,31 @@ elle règlerait au passage une entorse à « les handlers de paquets orchestrent
 abonner un consommateur à une action produite par ses propres événements. Un test le vérifie sur
 les tables (§10.2).
 
-### 7.3 Livraison au moins une fois
+### 7.3 Ce que le garde de rejeu garantit — et ce qu'il ne garantit pas
 
-Le garde de rejeu reste **par consommateur**, avec la clé qu'il a aujourd'hui. Le traducteur ne
-déduplique jamais — il est pur, il n'a pas de journal — et c'est correct : les consommateurs sont
-isolés, l'un peut échouer là où les autres réussissent, et il doit revoir la livraison. Le signal
-porte `DeliveryId` pour ça ; vide, le garde passe sans écrire (§1.5).
+Le garde reste **par consommateur**, avec la clé qu'il a aujourd'hui, et il est appelé **une fois
+par lot** (§3.1). Le traducteur ne déduplique jamais — il est pur, il n'a pas de journal.
+
+> **Le reçu est un garde contre la republication, pas un accusé de traitement.** La v3 affirmait
+> qu'« un consommateur qui a échoué doit revoir la livraison ». C'est faux, et ça l'est déjà
+> aujourd'hui : `FirstDeliveryAsync` écrit le reçu **avant** l'appel métier, et
+> `EnvelopeHost.InvokeOneAsync` capture l'exception du handler **sans la relancer**. Un consommateur
+> peut donc faire reçu ✓ → `ProgressAsync` ✗ et ne jamais rien revoir. Pire, `CommerceRelayService`
+> fait `PublishAsync(rebuilt)` puis `MarkRelayedAsync` : l'opération est marquée relayée même si un
+> consommateur a échoué à l'intérieur.
+
+Ce que la clé par consommateur garantit réellement, et qui reste indispensable : **le reçu d'un
+consommateur ne supprime pas la première livraison d'un autre.** Sans elle, le premier des trois à
+traiter le lot les priverait tous les deux.
+
+Ce que ça ne garantit pas : la reprise après échec. Une vraie garantie demanderait une boîte de
+réception idempotente au niveau du grain consommateur — écrire le reçu et appliquer la progression
+dans la même transaction. C'est un sujet séparé, il préexiste à cette refonte, et l'étape ① le
+**conserve tel quel** plutôt que de mélanger une migration sans risque observable avec un changement
+de sémantique de livraison.
+
+Un `DeliveryId` vide fait passer le garde sans rien écrire (§1.5), ce qui est le cas de tous les
+événements sauf l'achat catalogue.
 
 ### 7.4 Le wired n'est pas un consommateur
 
@@ -562,7 +681,7 @@ enveloppe.
 
 | Projet | Contenu | Dépend de |
 | --- | --- | --- |
-| `Vortex.Primitives/Signals/` | `ProgressSignal`, `ProgressSignalRaised`, `SignalActions`, `Facts`, `FactKind`, `SignalShape`, `FilterOperator`, l'évaluateur, les règles de validation, **`ISignalVocabulary`**, `ISignalInterest`, `ISignalConsumerInterest`, `ISignalTranslator<T>` | rien |
+| `Vortex.Primitives/Signals/` | `ProgressSignal`, `ProgressSignalsRaised`, `SignalActions`, `Facts`, `FactKind`, `SignalShape`, `FilterOperator`, l'évaluateur, les règles de validation, **`ISignalVocabulary`**, `ISignalInterest`, `ISignalInterestSource`, `ISignalTranslator<T>` | rien |
 | **`Vortex.Signals`** *(nouveau)* | les 21 (+3) traducteurs, `SignalTranslatorHost<T>`, `SignalTranslatorFeatureProcessor`, `SignalVocabulary` (implémente `ISignalVocabulary`) | Primitives, Events, Pipeline, Runtime |
 | `Vortex.RewardTracks` | son consommateur ; `RewardTrackSequenceRules` reçoit un `ISignalVocabulary` en paramètre au lieu de lire une carte statique | Primitives |
 | `Vortex.Progression` | ses deux consommateurs + les deux tables | Primitives |
@@ -584,10 +703,20 @@ modularité n'est pas à construire, elle est héritée du chargeur de plugins.
 
 Deux règles en découlent :
 
-1. **Espace de noms.** Une clé de fait ou d'action venant d'un plugin est préfixée par la clé du
-   plugin (`acme:trophy`). Le processeur la lit dans le `PluginManifest` que `PluginManager` enregistre
-   dans le provider du plugin ; une collision avec le vocabulaire du cœur ou d'un autre plugin est
-   refusée au chargement, pas découverte le jour où deux plugins se marchent dessus.
+1. **Espace de noms — validé, jamais réécrit.** Un plugin écrit ses clés **déjà qualifiées**
+   (`acme:trophy`) dans ses `Shapes` comme dans ce que `Translate` retourne ; le processeur
+   **vérifie** le préfixe au chargement contre la clé du `PluginManifest` et refuse l'assembly
+   sinon. Il ne réécrit rien.
+
+   > Réécrire au chargement était une incohérence de la v3 : le vocabulaire aurait porté
+   > `acme:trophy` pendant que l'hôte publiait le `trophy` brut rendu par `Translate`, et les
+   > filtres n'auraient jamais matché. Valider plutôt que réécrire supprime la question — et laisse
+   > un plugin **réutiliser les faits du cœur** (`room`, `player`) sans qu'ils deviennent
+   > accidentellement `acme:room`. Un plugin peut donc dire « dans tel appart » avec le même
+   > vocabulaire que tout le monde.
+
+   Une clé non préfixée qui n'existe pas dans le cœur est refusée ; une collision entre deux plugins
+   est impossible par construction, puisque le préfixe est la clé du plugin.
 2. **La règle « on ne renomme jamais » (§5.3) vaut aussi pour eux**, mais le dépôt ne peut pas la
    verrouiller par un test. Elle est écrite dans le contrat du plugin : un plugin qui renomme une de
    ses clés casse le contenu écrit dessus, et c'est à lui d'assumer sa migration.
@@ -626,26 +755,53 @@ prévenir, et une tâche écrite dessus deviendrait invisible au lieu d'être si
 
 ## 10. Tests
 
-### 10.1 Le test qui manquait
+### 10.1 Le test qui manquait — en deux moitiés, parce qu'une seule ne suffit pas
 
-Un test paramétré sur tous les traducteurs découverts dans `Vortex.Signals` :
+Une fixture générique **ne peut pas** prouver toutes les formes, et la spec en portait elle-même les
+contre-exemples : le chat exige `Whisper == false`, le geste exige `Gesture == "dance"` ou
+`"wave"` exactement, le déplacement exige `RotatedInPlace` dans ses **deux** états, l'achat exige
+`CreditCost > 0` pour émettre sa seconde action. Un générateur qui sait produire « une chaîne non
+vide » ne devinera jamais `"dance"`. Prétendre le contraire, c'était écrire un test vert qui ne
+prouve rien — le défaut même qu'il est censé empêcher.
 
-1. fabrique l'événement source par réflexion sur son constructeur positionnel, avec des valeurs
-   **non nulles, non vides, non nulles numériquement** — un fait à `0` ou `""` passerait à côté d'un
-   traducteur qui oublie un champ ;
-2. appelle `Translate` ;
-3. exige que **chaque clé déclarée dans `Shapes` soit présente et non vide** dans au moins un
-   signal produit, et qu'**aucun signal ne porte une clé non déclarée** ;
-4. exige que chaque `Action` produite soit déclarée dans `Shapes`.
+**Moitié générique — invariants structurels, sur tous les traducteurs.** La fixture fabrique
+l'événement par réflexion sur son constructeur positionnel, avec des valeurs non nulles et non
+vides, et le test exige :
+
+1. aucun signal ne porte une clé **non déclarée** dans les `Shapes` ;
+2. chaque `Action` produite est déclarée ;
+3. aucune valeur de fait n'est nulle ou vide ;
+4. `PlayerId > 0` sur chaque signal produit.
+
+Ces quatre-là valent même quand `Translate` rend un tableau vide, ce qui est le cas normal pour un
+traducteur branché mal deviné.
+
+**Moitié explicite — une matrice de cas, pour les traducteurs qui branchent.** Un cas nommé par
+chemin, avec l'événement écrit à la main, qui exige que **chaque clé déclarée de la forme visée soit
+présente et non vide** :
+
+| Traducteur | Cas |
+| --- | --- |
+| Chat | ligne normale → signal ; chuchotement → rien |
+| Geste | `"dance"` → `dance` ; `"wave"` → `wave` ; `"cough"` → rien |
+| Meuble déplacé | déplacement → `move_item` seul ; rotation → `move_item` **et** `rotate_item` |
+| Achat catalogue | `CreditCost > 0` → deux signaux ; `CreditCost == 0` → un seul ; `DeliveryIdOf` rend l'`OperationId` |
+| Badges | trois codes → trois signaux ; liste vide → rien |
+| Échange | deux signaux, chacun avec **l'autre** joueur en fait `player` |
+| Habbicon | en appart → fait `room` ; en conversation privée (`RoomId == 0`) → **pas** de fait `room` |
+| Amitié acceptée | deux signaux, un par joueur |
+| Niveau de familier | `Amount` == le niveau, pas 1 ; le crédit va au propriétaire |
+
+**Et le filet qui rend la matrice fiable** : un test de couverture exige que **chaque `Shape`
+déclarée soit couverte par au moins un cas** — explicite ou générique. Un traducteur branché ajouté
+sans son cas fait échouer la suite au lieu de rester silencieusement non testé. Sans ce filet, la
+matrice serait exactement le genre de liste tenue à la main qui a produit les neuf dérives du §1.3.
 
 Aucun générateur de fixtures n'est dans le dépôt (ni AutoFixture, ni Bogus) : le constructeur est
 maison, ~60 lignes, et couvre exactement les types que les 24 événements concernés utilisent —
 `int`, `long`, `bool`, `string`, `string?`, `PlayerId`, `PlayerId?`, `RoomId`,
 `ImmutableArray<string>`, `IReadOnlyList<int>`. Un type inconnu fait échouer le test avec son nom,
 pas passer silencieusement.
-
-Il échoue le jour où quelqu'un ajoute un fait à une `Shape` sans l'émettre — les neuf dérives du
-§1.3, mais avant le commit.
 
 ### 10.2 L'évaluateur, les tables, la boucle
 
@@ -805,7 +961,8 @@ publication si la donnée y est libre, et **écarter explicitement** ce qui coû
 | Risque | Parade |
 | --- | --- |
 | **La porte d'intérêt est oubliée** ou évaluée après `Translate` : une enveloppe par action, une fois par case marchée | §4.4 : première instruction de l'hôte, avant toute allocation. Mesure du cas « aucun contenu » en §10.4, `signals_gated_total` en production. |
-| +1 enveloppe par action quand du contenu écoute | En face : traduction et enrichissement passent de trois fois à une, l'hôte est un singleton là où trois handlers étaient instanciés, et deux appels de grain inconditionnels disparaissent. Mesuré avant de livrer ①. |
+| +1 enveloppe par **événement traduit** quand du contenu écoute (§3.1 : un lot, pas un par action) | En face : traduction et enrichissement passent de trois fois à une, l'hôte est un singleton là où trois handlers étaient instanciés, et deux appels de grain inconditionnels disparaissent. Mesuré avant de livrer ①. |
+| Un consommateur dépense son reçu de rejeu sur un lot qui ne le concerne pas | Filtrer avant de garder, garder avant de traiter — l'ordre est écrit dans §7.1 et couvert par un test de la matrice §10.1 (achat catalogue). |
 | L'ancien handler et le nouveau consommateur tournent ensemble : **toute progression compte double**, sur des compteurs persistés | Livraison en un seul commit, pas de drapeau, retour arrière par revert (§11.2). |
 | Le modèle canonique devient un goulot qui force des déploiements en lock-step | Vocabulaire additif (§5.3) ; un consommateur ignore ce qu'il ne connaît pas ; un filtre sur un fait absent échoue en fermé (§6). |
 | Un renommage de clé casse du contenu déjà écrit en base | Interdit et verrouillé par un test (§5.3, §10.3). |
@@ -849,3 +1006,24 @@ Non mesuré non plus : le coût réel de la publication imbriquée sur l'entrée
   n'existaient pas ; `Login` est `ProgressDailyAsync` ; les quêtes ont un quatrième chemin depuis les
   handlers de paquets ; le garde de rejeu ne fait rien sur un id vide. Ajoutés : la règle
   anti-boucle, le test d'hébergement, la liste exacte des types du constructeur de fixtures.
+- **v4** — six défauts relevés en revue, tous confirmés dans le code, tous corrigés.
+  **Bloquant** : un `DeliveryId` par signal aurait fait rejeter le second signal d'un même
+  événement — `TryRecordStepAsync` est unique par `(operation, stepKey)`, donc `spend_credits`
+  n'aurait jamais compté. L'enveloppe devient un **lot** : `ProgressSignalsRaised(DeliveryId,
+  Signals)`, un garde par événement source comme aujourd'hui, et le surcoût passe de +1 enveloppe
+  par action à +1 par événement traduit. **Faux** : §7.3 promettait une reprise après échec ; le
+  reçu est écrit avant l'appel métier, `InvokeOneAsync` avale l'exception et `CommerceRelayService`
+  marque relayé après un publish qui ne remonte rien — c'est un garde contre la republication, et
+  la garantie réelle (une inbox idempotente dans le grain) est hors périmètre. **Régression** :
+  l'exemple perdait le fait `target`, que `SendAsync` insère automatiquement aujourd'hui ; il est
+  désormais inséré par l'hôte, et `SignalShape` porte un `TargetKind` qui en fait un fait virtuel
+  typé par action — ce qui lui donne enfin un picker. **Impossible** : une fixture générique ne peut
+  pas deviner `Gesture == "dance"` ; le test se scinde en invariants structurels sur tous les
+  traducteurs plus une matrice de cas explicites pour les branchants, avec un test de couverture qui
+  refuse une `Shape` non couverte. **Non câblé** : l'intérêt ne peut pas être porté par le
+  consommateur, les handlers ne sont pas des services DI — ce sont trois singletons dédiés.
+  **Gouvernance** : les actions sont figées comme les faits ; « jamais zéro » ne vaut que pour les
+  identifiants, un `Number` peut valoir 0 ; et un plugin écrit ses clés déjà qualifiées, le
+  processeur **valide** le préfixe au lieu de réécrire — sinon le vocabulaire aurait porté
+  `acme:trophy` pendant que l'hôte publiait `trophy`, et un plugin n'aurait pas pu réutiliser
+  `room`.
