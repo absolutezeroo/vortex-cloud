@@ -7,7 +7,7 @@ using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 
-namespace Vortex.Primitives.RewardTracks.Content;
+namespace Vortex.Dashboard.API.Admin.Content;
 
 /// <summary>
 /// Checks campaign content for the mistakes that make a track unplayable rather than merely wrong.
@@ -23,7 +23,7 @@ namespace Vortex.Primitives.RewardTracks.Content;
 /// a milestone nobody can reach, a bonus nobody can claim, a chapter that unlocks from itself.
 /// </para>
 /// </remarks>
-public static class RewardTrackContentValidator
+internal static class RewardTrackContentValidator
 {
     public static RewardTrackContentReport Validate(
         ImmutableArray<RewardTrackDefinitionSnapshot> tracks

@@ -11,7 +11,7 @@ using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.RewardTracks;
-using Vortex.Primitives.RewardTracks.Content;
+using Vortex.Dashboard.API.Admin.Content;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.RewardTracks.Snapshots;
 using Vortex.Primitives.Signals;

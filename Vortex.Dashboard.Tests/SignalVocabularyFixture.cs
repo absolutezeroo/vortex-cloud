@@ -5,7 +5,7 @@ using System.Reflection;
 using Vortex.Primitives.Signals;
 using Vortex.Signals.Translators;
 
-namespace Vortex.Rewards.Tests;
+namespace Vortex.Dashboard.Tests;
 
 /// <summary>
 /// The vocabulary the real translators declare, for tests that used to read the hand-kept map.

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -23,5 +23,11 @@
     <!-- The sequence tests validate against the vocabulary the real translators declare. -->
     <ProjectReference Include="..\Vortex.Signals\Vortex.Signals.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <!--
+      The content validator lives with the dashboard, because authoring content is the
+      dashboard's job. Its tests stay here because they are built on Content, this project's
+      reward-track builder, which reaches domain types the dashboard has no business knowing.
+    -->
+    <ProjectReference Include="..\Vortex.Dashboard.API\Vortex.Dashboard.API.csproj" />
   </ItemGroup>
 </Project>

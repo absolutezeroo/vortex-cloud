@@ -5,7 +5,7 @@ using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 using Vortex.Primitives.Signals;
 
-namespace Vortex.Primitives.RewardTracks.Content;
+namespace Vortex.Dashboard.API.Admin.Content;
 
 /// <summary>
 /// Which sequence an operator is allowed to save.
@@ -23,7 +23,7 @@ namespace Vortex.Primitives.RewardTracks.Content;
 /// the two cannot disagree.
 /// </para>
 /// </remarks>
-public static class RewardTrackSequenceRules
+internal static class RewardTrackSequenceRules
 {
     /// <summary>
     /// The first thing wrong with a sequence, as an error code, or <c>null</c> when it is saveable.

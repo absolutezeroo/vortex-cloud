@@ -24,5 +24,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Dashboard.API\Vortex.Dashboard.API.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <!--
+      The real signal vocabulary. The editor's rules decide which filters an operator may write, and
+      checking them against a hand-written vocabulary would only prove the test agrees with itself —
+      SignalVocabularyFixture builds it from the translators that are actually loaded.
+    -->
+    <ProjectReference Include="..\Vortex.Signals\Vortex.Signals.csproj" />
   </ItemGroup>
 </Project>
