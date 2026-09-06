@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Linq;
+using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.RewardTracks;
 
 namespace Vortex.Primitives.Signals;
@@ -249,12 +251,20 @@ public static class Facts
         "Duration (s)"
     );
 
-    /// <summary>A mystery-box colour.</summary>
+    /// <summary>
+    /// A mystery-box colour.
+    /// </summary>
+    /// <remarks>
+    /// Closed, and taken from <see cref="MysteryBoxColors"/> rather than restated: that list is
+    /// client truth — the toolbar tints its artwork through a hardcoded dictionary keyed by exactly
+    /// these eight names — so a colour typed by hand would be a filter that can never match.
+    /// </remarks>
     public static readonly FactKey Colour = new(
         RewardTrackFacts.Colour,
-        FactKind.Text,
+        FactKind.Enum,
         "rewardTracks.fact_colour",
-        "Colour"
+        "Colour",
+        [.. MysteryBoxColors.All.Select(c => new EnumValue(c, $"mysteryBox.colour_{c}", c))]
     );
 
     /// <summary>How many months.</summary>
@@ -281,12 +291,23 @@ public static class Facts
         "Figure"
     );
 
-    /// <summary>Which setting or section was touched.</summary>
+    /// <summary>
+    /// Which dialog saved a room's settings.
+    /// </summary>
+    /// <remarks>
+    /// The three the room grain actually raises. Closed, so "rename a flat" and "re-file it under a
+    /// category" are two tasks an operator picks rather than two strings they spell.
+    /// </remarks>
     public static readonly FactKey Section = new(
         RewardTrackFacts.Section,
-        FactKind.Text,
+        FactKind.Enum,
         "rewardTracks.fact_section",
-        "Section"
+        "Section",
+        [
+            new("settings", "rewardTracks.section_settings", "Main settings"),
+            new("tags", "rewardTracks.section_tags", "Tags"),
+            new("category_trade", "rewardTracks.section_category_trade", "Category and trading"),
+        ]
     );
 
     /// <summary>Every core fact, in declaration order. The governance test freezes this list.</summary>

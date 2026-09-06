@@ -99,6 +99,10 @@ internal sealed partial class DashboardApiService
             kind = fact.Kind.ToString(),
             labelKey = fact.LabelKey,
             fallbackLabel = fact.FallbackLabel,
+            // Which operators mean anything here. Sent rather than inferred client-side: the
+            // validator refuses the others, and an editor that offered them would be inviting a
+            // save it knows will fail.
+            operators = FactOperators.For(fact.Kind),
             values = fact.EnumValues.IsDefaultOrEmpty
                 ? []
                 : fact

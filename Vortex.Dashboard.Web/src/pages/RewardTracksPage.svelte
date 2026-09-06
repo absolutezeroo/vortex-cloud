@@ -48,11 +48,26 @@
   ];
 
   // Mirrors StepFilterOperator.
+  // Mirrors StepFilterOperator. Which of these a given fact may use is decided by the server and
+  // sent with the fact: `contains` is meaningless on a room id and an exact match is useless on a
+  // line a player typed, and the validator refuses both -- so the editor must not offer them.
   const FILTER_OPERATORS = [
     { value: 0, key: 'rewardTracks.filterOpEquals' },
     { value: 1, key: 'rewardTracks.filterOpNotEquals' },
     { value: 2, key: 'rewardTracks.filterOpOneOf' },
+    { value: 3, key: 'rewardTracks.filterOpContains' },
   ];
+
+  /** The operators this fact accepts, in the order the server ranked them. */
+  function operatorsFor(actionCode, factKey) {
+    const allowed = factMeta(actionCode, factKey)?.operators;
+
+    if (!allowed?.length) return FILTER_OPERATORS;
+
+    return allowed
+      .map((value) => FILTER_OPERATORS.find((op) => op.value === value))
+      .filter(Boolean);
+  }
 
   /**
    * Which fact kinds have a directory behind them, so their value can be picked instead of typed.
@@ -1068,6 +1083,9 @@
               bind:value={filter.factKey}
               onchange={() => {
                 filter.value = defaultFilterValue(step.actionCode, filter.factKey);
+                // The operator that was selected may mean nothing for the new fact, and the server
+                // would refuse the save. Land on the first one this fact does accept.
+                filter.op = operatorsFor(step.actionCode, filter.factKey)[0]?.value ?? 0;
                 delete pickedLabels[`${stepIndex}:${filterIndex}`];
               }}
             >
@@ -1076,7 +1094,7 @@
               {/each}
             </select>
             <select bind:value={filter.op}>
-              {#each FILTER_OPERATORS as op (op.value)}
+              {#each operatorsFor(step.actionCode, filter.factKey) as op (op.value)}
                 <option value={op.value}>{$t(op.key)}</option>
               {/each}
             </select>

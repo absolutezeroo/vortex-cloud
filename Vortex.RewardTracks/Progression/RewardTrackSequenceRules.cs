@@ -77,6 +77,17 @@ public static class RewardTrackSequenceRules
             return "filter_incomplete";
         }
 
+        // An operator that says nothing about this kind of fact: Contains on a room id, or an exact
+        // match on a line a player typed. The engine evaluates both happily and matches neither, so
+        // the only place to catch it is here, while the operator is still looking at the form.
+        if (
+            vocabulary.FactFor(step.ActionCode, filter.FactKey) is FactKey fact
+            && !FactOperators.Allows(fact.Kind, (int)filter.Operator)
+        )
+        {
+            return "filter_operator_not_valid_for_fact";
+        }
+
         if (!vocabulary.Emits(step.ActionCode, filter.FactKey))
         {
             // The step's own action never reports this. Nothing would ever satisfy the filter.

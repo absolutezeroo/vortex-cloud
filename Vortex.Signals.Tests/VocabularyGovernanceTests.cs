@@ -140,7 +140,22 @@ public sealed class VocabularyGovernanceTests
     ];
 
     /// <summary>The declared values of every closed fact, which content compares against too.</summary>
-    private static readonly ImmutableArray<string> FrozenEnumValues = ["floor", "wall"];
+    private static readonly ImmutableArray<string> FrozenEnumValues =
+    [
+        "floor",
+        "wall",
+        "purple",
+        "blue",
+        "green",
+        "yellow",
+        "lilac",
+        "orange",
+        "turquoise",
+        "red",
+        "settings",
+        "tags",
+        "category_trade",
+    ];
 
     [Fact]
     public void No_fact_key_has_been_renamed_or_removed()
@@ -183,6 +198,31 @@ public sealed class VocabularyGovernanceTests
         // Without a fallback the editor renders a raw key, which tells an operator nothing.
         Facts.All.Should().OnlyContain(f => !string.IsNullOrWhiteSpace(f.FallbackLabel));
         Facts.All.Should().OnlyContain(f => !string.IsNullOrWhiteSpace(f.LabelKey));
+    }
+
+    [Fact]
+    public void Every_fact_offers_an_operator_that_means_something()
+    {
+        // A fact whose kind allows no operator is a filter nobody can write, and a fact whose only
+        // allowed operator is one the engine treats as exact equality on free text is a filter that
+        // never fires. Contains exists precisely so Text has an answer here.
+        foreach (FactKey fact in Facts.All)
+        {
+            FactOperators
+                .For(fact.Kind)
+                .Should()
+                .NotBeEmpty($"'{fact.Key}' would be offered with no way to compare it");
+        }
+
+        FactOperators
+            .For(FactKind.Text)
+            .Should()
+            .Contain(FactOperators.Contains, "exact equality on a line a player typed never fires");
+
+        FactOperators
+            .For(FactKind.RoomId)
+            .Should()
+            .NotContain(FactOperators.Contains, "a substring of an id is not a thing");
     }
 
     [Fact]

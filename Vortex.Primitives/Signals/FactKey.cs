@@ -36,6 +36,44 @@ public sealed record FactKey(
     ImmutableArray<EnumValue> EnumValues = default
 );
 
+/// <summary>
+/// Which operators make sense on a fact, decided by its kind.
+/// </summary>
+/// <remarks>
+/// <para>
+/// An exact match on free text a player typed is a filter that never fires; a substring match on a
+/// room id is nonsense. Neither is caught by the engine, which will happily evaluate both and
+/// silently never match — so the rule is enforced where content is written instead.
+/// </para>
+/// <para>
+/// Lives here rather than in the editor because the editor is not the only way in: content also
+/// arrives through the operations API, and a rule only the UI knows is a rule content can dodge.
+/// </para>
+/// </remarks>
+public static class FactOperators
+{
+    /// <summary>Substring, the only operator worth anything on free text.</summary>
+    public const int Contains = 3;
+
+    private static readonly ImmutableArray<int> Equality = [0, 1];
+    private static readonly ImmutableArray<int> EqualityAndList = [0, 1, 2];
+    private static readonly ImmutableArray<int> TextOperators = [Contains, 0, 1];
+
+    /// <summary>The operators an editor may offer, and a validator must accept, for this kind.</summary>
+    public static ImmutableArray<int> For(FactKind kind) =>
+        kind switch
+        {
+            FactKind.Text => TextOperators,
+            FactKind.Number => Equality,
+            FactKind.Enum => Equality,
+            FactKind.OpaqueId => Equality,
+            _ => EqualityAndList,
+        };
+
+    /// <summary>Whether this operator says anything meaningful about this kind of fact.</summary>
+    public static bool Allows(FactKind kind, int op) => For(kind).Contains(op);
+}
+
 /// <summary>One allowed value of a closed fact: what the engine compares, and what the operator reads.</summary>
 public readonly record struct EnumValue(string Value, string LabelKey, string FallbackLabel);
 
