@@ -55,28 +55,42 @@
   ];
 
   /**
-   * Which facts have a directory behind them, so their value can be picked instead of typed. The
-   * ids are what the handlers emit: `def` is a furniture definition id, `room` a room id, `player`
-   * another player's id. `item` is a live room-object id and `target` means something different per
-   * action, so neither has a picker — they stay typed rather than offering the wrong catalogue.
+   * Which fact kinds have a directory behind them, so their value can be picked instead of typed.
+   * The kind now arrives from the server with the fact itself, so this maps kinds rather than keys:
+   * any action carrying a room id gets the room picker without this list being touched again.
+   * `OpaqueId` deliberately has none -- a placed item or a pet has no catalogue to pick from.
    */
-  const PICKER_KINDS = {
-    def: 'furniture',
-    room: 'room',
-    player: 'user',
+  const PICKER_FOR_KIND = {
+    FurnitureId: 'furniture',
+    RoomId: 'room',
+    PlayerId: 'user',
   };
 
-  /** Mirrors RewardTrackFacts.PlacementFloor / PlacementWall: the only two values `kind` accepts. */
-  const PLACEMENTS = ['floor', 'wall'];
-
-  /** The facts a given action emits, straight from the server: anything else can never match. */
+  /**
+   * The facts a given action emits, straight from the server: each carries its kind, its label and
+   * -- for a closed fact -- the values it accepts. Anything not in here can never match.
+   */
   function factsFor(actionCode) {
     return actionOptions.find((a) => a.name === actionCode)?.facts ?? [];
   }
 
-  /** A closed-vocabulary fact starts on a valid value; everything else starts empty. */
-  function defaultFilterValue(factKey) {
-    return factKey === 'kind' ? PLACEMENTS[0] : '';
+  /** One fact's metadata, by key. */
+  function factMeta(actionCode, factKey) {
+    return factsFor(actionCode).find((f) => f.key === factKey) ?? null;
+  }
+
+  /** The declared label, falling back to the server's own text when the locale has no such key. */
+  function factLabel(fact) {
+    const translated = translate(fact.labelKey);
+
+    return translated === fact.labelKey ? fact.fallbackLabel : translated;
+  }
+
+  /** A closed-vocabulary fact starts on a value it accepts; everything else starts empty. */
+  function defaultFilterValue(actionCode, factKey) {
+    const meta = factMeta(actionCode, factKey);
+
+    return meta?.values?.length ? meta.values[0].value : '';
   }
 
   /**
@@ -88,7 +102,7 @@
     return steps
       .slice(0, index)
       .map((step, i) => ({ value: `$${i}`, index: i, action: step.actionCode }))
-      .filter((r) => factsFor(r.action).includes(factKey));
+      .filter((r) => factsFor(r.action).some((f) => f.key === factKey));
   }
 
   const COMPLETION_POLICIES = [
@@ -1048,16 +1062,17 @@
         {#each step.filters as filter, filterIndex (filterIndex)}
           {@const refs = referencesFor(taskDraft.form.steps, stepIndex, filter.factKey)}
           {@const picked = pickedLabels[`${stepIndex}:${filterIndex}`]}
+          {@const meta = factMeta(step.actionCode, filter.factKey)}
           <div class="condition-row block block--filter">
             <select
               bind:value={filter.factKey}
               onchange={() => {
-                filter.value = defaultFilterValue(filter.factKey);
+                filter.value = defaultFilterValue(step.actionCode, filter.factKey);
                 delete pickedLabels[`${stepIndex}:${filterIndex}`];
               }}
             >
-              {#each factsFor(step.actionCode) as fact (fact)}
-                <option value={fact}>{$t(`rewardTracks.fact_${fact}`)}</option>
+              {#each factsFor(step.actionCode) as fact (fact.key)}
+                <option value={fact.key}>{factLabel(fact)}</option>
               {/each}
             </select>
             <select bind:value={filter.op}>
@@ -1077,11 +1092,12 @@
                 {/each}
               </select>
             {/if}
-            {#if filter.factKey === 'kind'}
-              <!-- Two values and no others: typed, "sol" would be accepted here and match nothing. -->
+            {#if meta?.values?.length}
+              <!-- A closed fact: the server declares which values it accepts, so a typo like "sol"
+                   cannot be entered here and silently match nothing. -->
               <select bind:value={filter.value}>
-                {#each PLACEMENTS as placement (placement)}
-                  <option value={placement}>{$t(`rewardTracks.placement_${placement}`)}</option>
+                {#each meta.values as allowed (allowed.value)}
+                  <option value={allowed.value}>{factLabel(allowed)}</option>
                 {/each}
               </select>
             {:else if !filter.value.startsWith('$')}
@@ -1094,7 +1110,7 @@
                     : 'rewardTracks.conditionValuePlaceholder'
                 )}
               />
-              {#if PICKER_KINDS[filter.factKey]}
+              {#if PICKER_FOR_KIND[meta?.kind]}
                 <button
                   type="button"
                   class="ghost-button block-pick"
@@ -1103,7 +1119,7 @@
                     (pickingFilter = {
                       stepIndex,
                       filterIndex,
-                      kind: PICKER_KINDS[filter.factKey],
+                      kind: PICKER_FOR_KIND[meta.kind],
                     })}
                 >
                   <Search size={14} />
@@ -1137,9 +1153,12 @@
             class="ghost-button block-add block-add--filter"
             onclick={() =>
               step.filters.push({
-                factKey: factsFor(step.actionCode)[0],
+                factKey: factsFor(step.actionCode)[0].key,
                 op: 0,
-                value: defaultFilterValue(factsFor(step.actionCode)[0]),
+                value: defaultFilterValue(
+                  step.actionCode,
+                  factsFor(step.actionCode)[0].key
+                ),
               })}
           >
             {$t('rewardTracks.addFilter')}

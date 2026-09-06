@@ -37,6 +37,7 @@ using Vortex.Revisions.Extensions;
 using Vortex.RewardTracks;
 using Vortex.Rooms;
 using Vortex.Runtime.AssemblyProcessing;
+using Vortex.Signals;
 using Vortex.Social;
 using Vortex.WebApi;
 
@@ -131,6 +132,7 @@ internal class Program
         builder.Services.AddHostPlugin<CatalogModule>(builder);
         builder.Services.AddHostPlugin<PlayerModule>(builder);
         builder.Services.AddHostPlugin<SocialModule>(builder);
+        builder.Services.AddHostPlugin<SignalsModule>(builder);
         builder.Services.AddHostPlugin<ProgressionModule>(builder);
         builder.Services.AddHostPlugin<HabbiconsModule>(builder);
         builder.Services.AddHostPlugin<RewardTracksModule>(builder);
