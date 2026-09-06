@@ -12,16 +12,16 @@
   import { identity } from '../lib/session.js';
   import { formatDate, formatNumber } from '../lib/format.js';
   import { t, translate } from '../lib/i18n.js';
-  import { Route, Search, Users } from '@lucide/svelte';
+  import { Blocks, Route, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import Drawer from '../components/Drawer.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import OpResult from '../components/OpResult.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
+  import SequenceWorkspace from '../components/sequence/SequenceWorkspace.svelte';
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
 
@@ -129,13 +129,6 @@
     return factsFor(actionCode).find((f) => f.key === factKey) ?? null;
   }
 
-  /** The declared label, falling back to the server's own text when the locale has no such key. */
-  function factLabel(fact) {
-    const translated = translate(fact.labelKey);
-
-    return translated === fact.labelKey ? fact.fallbackLabel : translated;
-  }
-
   /** A closed-vocabulary fact starts on a value it accepts; everything else starts empty. */
   function defaultFilterValue(actionCode, factKey) {
     const meta = factMeta(actionCode, factKey);
@@ -172,6 +165,7 @@
   // Which filter's value the picker is filling, and what the last pick was called. The name and the
   // sprite are shown, never stored: a filter holds the id the handler emits, and the drawer reopens
   // on that id alone.
+  let sequenceOpen = $state(false);
   let pickingFilter = $state(null);
   let pickedLabels = $state({});
 
@@ -347,7 +341,10 @@
       {
         trackRowId: form.trackRowId,
         taskId: form.taskId.trim(),
-        actionCode: form.actionCode,
+        // Follows the first block. The engine already reads Steps[0] when a sequence exists, so
+        // this is only the client's artwork key -- and an icon that disagrees with what the task
+        // counts is exactly the divergence removing the separate field prevents.
+        actionCode: form.steps[0]?.actionCode || form.actionCode,
         parameter: form.parameter.trim(),
         mode: Number(form.mode) || 0,
         premium: form.premium,
@@ -1051,17 +1048,6 @@
     </label>
     <p class="muted small">{$t('rewardTracks.taskIdHint')}</p>
     <label>
-      {$t('rewardTracks.action')}
-      <select bind:value={taskDraft.form.actionCode}>
-        {#each actionOptions as action (action.name)}
-          <option value={action.name}>
-            {action.name}{action.wired ? '' : ` — ${translate('rewardTracks.notWired')}`}
-          </option>
-        {/each}
-      </select>
-    </label>
-    <p class="muted small">{$t('rewardTracks.notWiredHint')}</p>
-    <label>
       {$t('rewardTracks.mode')}
       <select bind:value={taskDraft.form.mode}>
         {#each MODES as mode (mode.value)}
@@ -1083,156 +1069,20 @@
     <h4 class="drawer-section">{$t('rewardTracks.sequence')}</h4>
     <p class="muted small">{$t('rewardTracks.sequenceHint')}</p>
 
-    {#each taskDraft.form.steps as step, stepIndex (stepIndex)}
-      <div class="step-card">
-        <div class="step-head block block--action">
-          <span class="block-label">{$t('rewardTracks.stepN', { n: stepIndex + 1 })}</span>
-          <select
-            bind:value={step.actionCode}
-            onchange={() => (step.filters = [])}
-          >
-            {#each actionOptions as action (action.name)}
-              <option value={action.name}>
-                {action.name}{action.wired ? '' : ` — ${translate('rewardTracks.notWired')}`}
-              </option>
-            {/each}
-          </select>
-          {#if taskDraft.form.steps.length > 1}
-            <button
-              type="button"
-              class="ghost-button block-remove"
-              title={$t('common.remove')}
-              onclick={() => taskDraft.form.steps.splice(stepIndex, 1)}
-            >
-              ×
-            </button>
-          {/if}
-        </div>
-
-        {#each step.filters as filter, filterIndex (filterIndex)}
-          {@const refs = referencesFor(taskDraft.form.steps, stepIndex, filter.factKey)}
-          {@const picked = pickedLabels[`${stepIndex}:${filterIndex}`]}
-          {@const meta = factMeta(step.actionCode, filter.factKey)}
-          <div class="condition-row block block--filter">
-            <select
-              bind:value={filter.factKey}
-              onchange={() => {
-                filter.value = defaultFilterValue(step.actionCode, filter.factKey);
-                // The operator that was selected may mean nothing for the new fact, and the server
-                // would refuse the save. Land on the first one this fact does accept.
-                filter.op = operatorsFor(step.actionCode, filter.factKey)[0]?.value ?? 0;
-                delete pickedLabels[`${stepIndex}:${filterIndex}`];
-              }}
-            >
-              {#each factsFor(step.actionCode) as fact (fact.key)}
-                <option value={fact.key}>{factLabel(fact)}</option>
-              {/each}
-            </select>
-            <select bind:value={filter.op}>
-              {#each operatorsFor(step.actionCode, filter.factKey) as op (op.value)}
-                <option value={op.value}>{$t(op.key)}</option>
-              {/each}
-            </select>
-            <!-- A reference is only offered where it can resolve, so an impossible one cannot be
-                 picked; the server refuses the same thing on save. -->
-            {#if refs.length > 0}
-              <select bind:value={filter.value}>
-                <option value="">{$t('rewardTracks.filterLiteral')}</option>
-                {#each refs as ref (ref.value)}
-                  <option value={ref.value}>
-                    {$t('rewardTracks.filterSameAsStep', { n: ref.index + 1 })}
-                  </option>
-                {/each}
-              </select>
-            {/if}
-            {#if meta?.values?.length}
-              <!-- A closed fact: the server declares which values it accepts, so a typo like "sol"
-                   cannot be entered here and silently match nothing. -->
-              <select bind:value={filter.value}>
-                {#each meta.values as allowed (allowed.value)}
-                  <option value={allowed.value}>{factLabel(allowed)}</option>
-                {/each}
-              </select>
-            {:else if !filter.value.startsWith('$')}
-              <input
-                type="text"
-                bind:value={filter.value}
-                placeholder={$t(
-                  Number(filter.op) === 2
-                    ? 'rewardTracks.conditionListPlaceholder'
-                    : 'rewardTracks.conditionValuePlaceholder'
-                )}
-              />
-              {#if pickerFor(meta)}
-                <button
-                  type="button"
-                  class="ghost-button block-pick"
-                  title={$t('rewardTracks.pickValue')}
-                  onclick={() =>
-                    (pickingFilter = {
-                      stepIndex,
-                      filterIndex,
-                      kind: pickerFor(meta),
-                    })}
-                >
-                  <Search size={14} />
-                </button>
-              {/if}
-            {/if}
-            <button
-              type="button"
-              class="ghost-button block-remove"
-              title={$t('common.remove')}
-              onclick={() => step.filters.splice(filterIndex, 1)}
-            >
-              ×
-            </button>
-            <!-- Last, and a full row of its own: the id is what is stored, this only says what the
-                 operator just picked. Inline it pushed the remove button onto a second line. -->
-            {#if picked?.name}
-              <span class="muted small picked-name">
-                {#if picked.iconUrl}
-                  <AssetImage src={picked.iconUrl} alt="" size={20} />
-                {/if}
-                {picked.name}
-              </span>
-            {/if}
-          </div>
-        {/each}
-
-        {#if factsFor(step.actionCode).length > 0}
-          <button
-            type="button"
-            class="ghost-button block-add block-add--filter"
-            onclick={() =>
-              step.filters.push({
-                factKey: factsFor(step.actionCode)[0].key,
-                op: 0,
-                value: defaultFilterValue(
-                  step.actionCode,
-                  factsFor(step.actionCode)[0].key
-                ),
-              })}
-          >
-            {$t('rewardTracks.addFilter')}
-          </button>
-        {:else}
-          <p class="muted small no-facts">{$t('rewardTracks.actionHasNoFacts')}</p>
-        {/if}
-      </div>
-    {/each}
-
-    <button
-      type="button"
-      class="ghost-button block-add block-add--action"
-      onclick={() =>
-        taskDraft.form.steps.push({
-          actionCode: actionOptions[0]?.name ?? '',
-          filters: [],
+    <!-- A summary and a button. The editor itself is full screen: a condition is four controls on
+         one line, and the drawer is a column narrow enough that every one of them wrapped. -->
+    <div class="sequence-summary">
+      <span>
+        {$t('rewardTracks.sequenceSummary', {
+          actions: taskDraft.form.steps.length,
+          conditions: taskDraft.form.steps.reduce((n, s) => n + (s.filters?.length ?? 0), 0),
         })}
-    >
-      {$t('rewardTracks.addStep')}
-    </button>
+      </span>
+      <button type="button" class="ghost-button" onclick={() => (sequenceOpen = true)}>
+        <Blocks size={14} />
+        {$t('rewardTracks.openSequence')}
+      </button>
+    </div>
 
     <label class="checkbox premium-task">
       <input type="checkbox" bind:checked={taskDraft.form.premium} />
@@ -1347,6 +1197,25 @@
   </Drawer>
 {/if}
 
+{#if taskDraft}
+  <SequenceWorkspace
+    open={sequenceOpen}
+    title={$t('rewardTracks.sequence')}
+    onclose={() => (sequenceOpen = false)}
+    steps={taskDraft.form.steps}
+    actions={actionOptions}
+    {canManage}
+    {factsFor}
+    {operatorsFor}
+    {referencesFor}
+    {defaultFilterValue}
+    {pickerFor}
+    {pickedLabels}
+    onchange={(next) => (taskDraft.form.steps = next)}
+    onpick={(stepIndex, filterIndex, kind) => (pickingFilter = { stepIndex, filterIndex, kind })}
+  />
+{/if}
+
 {#if pickingFilter}
   <PickerModal
     kind={pickingFilter.kind}
@@ -1446,141 +1315,7 @@
      indent and hue carry the structure. No drag-and-drop: a filter can point back at an earlier
      step with $N, so reordering would have to rewrite those references -- reading order is the
      order. */
-  .step-card {
-    margin-bottom: 14px;
-  }
-
-  .block {
-    position: relative;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 8px 10px;
-    border: 1px solid;
-    border-radius: 6px;
-  }
-
-  /* The tab underneath. It is what makes two stacked blocks read as clipped together rather than
-     merely adjacent -- the one detail that says "these assemble". It takes the block's edge
-     colour, not its fill: the fills are 10% tints and a 5px tab in one is invisible. */
-  .block::after {
-    content: '';
-    position: absolute;
-    left: 16px;
-    top: 100%;
-    width: 16px;
-    height: 5px;
-    background: var(--notch);
-    border-radius: 0 0 4px 4px;
-  }
-
-  .block--action {
-    --notch: rgba(var(--accent-rgb), 0.55);
-    background: var(--accent-soft);
-    border-color: rgba(var(--accent-rgb), 0.55);
-  }
-
-  /* Doubled up on purpose: `.condition-row` sets a bottom margin further down and would otherwise
-     re-open the gap the notch is meant to close. */
-  /* Indented under its action and offset by less than the notch, so the tab above lands inside
-     this block's own left edge -- the two read as clipped together, which is the whole point. The
-     5px gap is the notch's height exactly. */
-  .block.block--filter {
-    --notch: rgba(var(--gold-rgb), 0.45);
-    margin: 5px 0 0 14px;
-    background: rgba(var(--gold-rgb), 0.1);
-    border-color: rgba(var(--gold-rgb), 0.4);
-  }
-
-  .block-label {
-    flex: 0 0 auto;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--accent-strong);
-  }
-
-  /* What the picked id is called: its own line under the condition, never competing for the first
-     one -- inline, it pushed the remove button down and the condition read as two. */
-  .picked-name {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1 0 100%;
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .block-remove,
-  .block-pick {
-    flex: 0 0 auto;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    font-size: 1.05rem;
-    line-height: 1;
-    box-shadow: none;
-  }
-
-  /* An empty slot, shaped like the block it makes. */
-  .block-add {
-    margin-top: 5px;
-    padding: 5px 12px;
-    border: 1px dashed var(--line-strong);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.78rem;
-    font-weight: 600;
-    box-shadow: none;
-  }
-
-  .block-add:hover:not(:disabled) {
-    color: var(--ink);
-  }
-
-  .block-add--filter {
-    margin-left: 14px;
-  }
-
-  /* Laid out as a block, not inline-flex: the ghost base is inline, which parked the next section's
-     checkbox on this button's own line as if it were part of the sequence. */
-  .block-add--action {
-    display: flex;
-    width: fit-content;
-    margin-top: 4px;
-  }
-
-  .no-facts {
-    margin: 7px 0 0 14px;
-  }
-
-  .step-head select {
-    flex: 1 1 auto;
-    width: auto;
-    min-width: 0;
-  }
-
-  /* The drawer's own rule stretches every field to the full width, which turns one condition into
-     three stacked rows. Here the two selects take what they need and the value box takes the
-     slack, so a condition reads as the sentence it is. */
-  .condition-row select {
-    flex: 0 1 auto;
-    width: auto;
-    min-width: 0;
-  }
-
-  .condition-row input {
-    flex: 1 1 6rem;
-    width: auto;
-    min-width: 0;
-  }
-
-  .condition-row,
-  .level-row,
+    .level-row,
   .reward-row {
     display: flex;
     gap: 0.5rem;

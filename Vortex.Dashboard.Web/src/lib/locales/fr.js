@@ -2248,6 +2248,11 @@ export default {
     sequence: 'Séquence',
     sequenceHint:
       'Les actions à faire, dans l’ordre, pour que la tâche compte une fois. Une seule action = une tâche simple. Un filtre peut pointer sur une action précédente — c’est ça, « le même mobilier ».',
+    dragAction: 'Glisser pour réordonner cette action',
+    dragFilter: 'Glisser vers une autre action',
+    referencesCleared: '{count} référence(s) effacée(s) : l’étape nommée n’est plus antérieure.',
+    openSequence: 'Modifier la séquence',
+    sequenceSummary: '{actions} action(s), {conditions} condition(s)',
     stepN: 'Action {n}',
     addStep: 'Ajouter une action',
     addFilter: 'Ajouter un filtre',

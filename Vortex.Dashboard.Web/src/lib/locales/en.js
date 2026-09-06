@@ -2240,6 +2240,11 @@ export default {
     sequence: 'Sequence',
     sequenceHint:
       'The actions to perform, in order, for this task to count once. A single action is a plain task. A filter can point back at an earlier one — that is what "the same furniture" means.',
+    dragAction: 'Drag to reorder this action',
+    dragFilter: 'Drag onto another action',
+    referencesCleared: '{count} reference(s) cleared: the step they named is no longer earlier.',
+    openSequence: 'Edit sequence',
+    sequenceSummary: '{actions} action(s), {conditions} condition(s)',
     stepN: 'Action {n}',
     addStep: 'Add an action',
     addFilter: 'Add a filter',
