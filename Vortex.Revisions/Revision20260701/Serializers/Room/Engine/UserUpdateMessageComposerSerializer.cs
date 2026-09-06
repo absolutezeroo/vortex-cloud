@@ -20,12 +20,13 @@ internal class UserUpdateMessageComposerSerializer(int header)
                 .WriteString(avatar.Z.ToString())
                 .WriteInteger((int)avatar.HeadRotation)
                 .WriteInteger((int)avatar.BodyRotation)
-                // NO jumpingPower int here. The two WIN63 builds disagree: 202607011411 reads one
-                // between the body rotation and the status
-                // (_SafePkg_2184/_SafeCls_2826.parse:85), 202601121721 does not
-                // (_SafePkg_2072/_SafeCls_3051.parse:82-84). Writing it killed the walk animation
-                // on the live hotel, which serves the January build, so the 8-field shape stays
-                // until the served build is settled. avatar.JumpPower is carried and unused.
+                // NO jumpingPower int here. The July Flash build reads one between the body
+                // rotation and the status (_SafePkg_2184/_SafeCls_2826.parse:85) but the hotel
+                // serves a Nitro/Helium client, whose UserUpdateParser.ts goes straight from the
+                // two rotations to the status string. Writing the int shifted the status, so `mv`
+                // never parsed and the walk animation died on a live server.
+                // Wire truth here is Nitro's TypeScript parser, not the AS3.
+                // avatar.JumpPower is carried and deliberately unused.
                 .WriteString(avatar.Status);
         }
     }
