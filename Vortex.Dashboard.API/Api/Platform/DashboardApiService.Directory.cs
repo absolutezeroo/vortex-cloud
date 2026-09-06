@@ -180,6 +180,15 @@ internal sealed partial class DashboardApiService
         );
     }
 
+    /// <summary>
+    /// The investigation search: one box that takes whatever an operator has in front of them.
+    /// </summary>
+    /// <remarks>
+    /// The term is not asked what it is, it is recognised by its shape — thirty-two hex characters
+    /// is a correlation id, a number is an id — and each shape is answered by its own method below.
+    /// Nothing else is a search: an unrecognised term says so rather than guessing, because a wrong
+    /// guess on an investigation screen is worse than no answer.
+    /// </remarks>
     public Task<object> SearchAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
@@ -195,695 +204,14 @@ internal sealed partial class DashboardApiService
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
                 {
-                    IQueryable<AuditEventEntity> audit = db
-                        .AuditEvents.AsNoTracking()
-                        .Where(a => a.CorrelationId == term);
-
-                    if (since is not null)
-                    {
-                        audit = audit.Where(a => a.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        audit = audit.Where(a => a.OccurredAt <= until.Value);
-                    }
-
-                    IQueryable<EconomyLedgerEntity> ledger = db
-                        .EconomyLedger.AsNoTracking()
-                        .Where(l => l.CorrelationId == term);
-
-                    if (since is not null)
-                    {
-                        ledger = ledger.Where(l => l.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        ledger = ledger.Where(l => l.OccurredAt <= until.Value);
-                    }
-
-                    IQueryable<ItemEventEntity> items = db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i => i.CorrelationId == term);
-
-                    if (since is not null)
-                    {
-                        items = items.Where(i => i.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        items = items.Where(i => i.OccurredAt <= until.Value);
-                    }
-
-                    var auditRows = await audit
-                        .OrderBy(a => a.OccurredAt)
-                        .Skip(offset)
-                        .Take(limit)
-                        .Select(a => new
-                        {
-                            a.OccurredAt,
-                            category = a.Category.ToString(),
-                            a.Action,
-                            a.ActorPlayerId,
-                        })
-                        .ToListAsync(ct)
+                    return await SearchByCorrelationAsync(db, term, since, until, limit, page, offset, ct)
                         .ConfigureAwait(false);
-
-                    List<int> auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
-
-                    Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(
-                            db,
-                            auditActorIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    var auditRowsWithNames = auditRows
-                        .Select(a => new
-                        {
-                            a.OccurredAt,
-                            category = a.category,
-                            a.Action,
-                            a.ActorPlayerId,
-                            actorName = ResolvePlayerName(auditActorNames, a.ActorPlayerId),
-                        })
-                        .ToList();
-
-                    var ledgerRows = await ledger
-                        .OrderBy(l => l.OccurredAt)
-                        .Skip(offset)
-                        .Take(limit)
-                        .Select(l => new
-                        {
-                            l.OccurredAt,
-                            l.PlayerId,
-                            l.Currency,
-                            l.Delta,
-                            l.BalanceAfter,
-                            l.ActivityPointType,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var itemRows = await items
-                        .OrderBy(i => i.OccurredAt)
-                        .Skip(offset)
-                        .Take(limit)
-                        .Select(i => new
-                        {
-                            i.OccurredAt,
-                            i.ItemId,
-                            eventType = i.EventType.ToString(),
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    return new
-                    {
-                        kind = "correlationId",
-                        term,
-                        page,
-                        limit,
-                        offset,
-                        auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
-                        ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
-                        itemTotal = await items.CountAsync(ct).ConfigureAwait(false),
-                        audit = auditRowsWithNames,
-                        ledger = ledgerRows,
-                        items = itemRows,
-                    };
                 }
 
                 if (int.TryParse(term, out int id))
                 {
-                    long playerIdLong = (long)id;
-                    DateTime profileWindowSince = since ?? DateTime.UtcNow.AddHours(-24);
-                    DateTime profileWindowUntil = until ?? DateTime.UtcNow;
-
-                    var player = await db
-                        .Players.AsNoTracking()
-                        .Where(p => p.Id == id)
-                        .Select(p => new
-                        {
-                            p.Id,
-                            p.Name,
-                            p.Motto,
-                            p.Figure,
-                            p.CreatedAt,
-                            p.UpdatedAt,
-                            // `players.status` is deliberately NOT projected: nothing in the
-                            // emulator ever writes it after account creation, so it answers
-                            // "Offline" for a connected player. `online` below is the real answer.
-                            gender = p.Gender.ToString(),
-                            perks = p.PlayerPerks.ToString(),
-                        })
-                        .FirstOrDefaultAsync(ct)
+                    return await SearchByIdAsync(db, term, id, since, until, limit, page, offset, ct)
                         .ConfigureAwait(false);
-
-                    var playerCurrencies = await db
-                        .PlayerCurrencies.AsNoTracking()
-                        .Where(pc => pc.PlayerEntityId == id)
-                        .Select(pc => new
-                        {
-                            pc.CurrencyTypeEntityId,
-                            amount = pc.Amount,
-                            currency = pc.CurrencyTypeEntity != null
-                                ? pc.CurrencyTypeEntity.Name
-                                    ?? pc.CurrencyTypeEntity.CurrencyType.ToString()
-                                : pc.CurrencyTypeEntityId.ToString(),
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var ownedRooms = await db
-                        .Rooms.AsNoTracking()
-                        .Where(r => r.PlayerEntityId == id)
-                        .OrderByDescending(r => r.LastActive)
-                        .Take(8)
-                        .Select(r => new
-                        {
-                            roomId = r.Id,
-                            roomName = r.Name,
-                            r.UsersNow,
-                            r.PlayersMax,
-                            r.LastActive,
-                            model = r.RoomModelEntity.Name,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var ownedItems = await db
-                        .Furnitures.AsNoTracking()
-                        .Where(f => f.PlayerEntityId == id)
-                        .OrderByDescending(f => f.UpdatedAt)
-                        .Take(16)
-                        .Select(f => new
-                        {
-                            itemId = (long)f.Id,
-                            definitionId = (int?)f.FurnitureDefinitionEntityId,
-                            definitionName = f.FurnitureDefinitionEntity != null
-                                ? f.FurnitureDefinitionEntity.Name
-                                : null,
-                            f.RoomEntityId,
-                            roomName = f.RoomEntity != null ? f.RoomEntity.Name : null,
-                            roomX = (int?)f.X,
-                            roomY = (int?)f.Y,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    // BuildFurniIconUrl isn't SQL-translatable, so the furni icon is attached in a
-                    // second pass over the materialized rows (same shape as the catalog products).
-                    var ownedItemsWithIcons = ownedItems
-                        .Select(f => new
-                        {
-                            f.itemId,
-                            f.definitionId,
-                            f.definitionName,
-                            furniIconUrl = f.definitionName is null
-                                ? null
-                                : BuildFurniIconUrl(f.definitionName),
-                            f.RoomEntityId,
-                            f.roomName,
-                            f.roomX,
-                            f.roomY,
-                        })
-                        .ToList();
-
-                    var roomEntries = await db
-                        .RoomEntryLogs.AsNoTracking()
-                        .Where(e => e.PlayerEntityId == id)
-                        .Where(e =>
-                            e.CreatedAt >= profileWindowSince && e.CreatedAt <= profileWindowUntil
-                        )
-                        .OrderByDescending(e => e.CreatedAt)
-                        .Take(12)
-                        .Select(e => new
-                        {
-                            e.CreatedAt,
-                            roomId = e.RoomEntityId,
-                            roomName = e.RoomEntity != null ? e.RoomEntity.Name : null,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var chatHistory = await db
-                        .Chatlogs.AsNoTracking()
-                        .Where(c => c.PlayerEntityId == id)
-                        .Where(c =>
-                            c.CreatedAt >= profileWindowSince && c.CreatedAt <= profileWindowUntil
-                        )
-                        .OrderByDescending(c => c.CreatedAt)
-                        .Take(12)
-                        .Select(c => new
-                        {
-                            c.CreatedAt,
-                            roomId = c.RoomEntityId,
-                            roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
-                            c.Message,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var itemEvents = await db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i =>
-                            i.ActorPlayerId == playerIdLong
-                            || i.FromOwnerId == playerIdLong
-                            || i.ToOwnerId == playerIdLong
-                        )
-                        .Where(i =>
-                            i.OccurredAt >= profileWindowSince && i.OccurredAt <= profileWindowUntil
-                        )
-                        .OrderByDescending(i => i.OccurredAt)
-                        .Take(24)
-                        .Select(i => new
-                        {
-                            i.OccurredAt,
-                            eventType = i.EventType.ToString(),
-                            itemId = i.ItemId,
-                            i.RoomId,
-                            actorPlayerId = i.ActorPlayerId,
-                            fromOwnerId = i.FromOwnerId,
-                            toOwnerId = i.ToOwnerId,
-                            correlationId = i.CorrelationId,
-                            i.Data,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    List<int> itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
-
-                    Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(
-                            db,
-                            itemRoomIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    List<int> itemPartyIds = NormalizeIds(
-                        itemEvents.SelectMany(i =>
-                            new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId }
-                        )
-                    );
-
-                    Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(
-                            db,
-                            itemPartyIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    var itemEventsWithRooms = itemEvents
-                        .Select(i => new
-                        {
-                            i.OccurredAt,
-                            i.eventType,
-                            i.itemId,
-                            i.RoomId,
-                            roomName = i.RoomId != null
-                            && itemRoomNames.TryGetValue(i.RoomId.Value, out string? roomName)
-                                ? roomName
-                                : null,
-                            i.actorPlayerId,
-                            actorPlayerName = ResolvePlayerName(itemPartyNames, i.actorPlayerId),
-                            i.fromOwnerId,
-                            fromOwnerName = ResolvePlayerName(itemPartyNames, i.fromOwnerId),
-                            i.toOwnerId,
-                            toOwnerName = ResolvePlayerName(itemPartyNames, i.toOwnerId),
-                            i.correlationId,
-                            i.Data,
-                        })
-                        .ToList();
-
-                    int auditCount = await db
-                        .AuditEvents.AsNoTracking()
-                        .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id)
-                        .Where(a =>
-                            a.OccurredAt >= profileWindowSince && a.OccurredAt <= profileWindowUntil
-                        )
-                        .CountAsync(ct)
-                        .ConfigureAwait(false);
-
-                    int ledgerCount = await db
-                        .EconomyLedger.AsNoTracking()
-                        .Where(l => l.PlayerId == id)
-                        .Where(l =>
-                            l.OccurredAt >= profileWindowSince && l.OccurredAt <= profileWindowUntil
-                        )
-                        .CountAsync(ct)
-                        .ConfigureAwait(false);
-
-                    int itemEventCount = await db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i =>
-                            i.ActorPlayerId == playerIdLong
-                            || i.FromOwnerId == playerIdLong
-                            || i.ToOwnerId == playerIdLong
-                        )
-                        .Where(i =>
-                            i.OccurredAt >= profileWindowSince && i.OccurredAt <= profileWindowUntil
-                        )
-                        .CountAsync(ct)
-                        .ConfigureAwait(false);
-
-                    int ownedRoomCount = await db
-                        .Rooms.AsNoTracking()
-                        .Where(r => r.PlayerEntityId == id)
-                        .CountAsync(ct)
-                        .ConfigureAwait(false);
-
-                    int ownedItemCount = await db
-                        .Furnitures.AsNoTracking()
-                        .Where(f => f.PlayerEntityId == id)
-                        .CountAsync(ct)
-                        .ConfigureAwait(false);
-
-                    var playerProfile = player is null
-                        ? null
-                        : new
-                        {
-                            player.Id,
-                            player.Name,
-                            player.Motto,
-                            player.Figure,
-                            avatarUrl = _assetUrls.AvatarImage(player.Figure),
-                            // The player page gates "kick" on this: there is nothing to disconnect
-                            // when the account is offline, and a button that always looks available
-                            // teaches the operator to ignore its result.
-                            online = _sessionGateway
-                                .GetOnlinePlayerIds()
-                                .Any(p => p.Value == player.Id),
-                            createdAt = player.CreatedAt,
-                            updatedAt = player.UpdatedAt,
-                            player.gender,
-                            player.perks,
-                            window = new { since = profileWindowSince, until = profileWindowUntil },
-                            ownedRooms = new { total = ownedRoomCount, latest = ownedRooms },
-                            wallets = playerCurrencies,
-                            inventory = new
-                            {
-                                total = ownedItemCount,
-                                latest = ownedItemsWithIcons,
-                            },
-                            activity = new
-                            {
-                                auditEvents = auditCount,
-                                ledgerEvents = ledgerCount,
-                                itemEvents = itemEventCount,
-                            },
-                            timeline = new
-                            {
-                                entries = roomEntries,
-                                chats = chatHistory,
-                                items = itemEventsWithRooms,
-                            },
-                        };
-
-                    IQueryable<AuditEventEntity> audit = db
-                        .AuditEvents.AsNoTracking()
-                        .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id);
-
-                    if (since is not null)
-                    {
-                        audit = audit.Where(a => a.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        audit = audit.Where(a => a.OccurredAt <= until.Value);
-                    }
-
-                    IQueryable<EconomyLedgerEntity> ledger = db
-                        .EconomyLedger.AsNoTracking()
-                        .Where(l => l.PlayerId == id);
-
-                    if (since is not null)
-                    {
-                        ledger = ledger.Where(l => l.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        ledger = ledger.Where(l => l.OccurredAt <= until.Value);
-                    }
-
-                    IQueryable<ItemEventEntity> itemHistory = db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i =>
-                            i.ActorPlayerId == id || i.FromOwnerId == id || i.ToOwnerId == id
-                        );
-
-                    if (since is not null)
-                    {
-                        itemHistory = itemHistory.Where(i => i.OccurredAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        itemHistory = itemHistory.Where(i => i.OccurredAt <= until.Value);
-                    }
-
-                    // Chat and wired-chest movements complete the timeline. An investigation that
-                    // sees a furni leave the room but not the sentence that preceded it, nor the
-                    // chest it went into, stops one step short of the answer. Both stay under
-                    // AuditRead: these are in-context reads on a player already being investigated,
-                    // which is exactly the line ChatlogsRead draws (it guards "who said this word,
-                    // anywhere" -- the one chat read that starts from no incident at all).
-                    IQueryable<RoomChatlogEntity> chat = db
-                        .Chatlogs.AsNoTracking()
-                        .Where(c => c.PlayerEntityId == id);
-
-                    if (since is not null)
-                    {
-                        chat = chat.Where(c => c.CreatedAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        chat = chat.Where(c => c.CreatedAt <= until.Value);
-                    }
-
-                    IQueryable<WiredChestTransactionEntity> chestMoves = db
-                        .WiredChestTransactions.AsNoTracking()
-                        .Where(t => t.PlayerEntityId == id);
-
-                    if (since is not null)
-                    {
-                        chestMoves = chestMoves.Where(t => t.CreatedAt >= since.Value);
-                    }
-
-                    if (until is not null)
-                    {
-                        chestMoves = chestMoves.Where(t => t.CreatedAt <= until.Value);
-                    }
-
-                    var asActorRows = await audit
-                        .OrderByDescending(a => a.OccurredAt)
-                        .Skip(offset)
-                        .Take(limit)
-                        .Select(a => new
-                        {
-                            a.OccurredAt,
-                            category = a.Category.ToString(),
-                            a.Action,
-                            a.ActorPlayerId,
-                            a.TargetPlayerId,
-                            a.RoomId,
-                            a.Data,
-                            a.Result,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    List<int> actorAndTargetIds = NormalizeIds(
-                        asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
-                    );
-
-                    Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(
-                            db,
-                            actorAndTargetIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    List<int> auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
-
-                    Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(
-                            db,
-                            auditRoomIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    var asActor = asActorRows
-                        .Select(r => new
-                        {
-                            r.OccurredAt,
-                            r.category,
-                            r.Action,
-                            r.ActorPlayerId,
-                            actorPlayerName = ResolvePlayerName(
-                                actorAndTargetNames,
-                                r.ActorPlayerId
-                            ),
-                            r.TargetPlayerId,
-                            targetPlayerName = ResolvePlayerName(
-                                actorAndTargetNames,
-                                r.TargetPlayerId
-                            ),
-                            r.RoomId,
-                            roomName = r.RoomId != null
-                            && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
-                                ? roomName
-                                : null,
-                            r.Result,
-                            r.Data,
-                        })
-                        .ToList();
-
-                    var itemHistoryRows = await itemHistory
-                        .OrderBy(i => i.OccurredAt)
-                        .Skip(offset)
-                        .Take(limit)
-                        .Select(i => new
-                        {
-                            i.OccurredAt,
-                            eventType = i.EventType.ToString(),
-                            i.ItemId,
-                            i.RoomId,
-                            i.ActorPlayerId,
-                            i.FromOwnerId,
-                            i.ToOwnerId,
-                            i.CorrelationId,
-                            i.Data,
-                        })
-                        .ToListAsync(ct)
-                        .ConfigureAwait(false);
-
-                    List<int> itemHistoryRoomIds = NormalizeIds(
-                        itemHistoryRows.Select(row => row.RoomId)
-                    );
-
-                    List<int> itemHistoryPartyIds = NormalizeIds(
-                        itemHistoryRows.SelectMany(row =>
-                            new[] { row.ActorPlayerId, row.FromOwnerId, row.ToOwnerId }
-                        )
-                    );
-
-                    Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(
-                            db,
-                            itemHistoryRoomIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    Dictionary<int, string> itemHistoryPartyNames = await LoadPlayerNamesAsync(
-                            db,
-                            itemHistoryPartyIds,
-                            ct
-                        )
-                        .ConfigureAwait(false);
-
-                    var itemHistoryWithNames = itemHistoryRows
-                        .Select(row => new
-                        {
-                            row.OccurredAt,
-                            row.eventType,
-                            row.ItemId,
-                            row.RoomId,
-                            roomName = row.RoomId != null
-                            && itemHistoryRoomNames.TryGetValue(
-                                row.RoomId.Value,
-                                out string? roomName
-                            )
-                                ? roomName
-                                : null,
-                            row.ActorPlayerId,
-                            actorPlayerName = ResolvePlayerName(
-                                itemHistoryPartyNames,
-                                row.ActorPlayerId
-                            ),
-                            row.FromOwnerId,
-                            fromOwnerName = ResolvePlayerName(
-                                itemHistoryPartyNames,
-                                row.FromOwnerId
-                            ),
-                            row.ToOwnerId,
-                            toOwnerName = ResolvePlayerName(itemHistoryPartyNames, row.ToOwnerId),
-                            row.CorrelationId,
-                            row.Data,
-                        })
-                        .ToList();
-
-                    return new
-                    {
-                        kind = "id",
-                        term,
-                        page,
-                        limit,
-                        offset,
-                        asActor,
-                        playerProfile,
-                        auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
-                        ledger = await ledger
-                            .OrderByDescending(l => l.OccurredAt)
-                            .Skip(offset)
-                            .Take(limit)
-                            .Select(l => new
-                            {
-                                l.OccurredAt,
-                                l.Currency,
-                                l.Delta,
-                                l.BalanceAfter,
-                                l.ActivityPointType,
-                                l.CorrelationId,
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
-                        ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
-                        itemHistory = itemHistoryWithNames,
-                        itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
-                        chats = await chat.OrderByDescending(c => c.CreatedAt)
-                            .Skip(offset)
-                            .Take(limit)
-                            .Select(c => new
-                            {
-                                c.CreatedAt,
-                                roomId = c.RoomEntityId,
-                                roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
-                                c.Message,
-                                targetPlayerId = c.TargetPlayerEntityId,
-                                targetPlayerName = c.TargetPlayerEntity != null
-                                    ? c.TargetPlayerEntity.Name
-                                    : null,
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
-                        chatTotal = await chat.CountAsync(ct).ConfigureAwait(false),
-                        chestMoves = await chestMoves
-                            .OrderByDescending(t => t.CreatedAt)
-                            .Skip(offset)
-                            .Take(limit)
-                            .Select(t => new
-                            {
-                                t.CreatedAt,
-                                chestId = t.WiredChestEntityId,
-                                roomId = t.RoomEntityId,
-                                roomName = t.Room != null ? t.Room.Name : null,
-                                t.TransactionType,
-                                t.DefinitionInfo,
-                                t.WithdrawFurniCount,
-                                t.DepositFurniCount,
-                                t.WithdrawCoinsCount,
-                                t.DepositCoinsCount,
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
-                        chestTotal = await chestMoves.CountAsync(ct).ConfigureAwait(false),
-                    };
                 }
 
                 return new
@@ -895,6 +223,738 @@ internal sealed partial class DashboardApiService
             },
             ct
         );
+
+    /// <summary>
+    /// Everything one correlation id touched: the audit trail, the money and the items, gathered
+    /// from the three journals that carry it.
+    /// </summary>
+    /// <remarks>
+    /// Chosen by the shape of the term alone, so it answers — with empty sections — even for an id
+    /// that correlates to nothing. That is deliberate: "no trace of this operation" is itself the
+    /// finding an investigation is often after.
+    /// </remarks>
+    private static async Task<object> SearchByCorrelationAsync(
+        VortexDbContext db,
+        string term,
+        DateTime? since,
+        DateTime? until,
+        int limit,
+        int page,
+        int offset,
+        CancellationToken ct
+    )
+    {
+
+                IQueryable<AuditEventEntity> audit = db
+                    .AuditEvents.AsNoTracking()
+                    .Where(a => a.CorrelationId == term);
+
+                if (since is not null)
+                {
+                    audit = audit.Where(a => a.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    audit = audit.Where(a => a.OccurredAt <= until.Value);
+                }
+
+                IQueryable<EconomyLedgerEntity> ledger = db
+                    .EconomyLedger.AsNoTracking()
+                    .Where(l => l.CorrelationId == term);
+
+                if (since is not null)
+                {
+                    ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+                }
+
+                IQueryable<ItemEventEntity> items = db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i => i.CorrelationId == term);
+
+                if (since is not null)
+                {
+                    items = items.Where(i => i.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    items = items.Where(i => i.OccurredAt <= until.Value);
+                }
+
+                var auditRows = await audit
+                    .OrderBy(a => a.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(a => new
+                    {
+                        a.OccurredAt,
+                        category = a.Category.ToString(),
+                        a.Action,
+                        a.ActorPlayerId,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<int> auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
+
+                Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(
+                        db,
+                        auditActorIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var auditRowsWithNames = auditRows
+                    .Select(a => new
+                    {
+                        a.OccurredAt,
+                        category = a.category,
+                        a.Action,
+                        a.ActorPlayerId,
+                        actorName = ResolvePlayerName(auditActorNames, a.ActorPlayerId),
+                    })
+                    .ToList();
+
+                var ledgerRows = await ledger
+                    .OrderBy(l => l.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(l => new
+                    {
+                        l.OccurredAt,
+                        l.PlayerId,
+                        l.Currency,
+                        l.Delta,
+                        l.BalanceAfter,
+                        l.ActivityPointType,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var itemRows = await items
+                    .OrderBy(i => i.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(i => new
+                    {
+                        i.OccurredAt,
+                        i.ItemId,
+                        eventType = i.EventType.ToString(),
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new
+                {
+                    kind = "correlationId",
+                    term,
+                    page,
+                    limit,
+                    offset,
+                    auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
+                    ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
+                    itemTotal = await items.CountAsync(ct).ConfigureAwait(false),
+                    audit = auditRowsWithNames,
+                    ledger = ledgerRows,
+                    items = itemRows,
+                };
+    }
+
+    /// <summary>
+    /// Everything known about one numeric id, read as a player id and as an item id at once.
+    /// </summary>
+    /// <remarks>
+    /// It answers for an id that matches no player, because the same number is also an item id and
+    /// a room id, and the history attached to it is the point. The sections are independent reads
+    /// assembled into one answer rather than one query: an investigation opens this once and reads
+    /// down it.
+    /// </remarks>
+    private async Task<object> SearchByIdAsync(
+        VortexDbContext db,
+        string term,
+        int id,
+        DateTime? since,
+        DateTime? until,
+        int limit,
+        int page,
+        int offset,
+        CancellationToken ct
+    )
+    {
+
+                long playerIdLong = (long)id;
+                DateTime profileWindowSince = since ?? DateTime.UtcNow.AddHours(-24);
+                DateTime profileWindowUntil = until ?? DateTime.UtcNow;
+
+                var player = await db
+                    .Players.AsNoTracking()
+                    .Where(p => p.Id == id)
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        p.Motto,
+                        p.Figure,
+                        p.CreatedAt,
+                        p.UpdatedAt,
+                        // `players.status` is deliberately NOT projected: nothing in the
+                        // emulator ever writes it after account creation, so it answers
+                        // "Offline" for a connected player. `online` below is the real answer.
+                        gender = p.Gender.ToString(),
+                        perks = p.PlayerPerks.ToString(),
+                    })
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(false);
+
+                var playerCurrencies = await db
+                    .PlayerCurrencies.AsNoTracking()
+                    .Where(pc => pc.PlayerEntityId == id)
+                    .Select(pc => new
+                    {
+                        pc.CurrencyTypeEntityId,
+                        amount = pc.Amount,
+                        currency = pc.CurrencyTypeEntity != null
+                            ? pc.CurrencyTypeEntity.Name
+                                ?? pc.CurrencyTypeEntity.CurrencyType.ToString()
+                            : pc.CurrencyTypeEntityId.ToString(),
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var ownedRooms = await db
+                    .Rooms.AsNoTracking()
+                    .Where(r => r.PlayerEntityId == id)
+                    .OrderByDescending(r => r.LastActive)
+                    .Take(8)
+                    .Select(r => new
+                    {
+                        roomId = r.Id,
+                        roomName = r.Name,
+                        r.UsersNow,
+                        r.PlayersMax,
+                        r.LastActive,
+                        model = r.RoomModelEntity.Name,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var ownedItems = await db
+                    .Furnitures.AsNoTracking()
+                    .Where(f => f.PlayerEntityId == id)
+                    .OrderByDescending(f => f.UpdatedAt)
+                    .Take(16)
+                    .Select(f => new
+                    {
+                        itemId = (long)f.Id,
+                        definitionId = (int?)f.FurnitureDefinitionEntityId,
+                        definitionName = f.FurnitureDefinitionEntity != null
+                            ? f.FurnitureDefinitionEntity.Name
+                            : null,
+                        f.RoomEntityId,
+                        roomName = f.RoomEntity != null ? f.RoomEntity.Name : null,
+                        roomX = (int?)f.X,
+                        roomY = (int?)f.Y,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                // BuildFurniIconUrl isn't SQL-translatable, so the furni icon is attached in a
+                // second pass over the materialized rows (same shape as the catalog products).
+                var ownedItemsWithIcons = ownedItems
+                    .Select(f => new
+                    {
+                        f.itemId,
+                        f.definitionId,
+                        f.definitionName,
+                        furniIconUrl = f.definitionName is null
+                            ? null
+                            : BuildFurniIconUrl(f.definitionName),
+                        f.RoomEntityId,
+                        f.roomName,
+                        f.roomX,
+                        f.roomY,
+                    })
+                    .ToList();
+
+                var roomEntries = await db
+                    .RoomEntryLogs.AsNoTracking()
+                    .Where(e => e.PlayerEntityId == id)
+                    .Where(e =>
+                        e.CreatedAt >= profileWindowSince && e.CreatedAt <= profileWindowUntil
+                    )
+                    .OrderByDescending(e => e.CreatedAt)
+                    .Take(12)
+                    .Select(e => new
+                    {
+                        e.CreatedAt,
+                        roomId = e.RoomEntityId,
+                        roomName = e.RoomEntity != null ? e.RoomEntity.Name : null,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var chatHistory = await db
+                    .Chatlogs.AsNoTracking()
+                    .Where(c => c.PlayerEntityId == id)
+                    .Where(c =>
+                        c.CreatedAt >= profileWindowSince && c.CreatedAt <= profileWindowUntil
+                    )
+                    .OrderByDescending(c => c.CreatedAt)
+                    .Take(12)
+                    .Select(c => new
+                    {
+                        c.CreatedAt,
+                        roomId = c.RoomEntityId,
+                        roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
+                        c.Message,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var itemEvents = await db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i =>
+                        i.ActorPlayerId == playerIdLong
+                        || i.FromOwnerId == playerIdLong
+                        || i.ToOwnerId == playerIdLong
+                    )
+                    .Where(i =>
+                        i.OccurredAt >= profileWindowSince && i.OccurredAt <= profileWindowUntil
+                    )
+                    .OrderByDescending(i => i.OccurredAt)
+                    .Take(24)
+                    .Select(i => new
+                    {
+                        i.OccurredAt,
+                        eventType = i.EventType.ToString(),
+                        itemId = i.ItemId,
+                        i.RoomId,
+                        actorPlayerId = i.ActorPlayerId,
+                        fromOwnerId = i.FromOwnerId,
+                        toOwnerId = i.ToOwnerId,
+                        correlationId = i.CorrelationId,
+                        i.Data,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<int> itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
+
+                Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(
+                        db,
+                        itemRoomIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                List<int> itemPartyIds = NormalizeIds(
+                    itemEvents.SelectMany(i =>
+                        new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId }
+                    )
+                );
+
+                Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(
+                        db,
+                        itemPartyIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var itemEventsWithRooms = itemEvents
+                    .Select(i => new
+                    {
+                        i.OccurredAt,
+                        i.eventType,
+                        i.itemId,
+                        i.RoomId,
+                        roomName = i.RoomId != null
+                        && itemRoomNames.TryGetValue(i.RoomId.Value, out string? roomName)
+                            ? roomName
+                            : null,
+                        i.actorPlayerId,
+                        actorPlayerName = ResolvePlayerName(itemPartyNames, i.actorPlayerId),
+                        i.fromOwnerId,
+                        fromOwnerName = ResolvePlayerName(itemPartyNames, i.fromOwnerId),
+                        i.toOwnerId,
+                        toOwnerName = ResolvePlayerName(itemPartyNames, i.toOwnerId),
+                        i.correlationId,
+                        i.Data,
+                    })
+                    .ToList();
+
+                int auditCount = await db
+                    .AuditEvents.AsNoTracking()
+                    .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id)
+                    .Where(a =>
+                        a.OccurredAt >= profileWindowSince && a.OccurredAt <= profileWindowUntil
+                    )
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                int ledgerCount = await db
+                    .EconomyLedger.AsNoTracking()
+                    .Where(l => l.PlayerId == id)
+                    .Where(l =>
+                        l.OccurredAt >= profileWindowSince && l.OccurredAt <= profileWindowUntil
+                    )
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                int itemEventCount = await db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i =>
+                        i.ActorPlayerId == playerIdLong
+                        || i.FromOwnerId == playerIdLong
+                        || i.ToOwnerId == playerIdLong
+                    )
+                    .Where(i =>
+                        i.OccurredAt >= profileWindowSince && i.OccurredAt <= profileWindowUntil
+                    )
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                int ownedRoomCount = await db
+                    .Rooms.AsNoTracking()
+                    .Where(r => r.PlayerEntityId == id)
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                int ownedItemCount = await db
+                    .Furnitures.AsNoTracking()
+                    .Where(f => f.PlayerEntityId == id)
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                var playerProfile = player is null
+                    ? null
+                    : new
+                    {
+                        player.Id,
+                        player.Name,
+                        player.Motto,
+                        player.Figure,
+                        avatarUrl = _assetUrls.AvatarImage(player.Figure),
+                        // The player page gates "kick" on this: there is nothing to disconnect
+                        // when the account is offline, and a button that always looks available
+                        // teaches the operator to ignore its result.
+                        online = _sessionGateway
+                            .GetOnlinePlayerIds()
+                            .Any(p => p.Value == player.Id),
+                        createdAt = player.CreatedAt,
+                        updatedAt = player.UpdatedAt,
+                        player.gender,
+                        player.perks,
+                        window = new { since = profileWindowSince, until = profileWindowUntil },
+                        ownedRooms = new { total = ownedRoomCount, latest = ownedRooms },
+                        wallets = playerCurrencies,
+                        inventory = new
+                        {
+                            total = ownedItemCount,
+                            latest = ownedItemsWithIcons,
+                        },
+                        activity = new
+                        {
+                            auditEvents = auditCount,
+                            ledgerEvents = ledgerCount,
+                            itemEvents = itemEventCount,
+                        },
+                        timeline = new
+                        {
+                            entries = roomEntries,
+                            chats = chatHistory,
+                            items = itemEventsWithRooms,
+                        },
+                    };
+
+                IQueryable<AuditEventEntity> audit = db
+                    .AuditEvents.AsNoTracking()
+                    .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id);
+
+                if (since is not null)
+                {
+                    audit = audit.Where(a => a.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    audit = audit.Where(a => a.OccurredAt <= until.Value);
+                }
+
+                IQueryable<EconomyLedgerEntity> ledger = db
+                    .EconomyLedger.AsNoTracking()
+                    .Where(l => l.PlayerId == id);
+
+                if (since is not null)
+                {
+                    ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+                }
+
+                IQueryable<ItemEventEntity> itemHistory = db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i =>
+                        i.ActorPlayerId == id || i.FromOwnerId == id || i.ToOwnerId == id
+                    );
+
+                if (since is not null)
+                {
+                    itemHistory = itemHistory.Where(i => i.OccurredAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    itemHistory = itemHistory.Where(i => i.OccurredAt <= until.Value);
+                }
+
+                // Chat and wired-chest movements complete the timeline. An investigation that
+                // sees a furni leave the room but not the sentence that preceded it, nor the
+                // chest it went into, stops one step short of the answer. Both stay under
+                // AuditRead: these are in-context reads on a player already being investigated,
+                // which is exactly the line ChatlogsRead draws (it guards "who said this word,
+                // anywhere" -- the one chat read that starts from no incident at all).
+                IQueryable<RoomChatlogEntity> chat = db
+                    .Chatlogs.AsNoTracking()
+                    .Where(c => c.PlayerEntityId == id);
+
+                if (since is not null)
+                {
+                    chat = chat.Where(c => c.CreatedAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    chat = chat.Where(c => c.CreatedAt <= until.Value);
+                }
+
+                IQueryable<WiredChestTransactionEntity> chestMoves = db
+                    .WiredChestTransactions.AsNoTracking()
+                    .Where(t => t.PlayerEntityId == id);
+
+                if (since is not null)
+                {
+                    chestMoves = chestMoves.Where(t => t.CreatedAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    chestMoves = chestMoves.Where(t => t.CreatedAt <= until.Value);
+                }
+
+                var asActorRows = await audit
+                    .OrderByDescending(a => a.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(a => new
+                    {
+                        a.OccurredAt,
+                        category = a.Category.ToString(),
+                        a.Action,
+                        a.ActorPlayerId,
+                        a.TargetPlayerId,
+                        a.RoomId,
+                        a.Data,
+                        a.Result,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<int> actorAndTargetIds = NormalizeIds(
+                    asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
+                );
+
+                Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(
+                        db,
+                        actorAndTargetIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                List<int> auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
+
+                Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(
+                        db,
+                        auditRoomIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var asActor = asActorRows
+                    .Select(r => new
+                    {
+                        r.OccurredAt,
+                        r.category,
+                        r.Action,
+                        r.ActorPlayerId,
+                        actorPlayerName = ResolvePlayerName(
+                            actorAndTargetNames,
+                            r.ActorPlayerId
+                        ),
+                        r.TargetPlayerId,
+                        targetPlayerName = ResolvePlayerName(
+                            actorAndTargetNames,
+                            r.TargetPlayerId
+                        ),
+                        r.RoomId,
+                        roomName = r.RoomId != null
+                        && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
+                            ? roomName
+                            : null,
+                        r.Result,
+                        r.Data,
+                    })
+                    .ToList();
+
+                var itemHistoryRows = await itemHistory
+                    .OrderBy(i => i.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(i => new
+                    {
+                        i.OccurredAt,
+                        eventType = i.EventType.ToString(),
+                        i.ItemId,
+                        i.RoomId,
+                        i.ActorPlayerId,
+                        i.FromOwnerId,
+                        i.ToOwnerId,
+                        i.CorrelationId,
+                        i.Data,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<int> itemHistoryRoomIds = NormalizeIds(
+                    itemHistoryRows.Select(row => row.RoomId)
+                );
+
+                List<int> itemHistoryPartyIds = NormalizeIds(
+                    itemHistoryRows.SelectMany(row =>
+                        new[] { row.ActorPlayerId, row.FromOwnerId, row.ToOwnerId }
+                    )
+                );
+
+                Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(
+                        db,
+                        itemHistoryRoomIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                Dictionary<int, string> itemHistoryPartyNames = await LoadPlayerNamesAsync(
+                        db,
+                        itemHistoryPartyIds,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var itemHistoryWithNames = itemHistoryRows
+                    .Select(row => new
+                    {
+                        row.OccurredAt,
+                        row.eventType,
+                        row.ItemId,
+                        row.RoomId,
+                        roomName = row.RoomId != null
+                        && itemHistoryRoomNames.TryGetValue(
+                            row.RoomId.Value,
+                            out string? roomName
+                        )
+                            ? roomName
+                            : null,
+                        row.ActorPlayerId,
+                        actorPlayerName = ResolvePlayerName(
+                            itemHistoryPartyNames,
+                            row.ActorPlayerId
+                        ),
+                        row.FromOwnerId,
+                        fromOwnerName = ResolvePlayerName(
+                            itemHistoryPartyNames,
+                            row.FromOwnerId
+                        ),
+                        row.ToOwnerId,
+                        toOwnerName = ResolvePlayerName(itemHistoryPartyNames, row.ToOwnerId),
+                        row.CorrelationId,
+                        row.Data,
+                    })
+                    .ToList();
+
+                return new
+                {
+                    kind = "id",
+                    term,
+                    page,
+                    limit,
+                    offset,
+                    asActor,
+                    playerProfile,
+                    auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
+                    ledger = await ledger
+                        .OrderByDescending(l => l.OccurredAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(l => new
+                        {
+                            l.OccurredAt,
+                            l.Currency,
+                            l.Delta,
+                            l.BalanceAfter,
+                            l.ActivityPointType,
+                            l.CorrelationId,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false),
+                    ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
+                    itemHistory = itemHistoryWithNames,
+                    itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
+                    chats = await chat.OrderByDescending(c => c.CreatedAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(c => new
+                        {
+                            c.CreatedAt,
+                            roomId = c.RoomEntityId,
+                            roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
+                            c.Message,
+                            targetPlayerId = c.TargetPlayerEntityId,
+                            targetPlayerName = c.TargetPlayerEntity != null
+                                ? c.TargetPlayerEntity.Name
+                                : null,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false),
+                    chatTotal = await chat.CountAsync(ct).ConfigureAwait(false),
+                    chestMoves = await chestMoves
+                        .OrderByDescending(t => t.CreatedAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(t => new
+                        {
+                            t.CreatedAt,
+                            chestId = t.WiredChestEntityId,
+                            roomId = t.RoomEntityId,
+                            roomName = t.Room != null ? t.Room.Name : null,
+                            t.TransactionType,
+                            t.DefinitionInfo,
+                            t.WithdrawFurniCount,
+                            t.DepositFurniCount,
+                            t.WithdrawCoinsCount,
+                            t.DepositCoinsCount,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false),
+                    chestTotal = await chestMoves.CountAsync(ct).ConfigureAwait(false),
+                };
+    }
 
     public Task<object?> RoomTimelineAsync(
         int roomId,
