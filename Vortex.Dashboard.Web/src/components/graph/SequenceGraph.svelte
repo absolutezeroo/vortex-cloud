@@ -53,6 +53,20 @@
   /** The fact a condition currently tests, read live rather than from the render snapshot. */
   const metaOf = (node) => factsFor(node.action).find((f) => f.key === node.filter.factKey) ?? null;
 
+  // Wires are measured off the DOM, and on the first render there is nothing to measure: the SVG is
+  // drawn before the nodes it connects exist, so every wire came out null and the canvas opened
+  // wireless until something moved a node and forced a second pass. This is that second pass, asked
+  // for on purpose. It reads the node ids and not `ports`, so writing `ports` here cannot loop.
+  $effect(() => {
+    const nodes = graph.nodes.map((n) => n.id).join('|');
+
+    if (!canvasEl || !nodes) return;
+
+    const frame = requestAnimationFrame(() => (ports += 1));
+
+    return () => cancelAnimationFrame(frame);
+  });
+
   /** Where a port ended up, in canvas coordinates. Measured, because node height varies. */
   function portAt(id) {
     void ports;
@@ -381,6 +395,49 @@
     addConditionOn(target, first.key, defaultFilterValue(target.action, first.key));
   }
 
+  /**
+   * Moves an action earlier or later in the sequence.
+   *
+   * Where a node sits on the canvas is decoration; the ORDER is the array, and it is the only thing
+   * the engine reads. Without this the number on a node could not be changed at all from here --
+   * you could arrange the picture any way you liked and never touch the sequence it pictures.
+   *
+   * moveStep rewrites every `$N` for the new positions and clears the ones the move invalidates, so
+   * dragging an action in front of the thing it depended on says so instead of failing on save.
+   */
+  function reorder(node, delta) {
+    const { steps: moved, clearedReferences } = moveStep(steps, node.index, node.index + delta);
+
+    if (moved === steps) return;
+
+    onchange(moved);
+    // The two nodes swapped places in the array, so their stored positions swap with them --
+    // otherwise the picture would stop matching the numbers on it.
+    layout = {
+      ...layout,
+      [`a:${node.index}`]: layout[`a:${node.index + delta}`],
+      [`a:${node.index + delta}`]: layout[`a:${node.index}`],
+    };
+    selected = `a:${node.index + delta}`;
+    notice = clearedReferences
+      ? $t('rewardTracks.referencesCleared', { count: clearedReferences })
+      : '';
+    ports += 1;
+  }
+
+  /**
+   * Throws the layout away.
+   *
+   * Positions are a convenience, never a meaning, so losing them costs nothing -- and once a graph
+   * has been dragged around for a while, the fastest way to read it again is to have it laid back
+   * out in the order it actually runs in.
+   */
+  function tidy() {
+    layout = {};
+    notice = '';
+    ports += 1;
+  }
+
   function removeAction(node) {
     // Removing a step renumbers everything after it, and a `$N` pointing past the gap would then
     // name the wrong action. moveStep already keeps references honest, so the removal is done by
@@ -454,6 +511,8 @@
             ports += 1;
           }}
           onremove={() => removeAction(node)}
+          onreorder={(delta) => reorder(node, delta)}
+          last={node.index === actionNodes.length - 1}
           onportdown={(factKey, e) => startFromOutput(node, factKey, e)}
           onportup={(factKey) => dropOnOutput(node, factKey)}
           onappliesup={() => dropOnApplies(node)}
@@ -495,7 +554,8 @@
     <div class="hints">
       <span>{$t('rewardTracks.graphHintPan')}</span>
       <span>{$t('rewardTracks.graphHintWire')}</span>
-      <span class="zoom">{Math.round(zoom * 100)}%</span>
+      <button type="button" class="chip" onclick={tidy}>{$t('rewardTracks.tidyGraph')}</button>
+      <span class="chip">{Math.round(zoom * 100)}%</span>
     </div>
   </div>
 </div>
@@ -563,11 +623,25 @@
     pointer-events: none;
   }
 
-  .zoom {
+  .chip {
     padding: 2px 7px;
     border: 2px solid var(--line-strong);
     border-radius: 5px;
     background: var(--surface);
     box-shadow: var(--panel-shadow);
+    color: var(--muted);
+    font: inherit;
+  }
+
+  /* The hint row ignores the pointer so it never eats a drag; the one thing in it you can press
+     has to opt back in. */
+  button.chip {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  button.chip:hover {
+    border-color: var(--gold);
+    color: var(--ink);
   }
 </style>

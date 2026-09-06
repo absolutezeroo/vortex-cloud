@@ -4,14 +4,14 @@
   // Its conditions are no longer inside it -- they are their own nodes, wired in. What is left here
   // is the action itself, the order ports, and one output port per fact it records, which is what a
   // later condition can read.
-  import { X } from '@lucide/svelte';
+  import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
   import { portColour } from '../../lib/graph/model.js';
   import { t } from '../../lib/i18n.js';
 
   /**
    * @type {{
    *   node: any, actions: any[], canManage: boolean, selected: boolean, pulling: any,
-   *   appliesLit: boolean,
+   *   appliesLit: boolean, last: boolean, onreorder: (delta: number) => void,
    *   candidateFor: (factKey: string) => boolean, usableFor: (factKey: string) => boolean,
    *   onmovestart: (e: PointerEvent) => void, onchange: () => void, onremove: () => void,
    *   onportdown: (factKey: string, e: PointerEvent) => void,
@@ -26,11 +26,13 @@
     selected,
     pulling,
     appliesLit,
+    last,
     candidateFor,
     usableFor,
     onmovestart,
     onchange,
     onremove,
+    onreorder,
     onportdown,
     onportup,
     onappliesup,
@@ -39,7 +41,29 @@
 
 <div class="node" class:selected style:left="{node.x}px" style:top="{node.y}px">
   <header class="node-head" onpointerdown={canManage ? onmovestart : undefined}>
+    <!-- The number IS the sequence: where the node sits on the canvas is decoration, and this is
+         the only thing the engine reads. So the two ways to change it live on it. -->
     <span class="node-index">{node.index + 1}</span>
+    {#if canManage}
+      <span class="node-order" onpointerdown={(e) => e.stopPropagation()} role="presentation">
+        <button
+          type="button"
+          disabled={node.index === 0}
+          title={$t('rewardTracks.moveEarlier')}
+          onclick={() => onreorder(-1)}
+        >
+          <ChevronLeft size={12} />
+        </button>
+        <button
+          type="button"
+          disabled={last}
+          title={$t('rewardTracks.moveLater')}
+          onclick={() => onreorder(1)}
+        >
+          <ChevronRight size={12} />
+        </button>
+      </span>
+    {/if}
     <span class="node-title">{node.action}</span>
     {#if canManage}
       <button type="button" class="node-close" title={$t('common.remove')} onclick={onremove}>
@@ -151,6 +175,32 @@
     background: var(--gold-soft);
     color: var(--gold);
     font-size: 0.68rem;
+  }
+
+  .node-order {
+    flex: 0 0 auto;
+    display: inline-flex;
+    gap: 1px;
+  }
+
+  .node-order button {
+    display: inline-flex;
+    padding: 1px;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .node-order button:hover:not(:disabled) {
+    background: var(--surface-hover);
+    color: var(--gold);
+  }
+
+  .node-order button:disabled {
+    opacity: 0.25;
+    cursor: default;
   }
 
   .node-title {
