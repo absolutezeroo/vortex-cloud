@@ -26,12 +26,14 @@ public sealed class TranslatorCaseTests
     {
         ChatTranslator translator = new();
 
+        // The line itself rides along, which is what "say something with the word X in it" reads.
         translator
-            .Translate(new PlayerChattedEvent(4312, 7, Whisper: false))
+            .Translate(new PlayerChattedEvent(4312, 7, Whisper: false, "hello casino"))
             .Should()
             .ContainSingle()
             .Which.Facts.Should()
-            .ContainSingle(f => f.Key == Facts.Room.Key && f.Value == "7");
+            .ContainSingle(f => f.Key == Facts.Room.Key && f.Value == "7")
+            .And.ContainSingle(f => f.Key == Facts.ChatMessage.Key && f.Value == "hello casino");
 
         // A whisper to yourself would otherwise farm a "chat with users" task.
         translator.Translate(new PlayerChattedEvent(4312, 7, Whisper: true)).Should().BeEmpty();

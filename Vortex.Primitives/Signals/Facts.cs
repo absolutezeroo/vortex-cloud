@@ -203,14 +203,6 @@ public static class Facts
         "Quantity"
     );
 
-    /// <summary>Which money moved.</summary>
-    public static readonly FactKey Currency = new(
-        RewardTrackFacts.Currency,
-        FactKind.Text,
-        "rewardTracks.fact_currency",
-        "Currency"
-    );
-
     /// <summary>A poll's code. Picked, never typed: a poll nobody ran is a filter nobody satisfies.</summary>
     public static readonly FactKey Poll = new(
         RewardTrackFacts.Poll,
@@ -389,7 +381,6 @@ public static class Facts
         Thread,
         Price,
         Quantity,
-        Currency,
         Poll,
         Quiz,
         Campaign,

@@ -49,7 +49,10 @@ public sealed class VocabularyGovernanceTests
         "thread",
         "price",
         "quantity",
-        "currency",
+        // "currency" was here and is deliberately gone, for the same reason and under the same
+        // exemption as "code" below: no translator ever emitted it, so no content can name it. No
+        // event carries a currency — every price is in the one currency its action spends — so the
+        // fact could only ever have been a constant, and a filter on a constant filters nothing.
         // "code" was here and is deliberately gone. It named a poll code, a quiz code, a campaign,
         // a voucher, two different product codes and a vault category -- one key meaning six
         // things, which is the ambiguity that makes a filter unreadable and a picker impossible.
@@ -249,5 +252,31 @@ public sealed class VocabularyGovernanceTests
         ];
 
         FrozenActions.Should().Contain(declared);
+    }
+
+    [Fact]
+    public void Every_fact_in_the_catalogue_is_emitted_by_something()
+    {
+        // The defect this whole subsystem exists to prevent, in its last hiding place. A fact can be
+        // written for a feature, documented, frozen above -- and never wired to the translator that
+        // was supposed to emit it. Nothing else says so: the editor builds its list from shapes, so
+        // an orphan is invisible rather than wrong, and the feature is simply missing.
+        //
+        // `message` was exactly that. The chat event was given its line, the fact was declared for
+        // it, and the translator kept emitting only the room, so "say something containing X" could
+        // not be written.
+        ImmutableArray<string> emitted =
+        [
+            .. TranslatorCatalog
+                .All.SelectMany(t => t.Shapes)
+                .SelectMany(s => s.Facts)
+                .Select(f => f.Key)
+                .Distinct(),
+        ];
+
+        Facts
+            .All.Select(f => f.Key)
+            .Should()
+            .BeSubsetOf(emitted, "a fact nothing emits is a filter that can never match");
     }
 }

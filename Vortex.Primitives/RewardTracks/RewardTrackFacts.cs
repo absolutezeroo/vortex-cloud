@@ -105,8 +105,10 @@ public static class RewardTrackFacts
     /// <summary>How many of a thing.</summary>
     public const string Quantity = "quantity";
 
-    /// <summary>A currency name, as the wallet knows it.</summary>
-    public const string Currency = "currency";
+    // "currency" was here. No event carries one: every price the hotel raises is in the single
+    // currency its action spends, so the fact would have been a constant, and a filter on a
+    // constant is a filter that changes nothing. Removed rather than fabricated -- the rule this
+    // subsystem exists for cuts both ways.
 
     /// <summary>A poll's code.</summary>
     public const string Poll = "poll";
