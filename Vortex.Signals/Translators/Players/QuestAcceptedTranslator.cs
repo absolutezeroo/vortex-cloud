@@ -8,7 +8,7 @@ namespace Vortex.Signals.Translators;
 public sealed class QuestAcceptedTranslator : ISignalTranslator<QuestAcceptedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.AcceptQuest, [Facts.Code], TargetKind: FactKind.Text)];
+    [new(SignalActions.AcceptQuest, [Facts.Campaign], TargetKind: FactKind.Text)];
 
     public ImmutableArray<ProgressSignal> Translate(QuestAcceptedEvent e) =>
         [
@@ -17,7 +17,7 @@ public sealed class QuestAcceptedTranslator : ISignalTranslator<QuestAcceptedEve
                 SignalActions.AcceptQuest,
                 1,
                 e.CampaignCode,
-                SignalFacts.Build().Text(Facts.Code, e.CampaignCode)
+                SignalFacts.Build().Text(Facts.Campaign, e.CampaignCode)
             ),
         ];
 }

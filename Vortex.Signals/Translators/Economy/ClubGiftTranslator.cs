@@ -8,7 +8,7 @@ namespace Vortex.Signals.Translators;
 public sealed class ClubGiftTranslator : ISignalTranslator<ClubGiftClaimedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.ClaimClubGift, [Facts.Code], TargetKind: FactKind.Text)];
+    [new(SignalActions.ClaimClubGift, [Facts.ClubGift], TargetKind: FactKind.Text)];
 
     public ImmutableArray<ProgressSignal> Translate(ClubGiftClaimedEvent e) =>
         [
@@ -17,7 +17,7 @@ public sealed class ClubGiftTranslator : ISignalTranslator<ClubGiftClaimedEvent>
                 SignalActions.ClaimClubGift,
                 1,
                 e.ProductCode,
-                SignalFacts.Build().Text(Facts.Code, e.ProductCode)
+                SignalFacts.Build().Text(Facts.ClubGift, e.ProductCode)
             ),
         ];
 }

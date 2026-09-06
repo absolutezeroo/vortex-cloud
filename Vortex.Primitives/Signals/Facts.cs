@@ -211,12 +211,68 @@ public static class Facts
         "Currency"
     );
 
-    /// <summary>A content code: product, voucher, poll, quiz, campaign.</summary>
-    public static readonly FactKey Code = new(
-        RewardTrackFacts.Code,
+    /// <summary>A poll's code. Picked, never typed: a poll nobody ran is a filter nobody satisfies.</summary>
+    public static readonly FactKey Poll = new(
+        RewardTrackFacts.Poll,
         FactKind.Text,
-        "rewardTracks.fact_code",
-        "Code"
+        "rewardTracks.fact_poll",
+        "Poll"
+    );
+
+    /// <summary>A quiz's code.</summary>
+    public static readonly FactKey Quiz = new(
+        RewardTrackFacts.Quiz,
+        FactKind.Text,
+        "rewardTracks.fact_quiz",
+        "Quiz"
+    );
+
+    /// <summary>A quest campaign's code.</summary>
+    public static readonly FactKey Campaign = new(
+        RewardTrackFacts.Campaign,
+        FactKind.Text,
+        "rewardTracks.fact_campaign",
+        "Campaign"
+    );
+
+    /// <summary>A voucher's code.</summary>
+    public static readonly FactKey Voucher = new(
+        RewardTrackFacts.Voucher,
+        FactKind.Text,
+        "rewardTracks.fact_voucher",
+        "Voucher"
+    );
+
+    /// <summary>A club gift's product code.</summary>
+    public static readonly FactKey ClubGift = new(
+        RewardTrackFacts.ClubGift,
+        FactKind.Text,
+        "rewardTracks.fact_clubgift",
+        "Club gift"
+    );
+
+    /// <summary>A collectibles-store product code.</summary>
+    public static readonly FactKey NftProduct = new(
+        RewardTrackFacts.NftProduct,
+        FactKind.Text,
+        "rewardTracks.fact_nftproduct",
+        "Store product"
+    );
+
+    /// <summary>A targeted offer's identifier.</summary>
+    public static readonly FactKey TargetedOffer = new(
+        RewardTrackFacts.TargetedOffer,
+        FactKind.Text,
+        "rewardTracks.fact_targeted_offer",
+        "Targeted offer"
+    );
+
+    /// <summary>A vault income category.</summary>
+    public static readonly FactKey VaultCategory = new(
+        RewardTrackFacts.VaultCategory,
+        FactKind.Text,
+        "rewardTracks.fact_vaultcategory",
+        "Vault category"
     );
 
     /// <summary>A pet's species.</summary>
@@ -334,7 +390,14 @@ public static class Facts
         Price,
         Quantity,
         Currency,
-        Code,
+        Poll,
+        Quiz,
+        Campaign,
+        Voucher,
+        ClubGift,
+        NftProduct,
+        VaultCategory,
+        TargetedOffer,
         PetType,
         GivenName,
         Effect,

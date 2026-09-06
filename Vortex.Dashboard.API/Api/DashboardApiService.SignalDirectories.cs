@@ -207,6 +207,97 @@ internal sealed partial class DashboardApiService
             ct
         );
 
+    /// <summary>Polls, by code. A filter stores the code, so that is what the row hands back.</summary>
+    public Task<object> PollsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        PickerPageAsync(
+            query,
+            db => db.Polls.AsNoTracking(),
+            (polls, term, id) =>
+                polls.Where(p => p.Code.Contains(term) || (id != null && p.Id == id)),
+            polls => polls.OrderBy(p => p.Code),
+            p => new PickerRow(p.Id, p.Code, null) { Value = p.Code },
+            ct
+        );
+
+    /// <summary>Quizzes, by code.</summary>
+    public Task<object> QuizzesDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        PickerPageAsync(
+            query,
+            db => db.Quizzes.AsNoTracking(),
+            (quizzes, term, id) =>
+                quizzes.Where(q => q.Code.Contains(term) || (id != null && q.Id == id)),
+            quizzes => quizzes.OrderBy(q => q.Code),
+            q => new PickerRow(q.Id, q.Code, null) { Value = q.Code },
+            ct
+        );
+
+    /// <summary>
+    /// Quest campaigns, by code.
+    /// </summary>
+    /// <remarks>
+    /// A campaign is not a row of its own — quests carry the code — so this is the distinct set,
+    /// which is exactly what a filter on "a quest from campaign X" compares against.
+    /// </remarks>
+    public Task<object> QuestCampaignsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) => DistinctCodesAsync(query, db => db.Quests.AsNoTracking().Select(q => q.CampaignCode), ct);
+
+    /// <summary>Vouchers, by code.</summary>
+    public Task<object> VouchersDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        PickerPageAsync(
+            query,
+            db => db.Vouchers.AsNoTracking(),
+            (vouchers, term, id) =>
+                vouchers.Where(v => v.Code.Contains(term) || (id != null && v.Id == id)),
+            vouchers => vouchers.OrderBy(v => v.Code),
+            v => new PickerRow(v.Id, v.Code, null) { Value = v.Code },
+            ct
+        );
+
+    /// <summary>Club gifts, by product code.</summary>
+    public Task<object> ClubGiftsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        PickerPageAsync(
+            query,
+            db => db.CatalogClubGifts.AsNoTracking(),
+            (gifts, term, id) =>
+                gifts.Where(g => g.ProductCode.Contains(term) || (id != null && g.Id == id)),
+            gifts => gifts.OrderBy(g => g.ProductCode),
+            g => new PickerRow(g.Id, g.ProductCode, null) { Value = g.ProductCode },
+            ct
+        );
+
+    /// <summary>Collectibles-store offers, by product code.</summary>
+    public Task<object> NftStoreDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        PickerPageAsync(
+            query,
+            db => db.NftStoreOffers.AsNoTracking(),
+            (offers, term, id) =>
+                offers.Where(o => o.ProductCode.Contains(term) || (id != null && o.Id == id)),
+            offers => offers.OrderBy(o => o.ProductCode),
+            o => new PickerRow(o.Id, o.ProductCode, null) { Value = o.ProductCode },
+            ct
+        );
+
+    /// <summary>Targeted offers, by identifier.</summary>
+    public Task<object> TargetedOffersDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        PickerPageAsync(
+            query,
+            db => db.TargetedOffers.AsNoTracking(),
+            (offers, term, id) =>
+                offers.Where(o =>
+                    o.Identifier.Contains(term)
+                    || o.Title.Contains(term)
+                    || (id != null && o.Id == id)
+                ),
+            offers => offers.OrderBy(o => o.Identifier),
+            o => new PickerRow(o.Id, o.Identifier, o.Title) { Value = o.Identifier },
+            ct
+        );
+
     /// <summary>What a picker row is, whatever table it came from.</summary>
     private sealed record PickerRow(int Id, string Name, string? Description)
     {
@@ -215,8 +306,63 @@ internal sealed partial class DashboardApiService
     }
 
     /// <summary>
-    /// One paged, searchable picker query, so six directories are six expressions rather than six
-    /// copies of the same twenty lines.
+    /// A directory whose values are distinct strings rather than rows: a badge nobody was granted
+    /// and a campaign no quest belongs to are both filters nobody can satisfy.
+    /// </summary>
+    private Task<object> DistinctCodesAsync(
+        NameValueCollection query,
+        Func<Database.Context.VortexDbContext, IQueryable<string>> source,
+        CancellationToken ct
+    ) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 200);
+                int offset = int.TryParse(query["offset"], out int parsed)
+                    ? Math.Max(0, parsed)
+                    : 0;
+
+                IQueryable<string> codes = source(db).Distinct();
+
+                if (term.Length > 0)
+                {
+                    codes = codes.Where(c => c.Contains(term));
+                }
+
+                int total = await codes.CountAsync(ct).ConfigureAwait(false);
+
+                List<string> page = await codes
+                    .OrderBy(c => c)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var items = page.Select(code => new
+                    {
+                        id = code,
+                        value = code,
+                        name = code,
+                        description = (string?)null,
+                    })
+                    .ToList();
+
+                return new
+                {
+                    count = items.Count,
+                    total,
+                    offset,
+                    hasMore = offset + items.Count < total,
+                    items,
+                };
+            },
+            ct
+        );
+
+    /// <summary>
+    /// One paged, searchable picker query, so the row-backed directories are one expression each
+    /// rather than a dozen copies of the same twenty lines.
     /// </summary>
     private Task<object> PickerPageAsync<TEntity>(
         NameValueCollection query,

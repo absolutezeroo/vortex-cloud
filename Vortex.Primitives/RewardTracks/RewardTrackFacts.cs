@@ -108,8 +108,29 @@ public static class RewardTrackFacts
     /// <summary>A currency name, as the wallet knows it.</summary>
     public const string Currency = "currency";
 
-    /// <summary>A content code: a product, a voucher, a poll, a quiz, a campaign.</summary>
-    public const string Code = "code";
+    /// <summary>A poll's code.</summary>
+    public const string Poll = "poll";
+
+    /// <summary>A quiz's code.</summary>
+    public const string Quiz = "quiz";
+
+    /// <summary>A quest campaign's code.</summary>
+    public const string Campaign = "campaign";
+
+    /// <summary>A voucher's code.</summary>
+    public const string Voucher = "voucher";
+
+    /// <summary>A club gift's product code.</summary>
+    public const string ClubGift = "club_gift";
+
+    /// <summary>A collectibles-store product code.</summary>
+    public const string NftProduct = "nft_product";
+
+    /// <summary>A vault income category.</summary>
+    public const string VaultCategory = "vault_category";
+
+    /// <summary>A targeted offer's identifier.</summary>
+    public const string TargetedOffer = "targeted_offer";
 
     /// <summary>A pet's species number.</summary>
     public const string PetType = "pet_type";

@@ -50,7 +50,20 @@ public sealed class VocabularyGovernanceTests
         "price",
         "quantity",
         "currency",
-        "code",
+        // "code" was here and is deliberately gone. It named a poll code, a quiz code, a campaign,
+        // a voucher, two different product codes and a vault category -- one key meaning six
+        // things, which is the ambiguity that makes a filter unreadable and a picker impossible.
+        // Removing a key is normally forbidden by this very list; it is safe exactly once, because
+        // the actions that carried it were added in the same unreleased change and no content can
+        // name them yet. The seven keys below replace it, and none of them may ever be removed.
+        "poll",
+        "quiz",
+        "campaign",
+        "voucher",
+        "club_gift",
+        "nft_product",
+        "vault_category",
+        "targeted_offer",
         "pet_type",
         "given_name",
         "effect",

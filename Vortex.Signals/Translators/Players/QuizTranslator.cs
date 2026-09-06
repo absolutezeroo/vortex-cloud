@@ -8,7 +8,7 @@ namespace Vortex.Signals.Translators;
 public sealed class QuizTranslator : ISignalTranslator<QuizSubmittedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.SubmitQuiz, [Facts.Code], TargetKind: FactKind.Text)];
+    [new(SignalActions.SubmitQuiz, [Facts.Quiz], TargetKind: FactKind.Text)];
 
     public ImmutableArray<ProgressSignal> Translate(QuizSubmittedEvent e) =>
         [
@@ -17,7 +17,7 @@ public sealed class QuizTranslator : ISignalTranslator<QuizSubmittedEvent>
                 SignalActions.SubmitQuiz,
                 1,
                 e.QuizCode,
-                SignalFacts.Build().Text(Facts.Code, e.QuizCode)
+                SignalFacts.Build().Text(Facts.Quiz, e.QuizCode)
             ),
         ];
 }

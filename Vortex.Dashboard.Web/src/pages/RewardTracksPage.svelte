@@ -97,6 +97,13 @@
     habbicon: 'habbicon',
     collection: 'collection',
     pet_type: 'petSpecies',
+    poll: 'poll',
+    quiz: 'quiz',
+    campaign: 'campaign',
+    voucher: 'voucher',
+    club_gift: 'clubGift',
+    nft_product: 'nftProduct',
+    targeted_offer: 'targetedOffer',
   };
 
   /** The directory this filter can pick from, by fact first and kind second. */

@@ -8,7 +8,7 @@ namespace Vortex.Signals.Translators;
 public sealed class VoucherTranslator : ISignalTranslator<VoucherRedeemedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.RedeemVoucher, [Facts.Code, Facts.Price], TargetKind: FactKind.Text)];
+    [new(SignalActions.RedeemVoucher, [Facts.Voucher, Facts.Price], TargetKind: FactKind.Text)];
 
     public ImmutableArray<ProgressSignal> Translate(VoucherRedeemedEvent e) =>
         [
@@ -17,7 +17,7 @@ public sealed class VoucherTranslator : ISignalTranslator<VoucherRedeemedEvent>
                 SignalActions.RedeemVoucher,
                 e.Amount,
                 e.Code,
-                SignalFacts.Build().Text(Facts.Code, e.Code).Number(Facts.Price, e.Amount)
+                SignalFacts.Build().Text(Facts.Voucher, e.Code).Number(Facts.Price, e.Amount)
             ),
         ];
 }

@@ -127,6 +127,62 @@ internal static partial class DashboardEndpoints
         );
         MapReadGet(
             app,
+            ApiDirectory + "/polls",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.PollsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.PollsRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/quizzes",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.QuizzesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.QuestsRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/quest-campaigns",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.QuestCampaignsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.QuestsRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/vouchers",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.VouchersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.EconomyRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/club-gifts",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.ClubGiftsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.CatalogRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/nft-store",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.NftStoreDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.CollectiblesRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
+            ApiDirectory + "/targeted-offers",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.TargetedOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.CatalogRead,
+            TagDirectory
+        );
+        MapReadGet(
+            app,
             ApiDirectory + "/entity/{id}",
             (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),

@@ -6,6 +6,8 @@
   import { House, User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { LOGIC_GROUPS } from '../lib/furnitureEnums.js';
+  import { directoryFor } from '../lib/pickers/directories.js';
+  import { PICKER_ROWS } from './pickers/index.js';
   import { t } from '../lib/i18n.js';
 
   
@@ -27,26 +29,13 @@
     canSelect = true
   } = $props();
 
-  const ENDPOINTS = {
-    furniture: '/api/v1/directory/furniture',
-    room: '/api/v1/directory/rooms',
-    user: '/api/v1/directory/players',
-  };
-
-  const endpoint = ENDPOINTS[kind] ?? ENDPOINTS.user;
-
-  // Searching by name only works while you still remember the name. These are the other ways an
-  // operator actually knows a thing: the id they just read in a log, the sprite an asset folder is
-  // named after, and -- for furniture -- what the thing *does*. The server owns the ordering (see
-  // OrderDefinitions/OrderPlayers/OrderRooms); this is only the vocabulary it accepts.
-  /** The plain directories order themselves; offering a sort they ignore would be a dead control. */
-  const PLAIN_KINDS = ['group', 'habbicon', 'collection', 'offer', 'category', 'badge', 'petSpecies'];
-
-  const SORTS = {
-    furniture: ['relevance', 'name', 'id', 'idDesc', 'sprite', 'logic'],
-    room: ['relevance', 'name', 'id', 'idDesc'],
-    user: ['relevance', 'name', 'id', 'idDesc'],
-  };
+  // Where the rows come from, how they sort, and which layout draws one -- all declared per
+  // directory in lib/pickers/directories.js. This component owns the search, the paging and the
+  // permission handling, and nothing about any particular catalogue.
+  const directory = directoryFor(kind);
+  const endpoint = directory?.endpoint;
+  const Row = PICKER_ROWS[directory?.row ?? 'plain'];
+  const sorts = directory?.sorts ?? [];
 
   const SORT_LABELS = {
     relevance: 'pickerModal.sortRelevance',
@@ -56,8 +45,6 @@
     sprite: 'pickerModal.sortSprite',
     logic: 'pickerModal.sortLogic',
   };
-
-  const sorts = SORTS[kind] ?? SORTS.user;
 
   let query = $state('');
   let sort = $state('relevance');
@@ -107,8 +94,8 @@
     const parts = [`q=${encodeURIComponent(query.trim())}`, `limit=${PAGE_SIZE}`, `offset=${offset}`];
 
     if (sort !== 'relevance') parts.push(`sort=${encodeURIComponent(sort)}`);
-    if (kind === 'furniture' && logicFilter) parts.push(`logic=${encodeURIComponent(logicFilter)}`);
-    if (kind === 'user' && onlineOnly) parts.push('online=true');
+    if (directory?.filter === 'logic' && logicFilter) parts.push(`logic=${encodeURIComponent(logicFilter)}`);
+    if (directory?.filter === 'online' && onlineOnly) parts.push('online=true');
 
     return parts.join('&');
   }
@@ -126,6 +113,15 @@
     forbidden = false;
     rows = [];
     hasMore = false;
+
+    // Says what is wrong instead of listing the wrong thing. The previous fallback made an
+    // unwired kind look like a working player picker.
+    if (!endpoint) {
+      loading = false;
+      error = `PickerModal: no directory is wired for kind "${kind}".`;
+
+      return;
+    }
 
     try {
       const data = await apiGet(`${endpoint}?${params(0)}`);
@@ -203,16 +199,20 @@
   <!-- Changing a filter re-runs the search straight away: it is a narrowing of the same question,
        not a new one, so making the operator press Search again would only cost a click. -->
   <div class="pick-filters">
-    <label>
-      <span>{$t('pickerModal.sortLabel')}</span>
-      <select bind:value={sort} onchange={load} disabled={!canSelect}>
-        {#each sorts as option (option)}
-          <option value={option}>{$t(SORT_LABELS[option])}</option>
-        {/each}
-      </select>
-    </label>
+    <!-- A directory that orders itself gets no sort control: a dropdown the server ignores is a
+         dead one. -->
+    {#if sorts.length}
+      <label>
+        <span>{$t('pickerModal.sortLabel')}</span>
+        <select bind:value={sort} onchange={load} disabled={!canSelect}>
+          {#each sorts as option (option)}
+            <option value={option}>{$t(SORT_LABELS[option])}</option>
+          {/each}
+        </select>
+      </label>
+    {/if}
 
-    {#if kind === 'furniture'}
+    {#if directory?.filter === 'logic'}
       <label>
         <span>{$t('pickerModal.logicLabel')}</span>
         <select bind:value={logicFilter} onchange={load} disabled={!canSelect}>
@@ -226,7 +226,7 @@
           {/each}
         </select>
       </label>
-    {:else if kind === 'user'}
+    {:else if directory?.filter === 'online'}
       <label class="pick-check">
         <input type="checkbox" bind:checked={onlineOnly} onchange={load} disabled={!canSelect} />
         <span>{$t('pickerModal.onlineOnly')}</span>
@@ -248,54 +248,7 @@
 
   <div class="pick-list">
     {#each rows as row}
-      {#if kind === 'furniture'}
-        <button type="button" class="pick-row" onclick={() => choose(row)}>
-          {#if row.iconUrl}
-            <img class="pick-icon" src={row.iconUrl} alt="" width="38" height="38" loading="lazy" />
-          {:else}
-            <span class="pick-icon" aria-hidden="true">{row.spriteId}</span>
-          {/if}
-          <span class="pick-main">
-            <strong>{row.name}</strong>
-            <small>
-              #{row.id} - sprite {row.spriteId} - {row.type}{row.logic ? ` - ${row.logic}` : ''}{row.canTrade
-                ? ''
-                : ` - ${$t('pickerModal.noTrade')}`}
-            </small>
-          </span>
-        </button>
-      {:else if kind === 'room'}
-        <button type="button" class="pick-row" onclick={() => choose(row)}>
-          <span class="pick-icon" aria-hidden="true"></span>
-          <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
-          <span class="pick-main">
-            <strong>{row.name}</strong>
-            <small>
-              #{row.id}{row.ownerName ? ` - ${row.ownerName}` : ''} - {$t('pickerModal.roomOccupancy', {
-                users: row.usersNow,
-                max: row.playersMax,
-              })}
-            </small>
-          </span>
-        </button>
-      {:else if PLAIN_KINDS.includes(kind)}
-        <button type="button" class="pick-row" onclick={() => choose(row)}>
-          <span class="pick-icon" aria-hidden="true"></span>
-          <span class="pick-main">
-            <strong>{row.name}</strong>
-            <small>#{row.id}{row.description ? ` - ${row.description}` : ''}</small>
-          </span>
-        </button>
-      {:else}
-        <button type="button" class="pick-row" onclick={() => choose(row)}>
-          <AssetImage src={row.avatarUrl} alt={row.name} size={38} fallbackIcon={User} />
-          <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
-          <span class="pick-main">
-            <strong>{row.name}</strong>
-            <small>#{row.id} - {row.online ? $t('pickerModal.online') : $t('pickerModal.offline')}</small>
-          </span>
-        </button>
-      {/if}
+      <Row {row} onchoose={choose} />
     {:else}
       {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
     {/each}

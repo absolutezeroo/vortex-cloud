@@ -11,7 +11,7 @@ public sealed class TargetedOfferTranslator : ISignalTranslator<TargetedOfferPur
     [
         new(
             SignalActions.BuyTargetedOffer,
-            [Facts.Offer, Facts.Code, Facts.Quantity, Facts.Price],
+            [Facts.Offer, Facts.TargetedOffer, Facts.Quantity, Facts.Price],
             TargetKind: FactKind.OfferId
         ),
     ];
@@ -26,7 +26,7 @@ public sealed class TargetedOfferTranslator : ISignalTranslator<TargetedOfferPur
                 SignalFacts
                     .Build()
                     .Id(Facts.Offer, e.OfferId)
-                    .Text(Facts.Code, e.Identifier)
+                    .Text(Facts.TargetedOffer, e.Identifier)
                     .Number(Facts.Quantity, e.Quantity)
                     .Number(Facts.Price, e.CreditCost)
             ),

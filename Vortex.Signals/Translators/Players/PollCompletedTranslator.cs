@@ -8,7 +8,7 @@ namespace Vortex.Signals.Translators;
 public sealed class PollCompletedTranslator : ISignalTranslator<PollCompletedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.CompletePoll, [Facts.Code], TargetKind: FactKind.Text)];
+    [new(SignalActions.CompletePoll, [Facts.Poll], TargetKind: FactKind.Text)];
 
     public ImmutableArray<ProgressSignal> Translate(PollCompletedEvent e) =>
         [
@@ -17,7 +17,7 @@ public sealed class PollCompletedTranslator : ISignalTranslator<PollCompletedEve
                 SignalActions.CompletePoll,
                 1,
                 e.PollCode,
-                SignalFacts.Build().Text(Facts.Code, e.PollCode)
+                SignalFacts.Build().Text(Facts.Poll, e.PollCode)
             ),
         ];
 }
