@@ -92,6 +92,8 @@ d'erreurs. Un handler qui tombe ne fait tomber ni l'action qui l'a causé, ni le
 3. Un registre de faits **typés**, d'où l'éditeur déduit ses contrôles et ses opérateurs.
 4. Un évaluateur et un validateur de filtres partagés.
 5. Les consommateurs : reward tracks d'abord, puis quêtes et succès.
+6. **La porte d'intérêt**, reprise et élargie — listée ici parce que l'oublier transformerait cette
+   conception en régression de performance sur les trois chemins les plus chauds du hall (§4.4).
 
 **On ne construit pas :**
 
@@ -115,6 +117,7 @@ public sealed record ProgressSignal(
     long PlayerId,
     string Action,          // SignalActions.*
     int Amount,             // 1 pour un acte, N pour "a dépensé N crédits"
+    string? Target,         // de quoi le signal parle principalement
     ImmutableArray<SignalFact> Facts,
     string DeliveryId       // vide si l'événement source n'est pas rejouable
 );
@@ -133,6 +136,20 @@ valeur : il sert à l'éditeur, pas au moteur.
 `DeliveryId` porte l'`OperationId` de l'événement source quand il en a un. Chaque consommateur
 continue de faire tourner **son propre** garde de rejeu avec sa propre clé (§1.3, §7.3).
 
+### 3.1 Pourquoi `Target` est un champ et pas seulement un fait
+
+`Target` est déjà un paramètre de premier rang de `IPlayerRewardTrackGrain.ProgressAsync`, et il y
+fait **deux choses qu'aucun fait ne fait** :
+
+1. c'est ce que le `Parameter` d'une tâche compare — le mécanisme des tâches d'avant les séquences,
+   qui continue de fonctionner sans être réécrit ;
+2. c'est **la clé de déduplication du mode distinct** : « visiter 20 apparts différents » compte 20
+   `Target` distincts.
+
+Le noyer dans les faits obligerait chaque consommateur à connaître la clé conventionnelle `"target"`
+et casserait le mode distinct au premier oubli. Il reste dupliqué dans les faits — c'est déjà le cas
+aujourd'hui, et c'est ce qui permet de filtrer dessus comme sur les autres.
+
 ---
 
 ## 4. Le traducteur
@@ -142,12 +159,16 @@ continue de faire tourner **son propre** garde de rejeu avec sa propre clé (§1
 ```csharp
 public sealed class RoomCreatedTranslator : ISignalTranslator<RoomCreatedEvent>
 {
-    public static SignalShape Shape { get; } = new(
-        SignalActions.CreateRoom,
-        [Facts.Room, Facts.RoomName, Facts.RoomDescription, Facts.Category, Facts.Model]);
+    // Une forme par action produite -- l'achat catalogue en déclare deux.
+    public static ImmutableArray<SignalShape> Shapes { get; } =
+    [
+        new(SignalActions.CreateRoom,
+            [Facts.Room, Facts.RoomName, Facts.RoomDescription, Facts.Category, Facts.Model]),
+    ];
 
-    public ProgressSignal? Translate(RoomCreatedEvent e) =>
-        new(e.OwnerId.Value, SignalActions.CreateRoom, 1,
+    public ImmutableArray<ProgressSignal> Translate(RoomCreatedEvent e) =>
+        [new(e.OwnerId.Value, SignalActions.CreateRoom, 1,
+            Target: e.RoomId.ToString(CultureInfo.InvariantCulture),
             [
                 new(Facts.Room.Key, e.RoomId.ToString(CultureInfo.InvariantCulture)),
                 new(Facts.RoomName.Key, e.Name),
@@ -155,12 +176,28 @@ public sealed class RoomCreatedTranslator : ISignalTranslator<RoomCreatedEvent>
                 new(Facts.Category.Key, e.CategoryId.ToString(CultureInfo.InvariantCulture)),
                 new(Facts.Model.Key, e.ModelName),
             ],
-            DeliveryId: "");
+            DeliveryId: "")];
 }
 ```
 
-`Translate` renvoie `null` quand l'événement ne produit pas de signal — un chuchotement, un geste
-inconnu, un joueur système. C'est le remplacement des `if (...) return;` en tête des handlers actuels.
+**`Translate` renvoie zéro, un ou plusieurs signaux** — pas un seul. Ce n'est pas de la
+généralisation gratuite, trois handlers actuels le font déjà :
+
+| Handler | Ce qu'il émet |
+| --- | --- |
+| Achat catalogue | **deux actions** : `buy_from_catalogue` et `spend_credits`, avec des montants différents |
+| Échange conclu | **deux joueurs** : un signal par participant, chacun avec l'autre comme fait `player` |
+| Geste | `dance` **ou** `wave` selon le geste, et rien pour un geste inconnu |
+| Meuble déplacé | `move_item` **ou** `rotate_item` — deux handlers sur le même `ItemMovedEvent` aujourd'hui, un seul traducteur demain |
+
+Une signature qui rend un seul signal aurait forcé ces trois-là à rester des handlers écrits à la
+main, c'est-à-dire à rester hors du test générique — exactement la population où les dérives se sont
+produites.
+
+Le tableau vide remplace les `if (...) return;` en tête des handlers actuels : un chuchotement, un
+geste inconnu, un joueur système. Chaque `Shape` déclare **l'union** des faits que les signaux
+produits peuvent porter, et le test §10.1 exige que chaque clé annoncée soit couverte par au moins
+un signal.
 
 Un `SignalTranslatorHost<TEvent>` générique — **un seul pour tout le système** — implémente
 `IEventHandler<TEvent>`, appelle le traducteur et publie `ProgressSignalRaised`. C'est lui que le
@@ -168,10 +205,10 @@ balayage d'assembly enregistre ; les traducteurs eux-mêmes n'ont aucune dépend
 
 ### 4.2 Deux propriétés qui justifient tout le reste
 
-1. **`Shape` est la seule source de vérité.** Le dashboard et le validateur lisent `Shape`, plus une
+1. **`Shapes` est la seule source de vérité.** Le dashboard et le validateur les lisent, plus une
    carte parallèle. Un fait proposé dans l'éditeur mais jamais émis devient impossible à écrire.
 2. **`Translate` est une fonction pure.** Un test générique parcourt tous les traducteurs, leur
-   donne un événement fabriqué et vérifie que chaque clé annoncée dans `Shape` sort réellement —
+   donne un événement fabriqué et vérifie que chaque clé annoncée sort réellement —
    **un seul test pour les 137 événements** (§10.1). C'est précisément ce que la forme actuelle
    rendait impossible.
 
@@ -188,6 +225,35 @@ C'est déjà le raisonnement écrit pour `room_owner`, absent de l'entrée d'app
 `PlayerEnteredRoomEvent` ne le porte pas et que le lire coûterait un appel de grain sur un chemin
 d'arrivée qui a déjà été lent. La règle devient générale, et un fait écarté pour cette raison est
 **documenté comme écarté**, jamais déclaré.
+
+### 4.4 La porte d'intérêt — à ne surtout pas perdre en route
+
+`RewardTrackSignal.SendAsync` commence aujourd'hui par `if (!catalog.IsActionInteresting(action))
+return;`, et le commentaire de `RewardTrackCatalog` dit exactement pourquoi :
+
+> Les entrées d'appart, les lignes de chat et les poses de meubles arrivent constamment ; sans
+> l'index, chacune atteindrait un grain pour y découvrir qu'elle n'intéresse personne.
+> `IsActionInteresting` répond depuis un `HashSet` sur le thread appelant, donc une action qu'aucun
+> contenu ne mentionne coûte une recherche et s'arrête là.
+
+Publier le signal inconditionnellement supprimerait cette porte et paierait une enveloppe par action
+pour toujours. **Le `SignalTranslatorHost` la reprend, élargie** : il interroge un
+`ISignalInterest` agrégé — l'union des actions qui intéressent au moins un consommateur — et
+n'appelle le traducteur que si la réponse est oui.
+
+```csharp
+// L'union, reconstruite quand un consommateur recharge son contenu.
+public interface ISignalInterest { bool AnyConsumerCares(string action); }
+```
+
+Chaque consommateur publie son propre ensemble d'actions (les reward tracks l'ont déjà : c'est
+`_index.Actions`) et l'union est recalculée aux mêmes moments qu'aujourd'hui — au démarrage, et
+après une écriture de contenu par le service d'admin. **Sans cette porte, la conception est une
+régression de performance sur les trois chemins les plus chauds du hall.**
+
+Conséquence sur `Shapes` : la porte se ferme sur l'**action**, mais un traducteur peut en produire
+plusieurs (§4.1). Elle est donc évaluée sur l'union des actions déclarées par le traducteur, et le
+tri fin — « cette action-ci n'intéresse personne » — reste au consommateur, où il est déjà.
 
 ---
 
@@ -311,6 +377,24 @@ grammaire** (le registre de faits, les opérateurs, l'évaluateur, les contrôle
 fournit ses faits lui-même depuis l'état du grain. Le faire consommer le bus signifierait faire
 transiter chaque pas d'un avatar par le pipeline d'événements : c'est non.
 
+Le sens inverse existe déjà et ne change pas : l'action wired `PROGRESS_REWARD_TRACK` appelle
+`IPlayerRewardTrackGrain.ProgressTaskAsync`, qui nomme une piste et une tâche et **contourne
+délibérément l'index d'actions**. Le wired écrit dans les reward tracks sans passer par un signal,
+parce qu'il ne décrit pas quelque chose que le joueur a fait — il ordonne une progression.
+
+### 7.5 Ordre et concurrence
+
+Le registre dispatche les handlers **en parallèle**, donc deux signaux d'un même joueur peuvent être
+traités dans le désordre. Ce n'est pas nouveau : c'est déjà vrai des trois familles de handlers
+d'aujourd'hui. **Le point de sérialisation est le grain du joueur** — Orleans exécute ses appels un
+à la fois, et c'est là que la capture inter-étapes (`StepCaptures`) est lue puis réécrite.
+
+Une séquence multi-étapes est donc sûre au sens où deux signaux ne peuvent pas s'écraser, mais
+**l'ordre de deux actions quasi simultanées n'est pas garanti**. Une séquence « pose un canapé puis
+marche dessus » exécutée en deux dixièmes de seconde peut échouer à s'ordonner. C'est le
+comportement actuel, il est conservé tel quel, et il est écrit ici pour que personne ne découvre
+plus tard que la conception l'avait promis autrement.
+
 ---
 
 ## 8. Où vit le code
@@ -329,6 +413,25 @@ d'assembly le voie, et rangé dans le dossier de solution qui va bien (cf. commi
 
 L'évaluateur part de `Vortex.RewardTracks/Progression/TaskProgressRules.StepMatches` vers Primitives
 tel quel — c'est de la logique pure, sans dépendance.
+
+### 8.1 Un plugin peut ajouter un traducteur
+
+`PluginBootstrapper` et `PluginManager` font tourner **le même `AssemblyProcessor`** que l'hôte sur
+les assemblys de plugins. Un traducteur étant découvert par ce balayage, **un plugin peut livrer les
+siens sans que le cœur soit modifié** — et avec eux ses propres faits et ses propres actions. C'est
+l'argument le plus fort en faveur de cette forme : la modularité n'est pas à construire, elle est
+héritée du chargeur de plugins existant.
+
+Deux règles en découlent, et elles sont la contrepartie :
+
+1. **Espace de noms.** Une clé de fait ou d'action venant d'un plugin est préfixée par la clé du
+   plugin (`acme:trophy`). Une collision avec le vocabulaire du cœur est refusée au chargement, pas
+   découverte le jour où deux plugins se marchent dessus.
+2. **La règle « on ne renomme jamais » (§5.3) vaut aussi pour eux**, mais le dépôt ne peut pas la
+   verrouiller par un test. Elle est donc écrite dans le contrat du plugin : un plugin qui renomme
+   une de ses clés casse le contenu écrit dessus, et c'est à lui d'assumer sa migration.
+
+Le vocabulaire du cœur reste fermé et testé (§10.3) ; celui des plugins est ouvert et à leur charge.
 
 ---
 
@@ -369,9 +472,10 @@ Un test paramétré sur tous les traducteurs découverts :
 1. fabrique l'événement source par réflexion (valeurs non nulles, non vides, non nulles
    numériquement — un fait à `0` ou `""` passerait à côté d'un traducteur qui oublie un champ) ;
 2. appelle `Translate` ;
-3. exige que **chaque clé de `Shape` soit présente et non vide** dans le résultat.
+3. exige que **chaque clé déclarée soit présente et non vide** dans au moins un signal produit,
+   et qu'aucun signal ne porte une clé non déclarée.
 
-Il échoue le jour où quelqu'un ajoute un fait à `Shape` sans l'émettre — c'est-à-dire exactement les
+Il échoue le jour où quelqu'un ajoute un fait à une `Shape` sans l'émettre — c'est-à-dire exactement les
 neuf dérives du §1.2, mais avant le commit.
 
 ### 10.2 L'évaluateur
@@ -392,6 +496,26 @@ demande de le vouloir explicitement.
 aujourd'hui trois handlers traduisent l'événement, demain un traducteur plus une enveloppe
 supplémentaire pour trois consommateurs. On vérifie la mesure, on ne la suppose pas.
 
+Le cas à mesurer en priorité est **celui où aucun contenu n'écoute** : la porte d'intérêt (§4.4)
+doit rendre ce cas au moins aussi rapide qu'aujourd'hui, sinon la conception coûte plus qu'elle ne
+rapporte sur un hôtel sans campagne active.
+
+### 10.5 Observabilité
+
+Le hall a déjà un endpoint `/metrics` Prometheus et un sink de regroupement d'erreurs. Le signal y
+ajoute trois compteurs, parce qu'un système de progression qui n'avance pas est un bug qu'on
+découvre par une plainte de joueur, jamais par une exception :
+
+| Métrique | Ce qu'elle répond |
+| --- | --- |
+| `signals_raised_total{action}` | quelles actions arrivent réellement, et lesquelles n'arrivent jamais |
+| `signals_gated_total{action}` | combien la porte d'intérêt a arrêté — la preuve qu'elle sert |
+| `signal_consumer_failures_total{consumer}` | quel consommateur tombe, sans lire les journaux |
+
+Le premier est aussi l'outil de couverture du §13 : une action déclarée dont le compteur reste à
+zéro sur une semaine est soit du contenu que personne ne déclenche, soit un traducteur qui ne
+traduit pas.
+
 ---
 
 ## 11. Étapes de livraison
@@ -399,7 +523,7 @@ supplémentaire pour trois consommateurs. On vérifie la mesure, on ne la suppos
 Chaque étape est livrable seule et laisse le système fonctionnel.
 
 **① Le contrat, les traducteurs, un consommateur.**
-`Vortex.Primitives/Signals`, `Vortex.Signals` avec les 22 traducteurs portés depuis
+`Vortex.Primitives/Signals`, `Vortex.Signals` avec les 21 traducteurs portés depuis
 `RewardTrackEventHandlers`, le consommateur reward tracks, l'évaluateur déplacé, le test §10.1.
 `RewardTrackEventHandlers.cs` est supprimé. `RewardTrackActionFacts` est supprimé — c'est le
 registre qui répond. Aucun changement de comportement observable ; les tests de contenu existants le
@@ -412,6 +536,51 @@ handlers. Les cinq événements traduits trois fois ne le sont plus qu'une.
 **③ La grammaire pour le wired et le vocabulaire élargi.**
 Le composant de filtres partagé côté dashboard, le wired branché sur le registre de faits avec ses
 propres sources, et l'élargissement de la couverture (§13).
+
+### 11.1 Ce que ② n'apporte PAS
+
+L'étape ② ne donne **aucune capacité nouvelle** aux quêtes ni aux succès : ni filtres, ni faits, ni
+séquences. C'est de la déduplication pure — cinq événements traduits une fois au lieu de trois. Leur
+contenu, leurs tables et leurs écrans sont inchangés, et un joueur ne voit rien.
+
+C'est délibéré : leur donner des filtres en même temps mélangerait une migration sans risque
+observable et une fonctionnalité neuve dans la même livraison. Les filtres pour les quêtes, s'ils
+sont voulus, sont une étape ④ qui n'existe pas encore — et qui sera bon marché puisque la grammaire
+et l'éditeur seront là.
+
+### 11.2 Bascule et retour arrière
+
+**Il ne faut pas faire tourner l'ancien handler et le nouveau consommateur en même temps.** Les deux
+appelleraient `ProgressAsync` pour le même acte, et toute progression compterait double — sur des
+compteurs cumulés persistés, donc sans rattrapage possible autrement qu'à la main en base. Un
+« double run pour comparer » est le piège évident de cette migration ; il est explicitement exclu.
+
+Le retour arrière est donc **un revert de commit**, pas un drapeau de configuration. Ce qui rend le
+revert sûr :
+
+- l'étape ① ne touche **aucun schéma de base** — mêmes tables, mêmes colonnes, mêmes valeurs. Ce
+  sont les mêmes appels de grain, émis depuis un autre endroit ;
+- elle est livrée **en une seule fois** (contrat, traducteurs, consommateur, suppression des anciens
+  handlers) précisément pour qu'il n'existe jamais d'état intermédiaire où les deux tournent ;
+- le contrôle après bascule est le compteur `signals_raised_total` (§10.5) comparé aux actions
+  attendues : une action qui tombe à zéro dit immédiatement quel traducteur manque.
+
+Un drapeau de configuration serait pire que le revert : il maintiendrait les deux chemins vivants,
+donc le risque de double comptage, pour économiser un `git revert`.
+
+### 11.3 Ordre de grandeur
+
+Indicatif, pour arbitrer — pas un engagement.
+
+| Étape | Fichiers | Le gros du travail |
+| --- | --- | --- |
+| ① | ~35 (dont 21 traducteurs mécaniques) | le portage des 21 traductions et le test générique §10.1 |
+| ② | ~12 | les deux tables de correspondance, la suppression de 15 handlers |
+| ③ | ~15 côté dashboard + wired | le composant de filtres partagé, puis la couverture §13 au fil de l'eau |
+
+Les 21 traducteurs de ① sont du portage ligne à ligne depuis un fichier que je viens de lire
+entièrement : c'est le volume, ce n'est pas la difficulté. La difficulté de ① est la porte
+d'intérêt (§4.4) et le test générique.
 
 ---
 
@@ -461,7 +630,11 @@ publication si la donnée y est libre, et **écarter explicitement** ce qui coû
 | Un renommage de clé casse du contenu déjà écrit en base | Interdit et verrouillé par un test (§5.3, §10.3). |
 | Une redélivrance saute un consommateur | Garde de rejeu par consommateur, `DeliveryId` porté par le signal (§7.3). |
 | Un traducteur qui plante coupe trois systèmes au lieu d'un | `Translate` est une fonction pure sans E/S : elle ne plante que sur un bug de code, et le registre isole déjà l'exception. Le test §10.1 la couvre. |
-| Le nouveau projet n'est pas chargé, donc plus aucun signal | Un test d'hébergement vérifie qu'au moins un traducteur est découvert au démarrage. |
+| Le nouveau projet n'est pas chargé, donc plus aucun signal | Un test d'hébergement vérifie qu'au moins un traducteur est découvert au démarrage, et `signals_raised_total` le dit en production. |
+| **La porte d'intérêt est oubliée** et chaque action publie une enveloppe même quand aucun contenu n'écoute | C'est la régression de performance la plus probable de cette conception. §4.4, plus la mesure du cas « aucun contenu » en §10.4. |
+| L'ancien handler et le nouveau consommateur tournent ensemble : **toute progression compte double**, sur des compteurs persistés | Livraison en un seul commit, pas de drapeau, retour arrière par revert (§11.2). |
+| Deux plugins déclarent la même clé de fait | Préfixe obligatoire par clé de plugin, collision refusée au chargement (§8.1). |
+| Une séquence multi-étapes échoue à s'ordonner sur deux actions quasi simultanées | Comportement actuel, conservé et écrit (§7.5). Le grain du joueur reste le point de sérialisation. |
 
 ---
 
