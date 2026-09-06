@@ -51,9 +51,12 @@ public static class AchievementProgressCalculator
                 : 0;
         int levelMaxScore = Math.Max(1, currentLevel.ProgressRequirement);
 
-        // Badge held = highest completed level's badge (empty until the first level is completed).
-        string badgeCode =
-            completed >= 1 ? definition.Levels[completed - 1].BadgeCode : string.Empty;
+        // The wire carries the CURRENT level's badge, not the one held: the client backs it off by
+        // one itself (AchievementController.getAchievedBadgeId -> getPreviousLevelBadgeId, whose
+        // BadgeBaseAndLevel clamps the level at 1). Sending the held badge double-decrements, and
+        // sending "" made BadgeBaseAndLevel yield the literal "1" -> a request for album1584/1.gif
+        // and a "badge_name_1" caption on every not-yet-started achievement.
+        string badgeCode = currentLevel.BadgeCode;
 
         // A finished achievement shows a full bar; otherwise the raw cumulative progress.
         int currentProgress = finalLevel ? levelMaxScore : progress;

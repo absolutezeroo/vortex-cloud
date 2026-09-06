@@ -48,7 +48,9 @@ public class AchievementProgressCalculatorTests
 
         result.Level.Should().Be(1);
         result.FinalLevel.Should().BeFalse();
-        result.BadgeCode.Should().BeEmpty();
+        // Current level's badge, never empty: the client derives the held one and turns "" into the
+        // literal badge id "1" (album1584/1.gif, caption "badge_name_1").
+        result.BadgeCode.Should().Be("ACH_RoomEntry1");
         result.ScoreAtStartOfLevel.Should().Be(0);
         result.LevelMaxScore.Should().Be(1);
         result.CurrentProgress.Should().Be(0);
@@ -58,7 +60,7 @@ public class AchievementProgressCalculatorTests
     }
 
     [Fact]
-    public void Build_PartiallyCompleted_ReportsCurrentLevelBandAndHeldBadge()
+    public void Build_PartiallyCompleted_ReportsCurrentLevelBandAndBadge()
     {
         // Two levels done, progress sits inside the third level's band [10, 25).
         AchievementProgressSnapshot result = AchievementProgressCalculator.Build(
@@ -69,7 +71,7 @@ public class AchievementProgressCalculatorTests
 
         result.Level.Should().Be(3); // working toward level 3
         result.FinalLevel.Should().BeFalse();
-        result.BadgeCode.Should().Be("ACH_RoomEntry2"); // highest completed level's badge
+        result.BadgeCode.Should().Be("ACH_RoomEntry3"); // level being worked toward; client backs it off to 2
         result.ScoreAtStartOfLevel.Should().Be(10); // start of level 3 = level 2's requirement
         result.LevelMaxScore.Should().Be(25); // level 3's requirement
         result.CurrentProgress.Should().Be(18);
