@@ -8,7 +8,13 @@ namespace Vortex.Signals.Translators;
 public sealed class NftStoreTranslator : ISignalTranslator<NftStorePurchasedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.BuyFromNftStore, [Facts.NftProduct, Facts.Price], TargetKind: FactKind.Text)];
+    [
+        new(
+            SignalActions.BuyFromNftStore,
+            [Facts.NftProduct, Facts.Price],
+            TargetKind: FactKind.Text
+        ),
+    ];
 
     public ImmutableArray<ProgressSignal> Translate(NftStorePurchasedEvent e) =>
         [
@@ -17,7 +23,10 @@ public sealed class NftStoreTranslator : ISignalTranslator<NftStorePurchasedEven
                 SignalActions.BuyFromNftStore,
                 1,
                 e.ProductCode,
-                SignalFacts.Build().Text(Facts.NftProduct, e.ProductCode).Number(Facts.Price, e.Price)
+                SignalFacts
+                    .Build()
+                    .Text(Facts.NftProduct, e.ProductCode)
+                    .Number(Facts.Price, e.Price)
             ),
         ];
 }

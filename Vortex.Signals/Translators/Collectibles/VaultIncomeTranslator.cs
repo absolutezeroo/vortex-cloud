@@ -8,7 +8,13 @@ namespace Vortex.Signals.Translators;
 public sealed class VaultIncomeTranslator : ISignalTranslator<VaultIncomeClaimedEvent>
 {
     public static ImmutableArray<SignalShape> Shapes { get; } =
-    [new(SignalActions.ClaimVaultIncome, [Facts.VaultCategory, Facts.Quantity], TargetKind: FactKind.Text)];
+    [
+        new(
+            SignalActions.ClaimVaultIncome,
+            [Facts.VaultCategory, Facts.Quantity],
+            TargetKind: FactKind.Text
+        ),
+    ];
 
     public ImmutableArray<ProgressSignal> Translate(VaultIncomeClaimedEvent e) =>
         [
@@ -17,7 +23,10 @@ public sealed class VaultIncomeTranslator : ISignalTranslator<VaultIncomeClaimed
                 SignalActions.ClaimVaultIncome,
                 e.Rewards,
                 e.Category,
-                SignalFacts.Build().Text(Facts.VaultCategory, e.Category).Number(Facts.Quantity, e.Rewards)
+                SignalFacts
+                    .Build()
+                    .Text(Facts.VaultCategory, e.Category)
+                    .Number(Facts.Quantity, e.Rewards)
             ),
         ];
 }
