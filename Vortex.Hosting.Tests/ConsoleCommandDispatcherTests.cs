@@ -41,11 +41,11 @@ public sealed class ConsoleCommandDispatcherTests
 
     [Fact]
     public void Find_ResolvesAliases() =>
-        Dispatcher().Dispatcher.Find("exit")?.Name.Should().Be("quit");
+        Dispatcher().Dispatcher.Find("exit")!.Name.Should().Be("quit");
 
     [Fact]
     public void Find_IsCaseInsensitive() =>
-        Dispatcher().Dispatcher.Find("RELOAD-PLUGINS")?.Name.Should().Be("reload-plugins");
+        Dispatcher().Dispatcher.Find("RELOAD-PLUGINS")!.Name.Should().Be("reload-plugins");
 
     [Fact]
     public void Find_ReturnsNullForAnUnknownWord() =>
@@ -90,23 +90,22 @@ public sealed class ConsoleCommandDispatcherTests
     [Theory]
     [InlineData("mystery-key")]
     [InlineData("mystery-box")]
-    [InlineData("reload-mystery-box")]
     public void TheMysteryBoxCommands_RequireTheMysteryBoxCapability(string command) =>
         Dispatcher()
-            .Dispatcher.Find(command)
+            .Dispatcher.Find(command)!
             ?.RequiredCapability.Should()
             .Be(Capabilities.Dashboard.OpsMysteryBoxManage);
 
     [Fact]
     public void Quit_RequiresTheServerControlCapability() =>
         Dispatcher()
-            .Dispatcher.Find("quit")
+            .Dispatcher.Find("quit")!
             ?.RequiredCapability.Should()
             .Be(Capabilities.Dashboard.OpsServerControl);
 
     [Fact]
     public void Help_IsReachableWithoutAnyExtraCapability() =>
-        Dispatcher().Dispatcher.Find("help")?.RequiredCapability.Should().BeNull();
+        Dispatcher().Dispatcher.Find("help")!.RequiredCapability.Should().BeNull();
 
     /// <summary>
     /// This used to be <c>Environment.Exit(0)</c>, which cut the process before a single hosted

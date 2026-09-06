@@ -40,6 +40,13 @@ internal sealed class RewardTrackCatalog(
     private ImmutableArray<RewardTrackDefinitionSnapshot> _tracks = [];
     private Index _index = Index.Empty;
 
+    /// <summary>
+    /// Whether a load has ever succeeded — which is what makes "keep the previous catalogue" a
+    /// recovery rather than a way to come up with nothing. Not the same as <c>_tracks</c> being
+    /// non-empty: a hotel with no campaigns loaded successfully.
+    /// </summary>
+    private bool _loaded;
+
     public int LoadStage => 0;
 
     public ImmutableArray<RewardTrackDefinitionSnapshot> Tracks => _tracks;
@@ -159,6 +166,7 @@ internal sealed class RewardTrackCatalog(
 
             _tracks = tracks;
             _index = Index.Build(tracks);
+            _loaded = true;
 
             logger.LogInformation(
                 "Loaded {TrackCount} reward track(s); {ActionCount} action code(s) have at least one task.",
@@ -166,10 +174,15 @@ internal sealed class RewardTrackCatalog(
                 _index.Actions.Count
             );
         }
-        catch (Exception ex)
+        catch (Exception ex) when (_loaded)
         {
             // The previous catalogue stays. Every player keeps the tracks they were already being
             // served rather than every campaign vanishing because one query timed out.
+            //
+            // The filter is what stops that reasoning applying to the FIRST load, where there is no
+            // previous catalogue: the hotel would come up with no campaigns at all, silently, and
+            // VortexEmulator's own try/catch would never see it. An unfiltered catch here made a
+            // startup failure indistinguishable from a hotel that simply has no content.
             logger.LogError(
                 ex,
                 "Failed to load the reward-track catalog; keeping the previous one."

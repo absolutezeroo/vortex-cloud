@@ -1,0 +1,57 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Vortex.Primitives.Hosting;
+
+/// <summary>
+/// Reloads one reference-data cache while the hotel is running.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Deliberately <em>not</em> the loop <c>VortexEmulator</c> runs at startup, even though both end up
+/// calling <see cref="IReferenceDataProvider.ReloadAsync"/>. The two have opposite error policies:
+/// a cache that fails to load at boot must stop the hotel starting, because serving with an empty
+/// catalogue is worse than not serving; a cache that fails to reload at runtime must not, because
+/// the hotel is already up and the previous data is still good. One method cannot hold both, so
+/// there are two paths and they share nothing but the providers themselves.
+/// </para>
+/// <para>
+/// There is no "reload everything" here for the same reason. Reloading everything is what starting
+/// up is, and the way to do it is to restart.
+/// </para>
+/// <para>
+/// Lives in the core, not in the dashboard: the dashboard is an <c>IHostPluginModule</c> and is
+/// meant to become an external plugin, and a hotel running without it must not thereby lose the
+/// ability to reload. The dashboard is one caller, and takes this as an optional dependency.
+/// </para>
+/// </remarks>
+public interface IReferenceDataReloader
+{
+    /// <summary>
+    /// Every reloadable cache, by name — the provider's type name, which is what the operator sees
+    /// and what <see cref="ReloadAsync"/> takes.
+    /// </summary>
+    IReadOnlyList<string> Providers { get; }
+
+    /// <summary>
+    /// Reloads one cache. Never throws for a cause the operator can act on: an unknown name and a
+    /// failed load both come back as a <see cref="ReloadOutcome"/> to be shown.
+    /// </summary>
+    Task<ReloadOutcome> ReloadAsync(string provider, CancellationToken ct);
+}
+
+/// <summary>What happened, in a form an operator can be shown.</summary>
+/// <param name="Provider">The name asked for.</param>
+/// <param name="Reloaded">Whether the cache now holds fresh data.</param>
+/// <param name="ElapsedMs">How long it took — a reload that takes minutes is worth seeing.</param>
+/// <param name="Error">
+/// Why it failed, or null. The previous data is still in place when this is set: a provider that
+/// cannot load keeps what it had, which is the whole reason a runtime failure is survivable.
+/// </param>
+public sealed record ReloadOutcome(
+    string Provider,
+    bool Reloaded,
+    long ElapsedMs,
+    string? Error = null
+);

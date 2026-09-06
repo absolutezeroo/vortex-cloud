@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using Vortex.Authentication;
 using Vortex.Benchmark;
 using Vortex.Catalog;
@@ -32,6 +34,8 @@ using Vortex.PacketHandlers;
 using Vortex.Players;
 using Vortex.Plugins.Extensions;
 using Vortex.Primitives.Console;
+using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Orleans;
 using Vortex.Progression;
 using Vortex.Revisions.Extensions;
 using Vortex.RewardTracks;
@@ -148,6 +152,28 @@ internal class Program
 
         builder.Services.AddSingleton<AssemblyProcessor>();
         builder.Services.AddSingleton<IConsoleCommandDispatcher, ConsoleCommandDispatcher>();
+        // The runtime half of reference-data loading. VortexEmulator is the startup half and shares
+        // nothing with it: their error policies are opposites.
+        //
+        // The two grain-held caches are composed in here rather than known about by the reloader.
+        // They are not IReferenceDataProvider singletons -- they live inside a grain and reload on a
+        // grain call -- which is why each had grown its own console command. Naming them here makes
+        // `reload` the one word for the whole idea.
+        builder.Services.AddSingleton<IReferenceDataReloader>(sp => new ReferenceDataReloader(
+            sp.GetServices<IReferenceDataProvider>(),
+            sp.GetRequiredService<ILogger<ReferenceDataReloader>>(),
+            new Dictionary<string, Func<CancellationToken, Task>>(StringComparer.Ordinal)
+            {
+                ["FishingDefinitions"] = ct =>
+                    sp.GetRequiredService<IGrainFactory>()
+                        .GetFishingDefinitionsGrain()
+                        .ReloadAsync(ct),
+                ["MysteryBox"] = ct =>
+                    sp.GetRequiredService<IGrainFactory>()
+                        .GetMysteryBoxManagerGrain()
+                        .ReloadAsync(ct),
+            }
+        ));
         builder.Services.AddSingleton<ConsoleCommandService>();
 
         builder.Services.AddHostedService<VortexEmulator>();

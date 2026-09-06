@@ -32,6 +32,13 @@ internal sealed class HabbiconCatalog(
     private ImmutableArray<HabbiconCollectionSnapshot> _collections = [];
     private FrozenLookups _lookups = FrozenLookups.Empty;
 
+    /// <summary>
+    /// Whether a load has ever succeeded — which is what makes "keep the previous catalog" a
+    /// recovery rather than a way to come up empty. Not the same as <c>_collections</c> being
+    /// non-empty: a hotel with no albums loaded successfully.
+    /// </summary>
+    private bool _loaded;
+
     public int LoadStage => 0;
 
     public ImmutableArray<HabbiconCollectionSnapshot> Collections => _collections;
@@ -86,6 +93,7 @@ internal sealed class HabbiconCatalog(
 
             _collections = collections;
             _lookups = FrozenLookups.Build(collections);
+            _loaded = true;
 
             logger.LogInformation(
                 "Loaded {CollectionCount} Habbicon collection(s) and {HabbiconCount} Habbicon(s).",
@@ -93,11 +101,14 @@ internal sealed class HabbiconCatalog(
                 _lookups.ByHabbiconId.Count
             );
         }
-        catch (Exception ex)
+        catch (Exception ex) when (_loaded)
         {
             // A failed reload keeps the previous catalog. The hotel goes on serving what it had,
             // which beats every collection vanishing from every album because one query timed out.
-            logger.LogError(ex, "Failed to load the Habbicon catalog; keeping the previous one.");
+            //
+            // The filter stops that applying to the FIRST load, where there is nothing to keep: the
+            // hotel would come up with no albums at all and nothing would say so.
+            logger.LogError(ex, "Failed to reload the Habbicon catalog; keeping the previous one.");
         }
     }
 

@@ -28,6 +28,13 @@ internal sealed class AccountLevelProvider(
         int
     )>.Empty;
 
+    /// <summary>
+    /// Whether a load has ever succeeded — which is what makes "keep the previous ladder" a
+    /// recovery rather than a way to come up empty. Not the same as <c>_rungs</c> being non-empty:
+    /// a hotel may legitimately have no ladder rows, and that load succeeded.
+    /// </summary>
+    private bool _loaded;
+
     public int LoadStage => 0;
 
     public int ResolveLevel(int achievementScore) =>
@@ -53,14 +60,18 @@ internal sealed class AccountLevelProvider(
             ];
 
             _rungs = [.. rungs];
+            _loaded = true;
 
             logger.LogInformation("Loaded {Count} account level(s).", _rungs.Length);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (_loaded)
         {
-            // A failed load leaves the previous ladder in place; the profile then shows the floor
-            // level rather than a wrong one, and the failure is visible instead of silent.
-            logger.LogError(ex, "Failed to load the account level ladder.");
+            // A failed RELOAD leaves the previous ladder in place. A failed FIRST load must not:
+            // "keep what we had" is only a recovery when there is something to keep, and at startup
+            // there is not — the hotel would come up serving the floor level to everyone, quietly.
+            // The filter lets that one rethrow, where VortexEmulator turns it into a startup
+            // failure somebody reads.
+            logger.LogError(ex, "Failed to reload the account level ladder; keeping the previous.");
         }
     }
 }

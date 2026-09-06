@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Orleans;
 using Vortex.Plugins;
 using Vortex.Primitives.Console;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;
 using Vortex.Primitives.Orleans;
@@ -58,16 +59,18 @@ public sealed class ConsoleCommandDispatcher(IServiceProvider services) : IConso
             "Give a player a mystery box.",
             Capabilities.Dashboard.OpsMysteryBoxManage
         ),
+        // `reload-mystery-box` and `reload-fishing` were here. They reloaded a grain rather than an
+        // IReferenceDataProvider, which is the only reason they were separate words for the same
+        // idea; both grains are now named caches under `reload`, composed in Program.cs.
+        //
+        // The general form of the two above, and of every reload button four domains grew
+        // separately. Content written outside an admin service -- a SQL script, a restore -- is
+        // invisible until the cache holding it is read again, and this is the way to do that
+        // without restarting the hotel.
         new(
-            "reload-mystery-box",
-            "reload-mystery-box",
-            "Reload mystery box definitions and prize pools.",
-            Capabilities.Dashboard.OpsMysteryBoxManage
-        ),
-        new(
-            "reload-fishing",
-            "reload-fishing",
-            "Reload fishing zones, species and rod tiers from the database.",
+            "reload",
+            "reload [provider]",
+            "List the reloadable reference caches, or reload one by name.",
             Capabilities.Dashboard.OpsConfigManage
         ),
     ];
@@ -120,6 +123,40 @@ public sealed class ConsoleCommandDispatcher(IServiceProvider services) : IConso
                 services.GetRequiredService<IHostApplicationLifetime>().StopApplication();
 
                 return true;
+
+            case "reload":
+            {
+                IReferenceDataReloader reloader =
+                    services.GetRequiredService<IReferenceDataReloader>();
+
+                // With no argument it lists rather than doing anything: the names are type names,
+                // nobody remembers twenty-nine of them, and a reload is not something to guess at.
+                if (args.Length == 0)
+                {
+                    write("Reloadable reference caches:");
+
+                    foreach (string name in reloader.Providers)
+                    {
+                        write($"  {name}");
+                    }
+
+                    write("Usage: reload <provider>");
+
+                    return true;
+                }
+
+                ReloadOutcome outcome = await reloader
+                    .ReloadAsync(args[0], ct)
+                    .ConfigureAwait(false);
+
+                write(
+                    outcome.Reloaded
+                        ? $"{outcome.Provider} reloaded in {outcome.ElapsedMs}ms."
+                        : $"{outcome.Provider} not reloaded: {outcome.Error}"
+                );
+
+                return true;
+            }
 
             case "reload-plugins":
                 try
@@ -304,41 +341,6 @@ public sealed class ConsoleCommandDispatcher(IServiceProvider services) : IConso
 
                 return true;
             }
-
-            case "reload-mystery-box":
-                try
-                {
-                    IGrainFactory grains = services.GetRequiredService<IGrainFactory>();
-                    await grains.GetMysteryBoxManagerGrain().ReloadAsync(ct).ConfigureAwait(false);
-                    write("Mystery box definitions and prize pools reloaded.");
-                }
-                catch (Exception ex)
-                {
-                    write($"Reload failed: {ex.Message}");
-                }
-
-                return true;
-
-            // Fishing's definitions are meant to be tuned live — the zones, the species table, their
-            // hours and weekdays and rates are all rows, deliberately, so that a wrong number is a
-            // query rather than a deploy. `FishingDefinitionsGrain.ReloadAsync` existed for that and
-            // had no caller at all, which made the whole design inert.
-            case "reload-fishing":
-                try
-                {
-                    IGrainFactory grains = services.GetRequiredService<IGrainFactory>();
-                    int species = await grains
-                        .GetFishingDefinitionsGrain()
-                        .ReloadAsync(ct)
-                        .ConfigureAwait(false);
-                    write($"Fishing definitions reloaded: {species} species.");
-                }
-                catch (Exception ex)
-                {
-                    write($"Reload failed: {ex.Message}");
-                }
-
-                return true;
 
             default:
                 write($"Unknown command: {cmd}");
