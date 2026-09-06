@@ -442,6 +442,12 @@ internal static class TaskProgressRules
                     StringComparison.Ordinal
                 ),
                 StepFilterOperator.OneOf => ListContains(expected, actual),
+                // Ordinal-ignore-case, not the current culture: the same content has to match the
+                // same room names on every silo, whatever locale the process happens to run in.
+                StepFilterOperator.Contains => actual.Contains(
+                    expected,
+                    StringComparison.OrdinalIgnoreCase
+                ),
                 _ => false,
             };
 

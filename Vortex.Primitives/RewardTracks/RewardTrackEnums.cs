@@ -227,4 +227,11 @@ public enum StepFilterOperator
 
     /// <summary>The value is a comma-separated list and the fact must be one of it.</summary>
     OneOf = 2,
+
+    /// <summary>
+    /// The fact contains this text, ignoring case. The only operator that is any use on a name or a
+    /// description: an exact match on free text an operator never typed is a filter that never
+    /// fires, and "a flat with 'casino' in the name" is the task somebody actually writes.
+    /// </summary>
+    Contains = 3,
 }

@@ -34,7 +34,18 @@ public static class RewardTrackActionFacts
         // no cheap way to read it on the entry path. Listing it would offer a filter that can never
         // match, which is the one thing this map exists to prevent.
         [RewardTrackActions.EnterOtherUsersRoom] = [RewardTrackFacts.Target, RewardTrackFacts.Room],
-        [RewardTrackActions.CreateRoom] = [RewardTrackFacts.Room],
+        // The room id is here for a later step to point back at ("build a flat, then place a sofa
+        // in it") -- as a literal it is worthless, since nobody can know the id of a room that does
+        // not exist yet. What an operator actually means by "build a flat" is the rest of this row.
+        [RewardTrackActions.CreateRoom] =
+        [
+            RewardTrackFacts.Target,
+            RewardTrackFacts.Room,
+            RewardTrackFacts.RoomName,
+            RewardTrackFacts.RoomDescription,
+            RewardTrackFacts.Category,
+            RewardTrackFacts.Model,
+        ],
         [RewardTrackActions.PlaceItem] =
         [
             RewardTrackFacts.Target,

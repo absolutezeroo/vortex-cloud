@@ -3,7 +3,22 @@ using Vortex.Primitives.Players;
 namespace Vortex.Primitives.Events;
 
 /// <summary>A player created a room.</summary>
-public sealed record RoomCreatedEvent(PlayerId OwnerId, int RoomId, string Name) : IEvent;
+/// <remarks>
+/// Carries what the creation form said, not just the id it produced: a subscriber's most useful
+/// question about a new room is what kind of room it is, and the id of a room that did not exist a
+/// moment ago answers nothing. Reward-track tasks filter on these — "build a flat in Chill", "build
+/// one on the tower model" — and reading them back per event would be a database round trip for
+/// values the caller already has in hand.
+/// </remarks>
+/// <param name="CategoryId">The navigator category, or 0 when the creator picked none.</param>
+public sealed record RoomCreatedEvent(
+    PlayerId OwnerId,
+    int RoomId,
+    string Name,
+    string Description,
+    string ModelName,
+    int CategoryId
+) : IEvent;
 
 /// <summary>
 /// The owner deleted their room. Soft-deleted in the database, but gone as far as anyone can see --

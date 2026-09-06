@@ -134,7 +134,17 @@ internal sealed partial class RoomService
         );
 
         await _events
-            .PublishAsync(new RoomCreatedEvent(playerId, room.Id, trimmedName), ct)
+            .PublishAsync(
+                new RoomCreatedEvent(
+                    playerId,
+                    room.Id,
+                    trimmedName,
+                    room.Description,
+                    model.Name,
+                    room.NavigatorCategoryEntityId ?? 0
+                ),
+                ct
+            )
             .ConfigureAwait(false);
 
         return (room.Id, trimmedName);

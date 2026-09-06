@@ -41,6 +41,22 @@ public static class RewardTrackFacts
     public const string Room = "room";
 
     /// <summary>
+    /// A room's name. Only worth filtering with <c>Contains</c>: a room id says which room, a name
+    /// says what kind of room, and "build a flat with 'casino' in the name" is a task a room id
+    /// cannot express — the id of a room created a moment ago is knowable to nobody.
+    /// </summary>
+    public const string RoomName = "name";
+
+    /// <summary>A room's description. Same reasoning as <see cref="RoomName"/>.</summary>
+    public const string RoomDescription = "desc";
+
+    /// <summary>A navigator flat-category id, or <c>0</c> when the room names none.</summary>
+    public const string Category = "category";
+
+    /// <summary>A room model name — the layout, e.g. <c>model_a</c>.</summary>
+    public const string Model = "model";
+
+    /// <summary>
     /// Who owns the room. Reserved, and NOT emitted by anything yet: it would make "join their
     /// flat" expressible without a follow event, but <c>PlayerEnteredRoomEvent</c> does not carry
     /// the owner and reading it per entry would be a grain call on an arrival path that has been

@@ -144,6 +144,7 @@ public sealed class RewardTrackChatHandler(IGrainFactory grainFactory, IRewardTr
                 RewardTrackActions.ChatWithSomeone,
                 1,
                 null,
+                [RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -175,7 +176,16 @@ public sealed class RewardTrackGestureHandler(
         }
 
         await RewardTrackSignal
-            .SendAsync(grainFactory, catalog, e.PlayerId.Value, action, 1, null, ct)
+            .SendAsync(
+                grainFactory,
+                catalog,
+                e.PlayerId.Value,
+                action,
+                1,
+                null,
+                [RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId)],
+                ct
+            )
             .ConfigureAwait(false);
     }
 }
@@ -296,6 +306,7 @@ public sealed class RewardTrackBadgeHandler(IGrainFactory grainFactory, IRewardT
                     RewardTrackActions.WearBadge,
                     1,
                     badgeCode,
+                    [new RewardTrackFactSnapshot(RewardTrackFacts.Badge, badgeCode)],
                     ct
                 )
                 .ConfigureAwait(false);
@@ -303,7 +314,11 @@ public sealed class RewardTrackBadgeHandler(IGrainFactory grainFactory, IRewardT
     }
 }
 
-/// <summary>Rooms created.</summary>
+/// <summary>
+/// Rooms created. The target is the new room's id, and the facts are what the creation form said —
+/// its name, its blurb, the category it was filed under and the model it was built on. Those are
+/// what "build a flat in Chill" is made of; the id only exists so a later step can say "in it".
+/// </summary>
 public sealed class RewardTrackRoomCreatedHandler(
     IGrainFactory grainFactory,
     IRewardTrackCatalog catalog
@@ -321,7 +336,14 @@ public sealed class RewardTrackRoomCreatedHandler(
                 e.OwnerId.Value,
                 RewardTrackActions.CreateRoom,
                 1,
-                null,
+                e.RoomId.ToString(CultureInfo.InvariantCulture),
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                    new RewardTrackFactSnapshot(RewardTrackFacts.RoomName, e.Name),
+                    new RewardTrackFactSnapshot(RewardTrackFacts.RoomDescription, e.Description),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Category, e.CategoryId),
+                    new RewardTrackFactSnapshot(RewardTrackFacts.Model, e.ModelName),
+                ],
                 ct
             )
             .ConfigureAwait(false);
@@ -449,6 +471,7 @@ public sealed class RewardTrackPetLevelHandler(
                 RewardTrackActions.PetLevel,
                 e.Level,
                 e.PetId.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Pet, e.PetId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -494,6 +517,7 @@ public sealed class RewardTrackCatalogPurchaseHandler(
                 RewardTrackActions.BuyFromCatalogue,
                 e.Quantity > 0 ? e.Quantity : 1,
                 e.OfferId.ToString(CultureInfo.InvariantCulture),
+                [RewardTrackSignal.Fact(RewardTrackFacts.Offer, e.OfferId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -533,6 +557,9 @@ public sealed class RewardTrackTradeHandler(IGrainFactory grainFactory, IRewardT
                 RewardTrackActions.CompleteTrade,
                 1,
                 null,
+                // Each side's fact is the other side: "trade with three different people" counts
+                // partners, which is the only thing a trade filter can usefully be about.
+                [RewardTrackSignal.Fact(RewardTrackFacts.Player, e.PlayerTwoId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -545,6 +572,7 @@ public sealed class RewardTrackTradeHandler(IGrainFactory grainFactory, IRewardT
                 RewardTrackActions.CompleteTrade,
                 1,
                 null,
+                [RewardTrackSignal.Fact(RewardTrackFacts.Player, e.PlayerOneId)],
                 ct
             )
             .ConfigureAwait(false);
@@ -598,6 +626,10 @@ public sealed class RewardTrackHabbiconUsedHandler(
                 RewardTrackActions.UseHabbicon,
                 1,
                 e.HabbiconId.ToString(CultureInfo.InvariantCulture),
+                [
+                    RewardTrackSignal.Fact(RewardTrackFacts.Habbicon, e.HabbiconId),
+                    RewardTrackSignal.Fact(RewardTrackFacts.Room, e.RoomId),
+                ],
                 ct
             )
             .ConfigureAwait(false);
@@ -622,6 +654,7 @@ public sealed class RewardTrackHabbiconCollectionHandler(
                 RewardTrackActions.CompleteHabbiconCollection,
                 1,
                 e.CollectionCode,
+                [new RewardTrackFactSnapshot(RewardTrackFacts.Collection, e.CollectionCode)],
                 ct
             )
             .ConfigureAwait(false);

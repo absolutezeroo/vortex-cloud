@@ -25,7 +25,8 @@ public sealed class DetachedPublicationTests
         TaskCompletionSource pending = new();
         harness.PublishResult = pending.Task;
 
-        Action publish = () => harness.Grain.PublishDetached(new RoomCreatedEvent(1, 2, "room"));
+        Action publish = () =>
+            harness.Grain.PublishDetached(new RoomCreatedEvent(1, 2, "room", "", "model_a", 0));
 
         publish.Should().NotThrow();
         harness.PublishedEvents.OfType<RoomCreatedEvent>().Should().ContainSingle();
@@ -40,7 +41,8 @@ public sealed class DetachedPublicationTests
 
         harness.PublishResult = Task.FromException(new InvalidOperationException("handler broke"));
 
-        Action publish = () => harness.Grain.PublishDetached(new RoomCreatedEvent(1, 2, "room"));
+        Action publish = () =>
+            harness.Grain.PublishDetached(new RoomCreatedEvent(1, 2, "room", "", "model_a", 0));
 
         // Observed and logged rather than thrown: a quest handler that is down must not make the
         // sofa fail to move.
