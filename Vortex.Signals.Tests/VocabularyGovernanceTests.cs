@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using FluentAssertions;
+using Vortex.Primitives.Signals;
+using Vortex.Signals.Translators;
+using Xunit;
+
+namespace Vortex.Signals.Tests;
+
+/// <summary>
+/// The vocabulary is append-only, and this is what enforces it.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Fact keys live in <c>reward_track_step_filters.fact_key</c> and action codes in the task rows
+/// beside them. Renaming either silently stops every filter already written on it from matching —
+/// no build error, no failing test, no log line, just content that quietly never completes.
+/// </para>
+/// <para>
+/// So the lists are frozen here, by hand, on purpose. Adding a key updates the list in the same
+/// commit; removing one has to be typed out deliberately, under a reviewer's eyes. That friction is
+/// the feature.
+/// </para>
+/// </remarks>
+public sealed class VocabularyGovernanceTests
+{
+    /// <summary>Every fact key content may already be written against.</summary>
+    private static readonly ImmutableArray<string> FrozenFacts =
+    [
+        "target",
+        "item",
+        "def",
+        "kind",
+        "room",
+        "name",
+        "desc",
+        "category",
+        "model",
+        "player",
+        "offer",
+        "habbicon",
+        "collection",
+        "pet",
+        "badge",
+    ];
+
+    /// <summary>Every action code content may already name.</summary>
+    private static readonly ImmutableArray<string> FrozenActions =
+    [
+        "enter_other_users_room",
+        "create_room",
+        "place_item",
+        "move_item",
+        "rotate_item",
+        "pick_up_item",
+        "walk_on_furni",
+        "teleport",
+        "chat_with_someone",
+        "request_friend",
+        "give_respect",
+        "send_messenger_message",
+        "dance",
+        "wave",
+        "change_figure",
+        "change_motto",
+        "wear_badge",
+        "buy_from_catalogue",
+        "pet_level",
+        "use_habbicon",
+        "complete_trade",
+        "spend_credits",
+        "complete_habbicon_collection",
+        "complete_quest",
+        "achievement_level",
+        "wired",
+    ];
+
+    /// <summary>The declared values of every closed fact, which content compares against too.</summary>
+    private static readonly ImmutableArray<string> FrozenEnumValues = ["floor", "wall"];
+
+    [Fact]
+    public void No_fact_key_has_been_renamed_or_removed()
+    {
+        ImmutableArray<string> live = [.. Facts.All.Select(f => f.Key), Facts.TargetKey];
+
+        live.Should()
+            .Contain(
+                FrozenFacts,
+                "a fact key is stored in content, so renaming one silently stops every filter "
+                    + "written on it from matching"
+            );
+    }
+
+    [Fact]
+    public void No_action_code_has_been_renamed_or_removed()
+    {
+        SignalActions
+            .All.Should()
+            .Contain(FrozenActions, "an action code is stored on every task row that names it");
+    }
+
+    [Fact]
+    public void No_declared_value_of_a_closed_fact_has_gone_away()
+    {
+        ImmutableArray<string> live =
+        [
+            .. Facts
+                .All.SelectMany(f => f.EnumValues.IsDefaultOrEmpty ? [] : f.EnumValues)
+                .Select(v => v.Value),
+        ];
+
+        live.Should().Contain(FrozenEnumValues, "content compares against these strings");
+    }
+
+    [Fact]
+    public void Every_fact_can_be_shown_to_an_operator()
+    {
+        // A plugin cannot add keys to the dashboard locales, and a locale can lag behind here too.
+        // Without a fallback the editor renders a raw key, which tells an operator nothing.
+        Facts.All.Should().OnlyContain(f => !string.IsNullOrWhiteSpace(f.FallbackLabel));
+        Facts.All.Should().OnlyContain(f => !string.IsNullOrWhiteSpace(f.LabelKey));
+    }
+
+    [Fact]
+    public void Every_action_a_translator_declares_is_frozen()
+    {
+        // Catches the other direction: a new action shipped without being added to the frozen list
+        // would otherwise be renameable a week later with nothing to stop it.
+        ImmutableArray<string> declared =
+        [
+            .. TranslatorCatalog.All.SelectMany(t => t.Shapes).Select(s => s.Action).Distinct(),
+        ];
+
+        FrozenActions.Should().Contain(declared);
+    }
+}

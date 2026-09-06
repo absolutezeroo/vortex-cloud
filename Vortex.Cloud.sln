@@ -125,6 +125,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Signals", "Vortex.Si
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Rewards.Tests", "Vortex.Rewards.Tests\Vortex.Rewards.Tests.csproj", "{31AC1D76-755B-43F2-8FCC-FB83E136A88B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Signals.Tests", "Vortex.Signals.Tests\Vortex.Signals.Tests.csproj", "{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -783,6 +785,18 @@ Global
 		{31AC1D76-755B-43F2-8FCC-FB83E136A88B}.Release|x64.Build.0 = Release|Any CPU
 		{31AC1D76-755B-43F2-8FCC-FB83E136A88B}.Release|x86.ActiveCfg = Release|Any CPU
 		{31AC1D76-755B-43F2-8FCC-FB83E136A88B}.Release|x86.Build.0 = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|x64.Build.0 = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|x64.Build.0 = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -842,5 +856,6 @@ Global
 		{7C3E4B21-9A5D-4F08-BE12-5D6A9C4E1F30} = {A1000000-0000-4000-8000-000000000003}
 		{D9168014-75D5-49C6-9B8F-1DF1D65EE648} = {A1000000-0000-4000-8000-000000000003}
 		{31AC1D76-755B-43F2-8FCC-FB83E136A88B} = {A1000000-0000-4000-8000-000000000007}
+		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15} = {A1000000-0000-4000-8000-000000000007}
 	EndGlobalSection
 EndGlobal
