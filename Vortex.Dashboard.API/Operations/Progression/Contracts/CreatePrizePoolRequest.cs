@@ -1,0 +1,12 @@
+using Vortex.Dashboard.API.Hosting;
+
+namespace Vortex.Dashboard.API.Operations;
+
+public sealed record CreatePrizePoolRequest(
+    string Code,
+    string Name,
+    string Variants,
+    string Notes,
+    bool Enabled,
+    string Reason
+) : IReasonedRequest;
