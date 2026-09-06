@@ -6,7 +6,14 @@
 // matches. So the meaning lives in a pure module and is checked here.
 
 import assert from 'node:assert/strict';
-import { canWire, connect, disconnect, referencedStep, toGraph } from '../src/lib/graph/model.js';
+import {
+  canWire,
+  connect,
+  disconnect,
+  readerOf,
+  referencedStep,
+  toGraph,
+} from '../src/lib/graph/model.js';
 
 const FACTS = {
   place_item: [
@@ -30,11 +37,25 @@ const step = (action, ...values) => ({
 {
   const { nodes, wires } = toGraph([step('place_item'), step('walk_on_furni')], factsFor);
 
-  assert.equal(nodes.length, 2);
+  assert.equal(nodes.filter((n) => n.type === 'action').length, 2);
   assert.deepEqual(
     wires.filter((w) => w.kind === 'flow'),
-    [{ kind: 'flow', from: 0, to: 1 }],
+    [{ kind: 'flow', from: 'a:0', to: 'a:1' }],
     'the second action follows the first, and that is a wire'
+  );
+}
+
+// --- a condition is a node of its own, attached to the action it constrains -------------------
+{
+  const { nodes, wires } = toGraph([step('place_item', '4312')], factsFor);
+  const condition = nodes.find((n) => n.type === 'condition');
+
+  assert.ok(condition, 'a filter is a module on the canvas, not a row inside the action');
+  assert.equal(condition.id, 'c:0:0');
+  assert.deepEqual(
+    wires.filter((w) => w.kind === 'applies'),
+    [{ kind: 'applies', from: 'c:0:0', to: 'a:0', fact: 'item' }],
+    'and the wire is what says which action it tests'
   );
 }
 
@@ -44,7 +65,7 @@ const step = (action, ...values) => ({
   const data = wires.filter((w) => w.kind === 'data');
 
   assert.equal(data.length, 1);
-  assert.deepEqual(data[0], { kind: 'data', from: 0, to: 1, fact: 'item', filterIndex: 0 });
+  assert.deepEqual(data[0], { kind: 'data', from: 'a:0', to: 'c:1:0', fact: 'item' });
 }
 
 // --- a literal is not a wire -----------------------------------------------------------------
@@ -60,7 +81,7 @@ const step = (action, ...values) => ({
   const { nodes } = toGraph([step('chat_with_someone')], factsFor);
 
   assert.deepEqual(
-    nodes[0].outputs.map((p) => p.key),
+    nodes.find((n) => n.type === 'action').outputs.map((p) => p.key),
     ['room'],
     'chat emits a room and nothing else, so it offers one port'
   );
@@ -77,6 +98,23 @@ const step = (action, ...values) => ({
     canWire(0, 1, 'room', filter),
     false,
     '$N reads the same fact key: a furniture filter cannot read a room port'
+  );
+}
+
+// --- a port with no reader can do nothing ------------------------------------------------------
+//
+// This is what a fact port is FOR: a later step that tests the same fact. Get it wrong and the
+// canvas either offers a drag that produces nothing, or refuses one that would have worked.
+{
+  const steps = [step('place_item'), step('chat_with_someone'), step('walk_on_furni')];
+
+  assert.equal(readerOf(steps, 0, 'item', factsFor), 2, 'the first LATER step that reports it');
+  assert.equal(readerOf(steps, 0, 'room', factsFor), 1, 'chat reports a room, so it is the reader');
+  assert.equal(readerOf(steps, 2, 'item', factsFor), -1, 'nothing follows the last step');
+  assert.equal(
+    readerOf([step('place_item'), step('chat_with_someone')], 0, 'item', factsFor),
+    -1,
+    'a step that never reports the fact is not a reader'
   );
 }
 
@@ -97,7 +135,7 @@ const step = (action, ...values) => ({
 {
   const steps = [step('place_item'), step('walk_on_furni', '$0')];
   const a = toGraph(steps, factsFor);
-  const b = toGraph(steps, factsFor, { 0: { x: 999, y: 999 } });
+  const b = toGraph(steps, factsFor, { 'a:0': { x: 999, y: 999 } });
 
   assert.equal(b.nodes[0].x, 999, 'a stored position is used');
   assert.deepEqual(a.wires, b.wires, 'moving a node changes no wire');

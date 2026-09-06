@@ -48,62 +48,112 @@ export function referencedStep(value) {
 /**
  * Turns the steps into nodes and wires.
  *
- * One node per step, in order. A node's output ports are the facts its action emits — that is what
- * a later condition can be wired to. Its input ports are its own filters, because a filter is the
- * thing that consumes a value.
+ * Two kinds of node, because a task has two kinds of thing in it:
  *
- * Positions are laid out left to right when a step has none stored, so an existing task opens as a
+ *   - an **action** node per step, whose output ports are the facts it records;
+ *   - a **condition** node per filter, which is a module of its own rather than a row buried in an
+ *     action. That is what lets one be dragged from the palette, moved between actions, and read
+ *     at a glance -- a filter is a test somebody wrote, not a property of the action.
+ *
+ * And three kinds of wire: the order (flow), which action a condition constrains (applies), and a
+ * `$N` reference reading an earlier action's recorded value (data).
+ *
+ * Positions are laid out left to right when nothing is stored, so an existing task opens as a
  * readable chain rather than a pile at the origin.
  */
 export function toGraph(steps, factsFor, layout = {}) {
-  const nodes = (steps ?? []).map((step, index) => ({
-    id: index,
-    step,
-    action: step.actionCode,
-    x: layout[index]?.x ?? 80 + index * 320,
-    y: layout[index]?.y ?? 80 + (index % 2) * 60,
-    outputs: factsFor(step.actionCode).map((fact) => ({
-      key: fact.key,
-      label: fact.fallbackLabel,
-      kind: fact.kind,
-    })),
-    filters: (step.filters ?? []).map((filter, filterIndex) => ({
-      index: filterIndex,
-      filter,
-      wiredTo: referencedStep(filter.value),
-    })),
-  }));
-
+  const nodes = [];
   const wires = [];
 
-  for (const node of nodes) {
-    // The flow edge: this action follows the previous one. It is the order, drawn.
-    if (node.id > 0) {
-      wires.push({ kind: 'flow', from: node.id - 1, to: node.id });
+  (steps ?? []).forEach((step, index) => {
+    nodes.push({
+      type: 'action',
+      id: `a:${index}`,
+      step,
+      index,
+      action: step.actionCode,
+      x: layout[`a:${index}`]?.x ?? 80 + index * 420,
+      y: layout[`a:${index}`]?.y ?? 80,
+      outputs: factsFor(step.actionCode).map((fact) => ({
+        key: fact.key,
+        label: fact.fallbackLabel,
+        kind: fact.kind,
+      })),
+      filterCount: (step.filters ?? []).length,
+    });
+
+    // The order, drawn.
+    if (index > 0) {
+      wires.push({ kind: 'flow', from: `a:${index - 1}`, to: `a:${index}` });
     }
 
-    for (const entry of node.filters) {
-      if (entry.wiredTo >= 0) {
+    (step.filters ?? []).forEach((filter, filterIndex) => {
+      const id = `c:${index}:${filterIndex}`;
+
+      nodes.push({
+        type: 'condition',
+        id,
+        step,
+        index,
+        filterIndex,
+        filter,
+        action: step.actionCode,
+        fact: filter.factKey,
+        wiredTo: referencedStep(filter.value),
+        x: layout[id]?.x ?? 80 + index * 420 + 60,
+        y: layout[id]?.y ?? 300 + filterIndex * 150,
+      });
+
+      // Which action this condition constrains. Not decoration: it is the only thing that says
+      // whose signal the test is applied to, and dragging this wire is how a condition moves.
+      wires.push({ kind: 'applies', from: id, to: `a:${index}`, fact: filter.factKey });
+
+      // And the $N reference, if the value is read from an earlier action rather than typed.
+      if (referencedStep(filter.value) >= 0) {
         wires.push({
           kind: 'data',
-          from: entry.wiredTo,
-          to: node.id,
-          fact: entry.filter.factKey,
-          filterIndex: entry.index,
+          from: `a:${referencedStep(filter.value)}`,
+          to: id,
+          fact: filter.factKey,
         });
       }
-    }
-  }
+    });
+  });
 
   return { nodes, wires };
 }
 
+/** The action a node belongs to, whichever kind it is. */
+export function stepOf(nodeId) {
+  const [, index] = nodeId.split(':');
+
+  return Number(index);
+}
+
 /**
- * Whether a wire may be drawn from one node's fact port to a filter on another node.
+ * The first step after `fromIndex` that records `factKey`.
+ *
+ * A fact port is only ever good for a `$N`, and `$N` is read by a condition on a LATER step that
+ * tests the SAME fact. So this is the whole answer to "what is this port for": that step, or
+ * nothing at all -- a port with no reader can do nothing, and the canvas has to show that rather
+ * than let it be dragged for no result.
+ *
+ * @returns the step index, or -1.
+ */
+export function readerOf(steps, fromIndex, factKey, factsFor) {
+  const found = (steps ?? []).findIndex(
+    (step, i) => i > fromIndex && factsFor(step.actionCode).some((fact) => fact.key === factKey)
+  );
+
+  return found;
+}
+
+/**
+ * Whether a `$N` wire may be drawn from one action's fact port to a condition.
  *
  * Two rules, both the engine's: a reference resolves to what an **earlier** step recorded, and it
- * resolves for the **same fact key** — `$0` on a filter about furniture reads step 0's furniture,
- * not its room. A canvas that let an operator draw either of those would be drawing a filter the
+ * resolves for the **same fact key** -- `$0` on a condition about furniture reads step 0's
+ * furniture, not its room. A canvas that let an operator draw either would be drawing a filter the
  * server refuses.
  */
 export function canWire(fromNode, toNode, factKey, filter) {

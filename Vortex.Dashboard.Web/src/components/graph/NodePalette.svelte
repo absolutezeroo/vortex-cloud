@@ -6,8 +6,13 @@
   // it. The counts are there so a group that is empty for this hotel says so.
   import { t } from '../../lib/i18n.js';
 
-  /** @type {{ actions: any[], canManage: boolean, onadd: (action: string) => void }} */
-  let { actions, canManage, onadd } = $props();
+  /**
+   * @type {{
+   *   actions: any[], canManage: boolean,
+   *   onadd: (action: string) => void, onaddcondition: () => void,
+   * }}
+   */
+  let { actions, canManage, onadd, onaddcondition } = $props();
 
   let query = $state('');
 
@@ -44,6 +49,13 @@
 </script>
 
 <aside class="palette">
+  <!-- A condition is a module of the same rank as an action, so it is dropped from the same
+       palette. It is pinned above the search because it is one thing, not one of sixty-seven. -->
+  <button type="button" class="palette-condition" disabled={!canManage} onclick={onaddcondition}>
+    <span class="palette-condition-kind">{$t('rewardTracks.conditionNode')}</span>
+    <span class="palette-condition-hint">{$t('rewardTracks.addConditionHint')}</span>
+  </button>
+
   <input
     type="search"
     bind:value={query}
@@ -77,7 +89,7 @@
 
 <style>
   .palette {
-    flex: 0 0 232px;
+    flex: 0 0 236px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -85,6 +97,37 @@
     border-right: 2px solid var(--line-strong);
     background: var(--surface);
     overflow: hidden;
+  }
+
+  /* Gold and bordered like the node it drops, so what lands on the canvas is what was clicked. */
+  .palette-condition {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 7px 9px;
+    border: 2px solid var(--line-strong);
+    border-left: 3px solid var(--gold);
+    border-radius: 5px;
+    background: var(--surface-strong);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .palette-condition:hover:not(:disabled) {
+    border-color: var(--gold);
+  }
+
+  .palette-condition-kind {
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .palette-condition-hint {
+    color: var(--muted);
+    font-size: 0.68rem;
   }
 
   .palette-list {
@@ -95,16 +138,18 @@
     gap: 1px;
   }
 
+  /* A section head, the way the dashboard writes one: a rule under it and the label above, rather
+     than a coloured pill that belongs to no other surface here. */
   .palette-group {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
-    padding: 5px 8px;
-    border-radius: 4px;
-    background: rgba(var(--accent-rgb), 0.22);
-    font-size: 0.7rem;
+    margin-top: 12px;
+    padding: 4px 2px 5px;
+    border-bottom: 2px solid var(--line-strong);
+    color: var(--gold);
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
@@ -115,7 +160,7 @@
   .palette-item {
     padding: 5px 8px;
     border: 0;
-    border-radius: 4px;
+    border-radius: 5px;
     background: transparent;
     color: var(--ink);
     font-size: 0.76rem;

@@ -1,25 +1,22 @@
 <script>
-  // One action on the canvas: a header, its conditions, and the ports a later condition wires to.
+  // One action on the canvas: what the player did, and what it records.
   //
-  // The header is the drag handle and the only draggable part, because the body is full of selects
-  // and text fields an operator has to be able to click into.
-  import { Search, X } from '@lucide/svelte';
-  import AssetImage from '../AssetImage.svelte';
+  // Its conditions are no longer inside it -- they are their own nodes, wired in. What is left here
+  // is the action itself, the order ports, and one output port per fact it records, which is what a
+  // later condition can read.
+  import { X } from '@lucide/svelte';
   import { portColour } from '../../lib/graph/model.js';
   import { t } from '../../lib/i18n.js';
 
   /**
    * @type {{
-   *   node: any, actions: any[], canManage: boolean, selected: boolean,
-   *   factsFor: (a: string) => any[], operatorsFor: (a: string, k: string) => any[],
-   *   defaultFilterValue: (a: string, k: string) => string,
-   *   pickerFor: (meta: any) => string | null, pickedLabels: Record<string, any>,
-   *   onmovestart: (event: PointerEvent) => void, onchange: () => void,
-   *   onremove: () => void, onaddfilter: () => void, onremovefilter: (i: number) => void,
-   *   onpick: (i: number, kind: string) => void,
-   *   onportdown: (factKey: string, event: PointerEvent) => void,
-   *   oninputup: (filterIndex: number) => void,
-   *   oncut: (filterIndex: number) => void,
+   *   node: any, actions: any[], canManage: boolean, selected: boolean, pulling: any,
+   *   appliesLit: boolean,
+   *   candidateFor: (factKey: string) => boolean, usableFor: (factKey: string) => boolean,
+   *   onmovestart: (e: PointerEvent) => void, onchange: () => void, onremove: () => void,
+   *   onportdown: (factKey: string, e: PointerEvent) => void,
+   *   onportup: (factKey: string) => void,
+   *   onappliesup: () => void,
    * }}
    */
   let {
@@ -27,40 +24,22 @@
     actions,
     canManage,
     selected,
-    factsFor,
-    operatorsFor,
-    defaultFilterValue,
-    pickerFor,
-    pickedLabels,
+    pulling,
+    appliesLit,
+    candidateFor,
+    usableFor,
     onmovestart,
     onchange,
     onremove,
-    onaddfilter,
-    onremovefilter,
-    onpick,
     onportdown,
-    oninputup,
-    oncut,
+    onportup,
+    onappliesup,
   } = $props();
-
-  let facts = $derived(factsFor(node.action));
-
-  function label(fact) {
-    const translated = $t(fact.labelKey);
-
-    return translated === fact.labelKey ? fact.fallbackLabel : translated;
-  }
 </script>
 
-<div
-  class="node"
-  class:selected
-  style:left="{node.x}px"
-  style:top="{node.y}px"
-  data-node={node.id}
->
+<div class="node" class:selected style:left="{node.x}px" style:top="{node.y}px">
   <header class="node-head" onpointerdown={canManage ? onmovestart : undefined}>
-    <span class="node-index">{node.id + 1}</span>
+    <span class="node-index">{node.index + 1}</span>
     <span class="node-title">{node.action}</span>
     {#if canManage}
       <button type="button" class="node-close" title={$t('common.remove')} onclick={onremove}>
@@ -69,9 +48,7 @@
     {/if}
   </header>
 
-  <!-- Flow in and out: the order, as something you can see and follow. The data-port attribute is
-       how the wire layer finds this point again after the node has been dragged -- measured, not
-       computed, because a node's height depends on how many conditions it carries. -->
+  <!-- The order. Diamonds, so it never looks like data. -->
   <span class="flow-port in" data-port="{node.id}:flow-in" aria-hidden="true"></span>
   <span class="flow-port out" data-port="{node.id}:flow-out" aria-hidden="true"></span>
 
@@ -85,117 +62,40 @@
       </select>
     </label>
 
-    {#each node.filters as entry (entry.index)}
-      {@const meta = facts.find((f) => f.key === entry.filter.factKey) ?? null}
-      {@const picked = pickedLabels[`${node.id}:${entry.index}`]}
-      <div class="condition">
-        <!-- The input side of a condition: a wire lands here, and clicking a live one cuts it. -->
-        <span
-          class="port in"
-          class:wired={entry.wiredTo >= 0}
-          style:--port={portColour(meta?.kind)}
-          onpointerup={() => oninputup(entry.index)}
-          onclick={() => entry.wiredTo >= 0 && oncut(entry.index)}
-          data-port="{node.id}:in:{entry.index}"
-          role="presentation"
-          title={entry.wiredTo >= 0
-            ? $t('rewardTracks.cutWire', { n: entry.wiredTo + 1 })
-            : $t('rewardTracks.wireHint')}
-        ></span>
-
-        <select
-          bind:value={entry.filter.factKey}
-          disabled={!canManage}
-          onchange={() => {
-            entry.filter.value = defaultFilterValue(node.action, entry.filter.factKey);
-            entry.filter.op = operatorsFor(node.action, entry.filter.factKey)[0]?.value ?? 0;
-            onchange();
-          }}
-        >
-          {#each facts as fact (fact.key)}
-            <option value={fact.key}>{label(fact)}</option>
-          {/each}
-        </select>
-
-        <select bind:value={entry.filter.op} disabled={!canManage} onchange={onchange}>
-          {#each operatorsFor(node.action, entry.filter.factKey) as op (op.value)}
-            <option value={op.value}>{$t(op.key)}</option>
-          {/each}
-        </select>
-
-        {#if entry.wiredTo >= 0}
-          <!-- Wired: the value is the earlier action's, so there is nothing to type. -->
-          <span class="wired-value">{$t('rewardTracks.filterSameAsStep', { n: entry.wiredTo + 1 })}</span>
-        {:else if meta?.values?.length}
-          <select bind:value={entry.filter.value} disabled={!canManage} onchange={onchange}>
-            {#each meta.values as allowed (allowed.value)}
-              <option value={allowed.value}>{label(allowed)}</option>
-            {/each}
-          </select>
-        {:else}
-          <input
-            type="text"
-            bind:value={entry.filter.value}
-            disabled={!canManage}
-            onchange={onchange}
-            placeholder={$t('rewardTracks.conditionValuePlaceholder')}
-          />
-          {#if pickerFor(meta)}
-            <button
-              type="button"
-              class="node-icon-button"
-              title={$t('rewardTracks.pickValue')}
-              disabled={!canManage}
-              onclick={() => onpick(entry.index, pickerFor(meta))}
-            >
-              <Search size={13} />
-            </button>
-          {/if}
-        {/if}
-
-        {#if canManage}
-          <button
-            type="button"
-            class="node-icon-button"
-            title={$t('common.remove')}
-            onclick={() => onremovefilter(entry.index)}
-          >
-            <X size={13} />
-          </button>
-        {/if}
-
-        {#if picked?.name}
-          <span class="picked">
-            {#if picked.iconUrl}<AssetImage src={picked.iconUrl} alt="" size={18} />{/if}
-            {picked.name}
-          </span>
-        {/if}
-      </div>
-    {/each}
-
-    {#if facts.length > 0 && canManage}
-      <button type="button" class="node-add" onclick={onaddfilter}>
-        {$t('rewardTracks.addFilter')}
-      </button>
-    {:else if facts.length === 0}
-      <p class="node-empty">{$t('rewardTracks.actionHasNoFacts')}</p>
-    {/if}
+    <!-- Where conditions plug in. It carries a count, so an action with tests on it says so even
+         when they have been dragged off to one side of the canvas. -->
+    <div class="applies-row">
+      <span
+        class="port applies"
+        class:lit={appliesLit}
+        data-port="{node.id}:applies"
+        onpointerup={onappliesup}
+        role="presentation"
+        title={$t('rewardTracks.appliesHint')}
+      ></span>
+      <span>{$t('rewardTracks.conditionCount', { count: node.filterCount })}</span>
+    </div>
   </div>
 
-  <!-- What this action records, and therefore what a later condition can read. One port per fact,
-       coloured by what it carries. -->
   {#if node.outputs.length}
     <div class="node-ports">
       {#each node.outputs as port (port.key)}
-        <div class="port-row">
-          <span class="port-label">{port.label}</span>
+        {@const usable = usableFor(port.key)}
+        <!-- A port is only good for a `$N`, and a `$N` needs a LATER action that reports the same
+             fact. Where there is none the port can do nothing, so it says so instead of looking
+             like every other one and being dragged for nothing. -->
+        <div class="port-row" class:inert={!pulling && !usable}>
+          <span>{port.label}</span>
           <span
             class="port out"
+            class:candidate={pulling?.from === 'value' && candidateFor(port.key)}
+            class:blocked={pulling?.from === 'value' && !candidateFor(port.key)}
             style:--port={portColour(port.kind)}
-            onpointerdown={(e) => canManage && onportdown(port.key, e)}
             data-port="{node.id}:out:{port.key}"
+            onpointerdown={(e) => canManage && onportdown(port.key, e)}
+            onpointerup={() => onportup(port.key)}
             role="presentation"
-            title={$t('rewardTracks.dragWire')}
+            title={usable ? $t('rewardTracks.dragWire') : $t('rewardTracks.portHasNoReader')}
           ></span>
         </div>
       {/each}
@@ -204,49 +104,53 @@
 </div>
 
 <style>
+  /* A node is a small panel, and the theme already says what a panel is: a 2px edge, a 5px corner
+     and an inner bevel. Inventing a second card style beside it is what made this look like a
+     different application bolted onto the dashboard. */
   .node {
     position: absolute;
-    /* Wide enough for a condition on one line -- fact, operator, value and its picker. At 300 the
-       third control wrapped, which is the exact failure that got the editor out of the drawer. */
-    width: 360px;
+    width: 300px;
     border: 2px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: 5px;
     background: var(--surface);
-    box-shadow: var(--shadow);
+    box-shadow: var(--panel-shadow);
     user-select: none;
   }
 
   .node.selected {
-    border-color: var(--accent);
+    border-color: var(--gold);
+    box-shadow: var(--panel-shadow), 0 0 0 1px rgba(var(--gold-rgb), 0.35);
   }
 
-  /* The header is the handle. Coloured like the trigger nodes it stands for, and the only part that
-     starts a drag -- the body has fields an operator must be able to click into. */
   .node-head {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 7px 10px;
-    background: rgba(var(--accent-rgb), 0.75);
+    background: var(--surface-strong);
+    border-bottom: 2px solid var(--line-strong);
+    border-left: 3px solid var(--accent);
     border-radius: 3px 3px 0 0;
     cursor: grab;
     font-weight: 700;
     font-size: 0.78rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
   }
 
   .node-head:active {
     cursor: grabbing;
   }
 
+  /* The step number, as the same gold tag the tables use for a premium mark. */
   .node-index {
     flex: 0 0 auto;
     min-width: 18px;
+    padding: 0 5px;
     text-align: center;
-    border-radius: 3px;
-    background: rgba(0, 0, 0, 0.28);
-    font-size: 0.7rem;
+    border: 1px solid rgba(var(--gold-rgb), 0.45);
+    border-radius: 4px;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-size: 0.68rem;
   }
 
   .node-title {
@@ -254,8 +158,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-transform: none;
-    letter-spacing: 0;
+    color: var(--ink);
   }
 
   .node-close {
@@ -265,14 +168,14 @@
     border: 0;
     border-radius: 3px;
     background: transparent;
-    color: inherit;
+    color: var(--muted);
     cursor: pointer;
   }
 
   .node-body {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 8px;
     padding: 9px 10px;
   }
 
@@ -280,7 +183,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: var(--muted);
   }
 
@@ -288,74 +191,12 @@
     width: 100%;
   }
 
-  .condition {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 6px 6px 10px;
-    border: 1px solid rgba(var(--gold-rgb), 0.35);
-    border-radius: 5px;
-    background: rgba(var(--gold-rgb), 0.08);
-    font-size: 0.76rem;
-  }
-
-  .condition select,
-  .condition input {
-    flex: 1 1 4rem;
-    min-width: 0;
-    width: auto;
-    font-size: 0.74rem;
-    padding: 3px 6px;
-  }
-
-  /* The operator is two words at most, so it takes what it needs and leaves the rest to the value. */
-  .condition select:nth-of-type(2) {
-    flex: 0 1 auto;
-  }
-
-  .wired-value {
-    flex: 1 1 auto;
-    color: var(--accent-strong);
-    font-weight: 600;
-  }
-
-  .picked {
-    flex: 1 0 100%;
+  .applies-row {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
     color: var(--muted);
     font-size: 0.7rem;
-  }
-
-  .node-icon-button {
-    flex: 0 0 auto;
-    display: inline-flex;
-    padding: 3px;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-  }
-
-  .node-add {
-    align-self: flex-start;
-    padding: 4px 10px;
-    border: 1px dashed var(--line-strong);
-    border-radius: 5px;
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.72rem;
-    cursor: pointer;
-  }
-
-  .node-empty {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.72rem;
   }
 
   .node-ports {
@@ -363,7 +204,9 @@
     flex-direction: column;
     gap: 5px;
     padding: 7px 10px 10px;
-    border-top: 1px solid var(--line);
+    border-top: 2px solid var(--line);
+    background: var(--surface-strong);
+    border-radius: 0 0 3px 3px;
   }
 
   .port-row {
@@ -375,7 +218,10 @@
     color: var(--muted);
   }
 
-  /* A port is a target, so it is bigger than it looks: the dot is 10px and the hit area is 20. */
+  .port-row.inert {
+    opacity: 0.4;
+  }
+
   .port {
     width: 10px;
     height: 10px;
@@ -385,37 +231,40 @@
     cursor: crosshair;
   }
 
-  .port::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    margin: -7px 0 0 -7px;
-  }
-
   .port.out {
     position: relative;
     margin-right: -16px;
   }
 
-  .port.in {
-    position: absolute;
-    left: -6px;
-    top: 50%;
-    transform: translateY(-50%);
+  .port.applies {
+    margin-left: -16px;
+    border-color: var(--accent);
   }
 
-  .port.wired {
-    background: var(--port, var(--accent));
+  .port.applies.lit {
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.22);
   }
 
-  /* Flow in and out, as diamonds, so the order never looks like data. */
+  /* While a wire is out, every port says whether it can take it. This is the single thing that
+     turns "drag onto the right dot" from a guess into something you can see. */
+  .port.candidate {
+    border-color: var(--gold);
+    background: var(--gold-soft);
+    box-shadow: 0 0 0 4px rgba(var(--gold-rgb), 0.22);
+  }
+
+  .port.blocked {
+    opacity: 0.25;
+  }
+
   .flow-port {
     position: absolute;
     width: 11px;
     height: 11px;
     top: 13px;
-    background: var(--ink);
+    border: 2px solid var(--line-strong);
+    background: var(--gold);
     transform: rotate(45deg);
   }
 
