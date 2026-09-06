@@ -13,21 +13,21 @@ using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
-using Vortex.Primitives.Hosting;
-using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Habbicons;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Quests;
-using Vortex.Primitives.Sound;
 using Vortex.Primitives.RewardTracks;
+using Vortex.Primitives.Sound;
 
 namespace Vortex.Dashboard.API;
 
@@ -37,6 +37,19 @@ namespace Vortex.Dashboard.API;
 /// Observability (metrics, audit sinks, health/incidents) and Database but owns no observability
 /// pipeline of its own — the audit and error-grouping writers live in <c>ObservabilityModule</c> so
 /// they run regardless of whether the dashboard is enabled.
+/// <para>
+/// <b>How this project is laid out, and the one rule it breaks.</b> Three of its folders —
+/// <c>Api</c>, <c>Hosting</c>, <c>Operations</c> — are each one very large partial class, and its
+/// parts are grouped into <c>Catalogue</c>, <c>Progression</c>, <c>Hotel</c>, <c>Platform</c> and
+/// <c>Safety</c>, the same five families <c>Admin</c> uses. Every part of a partial class must
+/// declare the <em>same</em> namespace, so those subfolders deliberately do not appear in it: a file
+/// in <c>Operations/Catalogue/</c> is still <c>Vortex.Dashboard.API.Operations</c>. Folder equals
+/// namespace everywhere else in this repository, and it cannot here without splitting the class.
+/// </para>
+/// <para>
+/// <c>Admin</c> is the exception that keeps the rule: it holds sixteen separate classes rather than
+/// one, so its subfolders <em>are</em> namespaces.
+/// </para>
 /// </summary>
 public sealed class DashboardApiModule : IHostPluginModule
 {

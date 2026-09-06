@@ -247,10 +247,6 @@ public sealed record CreateFurnitureDefinitionRequest(
     string? ExtraData,
     StuffDataType StuffDataType,
     string Reason,
-    /// <summary>
-    /// Hand items a vending machine dispenses, comma-separated. Last and defaulted so the SPA's
-    /// existing furniture form keeps working while it does not send the field.
-    /// </summary>
     string? VendingIds = null
 ) : IReasonedRequest;
 
@@ -277,10 +273,6 @@ public sealed record UpdateFurnitureDefinitionRequest(
     string? ExtraData,
     StuffDataType StuffDataType,
     string Reason,
-    /// <summary>
-    /// Hand items a vending machine dispenses, comma-separated. Last and defaulted so the SPA's
-    /// existing furniture form keeps working while it does not send the field.
-    /// </summary>
     string? VendingIds = null
 ) : IReasonedRequest;
 
