@@ -6,7 +6,7 @@
   // Blocks you arrange need room to be arranged in -- so this takes the whole viewport, and the
   // drawer keeps only a summary and the button that opens it.
   import { X } from '@lucide/svelte';
-  import SequenceEditor from './SequenceEditor.svelte';
+  import SequenceGraph from '../graph/SequenceGraph.svelte';
   import { t } from '../../lib/i18n.js';
 
   // Rendered on the body, not where it was written: a drawer sets its own stacking context, so a
@@ -40,11 +40,7 @@
       </button>
     </header>
 
-    <div class="workspace-canvas">
-      <div class="workspace-inner">
-        <SequenceEditor {...editor} />
-      </div>
-    </div>
+    <SequenceGraph {...editor} />
   </div>
 {/if}
 
@@ -79,17 +75,7 @@
     max-width: 70ch;
   }
 
-  /* The canvas scrolls, the header does not: a long sequence must not push the way out off screen. */
-  .workspace-canvas {
-    flex: 1 1 auto;
-    overflow: auto;
-    padding: 24px;
-  }
-
-  /* Wide enough that a condition -- fact, operator, value, picker -- fits on one line, which is the
-     whole reason this is not in the drawer. */
-  .workspace-inner {
-    max-width: 900px;
-    margin: 0 auto;
-  }
+  /* The graph fills what is left. It pans and zooms itself, so nothing here scrolls: a canvas
+     inside a scroller is two ways to move the same thing and they fight. */
 </style>
+
