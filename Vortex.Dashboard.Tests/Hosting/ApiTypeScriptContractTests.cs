@@ -100,6 +100,11 @@ public sealed class ApiTypeScriptContractTests
         typeof(StaffOverview),
         typeof(StaffAccountSearch),
         typeof(CollectiblesOverview),
+        typeof(TargetedOfferList),
+        typeof(TargetedOfferDetail),
+        typeof(TargetedOfferFormMeta),
+        typeof(TargetedOfferImageList),
+        typeof(TargetedOfferStats),
     ];
 
     [Fact]

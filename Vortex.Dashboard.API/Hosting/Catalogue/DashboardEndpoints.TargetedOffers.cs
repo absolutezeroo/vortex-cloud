@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
@@ -22,7 +23,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapTargetedOfferReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<TargetedOfferList>(
             app,
             ApiTargetedOffers,
             (HttpContext ctx, TargetedOfferReads reads, CancellationToken ct) =>
@@ -30,7 +31,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
-        MapReadGet(
+        MapReadGet<TargetedOfferStats>(
             app,
             ApiTargetedOffers + "/stats",
             (HttpContext ctx, TargetedOfferReads reads, CancellationToken ct) =>
@@ -38,7 +39,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
-        MapReadGet(
+        MapReadGet<TargetedOfferFormMeta>(
             app,
             ApiTargetedOffers + "/form-meta",
             (TargetedOfferReads reads, CancellationToken ct) =>
@@ -46,14 +47,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
-        MapReadGet(
+        MapReadGet<TargetedOfferImageList>(
             app,
             ApiTargetedOffers + "/images",
             (TargetedOfferReads reads) => Results.Ok(reads.TargetedOfferImages()),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
-        MapReadGet(
+        MapReadGetNullable<TargetedOfferDetail>(
             app,
             ApiTargetedOffers + "/{offerId:int}",
             (int offerId, TargetedOfferReads reads, CancellationToken ct) =>

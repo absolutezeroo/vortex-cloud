@@ -2039,6 +2039,117 @@ export interface StaffTotals {
   activeBans: number;
 }
 
+export interface TargetedOfferCurrency {
+  id: number;
+  name: string | null;
+  type: string;
+  activityPointType: number | null;
+}
+
+export interface TargetedOfferDetail {
+  id: number;
+  identifier: string;
+  offerType: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  iconImageUrl: string;
+  productCode: string;
+  priceInCredits: number;
+  priceInActivityPoints: number;
+  activityPointType: number;
+  purchaseLimit: number;
+  expiresAt: string | null;
+  expired: boolean;
+  active: boolean;
+  sortOrder: number;
+  buyerCount: number;
+  totalPurchases: number;
+  products: TargetedOfferProduct[];
+}
+
+export interface TargetedOfferFormMeta {
+  imageTemplate: string | null;
+  currencyTypes: TargetedOfferCurrency[];
+}
+
+export interface TargetedOfferImage {
+  file: string;
+  url: string;
+  thumbUrl: string;
+}
+
+export interface TargetedOfferImageList {
+  count: number;
+  items: TargetedOfferImage[];
+}
+
+export interface TargetedOfferList {
+  count: number;
+  items: TargetedOfferRow[];
+}
+
+export interface TargetedOfferPoint {
+  bucket: string;
+  label: string;
+  purchaseCount: number;
+  creditsSpent: number;
+}
+
+export interface TargetedOfferProduct {
+  id: number;
+  productCode: string;
+  furnitureDefinitionEntityId: number | null;
+  furnitureName: string | null;
+  furnitureIconUrl: string | null;
+  quantity: number;
+}
+
+export interface TargetedOfferRow {
+  id: number;
+  identifier: string;
+  offerType: number;
+  title: string;
+  imageUrl: string;
+  iconImageUrl: string;
+  productCode: string;
+  priceInCredits: number;
+  priceInActivityPoints: number;
+  activityPointType: number;
+  purchaseLimit: number;
+  expiresAt: string | null;
+  expired: boolean;
+  active: boolean;
+  sortOrder: number;
+  productCount: number;
+  buyerCount: number;
+  totalPurchases: number;
+}
+
+export interface TargetedOfferSales {
+  offerId: number;
+  offerName: string;
+  furniIconUrl: string | null;
+  purchaseCount: number;
+  quantity: number;
+  creditsSpent: number;
+  activityPointsSpent: number;
+}
+
+export interface TargetedOfferStats {
+  window: ReportWindow;
+  totals: TargetedOfferTotals;
+  timeline: TargetedOfferPoint[];
+  topOffers: TargetedOfferSales[];
+}
+
+export interface TargetedOfferTotals {
+  purchaseCount: number;
+  totalCreditsSpent: number;
+  totalActivityPointsSpent: number;
+  totalQuantity: number;
+}
+
 export interface UntouchedAchievement {
   id: number;
   name: string;

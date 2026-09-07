@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
@@ -34,8 +36,11 @@ internal sealed class TargetedOfferReads(
 
     /// <summary>Every targeted offer with its bundle size and lifetime purchase totals, ordered like
     /// the client sees them (sort order then id).</summary>
-    public Task<object> TargetedOffersAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<TargetedOfferList> TargetedOffersAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<TargetedOfferList>(
             async db =>
             {
                 bool activeOnly = string.Equals(
@@ -85,8 +90,7 @@ internal sealed class TargetedOfferReads(
                     .ConfigureAwait(false);
 
                 DateTime now = DateTime.UtcNow;
-                var items = rows.Select(o => new
-                    {
+                List<TargetedOfferRow> items = rows.Select(o => new TargetedOfferRow(
                         o.Id,
                         o.Identifier,
                         o.OfferType,
@@ -99,24 +103,24 @@ internal sealed class TargetedOfferReads(
                         o.ActivityPointType,
                         o.PurchaseLimit,
                         o.ExpiresAt,
-                        expired = o.ExpiresAt is { } expiry && expiry <= now,
+                        o.ExpiresAt is { } expiry && expiry <= now,
                         o.Active,
                         o.SortOrder,
                         o.productCount,
                         o.buyerCount,
-                        o.totalPurchases,
-                    })
+                        o.totalPurchases
+                    ))
                     .ToList();
 
-                return new { count = items.Count, items };
+                return new TargetedOfferList(items.Count, items);
             },
             ct
         );
 
     /// <summary>One targeted offer with its full field set and bundle products (furniture name/icon
     /// attached), plus its lifetime purchase totals.</summary>
-    public Task<object?> TargetedOfferDetailAsync(int offerId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<TargetedOfferDetail?> TargetedOfferDetailAsync(int offerId, CancellationToken ct) =>
+        QueryAsync<TargetedOfferDetail?>(
             async db =>
             {
                 TargetedOfferEntity? offer = await db
@@ -148,18 +152,15 @@ internal sealed class TargetedOfferReads(
 
                 // BuildFurniIconUrl isn't SQL-translatable, so icon URLs are attached in a second pass
                 // over the materialized rows (same shape as CatalogOfferDetailAsync).
-                var products = productRows
-                    .Select(p => new
-                    {
+                List<TargetedOfferProduct> products = productRows
+                    .Select(p => new TargetedOfferProduct(
                         p.Id,
                         p.ProductCode,
                         p.FurnitureDefinitionEntityId,
                         p.furnitureName,
-                        furnitureIconUrl = p.furnitureName is null
-                            ? null
-                            : _assetUrls.FurniIcon(p.furnitureName),
-                        p.Quantity,
-                    })
+                        p.furnitureName is null ? null : _assetUrls.FurniIcon(p.furnitureName),
+                        p.Quantity
+                    ))
                     .ToList();
 
                 int buyerCount = await db
@@ -176,8 +177,8 @@ internal sealed class TargetedOfferReads(
                     ?? 0;
 
                 DateTime now = DateTime.UtcNow;
-                return new
-                {
+
+                return new TargetedOfferDetail(
                     offer.Id,
                     offer.Identifier,
                     offer.OfferType,
@@ -191,13 +192,13 @@ internal sealed class TargetedOfferReads(
                     offer.ActivityPointType,
                     offer.PurchaseLimit,
                     offer.ExpiresAt,
-                    expired = offer.ExpiresAt is { } expiry && expiry <= now,
+                    offer.ExpiresAt is { } expiry && expiry <= now,
                     offer.Active,
                     offer.SortOrder,
                     buyerCount,
                     totalPurchases,
-                    products,
-                };
+                    products
+                );
             },
             ct
         );
@@ -208,25 +209,27 @@ internal sealed class TargetedOfferReads(
     /// URL) and the currency types for the activity-point-type picker (the client filters out Credits,
     /// which are already handled by the separate credits price field — no duplicate).
     /// </summary>
-    public Task<object> TargetedOfferFormMetaAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<TargetedOfferFormMeta> TargetedOfferFormMetaAsync(CancellationToken ct) =>
+        QueryAsync<TargetedOfferFormMeta>(
             async db =>
             {
-                var currencyTypes = await db
+                List<TargetedOfferCurrency> currencyTypes = await db
                     .CurrencyTypes.AsNoTracking()
                     .Where(c => c.Enabled)
                     .OrderBy(c => c.Id)
-                    .Select(c => new
-                    {
+                    .Select(c => new TargetedOfferCurrency(
                         c.Id,
                         c.Name,
-                        type = c.CurrencyType.ToString(),
-                        c.ActivityPointType,
-                    })
+                        c.CurrencyType.ToString(),
+                        c.ActivityPointType
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { imageTemplate = _assetUrls.TargetedOfferImageTemplate, currencyTypes };
+                return new TargetedOfferFormMeta(
+                    _assetUrls.TargetedOfferImageTemplate,
+                    currencyTypes
+                );
             },
             ct
         );
@@ -238,21 +241,21 @@ internal sealed class TargetedOfferReads(
     /// template is unset (the form then falls back to manual entry). <c>.thumb.png</c> variants are
     /// folded into their main image's <c>thumbUrl</c> rather than listed separately.
     /// </summary>
-    public object TargetedOfferImages()
+    public TargetedOfferImageList TargetedOfferImages()
     {
         string root = _config.AssetsLocalRoot;
         string? template = _assetUrls.TargetedOfferImageTemplate;
 
         if (string.IsNullOrWhiteSpace(root) || template is null)
         {
-            return new { count = 0, items = Array.Empty<object>() };
+            return new TargetedOfferImageList(0, []);
         }
 
         string dir = Path.Combine(root, "c_images", "targetedoffers");
 
         if (!Directory.Exists(dir))
         {
-            return new { count = 0, items = Array.Empty<object>() };
+            return new TargetedOfferImageList(0, []);
         }
 
         HashSet<string> allFiles = Directory
@@ -262,7 +265,7 @@ internal sealed class TargetedOfferReads(
             .Select(name => name!)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        List<object> items = allFiles
+        List<TargetedOfferImage> items = allFiles
             .Where(name =>
                 (
                     name.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
@@ -276,27 +279,24 @@ internal sealed class TargetedOfferReads(
                     Path.GetFileNameWithoutExtension(name) + ".thumb" + Path.GetExtension(name);
                 string previewName = allFiles.Contains(thumbName) ? thumbName : name;
 
-                return (object)
-                    new
-                    {
-                        file = name,
-                        url = template.Replace("{file}", name, StringComparison.Ordinal),
-                        thumbUrl = template.Replace(
-                            "{file}",
-                            previewName,
-                            StringComparison.Ordinal
-                        ),
-                    };
+                return new TargetedOfferImage(
+                    name,
+                    template.Replace("{file}", name, StringComparison.Ordinal),
+                    template.Replace("{file}", previewName, StringComparison.Ordinal)
+                );
             })
             .ToList();
 
-        return new { count = items.Count, items };
+        return new TargetedOfferImageList(items.Count, items);
     }
 
     /// <summary>Purchase volume/revenue over time and the top-selling offers, sourced from the
     /// <c>economy.targeted_offer_purchase</c> audit trail.</summary>
-    public Task<object> TargetedOffersStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<TargetedOfferStats> TargetedOffersStatsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<TargetedOfferStats>(
             async db =>
             {
                 DateTime until = TimeWindow.ParseDateTime(query["until"]) ?? DateTime.UtcNow;
@@ -343,15 +343,14 @@ internal sealed class TargetedOfferReads(
                     bucketMap[bucket] = (current.count + 1, current.credits + p.CreditCost);
                 }
 
-                var timeline = bucketMap
+                List<TargetedOfferPoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        purchaseCount = pair.Value.count,
-                        creditsSpent = pair.Value.credits,
-                    })
+                    .Select(pair => new TargetedOfferPoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value.count,
+                        pair.Value.credits
+                    ))
                     .ToList();
 
                 // ponytail: same as the catalog purchase stats -- the amounts come out of the
@@ -404,44 +403,36 @@ internal sealed class TargetedOfferReads(
                     .GroupBy(p => p.OfferId)
                     .ToDictionary(g => g.Key, g => g.First().Name);
 
-                var topOffers = topOfferGroups
-                    .Select(g => new
-                    {
+                List<TargetedOfferSales> topOffers = topOfferGroups
+                    .Select(g => new TargetedOfferSales(
                         g.offerId,
-                        offerName = offerTitles.GetValueOrDefault(
+                        offerTitles.GetValueOrDefault(
                             g.offerId,
                             string.IsNullOrEmpty(g.identifier)
                                 ? $"offer #{g.offerId}"
                                 : g.identifier
                         ),
-                        furniIconUrl = offerFurniNames.TryGetValue(g.offerId, out string? furniName)
+                        offerFurniNames.TryGetValue(g.offerId, out string? furniName)
                             ? _assetUrls.FurniIcon(furniName)
                             : null,
                         g.purchaseCount,
                         g.quantity,
                         g.creditsSpent,
-                        g.activityPointsSpent,
-                    })
+                        g.activityPointsSpent
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new TargetedOfferStats(
+                    new ReportWindow(since, until, granularity),
+                    new TargetedOfferTotals(
                         purchaseCount,
                         totalCreditsSpent,
                         totalActivityPointsSpent,
-                        totalQuantity,
-                    },
+                        totalQuantity
+                    ),
                     timeline,
-                    topOffers,
-                };
+                    topOffers
+                );
             },
             ct
         );

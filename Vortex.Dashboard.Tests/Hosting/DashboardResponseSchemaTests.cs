@@ -97,6 +97,11 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/staff", typeof(StaffOverview)),
         ("/api/v1/staff/accounts", typeof(StaffAccountSearch)),
         ("/api/v1/collectibles", typeof(CollectiblesOverview)),
+        ("/api/v1/targeted-offers", typeof(TargetedOfferList)),
+        ("/api/v1/targeted-offers/stats", typeof(TargetedOfferStats)),
+        ("/api/v1/targeted-offers/form-meta", typeof(TargetedOfferFormMeta)),
+        ("/api/v1/targeted-offers/images", typeof(TargetedOfferImageList)),
+        ("/api/v1/targeted-offers/{offerId:int}", typeof(TargetedOfferDetail)),
     ];
 
     [Fact]
