@@ -24,7 +24,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapStatsReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<GroupStats>(
             app,
             ApiGroups + "/stats",
             (HttpContext ctx, GroupReads groups, CancellationToken ct) =>

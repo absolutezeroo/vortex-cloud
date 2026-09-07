@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
@@ -24,8 +25,8 @@ internal sealed class GroupReads(
     /// recent activity pulled from the existing <c>AuditCategory.Social</c> trail (see
     /// <c>Vortex.Observability/Events/GroupAuditHandlers.cs</c>/<c>GroupForumAuditHandlers.cs</c>) —
     /// no new instrumentation needed, the domain already audits itself.</summary>
-    public Task<object> GroupsStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<GroupStats> GroupsStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<GroupStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -71,14 +72,13 @@ internal sealed class GroupReads(
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var growth = bucketMap
+                List<GroupGrowthPoint> growth = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        groupsCreated = pair.Value,
-                    })
+                    .Select(pair => new GroupGrowthPoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
                 var topByMembers = await db
@@ -100,31 +100,29 @@ internal sealed class GroupReads(
 
                 // GroupBadge isn't SQL-translatable, so the badge URL is attached in a second pass over
                 // the materialized rows (same shape as the catalog/furni icon URLs).
-                var topByMembersWithBadges = topByMembers
-                    .Select(g => new
-                    {
+                List<GroupMemberRanking> topByMembersWithBadges = topByMembers
+                    .Select(g => new GroupMemberRanking(
                         g.groupId,
                         g.Name,
                         g.Badge,
-                        badgeUrl = _assetUrls.GroupBadge(g.Badge),
+                        _assetUrls.GroupBadge(g.Badge),
                         g.ownerId,
                         g.ownerName,
                         g.memberCount,
-                        g.roomId,
-                    })
+                        g.roomId
+                    ))
                     .ToList();
 
-                var topByForumActivity = await db
+                List<GroupForumRanking> topByForumActivity = await db
                     .Groups.AsNoTracking()
-                    .Select(g => new
-                    {
-                        groupId = g.Id,
+                    .Select(g => new GroupForumRanking(
+                        g.Id,
                         g.Name,
-                        threadCount = db.GroupForumThreads.Count(th => th.GroupEntityId == g.Id),
-                        postCount = db.GroupForumPosts.Count(p => p.GroupEntityId == g.Id),
-                    })
-                    .Where(g => g.threadCount > 0 || g.postCount > 0)
-                    .OrderByDescending(g => g.postCount)
+                        db.GroupForumThreads.Count(th => th.GroupEntityId == g.Id),
+                        db.GroupForumPosts.Count(p => p.GroupEntityId == g.Id)
+                    ))
+                    .Where(g => g.ThreadCount > 0 || g.PostCount > 0)
+                    .OrderByDescending(g => g.PostCount)
                     .Take(10)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
@@ -155,45 +153,34 @@ internal sealed class GroupReads(
                 Dictionary<int, string> actorNames = await db.PlayerNamesAsync(actorIds, ct)
                     .ConfigureAwait(false);
 
-                var recentActivityWithNames = recentActivity
-                    .Select(a => new
-                    {
+                List<GroupActivityEvent> recentActivityWithNames = recentActivity
+                    .Select(a => new GroupActivityEvent(
                         a.OccurredAt,
                         a.Action,
-                        actorPlayerId = DisplayNameQueries.ToPlayerId(a.ActorPlayerId),
-                        actorPlayerName = DisplayNameQueries.ResolvePlayerName(
-                            actorNames,
-                            a.ActorPlayerId
-                        ),
-                        result = a.Result.ToString(),
-                        a.Data,
-                    })
+                        DisplayNameQueries.ToPlayerId(a.ActorPlayerId),
+                        DisplayNameQueries.ResolvePlayerName(actorNames, a.ActorPlayerId),
+                        a.Result.ToString(),
+                        a.Data
+                    ))
                     .ToList();
 
                 double avgMembersPerGroup =
                     totalGroups > 0 ? Math.Round((double)totalMembers / totalGroups, 2) : 0d;
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new GroupStats(
+                    new ReportWindow(since, until, granularity),
+                    new GroupTotals(
                         totalGroups,
                         totalMembers,
                         totalThreads,
                         totalPosts,
-                        avgMembersPerGroup,
-                    },
+                        avgMembersPerGroup
+                    ),
                     growth,
-                    topGroupsByMembers = topByMembersWithBadges,
-                    topGroupsByForumActivity = topByForumActivity,
-                    recentActivity = recentActivityWithNames,
-                };
+                    topByMembersWithBadges,
+                    topByForumActivity,
+                    recentActivityWithNames
+                );
             },
             ct
         );

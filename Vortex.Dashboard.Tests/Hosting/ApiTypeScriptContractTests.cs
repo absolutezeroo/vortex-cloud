@@ -58,6 +58,7 @@ public sealed class ApiTypeScriptContractTests
         typeof(CfhStats),
         typeof(ChatlogPage),
         typeof(SongListResponse),
+        typeof(GroupStats),
     ];
 
     [Fact]

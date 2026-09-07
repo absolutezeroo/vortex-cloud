@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -12,15 +12,16 @@
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Shield, Users, Hash } from '@lucide/svelte';
-  import { t } from '../lib/i18n';
+  import { t, type Translator } from '../lib/i18n';
+  import type { GroupStats } from '../lib/apiTypes';
 
   const granularities = ['day', 'month', 'year'];
 
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: Translator) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
-  function resultLabel(value, translator) {
+  function resultLabel(value: string, translator: Translator) {
     if (value === 'Success') return translator('common.resultSuccess');
     if (value === 'Denied') return translator('common.resultDenied');
     if (value === 'Failed') return translator('common.resultFailed');
@@ -33,9 +34,9 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<GroupStats | null>(null);
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -57,7 +58,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/v1/groups/stats?${params}`);
+      data = await apiGet<GroupStats>(`/api/v1/groups/stats?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -65,7 +66,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -77,7 +78,10 @@
         {
           name: $t('groupsStats.totalGroups'),
           color: 'var(--accent)',
-          points: (data.growth || []).map((p) => ({ label: p.label, value: p.groupsCreated })),
+          points: (data.growth || []).map((p) => ({
+            label: p.label,
+            value: p.groupsCreated,
+          })),
         },
       ]
     : []);

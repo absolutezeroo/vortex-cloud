@@ -157,6 +157,56 @@ export interface ChatlogWindow {
   until: string;
 }
 
+export interface GroupActivityEvent {
+  occurredAt: string;
+  action: string;
+  actorPlayerId: number | null;
+  actorPlayerName: string | null;
+  result: string;
+  data: string | null;
+}
+
+export interface GroupForumRanking {
+  groupId: number;
+  name: string;
+  threadCount: number;
+  postCount: number;
+}
+
+export interface GroupGrowthPoint {
+  bucket: string;
+  label: string;
+  groupsCreated: number;
+}
+
+export interface GroupMemberRanking {
+  groupId: number;
+  name: string;
+  badge: string;
+  badgeUrl: string | null;
+  ownerId: number;
+  ownerName: string;
+  memberCount: number;
+  roomId: number;
+}
+
+export interface GroupStats {
+  window: ReportWindow;
+  totals: GroupTotals;
+  growth: GroupGrowthPoint[];
+  topGroupsByMembers: GroupMemberRanking[];
+  topGroupsByForumActivity: GroupForumRanking[];
+  recentActivity: GroupActivityEvent[];
+}
+
+export interface GroupTotals {
+  totalGroups: number;
+  totalMembers: number;
+  totalThreads: number;
+  totalPosts: number;
+  avgMembersPerGroup: number;
+}
+
 export interface PetGrowthPoint {
   bucket: string;
   label: string;
