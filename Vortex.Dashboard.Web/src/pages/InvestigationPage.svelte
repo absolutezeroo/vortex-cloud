@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -21,11 +21,67 @@
   import { Wrench, ScrollText } from '@lucide/svelte';
   import { readParam, readNumberParam, writeParams } from '../lib/urlState';
   import { t, translate } from '../lib/i18n';
+  import type {
+    ChestMoveRow,
+    DirectorySearch,
+    IdSearch,
+    PlayerProfile,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** Which journal a timeline line came from. The filter above the table offers exactly these. */
+  type TimelineKind = 'audit' | 'ledger' | 'item' | 'chat' | 'chest';
+
+  /**
+   * One line of the merged timeline.
+   *
+   * Five different server rows flattened into one bag, plus what push() adds. Written as one shape
+   * with optional fields rather than a union of the five, because the table reads across them --
+   * `row.action || row.eventType || row.category` is one column, not three -- and a union would
+   * have to be narrowed in every cell to say the same thing.
+   */
+  type TimelineRow = {
+    kind: TimelineKind;
+    /** Whichever of occurredAt / createdAt the source row carried. */
+    time?: string | null;
+    sortTime: number;
+    /** Whose line this is; only rendered while two accounts are being compared. */
+    account?: string;
+    category?: string | null;
+    action?: string | null;
+    eventType?: string | null;
+    correlationId?: string | null;
+    itemId?: number | null;
+    /** The searched term for the rows that carry no player id of their own. */
+    playerId?: number | string | null;
+    playerName?: string | null;
+    actorPlayerId?: number | null;
+    actorPlayerName?: string | null;
+    fromOwnerId?: number | null;
+    fromOwnerName?: string | null;
+    targetPlayerId?: number | null;
+    targetPlayerName?: string | null;
+    roomId?: number | null;
+    roomName?: string | null;
+    currency?: string | null;
+    activityPointType?: number | null;
+    delta?: number | null;
+    balanceAfter?: number | null;
+    data?: string | null;
+    [field: string]: unknown;
+  };
+
+  /** A server row on its way in, before push() stamps the time it is sorted by. */
+  type SourceRow = Partial<TimelineRow> & {
+    kind: TimelineKind;
+    occurredAt?: string;
+    createdAt?: string;
+  };
 
   // ?player= makes this page linkable, and is how the command palette hands a player over.
   let query = $state(readParam('player'));
-  let rows = $state([]);
-  let player = $state(null);
+  let rows = $state<TimelineRow[]>([]);
+  let player = $state<PlayerProfile | null>(null);
   let summary = $state('');
   $effect(() => {
     if (!summary) summary = translate('investigation.hint');
@@ -35,12 +91,12 @@
   // The search box takes an id or a correlation id; a name is what an operator actually remembers,
   // and the shared picker already knows how to find one. Picking fills the box and runs the search,
   // so both paths land on the same page state.
-  let picking = $state(null);
+  let picking = $state<'user' | 'furniture' | null>(null);
 
   // The second account of a multi-account case. Empty is the ordinary single-player investigation;
   // filled, the timeline carries both and says which line belongs to whom.
   let compareQuery = $state(readParam('compare'));
-  let comparePlayer = $state(null);
+  let comparePlayer = $state<PlayerProfile | null>(null);
 
   // The timeline is paged client-side: the search already returns the whole window, so paging
   // is a reading aid, not another round trip.
@@ -57,7 +113,15 @@
 
   // Built from what actually came back rather than a hardcoded list: the server grows categories
   // (Progression was the last one) and a list written here would quietly stop offering the newest.
-  let categories = $derived([...new Set(rows.map((row) => row.category).filter(Boolean))].sort());
+  let categories = $derived(
+    [
+      ...new Set(
+        rows
+          .map((row) => row.category)
+          .filter((category): category is string => Boolean(category)),
+      ),
+    ].sort(),
+  );
 
   let visibleRows = $derived(
     filterRows(
@@ -76,9 +140,13 @@
 
   let reasonByCorrelation = $derived(
     new Map(
-      rows
-        .filter((row) => row.kind !== 'ledger' && row.correlationId && (row.action || row.eventType))
-        .map((row) => [row.correlationId, row.action || row.eventType]),
+      rows.flatMap((row): [string, string][] => {
+        const reason = row.action || row.eventType;
+
+        return row.kind !== 'ledger' && row.correlationId && reason
+          ? [[row.correlationId, reason]]
+          : [];
+      }),
     ),
   );
 
@@ -95,7 +163,7 @@
   // and an export that quietly ignores their filters is a different question's answer.
   function exportCsv() {
     const columns = ['time', 'account', 'kind', 'category', 'action', 'actor', 'target', 'room', 'item', 'correlationId', 'detail'];
-    const cell = (value) => {
+    const cell = (value: unknown) => {
       const text = value === null || value === undefined ? '' : String(value);
 
       // Excel and every other reader treat a bare quote as a delimiter, so a chat line containing
@@ -117,7 +185,7 @@
           row.roomName ?? row.roomId ?? '',
           row.itemId ?? '',
           row.correlationId ?? '',
-          summarizeData(row.data ?? row.Data),
+          summarizeData(row.data),
         ]
           .map(cell)
           .join(','),
@@ -147,7 +215,7 @@
     { id: 'timeline', label: $t('investigation.tabTimeline'), icon: ScrollText },
   ]);
 
-  function pick(chosen) {
+  function pick(chosen: PickerRow) {
     query = String(chosen.id);
     picking = null;
     search();
@@ -157,21 +225,19 @@
     if (query.trim()) search();
   });
 
-  function push(rows, row) {
-    rows.push({
-      time: row.occurredAt || row.OccurredAt || row.createdAt || row.CreatedAt,
-      sortTime: Date.parse(row.occurredAt || row.OccurredAt || row.createdAt || row.CreatedAt || '') || 0,
-      ...row,
-    });
+  function push(rows: TimelineRow[], row: SourceRow) {
+    const at = row.occurredAt || row.createdAt;
+
+    rows.push({ ...row, time: at, sortTime: Date.parse(at || '') || 0 });
   }
 
   // A contract trade can deposit and withdraw in the same movement; the direction is the headline and
   // the detail line below spells out both halves, so a two-way row is not mislabelled into one word.
-  function chestAction(row) {
+  function chestAction(row: ChestMoveRow) {
     return row.depositFurniCount + row.depositCoinsCount > 0 ? 'chest.deposit' : 'chest.withdraw';
   }
 
-  function chestDetail(row) {
+  function chestDetail(row: ChestMoveRow) {
     return [
       row.depositFurniCount ? `+${row.depositFurniCount} furni` : '',
       row.withdrawFurniCount ? `-${row.withdrawFurniCount} furni` : '',
@@ -186,11 +252,16 @@
 
   // One account's rows, tagged with whose they are. Split out of search() so the comparison run can
   // feed the same list a second time instead of duplicating every mapping.
-  function collectPlayerRows(data, into, term, account) {
-    (data.asActor || []).forEach((row) => push(into, { kind: 'audit', account, ...row }));
-    (data.ledger || []).forEach((row) => push(into, { kind: 'ledger', playerId: term, account, ...row }));
-    (data.itemHistory || []).forEach((row) => push(into, { kind: 'item', account, ...row }));
-    (data.chats || []).forEach((row) =>
+  function collectPlayerRows(
+    data: IdSearch,
+    into: TimelineRow[],
+    term: string,
+    account: string,
+  ) {
+    data.asActor.forEach((row) => push(into, { kind: 'audit', account, ...row }));
+    data.ledger.forEach((row) => push(into, { kind: 'ledger', playerId: term, account, ...row }));
+    data.itemHistory.forEach((row) => push(into, { kind: 'item', account, ...row }));
+    data.chats.forEach((row) =>
       push(into, {
         kind: 'chat',
         playerId: term,
@@ -200,7 +271,7 @@
         ...row,
       }),
     );
-    (data.chestMoves || []).forEach((row) =>
+    data.chestMoves.forEach((row) =>
       push(into, {
         kind: 'chest',
         playerId: term,
@@ -226,11 +297,13 @@
       // limit applies per source, and the noisy ones (room entries, sessions) would otherwise fill
       // the default 50 on their own and push everything rarer -- a badge, an achievement, a chest
       // movement -- off a timeline that pages client-side and so never asks for a second window.
-      const data = await apiGet(`/api/v1/directory/search?q=${encodeURIComponent(term)}&limit=200`);
-      const nextRows = [];
+      const data = await apiGet<DirectorySearch>(
+        `/api/v1/directory/search?q=${encodeURIComponent(term)}&limit=200`,
+      );
+      const nextRows: TimelineRow[] = [];
 
       if (data.kind === 'id') {
-        player = data.playerProfile || null;
+        player = data.playerProfile;
         collectPlayerRows(data, nextRows, term, player?.name || term);
 
         // The second account, interleaved into the same list rather than shown beside it. Two
@@ -239,12 +312,12 @@
         const otherTerm = compareQuery.trim();
 
         if (otherTerm && otherTerm !== term) {
-          const other = await apiGet(
+          const other = await apiGet<DirectorySearch>(
             `/api/v1/directory/search?q=${encodeURIComponent(otherTerm)}&limit=200`,
           );
 
           if (other.kind === 'id') {
-            comparePlayer = other.playerProfile || null;
+            comparePlayer = other.playerProfile;
             collectPlayerRows(other, nextRows, otherTerm, comparePlayer?.name || otherTerm);
           }
         }
@@ -259,9 +332,9 @@
             ? translate('investigation.eventsForPlayer', { count: nextRows.length, term })
             : translate('investigation.eventsForId', { count: nextRows.length, term });
       } else if (data.kind === 'correlationId') {
-        (data.audit || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
-        (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', ...row }));
-        (data.items || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
+        data.audit.forEach((row) => push(nextRows, { kind: 'audit', ...row }));
+        data.ledger.forEach((row) => push(nextRows, { kind: 'ledger', ...row }));
+        data.items.forEach((row) => push(nextRows, { kind: 'item', ...row }));
         summary = translate('investigation.linkedEventsFor', { count: nextRows.length, term });
       } else {
         summary = data.hint || translate('investigation.noStructuredResult');
@@ -287,7 +360,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       rows = [];
       player = null;
     }
@@ -430,7 +503,7 @@
               <div class="ledger-move">
                 <span class={currencyChipClass(currencyKindFromName(row.currency, row.activityPointType))}>
                   <CurrencyIcon kind={currencyKindFromName(row.currency, row.activityPointType)} size={13} />
-                  {row.delta > 0 ? '+' : ''}{formatNumber(row.delta ?? 0)}
+                  {(row.delta ?? 0) > 0 ? '+' : ''}{formatNumber(row.delta)}
                 </span>
                 <b>{currencyLabel(row.currency, row.activityPointType)}</b>
                 {#if row.balanceAfter != null}
@@ -438,7 +511,7 @@
                 {/if}
               </div>
               <div class="ledger-why">
-                {reasonByCorrelation.get(row.correlationId) ?? $t('investigation.noReason')}
+                {reasonByCorrelation.get(row.correlationId ?? '') ?? $t('investigation.noReason')}
               </div>
             {:else}
               {row.action || row.eventType || row.category || $t('investigation.event')}
@@ -449,7 +522,7 @@
             {#if row.itemId}
               - <EntityLink type="item" id={row.itemId} label={`item #${row.itemId}`} {openPlayer} {openItem} />
             {/if}
-            <span class="muted">{compactCorrelation(row.correlationId)} {summarizeData(row.data || row.Data)}</span>
+            <span class="muted">{compactCorrelation(row.correlationId)} {summarizeData(row.data)}</span>
           </td>
         </tr>
       {:else}

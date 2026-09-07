@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
 
   import { apiGet } from '../lib/api';
   import { formatDate, summarizeData } from '../lib/format';
@@ -13,6 +13,8 @@
   import { filterRows } from '../lib/tableView';
   import { onMount } from 'svelte';
   import { t } from '../lib/i18n';
+  import type { RoomTimeline } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
 
   // ?room= makes a room timeline a link, and is how the command palette hands one over.
   let roomId = $state(readParam('room'));
@@ -21,7 +23,7 @@
   // its number, and a typo returns an empty timeline rather than an error.
   let roomName = $state('');
   let picking = $state(false);
-  let data = $state(null);
+  let data = $state<RoomTimeline | null>(null);
   let error = $state('');
   let forbidden = $state(false);
 
@@ -38,7 +40,7 @@
 
   // The list of event types comes from the rows themselves: a hard-coded list goes stale the day
   // the server emits a new one, and silently offers filters that match nothing.
-  let kinds = $derived([...new Set(allRows.map((row) => row.eventType).filter(Boolean))].sort());
+  let kinds = $derived([...new Set(allRows.map((row) => row.eventType))].sort());
 
   let visibleRows = $derived(
     filterRows(
@@ -74,7 +76,7 @@
     }
 
     const half = Math.max(1, Number(replayMinutes) || 15) * 60_000;
-    const iso = (ms) => new Date(ms).toISOString();
+    const iso = (ms: number) => new Date(ms).toISOString();
 
     return `&since=${encodeURIComponent(iso(at - half))}&until=${encodeURIComponent(iso(at + half))}`;
   }
@@ -95,12 +97,12 @@
     writeParams({ room: roomId.trim() });
 
     try {
-      data = await apiGet(
+      data = await apiGet<RoomTimeline>(
         `/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=${replayAt ? 500 : 120}${replayWindow()}`,
       );
 
       // Keep the page only while it still exists in the new room's timeline.
-      if (page > Math.ceil((data?.timeline?.length || 0) / PAGE_SIZE)) {
+      if (page > Math.ceil(data.timeline.length / PAGE_SIZE)) {
         page = 1;
         writeParams({ page: '' });
       }
@@ -112,7 +114,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     }
   }
@@ -151,10 +153,10 @@
 
     {#if data?.room}
       <div class="room-summary">
-        <strong>{data.room.name || data.room.roomName} #{data.room.roomId || data.room.id}</strong>
-        <span>{data.room.usersNow ?? data.room.roomUsersNow}/{data.room.playersMax ?? data.room.roomPlayersMax} {$t('roomsTimeline.players')}</span>
-        <span>{data.room.modelName || data.room.roomModelName}</span>
-        <EntityLink id={data.room.roomOwnerId || data.room.ownerPlayerId} label={data.room.roomOwnerName || ''} {openPlayer} {openItem} />
+        <strong>{data.room.name} #{data.room.roomId}</strong>
+        <span>{data.room.usersNow}/{data.room.playersMax} {$t('roomsTimeline.players')}</span>
+        <span>{data.room.modelName}</span>
+        <EntityLink id={data.room.roomOwnerId} label={data.room.roomOwnerName} {openPlayer} {openItem} />
       </div>
     {/if}
   </section>
@@ -266,7 +268,7 @@
   <PickerModal
     kind="room"
     title={$t('roomsTimeline.title')}
-    onSelect={(item) => {
+    onSelect={(item: PickerRow) => {
       roomId = String(item.id);
       roomName = item.name;
       picking = false;

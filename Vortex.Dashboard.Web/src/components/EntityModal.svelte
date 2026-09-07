@@ -1,6 +1,7 @@
 ﻿<script lang="ts">
   import Modal from './Modal.svelte';
   import { apiGet } from '../lib/api';
+  import type { ItemProfile, PlayerProfile } from '../lib/apiTypes';
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format';
   import EntityLink from './EntityLink.svelte';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
@@ -15,75 +16,6 @@
 
   let loading = $state(false);
   let error = $state('');
-  // Two different profiles behind one popup, and neither endpoint has a contract yet: they both
-  // live in DirectoryReads, which still answers `object`. These are what this popup reads, written
-  // from the markup below, and they are meant to be deleted the day the directory is converted.
-  type PlayerProfile = {
-    id: number;
-    name: string;
-    motto?: string | null;
-    status?: string | null;
-    gender?: string | null;
-    avatarUrl?: string | null;
-    createdAt?: string | null;
-    updatedAt?: string | null;
-    inventory?: { total?: number; latest?: InventoryItem[] } | null;
-    ownedRooms?: { total?: number } | null;
-    wallets?: Wallet[] | null;
-    timeline?: { items?: TimelineEntry[] } | null;
-  };
-
-  type Wallet = {
-    currency: string;
-    activityPointType?: number | null;
-    amount?: number | null;
-  };
-
-  type InventoryItem = {
-    itemId: number;
-    definitionName?: string | null;
-    furniIconUrl?: string | null;
-    roomName?: string | null;
-  };
-
-  /**
-   * The forensic rows arrive from two writers, one of which never camel-cased its keys -- hence
-   * every `x || X` pair in the markup. Both spellings are declared rather than one being quietly
-   * assumed, because the fallback is what actually renders half the time.
-   */
-  type TimelineEntry = {
-    occurredAt?: string | null;
-    OccurredAt?: string | null;
-    eventType?: string | null;
-    itemId?: number | null;
-    roomName?: string | null;
-    correlationId?: string | null;
-  };
-
-  type ItemProfile = {
-    itemId: number;
-    total?: number | null;
-    snapshot?: {
-      definitionName?: string | null;
-      furniIconUrl?: string | null;
-      ownerPlayerId?: number | null;
-      ownerName?: string | null;
-      roomId?: number | null;
-      roomName?: string | null;
-    } | null;
-    history?: ItemHistoryRow[] | null;
-  };
-
-  type ItemHistoryRow = TimelineEntry & {
-    actorPlayerId?: number | null;
-    ActorPlayerId?: number | null;
-    actorPlayerName?: string | null;
-    actorName?: string | null;
-    RoomId?: number | null;
-    data?: string | null;
-    Data?: string | null;
-  };
-
   let data = $state<PlayerProfile | ItemProfile | null>(null);
   let currentKey = $state('');
   let forbidden = $state(false);
@@ -164,7 +96,10 @@
         <div class="profile-headline-text">
           <strong>{playerProfile.name} #{playerProfile.id}</strong>
           {#if playerProfile.motto}<small>{playerProfile.motto}</small>{/if}
-          <small>{playerProfile.status} - {playerProfile.gender}</small>
+          <small>
+            {playerProfile.online ? $t('entityModal.online') : $t('entityModal.offline')} -
+            {playerProfile.gender}
+          </small>
         </div>
       </div>
       <div class="modal-grid">
@@ -175,12 +110,12 @@
         </article>
         <article>
           <span>{$t('entityModal.inventory')}</span>
-          <strong>{playerProfile.inventory?.total || 0}</strong>
+          <strong>{playerProfile.inventory.total}</strong>
           <small>{$t('entityModal.ownedItems')}</small>
         </article>
         <article>
           <span>{$t('entityModal.rooms')}</span>
-          <strong>{playerProfile.ownedRooms?.total || 0}</strong>
+          <strong>{playerProfile.ownedRooms.total}</strong>
           <small>{$t('entityModal.ownedRooms')}</small>
         </article>
       </div>
@@ -188,10 +123,10 @@
       <section class="modal-section">
         <h3>{$t('entityModal.wallets')}</h3>
         <div class="inline-list">
-          {#each playerProfile.wallets || [] as wallet}
+          {#each playerProfile.wallets as wallet}
             <span class={currencyChipClass(currencyKindFromName(wallet.currency, wallet.activityPointType))}>
               <CurrencyIcon kind={currencyKindFromName(wallet.currency, wallet.activityPointType)} size={13} />
-              <strong>{formatNumber(wallet.amount ?? 0)}</strong>
+              <strong>{formatNumber(wallet.amount)}</strong>
               {currencyLabel(wallet.currency, wallet.activityPointType)}
             </span>
           {:else}
@@ -206,7 +141,7 @@
           <table>
           <thead><tr><th>{$t('entityModal.colItem')}</th><th>{$t('entityModal.colDefinition')}</th><th>{$t('entityModal.colRoom')}</th></tr></thead>
           <tbody>
-            {#each playerProfile.inventory?.latest || [] as item}
+            {#each playerProfile.inventory.latest as item}
               <tr>
                 <td><EntityLink type="item" id={item.itemId} label={`item #${item.itemId}`} {openPlayer} {openItem} /></td>
                 <td>
@@ -231,9 +166,9 @@
           <table>
           <thead><tr><th>{$t('entityModal.colTime')}</th><th>{$t('entityModal.colType')}</th><th>{$t('entityModal.colDetails')}</th></tr></thead>
           <tbody>
-            {#each playerProfile.timeline?.items || [] as entry}
+            {#each playerProfile.timeline.items as entry}
               <tr>
-                <td>{formatDate(entry.occurredAt || entry.OccurredAt)}</td>
+                <td>{formatDate(entry.occurredAt)}</td>
                 <td>{entry.eventType || $t('entityModal.item')}</td>
                 <td>
                   <EntityLink type="item" id={entry.itemId} label={`item #${entry.itemId}`} {openPlayer} {openItem} />
@@ -284,7 +219,7 @@
         </article>
         <article>
           <span>{$t('entityModal.events')}</span>
-          <strong>{itemProfile.total || 0}</strong>
+          <strong>{itemProfile.total}</strong>
           <small>{$t('entityModal.forensicRows')}</small>
         </article>
       </div>
@@ -295,20 +230,20 @@
           <table>
           <thead><tr><th>{$t('entityModal.colTime')}</th><th>{$t('entityModal.colEvent')}</th><th>{$t('entityModal.colActor')}</th><th>{$t('entityModal.colRoom')}</th><th>{$t('entityModal.colDetails')}</th></tr></thead>
           <tbody>
-            {#each itemProfile.history || [] as row}
+            {#each itemProfile.history as row}
               <tr>
-                <td>{formatDate(row.occurredAt || row.OccurredAt)}</td>
+                <td>{formatDate(row.occurredAt)}</td>
                 <td>{row.eventType || '-'}</td>
                 <td>
                   <EntityLink
-                    id={row.actorPlayerId || row.ActorPlayerId}
-                    label={row.actorPlayerName || row.actorName || ''}
+                    id={row.actorPlayerId}
+                    label={row.actorPlayerName}
                     {openPlayer}
                     {openItem}
                   />
                 </td>
-                <td>{row.roomName || row.RoomId || '-'}</td>
-                <td>{summarizeData(row.data || row.Data)}</td>
+                <td>{row.roomName || row.roomId || '-'}</td>
+                <td>{summarizeData(row.data)}</td>
               </tr>
             {:else}
               <tr><td colspan="5" class="muted">{$t('entityModal.noItemHistory')}</td></tr>

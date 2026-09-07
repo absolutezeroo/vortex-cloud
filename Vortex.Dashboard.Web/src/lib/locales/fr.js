@@ -801,6 +801,8 @@ export default {
     foundSoFar: '{found} icône(s) trouvée(s) pour le moment ({probed} id(s) vérifié(s), {pending} en attente).',
   },
   entityModal: {
+    online: 'En ligne',
+    offline: 'Hors ligne',
     itemInspector: "Inspecteur d'objet",
     playerInspector: 'Inspecteur de joueur',
     unableToLoad: 'Impossible de charger : {error}',

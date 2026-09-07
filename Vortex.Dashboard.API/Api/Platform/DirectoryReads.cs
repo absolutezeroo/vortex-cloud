@@ -40,14 +40,18 @@ internal sealed class DirectoryReads(
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
 
-    public Task<object?> ItemAsync(string idText, NameValueCollection query, CancellationToken ct)
+    public Task<ItemProfile?> ItemAsync(
+        string idText,
+        NameValueCollection query,
+        CancellationToken ct
+    )
     {
         if (!long.TryParse(idText, out long itemId))
         {
-            return Task.FromResult<object?>(null);
+            return Task.FromResult<ItemProfile?>(null);
         }
 
-        return QueryAsync<object?>(
+        return QueryAsync<ItemProfile?>(
             async db =>
             {
                 int limit = QueryValues.Limit(query["limit"], 50, 500);
@@ -97,14 +101,13 @@ internal sealed class DirectoryReads(
 
                 // BuildFurniIconUrl is not translatable to SQL, so the icon is attached once the
                 // row is in memory -- the same two-step the catalog projections use.
-                var itemSnapshotWithIcon = itemSnapshot is null
+                ItemSnapshot? itemSnapshotWithIcon = itemSnapshot is null
                     ? null
-                    : new
-                    {
+                    : new ItemSnapshot(
                         itemSnapshot.Id,
                         itemSnapshot.definitionId,
                         itemSnapshot.definitionName,
-                        furniIconUrl = itemSnapshot.definitionName is null
+                        itemSnapshot.definitionName is null
                             ? null
                             : _assetUrls.FurniIcon(itemSnapshot.definitionName),
                         itemSnapshot.ownerPlayerId,
@@ -115,8 +118,8 @@ internal sealed class DirectoryReads(
                         itemSnapshot.roomY,
                         itemSnapshot.roomZ,
                         itemSnapshot.ExtraData,
-                        itemSnapshot.updatedAt,
-                    };
+                        itemSnapshot.updatedAt
+                    );
 
                 var rows = await q.OrderBy(i => i.OccurredAt)
                     .Skip(offset)
@@ -148,47 +151,36 @@ internal sealed class DirectoryReads(
                 Dictionary<int, string> rowRoomNames = await db.RoomNamesAsync(rowRoomIds, ct)
                     .ConfigureAwait(false);
 
-                var rowsWithNames = rows.Select(r => new
-                    {
+                List<ItemEventRow> rowsWithNames = rows.Select(r => new ItemEventRow(
                         r.Id,
                         r.OccurredAt,
                         r.eventType,
                         r.ActorPlayerId,
-                        actorPlayerName = DisplayNameQueries.ResolvePlayerName(
-                            rowPlayerNames,
-                            r.ActorPlayerId
-                        ),
+                        DisplayNameQueries.ResolvePlayerName(rowPlayerNames, r.ActorPlayerId),
                         r.FromOwnerId,
-                        fromOwnerName = DisplayNameQueries.ResolvePlayerName(
-                            rowPlayerNames,
-                            r.FromOwnerId
-                        ),
+                        DisplayNameQueries.ResolvePlayerName(rowPlayerNames, r.FromOwnerId),
                         r.ToOwnerId,
-                        toOwnerName = DisplayNameQueries.ResolvePlayerName(
-                            rowPlayerNames,
-                            r.ToOwnerId
-                        ),
+                        DisplayNameQueries.ResolvePlayerName(rowPlayerNames, r.ToOwnerId),
                         r.RoomId,
-                        roomName = r.RoomId != null
+                        r.RoomId != null
                         && rowRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
                             ? roomName
                             : null,
                         r.CorrelationId,
-                        r.Data,
-                    })
+                        r.Data
+                    ))
                     .ToList();
 
-                return new
-                {
+                return new ItemProfile(
                     itemId,
-                    snapshot = itemSnapshotWithIcon,
+                    itemSnapshotWithIcon,
                     page,
                     limit,
                     total,
                     offset,
-                    count = rows.Count,
-                    history = rowsWithNames,
-                };
+                    rows.Count,
+                    rowsWithNames
+                );
             },
             ct
         );
@@ -203,8 +195,8 @@ internal sealed class DirectoryReads(
     /// Nothing else is a search: an unrecognised term says so rather than guessing, because a wrong
     /// guess on an investigation screen is worse than no answer.
     /// </remarks>
-    public Task<object> SearchAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<DirectorySearch> SearchAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<DirectorySearch>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -247,12 +239,10 @@ internal sealed class DirectoryReads(
                         .ConfigureAwait(false);
                 }
 
-                return new
-                {
-                    kind = "unknown",
+                return new UnknownSearch(
                     term,
-                    hint = "Enter a player/item id, or a 32-char correlation id.",
-                };
+                    "Enter a player/item id, or a 32-char correlation id."
+                );
             },
             ct
         );
@@ -266,7 +256,7 @@ internal sealed class DirectoryReads(
     /// that correlates to nothing. That is deliberate: "no trace of this operation" is itself the
     /// finding an investigation is often after.
     /// </remarks>
-    private static async Task<object> SearchByCorrelationAsync(
+    private static async Task<CorrelationSearch> SearchByCorrelationAsync(
         VortexDbContext db,
         string term,
         DateTime? since,
@@ -340,57 +330,48 @@ internal sealed class DirectoryReads(
         Dictionary<int, string> auditActorNames = await db.PlayerNamesAsync(auditActorIds, ct)
             .ConfigureAwait(false);
 
-        var auditRowsWithNames = auditRows
-            .Select(a => new
-            {
+        List<CorrelationAuditRow> auditRowsWithNames = auditRows
+            .Select(a => new CorrelationAuditRow(
                 a.OccurredAt,
-                category = a.category,
+                a.category,
                 a.Action,
                 a.ActorPlayerId,
-                actorName = DisplayNameQueries.ResolvePlayerName(auditActorNames, a.ActorPlayerId),
-            })
+                DisplayNameQueries.ResolvePlayerName(auditActorNames, a.ActorPlayerId)
+            ))
             .ToList();
 
-        var ledgerRows = await ledger
+        List<CorrelationLedgerRow> ledgerRows = await ledger
             .OrderBy(l => l.OccurredAt)
             .Skip(offset)
             .Take(limit)
-            .Select(l => new
-            {
+            .Select(l => new CorrelationLedgerRow(
                 l.OccurredAt,
                 l.PlayerId,
                 l.Currency,
                 l.Delta,
                 l.BalanceAfter,
-                l.ActivityPointType,
-            })
+                l.ActivityPointType
+            ))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        var itemRows = await items
+        List<CorrelationItemRow> itemRows = await items
             .OrderBy(i => i.OccurredAt)
             .Skip(offset)
             .Take(limit)
-            .Select(i => new
-            {
-                i.OccurredAt,
-                i.ItemId,
-                eventType = i.EventType.ToString(),
-            })
+            .Select(i => new CorrelationItemRow(i.OccurredAt, i.ItemId, i.EventType.ToString()))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        return new
-        {
-            kind = "correlationId",
+        return new CorrelationSearch(
             term,
             page,
             limit,
             offset,
-            audit = auditRowsWithNames,
-            ledger = ledgerRows,
-            items = itemRows,
-        };
+            auditRowsWithNames,
+            ledgerRows,
+            itemRows
+        );
     }
 
     /// <summary>
@@ -401,7 +382,7 @@ internal sealed class DirectoryReads(
     /// audit trail, ledger, chat and item history that go with it there. The popup reads only this,
     /// and was paying a dozen queries for the rest.
     /// </remarks>
-    public Task<object?> PlayerProfileAsync(
+    public Task<PlayerProfile?> PlayerProfileAsync(
         int playerId,
         NameValueCollection query,
         CancellationToken ct
@@ -428,7 +409,7 @@ internal sealed class DirectoryReads(
     /// the ledger, the chat and the item history. Serving both from one answer made the popup pay
     /// for the investigation's queries.
     /// </remarks>
-    private async Task<object?> PlayerProfileAsync(
+    private async Task<PlayerProfile?> PlayerProfileAsync(
         VortexDbContext db,
         int id,
         DateTime? since,
@@ -460,34 +441,33 @@ internal sealed class DirectoryReads(
             .FirstOrDefaultAsync(ct)
             .ConfigureAwait(false);
 
-        var playerCurrencies = await db
+        List<ProfileWallet> playerCurrencies = await db
             .PlayerCurrencies.AsNoTracking()
             .Where(pc => pc.PlayerEntityId == id)
-            .Select(pc => new
-            {
+            .Select(pc => new ProfileWallet(
                 pc.CurrencyTypeEntityId,
-                amount = pc.Amount,
-                currency = pc.CurrencyTypeEntity != null
+                pc.Amount,
+                pc.CurrencyTypeEntity != null
                     ? pc.CurrencyTypeEntity.Name ?? pc.CurrencyTypeEntity.CurrencyType.ToString()
                     : pc.CurrencyTypeEntityId.ToString(),
-            })
+                pc.CurrencyTypeEntity != null ? pc.CurrencyTypeEntity.ActivityPointType : null
+            ))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        var ownedRooms = await db
+        List<ProfileRoomRow> ownedRooms = await db
             .Rooms.AsNoTracking()
             .Where(r => r.PlayerEntityId == id)
             .OrderByDescending(r => r.LastActive)
             .Take(8)
-            .Select(r => new
-            {
-                roomId = r.Id,
-                roomName = r.Name,
+            .Select(r => new ProfileRoomRow(
+                r.Id,
+                r.Name,
                 r.UsersNow,
                 r.PlayersMax,
                 r.LastActive,
-                model = r.RoomModelEntity.Name,
-            })
+                r.RoomModelEntity.Name
+            ))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
@@ -513,50 +493,45 @@ internal sealed class DirectoryReads(
 
         // BuildFurniIconUrl isn't SQL-translatable, so the furni icon is attached in a
         // second pass over the materialized rows (same shape as the catalog products).
-        var ownedItemsWithIcons = ownedItems
-            .Select(f => new
-            {
+        List<ProfileItemRow> ownedItemsWithIcons = ownedItems
+            .Select(f => new ProfileItemRow(
                 f.itemId,
                 f.definitionId,
                 f.definitionName,
-                furniIconUrl = f.definitionName is null
-                    ? null
-                    : _assetUrls.FurniIcon(f.definitionName),
+                f.definitionName is null ? null : _assetUrls.FurniIcon(f.definitionName),
                 f.RoomEntityId,
                 f.roomName,
                 f.roomX,
-                f.roomY,
-            })
+                f.roomY
+            ))
             .ToList();
 
-        var roomEntries = await db
+        List<ProfileEntryRow> roomEntries = await db
             .RoomEntryLogs.AsNoTracking()
             .Where(e => e.PlayerEntityId == id)
             .Where(e => e.CreatedAt >= profileWindowSince && e.CreatedAt <= profileWindowUntil)
             .OrderByDescending(e => e.CreatedAt)
             .Take(12)
-            .Select(e => new
-            {
+            .Select(e => new ProfileEntryRow(
                 e.CreatedAt,
-                roomId = e.RoomEntityId,
-                roomName = e.RoomEntity != null ? e.RoomEntity.Name : null,
-            })
+                e.RoomEntityId,
+                e.RoomEntity != null ? e.RoomEntity.Name : null
+            ))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        var chatHistory = await db
+        List<ProfileChatRow> chatHistory = await db
             .Chatlogs.AsNoTracking()
             .Where(c => c.PlayerEntityId == id)
             .Where(c => c.CreatedAt >= profileWindowSince && c.CreatedAt <= profileWindowUntil)
             .OrderByDescending(c => c.CreatedAt)
             .Take(12)
-            .Select(c => new
-            {
+            .Select(c => new ProfileChatRow(
                 c.CreatedAt,
-                roomId = c.RoomEntityId,
-                roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
-                c.Message,
-            })
+                c.RoomEntityId,
+                c.RoomEntity != null ? c.RoomEntity.Name : null,
+                c.Message
+            ))
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
@@ -597,29 +572,24 @@ internal sealed class DirectoryReads(
         Dictionary<int, string> itemPartyNames = await db.PlayerNamesAsync(itemPartyIds, ct)
             .ConfigureAwait(false);
 
-        var itemEventsWithRooms = itemEvents
-            .Select(i => new
-            {
+        List<PlayerItemRow> itemEventsWithRooms = itemEvents
+            .Select(i => new PlayerItemRow(
                 i.OccurredAt,
                 i.eventType,
                 i.itemId,
                 i.RoomId,
-                roomName = i.RoomId != null
-                && itemRoomNames.TryGetValue(i.RoomId.Value, out string? roomName)
+                i.RoomId != null && itemRoomNames.TryGetValue(i.RoomId.Value, out string? roomName)
                     ? roomName
                     : null,
                 i.actorPlayerId,
-                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
-                    itemPartyNames,
-                    i.actorPlayerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.actorPlayerId),
                 i.fromOwnerId,
-                fromOwnerName = DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.fromOwnerId),
+                DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.fromOwnerId),
                 i.toOwnerId,
-                toOwnerName = DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.toOwnerId),
+                DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.toOwnerId),
                 i.correlationId,
-                i.Data,
-            })
+                i.Data
+            ))
             .ToList();
 
         int auditCount = await db
@@ -659,42 +629,29 @@ internal sealed class DirectoryReads(
             .CountAsync(ct)
             .ConfigureAwait(false);
 
-        var playerProfile = player is null
+        return player is null
             ? null
-            : new
-            {
+            : new PlayerProfile(
                 player.Id,
                 player.Name,
                 player.Motto,
                 player.Figure,
-                avatarUrl = _assetUrls.AvatarImage(player.Figure),
+                _assetUrls.AvatarImage(player.Figure),
                 // The player page gates "kick" on this: there is nothing to disconnect
                 // when the account is offline, and a button that always looks available
                 // teaches the operator to ignore its result.
-                online = _sessionGateway.IsOnline(player.Id),
-                createdAt = player.CreatedAt,
-                updatedAt = player.UpdatedAt,
+                _sessionGateway.IsOnline(player.Id),
+                player.CreatedAt,
+                player.UpdatedAt,
                 player.gender,
                 player.perks,
-                window = new { since = profileWindowSince, until = profileWindowUntil },
-                ownedRooms = new { total = ownedRoomCount, latest = ownedRooms },
-                wallets = playerCurrencies,
-                inventory = new { total = ownedItemCount, latest = ownedItemsWithIcons },
-                activity = new
-                {
-                    auditEvents = auditCount,
-                    ledgerEvents = ledgerCount,
-                    itemEvents = itemEventCount,
-                },
-                timeline = new
-                {
-                    entries = roomEntries,
-                    chats = chatHistory,
-                    items = itemEventsWithRooms,
-                },
-            };
-
-        return playerProfile;
+                new ProfileWindow(profileWindowSince, profileWindowUntil),
+                new ProfileRooms(ownedRoomCount, ownedRooms),
+                playerCurrencies,
+                new ProfileInventory(ownedItemCount, ownedItemsWithIcons),
+                new ProfileActivity(auditCount, ledgerCount, itemEventCount),
+                new ProfileTimeline(roomEntries, chatHistory, itemEventsWithRooms)
+            );
     }
 
     /// <summary>
@@ -706,7 +663,7 @@ internal sealed class DirectoryReads(
     /// assembled into one answer rather than one query: an investigation opens this once and reads
     /// down it.
     /// </remarks>
-    private async Task<object> SearchByIdAsync(
+    private async Task<IdSearch> SearchByIdAsync(
         VortexDbContext db,
         string term,
         int id,
@@ -718,7 +675,7 @@ internal sealed class DirectoryReads(
         CancellationToken ct
     )
     {
-        object? playerProfile = await PlayerProfileAsync(db, id, since, until, ct)
+        PlayerProfile? playerProfile = await PlayerProfileAsync(db, id, since, until, ct)
             .ConfigureAwait(false);
 
         IQueryable<AuditEventEntity> audit = db
@@ -830,30 +787,22 @@ internal sealed class DirectoryReads(
         Dictionary<int, string> auditRoomNames = await db.RoomNamesAsync(auditRoomIds, ct)
             .ConfigureAwait(false);
 
-        var asActor = asActorRows
-            .Select(r => new
-            {
+        List<PlayerAuditRow> asActor = asActorRows
+            .Select(r => new PlayerAuditRow(
                 r.OccurredAt,
                 r.category,
                 r.Action,
                 r.ActorPlayerId,
-                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
-                    actorAndTargetNames,
-                    r.ActorPlayerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(actorAndTargetNames, r.ActorPlayerId),
                 r.TargetPlayerId,
-                targetPlayerName = DisplayNameQueries.ResolvePlayerName(
-                    actorAndTargetNames,
-                    r.TargetPlayerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(actorAndTargetNames, r.TargetPlayerId),
                 r.RoomId,
-                roomName = r.RoomId != null
-                && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
+                r.RoomId != null && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
                     ? roomName
                     : null,
                 r.Result,
-                r.Data,
-            })
+                r.Data
+            ))
             .ToList();
 
         var itemHistoryRows = await itemHistory
@@ -897,106 +846,95 @@ internal sealed class DirectoryReads(
             )
             .ConfigureAwait(false);
 
-        var itemHistoryWithNames = itemHistoryRows
-            .Select(row => new
-            {
+        List<PlayerItemRow> itemHistoryWithNames = itemHistoryRows
+            .Select(row => new PlayerItemRow(
                 row.OccurredAt,
                 row.eventType,
                 row.ItemId,
                 row.RoomId,
-                roomName = row.RoomId != null
+                row.RoomId != null
                 && itemHistoryRoomNames.TryGetValue(row.RoomId.Value, out string? roomName)
                     ? roomName
                     : null,
                 row.ActorPlayerId,
-                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
-                    itemHistoryPartyNames,
-                    row.ActorPlayerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(itemHistoryPartyNames, row.ActorPlayerId),
                 row.FromOwnerId,
-                fromOwnerName = DisplayNameQueries.ResolvePlayerName(
-                    itemHistoryPartyNames,
-                    row.FromOwnerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(itemHistoryPartyNames, row.FromOwnerId),
                 row.ToOwnerId,
-                toOwnerName = DisplayNameQueries.ResolvePlayerName(
-                    itemHistoryPartyNames,
-                    row.ToOwnerId
-                ),
+                DisplayNameQueries.ResolvePlayerName(itemHistoryPartyNames, row.ToOwnerId),
                 row.CorrelationId,
-                row.Data,
-            })
+                row.Data
+            ))
             .ToList();
 
-        return new
-        {
-            kind = "id",
+        List<PlayerLedgerRow> ledgerRows = await ledger
+            .OrderByDescending(l => l.OccurredAt)
+            .Skip(offset)
+            .Take(limit)
+            .Select(l => new PlayerLedgerRow(
+                l.OccurredAt,
+                l.Currency,
+                l.Delta,
+                l.BalanceAfter,
+                l.ActivityPointType,
+                l.CorrelationId
+            ))
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        List<PlayerChatRow> chatRows = await chat.OrderByDescending(c => c.CreatedAt)
+            .Skip(offset)
+            .Take(limit)
+            .Select(c => new PlayerChatRow(
+                c.CreatedAt,
+                c.RoomEntityId,
+                c.RoomEntity != null ? c.RoomEntity.Name : null,
+                c.Message,
+                c.TargetPlayerEntityId,
+                c.TargetPlayerEntity != null ? c.TargetPlayerEntity.Name : null
+            ))
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        List<ChestMoveRow> chestMoveRows = await chestMoves
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip(offset)
+            .Take(limit)
+            .Select(t => new ChestMoveRow(
+                t.CreatedAt,
+                t.WiredChestEntityId,
+                t.RoomEntityId,
+                t.Room != null ? t.Room.Name : null,
+                t.TransactionType,
+                t.DefinitionInfo,
+                t.WithdrawFurniCount,
+                t.DepositFurniCount,
+                t.WithdrawCoinsCount,
+                t.DepositCoinsCount
+            ))
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return new IdSearch(
             term,
             page,
             limit,
             offset,
             asActor,
             playerProfile,
-            ledger = await ledger
-                .OrderByDescending(l => l.OccurredAt)
-                .Skip(offset)
-                .Take(limit)
-                .Select(l => new
-                {
-                    l.OccurredAt,
-                    l.Currency,
-                    l.Delta,
-                    l.BalanceAfter,
-                    l.ActivityPointType,
-                    l.CorrelationId,
-                })
-                .ToListAsync(ct)
-                .ConfigureAwait(false),
-            itemHistory = itemHistoryWithNames,
-            chats = await chat.OrderByDescending(c => c.CreatedAt)
-                .Skip(offset)
-                .Take(limit)
-                .Select(c => new
-                {
-                    c.CreatedAt,
-                    roomId = c.RoomEntityId,
-                    roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
-                    c.Message,
-                    targetPlayerId = c.TargetPlayerEntityId,
-                    targetPlayerName = c.TargetPlayerEntity != null
-                        ? c.TargetPlayerEntity.Name
-                        : null,
-                })
-                .ToListAsync(ct)
-                .ConfigureAwait(false),
-            chestMoves = await chestMoves
-                .OrderByDescending(t => t.CreatedAt)
-                .Skip(offset)
-                .Take(limit)
-                .Select(t => new
-                {
-                    t.CreatedAt,
-                    chestId = t.WiredChestEntityId,
-                    roomId = t.RoomEntityId,
-                    roomName = t.Room != null ? t.Room.Name : null,
-                    t.TransactionType,
-                    t.DefinitionInfo,
-                    t.WithdrawFurniCount,
-                    t.DepositFurniCount,
-                    t.WithdrawCoinsCount,
-                    t.DepositCoinsCount,
-                })
-                .ToListAsync(ct)
-                .ConfigureAwait(false),
-        };
+            ledgerRows,
+            itemHistoryWithNames,
+            chatRows,
+            chestMoveRows
+        );
     }
 
-    public Task<object?> RoomTimelineAsync(
+    public Task<RoomTimeline?> RoomTimelineAsync(
         int roomId,
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object?>(
+        QueryAsync<RoomTimeline?>(
             async db =>
             {
                 var room = await db
@@ -1058,39 +996,35 @@ internal sealed class DirectoryReads(
                 int chatCount = await chatQuery.CountAsync(ct).ConfigureAwait(false);
                 int itemCount = await itemQuery.CountAsync(ct).ConfigureAwait(false);
 
-                var entryTimeline = await entriesQuery
+                List<RoomTimelineRow> entryTimeline = await entriesQuery
                     .OrderByDescending(e => e.CreatedAt)
                     .Take(take)
-                    .Select(e => new
-                    {
+                    .Select(e => new RoomTimelineRow(
                         e.CreatedAt,
-                        EventType = "entry",
-                        PlayerId = (int?)e.PlayerEntityId,
-                        PlayerName = e.PlayerEntity != null ? (string?)e.PlayerEntity.Name : null,
-                        Message = (string?)null,
-                        TargetPlayerId = (int?)null,
-                        TargetPlayerName = (string?)null,
-                        ItemId = (long?)null,
-                    })
+                        "entry",
+                        e.PlayerEntityId,
+                        e.PlayerEntity != null ? e.PlayerEntity.Name : null,
+                        null,
+                        null,
+                        null,
+                        null
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var chatTimeline = await chatQuery
+                List<RoomTimelineRow> chatTimeline = await chatQuery
                     .OrderByDescending(c => c.CreatedAt)
                     .Take(take)
-                    .Select(c => new
-                    {
+                    .Select(c => new RoomTimelineRow(
                         c.CreatedAt,
-                        EventType = "chat",
-                        PlayerId = (int?)c.PlayerEntityId,
-                        PlayerName = c.PlayerEntity != null ? (string?)c.PlayerEntity.Name : null,
-                        Message = (string?)c.Message,
-                        TargetPlayerId = (int?)c.TargetPlayerEntityId,
-                        TargetPlayerName = c.TargetPlayerEntity != null
-                            ? (string?)c.TargetPlayerEntity.Name
-                            : null,
-                        ItemId = (long?)null,
-                    })
+                        "chat",
+                        c.PlayerEntityId,
+                        c.PlayerEntity != null ? c.PlayerEntity.Name : null,
+                        c.Message,
+                        c.TargetPlayerEntityId,
+                        c.TargetPlayerEntity != null ? c.TargetPlayerEntity.Name : null,
+                        null
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -1109,22 +1043,8 @@ internal sealed class DirectoryReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var itemTimeline = rawItemTimeline
-                    .Select(i => new
-                    {
-                        i.CreatedAt,
-                        i.EventType,
-                        PlayerId = DisplayNameQueries.ToPlayerId(i.ActorPlayerId),
-                        PlayerName = (string?)null,
-                        i.Message,
-                        TargetPlayerId = DisplayNameQueries.ToPlayerId(i.ToOwnerId),
-                        TargetPlayerName = (string?)null,
-                        i.ItemId,
-                    })
-                    .ToList();
-
                 List<int> itemPlayerIds = DisplayNameQueries.NormalizeIds(
-                    itemTimeline.SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
+                    rawItemTimeline.SelectMany(i => new[] { i.ActorPlayerId, i.ToOwnerId })
                 );
 
                 Dictionary<int, string> itemPlayerNames = await db.PlayerNamesAsync(
@@ -1133,40 +1053,31 @@ internal sealed class DirectoryReads(
                     )
                     .ConfigureAwait(false);
 
-                var itemTimelineEnriched = itemTimeline
-                    .Select(i => new
-                    {
+                List<RoomTimelineRow> itemTimeline = rawItemTimeline
+                    .Select(i => new RoomTimelineRow(
                         i.CreatedAt,
                         i.EventType,
-                        i.PlayerId,
-                        PlayerName = DisplayNameQueries.ResolvePlayerName(
-                            itemPlayerNames,
-                            i.PlayerId
-                        ) ?? i.PlayerName,
+                        DisplayNameQueries.ToPlayerId(i.ActorPlayerId),
+                        DisplayNameQueries.ResolvePlayerName(itemPlayerNames, i.ActorPlayerId),
                         i.Message,
-                        i.TargetPlayerId,
-                        TargetPlayerName = DisplayNameQueries.ResolvePlayerName(
-                            itemPlayerNames,
-                            i.TargetPlayerId
-                        ) ?? i.TargetPlayerName,
-                        i.ItemId,
-                    })
+                        DisplayNameQueries.ToPlayerId(i.ToOwnerId),
+                        DisplayNameQueries.ResolvePlayerName(itemPlayerNames, i.ToOwnerId),
+                        i.ItemId
+                    ))
                     .ToList();
 
-                var timeline = entryTimeline
+                List<RoomTimelineRow> timeline = entryTimeline
                     .Concat(chatTimeline)
-                    .Concat(itemTimelineEnriched)
+                    .Concat(itemTimeline)
                     .OrderByDescending(e => e.CreatedAt)
                     .ThenBy(e => e.EventType)
                     .Skip(offset)
                     .Take(limit)
                     .ToList();
 
-                return new
-                {
-                    room = new
-                    {
-                        roomId = room.Id,
+                return new RoomTimeline(
+                    new RoomTimelineHeader(
+                        room.Id,
                         room.Name,
                         room.Description,
                         room.RoomOwnerId,
@@ -1175,21 +1086,16 @@ internal sealed class DirectoryReads(
                         room.UsersNow,
                         room.PlayersMax,
                         room.LastActive,
-                        room.ModelName,
-                    },
+                        room.ModelName
+                    ),
                     page,
                     limit,
                     offset,
-                    count = timeline.Count,
-                    total = entryCount + chatCount + itemCount,
-                    totals = new
-                    {
-                        entries = entryCount,
-                        chats = chatCount,
-                        items = itemCount,
-                    },
-                    timeline,
-                };
+                    timeline.Count,
+                    entryCount + chatCount + itemCount,
+                    new RoomTimelineTotals(entryCount, chatCount, itemCount),
+                    timeline
+                );
             },
             ct
         );

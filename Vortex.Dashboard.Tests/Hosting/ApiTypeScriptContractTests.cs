@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
@@ -123,6 +124,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(CatalogOfferDetail),
         typeof(CatalogCurrencyList),
         typeof(CatalogIconTemplate),
+        typeof(DirectorySearch),
+        typeof(PlayerProfile),
+        typeof(ItemProfile),
+        typeof(RoomTimeline),
     ];
 
     [Fact]
@@ -160,7 +165,20 @@ public sealed class ApiTypeScriptContractTests
 
         foreach (Type type in Reachable().OrderBy(type => type.Name, StringComparer.Ordinal))
         {
+            if (Derived(type) is { Length: > 0 } derived)
+            {
+                string union = string.Join(" | ", derived.Select(a => a.DerivedType.Name));
+                output.AppendLine($"export type {type.Name} = {union};");
+                output.AppendLine();
+                continue;
+            }
+
             output.AppendLine($"export interface {type.Name} {{");
+
+            if (Discriminator(type) is { } tag)
+            {
+                output.AppendLine(tag);
+            }
 
             foreach (PropertyInfo property in type.GetProperties())
             {
@@ -189,6 +207,11 @@ public sealed class ApiTypeScriptContractTests
                 continue;
             }
 
+            foreach (JsonDerivedTypeAttribute derived in Derived(type))
+            {
+                pending.Enqueue(derived.DerivedType);
+            }
+
             foreach (PropertyInfo property in type.GetProperties())
             {
                 pending.Enqueue(Unwrap(property.PropertyType));
@@ -196,6 +219,38 @@ public sealed class ApiTypeScriptContractTests
         }
 
         return found;
+    }
+
+    /// <summary>The shapes a polymorphic contract can take, or nothing when it is not one.</summary>
+    private static JsonDerivedTypeAttribute[] Derived(Type type) =>
+        [.. type.GetCustomAttributes<JsonDerivedTypeAttribute>(inherit: false)];
+
+    /// <summary>
+    /// The literal tag member a member of a union carries, or null for a type that is not one.
+    /// </summary>
+    /// <remarks>
+    /// Read off the base rather than declared on the record, because that is where the serializer
+    /// reads it too. Emitting it as a string literal is what makes the union discriminated on the
+    /// front end: a page that has checked <c>kind</c> is narrowed to one shape by the compiler.
+    /// </remarks>
+    private static string? Discriminator(Type type)
+    {
+        Type? baseType = type.BaseType;
+
+        if (
+            baseType is null
+            || Derived(baseType).FirstOrDefault(a => a.DerivedType == type)?.TypeDiscriminator
+                is not string value
+        )
+        {
+            return null;
+        }
+
+        string property =
+            baseType.GetCustomAttribute<JsonPolymorphicAttribute>()?.TypeDiscriminatorPropertyName
+            ?? "$type";
+
+        return $"  {property}: \"{value}\";";
     }
 
     private static bool IsContract(Type type) =>
@@ -297,6 +352,8 @@ public sealed class ApiTypeScriptContractTests
                 "number",
             // An instant reaches the browser as the ISO string System.Text.Json writes.
             _ when type == typeof(DateTime) || type == typeof(DateTimeOffset) => "string",
+            // No string-enum converter is configured, so an enum reaches the browser as its number.
+            _ when type.IsEnum => "number",
             _ => null,
         };
 

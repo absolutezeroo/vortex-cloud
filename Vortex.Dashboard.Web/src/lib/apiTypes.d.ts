@@ -667,6 +667,19 @@ export interface ChatlogWindow {
   until: string;
 }
 
+export interface ChestMoveRow {
+  createdAt: string;
+  chestId: number;
+  roomId: number;
+  roomName: string | null;
+  transactionType: number;
+  definitionInfo: string;
+  withdrawFurniCount: number;
+  depositFurniCount: number;
+  withdrawCoinsCount: number;
+  depositCoinsCount: number;
+}
+
 export interface ClubExpiringSubscription {
   playerId: number;
   playerName: string | null;
@@ -867,6 +880,40 @@ export interface ConfigList {
   items: ConfigEntryDto[];
 }
 
+export interface CorrelationAuditRow {
+  occurredAt: string;
+  category: string;
+  action: string;
+  actorPlayerId: number | null;
+  actorName: string | null;
+}
+
+export interface CorrelationItemRow {
+  occurredAt: string;
+  itemId: number;
+  eventType: string;
+}
+
+export interface CorrelationLedgerRow {
+  occurredAt: string;
+  playerId: number;
+  currency: string;
+  delta: number;
+  balanceAfter: number;
+  activityPointType: number | null;
+}
+
+export interface CorrelationSearch {
+  kind: "correlationId";
+  term: string;
+  page: number;
+  limit: number;
+  offset: number;
+  audit: CorrelationAuditRow[];
+  ledger: CorrelationLedgerRow[];
+  items: CorrelationItemRow[];
+}
+
 export interface CurrencyTypeRow {
   id: number;
   name: string | null;
@@ -928,6 +975,8 @@ export interface DirectoryRow {
   name: string;
   description: string | null;
 }
+
+export type DirectorySearch = CorrelationSearch | IdSearch | UnknownSearch;
 
 export interface EconomyCurrencyTotals {
   spend: number;
@@ -1335,6 +1384,20 @@ export interface HandItemRow {
   imageUrl: string | null;
 }
 
+export interface IdSearch {
+  kind: "id";
+  term: string;
+  page: number;
+  limit: number;
+  offset: number;
+  asActor: PlayerAuditRow[];
+  playerProfile: PlayerProfile | null;
+  ledger: PlayerLedgerRow[];
+  itemHistory: PlayerItemRow[];
+  chats: PlayerChatRow[];
+  chestMoves: ChestMoveRow[];
+}
+
 export interface InventoryGroup {
   key: string;
   rows: InventoryRow[];
@@ -1345,6 +1408,49 @@ export interface InventoryRow {
   count: number;
   route: string | null;
   empty: boolean;
+}
+
+export interface ItemEventRow {
+  id: number;
+  occurredAt: string;
+  eventType: string;
+  actorPlayerId: number | null;
+  actorPlayerName: string | null;
+  fromOwnerId: number | null;
+  fromOwnerName: string | null;
+  toOwnerId: number | null;
+  toOwnerName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  correlationId: string | null;
+  data: string | null;
+}
+
+export interface ItemProfile {
+  itemId: number;
+  snapshot: ItemSnapshot | null;
+  page: number;
+  limit: number;
+  total: number;
+  offset: number;
+  count: number;
+  history: ItemEventRow[];
+}
+
+export interface ItemSnapshot {
+  id: number;
+  definitionId: number | null;
+  definitionName: string | null;
+  furniIconUrl: string | null;
+  ownerPlayerId: number | null;
+  ownerName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  roomX: number | null;
+  roomY: number | null;
+  roomZ: number;
+  extraData: string | null;
+  updatedAt: string;
 }
 
 export interface LtdRaffleResultCount {
@@ -1791,12 +1897,35 @@ export interface PetTypeCount {
   count: number;
 }
 
+export interface PlayerAuditRow {
+  occurredAt: string;
+  category: string;
+  action: string;
+  actorPlayerId: number | null;
+  actorPlayerName: string | null;
+  targetPlayerId: number | null;
+  targetPlayerName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  result: number;
+  data: string | null;
+}
+
 export interface PlayerBadgeRow {
   id: number;
   badgeCode: string;
   badgeUrl: string | null;
   slotId: number | null;
   createdAt: string;
+}
+
+export interface PlayerChatRow {
+  createdAt: string;
+  roomId: number;
+  roomName: string | null;
+  message: string;
+  targetPlayerId: number | null;
+  targetPlayerName: string | null;
 }
 
 export interface PlayerChatStyleRow {
@@ -1846,11 +1975,55 @@ export interface PlayerHabbicons {
   items: PlayerHabbiconRow[];
 }
 
+export interface PlayerItemRow {
+  occurredAt: string;
+  eventType: string;
+  itemId: number;
+  roomId: number | null;
+  roomName: string | null;
+  actorPlayerId: number | null;
+  actorPlayerName: string | null;
+  fromOwnerId: number | null;
+  fromOwnerName: string | null;
+  toOwnerId: number | null;
+  toOwnerName: string | null;
+  correlationId: string | null;
+  data: string | null;
+}
+
+export interface PlayerLedgerRow {
+  occurredAt: string;
+  currency: string;
+  delta: number;
+  balanceAfter: number;
+  activityPointType: number | null;
+  correlationId: string | null;
+}
+
 export interface PlayerOutfitRow {
   id: number;
   slotId: number;
   figure: string;
   gender: string;
+}
+
+export interface PlayerProfile {
+  id: number;
+  name: string;
+  motto: string | null;
+  figure: string;
+  avatarUrl: string | null;
+  online: boolean;
+  createdAt: string;
+  updatedAt: string;
+  gender: string;
+  perks: string;
+  window: ProfileWindow;
+  ownedRooms: ProfileRooms;
+  wallets: ProfileWallet[];
+  inventory: ProfileInventory;
+  activity: ProfileActivity;
+  timeline: ProfileTimeline;
 }
 
 export interface PlayerRewardDetail {
@@ -2133,6 +2306,73 @@ export interface PrizePoolWeightTotal {
 export interface PrizeSourceDraws {
   source: string;
   draws: number;
+}
+
+export interface ProfileActivity {
+  auditEvents: number;
+  ledgerEvents: number;
+  itemEvents: number;
+}
+
+export interface ProfileChatRow {
+  createdAt: string;
+  roomId: number;
+  roomName: string | null;
+  message: string;
+}
+
+export interface ProfileEntryRow {
+  createdAt: string;
+  roomId: number;
+  roomName: string | null;
+}
+
+export interface ProfileInventory {
+  total: number;
+  latest: ProfileItemRow[];
+}
+
+export interface ProfileItemRow {
+  itemId: number;
+  definitionId: number | null;
+  definitionName: string | null;
+  furniIconUrl: string | null;
+  roomEntityId: number | null;
+  roomName: string | null;
+  roomX: number | null;
+  roomY: number | null;
+}
+
+export interface ProfileRoomRow {
+  roomId: number;
+  roomName: string;
+  usersNow: number;
+  playersMax: number;
+  lastActive: string;
+  model: string;
+}
+
+export interface ProfileRooms {
+  total: number;
+  latest: ProfileRoomRow[];
+}
+
+export interface ProfileTimeline {
+  entries: ProfileEntryRow[];
+  chats: ProfileChatRow[];
+  items: PlayerItemRow[];
+}
+
+export interface ProfileWallet {
+  currencyTypeEntityId: number;
+  amount: number;
+  currency: string;
+  activityPointType: number | null;
+}
+
+export interface ProfileWindow {
+  since: string;
+  until: string;
 }
 
 export interface QuestCompletionCount {
@@ -2451,6 +2691,47 @@ export interface RoomDirectoryRow {
   lastActive: string;
 }
 
+export interface RoomTimeline {
+  room: RoomTimelineHeader;
+  page: number;
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  totals: RoomTimelineTotals;
+  timeline: RoomTimelineRow[];
+}
+
+export interface RoomTimelineHeader {
+  roomId: number;
+  name: string;
+  description: string | null;
+  roomOwnerId: number;
+  roomOwnerName: string | null;
+  ownerPlayerId: number;
+  usersNow: number;
+  playersMax: number;
+  lastActive: string;
+  modelName: string;
+}
+
+export interface RoomTimelineRow {
+  createdAt: string;
+  eventType: string;
+  playerId: number | null;
+  playerName: string | null;
+  message: string | null;
+  targetPlayerId: number | null;
+  targetPlayerName: string | null;
+  itemId: number | null;
+}
+
+export interface RoomTimelineTotals {
+  entries: number;
+  chats: number;
+  items: number;
+}
+
 export interface SanctionPresetKindOption {
   value: number;
   label: string;
@@ -2703,6 +2984,12 @@ export interface TargetedOfferTotals {
   totalCreditsSpent: number;
   totalActivityPointsSpent: number;
   totalQuantity: number;
+}
+
+export interface UnknownSearch {
+  kind: "unknown";
+  term: string;
+  hint: string;
 }
 
 export interface UntouchedAchievement {

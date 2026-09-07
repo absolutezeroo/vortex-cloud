@@ -802,6 +802,8 @@ export default {
     foundSoFar: '{found} icon(s) found so far ({probed} id(s) checked, {pending} pending).',
   },
   entityModal: {
+    online: 'Online',
+    offline: 'Offline',
     itemInspector: 'Item inspector',
     playerInspector: 'Player inspector',
     unableToLoad: 'Unable to load: {error}',

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Catalog;
@@ -30,8 +31,6 @@ using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api.Catalogue;
-
-using Vortex.Dashboard.API.Infrastructure;
 
 /// <summary>
 /// What the catalogue pages, offers and products look like to an operator.

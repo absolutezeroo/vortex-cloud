@@ -24,7 +24,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapDirectoryReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<DirectorySearch>(
             app,
             ApiDirectory + "/search",
             (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -211,7 +211,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.FurnitureRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGetNullable<ItemProfile>(
             app,
             ApiDirectory + "/entity/{id}",
             (string id, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -224,7 +224,7 @@ internal static partial class DashboardEndpoints
         // history — a dozen queries it never reads. Same capability as /search deliberately: the
         // profile carries the player's recent chat, so serving it under PlayersRead would widen who
         // can read chatlogs.
-        MapReadGet(
+        MapReadGetNullable<PlayerProfile>(
             app,
             ApiDirectory + "/players/{playerId:int}/profile",
             (int playerId, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -232,7 +232,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
-        MapReadGet(
+        MapReadGetNullable<RoomTimeline>(
             app,
             ApiDirectory + "/rooms/{roomId:int}",
             (int roomId, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
