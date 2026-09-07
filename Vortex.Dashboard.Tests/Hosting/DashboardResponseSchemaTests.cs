@@ -115,6 +115,11 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/quests/{questId:int}", typeof(QuestDetail)),
         ("/api/v1/community-goals", typeof(CommunityGoalList)),
         ("/api/v1/daily-tasks", typeof(DailyTaskList)),
+        ("/api/v1/catalog/pages", typeof(CatalogPageList)),
+        ("/api/v1/catalog/pages/{pageId:int}", typeof(CatalogPageDetail)),
+        ("/api/v1/catalog/offers/{offerId:int}", typeof(CatalogOfferDetail)),
+        ("/api/v1/catalog/currency-types", typeof(CatalogCurrencyList)),
+        ("/api/v1/catalog/icon-template", typeof(CatalogIconTemplate)),
     ];
 
     [Fact]

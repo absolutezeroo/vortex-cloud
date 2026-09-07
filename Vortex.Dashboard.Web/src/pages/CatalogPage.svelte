@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
@@ -20,12 +20,73 @@
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import { CURRENCY_KIND, currencyChipClass, currencyKindFromRewardType } from '../lib/currency';
   import { formatNumber } from '../lib/format';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
+  import type {
+    CatalogCurrencyList,
+    CatalogIconTemplate,
+    CatalogOfferDetail,
+    CatalogOfferRow,
+    CatalogPageDetail,
+    CatalogPageList,
+    CatalogPageRow,
+    CatalogProductRow,
+    TargetedOfferCurrency,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** Number fields bind to inputs that hand back a string while being typed. */
+  type Num = number | string;
+
+  /**
+   * A page's form. imageData/textData are stored as JSON string lists; the editor is one item
+   * per line, which is why they are text here and arrays on the wire.
+   */
+  type PageForm = {
+    localization: string;
+    name: string;
+    icon: Num;
+    layout: string;
+    sortOrder: Num;
+    visible: boolean;
+    imageDataText: string;
+    textDataText: string;
+  };
+
+  type OfferForm = {
+    localizationId: string;
+    costCredits: Num;
+    costCurrency: Num;
+    currencyTypeId: Num;
+    canGift: boolean;
+    canBundle: boolean;
+    clubLevel: Num;
+    discountPercent: Num;
+    visible: boolean;
+  };
+
+  type ProductForm = {
+    productType: Num;
+    furnitureDefinitionId: Num;
+    furnitureName: string;
+    furnitureIcon: string;
+    furnitureSprite: Num;
+    extraParam: string;
+    quantity: Num;
+    uniqueSize: Num;
+    uniqueRemaining: Num;
+    buildersClubEligible: boolean;
+  };
+
+  /** One step of the breadcrumb: the page and what to call it. */
+  type Crumb = { id: number; label: string };
+
+  /** Who the picker is filling in, and what to do once it has. */
+  type ProductPick = { title: string; onSelect: (row: PickerRow) => void };
   import { createWriteOps } from '../lib/writeOps';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { nonNegative } from '../lib/validation';
-  import { diffFields } from '../lib/changes';
+  import { diffFields, type FieldChange } from '../lib/changes';
   import { PRODUCT_TYPES } from '../lib/furnitureEnums';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -33,7 +94,7 @@
   import CatalogIconPickerModal from '../components/CatalogIconPickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { identity } from '../lib/session';
-  import { t, translate } from '../lib/i18n';
+  import { t, translate, type Translator } from '../lib/i18n';
 
   const CATALOG_TYPES = [
     { value: 0, key: 'catalogAdmin.typeNormal' },
@@ -50,28 +111,28 @@
     'old_layout_marketplace', 'old_layout_marketplace_own_items',
   ];
 
-  function formatLayoutLabel(wireValue) {
+  function formatLayoutLabel(wireValue: string) {
     return wireValue
       .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
-  function emptyPageForm() {
+  function emptyPageForm(): PageForm {
     return {
       localization: '', name: '', icon: 0, layout: 'default_3x3', sortOrder: 0, visible: true,
       imageDataText: '', textDataText: '',
     };
   }
 
-  function emptyOfferForm() {
+  function emptyOfferForm(): OfferForm {
     return {
       localizationId: '', costCredits: 0, costCurrency: 0, currencyTypeId: '',
       canGift: true, canBundle: true, clubLevel: 0, discountPercent: 0, visible: true,
     };
   }
 
-  function emptyProductForm() {
+  function emptyProductForm(): ProductForm {
     return {
       productType: 0, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '',
       extraParam: '', quantity: 1, uniqueSize: 0, uniqueRemaining: 0, buildersClubEligible: false,
@@ -81,7 +142,7 @@
   // catalog_pages.image_data/text_data are stored as JSON string lists. A one-item-per-line
   // textarea is the simplest editable form for that shape -- blank lines are dropped, and an
   // empty result becomes null (matches "not set" rather than an empty array).
-  function linesToArray(text) {
+  function linesToArray(text: string) {
     const lines = text
       .split('\n')
       .map((line) => line.trim())
@@ -89,56 +150,57 @@
     return lines.length > 0 ? lines : null;
   }
 
-  function arrayToLines(value) {
+  function arrayToLines(value: readonly string[] | null | undefined) {
     return Array.isArray(value) ? value.join('\n') : '';
   }
 
   let catalogType = $state(0);
-  let parentChain = $state([]); // [{ id, label }], ancestors of the current level (root = empty array).
+  /** Ancestors of the current level; empty at the root. */
+  let parentChain = $state<Crumb[]>([]);
 
-  let pages = $state([]);
+  let pages = $state<CatalogPageRow[]>([]);
   let pagesLoading = $state(false);
   let pagesError = $state('');
   let pagesForbidden = $state(false);
 
-  let currentPage = $state(null);
+  let currentPage = $state<CatalogPageDetail | null>(null);
   let currentPageLoading = false;
 
-  let currencyTypes = $state([]);
-  let iconTemplate = '';
+  let currencyTypes = $state<TargetedOfferCurrency[]>([]);
+  let iconTemplate: string | null = '';
 
   // 'new' | 'edit' | null -- which form's icon field the picker modal is currently targeting.
-  let iconPickerTarget = $state(null);
+  let iconPickerTarget = $state<'new' | 'edit' | null>(null);
 
-  function iconUrlFor(id) {
+  function iconUrlFor(id: Num) {
     return iconTemplate && Number(id) > 0 ? iconTemplate.replace('{id}', String(id)) : null;
   }
 
   let newPageOpen = $state(false);
   let newPage = $state(emptyPageForm());
   let editPageOpen = $state(false);
-  let editPageForm = $state(null);
+  let editPageForm = $state<PageForm | null>(null);
 
   let newOfferOpen = $state(false);
   let newOffer = $state(emptyOfferForm());
-  let editOfferId = $state(null);
-  let editOfferForm = $state(null);
+  let editOfferId = $state<number | null>(null);
+  let editOfferForm = $state<OfferForm | null>(null);
 
-  let selectedOfferId = $state(null);
-  let offerDetail = $state(null);
+  let selectedOfferId = $state<number | null>(null);
+  let offerDetail = $state<CatalogOfferDetail | null>(null);
   let offerDetailLoading = $state(false);
   let offerDetailError = $state('');
 
   let newProductOpen = $state(false);
   let newProduct = $state(emptyProductForm());
-  let editProductId = $state(null);
-  let editProductForm = $state(null);
+  let editProductId = $state<number | null>(null);
+  let editProductForm = $state<ProductForm | null>(null);
 
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
   // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
-  let picker = $state(null);
+  let picker = $state<ProductPick | null>(null);
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsCatalogManage));
 
@@ -160,7 +222,7 @@
     if (parentId !== null) params.set('parentId', String(parentId));
 
     try {
-      const data = await apiGet(`/api/v1/catalog/pages?${params}`);
+      const data = await apiGet<CatalogPageList>(`/api/v1/catalog/pages?${params}`);
       pages = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -169,7 +231,7 @@
         return;
       }
 
-      pagesError = err.message;
+      pagesError = (err as Error).message;
       pages = [];
     } finally {
       pagesLoading = false;
@@ -187,16 +249,18 @@
     currentPageLoading = true;
 
     try {
-      currentPage = await apiGet(`/api/v1/catalog/pages/${parentId}`);
+      currentPage = await apiGet<CatalogPageDetail>(`/api/v1/catalog/pages/${parentId}`);
     } catch (err) {
       currentPage = null;
-      pagesError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
+      pagesError = isPermissionDeniedError(err)
+        ? translate('common.insufficientRights')
+        : describeApiError(err);
     } finally {
       currentPageLoading = false;
     }
   }
 
-  async function loadOfferDetail(offerId) {
+  async function loadOfferDetail(offerId: number) {
     selectedOfferId = offerId;
     offerDetail = null;
     offerDetailError = '';
@@ -205,9 +269,11 @@
     editProductId = null;
 
     try {
-      offerDetail = await apiGet(`/api/v1/catalog/offers/${offerId}`);
+      offerDetail = await apiGet<CatalogOfferDetail>(`/api/v1/catalog/offers/${offerId}`);
     } catch (err) {
-      offerDetailError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
+      offerDetailError = isPermissionDeniedError(err)
+        ? translate('common.insufficientRights')
+        : describeApiError(err);
     } finally {
       offerDetailLoading = false;
     }
@@ -220,7 +286,11 @@
   // outer `selectedOfferId` inside the function body) so this stays part of the template
   // expression Svelte's reactivity tracks -- a value only read inside a called function's body
   // wouldn't be seen as a dependency of the {expression} it's called from.
-  function offerActionLabel(offer, expandedOfferId, translator) {
+  function offerActionLabel(
+    offer: CatalogOfferRow,
+    expandedOfferId: number | null,
+    translator: Translator,
+  ) {
     const expanded = expandedOfferId === offer.id;
 
     if (offer.productCount === 0) {
@@ -236,7 +306,7 @@
 
   // Toggles the inline products panel under the clicked offer's own card -- clicking the same
   // offer's action button again collapses it instead of re-fetching.
-  async function toggleOfferDetail(offerId) {
+  async function toggleOfferDetail(offerId: number) {
     if (selectedOfferId === offerId) {
       selectedOfferId = null;
       offerDetail = null;
@@ -254,7 +324,7 @@
     }
   }
 
-  function switchCatalogType(value) {
+  function switchCatalogType(value: number) {
     if (catalogType === value) return;
     catalogType = value;
     parentChain = [];
@@ -266,8 +336,8 @@
     void loadPages();
   }
 
-  function drillInto(page) {
-    parentChain = [...parentChain, { id: page.Id ?? page.id, label: page.Localization ?? page.localization }];
+  function drillInto(page: CatalogPageRow) {
+    parentChain = [...parentChain, { id: page.id, label: page.localization }];
     selectedOfferId = null;
     offerDetail = null;
     newPageOpen = false;
@@ -276,7 +346,7 @@
     void loadCurrentPage();
   }
 
-  function drillToBreadcrumb(index) {
+  function drillToBreadcrumb(index: number) {
     // index -1 = root.
     parentChain = index < 0 ? [] : parentChain.slice(0, index + 1);
     selectedOfferId = null;
@@ -294,7 +364,16 @@
   // `changes` is the before/after list for an edit (empty for a create or a delete). It is shown in
   // the confirm dialog and becomes the audited reason, which is why none of these actions asks the
   // operator to type one any more: the page already knows what it is about to do.
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess, changes = []) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown>,
+    summary: string,
+    onSuccess: () => void | Promise<void>,
+    changes: FieldChange[] = [],
+  ) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
@@ -388,6 +467,8 @@
   function stageUpdatePage() {
     if (!canManage || !currentPage || !editPageForm) return;
 
+    const form = editPageForm;
+
     stage(
       'updatePage',
       translate('catalogAdmin.edit'),
@@ -412,11 +493,15 @@
         await loadPages();
         if (parentChain.length > 0) {
           parentChain = parentChain.map((p, i) =>
-            i === parentChain.length - 1 ? { ...p, label: editPageForm.localization.trim() } : p,
+            i === parentChain.length - 1 ? { ...p, label: form.localization.trim() } : p,
           );
         }
       },
-      diffFields(currentPage, { ...editPageForm, name: editPageForm.name.trim() || null }, PAGE_FIELDS()),
+      diffFields(
+        currentPage as unknown as Record<string, unknown>,
+        { ...form, name: form.name.trim() || null },
+        PAGE_FIELDS(),
+      ),
     );
   }
 
@@ -491,10 +576,10 @@
   }
 
   // The row as it was loaded, kept so the confirm dialog can show what actually changes.
-  let editOfferOriginal = null;
-  let editProductOriginal = null;
+  let editOfferOriginal: CatalogOfferRow | null = null;
+  let editProductOriginal: CatalogProductRow | null = null;
 
-  function startEditOffer(offer) {
+  function startEditOffer(offer: CatalogOfferRow) {
     editOfferId = offer.id;
     editOfferOriginal = offer;
     editOfferForm = {
@@ -512,6 +597,8 @@
 
   function stageUpdateOffer() {
     if (!canManage || !editOfferForm || editOfferId === null) return;
+
+    const form = editOfferForm;
 
     const currencyTypeId = editOfferForm.currencyTypeId === '' ? null : Number(editOfferForm.currencyTypeId);
 
@@ -538,19 +625,19 @@
         editOfferId = null;
         await loadCurrentPage();
         if (selectedOfferId === id) {
-          await loadOfferDetail(id);
+          await loadOfferDetail(id!);
         }
       },
       diffFields(
-        editOfferOriginal,
-        { ...editOfferForm, localizationId: editOfferForm.localizationId.trim(), currencyTypeId },
+        editOfferOriginal as unknown as Record<string, unknown>,
+        { ...form, localizationId: form.localizationId.trim(), currencyTypeId },
         OFFER_FIELDS(),
       ),
     );
   }
 
 
-  function stageDeleteOffer(offer) {
+  function stageDeleteOffer(offer: CatalogOfferRow) {
     if (!canManage) return;
 
     stage(
@@ -570,8 +657,8 @@
     );
   }
 
-  function pickProductFurniture(apply) {
-    picker = { kind: 'furniture', title: translate('common.selectFurniture'), onSelect: apply };
+  function pickProductFurniture(apply: (row: PickerRow) => void) {
+    picker = { title: translate('common.selectFurniture'), onSelect: apply };
   }
 
   function stageCreateProduct() {
@@ -596,18 +683,22 @@
       async () => {
         newProductOpen = false;
         newProduct = emptyProductForm();
-        await loadOfferDetail(selectedOfferId);
+        await loadOfferDetail(selectedOfferId!);
       },
     );
   }
 
-  function startEditProduct(product) {
+  function startEditProduct(product: CatalogProductRow) {
     editProductId = product.id;
     editProductOriginal = product;
     editProductForm = {
       productType: product.productType,
       furnitureDefinitionId: product.furnitureDefinitionEntityId ?? '',
+      furnitureSprite: product.furnitureSpriteId ?? '',
       furnitureName: product.furnitureName || '',
+      // The row carries the icon; the edit form was never given it, so the preview beside the
+      // picker was blank until the operator re-picked.
+      furnitureIcon: product.furnitureIconUrl || '',
       extraParam: product.extraParam || '',
       quantity: product.quantity,
       uniqueSize: product.uniqueSize,
@@ -618,6 +709,8 @@
 
   function stageUpdateProduct() {
     if (!canManage || !editProductForm || editProductId === null) return;
+
+    const form = editProductForm;
 
     stage(
       'updateProduct',
@@ -637,20 +730,23 @@
       translate('catalogAdmin.updateProductSummary', { id: editProductId }),
       async () => {
         editProductId = null;
-        await loadOfferDetail(selectedOfferId);
+        await loadOfferDetail(selectedOfferId!);
       },
       diffFields(
         // The loaded product names the definition `furnitureDefinitionEntityId`; the form uses the
         // shorter key the endpoint takes. Aligned here so the diff compares like with like.
-        { ...editProductOriginal, furnitureDefinitionId: editProductOriginal?.furnitureDefinitionEntityId ?? '' },
-        editProductForm,
+        {
+          ...editProductOriginal,
+          furnitureDefinitionId: editProductOriginal?.furnitureDefinitionEntityId ?? '',
+        },
+        form,
         PRODUCT_FIELDS(),
       ),
     );
   }
 
 
-  function stageDeleteProduct(product) {
+  function stageDeleteProduct(product: CatalogProductRow) {
     if (!canManage) return;
 
     stage(
@@ -661,7 +757,7 @@
       { productId: product.id },
       translate('catalogAdmin.deleteProductSummary', { id: product.id }),
       async () => {
-        await loadOfferDetail(selectedOfferId);
+        await loadOfferDetail(selectedOfferId!);
       },
     );
   }
@@ -669,13 +765,13 @@
   onMount(async () => {
     await loadPages();
     try {
-      const data = await apiGet('/api/v1/catalog/currency-types');
+      const data = await apiGet<CatalogCurrencyList>('/api/v1/catalog/currency-types');
       currencyTypes = data.items || [];
     } catch {
       // Non-fatal: the offer forms fall back to a plain numeric currency id.
     }
     try {
-      const data = await apiGet('/api/v1/catalog/icon-template');
+      const data = await apiGet<CatalogIconTemplate>('/api/v1/catalog/icon-template');
       iconTemplate = data.template || '';
     } catch {
       // Non-fatal: falls back to showing just the numeric icon id with no preview image.
@@ -753,8 +849,8 @@
           {/snippet}
           {#snippet value()}
                     <strong class="icon-preview">
-              {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" loading="lazy" />{/if}
-              #{currentPage.icon}
+              {#if currentPage?.iconUrl}<img src={currentPage?.iconUrl} alt="" loading="lazy" />{/if}
+              #{currentPage?.icon}
             </strong>
           {/snippet}
         </StatCard>
@@ -769,8 +865,8 @@
           {/snippet}
           {#snippet value()}
                     <span>
-              <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
-                {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
+              <span class="status-badge" class:status-badge--ok={currentPage?.visible} class:status-badge--bad={!currentPage?.visible}>
+                {currentPage?.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
               </span>
             </span>
           {/snippet}
@@ -1001,7 +1097,7 @@
 
 {#if picker}
   <PickerModal
-    kind={picker.kind}
+    kind="furniture"
     title={picker.title}
     onSelect={picker.onSelect}
     onClose={() => (picker = null)}
@@ -1248,7 +1344,13 @@
         <div class="op-pick">
           <button class="success"
             type="button"
-            onclick={() => pickProductFurniture((f) => (newProduct = { ...newProduct, furnitureDefinitionId: f.id, furnitureName: f.name, furnitureSprite: f.spriteId, furnitureIcon: f.iconUrl }))}
+            onclick={() => pickProductFurniture((f) => (newProduct = {
+                ...newProduct,
+                furnitureDefinitionId: Number(f.id),
+                furnitureName: f.name,
+                furnitureSprite: f.spriteId ?? '',
+                furnitureIcon: f.iconUrl ?? '',
+              }))}
           >
             {$t('common.selectFurniture')}
           </button>

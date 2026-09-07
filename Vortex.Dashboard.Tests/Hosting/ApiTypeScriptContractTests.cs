@@ -118,6 +118,11 @@ public sealed class ApiTypeScriptContractTests
         typeof(QuestTypeOptions),
         typeof(CommunityGoalList),
         typeof(DailyTaskList),
+        typeof(CatalogPageList),
+        typeof(CatalogPageDetail),
+        typeof(CatalogOfferDetail),
+        typeof(CatalogCurrencyList),
+        typeof(CatalogIconTemplate),
     ];
 
     [Fact]

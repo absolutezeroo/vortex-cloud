@@ -442,6 +442,37 @@ export interface CapabilityGroup {
   capabilities: string[];
 }
 
+export interface CatalogCurrencyList {
+  count: number;
+  items: TargetedOfferCurrency[];
+}
+
+export interface CatalogIconTemplate {
+  template: string | null;
+}
+
+export interface CatalogOfferDetail {
+  id: number;
+  offer: CatalogOfferView;
+  products: CatalogProductRow[];
+}
+
+export interface CatalogOfferRow {
+  id: number;
+  localizationId: string;
+  costCredits: number;
+  costCurrency: number;
+  currencyTypeId: number | null;
+  currencyName: string | null;
+  canGift: boolean;
+  canBundle: boolean;
+  clubLevel: number;
+  discountPercent: number;
+  visible: boolean;
+  productCount: number;
+  singleProduct: CatalogProductSummary | null;
+}
+
 export interface CatalogOfferSales {
   offerId: number;
   offerName: string;
@@ -450,6 +481,88 @@ export interface CatalogOfferSales {
   purchaseCount: number;
   quantity: number;
   creditsSpent: number;
+}
+
+export interface CatalogOfferView {
+  id: number;
+  catalogPageEntityId: number;
+  pageLocalization: string;
+  catalogType: number;
+  localizationId: string;
+  costCredits: number;
+  costCurrency: number;
+  currencyTypeId: number | null;
+  currencyName: string | null;
+  canGift: boolean;
+  canBundle: boolean;
+  clubLevel: number;
+  discountPercent: number;
+  visible: boolean;
+}
+
+export interface CatalogPageDetail {
+  id: number;
+  catalogType: number;
+  parentEntityId: number | null;
+  parentLocalization: string | null;
+  localization: string;
+  name: string | null;
+  icon: number;
+  iconUrl: string | null;
+  layout: string;
+  imageData: string[] | null;
+  textData: string[] | null;
+  sortOrder: number;
+  visible: boolean;
+  offers: CatalogOfferRow[];
+}
+
+export interface CatalogPageList {
+  catalogType: number;
+  parentId: number | null;
+  count: number;
+  items: CatalogPageRow[];
+}
+
+export interface CatalogPageRow {
+  id: number;
+  parentEntityId: number | null;
+  localization: string;
+  name: string | null;
+  icon: number;
+  iconUrl: string | null;
+  layout: string;
+  sortOrder: number;
+  visible: boolean;
+  childCount: number;
+  offerCount: number;
+}
+
+export interface CatalogProductRow {
+  id: number;
+  productType: number;
+  productTypeLabel: string;
+  furnitureDefinitionEntityId: number | null;
+  furnitureName: string | null;
+  furnitureSpriteId: number | null;
+  furnitureIconUrl: string | null;
+  extraParam: string | null;
+  quantity: number;
+  uniqueSize: number;
+  uniqueRemaining: number;
+  buildersClubEligible: boolean;
+}
+
+export interface CatalogProductSummary {
+  id: number;
+  productType: number;
+  productTypeLabel: string;
+  furnitureName: string | null;
+  furnitureIconUrl: string | null;
+  quantity: number;
+  uniqueSize: number;
+  uniqueRemaining: number;
+  buildersClubEligible: boolean;
 }
 
 export interface CatalogPurchasePoint {

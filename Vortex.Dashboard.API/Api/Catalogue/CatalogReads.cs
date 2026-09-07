@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Catalog;
@@ -52,7 +53,7 @@ internal sealed class CatalogReads(
 
     /// <summary>Pages at one level of one catalog tree. <c>parentId</c> omitted/blank means the root
     /// level (pages with no parent) of the given <c>catalogType</c> (0=Normal, 1=BuildersClub).</summary>
-    public Task<object> CatalogPagesAsync(NameValueCollection query, CancellationToken ct)
+    public Task<CatalogPageList> CatalogPagesAsync(NameValueCollection query, CancellationToken ct)
     {
         CatalogType catalogType = int.TryParse(query["catalogType"], out int catalogTypeValue)
             ? (CatalogType)catalogTypeValue
@@ -61,7 +62,7 @@ internal sealed class CatalogReads(
             ? parsedParentId
             : null;
 
-        return QueryAsync<object>(
+        return QueryAsync<CatalogPageList>(
             async db =>
             {
                 var rows = await db
@@ -85,36 +86,29 @@ internal sealed class CatalogReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = rows.Select(p => new
-                    {
+                List<CatalogPageRow> items = rows.Select(p => new CatalogPageRow(
                         p.Id,
                         p.ParentEntityId,
                         p.Localization,
                         p.Name,
                         p.Icon,
-                        iconUrl = BuildCatalogIconUrl(p.Icon),
+                        BuildCatalogIconUrl(p.Icon),
                         p.layout,
                         p.SortOrder,
                         p.Visible,
                         p.childCount,
-                        p.offerCount,
-                    })
+                        p.offerCount
+                    ))
                     .ToList();
 
-                return new
-                {
-                    catalogType = (int)catalogType,
-                    parentId,
-                    count = items.Count,
-                    items,
-                };
+                return new CatalogPageList((int)catalogType, parentId, items.Count, items);
             },
             ct
         );
     }
 
-    public Task<object?> CatalogPageDetailAsync(int pageId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<CatalogPageDetail?> CatalogPageDetailAsync(int pageId, CancellationToken ct) =>
+        QueryAsync<CatalogPageDetail?>(
             async db =>
             {
                 CatalogPageEntity? page = await db
@@ -187,31 +181,24 @@ internal sealed class CatalogReads(
                             .ToListAsync(ct)
                             .ConfigureAwait(false);
 
-                Dictionary<int, object> singleProductByOfferId = singleProductRows.ToDictionary(
-                    p => p.CatalogOfferEntityId,
-                    p =>
-                        (object)
-                            new
-                            {
-                                p.Id,
-                                p.productType,
-                                p.productTypeLabel,
-                                p.furnitureName,
-                                furnitureIconUrl = _assetUrls.ProductImage(
-                                    p.productType,
-                                    p.furnitureName,
-                                    p.ExtraParam
-                                ),
-                                p.Quantity,
-                                p.UniqueSize,
-                                p.UniqueRemaining,
-                                p.BuildersClubEligible,
-                            }
-                );
+                Dictionary<int, CatalogProductSummary> singleProductByOfferId =
+                    singleProductRows.ToDictionary(
+                        p => p.CatalogOfferEntityId,
+                        p => new CatalogProductSummary(
+                            p.Id,
+                            p.productType,
+                            p.productTypeLabel,
+                            p.furnitureName,
+                            _assetUrls.ProductImage(p.productType, p.furnitureName, p.ExtraParam),
+                            p.Quantity,
+                            p.UniqueSize,
+                            p.UniqueRemaining,
+                            p.BuildersClubEligible
+                        )
+                    );
 
-                var offers = offerRows
-                    .Select(o => new
-                    {
+                List<CatalogOfferRow> offers = offerRows
+                    .Select(o => new CatalogOfferRow(
                         o.Id,
                         o.LocalizationId,
                         o.CostCredits,
@@ -224,8 +211,8 @@ internal sealed class CatalogReads(
                         o.DiscountPercent,
                         o.Visible,
                         o.productCount,
-                        singleProduct = singleProductByOfferId.GetValueOrDefault(o.Id),
-                    })
+                        singleProductByOfferId.GetValueOrDefault(o.Id)
+                    ))
                     .ToList();
 
                 string? parentLocalization = page.ParentEntityId is { } parentId
@@ -237,53 +224,49 @@ internal sealed class CatalogReads(
                         .ConfigureAwait(false)
                     : null;
 
-                return new
-                {
+                return new CatalogPageDetail(
                     page.Id,
-                    catalogType = (int)page.CatalogType,
+                    (int)page.CatalogType,
                     page.ParentEntityId,
                     parentLocalization,
                     page.Localization,
                     page.Name,
                     page.Icon,
-                    iconUrl = BuildCatalogIconUrl(page.Icon),
-                    layout = page.Layout.ToLayoutString(),
+                    BuildCatalogIconUrl(page.Icon),
+                    page.Layout.ToLayoutString(),
                     page.ImageData,
                     page.TextData,
                     page.SortOrder,
                     page.Visible,
-                    offers,
-                };
+                    offers
+                );
             },
             ct
         );
 
-    public Task<object?> CatalogOfferDetailAsync(int offerId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<CatalogOfferDetail?> CatalogOfferDetailAsync(int offerId, CancellationToken ct) =>
+        QueryAsync<CatalogOfferDetail?>(
             async db =>
             {
-                var offer = await db
+                CatalogOfferView? offer = await db
                     .CatalogOffers.AsNoTracking()
                     .Where(o => o.Id == offerId)
-                    .Select(o => new
-                    {
+                    .Select(o => new CatalogOfferView(
                         o.Id,
                         o.CatalogPageEntityId,
-                        pageLocalization = o.Page.Localization,
-                        catalogType = (int)o.Page.CatalogType,
+                        o.Page.Localization,
+                        (int)o.Page.CatalogType,
                         o.LocalizationId,
                         o.CostCredits,
                         o.CostCurrency,
                         o.CurrencyTypeId,
-                        currencyName = o.CurrencyTypeEntity != null
-                            ? o.CurrencyTypeEntity.Name
-                            : null,
+                        o.CurrencyTypeEntity != null ? o.CurrencyTypeEntity.Name : null,
                         o.CanGift,
                         o.CanBundle,
                         o.ClubLevel,
                         o.DiscountPercent,
-                        o.Visible,
-                    })
+                        o.Visible
+                    ))
                     .FirstOrDefaultAsync(ct)
                     .ConfigureAwait(false);
 
@@ -320,57 +303,46 @@ internal sealed class CatalogReads(
                 // BuildFurniIconUrl isn't translatable to SQL, so the icon URL is attached in a
                 // second pass over the already-materialized rows (same two-step shape as
                 // FurnitureDefinitionsAsync).
-                var products = productRows
-                    .Select(p => new
-                    {
+                List<CatalogProductRow> products = productRows
+                    .Select(p => new CatalogProductRow(
                         p.Id,
                         p.productType,
                         p.productTypeLabel,
                         p.FurnitureDefinitionEntityId,
                         p.furnitureName,
                         p.furnitureSpriteId,
-                        furnitureIconUrl = _assetUrls.ProductImage(
-                            p.productType,
-                            p.furnitureName,
-                            p.ExtraParam
-                        ),
+                        _assetUrls.ProductImage(p.productType, p.furnitureName, p.ExtraParam),
                         p.ExtraParam,
                         p.Quantity,
                         p.UniqueSize,
                         p.UniqueRemaining,
-                        p.BuildersClubEligible,
-                    })
+                        p.BuildersClubEligible
+                    ))
                     .ToList();
 
-                return new
-                {
-                    offer.Id,
-                    offer,
-                    products,
-                };
+                return new CatalogOfferDetail(offer.Id, offer, products);
             },
             ct
         );
 
-    public Task<object> CatalogCurrencyTypesAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<CatalogCurrencyList> CatalogCurrencyTypesAsync(CancellationToken ct) =>
+        QueryAsync<CatalogCurrencyList>(
             async db =>
             {
-                var rows = await db
+                List<TargetedOfferCurrency> rows = await db
                     .CurrencyTypes.AsNoTracking()
                     .Where(c => c.Enabled)
                     .OrderBy(c => c.Id)
-                    .Select(c => new
-                    {
+                    .Select(c => new TargetedOfferCurrency(
                         c.Id,
                         c.Name,
-                        type = c.CurrencyType.ToString(),
-                        c.ActivityPointType,
-                    })
+                        c.CurrencyType.ToString(),
+                        c.ActivityPointType
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { count = rows.Count, items = rows };
+                return new CatalogCurrencyList(rows.Count, rows);
             },
             ct
         );
@@ -381,13 +353,12 @@ internal sealed class CatalogReads(
     /// of which icon ids actually exist on the asset host, so "does this id have a real icon" can
     /// only be answered by letting the browser try to load it.
     /// </summary>
-    public object CatalogIconTemplate() =>
-        new
-        {
-            template = string.IsNullOrWhiteSpace(_config.CatalogIconUrlTemplate)
+    public CatalogIconTemplate CatalogIconTemplate() =>
+        new(
+            string.IsNullOrWhiteSpace(_config.CatalogIconUrlTemplate)
                 ? null
-                : _config.CatalogIconUrlTemplate,
-        };
+                : _config.CatalogIconUrlTemplate
+        );
 
     private string? BuildCatalogIconUrl(int iconId) => _assetUrls.CatalogIcon(iconId);
 }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
@@ -25,7 +26,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapCatalogReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<CatalogPageList>(
             app,
             ApiCatalog + "/pages",
             (HttpContext ctx, CatalogReads api, CancellationToken ct) =>
@@ -33,7 +34,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );
-        MapReadGet(
+        MapReadGetNullable<CatalogPageDetail>(
             app,
             ApiCatalog + "/pages/{pageId:int}",
             (int pageId, CatalogReads api, CancellationToken ct) =>
@@ -41,7 +42,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );
-        MapReadGet(
+        MapReadGetNullable<CatalogOfferDetail>(
             app,
             ApiCatalog + "/offers/{offerId:int}",
             (int offerId, CatalogReads api, CancellationToken ct) =>
@@ -49,14 +50,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );
-        MapReadGet(
+        MapReadGet<CatalogCurrencyList>(
             app,
             ApiCatalog + "/currency-types",
             (CatalogReads api, CancellationToken ct) => OkAsync(api.CatalogCurrencyTypesAsync(ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );
-        MapReadGet(
+        MapReadGet<CatalogIconTemplate>(
             app,
             ApiCatalog + "/icon-template",
             (CatalogReads api) => Results.Ok(api.CatalogIconTemplate()),
