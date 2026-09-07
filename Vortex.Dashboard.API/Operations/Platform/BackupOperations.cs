@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Database.Backup;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform;
 
 internal sealed class BackupOperations(
     OperationRunner runner,

@@ -5,7 +5,7 @@ using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Permissions.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety;
 
 /// <summary>
 /// Staff/role operations. These are the writes that can grant capabilities — including the one that

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety;
 
 /// <summary>
 /// Erasure on request. Separate from the moderation operations on purpose: this is not a sanction,

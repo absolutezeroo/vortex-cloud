@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Prizes;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read surface for the prize pools. The admin CRUD lives in

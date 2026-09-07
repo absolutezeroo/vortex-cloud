@@ -10,7 +10,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Habbicons;
 using Vortex.Primitives.Habbicons;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read surface for Habbicon content and ownership. The CRUD lives in

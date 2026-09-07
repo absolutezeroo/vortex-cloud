@@ -11,7 +11,7 @@ using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Groups;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 internal sealed class GroupReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

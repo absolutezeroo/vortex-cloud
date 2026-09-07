@@ -19,7 +19,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety;
 
 internal sealed class ModerationOperations(
     OperationRunner runner,

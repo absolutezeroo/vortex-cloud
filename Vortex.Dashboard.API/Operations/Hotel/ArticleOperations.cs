@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Content;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel;
 
 /// <summary>
 /// The website's news, written. Every one of these routes through

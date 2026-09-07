@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Creating, changing and removing surveys and their questions.

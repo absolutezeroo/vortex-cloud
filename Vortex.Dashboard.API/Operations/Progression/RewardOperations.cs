@@ -8,7 +8,7 @@ using Vortex.Primitives.Habbicons.Admin;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.RewardTracks.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Habbicon and reward-track admin operations.

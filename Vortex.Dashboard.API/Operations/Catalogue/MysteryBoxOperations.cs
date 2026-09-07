@@ -7,7 +7,7 @@ using Vortex.Primitives.MysteryBox.Admin;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue;
 
 /// <summary>
 /// Mystery box admin operations. Each routes through

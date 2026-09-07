@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Safety;
 
 internal sealed class ChatlogReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)

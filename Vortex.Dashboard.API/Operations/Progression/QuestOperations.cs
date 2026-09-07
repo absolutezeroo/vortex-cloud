@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Quest admin operations. Each routes through <see cref="Vortex.Primitives.Quests.IQuestAdminService"/>

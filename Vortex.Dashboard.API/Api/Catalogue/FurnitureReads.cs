@@ -9,7 +9,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 internal sealed class FurnitureReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

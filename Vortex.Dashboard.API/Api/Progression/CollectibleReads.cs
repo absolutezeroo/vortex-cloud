@@ -8,7 +8,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Players.Avatar;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// NFT collections, the items that make them up, and the collector scores players have reached.

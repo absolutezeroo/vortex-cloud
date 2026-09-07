@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Fishing.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Fishing content admin operations. Each routes through

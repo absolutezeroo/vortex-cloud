@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Community goal and daily-task admin operations.

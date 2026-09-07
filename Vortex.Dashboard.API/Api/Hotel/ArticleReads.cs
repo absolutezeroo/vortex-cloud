@@ -12,7 +12,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
 using Vortex.Observability.Configuration;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 /// <summary>
 /// Read surface for the website's news. Every write lives in

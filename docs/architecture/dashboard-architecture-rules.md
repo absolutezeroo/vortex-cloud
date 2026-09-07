@@ -912,6 +912,11 @@ Recorded at each step, so the debt is measured instead of felt. Re-take the meas
 and twenty-nine constructor dependencies the two services held are now held by whichever subject
 uses each one.
 
+**Folder equals namespace under `Api` and `Operations`** since the same day — the partial classes
+that forced them apart are gone. `Hosting` still declares one namespace across its five family
+folders, because `DashboardEndpoints` is still one partial class, which §19 tolerates for thin
+routing that holds no dependencies of its own.
+
 **§29 settled the same day.** The forwarding list no longer grows with the subjects: the sixty
 entries that did are derived from what the classes are (a read derives `DashboardReads`, a write
 takes an `OperationRunner`), leaving eleven declared for the services endpoints inject directly.

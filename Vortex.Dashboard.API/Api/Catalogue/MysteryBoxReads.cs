@@ -11,7 +11,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Prizes;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// Read + analytics surface for the mystery box. The admin CRUD lives in

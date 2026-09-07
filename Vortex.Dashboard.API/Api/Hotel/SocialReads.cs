@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 /// <summary>
 /// The social graph and the guild forums: friendships, pending requests, the blocking/ignoring that

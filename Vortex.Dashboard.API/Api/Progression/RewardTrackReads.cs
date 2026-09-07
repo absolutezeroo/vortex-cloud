@@ -10,7 +10,7 @@ using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.RewardTracks;
 using Vortex.Primitives.Signals;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read surface for reward-track content and player progression. The CRUD lives in

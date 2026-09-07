@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)

@@ -28,7 +28,7 @@ using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Platform;
 
 internal sealed class DirectoryReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

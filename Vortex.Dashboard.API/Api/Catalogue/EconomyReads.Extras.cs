@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// The corners of the economy that have their own tables but no surface of their own: LTD series and

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// One row per subsystem: how much of it actually exists. The Overview answers "is the hotel

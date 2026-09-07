@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Hotel;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;

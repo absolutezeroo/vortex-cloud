@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Primitives.Sound;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// The song catalogue, read for the page that edits it. The writes live in

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Content;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel;
 
 /// <summary>
 /// Content operations: achievement ladders, bots and hand items, NFT collections, the economy's

@@ -6,7 +6,7 @@ using Vortex.Database.Context;
 using Vortex.Observability.Runtime;
 using Vortex.Primitives.Benchmark;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Platform;
 
 /// <summary>
 /// What the last load run measured, and what the current one is doing.

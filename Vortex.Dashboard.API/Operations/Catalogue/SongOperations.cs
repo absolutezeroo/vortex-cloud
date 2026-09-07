@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Sound;
 using Vortex.Primitives.Sound.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue;
 
 /// <summary>
 /// Song catalogue admin operations. Each routes through

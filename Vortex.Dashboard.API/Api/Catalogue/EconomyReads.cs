@@ -26,7 +26,7 @@ using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 internal sealed partial class EconomyReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

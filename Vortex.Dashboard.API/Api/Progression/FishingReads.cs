@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// The four fishing content tables plus what players have done with them, read for the page that

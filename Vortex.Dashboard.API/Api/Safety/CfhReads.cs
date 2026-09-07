@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Primitives.Moderation;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Safety;
 
 internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)

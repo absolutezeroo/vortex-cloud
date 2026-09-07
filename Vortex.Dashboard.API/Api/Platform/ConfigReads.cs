@@ -8,7 +8,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Platform;
 
 /// <summary>
 /// Read surface for the server-config editor. The <c>IServerConfigGrain</c> only knows keys that have

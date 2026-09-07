@@ -2,6 +2,10 @@ using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;

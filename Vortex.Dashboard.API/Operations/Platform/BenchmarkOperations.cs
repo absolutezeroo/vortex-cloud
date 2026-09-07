@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Benchmark;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform;
 
 /// <summary>
 /// Starting and stopping a load run.

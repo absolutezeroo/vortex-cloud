@@ -8,7 +8,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Quests;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read surface for the content behind the quest system that is not a quest: community goals with

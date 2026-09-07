@@ -9,7 +9,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Permissions;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Safety;
 
 /// <summary>
 /// Who can do what: the roles, the capabilities each one grants, the accounts holding them, and the

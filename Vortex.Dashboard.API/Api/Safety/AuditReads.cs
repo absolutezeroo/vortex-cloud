@@ -25,7 +25,7 @@ using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Safety;
 
 internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)

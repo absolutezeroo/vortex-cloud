@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// The two economy aggregates that used to be computed in the emulator's own heap. Both read the

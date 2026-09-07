@@ -14,7 +14,7 @@ using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Pets;
 using Vortex.Database.Entities.Players;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Platform;
 
 /// <summary>
 /// The directories behind the filter pickers.

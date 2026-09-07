@@ -9,7 +9,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read + analytics surface for achievements. There is no achievement audit trail, so everything is

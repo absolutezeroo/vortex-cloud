@@ -14,7 +14,7 @@ using Vortex.Database.Entities.Catalog;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 /// <summary>
 /// Read + analytics surface for targeted (personalised/promotional) offers. The admin CRUD lives in

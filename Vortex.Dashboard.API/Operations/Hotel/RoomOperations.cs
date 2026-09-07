@@ -20,7 +20,7 @@ using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel;
 
 internal sealed class RoomOperations(
     OperationRunner runner,

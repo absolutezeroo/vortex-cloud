@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Everything a player accumulates that is neither currency nor furniture: badges, avatar effects,

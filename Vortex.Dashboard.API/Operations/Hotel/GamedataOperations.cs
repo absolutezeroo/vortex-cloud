@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel;
 
 /// <summary>
 /// The four gamedata files, written.

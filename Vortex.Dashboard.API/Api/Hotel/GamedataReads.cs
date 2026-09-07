@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 /// <summary>
 /// The gamedata files an operator edits, read for the page that edits them.

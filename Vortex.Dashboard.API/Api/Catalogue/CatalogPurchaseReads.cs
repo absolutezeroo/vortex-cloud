@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Primitives.Observability;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Catalogue;
 
 internal sealed class CatalogPurchaseReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

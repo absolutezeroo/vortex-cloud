@@ -2,6 +2,7 @@ using System;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Database.Context;
 using Xunit;
 

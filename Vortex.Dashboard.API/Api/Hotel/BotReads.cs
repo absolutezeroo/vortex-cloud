@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Bots;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 /// <summary>
 /// Read surface for the room actors that are neither players nor furni: bots and the hand items

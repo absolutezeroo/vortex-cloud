@@ -6,10 +6,20 @@ using Vortex.Dashboard.API.Admin.Catalogue;
 using Vortex.Dashboard.API.Admin.Hotel;
 using Vortex.Dashboard.API.Admin.Progression;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Platform;
+using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Dashboard.API.Http;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Catalogue;
+using Vortex.Dashboard.API.Operations.Hotel;
+using Vortex.Dashboard.API.Operations.Platform;
+using Vortex.Dashboard.API.Operations.Progression;
+using Vortex.Dashboard.API.Operations.Safety;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
@@ -46,12 +56,16 @@ namespace Vortex.Dashboard.API;
 /// subject.
 /// </para>
 /// <para>
-/// The folders under <c>Api</c>, <c>Operations</c> and <c>Hosting</c> are not namespaces — those
-/// files declare <c>Vortex.Dashboard.API.Api</c>, <c>.Operations</c> and <c>.Hosting</c> whatever
-/// family folder they sit in. That was forced while they were parts of one partial class; it stays
-/// now because renaming the namespaces is a separate change from moving the code, and
-/// <c>DashboardEndpoints</c> is still one partial class per §19's tolerated case: thin routing, no
-/// dependencies of its own.
+/// Folder equals namespace under <c>Api</c> and <c>Operations</c>, as everywhere else in this
+/// repository: a file in <c>Operations/Catalogue/</c> declares
+/// <c>Vortex.Dashboard.API.Operations.Catalogue</c>. That was impossible while those folders held
+/// parts of one partial class, since every part must declare the same namespace.
+/// </para>
+/// <para>
+/// <c>Hosting</c> is the exception, and still is: <see cref="Hosting.DashboardEndpoints"/> remains
+/// one partial class across all five family folders, so they all declare
+/// <c>Vortex.Dashboard.API.Hosting</c>. That is the tolerated case — thin routing with no
+/// dependencies of its own — not a subject hiding its size.
 /// </para>
 /// <para>
 /// Writes all go through <see cref="OperationRunner"/>, which carries the audit, correlation id and

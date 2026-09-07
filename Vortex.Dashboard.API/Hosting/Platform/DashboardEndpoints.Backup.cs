@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Platform;
 using Vortex.Database.Backup;
 using Vortex.Primitives.Permissions;
 

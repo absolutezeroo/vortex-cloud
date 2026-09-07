@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Console;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform;
 
 internal sealed class ConsoleOperations(
     OperationRunner runner,

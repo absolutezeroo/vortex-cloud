@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;

@@ -6,7 +6,7 @@ using Orleans;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform;
 
 /// <summary>
 /// Write surface for the server-config editor. Every set routes through <c>IServerConfigGrain</c>

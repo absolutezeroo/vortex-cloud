@@ -8,7 +8,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Enums;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Hotel;
 
 /// <summary>
 /// The navigator's own configuration: the tabs the client asks for, the blocks inside them, and the

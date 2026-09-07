@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue;
 
 /// <summary>
 /// Targeted-offer admin operations. Each routes through <see cref="ITargetedOfferAdminService"/>

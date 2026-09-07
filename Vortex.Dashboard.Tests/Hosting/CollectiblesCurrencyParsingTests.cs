@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Xunit;
 

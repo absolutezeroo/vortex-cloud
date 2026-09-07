@@ -10,7 +10,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
 using Vortex.Primitives.Polls;
 
-namespace Vortex.Dashboard.API.Api;
+namespace Vortex.Dashboard.API.Api.Progression;
 
 /// <summary>
 /// Read + results surface for surveys. Authoring lives in <see cref="Operations.PollOperations"/>;

@@ -5,7 +5,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Admin;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression;
 
 /// <summary>
 /// Prize pool admin operations. Each routes through

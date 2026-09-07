@@ -5,7 +5,7 @@ using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Admin;
 using Vortex.Primitives.Navigator.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel;
 
 /// <summary>
 /// Navigator configuration operations. Each routes through
