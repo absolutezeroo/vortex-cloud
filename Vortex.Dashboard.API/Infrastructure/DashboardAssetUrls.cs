@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
 
+using Vortex.Primitives.Furniture.Enums;
+
 namespace Vortex.Dashboard.API.Infrastructure;
 
 /// <summary>
@@ -234,4 +236,34 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             ? uri.GetLeftPart(UriPartial.Authority)
             : null;
     }
+    /// <summary>
+    /// The image for a catalogue product, which is a different asset per product type.
+    /// </summary>
+    /// <remarks>
+    /// Lived as a private helper on the read service, and was wanted by two subjects the moment that
+    /// service started being split — so it belongs here, on the class whose whole job is turning a
+    /// thing into the URL of its picture, rather than being copied or pushed into a base class the
+    /// two would then share for one method.
+    /// </remarks>
+    public string? ProductImage(int productType, string? furnitureName, string? extraParam)
+    {
+        if (productType == (int)ProductType.Badge)
+        {
+            return string.IsNullOrWhiteSpace(extraParam) || extraParam == "0"
+                ? null
+                : BadgeImage(extraParam);
+        }
+
+        if (
+            productType == (int)ProductType.Effect
+            && int.TryParse(extraParam, out int effectId)
+            && effectId > 0
+        )
+        {
+            return EffectImage(effectId);
+        }
+
+        return furnitureName is null ? null : FurniIcon(furnitureName);
+    }
+
 }

@@ -1535,26 +1535,5 @@ internal sealed partial class DashboardApiService
     /// at — a URL that 404s is worse than an honest fallback icon.
     /// </para>
     /// </remarks>
-    private string? BuildProductImageUrl(int productType, string? furnitureName, string? extraParam)
-    {
-        if (productType == (int)ProductType.Badge)
-        {
-            return string.IsNullOrWhiteSpace(extraParam) || extraParam == "0"
-                ? null
-                : _assetUrls.BadgeImage(extraParam);
-        }
-
-        if (
-            productType == (int)ProductType.Effect
-            && int.TryParse(extraParam, out int effectId)
-            && effectId > 0
-        )
-        {
-            return _assetUrls.EffectImage(effectId);
-        }
-
-        return furnitureName is null ? null : _assetUrls.FurniIcon(furnitureName);
-    }
-
     private sealed record PlayerRow(int Id, string Name, string Figure);
 }

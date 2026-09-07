@@ -23,14 +23,24 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+/// <summary>
+/// Creating, changing and removing catalogue pages, offers and products.
+/// </summary>
+/// <remarks>
+/// Two dependencies where the service it left took thirty-two: the runner that audits every write,
+/// and the domain's own catalogue authoring service. That is the whole of what writing a catalogue
+/// needs, and it is now readable in one constructor.
+/// </remarks>
+internal sealed class CatalogOperations(OperationRunner runner, ICatalogAdminService catalogAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
     public Task<OperationResult> CreateCatalogPageAsync(
         CreateCatalogPageRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.page.create",
             actor,
             request.Reason,
@@ -76,7 +86,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.page.update",
             actor,
             request.Reason,
@@ -122,7 +132,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.page.delete",
             actor,
             request.Reason,
@@ -148,7 +158,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.offer.create",
             actor,
             request.Reason,
@@ -194,7 +204,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.offer.update",
             actor,
             request.Reason,
@@ -240,7 +250,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.offer.delete",
             actor,
             request.Reason,
@@ -266,7 +276,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.product.create",
             actor,
             request.Reason,
@@ -310,7 +320,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.product.update",
             actor,
             request.Reason,
@@ -354,7 +364,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.catalog.product.delete",
             actor,
             request.Reason,

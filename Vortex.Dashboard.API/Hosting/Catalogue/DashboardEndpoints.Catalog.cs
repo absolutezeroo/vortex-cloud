@@ -25,7 +25,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/pages",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+            (HttpContext ctx, CatalogReads api, CancellationToken ct) =>
                 OkAsync(api.CatalogPagesAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
@@ -33,7 +33,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/pages/{pageId:int}",
-            (int pageId, DashboardApiService api, CancellationToken ct) =>
+            (int pageId, CatalogReads api, CancellationToken ct) =>
                 OkNullableAsync(api.CatalogPageDetailAsync(pageId, ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
@@ -41,7 +41,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/offers/{offerId:int}",
-            (int offerId, DashboardApiService api, CancellationToken ct) =>
+            (int offerId, CatalogReads api, CancellationToken ct) =>
                 OkNullableAsync(api.CatalogOfferDetailAsync(offerId, ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
@@ -49,7 +49,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/currency-types",
-            (DashboardApiService api, CancellationToken ct) =>
+            (CatalogReads api, CancellationToken ct) =>
                 OkAsync(api.CatalogCurrencyTypesAsync(ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
@@ -57,7 +57,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/icon-template",
-            (DashboardApiService api) => Results.Ok(api.CatalogIconTemplate()),
+            (CatalogReads api) => Results.Ok(api.CatalogIconTemplate()),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );
@@ -71,7 +71,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateCatalogPageRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -97,7 +97,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateCatalogPageRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -124,7 +124,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteCatalogPageRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -148,7 +148,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateCatalogOfferRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -171,7 +171,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateCatalogOfferRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -194,7 +194,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteCatalogOfferRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -218,7 +218,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateCatalogProductRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -241,7 +241,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateCatalogProductRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -264,7 +264,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteCatalogProductRequest body,
-                DashboardOperationsService ops,
+                CatalogOperations ops,
                 CancellationToken ct
             ) =>
             {

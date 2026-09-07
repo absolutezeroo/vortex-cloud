@@ -216,6 +216,11 @@ internal sealed class DashboardWebHost(
         typeof(DashboardApiService),
         typeof(DashboardMonitoringReads),
         typeof(DashboardOperationsService),
+        // Every subject that has left the two services above for classes of its own has to be listed
+        // here as well — a route parameter this list does not name is taken for a request body, and
+        // the failure is at startup, for the whole dashboard, not at that route.
+        typeof(CatalogReads),
+        typeof(CatalogOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

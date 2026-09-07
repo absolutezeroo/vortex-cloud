@@ -30,8 +30,25 @@ using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+using Vortex.Dashboard.API.Infrastructure;
+
+/// <summary>
+/// What the catalogue pages, offers and products look like to an operator.
+/// </summary>
+/// <remarks>
+/// Three dependencies, which is what this subject actually uses: a context, the asset URL builder
+/// for icons, and the observability config for the icon template. It used to be part of a class
+/// that took ten for every subject — see <see cref="DashboardReads"/> for why the base carries only
+/// the context.
+/// </remarks>
+internal sealed class CatalogReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls,
+    IOptions<ObservabilityConfig> options
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly ObservabilityConfig _config = options.Value;
     /// <summary>Pages at one level of one catalog tree. <c>parentId</c> omitted/blank means the root
     /// level (pages with no parent) of the given <c>catalogType</c> (0=Normal, 1=BuildersClub).</summary>
     public Task<object> CatalogPagesAsync(NameValueCollection query, CancellationToken ct)
@@ -179,7 +196,7 @@ internal sealed partial class DashboardApiService
                                 p.productType,
                                 p.productTypeLabel,
                                 p.furnitureName,
-                                furnitureIconUrl = BuildProductImageUrl(
+                                furnitureIconUrl = _assetUrls.ProductImage(
                                     p.productType,
                                     p.furnitureName,
                                     p.ExtraParam
@@ -311,7 +328,7 @@ internal sealed partial class DashboardApiService
                         p.FurnitureDefinitionEntityId,
                         p.furnitureName,
                         p.furnitureSpriteId,
-                        furnitureIconUrl = BuildProductImageUrl(
+                        furnitureIconUrl = _assetUrls.ProductImage(
                             p.productType,
                             p.furnitureName,
                             p.ExtraParam

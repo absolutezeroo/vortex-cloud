@@ -95,6 +95,10 @@ public sealed class DashboardApiModule : IHostPluginModule
         // What every dashboard write goes through. A collaborator, so a subject that becomes its
         // own operations class takes it directly instead of inheriting a mechanism.
         services.TryAddSingleton<OperationRunner>();
+        // The catalogue, as its own two classes rather than a slice of two god services. Three
+        // dependencies for the reads, two for the writes, both visible in their constructors.
+        services.TryAddSingleton<CatalogReads>();
+        services.TryAddSingleton<CatalogOperations>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,
