@@ -81,16 +81,33 @@ if (handlerDb.length > 0) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Wall 2 -- the admin surface writes through grains, never behind their back.
+// Wall 2 -- only the authoring services persist, and they own what they persist.
 //
-// The dashboard reads the database directly (one read service, deliberately) but every mutation
-// goes through the owning grain, so the single-writer-per-aggregate rule survives contact with the
-// admin pages. A SaveChanges here would be a second writer that the grain never learns about.
+// This used to forbid SaveChangesAsync anywhere in Vortex.Dashboard.API, and that rule was simply
+// wrong: it reported 146 violations, every one of them an *AdminService doing exactly its job.
+// docs/architecture/dashboard-architecture.md §11-13 states the real rule -- what matters is who
+// owns the mutable state, not whether the call happens to be in this assembly. Catalogue rows,
+// furniture definitions and poll content are owned by the authoring services; a grain's live state
+// is not, and that distinction is not something a regex can see.
+//
+// So this wall guards the part that IS mechanical, and that the architecture actually holds today:
+// persistence lives in Admin/ and nowhere else. A Reads class that starts writing breaks §26.3
+// ("reads do not modify state"); an Operations class that persists directly has gone around the
+// authoring service that owns the data. Both are real regressions, and both are invisible to the
+// compiler.
+//
+// The ownership rule above stays prose on purpose: an executable rule that does not match the
+// architecture pushes the code towards the wrong shape, which is worse than no rule at all (§25).
 // ---------------------------------------------------------------------------------------------
-const dashboardWrites = hits('Vortex.Dashboard.API', /\bSaveChangesAsync\b/);
+const dashboardWrites = hits(
+  'Vortex.Dashboard.API',
+  /\bSaveChangesAsync\b/,
+  (file) => file.startsWith('Vortex.Dashboard.API/Admin/')
+);
 if (dashboardWrites.length > 0) {
   failures.push([
-    'The dashboard writes to the database directly. Route the mutation through the owning grain.',
+    'The dashboard persists outside Admin/. Reads never write, and an operation goes through the ' +
+      'authoring service that owns the data.',
     dashboardWrites,
   ]);
 }

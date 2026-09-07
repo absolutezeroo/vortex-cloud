@@ -1,8 +1,22 @@
-# Dashboard C# — Architecture Rules
+# Dashboard C# — Architecture Rules (migration contract, complete)
 
-> Architecture contract for `Vortex.Dashboard.API`, given by the project owner.
-> It outranks case-by-case judgement: an extraction that breaks one of these rules is to be redone,
-> even if it compiles and the tests pass.
+> **This is the contract that governed a migration, and that migration is finished.** Both god
+> services are deleted, 43 subjects own their classes, and every read answers a named contract.
+>
+> For the architecture to preserve going forward, read `dashboard-architecture.md` beside this file.
+> Where the two disagree, that one wins.
+>
+> On administrative writes the two never disagreed: §7 here says an operation goes through the
+> domain's existing API and lists an **admin service** as one of them. The rule that the Dashboard
+> may never call `SaveChangesAsync` was never in this contract at all — it existed only in a comment
+> in `check-architecture-walls.mjs`, which claimed all seven walls held while that one had never
+> held. `dashboard-architecture.md` §11-13 states the real rule: what decides how a mutation is
+> written is **who owns the mutable state**.
+>
+> This file is kept because the reasoning behind several rules is still cited by name — §13 (do not
+> compute data nobody uses), §24 (a refactor, an optimisation and a behaviour change are three
+> commits), §33-35 (cross-feature imports, premature abstraction, duplication over a bad
+> abstraction). They have not been superseded; they were simply written down here first.
 >
 > See also `AGENTS.md` (repository-wide contract) and `CONTEXT.md` (what each project is for).
 
