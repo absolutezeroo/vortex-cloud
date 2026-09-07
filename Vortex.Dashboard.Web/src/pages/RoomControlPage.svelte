@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
   import { formatDate, compactCorrelation } from '../lib/format';
@@ -16,18 +16,19 @@
   // stable field names for a key-based sort to name.
   import { filterRows } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
+  import type { RoomOccupantSnapshot, RoomSummaryDto } from '../lib/apiTypes';
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let rooms = $state([]);
+  let rooms = $state<RoomSummaryDto[]>([]);
 
   let roomQuery = $state('');
   let roomView = $derived(filterRows(rooms, roomQuery));
 
   // Expanded room id -> occupant list / loading state.
-  let expanded = $state(null);
-  let occupants = $state([]);
+  let expanded = $state<number | null>(null);
+  let occupants = $state<RoomOccupantSnapshot[]>([]);
   let occupantsLoading = $state(false);
   let occupantsError = $state('');
 
@@ -39,45 +40,13 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsRoomsManage));
 
-  function roomId(room) {
-    return room.roomId ?? room.RoomId;
-  }
-
-  function roomName(room) {
-    return room.name ?? room.Name ?? `room #${roomId(room)}`;
-  }
-
-  function roomOwnerName(room) {
-    return room.ownerName ?? room.OwnerName ?? '';
-  }
-
-  function roomOwnerId(room) {
-    return room.ownerId ?? room.OwnerId;
-  }
-
-  function roomPopulation(room) {
-    return room.population ?? room.Population ?? 0;
-  }
-
-  function roomUpdatedAt(room) {
-    return room.lastUpdatedUtc ?? room.LastUpdatedUtc;
-  }
-
-  function occupantId(occupant) {
-    return occupant.playerId ?? occupant.PlayerId;
-  }
-
-  function occupantName(occupant) {
-    return occupant.name ?? occupant.Name;
-  }
-
   async function refresh() {
     loading = true;
     error = '';
     forbidden = false;
 
     try {
-      rooms = await apiGet('/api/v1/directory/rooms/active');
+      rooms = await apiGet<RoomSummaryDto[]>('/api/v1/directory/rooms/active');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -85,27 +54,31 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       rooms = [];
     } finally {
       loading = false;
     }
   }
 
-  async function refreshOccupants(id) {
+  async function refreshOccupants(id: number) {
     occupantsLoading = true;
     occupantsError = '';
 
     try {
-      occupants = await apiGet(`/api/v1/directory/rooms/${id}/occupants`);
+      occupants = await apiGet<RoomOccupantSnapshot[]>(
+        `/api/v1/directory/rooms/${id}/occupants`,
+      );
     } catch (err) {
-      occupantsError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
+      occupantsError = isPermissionDeniedError(err)
+        ? translate('common.insufficientRights')
+        : describeApiError(err);
     } finally {
       occupantsLoading = false;
     }
   }
 
-  async function toggleExpand(id) {
+  async function toggleExpand(id: number) {
     if (expanded === id) {
       expanded = null;
       occupants = [];
@@ -117,24 +90,24 @@
     await refreshOccupants(id);
   }
 
-  function stageClose(room) {
+  function stageClose(room: RoomSummaryDto) {
     ops.ask(
       '/api/v1/operations/rooms/close',
-      { roomId: roomId(room) },
+      { roomId: room.roomId },
       translate('roomControl.forceCloseRoom'),
-      translate('roomControl.deactivateSummary', { room: roomName(room), id: roomId(room) }),
+      translate('roomControl.deactivateSummary', { room: room.name, id: room.roomId }),
       { danger: true, onSuccess: refresh },
     );
   }
 
-  function stageKick(occupant, forRoomId) {
+  function stageKick(occupant: RoomOccupantSnapshot, forRoomId: number) {
     ops.ask(
       '/api/v1/operations/rooms/kick',
-      { roomId: forRoomId, playerId: occupantId(occupant) },
+      { roomId: forRoomId, playerId: occupant.playerId },
       translate('roomControl.kickFromRoom'),
       translate('roomControl.removeSummary', {
-        occupant: occupantName(occupant),
-        id: occupantId(occupant),
+        occupant: occupant.name,
+        id: occupant.playerId,
         roomId: forRoomId,
       }),
       { danger: true, onSuccess: () => refreshOccupants(forRoomId) },
@@ -183,21 +156,21 @@
       </tr>
     </thead>
     <tbody>
-      {#each roomView as room (roomId(room))}
+      {#each roomView as room (room.roomId)}
         <tr>
           <td>
-            <button class="ghost-button" type="button" onclick={() => toggleExpand(roomId(room))}>
-              {#if expanded === roomId(room)}
+            <button class="ghost-button" type="button" onclick={() => toggleExpand(room.roomId)}>
+              {#if expanded === room.roomId}
                 <ChevronDown size={15} strokeWidth={2} aria-hidden="true" />
               {:else}
                 <ChevronRight size={15} strokeWidth={2} aria-hidden="true" />
               {/if}
-              {roomName(room)} <small>#{roomId(room)}</small>
+              {room.name} <small>#{room.roomId}</small>
             </button>
           </td>
-          <td><EntityLink id={roomOwnerId(room)} label={roomOwnerName(room)} {openPlayer} {openItem} /></td>
-          <td>{roomPopulation(room)}</td>
-          <td>{formatDate(roomUpdatedAt(room))}</td>
+          <td><EntityLink id={room.ownerId} label={room.ownerName} {openPlayer} {openItem} /></td>
+          <td>{room.population}</td>
+          <td>{formatDate(room.lastUpdatedUtc)}</td>
           <td>
             {#if canManage}
               <button type="button" onclick={() => stageClose(room)}>{$t('roomControl.forceClose')}</button>
@@ -206,7 +179,7 @@
             {/if}
           </td>
         </tr>
-        {#if expanded === roomId(room)}
+        {#if expanded === room.roomId}
           <tr>
             <td colspan="5">
               {#if occupantsLoading}
@@ -217,14 +190,14 @@
                 <table>
                   <thead><tr><th>{$t('roomControl.colPlayer')}</th><th>{$t('roomControl.colActions')}</th></tr></thead>
                   <tbody>
-                    {#each occupants as occupant (occupantId(occupant))}
+                    {#each occupants as occupant (occupant.playerId)}
                       <tr>
                         <td>
-                          <EntityLink id={occupantId(occupant)} label={occupantName(occupant)} {openPlayer} {openItem} />
+                          <EntityLink id={occupant.playerId} label={occupant.name} {openPlayer} {openItem} />
                         </td>
                         <td>
                           {#if canManage}
-                            <button type="button" class="ghost-button" onclick={() => stageKick(occupant, roomId(room))}>{$t('roomControl.kick')}</button>
+                            <button type="button" class="ghost-button" onclick={() => stageKick(occupant, room.roomId)}>{$t('roomControl.kick')}</button>
                           {/if}
                         </td>
                       </tr>

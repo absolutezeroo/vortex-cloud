@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -15,8 +16,13 @@ using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Hosting;
+using Vortex.Dashboard.API.Operations.Hotel;
+using Vortex.Dashboard.API.Operations.Platform.Contracts;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Runtime;
+using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Moderation;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;
@@ -92,6 +98,15 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/gamedata/entries", typeof(GamedataEntryPage)),
         ("/api/v1/gamedata/languages", typeof(GamedataLanguageList)),
         ("/api/v1/mystery-box/colors", typeof(MysteryBoxColorOptions)),
+        ("/api/v1/meta/endpoints", typeof(ApiRouteCatalog)),
+        ("/api/v1/directory/rooms/active", typeof(ImmutableArray<RoomSummaryDto>)),
+        (
+            "/api/v1/directory/rooms/{roomId:int}/occupants",
+            typeof(ImmutableArray<RoomOccupantSnapshot>)
+        ),
+        ("/api/v1/operations/console/commands", typeof(IReadOnlyList<ConsoleCommandInfo>)),
+        ("/api/v1/operations/cfh/queue", typeof(ImmutableArray<CfhIssueQueueEntrySnapshot>)),
+        ("/api/v1/operations/vouchers/{code}", typeof(VoucherSnapshot)),
         ("/api/v1/achievements", typeof(AchievementListResponse)),
         ("/api/v1/achievements/stats", typeof(AchievementStats)),
         ("/api/v1/achievements/resolutions", typeof(AchievementResolutions)),
@@ -209,6 +224,12 @@ public sealed class DashboardResponseSchemaTests
         WebApplication app = BuildApp();
 
         DashboardEndpoints.MapReadApi(app, () => DateTime.UnixEpoch);
+        // Two more entry points, because three of the reads this test pins are not under
+        // MapReadApi: a handful of GETs live beside the writes they belong to (the CFH queue, a
+        // voucher lookup), and /meta/endpoints describes the routes rather than reading the hotel.
+        // They publish a schema like any other read, and a page types itself from each.
+        DashboardEndpoints.MapOperations(app);
+        DashboardEndpoints.MapMeta(app);
 
         return
         [

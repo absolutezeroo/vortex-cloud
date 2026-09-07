@@ -18,6 +18,7 @@ using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 using Vortex.Dashboard.API.Security;
+using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players.Enums.Wallet;
 
@@ -230,7 +231,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsManageVouchers,
             TagOperations
         );
-        MapReadGet(
+        MapReadGet<VoucherSnapshot>(
             app,
             ApiOperations + "/vouchers/{code}",
             async (string code, VouchersOperations vouchers, CancellationToken ct) =>

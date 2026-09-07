@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import Modal from '../components/Modal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
-  import { apiGet, apiPost } from '../lib/api';
+  import { apiGet, apiPost, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
   import { formatDuration, compactCorrelation } from '../lib/format';
@@ -15,6 +15,17 @@
   import SortTh from '../components/SortTh.svelte';
   import { filterRows, sortRows } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
+  import type { CfhIssueQueueEntrySnapshot } from '../lib/apiTypes';
+  import type { Sort } from '../lib/tableView';
+
+  /** The inline ban form, opened on one row of the queue. */
+  type BanDraft = {
+    playerId: number;
+    playerName: string;
+    permanent: boolean;
+    durationSeconds: number | string;
+    reason: string;
+  };
 
   const closeReasons = [
     { value: 1, label: 'Useless' },
@@ -25,24 +36,24 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let queue = $state([]);
+  let queue = $state<CfhIssueQueueEntrySnapshot[]>([]);
 
   // The queue is one request, no paging: on a busy hotel it is the table you scroll looking for one
   // reporter's name.
   let queueQuery = $state('');
-  let queueSort = $state({ key: '', dir: 'desc' });
+  let queueSort = $state<Sort>({ key: '', dir: 'desc' });
   let queueView = $derived(sortRows(filterRows(queue, queueQuery), queueSort));
 
   // Row-scoped action state, keyed by issueId.
-  let rowBusy = $state({});
-  let rowError = $state({});
+  let rowBusy = $state<Record<number, boolean>>({});
+  let rowError = $state<Record<number, string>>({});
 
   // Inline "ban reported player" panel — opened per row, closed after confirm/cancel.
   // The ban IS an audited sanction, unlike the queue moves above: it goes through the shared write
   // store so its reason reaches the audit log and the reason-history datalist, and so a 403 mid-
   // session reads the same here as everywhere else. The draft holds the form; the store holds the
   // write.
-  let banDraft = $state(null);
+  let banDraft = $state<BanDraft | null>(null);
   const banOps = createWriteOps();
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsCfhManage));
@@ -54,7 +65,7 @@
     forbidden = false;
 
     try {
-      queue = await apiGet('/api/v1/operations/cfh/queue');
+      queue = await apiGet<CfhIssueQueueEntrySnapshot[]>('/api/v1/operations/cfh/queue');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -62,7 +73,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       queue = [];
     } finally {
       loading = false;
@@ -73,7 +84,11 @@
   // on the ticket and there is nothing to justify, which is why they do not go through the shared
   // reason modal like the sanctions below do. They did each carry their own copy of this
   // busy/refresh/report-the-403 dance -- it lives here once instead.
-  async function rowAction(issueId, endpoint, body) {
+  async function rowAction(
+    issueId: number,
+    endpoint: string,
+    body: Record<string, unknown> = {},
+  ) {
     rowBusy = { ...rowBusy, [issueId]: true };
     rowError = { ...rowError, [issueId]: '' };
 
@@ -85,19 +100,19 @@
         ...rowError,
         [issueId]: isPermissionDeniedError(err)
           ? translate('common.insufficientRights')
-          : err.code || err.message,
+          : describeApiError(err),
       };
     } finally {
       rowBusy = { ...rowBusy, [issueId]: false };
     }
   }
 
-  const pick = (issueId) => rowAction(issueId, '/api/v1/operations/cfh/pick');
-  const release = (issueId) => rowAction(issueId, '/api/v1/operations/cfh/release');
-  const close = (issueId, reason, sanctioned) =>
+  const pick = (issueId: number) => rowAction(issueId, '/api/v1/operations/cfh/pick');
+  const release = (issueId: number) => rowAction(issueId, '/api/v1/operations/cfh/release');
+  const close = (issueId: number, reason: number, sanctioned: boolean) =>
     rowAction(issueId, '/api/v1/operations/cfh/close', { reason, sanctioned });
 
-  function openBanDraft(entry) {
+  function openBanDraft(entry: CfhIssueQueueEntrySnapshot) {
     banDraft = {
       playerId: entry.reportedUserId,
       playerName: entry.reportedUserName,

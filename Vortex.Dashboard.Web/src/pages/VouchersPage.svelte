@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { compactCorrelation, formatDate } from '../lib/format';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
@@ -13,6 +13,21 @@
   import { Activity, Coins, Hash, Timer } from '@lucide/svelte';
   import { identity } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { Translator } from '../lib/i18n';
+  import type { VoucherSnapshot } from '../lib/apiTypes';
+
+  /** Number fields bind to inputs that hand back a string while being typed. */
+  type Num = number | string;
+
+  /** The create form. expiresAt is a datetime-local value, sent as an ISO instant. */
+  type CreateForm = {
+    code: string;
+    currencyType: Num;
+    activityPointType: Num;
+    amount: Num;
+    maxRedemptions: Num;
+    expiresAt: string;
+  };
 
   const currencyTypes = [
     { value: 1, key: 'vouchers.currencyCredits' },
@@ -21,12 +36,12 @@
     { value: 4, key: 'vouchers.currencyActivityPoints' },
   ];
 
-  function currencyLabel(value, translator) {
+  function currencyLabel(value: Num, translator: Translator) {
     const entry = currencyTypes.find((c) => c.value === Number(value));
     return entry ? translator(entry.key) : String(value);
   }
 
-  let create = $state({
+  let create = $state<CreateForm>({
     code: '',
     currencyType: 1,
     activityPointType: '',
@@ -36,7 +51,7 @@
   });
   let deactivate = $state({ code: '' });
   let lookupCode = $state('');
-  let lookupResult = $state(null);
+  let lookupResult = $state<VoucherSnapshot | null>(null);
   let lookupError = $state('');
   let lookupLoading = $state(false);
 
@@ -47,11 +62,18 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsManageVouchers));
 
-  function reasonError(id, message) {
+  function reasonError(id: string, message: string) {
     ops.fail(id, message);
   }
 
-  const stage = (id, title, endpoint, valid, body, summary) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown>,
+    summary: string,
+  ) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
@@ -72,7 +94,7 @@
       '/api/v1/operations/vouchers',
       Boolean(create.code.trim()) &&
         positive(create.amount) &&
-        (!needsActivityType || nonNegative(create.activityPointType)) &&
+        (!needsActivityType || nonNegative(create.activityPointType)),
       {
         code: create.code.trim(),
         currencyType: Number(create.currencyType),
@@ -115,15 +137,19 @@
     lookupResult = null;
 
     try {
-      lookupResult = await apiGet(`/api/v1/operations/vouchers/${encodeURIComponent(lookupCode.trim())}`);
+      lookupResult = await apiGet<VoucherSnapshot>(
+        `/api/v1/operations/vouchers/${encodeURIComponent(lookupCode.trim())}`,
+      );
     } catch (err) {
-      lookupError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
+      lookupError = isPermissionDeniedError(err)
+        ? translate('common.insufficientRights')
+        : describeApiError(err);
     } finally {
       lookupLoading = false;
     }
   }
 
-  async function copy(value) {
+  async function copy(value: string) {
     try {
       await navigator.clipboard.writeText(value || '');
     } catch {
@@ -215,21 +241,22 @@
     {:else if lookupError}
       <p class="empty-state danger" role="alert">{lookupError}</p>
     {:else if lookupResult}
-      {#if !lookupResult.exists}
+      {@const voucher = lookupResult}
+      {#if !voucher.exists}
         <p class="empty-state">{$t('vouchers.noVoucher')}</p>
       {:else}
         <div class="metric-grid compact">
-          <StatCard label={$t('vouchers.status')} value={lookupResult.isActive ? $t('vouchers.active') : $t('vouchers.inactive')}>
+          <StatCard label={$t('vouchers.status')} value={voucher.isActive ? $t('vouchers.active') : $t('vouchers.inactive')}>
             {#snippet icon()}
               <Activity size={15} strokeWidth={2} aria-hidden="true" />
             {/snippet}
           </StatCard>
-          <StatCard label={$t('vouchers.currencyCol')} value={currencyLabel(lookupResult.currencyType, $t)} accent>
+          <StatCard label={$t('vouchers.currencyCol')} value={currencyLabel(voucher.currencyType, $t)} accent>
             {#snippet icon()}
               <Coins size={15} strokeWidth={2} aria-hidden="true" />
             {/snippet}
           </StatCard>
-          <StatCard label={$t('vouchers.amountCol')} value={lookupResult.amount} accent>
+          <StatCard label={$t('vouchers.amountCol')} value={voucher.amount} accent>
             {#snippet icon()}
               <Coins size={15} strokeWidth={2} aria-hidden="true" />
             {/snippet}
@@ -239,10 +266,10 @@
               <Hash size={15} strokeWidth={2} aria-hidden="true" />
             {/snippet}
             {#snippet value()}
-              <span>{lookupResult.redemptionCount}{lookupResult.maxRedemptions ? ` / ${lookupResult.maxRedemptions}` : ''}</span>
+              <span>{voucher.redemptionCount}{voucher.maxRedemptions ? ` / ${voucher.maxRedemptions}` : ''}</span>
             {/snippet}
           </StatCard>
-          <StatCard label={$t('vouchers.expires')} value={lookupResult.expiresAt ? formatDate(lookupResult.expiresAt) : $t('vouchers.never')}>
+          <StatCard label={$t('vouchers.expires')} value={voucher.expiresAt ? formatDate(voucher.expiresAt) : $t('vouchers.never')}>
             {#snippet icon()}
               <Timer size={15} strokeWidth={2} aria-hidden="true" />
             {/snippet}

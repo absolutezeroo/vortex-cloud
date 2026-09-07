@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatDate } from '../lib/format';
@@ -6,8 +6,9 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
+  import type { ApiRouteCatalog, ApiRouteDescriptor } from '../lib/apiTypes';
 
-  let data = $state(null);
+  let data = $state<ApiRouteCatalog | null>(null);
   let error = $state('');
   let forbidden = $state(false);
   let loading = $state(true);
@@ -22,41 +23,35 @@
 
 
 
-  function matchesSearch(route, normalizedSearchValue) {
+  function matchesSearch(route: ApiRouteDescriptor, normalizedSearchValue: string) {
     if (!normalizedSearchValue) return true;
 
-    const payload = [
-      route.domain || '',
-      route.path || '',
-      route.displayName || '',
-      ...(route.capabilities || []),
-      ...(route.tags || []),
-    ]
+    const payload = [route.domain, route.path, route.displayName ?? '', ...route.capabilities, ...route.tags]
       .join(' ')
       .toLowerCase();
 
     return payload.includes(normalizedSearchValue);
   }
 
-  function matchesDomain(route, normalizedDomainValue) {
+  function matchesDomain(route: ApiRouteDescriptor, normalizedDomainValue: string) {
     return (
       normalizedDomainValue === 'all' ||
       (route.domain || 'legacy').toLowerCase() === normalizedDomainValue
     );
   }
 
-  function matchesMethod(route, normalizedMethodValue) {
+  function matchesMethod(route: ApiRouteDescriptor, normalizedMethodValue: string) {
     return (
       normalizedMethodValue === 'all' ||
-      route.methods.some((method) => (method || '').toLowerCase() === normalizedMethodValue)
+      route.methods.some((method) => method.toLowerCase() === normalizedMethodValue)
     );
   }
 
-  function selectDomain(domain) {
+  function selectDomain(domain: string) {
     domainFilter = domain;
   }
 
-  function methodClass(method) {
+  function methodClass(method: string) {
     const normalized = String(method || '').toUpperCase();
 
     if (normalized === 'GET') return 'method-badge method-badge--get';
@@ -72,20 +67,20 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/meta/endpoints');
+      data = await apiGet<ApiRouteCatalog>('/api/v1/meta/endpoints');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
         error = '';
       } else {
-        error = err.message;
+        error = (err as Error).message;
       }
     } finally {
       loading = false;
     }
   }
 
-  async function copyCurl(path, method) {
+  async function copyCurl(path: string, method: string) {
     const command = `curl -X ${method} '${window.location.origin}${path}'`;
 
     if (navigator?.clipboard?.writeText) {
@@ -98,8 +93,8 @@
     }
   }
 
-  function groupBy(values, selector) {
-    const output = new Map();
+  function groupBy<T>(values: T[], selector: (value: T) => string) {
+    const output = new Map<string, T[]>();
 
     for (const value of values) {
       const key = selector(value);
@@ -116,9 +111,9 @@
   }
 
   onMount(refresh);
-  let routes = $derived(data?.routes || []);
-  let groups = $derived(data?.groups || []);
-  let methodUsage = $derived(data?.methodUsage || []);
+  let routes = $derived(data?.routes ?? []);
+  let groups = $derived(data?.groups ?? []);
+  let methodUsage = $derived(data?.methodUsage ?? []);
   let domains = $derived(['all', ...new Set(groups.map((group) => group.domain).sort())]);
   let methods = $derived(['all', ...new Set(methodUsage.map((item) => item.method).sort())]);
   let normalizedSearch = $derived(String(search || '').toLowerCase().trim());
@@ -137,8 +132,8 @@
       matchesMethod(route, normalizedMethod)
   ));
   let groupedByDomain = $derived(groupBy(filtered, (route) => route.domain || 'misc'));
-  let maxDomain = $derived(Math.max(1, ...groups.map((group) => group.routeCount || 0)));
-  let maxMethod = $derived(Math.max(1, ...methodUsage.map((entry) => entry.count || 0)));
+  let maxDomain = $derived(Math.max(1, ...groups.map((group) => group.routeCount)));
+  let maxMethod = $derived(Math.max(1, ...methodUsage.map((entry) => entry.count)));
 </script>
 
 <section class="panel">

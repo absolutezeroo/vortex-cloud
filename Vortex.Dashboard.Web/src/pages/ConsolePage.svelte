@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -14,6 +14,10 @@
   import { t, translate } from '../lib/i18n';
   import { get } from 'svelte/store';
   import { Lock, Trash2 } from '@lucide/svelte';
+  import type { ConsoleCommandInfo, RunConsoleCommandResponse } from '../lib/apiTypes';
+
+  /** Where a line came from: the server's log, the command typed, or what it printed. */
+  type LineKind = 'log' | 'echo' | 'out';
 
   const MAX_LINES = 2000;
 
@@ -24,15 +28,15 @@
   // One stream for everything the operator sees: the server's own log lines, the commands they
   // typed, and what those printed. A real terminal does not separate them, and reading a command's
   // effect means seeing it land next to the log it caused.
-  let lines = $state([]);
-  let viewport = $state(null);
+  let lines = $state<{ kind: LineKind; text: string }[]>([]);
+  let viewport = $state<HTMLDivElement | null>(null);
 
   let canFollow = $derived(hasDashboardCapability($identity, CAPABILITIES.serverConsoleRead));
   let canUseConsole = $derived(hasDashboardCapability($identity, CAPABILITIES.opsServerConsole));
 
   const commands = createResource(
     () => ['console', 'commands'],
-    () => apiGet('/api/v1/operations/console/commands'),
+    () => apiGet<ConsoleCommandInfo[]>('/api/v1/operations/console/commands'),
     { enabled: () => canUseConsole },
   );
 
@@ -42,7 +46,9 @@
   let commandView = $derived(filterRows(commandRows, commandQuery));
 
   const ops = createWriteOps(() => {
-    const result = get(ops).results.run;
+    // This one write answers a superset of OperationResult: the same ok/correlationId/message,
+    // flat, plus whatever the command printed.
+    const result = get(ops).results.run as RunConsoleCommandResponse | null;
 
     push('echo', `> ${lastRun}`);
 
@@ -53,7 +59,7 @@
     command = '';
   });
 
-  function push(kind, text) {
+  function push(kind: LineKind, text: string) {
     // Scrolled-to-bottom is read before the row is added, so following the tail keeps working while
     // reading back through the buffer does not get yanked away by every new line.
     const following = atBottom();
@@ -126,13 +132,13 @@
     );
   }
 
-  function fill(usage) {
+  function fill(usage: string) {
     // The usage string carries <placeholders>; drop them so the operator types over a bare verb
     // rather than deleting angle brackets.
     command = usage.replace(/<[^>]*>/g, '').trim() + ' ';
   }
 
-  async function copy(value) {
+  async function copy(value: string) {
     try {
       await navigator.clipboard.writeText(value || '');
     } catch {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ internal static partial class DashboardEndpoints
 
     private static void MapConsoleReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<IReadOnlyList<ConsoleCommandInfo>>(
             app,
             ApiOperations + "/console/commands",
             (HttpContext ctx, ConsoleOperations ops) =>

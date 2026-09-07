@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,7 @@ using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Hotel;
 using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Dashboard.API.Security;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -24,7 +26,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapRoomReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<ImmutableArray<RoomSummaryDto>>(
             app,
             ApiDirectory + "/rooms/active",
             async (RoomOperations ops, CancellationToken ct) =>
@@ -32,7 +34,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsRoomsManage,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<ImmutableArray<RoomOccupantSnapshot>>(
             app,
             ApiDirectory + "/rooms/{roomId:int}/occupants",
             async (int roomId, RoomOperations ops, CancellationToken ct) =>

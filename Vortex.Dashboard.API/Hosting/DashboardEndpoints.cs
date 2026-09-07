@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
@@ -57,16 +58,6 @@ internal static partial class DashboardEndpoints
     private const string ApiCatalog = ApiV1 + "/catalog";
     private const string ApiFurniture = ApiV1 + "/furniture";
     private const string ApiMeta = ApiV1 + "/meta";
-
-    private sealed record ApiRouteDescriptor(
-        string Domain,
-        string Path,
-        string[] Methods,
-        string[] Tags,
-        string[] Capabilities,
-        bool RequiresAuth,
-        string? DisplayName
-    );
 
     public static void MapAuth(WebApplication app)
     {
@@ -306,40 +297,34 @@ internal static partial class DashboardEndpoints
                         .ThenBy(route => route.Path)
                         .ToArray();
 
-                    var groups = routes
+                    ApiDomainGroup[] groups = routes
                         .GroupBy(route => route.Domain)
                         .OrderBy(group => group.Key)
-                        .Select(group => new
-                        {
-                            domain = group.Key,
-                            routeCount = group.Count(),
-                            methods = group
-                                .SelectMany(route => route.Methods)
-                                .Distinct()
-                                .OrderBy(method => method)
-                                .ToArray(),
-                        })
+                        .Select(group => new ApiDomainGroup(
+                            group.Key,
+                            group.Count(),
+                            [
+                                .. group
+                                    .SelectMany(route => route.Methods)
+                                    .Distinct()
+                                    .OrderBy(method => method),
+                            ]
+                        ))
                         .ToArray();
 
-                    var methodUsage = routes
+                    ApiMethodUsage[] methodUsage = routes
                         .SelectMany(route => route.Methods)
                         .GroupBy(method => method)
                         .OrderBy(group => group.Key)
-                        .Select(group => new { method = group.Key, count = group.Count() })
+                        .Select(group => new ApiMethodUsage(group.Key, group.Count()))
                         .ToArray();
 
                     return Results.Ok(
-                        new
-                        {
-                            version = "1",
-                            generatedAt = DateTime.UtcNow,
-                            routes,
-                            groups,
-                            methodUsage,
-                        }
+                        new ApiRouteCatalog("1", DateTime.UtcNow, routes, groups, methodUsage)
                     );
                 }
             )
+            .Produces<ApiRouteCatalog>()
             .RequireAuthorization(Capabilities.Dashboard.OverviewRead)
             .WithTags(TagMonitoring)
             .WithSummary("List dashboard API routes with methods and capability requirements.")

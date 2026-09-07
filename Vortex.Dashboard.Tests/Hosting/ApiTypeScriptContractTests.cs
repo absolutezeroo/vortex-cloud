@@ -12,7 +12,12 @@ using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
+using Vortex.Dashboard.API.Operations.Hotel;
+using Vortex.Dashboard.API.Operations.Platform.Contracts;
 using Vortex.Observability.Runtime;
+using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Moderation;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;
@@ -139,6 +144,13 @@ public sealed class ApiTypeScriptContractTests
         typeof(GamedataEntryPage),
         typeof(GamedataLanguageList),
         typeof(MysteryBoxColorOptions),
+        typeof(ApiRouteCatalog),
+        typeof(RoomSummaryDto),
+        typeof(RoomOccupantSnapshot),
+        typeof(ConsoleCommandInfo),
+        typeof(RunConsoleCommandResponse),
+        typeof(CfhIssueQueueEntrySnapshot),
+        typeof(VoucherSnapshot),
     ];
 
     [Fact]
@@ -266,15 +278,26 @@ public sealed class ApiTypeScriptContractTests
 
     /// <summary>Where a type has to live to be part of the published contract.</summary>
     /// <remarks>
-    /// The observability snapshots are in the list because they ARE the answer for
-    /// <c>/infrastructure</c>, <c>/incidents</c> and <c>/room-performance</c> -- the read hands back
-    /// what the service produced, untouched. Copying them into records here would be a second
-    /// description of one shape, which is the failure this file exists to prevent.
+    /// <para>
+    /// The namespaces outside <c>Api</c> hold live state the dashboard forwards rather than
+    /// projects: the observability snapshots ARE the answer for <c>/infrastructure</c>,
+    /// <c>/incidents</c> and <c>/room-performance</c>, and the grain snapshots are the answer for
+    /// the room, moderation and voucher live reads. Copying them into records here would be a
+    /// second description of one shape, which is the failure this file exists to prevent.
+    /// </para>
+    /// <para>
+    /// Everything read out of the database still projects into a record under <c>Contracts</c>. A
+    /// contract is not an entity, and an entity on the wire carries columns nobody asked for.
+    /// </para>
     /// </remarks>
     private static readonly string[] ContractNamespaces =
     [
         "Vortex.Dashboard.API.Api",
+        "Vortex.Dashboard.API.Operations",
         "Vortex.Observability.Runtime",
+        "Vortex.Primitives.Catalog.Snapshots",
+        "Vortex.Primitives.Moderation",
+        "Vortex.Primitives.Orleans.Snapshots",
     ];
 
     private static bool IsContract(Type type) =>
@@ -359,7 +382,7 @@ public sealed class ApiTypeScriptContractTests
                 )
             );
 
-        string name = Scalar(inner) ?? inner.Name;
+        string name = Scalar(inner) ?? NameOfContract(inner, property);
         string shape =
             dictionary ? $"Record<string, {name}>"
             : collection ? $"{name}[]"
@@ -367,6 +390,24 @@ public sealed class ApiTypeScriptContractTests
 
         return nullable ? $"{shape} | null" : shape;
     }
+
+    /// <summary>
+    /// The interface name for a nested contract, or a failure naming what escaped.
+    /// </summary>
+    /// <remarks>
+    /// Without this a type outside <see cref="ContractNamespaces"/> is written into the file as a
+    /// bare name that nothing declares, and the front end gets a .d.ts that does not compile --
+    /// from a test that passed. Failing here says which property reached out of the contract, which
+    /// is the one thing needed to decide whether it should be projected or the namespace listed.
+    /// </remarks>
+    private static string NameOfContract(Type type, PropertyInfo property) =>
+        IsContract(type)
+            ? type.Name
+            : throw new InvalidOperationException(
+                $"{property.DeclaringType?.Name}.{property.Name} is a {type.Name}, which is not a "
+                    + "contract: project it into a record under Contracts, or add its namespace to "
+                    + "ContractNamespaces if it is live state the dashboard forwards as it is."
+            );
 
     private static string? Scalar(Type type) =>
         type switch

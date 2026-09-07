@@ -115,6 +115,35 @@ export interface AchievementTopPlayer {
   updatedAt: string;
 }
 
+export interface ApiDomainGroup {
+  domain: string;
+  routeCount: number;
+  methods: string[];
+}
+
+export interface ApiMethodUsage {
+  method: string;
+  count: number;
+}
+
+export interface ApiRouteCatalog {
+  version: string;
+  generatedAt: string;
+  routes: ApiRouteDescriptor[];
+  groups: ApiDomainGroup[];
+  methodUsage: ApiMethodUsage[];
+}
+
+export interface ApiRouteDescriptor {
+  domain: string;
+  path: string;
+  methods: string[];
+  tags: string[];
+  capabilities: string[];
+  requiresAuth: boolean;
+  displayName: string | null;
+}
+
 export interface ArticleCategoryOption {
   id: number;
   code: string;
@@ -606,6 +635,21 @@ export interface CfhCloseReasonCount {
   count: number;
 }
 
+export interface CfhIssueQueueEntrySnapshot {
+  issueId: number;
+  state: number;
+  categoryId: number;
+  issueAgeMs: number;
+  priority: number;
+  reporterUserId: number;
+  reporterUserName: string;
+  reportedUserId: number;
+  reportedUserName: string;
+  pickerUserId: number;
+  pickerUserName: string;
+  message: string;
+}
+
 export interface CfhReportedPlayer {
   playerId: number;
   playerName: string | null;
@@ -619,6 +663,9 @@ export interface CfhStats {
   byCloseReason: CfhCloseReasonCount[];
   topTopics: CfhTopicCount[];
   topReportedPlayers: CfhReportedPlayer[];
+}
+
+export interface CfhTicketState {
 }
 
 export interface CfhTimelinePoint {
@@ -894,6 +941,14 @@ export interface ConfigEntryDto {
 export interface ConfigList {
   count: number;
   items: ConfigEntryDto[];
+}
+
+export interface ConsoleCommandInfo {
+  name: string;
+  usage: string;
+  description: string;
+  requiredCapability: string | null;
+  allowed: boolean;
 }
 
 export interface CorrelationAuditRow {
@@ -2869,6 +2924,11 @@ export interface RoomDirectoryRow {
   lastActive: string;
 }
 
+export interface RoomOccupantSnapshot {
+  playerId: number;
+  name: string;
+}
+
 export interface RoomPerformanceSeriesStats {
   name: string;
   count: number;
@@ -2884,6 +2944,15 @@ export interface RoomPerformanceSnapshot {
   tick: RoomPerformanceSeriesStats;
   steps: RoomPerformanceSeriesStats[];
   directoryCalls: RoomPerformanceSeriesStats[];
+}
+
+export interface RoomSummaryDto {
+  roomId: number;
+  name: string;
+  ownerId: number;
+  ownerName: string;
+  population: number;
+  lastUpdatedUtc: string;
 }
 
 export interface RoomTimeline {
@@ -2925,6 +2994,13 @@ export interface RoomTimelineTotals {
   entries: number;
   chats: number;
   items: number;
+}
+
+export interface RunConsoleCommandResponse {
+  ok: boolean;
+  correlationId: string;
+  message: string;
+  output: string[];
 }
 
 export interface RuntimeHealthSnapshot {
@@ -3222,6 +3298,18 @@ export interface UntouchedAchievement {
   category: string;
   triggered: boolean;
   levels: number;
+}
+
+export interface VoucherSnapshot {
+  exists: boolean;
+  code: string;
+  isActive: boolean;
+  currencyType: number;
+  activityPointType: number | null;
+  amount: number;
+  maxRedemptions: number | null;
+  redemptionCount: number;
+  expiresAt: string | null;
 }
 
 export interface WiredCategoryCount {

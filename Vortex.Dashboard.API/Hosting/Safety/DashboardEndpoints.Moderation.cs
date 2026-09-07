@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,7 @@ using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Safety;
 using Vortex.Dashboard.API.Operations.Safety.Contracts;
 using Vortex.Dashboard.API.Security;
+using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -186,7 +188,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsForensicsPurge,
             TagOperations
         );
-        MapReadGet(
+        MapReadGet<ImmutableArray<CfhIssueQueueEntrySnapshot>>(
             app,
             ApiOperations + "/cfh/queue",
             async (ModerationOperations ops, CancellationToken ct) =>
