@@ -931,6 +931,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | benchmark | 53 methods, 7 deps | 27 methods, 9 deps | 18 (+ Benchmark) | 47 types |
 | backup, console, privacy | 53 methods, 7 deps | 22 methods, 5 deps | 21 (+ Backup, Console, Privacy) | 50 types |
 | moderation | 53 methods, 7 deps | 12 methods, 5 deps | 22 (+ Moderation) | 51 types |
+| rooms | 53 methods, 7 deps | 6 methods, 3 deps | 23 (+ Rooms) | 52 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

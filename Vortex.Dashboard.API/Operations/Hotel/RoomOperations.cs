@@ -22,8 +22,18 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class RoomOperations(
+    OperationRunner runner,
+    IGrainFactory grainFactory,
+    IVortexMetrics metrics,
+    StaffActorAccount staffActor
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IVortexMetrics _metrics = metrics;
+    private readonly StaffActorAccount _staffActor = staffActor;
+
     public async Task<ImmutableArray<RoomSummaryDto>> GetActiveRoomsAsync()
     {
         ImmutableArray<RoomSummarySnapshot> rooms;
@@ -72,7 +82,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.room.close",
             actor,
             request.Reason,
@@ -89,7 +99,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.room.kick",
             actor,
             request.Reason,
@@ -98,7 +108,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
                 RoomId roomId = new(request.RoomId);
                 ActionContext actorCtx = ActionContext.CreateForPlayer(staffActor, roomId);
 

@@ -25,7 +25,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/rooms/active",
-            async (DashboardOperationsService ops, CancellationToken ct) =>
+            async (RoomOperations ops, CancellationToken ct) =>
                 Results.Ok(await ops.GetActiveRoomsAsync().ConfigureAwait(false)),
             Capabilities.Dashboard.OpsRoomsManage,
             TagDirectory
@@ -33,7 +33,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/rooms/{roomId:int}/occupants",
-            async (int roomId, DashboardOperationsService ops, CancellationToken ct) =>
+            async (int roomId, RoomOperations ops, CancellationToken ct) =>
                 Results.Ok(await ops.GetRoomOccupantsAsync(roomId, ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsRoomsManage,
             TagDirectory
@@ -48,7 +48,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ForceCloseRoomRequest body,
-                DashboardOperationsService ops,
+                RoomOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -70,7 +70,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 KickFromRoomRequest body,
-                DashboardOperationsService ops,
+                RoomOperations ops,
                 CancellationToken ct
             ) =>
             {

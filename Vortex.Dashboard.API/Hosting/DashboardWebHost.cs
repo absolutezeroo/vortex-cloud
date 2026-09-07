@@ -257,6 +257,7 @@ internal sealed class DashboardWebHost(
         typeof(ConsoleOperations),
         typeof(PrivacyOperations),
         typeof(ModerationOperations),
+        typeof(RoomOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

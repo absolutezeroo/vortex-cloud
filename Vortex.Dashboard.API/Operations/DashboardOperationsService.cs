@@ -52,14 +52,11 @@ namespace Vortex.Dashboard.API.Operations;
 /// </summary>
 internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
-    StaffActorAccount staffActor,
     ISessionGateway sessionGateway,
-    OperationRunner runner,
-    IVortexMetrics metrics
+    OperationRunner runner
 )
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
-    private readonly StaffActorAccount _staffActor = staffActor;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
 
     /// <summary>
@@ -70,7 +67,6 @@ internal sealed partial class DashboardOperationsService(
 
     // Kept for GetActiveRoomsAsync, which times a grain call. Auditing a write is the
     // runner's business; this is not a write.
-    private readonly IVortexMetrics _metrics = metrics;
 
     /// <summary>
     /// Forwards to <see cref="OperationRunner"/>, so the twenty-six topic files that still live on
@@ -99,8 +95,4 @@ internal sealed partial class DashboardOperationsService(
             ct,
             category
         );
-
-    // The lookup lives in StaffActorAccount now; this stays while Rooms is still on this class.
-    private Task<PlayerId> ResolveStaffActorPlayerIdAsync(CancellationToken ct) =>
-        _staffActor.PlayerIdAsync(ct);
 }
