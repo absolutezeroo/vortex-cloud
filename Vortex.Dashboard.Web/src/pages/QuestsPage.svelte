@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -19,7 +19,39 @@
     Trash2,
     Users,
   } from '@lucide/svelte';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
+  import type {
+    QuestDetail,
+    QuestList,
+    QuestRow,
+    QuestTypeOption,
+    QuestTypeOptions,
+  } from '../lib/apiTypes';
+
+  /**
+   * The quest form. `endsAt` is a local datetime-local string, not the instant the API takes;
+   * the two helpers below bridge the pair, and an empty field means no absolute end.
+   */
+  type QuestForm = {
+    campaignCode: string;
+    chainCode: string;
+    localizationCode: string;
+    questType: string;
+    totalSteps: number | string;
+    /** Bound through CurrencySelect, which writes a number rather than an input's string. */
+    rewardType: number;
+    rewardAmount: number | string;
+    targetType: string;
+    targetValue: string;
+    enabled: boolean;
+    catalogPageName: string;
+    imageVersion: string;
+    sortOrder: number | string;
+    easy: boolean;
+    seasonal: boolean;
+    seasonalSeconds: number | string;
+    endsAt: string;
+  };
   import { createWriteOps } from '../lib/writeOps';
   import { formatDate, formatDuration, formatNumber } from '../lib/format';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
@@ -33,7 +65,7 @@
   import QuestGoalsPanel from '../components/quests/QuestGoalsPanel.svelte';
   import QuestCompletionsPanel from '../components/quests/QuestCompletionsPanel.svelte';
   import { identity } from '../lib/session';
-  import { t, translate } from '../lib/i18n';
+  import { t, translate, type Translator } from '../lib/i18n';
 
   // One subject, one entry. The quest editor, the community goals and daily tasks, and the
   // completion figures used to be three sidebar entries -- two of which rendered the same word,
@@ -49,7 +81,7 @@
   // Reward is encoded in a single wire int: negative => Credits, otherwise the activity-point
   // currency type granted on completion (0 = Duckets). The form splits that back out into a friendly
   // "kind" select + an optional point-type number, then folds it back to the int when submitting.
-  function emptyQuestForm() {
+  function emptyQuestForm(): QuestForm {
     return {
       campaignCode: '', chainCode: '', localizationCode: '', questType: '',
       totalSteps: 1, rewardType: 0, rewardAmount: 0,
@@ -71,22 +103,25 @@
   // The API round-trips EndsAt as an ISO instant (or null); <input type="datetime-local"> wants a
   // local `yyyy-MM-ddThh:mm` string with no zone. These bridge the pair -- an empty field means
   // "no absolute end" (null on the wire), matching the nullable DateTime? server-side.
-  function toDateTimeLocal(iso) {
+  function toDateTimeLocal(iso: string | null | undefined) {
     if (!iso) return '';
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return '';
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
-  function fromDateTimeLocal(value) {
+  function fromDateTimeLocal(value: string) {
     if (!value) return null;
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
 
   // Compact reward summary for a list row: "50 Credits" / "25 Duckets" / "10 pts(type 3)".
-  function rewardChip(quest, translator) {
+  function rewardChip(
+    quest: Pick<QuestRow, 'rewardAmount' | 'rewardType'>,
+    translator: Translator,
+  ) {
     const amount = formatNumber(quest.rewardAmount);
     if (Number(quest.rewardType) < 0) {
       return translator('quests.rewardCredits', { amount });
@@ -97,15 +132,15 @@
     return translator('quests.rewardPoints', { amount, type: quest.rewardType });
   }
 
-  let quests = $state([]);
+  let quests = $state<QuestRow[]>([]);
   // Campaigns power the filter dropdown. The list endpoint only reports the campaigns present in the
   // *filtered* rows, so once a filter is active it would collapse to a single option -- keep the full
   // set from the last unfiltered load so the dropdown stays complete.
-  let campaigns = $state([]);
+  let campaigns = $state<string[]>([]);
   let campaignFilter = $state('');
   // Valid objective types from the backend (name + whether a trigger actually advances it today).
   // Loaded best-effort: if the fetch fails we fall back to a free-text questType input.
-  let questTypes = $state([]);
+  let questTypes = $state<QuestTypeOption[]>([]);
   let loading = $state(false);
   let error = $state('');
   let forbidden = $state(false);
@@ -116,7 +151,7 @@
   // to, which is the case every design system reserves a dialog for -- a multi-field form with mixed
   // input types. It also means the save commits straight away: a confirm dialog on top of a dialog
   // is the one thing the same guidance rules out, and the modal is itself the deliberate step.
-  let questModal = $state(null);
+  let questModal = $state<{ id: number | null; form: QuestForm } | null>(null);
 
   // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
   // ConfirmReasonModal. Two stores rather than one so staging an edit cannot open the delete dialog
@@ -134,7 +169,7 @@
 
     try {
       const params = campaignFilter ? `?campaign=${encodeURIComponent(campaignFilter)}` : '';
-      const data = await apiGet(`/api/v1/quests${params}`);
+      const data = await apiGet<QuestList>(`/api/v1/quests${params}`);
       quests = data.items || [];
       if (!campaignFilter) {
         campaigns = data.campaigns || [];
@@ -146,7 +181,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       quests = [];
     } finally {
       loading = false;
@@ -155,7 +190,7 @@
 
   // Create and update take the same field set; update additionally carries the questId. The reward
   // int and the datetime are folded here so both call sites stay identical.
-  function buildQuestBody(form, questId) {
+  function buildQuestBody(form: QuestForm, questId: number | null) {
     const body = {
       campaignCode: form.campaignCode.trim(),
       chainCode: form.chainCode.trim(),
@@ -179,7 +214,7 @@
     return questId === null ? body : { questId, ...body };
   }
 
-  function formValid(form) {
+  function formValid(form: QuestForm) {
     return (
       Boolean(form.campaignCode.trim()) &&
       Boolean(form.localizationCode.trim()) &&
@@ -224,13 +259,13 @@
 
   // List rows omit catalogPageName/imageVersion (only the detail endpoint carries them), so the edit
   // form is populated from a fresh detail fetch rather than the list row.
-  async function startEditQuest(quest) {
+  async function startEditQuest(quest: QuestRow) {
     if (!canManage) return;
 
     ops.clear('questForm');
 
     try {
-      const detail = await apiGet(`/api/v1/quests/${quest.id}`);
+      const detail = await apiGet<QuestDetail>(`/api/v1/quests/${quest.id}`);
 
       questModal = {
         id: quest.id,
@@ -257,14 +292,16 @@
     } catch (err) {
       ops.fail(
         'questForm',
-        isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
+        isPermissionDeniedError(err)
+          ? translate('common.insufficientRights')
+          : describeApiError(err),
       );
     }
   }
 
   // The reason comes from the shared modal; on a server refusal (quest_has_progress) createWriteOps
   // keeps it open with the message so the operator can react without re-opening it.
-  function openDeleteQuest(quest) {
+  function openDeleteQuest(quest: QuestRow) {
     if (!canManage) return;
 
     deleteOps.ask(
@@ -282,7 +319,7 @@
   // Best-effort: the type picker degrades to a free-text input if this fails, so errors are swallowed.
   async function loadQuestTypes() {
     try {
-      const data = await apiGet('/api/v1/quests/types');
+      const data = await apiGet<QuestTypeOptions>('/api/v1/quests/types');
       questTypes = data.items || [];
     } catch {
       questTypes = [];
@@ -404,8 +441,9 @@
 {/if}
 
 {#if questModal}
+  {@const modal = questModal}
   <Drawer
-    title={questModal.id === null ? $t('quests.newQuest') : $t('quests.editQuest')}
+    title={modal.id === null ? $t('quests.newQuest') : $t('quests.editQuest')}
     eyebrow={$t('quests.questsHeading')}
     width={720}
     labelledBy="quest-form-title"
@@ -413,35 +451,35 @@
   >
     <div class="op-field">
       <label for="quest-campaign">{$t('quests.campaignCodeRequired')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-campaign" bind:value={questModal.form.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" id="quest-campaign" bind:value={modal.form.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
     </div>
     <div class="op-field">
       <label for="quest-chain">{$t('quests.chainCode')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-chain" bind:value={questModal.form.chainCode} />
+      <input autocomplete="off" spellcheck="false" id="quest-chain" bind:value={modal.form.chainCode} />
     </div>
     <div class="op-field">
       <label for="quest-localization">{$t('quests.localizationCodeRequired')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-localization" bind:value={questModal.form.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" id="quest-localization" bind:value={modal.form.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
     </div>
     <div class="op-field">
       <label for="quest-type">{$t('quests.questTypeRequired')}</label>
       {#if questTypes.length > 0}
-        <select id="quest-type" bind:value={questModal.form.questType}>
+        <select id="quest-type" bind:value={modal.form.questType}>
           <option value="">{$t('quests.questTypeSelect')}</option>
-          {#if questModal.form.questType && !questTypeNames.includes(questModal.form.questType)}
-            <option value={questModal.form.questType}>{$t('quests.questTypeLegacy', { name: questModal.form.questType })}</option>
+          {#if modal.form.questType && !questTypeNames.includes(modal.form.questType)}
+            <option value={modal.form.questType}>{$t('quests.questTypeLegacy', { name: modal.form.questType })}</option>
           {/if}
           {#each questTypes as questType (questType.name)}
             <option value={questType.name}>{questType.wired ? questType.name : $t('quests.questTypeNoTrigger', { name: questType.name })}</option>
           {/each}
         </select>
       {:else}
-        <input autocomplete="off" spellcheck="false" id="quest-type" bind:value={questModal.form.questType} placeholder={$t('quests.questTypePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-type" bind:value={modal.form.questType} placeholder={$t('quests.questTypePlaceholder')} />
       {/if}
     </div>
     <div class="op-field">
       <label for="quest-steps">{$t('quests.totalSteps')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-steps" type="number" min="1" bind:value={questModal.form.totalSteps} />
+      <input autocomplete="off" spellcheck="false" id="quest-steps" type="number" min="1" bind:value={modal.form.totalSteps} />
       <small class="muted">{$t('quests.objectiveHint')}</small>
     </div>
 
@@ -449,11 +487,11 @@
       <legend><Target size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.targetLegend')}</legend>
       <div class="op-field">
         <label for="quest-target-type">{$t('quests.targetType')}</label>
-        <input autocomplete="off" spellcheck="false" id="quest-target-type" bind:value={questModal.form.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-target-type" bind:value={modal.form.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
       </div>
       <div class="op-field">
         <label for="quest-target-value">{$t('quests.targetValue')}</label>
-        <input autocomplete="off" spellcheck="false" id="quest-target-value" bind:value={questModal.form.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-target-value" bind:value={modal.form.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
       </div>
       <small class="muted">{$t('quests.targetHint')}</small>
     </fieldset>
@@ -462,32 +500,32 @@
       <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.rewardLegend')}</legend>
       <div class="op-field">
         <label for="quest-reward-kind">{$t('quests.rewardKind')}</label>
-        <CurrencySelect id="quest-reward-kind" bind:value={questModal.form.rewardType} />
+        <CurrencySelect id="quest-reward-kind" bind:value={modal.form.rewardType} />
       </div>
       <div class="op-field">
         <label for="quest-reward-amount">{$t('quests.rewardAmount')}</label>
-        <input autocomplete="off" spellcheck="false" id="quest-reward-amount" type="number" min="0" bind:value={questModal.form.rewardAmount} />
+        <input autocomplete="off" spellcheck="false" id="quest-reward-amount" type="number" min="0" bind:value={modal.form.rewardAmount} />
       </div>
     </fieldset>
 
     <fieldset class="op-subgroup">
       <legend><Clock size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.timerLegend')}</legend>
       <div class="op-field">
-        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.seasonal} /> {$t('quests.seasonalLabel')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={modal.form.seasonal} /> {$t('quests.seasonalLabel')}</label>
       </div>
-      {#if questModal.form.seasonal}
+      {#if modal.form.seasonal}
         <div class="op-field">
           <label for="quest-seconds">{$t('quests.seasonalSeconds')}</label>
-          <input autocomplete="off" spellcheck="false" id="quest-seconds" type="number" min="0" bind:value={questModal.form.seasonalSeconds} />
+          <input autocomplete="off" spellcheck="false" id="quest-seconds" type="number" min="0" bind:value={modal.form.seasonalSeconds} />
           <div class="preset-row">
             {#each seasonalPresets as preset}
-              <button type="button" class="ghost-button preset" onclick={() => { questModal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
+              <button type="button" class="ghost-button preset" onclick={() => { modal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
             {/each}
           </div>
         </div>
         <div class="op-field">
           <label for="quest-ends">{$t('quests.endsAt')}</label>
-          <input autocomplete="off" spellcheck="false" id="quest-ends" type="datetime-local" bind:value={questModal.form.endsAt} />
+          <input autocomplete="off" spellcheck="false" id="quest-ends" type="datetime-local" bind:value={modal.form.endsAt} />
           <small class="muted">{$t('quests.timerHint')}</small>
         </div>
       {/if}
@@ -495,21 +533,21 @@
 
     <div class="op-field">
       <label for="quest-catalog">{$t('quests.catalogPageName')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-catalog" bind:value={questModal.form.catalogPageName} />
+      <input autocomplete="off" spellcheck="false" id="quest-catalog" bind:value={modal.form.catalogPageName} />
     </div>
     <div class="op-field">
       <label for="quest-image">{$t('quests.imageVersion')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-image" bind:value={questModal.form.imageVersion} />
+      <input autocomplete="off" spellcheck="false" id="quest-image" bind:value={modal.form.imageVersion} />
     </div>
     <div class="op-field">
       <label for="quest-sort">{$t('quests.sortOrder')}</label>
-      <input autocomplete="off" spellcheck="false" id="quest-sort" type="number" bind:value={questModal.form.sortOrder} />
+      <input autocomplete="off" spellcheck="false" id="quest-sort" type="number" bind:value={modal.form.sortOrder} />
     </div>
     <div class="op-field">
-      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.enabled} /> {$t('quests.enabledLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={modal.form.enabled} /> {$t('quests.enabledLabel')}</label>
     </div>
     <div class="op-field">
-      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.easy} /> {$t('quests.easyLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={modal.form.easy} /> {$t('quests.easyLabel')}</label>
     </div>
 
     {#if $ops.errors.questForm}<p class="empty-state danger" role="alert">{$ops.errors.questForm}</p>{/if}
@@ -517,7 +555,7 @@
     {#snippet actions()}
 
       <button type="button" onclick={saveQuest} disabled={$ops.busyKeys.questForm} class="success">
-        {questModal.id === null ? $t('quests.create') : $t('quests.save')}
+        {modal.id === null ? $t('quests.create') : $t('quests.save')}
       </button>
       <button class="ghost-button" type="button" onclick={closeQuestModal}>{$t('quests.cancel')}</button>
 

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
@@ -53,25 +55,25 @@ internal sealed class QuestReads(
     /// of typing a free string. <c>wired</c> marks the ones that actually advance today; the quest's
     /// step count (<c>TotalSteps</c>) is the goal (e.g. RoomEntry + 200 = "visit 200 rooms").
     /// </summary>
-    public object QuestTypeOptions()
+    public QuestTypeOptions QuestTypeOptions()
     {
-        List<object> items = typeof(Vortex.Primitives.Quests.QuestTypes)
+        List<QuestTypeOption> items = typeof(Vortex.Primitives.Quests.QuestTypes)
             .GetFields(
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
             )
             .Where(f => f.IsLiteral && f.FieldType == typeof(string))
             .Select(f => (string)f.GetRawConstantValue()!)
             .OrderBy(name => name, StringComparer.Ordinal)
-            .Select(name => (object)new { name, wired = WiredQuestTypes.Contains(name) })
+            .Select(name => new QuestTypeOption(name, WiredQuestTypes.Contains(name)))
             .ToList();
 
-        return new { count = items.Count, items };
+        return new QuestTypeOptions(items.Count, items);
     }
 
     /// <summary>Every quest with its reward config, timer, and lifetime accept/complete counts,
     /// ordered like the client sees them (sort order then id).</summary>
-    public Task<object> QuestsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<QuestList> QuestsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<QuestList>(
             async db =>
             {
                 string campaign = (query["campaign"] ?? string.Empty).Trim();
@@ -115,12 +117,11 @@ internal sealed class QuestReads(
                     .ConfigureAwait(false);
 
                 DateTime now = DateTime.UtcNow;
-                var items = rows.Select(q => new
-                    {
+                List<QuestRow> items = rows.Select(q => new QuestRow(
                         q.Id,
                         // image_version *is* the asset filename, so a quest with an empty one shows
                         // no picture in the client either -- which is worth seeing here.
-                        imageUrl = _assetUrls.QuestImage(q.ImageVersion),
+                        _assetUrls.QuestImage(q.ImageVersion),
                         q.CampaignCode,
                         q.ChainCode,
                         q.LocalizationCode,
@@ -131,36 +132,31 @@ internal sealed class QuestReads(
                         q.TotalSteps,
                         q.RewardType,
                         q.RewardAmount,
-                        rewardKind = q.RewardType < 0 ? "credits" : "activityPoints",
+                        q.RewardType < 0 ? "credits" : "activityPoints",
                         q.SortOrder,
                         q.Easy,
                         q.Seasonal,
                         q.SeasonalSeconds,
                         q.EndsAt,
-                        expired = q.Seasonal && q.EndsAt is { } endsAt && endsAt <= now,
+                        q.Seasonal && q.EndsAt is { } endsAt && endsAt <= now,
                         q.acceptedCount,
-                        q.completedCount,
-                    })
+                        q.completedCount
+                    ))
                     .ToList();
 
                 List<string> campaigns = rows.Select(q => q.CampaignCode)
                     .Distinct()
-                    .OrderBy(c => c)
+                    .OrderBy(c => c, StringComparer.Ordinal)
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
-                    campaigns,
-                    items,
-                };
+                return new QuestList(items.Count, campaigns, items);
             },
             ct
         );
 
     /// <summary>One quest with its full field set plus its lifetime accept/complete totals.</summary>
-    public Task<object?> QuestDetailAsync(int questId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<QuestDetail?> QuestDetailAsync(int questId, CancellationToken ct) =>
+        QueryAsync<QuestDetail?>(
             async db =>
             {
                 QuestEntity? quest = await db
@@ -184,8 +180,8 @@ internal sealed class QuestReads(
                     .ConfigureAwait(false);
 
                 DateTime now = DateTime.UtcNow;
-                return new
-                {
+
+                return new QuestDetail(
                     quest.Id,
                     quest.CampaignCode,
                     quest.ChainCode,
@@ -197,27 +193,27 @@ internal sealed class QuestReads(
                     quest.TotalSteps,
                     quest.RewardType,
                     quest.RewardAmount,
-                    rewardKind = quest.RewardType < 0 ? "credits" : "activityPoints",
+                    quest.RewardType < 0 ? "credits" : "activityPoints",
                     quest.CatalogPageName,
                     quest.ImageVersion,
-                    imageUrl = _assetUrls.QuestImage(quest.ImageVersion),
+                    _assetUrls.QuestImage(quest.ImageVersion),
                     quest.SortOrder,
                     quest.Easy,
                     quest.Seasonal,
                     quest.SeasonalSeconds,
                     quest.EndsAt,
-                    expired = quest.Seasonal && quest.EndsAt is { } endsAt && endsAt <= now,
+                    quest.Seasonal && quest.EndsAt is { } endsAt && endsAt <= now,
                     acceptedCount,
-                    completedCount,
-                };
+                    completedCount
+                );
             },
             ct
         );
 
     /// <summary>Quest completions over time and the most-completed quests, aggregated from
     /// <c>player_quests</c>.</summary>
-    public Task<object> QuestsStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<QuestStats> QuestsStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<QuestStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -267,14 +263,13 @@ internal sealed class QuestReads(
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var timeline = bucketMap
+                List<QuestCompletionPoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        completions = pair.Value,
-                    })
+                    .Select(pair => new QuestCompletionPoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
                 List<int> topQuestIds = completions
@@ -298,32 +293,20 @@ internal sealed class QuestReads(
                     )
                     .ConfigureAwait(false);
 
-                var topQuests = topQuestIds
-                    .Select(id => new
-                    {
-                        questId = id,
-                        name = questNames.GetValueOrDefault(id, $"quest #{id}"),
-                        completions = completionsByQuest.GetValueOrDefault(id),
-                    })
+                List<QuestCompletionCount> topQuests = topQuestIds
+                    .Select(id => new QuestCompletionCount(
+                        id,
+                        questNames.GetValueOrDefault(id, $"quest #{id}"),
+                        completionsByQuest.GetValueOrDefault(id)
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
-                        totalCompletions,
-                        totalAccepted,
-                        activePlayers,
-                    },
+                return new QuestStats(
+                    new ReportWindow(since, until, granularity),
+                    new QuestTotals(totalCompletions, totalAccepted, activePlayers),
                     timeline,
-                    topQuests,
-                };
+                    topQuests
+                );
             },
             ct
         );

@@ -710,6 +710,35 @@ export interface CollectorScore {
   score: number;
 }
 
+export interface CommunityGoalLevelRow {
+  id: number;
+  levelNumber: number;
+  scoreThreshold: number;
+  rewardUserLimit: number;
+  reached: boolean;
+}
+
+export interface CommunityGoalList {
+  count: number;
+  items: CommunityGoalRow[];
+}
+
+export interface CommunityGoalRow {
+  id: number;
+  code: string;
+  campaignCode: string;
+  scorePerQuest: number;
+  enabled: boolean;
+  endsAt: string | null;
+  sortOrder: number;
+  expired: boolean;
+  isActive: boolean;
+  totalScore: number;
+  contributors: number;
+  reachedLevel: number;
+  levels: CommunityGoalLevelRow[];
+}
+
 export interface ConfigEntryDto {
   key: string;
   group: string;
@@ -734,6 +763,37 @@ export interface CurrencyTypeRow {
   startingAmount: number;
   walletRows: number;
   totalHeld: number;
+}
+
+export interface DailyTaskList {
+  count: number;
+  items: DailyTaskRow[];
+  questTypes: string[];
+}
+
+export interface DailyTaskRewardRow {
+  id: number;
+  productItemTypeId: number;
+  rewardTypeId: string;
+  extraParams: string;
+  amount: number;
+}
+
+export interface DailyTaskRow {
+  id: number;
+  taskCode: string;
+  questTypeCode: string;
+  isBonus: boolean;
+  imageVersion: string;
+  catalogName: string;
+  requiredRepeats: number;
+  enabled: boolean;
+  sortOrder: number;
+  assigned: number;
+  completed: number;
+  claimed: number;
+  completionRate: number;
+  rewards: DailyTaskRewardRow[];
 }
 
 export interface DashboardInventory {
@@ -1960,6 +2020,97 @@ export interface PrizePoolWeightTotal {
 export interface PrizeSourceDraws {
   source: string;
   draws: number;
+}
+
+export interface QuestCompletionCount {
+  questId: number;
+  name: string;
+  completions: number;
+}
+
+export interface QuestCompletionPoint {
+  bucket: string;
+  label: string;
+  completions: number;
+}
+
+export interface QuestDetail {
+  id: number;
+  campaignCode: string;
+  chainCode: string;
+  localizationCode: string;
+  questType: string;
+  targetType: string;
+  targetValue: string;
+  enabled: boolean;
+  totalSteps: number;
+  rewardType: number;
+  rewardAmount: number;
+  rewardKind: string;
+  catalogPageName: string;
+  imageVersion: string;
+  imageUrl: string | null;
+  sortOrder: number;
+  easy: boolean;
+  seasonal: boolean;
+  seasonalSeconds: number;
+  endsAt: string | null;
+  expired: boolean;
+  acceptedCount: number;
+  completedCount: number;
+}
+
+export interface QuestList {
+  count: number;
+  campaigns: string[];
+  items: QuestRow[];
+}
+
+export interface QuestRow {
+  id: number;
+  imageUrl: string | null;
+  campaignCode: string;
+  chainCode: string;
+  localizationCode: string;
+  questType: string;
+  targetType: string;
+  targetValue: string;
+  enabled: boolean;
+  totalSteps: number;
+  rewardType: number;
+  rewardAmount: number;
+  rewardKind: string;
+  sortOrder: number;
+  easy: boolean;
+  seasonal: boolean;
+  seasonalSeconds: number;
+  endsAt: string | null;
+  expired: boolean;
+  acceptedCount: number;
+  completedCount: number;
+}
+
+export interface QuestStats {
+  window: ReportWindow;
+  totals: QuestTotals;
+  timeline: QuestCompletionPoint[];
+  topQuests: QuestCompletionCount[];
+}
+
+export interface QuestTotals {
+  totalCompletions: number;
+  totalAccepted: number;
+  activePlayers: number;
+}
+
+export interface QuestTypeOption {
+  name: string;
+  wired: boolean;
+}
+
+export interface QuestTypeOptions {
+  count: number;
+  items: QuestTypeOption[];
 }
 
 export interface RentableSpaceAuditEntry {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Quests;
@@ -27,8 +28,8 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
     /// one is flagged: exactly one goal is served to players, and which one is a rule (enabled,
     /// in-window, lowest sort order) an operator should not have to reconstruct by eye.
     /// </summary>
-    public Task<object> CommunityGoalsAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<CommunityGoalList> CommunityGoalsAsync(CancellationToken ct) =>
+        QueryAsync<CommunityGoalList>(
             async db =>
             {
                 List<CommunityGoalEntity> goals = await db
@@ -40,7 +41,7 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
 
                 if (goals.Count == 0)
                 {
-                    return new { count = 0, items = Array.Empty<object>() };
+                    return new CommunityGoalList(0, []);
                 }
 
                 List<int> goalIds = [.. goals.Select(g => g.Id)];
@@ -78,14 +79,13 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
                     .Select(g => (int?)g.Id)
                     .FirstOrDefault();
 
-                var items = goals
+                List<CommunityGoalRow> items = goals
                     .Select(goal =>
                     {
                         (int total, int contributors) = standings.GetValueOrDefault(goal.Id);
                         List<CommunityGoalLevelEntity> levels = [.. levelsByGoal[goal.Id]];
 
-                        return new
-                        {
+                        return new CommunityGoalRow(
                             goal.Id,
                             goal.Code,
                             goal.CampaignCode,
@@ -93,26 +93,25 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
                             goal.Enabled,
                             goal.EndsAt,
                             goal.SortOrder,
-                            expired = goal.EndsAt is { } endsAt && endsAt <= now,
-                            isActive = activeGoalId == goal.Id,
-                            totalScore = total,
+                            goal.EndsAt is { } endsAt && endsAt <= now,
+                            activeGoalId == goal.Id,
+                            total,
                             contributors,
-                            reachedLevel = levels.Count(l => total >= l.ScoreThreshold),
-                            levels = levels
-                                .Select(l => new
-                                {
+                            levels.Count(l => total >= l.ScoreThreshold),
+                            levels
+                                .Select(l => new CommunityGoalLevelRow(
                                     l.Id,
                                     l.LevelNumber,
                                     l.ScoreThreshold,
                                     l.RewardUserLimit,
-                                    reached = total >= l.ScoreThreshold,
-                                })
-                                .ToList(),
-                        };
+                                    total >= l.ScoreThreshold
+                                ))
+                                .ToList()
+                        );
                     })
                     .ToList();
 
-                return new { count = items.Count, items };
+                return new CommunityGoalList(items.Count, items);
             },
             ct
         );
@@ -122,8 +121,8 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
     /// assignments each has produced, and how many were finished and claimed. A task nobody ever
     /// completes is the one worth re-tuning.
     /// </summary>
-    public Task<object> DailyTasksAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<DailyTaskList> DailyTasksAsync(CancellationToken ct) =>
+        QueryAsync<DailyTaskList>(
             async db =>
             {
                 List<DailyTaskEntity> tasks = await db
@@ -136,12 +135,7 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
 
                 if (tasks.Count == 0)
                 {
-                    return new
-                    {
-                        count = 0,
-                        items = Array.Empty<object>(),
-                        questTypes = QuestTypeNames(),
-                    };
+                    return new DailyTaskList(0, [], QuestTypeNames());
                 }
 
                 List<int> taskIds = [.. tasks.Select(t => t.Id)];
@@ -171,15 +165,14 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
                         .ConfigureAwait(false)
                 ).ToDictionary(x => x.TaskId, x => (x.Assigned, x.Completed, x.Claimed));
 
-                var items = tasks
+                List<DailyTaskRow> items = tasks
                     .Select(task =>
                     {
                         (int assigned, int completed, int claimed) = stats.GetValueOrDefault(
                             task.Id
                         );
 
-                        return new
-                        {
+                        return new DailyTaskRow(
                             task.Id,
                             task.TaskCode,
                             task.QuestTypeCode,
@@ -192,29 +185,21 @@ internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbCon
                             assigned,
                             completed,
                             claimed,
-                            completionRate = assigned <= 0
-                                ? 0
-                                : Math.Round(completed * 100d / assigned, 1),
-                            rewards = rewardsByTask[task.Id]
-                                .Select(r => new
-                                {
+                            assigned <= 0 ? 0 : Math.Round(completed * 100d / assigned, 1),
+                            rewardsByTask[task.Id]
+                                .Select(r => new DailyTaskRewardRow(
                                     r.Id,
                                     r.ProductItemTypeId,
                                     r.RewardTypeId,
                                     r.ExtraParams,
-                                    r.Amount,
-                                })
-                                .ToList(),
-                        };
+                                    r.Amount
+                                ))
+                                .ToList()
+                        );
                     })
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
-                    items,
-                    questTypes = QuestTypeNames(),
-                };
+                return new DailyTaskList(items.Count, items, QuestTypeNames());
             },
             ct
         );

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { CalendarCheck, Gift, Pencil, Plus, Target, Trash2, Trophy } from '@lucide/svelte';
   import AccessDeniedNotice from '../AccessDeniedNotice.svelte';
@@ -12,11 +12,54 @@
   import { identity } from '../../lib/session';
   import { t, translate } from '../../lib/i18n';
   import { createWriteOps } from '../../lib/writeOps';
+  import type {
+    CommunityGoalList,
+    CommunityGoalRow,
+    DailyTaskList,
+    DailyTaskRow,
+  } from '../../lib/apiTypes';
+
+  /** A community goal being edited. Number inputs hand back strings while being typed. */
+  type GoalForm = {
+    id?: number;
+    code: string;
+    campaignCode: string;
+    scorePerQuest: number | string;
+    enabled: boolean;
+    endsAt: string;
+    sortOrder: number | string;
+    levels: LevelForm[];
+    reason: string;
+  };
+
+  type LevelForm = { scoreThreshold: number | string; rewardUserLimit: number | string };
+
+  /** A daily task being edited. */
+  type TaskForm = {
+    id?: number;
+    taskCode: string;
+    questTypeCode: string;
+    isBonus: boolean;
+    imageVersion: string;
+    catalogName: string;
+    requiredRepeats: number | string;
+    enabled: boolean;
+    sortOrder: number | string;
+    rewards: RewardForm[];
+    reason: string;
+  };
+
+  type RewardForm = {
+    productItemTypeId: number | string;
+    rewardTypeId: string;
+    extraParams: string;
+    amount: number | string;
+  };
 
   // Community goals and daily tasks share the quest capability: same domain, same operators, and a
   // brand new capability would have to be granted to every role before anyone could open the page.
 
-  function emptyGoal() {
+  function emptyGoal(): GoalForm {
     return {
       code: '',
       campaignCode: '',
@@ -29,11 +72,11 @@
     };
   }
 
-  function emptyLevel() {
+  function emptyLevel(): LevelForm {
     return { scoreThreshold: 0, rewardUserLimit: 0 };
   }
 
-  function emptyTask() {
+  function emptyTask(): TaskForm {
     return {
       taskCode: '',
       questTypeCode: '',
@@ -48,21 +91,26 @@
     };
   }
 
-  function emptyReward() {
-    return { productItemTypeId: 0, rewardTypeId: 'credits', extraParams: '', amount: 0 };
+  function emptyReward(): RewardForm {
+    return {
+      productItemTypeId: 0,
+      rewardTypeId: 'credits',
+      extraParams: '',
+      amount: 0,
+    };
   }
 
-  let goals = $state([]);
-  let tasks = $state([]);
-  let questTypes = $state([]);
+  let goals = $state<CommunityGoalRow[]>([]);
+  let tasks = $state<DailyTaskRow[]>([]);
+  let questTypes = $state<string[]>([]);
   let loading = $state(false);
   let error = $state('');
   let forbidden = $state(false);
 
-  let newGoal = $state(null);
-  let editGoal = $state(null);
-  let newTask = $state(null);
-  let editTask = $state(null);
+  let newGoal = $state<GoalForm | null>(null);
+  let editGoal = $state<GoalForm | null>(null);
+  let newTask = $state<TaskForm | null>(null);
+  let editTask = $state<TaskForm | null>(null);
 
   const ops = createWriteOps();
   const deleteOps = createWriteOps();
@@ -76,8 +124,8 @@
 
     try {
       const [goalData, taskData] = await Promise.all([
-        apiGet('/api/v1/community-goals'),
-        apiGet('/api/v1/daily-tasks'),
+        apiGet<CommunityGoalList>('/api/v1/community-goals'),
+        apiGet<DailyTaskList>('/api/v1/daily-tasks'),
       ]);
 
       goals = goalData.items || [];
@@ -91,7 +139,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       loading = false;
     }
@@ -99,19 +147,19 @@
 
   // The API round-trips endsAt as an ISO instant (or null); <input type="datetime-local"> wants a
   // local `yyyy-MM-ddThh:mm`. An empty field means "no deadline", which is null on the wire.
-  function toLocal(iso) {
+  function toLocal(iso: string | null | undefined) {
     if (!iso) return '';
 
     const date = new Date(iso);
 
     if (Number.isNaN(date.getTime())) return '';
 
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
-  function fromLocal(value) {
+  function fromLocal(value: string) {
     if (!value) return null;
 
     const date = new Date(value);
@@ -119,7 +167,7 @@
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
 
-  function goalBody(form, goalId) {
+  function goalBody(form: GoalForm, goalId: number | null) {
     const body = {
       code: form.code.trim(),
       campaignCode: form.campaignCode.trim(),
@@ -140,7 +188,7 @@
     return goalId === null ? body : { goalId, ...body };
   }
 
-  function goalValid(form) {
+  function goalValid(form: GoalForm) {
     const levels = form.levels.filter((l) => Number(l.scoreThreshold) > 0);
     const thresholds = new Set(levels.map((l) => Number(l.scoreThreshold)));
 
@@ -152,7 +200,7 @@
     );
   }
 
-  function taskBody(form, taskId) {
+  function taskBody(form: TaskForm, taskId: number | null) {
     const body = {
       taskCode: form.taskCode.trim(),
       questTypeCode: form.questTypeCode.trim(),
@@ -176,7 +224,7 @@
     return taskId === null ? body : { taskId, ...body };
   }
 
-  function taskValid(form) {
+  function taskValid(form: TaskForm) {
     return (
       Boolean(form.taskCode.trim()) &&
       Boolean(form.questTypeCode.trim()) &&
@@ -186,7 +234,15 @@
     );
   }
 
-  function stage(key, title, endpoint, valid, body, summary, onSuccess) {
+  function stage(
+    key: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown> & { reason: string },
+    summary: string,
+    onSuccess: () => void | Promise<void>,
+  ) {
     ops.ask(endpoint, body, title, summary, {
       key,
       valid,
@@ -198,14 +254,14 @@
 
   function saveGoal() {
     const isEdit = editGoal !== null;
-    const form = isEdit ? editGoal : newGoal;
+    const form = (isEdit ? editGoal : newGoal)!;
 
     stage(
-      isEdit ? `goal:${editGoal.id}` : 'goalCreate',
+      isEdit ? `goal:${editGoal!.id}` : 'goalCreate',
       isEdit ? translate('questContent.editGoal') : translate('questContent.newGoal'),
       isEdit ? '/api/v1/operations/community-goals/update' : '/api/v1/operations/community-goals',
       goalValid(form),
-      goalBody(form, isEdit ? editGoal.id : null),
+      goalBody(form, isEdit ? editGoal!.id! : null),
       form.code.trim(),
       async () => {
         newGoal = null;
@@ -217,14 +273,14 @@
 
   function saveTask() {
     const isEdit = editTask !== null;
-    const form = isEdit ? editTask : newTask;
+    const form = (isEdit ? editTask : newTask)!;
 
     stage(
-      isEdit ? `task:${editTask.id}` : 'taskCreate',
+      isEdit ? `task:${editTask!.id}` : 'taskCreate',
       isEdit ? translate('questContent.editTask') : translate('questContent.newTask'),
       isEdit ? '/api/v1/operations/daily-tasks/update' : '/api/v1/operations/daily-tasks',
       taskValid(form),
-      taskBody(form, isEdit ? editTask.id : null),
+      taskBody(form, isEdit ? editTask!.id! : null),
       form.taskCode.trim(),
       async () => {
         newTask = null;
@@ -234,7 +290,7 @@
     );
   }
 
-  function startEditGoal(goal) {
+  function startEditGoal(goal: CommunityGoalRow) {
     newGoal = null;
     editGoal = {
       id: goal.id,
@@ -255,7 +311,7 @@
     };
   }
 
-  function startEditTask(task) {
+  function startEditTask(task: DailyTaskRow) {
     newTask = null;
     editTask = {
       id: task.id,
@@ -283,7 +339,7 @@
   // Staged on the click; the modal collects the reason and confirm() merges it into the body. A
   // refused delete (goal_has_contributions / task_has_assignments) keeps the modal open with the
   // code showing, which is the whole point of routing it through the store.
-  function askDelete(kind, id, label) {
+  function askDelete(kind: string, id: number, label: string) {
     const isGoal = kind === 'goal';
 
     deleteOps.ask(
@@ -357,7 +413,7 @@
 
         <fieldset class="op-subgroup">
           <legend>{$t('questContent.ladderLegend')}</legend>
-          {#each newGoal.levels as level, index}
+          {#each newGoal!.levels as level, index}
             <div class="row-grid">
               <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.threshold')} bind:value={level.scoreThreshold} />
               <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.rewardLimit')} bind:value={level.rewardUserLimit} />
@@ -365,14 +421,14 @@
                 type="button"
                 class="ghost-button danger"
                 onclick={() => {
-                  newGoal.levels = newGoal.levels.filter((_, i) => i !== index);
-                  if (newGoal.levels.length === 0) newGoal.levels = [emptyLevel()];
+                  newGoal!.levels = newGoal!.levels.filter((_, i) => i !== index);
+                  if (newGoal!.levels.length === 0) newGoal!.levels = [emptyLevel()];
                 }}
               >
                 {$t('common.delete')}</button>
             </div>
           {/each}
-          <button type="button" class="success" onclick={() => (newGoal.levels = [...newGoal.levels, emptyLevel()])}>
+          <button type="button" class="success" onclick={() => (newGoal!.levels = [...newGoal!.levels, emptyLevel()])}>
             {$t('questContent.addLevel')}
           </button>
           <small class="muted">{$t('questContent.ladderHint')}</small>
@@ -385,7 +441,8 @@
         <button type="button" onclick={saveGoal} disabled={$ops.busyKeys.goalCreate} class="success">
           {$t('questContent.create')}
         </button>
-        <OpResult result={$ops.results.goalCreate} error={$ops.errors.goalCreate} />
+        {#if $ops.errors.goalCreate}<p class="empty-state danger" role="alert">{$ops.errors.goalCreate}</p>{/if}
+        <OpResult result={$ops.results.goalCreate} />
       </div>
     {/if}
 
@@ -465,7 +522,7 @@
 
               <fieldset class="op-subgroup">
                 <legend>{$t('questContent.ladderLegend')}</legend>
-                {#each editGoal.levels as level, index}
+                {#each editGoal!.levels as level, index}
                   <div class="row-grid">
                     <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={level.scoreThreshold} />
                     <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={level.rewardUserLimit} />
@@ -473,14 +530,14 @@
                       type="button"
                       class="ghost-button danger"
                       onclick={() => {
-                        editGoal.levels = editGoal.levels.filter((_, i) => i !== index);
-                        if (editGoal.levels.length === 0) editGoal.levels = [emptyLevel()];
+                        editGoal!.levels = editGoal!.levels.filter((_, i) => i !== index);
+                        if (editGoal!.levels.length === 0) editGoal!.levels = [emptyLevel()];
                       }}
                     >
                       {$t('common.delete')}</button>
                   </div>
                 {/each}
-                <button type="button" class="success" onclick={() => (editGoal.levels = [...editGoal.levels, emptyLevel()])}>
+                <button type="button" class="success" onclick={() => (editGoal!.levels = [...editGoal!.levels, emptyLevel()])}>
                   {$t('questContent.addLevel')}
                 </button>
               </fieldset>
@@ -497,7 +554,8 @@
                   {$t('questContent.cancel')}
                 </button>
               </div>
-              <OpResult result={$ops.results[`goal:${goal.id}`]} error={$ops.errors[`goal:${goal.id}`]} />
+              {#if $ops.errors[`goal:${goal.id}`]}<p class="empty-state danger" role="alert">{$ops.errors[`goal:${goal.id}`]}</p>{/if}
+              <OpResult result={$ops.results[`goal:${goal.id}`]} />
             </div>
           {/if}
         </article>
@@ -566,7 +624,7 @@
 
         <fieldset class="op-subgroup">
           <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('questContent.rewardsLegend')}</legend>
-          {#each newTask.rewards as reward, index}
+          {#each newTask!.rewards as reward, index}
             <div class="row-grid four">
               <input autocomplete="off" spellcheck="false" placeholder={$t('questContent.rewardType')} bind:value={reward.rewardTypeId} />
               <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.amount')} bind:value={reward.amount} />
@@ -575,14 +633,14 @@
                 type="button"
                 class="ghost-button danger"
                 onclick={() => {
-                  newTask.rewards = newTask.rewards.filter((_, i) => i !== index);
-                  if (newTask.rewards.length === 0) newTask.rewards = [emptyReward()];
+                  newTask!.rewards = newTask!.rewards.filter((_, i) => i !== index);
+                  if (newTask!.rewards.length === 0) newTask!.rewards = [emptyReward()];
                 }}
               >
                 {$t('common.delete')}</button>
             </div>
           {/each}
-          <button type="button" class="success" onclick={() => (newTask.rewards = [...newTask.rewards, emptyReward()])}>
+          <button type="button" class="success" onclick={() => (newTask!.rewards = [...newTask!.rewards, emptyReward()])}>
             {$t('questContent.addReward')}
           </button>
           <small class="muted">{$t('questContent.rewardsHint')}</small>
@@ -595,7 +653,8 @@
         <button type="button" onclick={saveTask} disabled={$ops.busyKeys.taskCreate} class="success">
           {$t('questContent.create')}
         </button>
-        <OpResult result={$ops.results.taskCreate} error={$ops.errors.taskCreate} />
+        {#if $ops.errors.taskCreate}<p class="empty-state danger" role="alert">{$ops.errors.taskCreate}</p>{/if}
+        <OpResult result={$ops.results.taskCreate} />
       </div>
     {/if}
 
@@ -688,7 +747,7 @@
 
               <fieldset class="op-subgroup">
                 <legend>{$t('questContent.rewardsLegend')}</legend>
-                {#each editTask.rewards as reward, index}
+                {#each editTask!.rewards as reward, index}
                   <div class="row-grid four">
                     <input autocomplete="off" spellcheck="false" bind:value={reward.rewardTypeId} />
                     <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={reward.amount} />
@@ -697,14 +756,14 @@
                       type="button"
                       class="ghost-button danger"
                       onclick={() => {
-                        editTask.rewards = editTask.rewards.filter((_, i) => i !== index);
-                        if (editTask.rewards.length === 0) editTask.rewards = [emptyReward()];
+                        editTask!.rewards = editTask!.rewards.filter((_, i) => i !== index);
+                        if (editTask!.rewards.length === 0) editTask!.rewards = [emptyReward()];
                       }}
                     >
                       {$t('common.delete')}</button>
                   </div>
                 {/each}
-                <button type="button" class="success" onclick={() => (editTask.rewards = [...editTask.rewards, emptyReward()])}>
+                <button type="button" class="success" onclick={() => (editTask!.rewards = [...editTask!.rewards, emptyReward()])}>
                   {$t('questContent.addReward')}
                 </button>
               </fieldset>
@@ -721,7 +780,8 @@
                   {$t('questContent.cancel')}
                 </button>
               </div>
-              <OpResult result={$ops.results[`task:${task.id}`]} error={$ops.errors[`task:${task.id}`]} />
+              {#if $ops.errors[`task:${task.id}`]}<p class="empty-state danger" role="alert">{$ops.errors[`task:${task.id}`]}</p>{/if}
+              <OpResult result={$ops.results[`task:${task.id}`]} />
             </div>
           {/if}
         </article>

@@ -109,6 +109,12 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/furniture/definitions", typeof(FurnitureDefinitionPage)),
         ("/api/v1/mystery-box", typeof(MysteryBoxContent)),
         ("/api/v1/mystery-box/stats", typeof(MysteryBoxStats)),
+        ("/api/v1/quests", typeof(QuestList)),
+        ("/api/v1/quests/stats", typeof(QuestStats)),
+        ("/api/v1/quests/types", typeof(QuestTypeOptions)),
+        ("/api/v1/quests/{questId:int}", typeof(QuestDetail)),
+        ("/api/v1/community-goals", typeof(CommunityGoalList)),
+        ("/api/v1/daily-tasks", typeof(DailyTaskList)),
     ];
 
     [Fact]

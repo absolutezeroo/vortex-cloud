@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Progression;
 using Vortex.Dashboard.API.Operations.Progression.Contracts;
@@ -22,7 +23,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapQuestReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<QuestList>(
             app,
             ApiQuests,
             (HttpContext ctx, QuestReads reads, CancellationToken ct) =>
@@ -30,7 +31,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
-        MapReadGet(
+        MapReadGet<QuestStats>(
             app,
             ApiQuests + "/stats",
             (HttpContext ctx, QuestReads reads, CancellationToken ct) =>
@@ -38,14 +39,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
-        MapReadGet(
+        MapReadGet<QuestTypeOptions>(
             app,
             ApiQuests + "/types",
             (QuestReads reads) => Results.Ok(reads.QuestTypeOptions()),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
-        MapReadGet(
+        MapReadGetNullable<QuestDetail>(
             app,
             ApiQuests + "/{questId:int}",
             (int questId, QuestReads reads, CancellationToken ct) =>

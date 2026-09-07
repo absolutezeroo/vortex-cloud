@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../../lib/api';
@@ -8,11 +8,12 @@
   import LineChart from '../LineChart.svelte';
   import StatCard from '../StatCard.svelte';
   import { Award, CircleCheck, Users } from '@lucide/svelte';
-  import { t } from '../../lib/i18n';
+  import { t, type Translator } from '../../lib/i18n';
+  import type { QuestStats } from '../../lib/apiTypes';
 
   const granularities = ['day', 'month', 'year'];
 
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: Translator) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
@@ -22,9 +23,9 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<QuestStats | null>(null);
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -46,7 +47,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/v1/quests/stats?${params}`);
+      data = await apiGet<QuestStats>(`/api/v1/quests/stats?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -54,7 +55,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;

@@ -112,6 +112,12 @@ public sealed class ApiTypeScriptContractTests
         typeof(FurnitureDefinitionPage),
         typeof(MysteryBoxContent),
         typeof(MysteryBoxStats),
+        typeof(QuestList),
+        typeof(QuestDetail),
+        typeof(QuestStats),
+        typeof(QuestTypeOptions),
+        typeof(CommunityGoalList),
+        typeof(DailyTaskList),
     ];
 
     [Fact]
