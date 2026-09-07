@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
@@ -23,14 +24,14 @@ internal static partial class DashboardEndpoints
 
     public static void MapMysteryBoxReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<MysteryBoxContent>(
             app,
             ApiMysteryBox,
             (MysteryBoxReads reads, CancellationToken ct) => OkAsync(reads.MysteryBoxAsync(ct)),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
         );
-        MapReadGet(
+        MapReadGet<MysteryBoxStats>(
             app,
             ApiMysteryBox + "/stats",
             (HttpContext ctx, MysteryBoxReads reads, CancellationToken ct) =>

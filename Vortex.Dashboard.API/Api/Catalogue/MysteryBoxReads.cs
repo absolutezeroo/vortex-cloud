@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Furniture.Enums;
@@ -47,8 +48,8 @@ internal sealed class MysteryBoxReads(
     /// running the mystery box logic are flagged: the row is valid but the client will never offer
     /// the dialog on that furni.
     /// </summary>
-    public Task<object> MysteryBoxAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<MysteryBoxContent> MysteryBoxAsync(CancellationToken ct) =>
+        QueryAsync<MysteryBoxContent>(
             async db =>
             {
                 // Which furniture can be a mystery box is decided by the client logic name, and a
@@ -68,16 +69,15 @@ internal sealed class MysteryBoxReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var definitionRows = definitions
-                    .Select(d => new
-                    {
+                List<MysteryBoxDefinitionRow> definitionRows = definitions
+                    .Select(d => new MysteryBoxDefinitionRow(
                         d.Id,
                         d.Name,
                         d.SpriteId,
                         d.TotalStates,
                         // An operator recognises the box, not definition id 4312.
-                        furnitureIconUrl = _assetUrls.FurniIcon(d.Name),
-                    })
+                        _assetUrls.FurniIcon(d.Name)
+                    ))
                     .ToList();
 
                 // Only the two box pools: this page edits the mystery box, and a seasonal crackable
@@ -110,9 +110,8 @@ internal sealed class MysteryBoxReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var prizeRows = prizes
-                    .Select(p => new
-                    {
+                List<MysteryBoxPrizeRow> prizeRows = prizes
+                    .Select(p => new MysteryBoxPrizeRow(
                         p.Id,
                         p.pool,
                         p.Color,
@@ -122,43 +121,38 @@ internal sealed class MysteryBoxReads(
                         p.Weight,
                         p.Enabled,
                         p.furnitureName,
-                        furnitureIconUrl = p.furnitureName is null
-                            ? null
-                            : _assetUrls.FurniIcon(p.furnitureName),
-                    })
+                        p.furnitureName is null ? null : _assetUrls.FurniIcon(p.furnitureName)
+                    ))
                     .ToList();
 
                 // The odds an operator actually cares about are per pool and per colour, and they are
                 // only meaningful relative to the entries that can be drawn together — so the share is
                 // computed here rather than left to the page to guess.
-                var pools = prizes
+                List<MysteryBoxPoolOdds> pools = prizes
                     .Where(p => p.Enabled)
                     .GroupBy(p => new { p.pool, p.Color })
-                    .Select(g => new
-                    {
-                        pool = g.Key.pool,
-                        color = g.Key.Color,
-                        totalWeight = g.Sum(p => p.Weight),
-                        entries = g.Count(),
-                    })
-                    .OrderBy(g => g.pool)
-                    .ThenBy(g => g.color)
+                    .Select(g => new MysteryBoxPoolOdds(
+                        g.Key.pool,
+                        g.Key.Color,
+                        g.Sum(p => p.Weight),
+                        g.Count()
+                    ))
+                    .OrderBy(g => g.Pool, StringComparer.Ordinal)
+                    .ThenBy(g => g.Color, StringComparer.Ordinal)
                     .ToList();
 
-                return new
-                {
-                    definitions = new { count = definitionRows.Count, items = definitionRows },
-                    prizes = new { count = prizeRows.Count, items = prizeRows },
+                return new MysteryBoxContent(
+                    new MysteryBoxDefinitionList(definitionRows.Count, definitionRows),
+                    new MysteryBoxPrizeList(prizeRows.Count, prizeRows),
                     pools,
-                    colors = MysteryBoxColors.All,
-                    productTypes = new[]
-                    {
+                    [.. MysteryBoxColors.All],
+                    [
                         ProductType.Floor.ToString(),
                         ProductType.Wall.ToString(),
                         ProductType.Effect.ToString(),
                         ProductType.HabboClub.ToString(),
-                    },
-                };
+                    ]
+                );
             },
             ct
         );
@@ -168,8 +162,11 @@ internal sealed class MysteryBoxReads(
     /// prizes players actually walked away with. A key granted but never consumed is still in
     /// circulation, which is the number that matters before adding more to the economy.
     /// </summary>
-    public Task<object> MysteryBoxStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<MysteryBoxStats> MysteryBoxStatsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<MysteryBoxStats>(
             async db =>
             {
                 int days = int.TryParse(query["days"], out int parsed)
@@ -207,17 +204,16 @@ internal sealed class MysteryBoxReads(
                     .CountAsync(k => k.ConsumedAt == null && k.DeletedAt == null, ct)
                     .ConfigureAwait(false);
 
-                var keysByColor = await db
+                List<MysteryKeyColorCount> keysByColor = await db
                     .PlayerMysteryBoxKeys.AsNoTracking()
                     .Where(k => k.DeletedAt == null)
                     .GroupBy(k => k.Color)
-                    .Select(g => new
-                    {
-                        color = g.Key,
-                        held = g.Count(k => k.ConsumedAt == null),
-                        spent = g.Count(k => k.ConsumedAt != null),
-                    })
-                    .OrderBy(g => g.color)
+                    .Select(g => new MysteryKeyColorCount(
+                        g.Key,
+                        g.Count(k => k.ConsumedAt == null),
+                        g.Count(k => k.ConsumedAt != null)
+                    ))
+                    .OrderBy(g => g.Color)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -233,19 +229,18 @@ internal sealed class MysteryBoxReads(
                     )
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new MysteryBoxStats(
                     days,
                     since,
-                    boxesOpened = byAction.GetValueOrDefault(MysteryBoxOpenedAction),
-                    trophiesOpened = byAction.GetValueOrDefault(MysteryTrophyOpenedAction),
-                    prizesAwarded = byAction.GetValueOrDefault(MysteryBoxPrizeAwardedAction),
-                    keysGranted = byAction.GetValueOrDefault(MysteryBoxKeyGrantedAction),
-                    keysConsumed = byAction.GetValueOrDefault(MysteryBoxKeyConsumedAction),
+                    byAction.GetValueOrDefault(MysteryBoxOpenedAction),
+                    byAction.GetValueOrDefault(MysteryTrophyOpenedAction),
+                    byAction.GetValueOrDefault(MysteryBoxPrizeAwardedAction),
+                    byAction.GetValueOrDefault(MysteryBoxKeyGrantedAction),
+                    byAction.GetValueOrDefault(MysteryBoxKeyConsumedAction),
                     keysOutstanding,
                     keysByColor,
-                    boxesInCirculation = boxesPlaced,
-                };
+                    boxesPlaced
+                );
             },
             ct
         );

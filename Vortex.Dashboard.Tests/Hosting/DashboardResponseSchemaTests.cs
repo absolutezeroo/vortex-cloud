@@ -107,6 +107,8 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/navigator/config", typeof(NavigatorSetup)),
         ("/api/v1/monitoring/inventory", typeof(DashboardInventory)),
         ("/api/v1/furniture/definitions", typeof(FurnitureDefinitionPage)),
+        ("/api/v1/mystery-box", typeof(MysteryBoxContent)),
+        ("/api/v1/mystery-box/stats", typeof(MysteryBoxStats)),
     ];
 
     [Fact]

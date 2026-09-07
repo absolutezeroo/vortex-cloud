@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import {
     Gift,
@@ -18,6 +18,28 @@
   import PickerModal from '../components/PickerModal.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { apiGet } from '../lib/api';
+  import type {
+    MysteryBoxContent,
+    MysteryBoxDefinitionRow,
+    MysteryBoxPoolOdds,
+    MysteryBoxPrizeRow,
+    MysteryBoxStats,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** The prize editor's form; the number fields bind as strings while being typed. */
+  type PrizeForm = {
+    pool: string;
+    color: string;
+    productType: string;
+    furnitureDefinitionId: number | string;
+    extraParam: string;
+    weight: number | string;
+    enabled: boolean;
+  };
+
+  /** Who the picker is filling in, and what to do once it has. */
+  type PlayerPick = { title: string; onSelect: (row: PickerRow) => void };
   import { createWriteOps } from '../lib/writeOps';
   import Tabs from '../components/Tabs.svelte';
   import { formatNumber } from '../lib/format';
@@ -35,7 +57,7 @@
   const POOL_BOX = 'mystery-box';
   const POOL_TROPHY = 'mystery-trophy';
 
-  function emptyPrizeForm() {
+  function emptyPrizeForm(): PrizeForm {
     return {
       pool: POOL_BOX,
       color: '',
@@ -47,12 +69,12 @@
     };
   }
 
-  let definitions = $state([]);
-  let prizes = $state([]);
-  let pools = $state([]);
-  let colors = $state([]);
-  let productTypes = $state([]);
-  let stats = $state(null);
+  let definitions = $state<MysteryBoxDefinitionRow[]>([]);
+  let prizes = $state<MysteryBoxPrizeRow[]>([]);
+  let pools = $state<MysteryBoxPoolOdds[]>([]);
+  let colors = $state<string[]>([]);
+  let productTypes = $state<string[]>([]);
+  let stats = $state<MysteryBoxStats | null>(null);
   let statsDays = $state(7);
 
   let loading = $state(false);
@@ -61,11 +83,12 @@
 
   let newPrizeOpen = $state(false);
   let newPrize = $state(emptyPrizeForm());
-  let editPrizeId = $state(null);
-  let editPrize = $state(null);
+  let editPrizeId = $state<number | null>(null);
+  let editPrize = $state<PrizeForm | null>(null);
 
   // Furniture is picked the same way players are: an operator knows the box, not its id.
-  let furniPicker = $state(null);
+  /** What to do with the picked furniture: whichever form opened it fills itself. */
+  let furniPicker = $state<((row: PickerRow) => void) | null>(null);
 
   // Both grants target a picked player, not a typed name: the shared PickerModal searches the live
   // directory, so the operation carries an unambiguous id and a rename or a typo cannot misfire it.
@@ -77,9 +100,9 @@
     furnitureDefinitionId: '',
     color: 'purple',
   });
-  let picker = $state(null);
+  let picker = $state<PlayerPick | null>(null);
 
-  function pickPlayer(apply) {
+  function pickPlayer(apply: (row: PickerRow) => void) {
     picker = { title: translate('mysteryBox.selectPlayerTitle'), onSelect: apply };
   }
 
@@ -99,14 +122,14 @@
 
   // Share of a pool, computed against the entries a draw actually competes with: same pool, and a
   // colourless prize competes with the colour-specific ones for that colour only.
-  function shareOf(prize) {
+  function shareOf(prize: MysteryBoxPrizeRow) {
     if (!prize.enabled) return null;
     const pool = pools.find((p) => p.pool === prize.pool && p.color === prize.color);
     if (!pool || pool.totalWeight <= 0) return null;
     return Math.round((prize.weight / pool.totalWeight) * 1000) / 10;
   }
 
-  function prizeTarget(prize) {
+  function prizeTarget(prize: MysteryBoxPrizeRow) {
     if (FURNITURE_TYPES.includes(prize.productType)) {
       return prize.furnitureName || `#${prize.furnitureDefinitionId}`;
     }
@@ -119,7 +142,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet('/api/v1/mystery-box');
+      const data = await apiGet<MysteryBoxContent>('/api/v1/mystery-box');
       definitions = data.definitions?.items || [];
       prizes = data.prizes?.items || [];
       pools = data.pools || [];
@@ -132,7 +155,7 @@
       }
 
       if (definitions.length === 1 && !boxForm.furnitureDefinitionId) {
-        boxForm = { ...boxForm, furnitureDefinitionId: definitions[0].id };
+        boxForm = { ...boxForm, furnitureDefinitionId: String(definitions[0].id) };
       }
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -142,7 +165,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       loading = false;
     }
@@ -152,13 +175,21 @@
   // admin surface.
   async function loadStats() {
     try {
-      stats = await apiGet(`/api/v1/mystery-box/stats?days=${statsDays}`);
+      stats = await apiGet<MysteryBoxStats>(`/api/v1/mystery-box/stats?days=${statsDays}`);
     } catch {
       stats = null;
     }
   }
 
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown>,
+    summary: string,
+    onSuccess: () => void | Promise<void>,
+  ) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
@@ -166,7 +197,7 @@
       onSuccess,
     });
 
-  function prizeBody(form) {
+  function prizeBody(form: PrizeForm) {
     const usesFurniture = FURNITURE_TYPES.includes(form.productType);
 
     return {
@@ -180,7 +211,7 @@
     };
   }
 
-  function prizeFormValid(form) {
+  function prizeFormValid(form: PrizeForm) {
     const body = prizeBody(form);
 
     if (body.weight <= 0) return false;
@@ -208,11 +239,11 @@
     );
   }
 
-  function startEditPrize(prize) {
+  function startEditPrize(prize: MysteryBoxPrizeRow) {
     editPrizeId = prize.id;
     editPrize = {
       pool: prize.pool,
-      color: prize.color,
+      color: prize.color ?? '',
       productType: prize.productType,
       furnitureDefinitionId: prize.furnitureDefinitionId || '',
       extraParam: prize.extraParam || '',
@@ -239,7 +270,7 @@
     );
   }
 
-  function stageDeletePrize(prize) {
+  function stageDeletePrize(prize: MysteryBoxPrizeRow) {
     if (!canManage) return;
 
     stage(
@@ -546,9 +577,9 @@
                     (u) =>
                       (boxForm = {
                         ...boxForm,
-                        playerId: u.id,
+                        playerId: Number(u.id),
                         playerName: u.name,
-                        playerOnline: u.online,
+                        playerOnline: Boolean(u.online),
                       }),
                   )}
               >
@@ -608,9 +639,9 @@
                   (u) =>
                     (keyForm = {
                       ...keyForm,
-                      playerId: u.id,
+                      playerId: Number(u.id),
                       playerName: u.name,
-                      playerOnline: u.online,
+                      playerOnline: Boolean(u.online),
                     }),
                 )}
             >
@@ -648,8 +679,8 @@
   <PickerModal
     kind="furniture"
     title={$t('mysteryBox.pickFurniture')}
-    onSelect={(item) => {
-      furniPicker(item);
+    onSelect={(item: PickerRow) => {
+      furniPicker?.(item);
       furniPicker = null;
     }}
     onClose={() => (furniPicker = null)}
@@ -743,16 +774,16 @@
   <Drawer title={$t('mysteryBox.editPrize')} eyebrow={$t('mysteryBox.prizesHeading')} onclose={() => { editPrizeId = null; editPrize = null; }}>
     <div class="catalog-card-detail">
       <div class="op-field">
-        <label for={`edit-prize-pool-${editPrize.id}`}>{$t('mysteryBox.pool')}</label>
-        <select id={`edit-prize-pool-${editPrize.id}`} bind:value={editPrize.pool}>
+        <label for={`edit-prize-pool-${editPrizeId}`}>{$t('mysteryBox.pool')}</label>
+        <select id={`edit-prize-pool-${editPrizeId}`} bind:value={editPrize.pool}>
           <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
           <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
         </select>
       </div>
       {#if editPrize.pool === POOL_BOX}
         <div class="op-field">
-          <label for={`edit-prize-color-${editPrize.id}`}>{$t('mysteryBox.color')}</label>
-          <select id={`edit-prize-color-${editPrize.id}`} bind:value={editPrize.color}>
+          <label for={`edit-prize-color-${editPrizeId}`}>{$t('mysteryBox.color')}</label>
+          <select id={`edit-prize-color-${editPrizeId}`} bind:value={editPrize.color}>
             <option value="">{$t('mysteryBox.colorAny')}</option>
             {#each colors as color}
               <option value={color}>{color}</option>
@@ -761,8 +792,8 @@
         </div>
       {/if}
       <div class="op-field">
-        <label for={`edit-prize-type-${editPrize.id}`}>{$t('mysteryBox.productType')}</label>
-        <select id={`edit-prize-type-${editPrize.id}`} bind:value={editPrize.productType}>
+        <label for={`edit-prize-type-${editPrizeId}`}>{$t('mysteryBox.productType')}</label>
+        <select id={`edit-prize-type-${editPrizeId}`} bind:value={editPrize.productType}>
           {#each productTypes as productType}
             <option value={productType}>{productType}</option>
           {/each}
@@ -770,10 +801,10 @@
       </div>
       {#if FURNITURE_TYPES.includes(editPrize.productType)}
         <div class="op-field">
-          <label for={`edit-prize-furni-${editPrize.id}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
+          <label for={`edit-prize-furni-${editPrizeId}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
           <div class="op-pick">
             <input autocomplete="off" spellcheck="false"
-              id={`edit-prize-furni-${editPrize.id}`}
+              id={`edit-prize-furni-${editPrizeId}`}
               type="number"
               min="1"
               bind:value={editPrize.furnitureDefinitionId}
@@ -781,22 +812,23 @@
             <button
               type="button"
               onclick={() =>
-                (furniPicker = (item) =>
-                  (editPrize.furnitureDefinitionId = item.id))}
+                (furniPicker = (item) => {
+                  if (editPrize) editPrize.furnitureDefinitionId = Number(item.id);
+                })}
               >{$t('mysteryBox.pick')}</button
             >
           </div>
         </div>
       {:else}
         <div class="op-field">
-          <label for={`edit-prize-extra-${editPrize.id}`}>{$t('mysteryBox.extraParam')}</label>
-          <input autocomplete="off" spellcheck="false" id={`edit-prize-extra-${editPrize.id}`} bind:value={editPrize.extraParam} />
+          <label for={`edit-prize-extra-${editPrizeId}`}>{$t('mysteryBox.extraParam')}</label>
+          <input autocomplete="off" spellcheck="false" id={`edit-prize-extra-${editPrizeId}`} bind:value={editPrize.extraParam} />
           <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
         </div>
       {/if}
       <div class="op-field">
-        <label for={`edit-prize-weight-${editPrize.id}`}>{$t('mysteryBox.weight')}</label>
-        <input autocomplete="off" spellcheck="false" id={`edit-prize-weight-${editPrize.id}`} type="number" min="1" bind:value={editPrize.weight} />
+        <label for={`edit-prize-weight-${editPrizeId}`}>{$t('mysteryBox.weight')}</label>
+        <input autocomplete="off" spellcheck="false" id={`edit-prize-weight-${editPrizeId}`} type="number" min="1" bind:value={editPrize.weight} />
       </div>
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>

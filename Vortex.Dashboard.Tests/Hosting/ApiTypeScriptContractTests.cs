@@ -110,6 +110,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(NavigatorSetup),
         typeof(DashboardInventory),
         typeof(FurnitureDefinitionPage),
+        typeof(MysteryBoxContent),
+        typeof(MysteryBoxStats),
     ];
 
     [Fact]
