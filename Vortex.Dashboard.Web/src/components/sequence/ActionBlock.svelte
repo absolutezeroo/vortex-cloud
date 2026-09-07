@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // One action and the conditions clipped under it. The unit an operator drags.
   import { GripVertical, X } from '@lucide/svelte';
   import { t, translate } from '../../lib/i18n';

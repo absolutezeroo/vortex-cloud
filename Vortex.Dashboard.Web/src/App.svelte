@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import Router, { replace, location } from 'svelte-spa-router';
@@ -28,7 +28,7 @@
   let bootMessage = $state('');
   let retryBusy = $state(false);
   let logoutBusy = $state(false);
-  let retryTimer = null;
+  let retryTimer: ReturnType<typeof setTimeout> | null = null;
   let identityRequestId = 0;
 
   onMount(() => {
@@ -44,7 +44,7 @@
     }
   }
 
-  async function loadIdentity(options = {}) {
+  async function loadIdentity(options: { silent?: boolean } = {}) {
     const silent = options.silent === true;
     const requestId = ++identityRequestId;
 
@@ -146,7 +146,7 @@
 
   // A capability guard that rejects a navigation surfaces as conditionsFailed; remember the target
   // and route the user to the shared access-denied view instead of a blank screen.
-  function handleConditionsFailed(event) {
+  function handleConditionsFailed(event: CustomEvent<{ userData?: { route?: string }; route?: string }>) {
     deniedRoute.set(event.detail?.userData?.route || event.detail?.route || '');
     replace('/access-denied');
   }
@@ -212,7 +212,8 @@
     {/if}
 
     <AppShell logout={handleLogout} {logoutBusy}>
-      <Router {routes} on:conditionsFailed={handleConditionsFailed} />
+      <!-- svelte-spa-router still dispatches DOM events; its types only describe routeLoaded. -->
+      <Router {routes} on:conditionsFailed={handleConditionsFailed as never} />
     </AppShell>
 
     <EntityModal />

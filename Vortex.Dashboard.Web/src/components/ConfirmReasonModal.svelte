@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Confirm a write, show what it actually changes, and collect the operator's optional note.
   //
   // The reason this action gets audited with is built from the action itself (lib/changes.js): the
@@ -14,23 +14,22 @@
   import { reasonOk } from '../lib/validation';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {boolean} [open]
-   * @property {string} [title]
-   * @property {string} [summary]
-   * @property {string} [confirmLabel]
-   * @property {boolean} [busy]
-   * @property {string} [error]
-   * @property {boolean} [danger]
-   * @property {any} [changes]
-   * @property {boolean} [noteOnly]
-   * @property {import('svelte').Snippet} [children]
-   * @property {(note: string) => void} [onconfirm] - receives the operator's note, already trimmed
-   * @property {() => void} [oncancel]
-   */
+  type Props = {
+    open?: boolean;
+    title?: string;
+    summary?: string;
+    confirmLabel?: string;
+    busy?: boolean;
+    error?: string;
+    danger?: boolean;
+    changes?: any;
+    noteOnly?: boolean;
+    children?: import('svelte').Snippet;
+    /** receives the operator's note, already trimmed */
+    onconfirm?: (note: string) => void;
+    oncancel?: () => void;
+  };
 
-  /** @type {Props} */
   let {
     open = false,
     title = '',
@@ -44,7 +43,7 @@
     children,
     onconfirm,
     oncancel
-  } = $props();
+  }: Props = $props();
 
   let note = $state('');
   let prevOpen = $state(false);

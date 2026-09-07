@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { describeApiError, isConnectionError, login } from '../lib/api';
   import { t, translate } from '../lib/i18n';
@@ -21,7 +21,10 @@
     try {
       await login(email, password, mfaRequired ? code : undefined);
       await onAuthenticated();
-    } catch (e) {
+    } catch (err) {
+      // A caught value is `unknown`; this is the shape the API layer actually throws.
+      const e = err as { status?: number; code?: string; message?: string };
+
       if (isConnectionError(e)) {
         error = describeApiError(e);
       } else if (e.status === 403) {

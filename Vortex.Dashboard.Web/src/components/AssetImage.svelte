@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Reusable asset image tile with a graceful fallback, so every dashboard surface renders Habbo
   // sprites (furniture, avatars, guild badges, promo art) the same crisp way without each page
   // repeating the `<img on:error>` dance. When `src` is missing or the asset host is unreachable the
@@ -7,26 +7,25 @@
   import { Image } from '@lucide/svelte';
 
   
-  /**
-   * @typedef {Object} Props
-   * @property {any} [src]
-   * @property {string} [alt]
-   * @property {number} [size]
-   * @property {any} [fallbackIcon] - Lucide icon component shown when there's no image or it fails to load.
-   */
+  type Props = {
+    src?: any;
+    alt?: string;
+    size?: number;
+    /** Lucide icon component shown when there's no image or it fails to load. */
+    fallbackIcon?: any;
+  };
 
-  /** @type {Props} */
   let {
     src = null,
     alt = '',
     size = 32,
     fallbackIcon = Image
-  } = $props();
+  }: Props = $props();
 
   // Keyed on the failing src (rather than a bare boolean) so that changing the source — e.g. the
   // operator types a new filename — re-arms the <img> instead of staying pinned to the fallback of a
   // previously broken URL.
-  let failedSrc = $state(null);
+  let failedSrc = $state<string | null>(null);
 
   let normalizedSrc = $derived(src ? String(src) : '');
   let showFallback = $derived(normalizedSrc === '' || failedSrc === normalizedSrc);

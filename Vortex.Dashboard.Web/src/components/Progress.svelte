@@ -1,21 +1,21 @@
-<script>
+<script lang="ts">
   // Determinate or indeterminate progress bar, per the kit.
   //
   //   <Progress value={75} label="Import" />        determinate
   //   <Progress indeterminate />                    running, no known end
   //   <Progress value={40} small />
 
-  /**
-   * @typedef {Object} Props
-   * @property {number} [value] - 0..100, ignored when indeterminate
-   * @property {boolean} [indeterminate]
-   * @property {boolean} [small]
-   * @property {string} [label] - announced to assistive tech; also shown when showValue is set
-   * @property {boolean} [showValue]
-   */
+  type Props = {
+    /** 0..100, ignored when indeterminate */
+    value?: number;
+    indeterminate?: boolean;
+    small?: boolean;
+    /** announced to assistive tech; also shown when showValue is set */
+    label?: string;
+    showValue?: boolean;
+  };
 
-  /** @type {Props} */
-  let { value = 0, indeterminate = false, small = false, label = '', showValue = false } = $props();
+  let { value = 0, indeterminate = false, small = false, label = '', showValue = false }: Props = $props();
 
   let clamped = $derived(Math.max(0, Math.min(100, Number(value) || 0)));
 </script>

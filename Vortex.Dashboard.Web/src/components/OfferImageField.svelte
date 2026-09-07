@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Targeted-offer promo image / icon field. When an image template (containing the literal `{file}`)
   // is configured, the operator supplies just a filename behind a read-only base prefix and gets a
   // live preview; the bound `value` always stays the FULL URL that is stored on the wire. A pasted
@@ -10,17 +10,19 @@
   import { t } from '../lib/i18n';
 
   
-  /**
-   * @typedef {Object} Props
-   * @property {string} [id]
-   * @property {string} [label]
-   * @property {string} [value]
-   * @property {any} [imageTemplate]
-   * @property {string} [previewAlt]
-   * @property {any} [images] - Available images for the gallery picker: [{ file, url, thumbUrl }]. Empty hides the picker.
-   */
+  type Props = {
+    id?: string;
+    label?: string;
+    value?: string;
+    imageTemplate?: any;
+    previewAlt?: string;
+    /**
+     * Available images for the gallery picker: [{ file, url, thumbUrl }]. Empty hides the
+     * picker.
+     */
+    images?: any;
+  };
 
-  /** @type {Props} */
   let {
     id = '',
     label = '',
@@ -28,13 +30,14 @@
     imageTemplate = null,
     previewAlt = '',
     images = []
-  } = $props();
+  }: Props = $props();
 
   let browseOpen = $state(false);
 
-  const isHttp = (candidate) => /^https?:\/\//i.test((candidate || '').trim());
+  const isHttp = (candidate: string | null | undefined) =>
+    /^https?:\/\//i.test((candidate || '').trim());
 
-  function pick(image) {
+  function pick(image: { url: string }) {
     value = image.url;
     browseOpen = false;
   }
@@ -59,8 +62,8 @@
     ? v.slice(prefix.length, suffix ? v.length - suffix.length : v.length)
     : '');
 
-  function onFilenameInput(event) {
-    const raw = event.target.value.trim();
+  function onFilenameInput(event: Event) {
+    const raw = (event.target as HTMLInputElement).value.trim();
     if (raw === '') {
       value = '';
     } else if (isHttp(raw)) {
@@ -70,8 +73,8 @@
     }
   }
 
-  function onFullUrlInput(event) {
-    value = event.target.value;
+  function onFullUrlInput(event: Event) {
+    value = (event.target as HTMLInputElement).value;
   }
 </script>
 

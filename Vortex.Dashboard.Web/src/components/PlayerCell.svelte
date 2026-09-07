@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Player identity cell — an avatar-head tile next to the player's name, identical in every table
   // or list that references a player. The head comes from the server-rendered avatar URL and falls
   // back to a user glyph (via AssetImage's graceful fallback). Pass a slot to control the name
@@ -6,21 +6,19 @@
   import { User } from '@lucide/svelte';
   import AssetImage from './AssetImage.svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [name]
-   * @property {any} [avatarUrl]
-   * @property {number} [size]
-   * @property {import('svelte').Snippet} [children]
-   */
+  type Props = {
+    name?: string;
+    avatarUrl?: any;
+    size?: number;
+    children?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
   let {
     name = '',
     avatarUrl = null,
     size = 32,
     children
-  } = $props();
+  }: Props = $props();
 </script>
 
 <span class="player">

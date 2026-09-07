@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Minimal dependency-free SVG line chart. No charting library is installed in this project —
   // this hand-rolled component is the shared primitive for every trend chart on the dashboard
   // (currently: Economy spend/earn/marketplace trends, and every new stats page). Series share
@@ -16,30 +16,35 @@
   import { onMount, onDestroy } from 'svelte';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {any} [series] - [{ name, color, points: [{ label, value }] }]
-   * @property {number} [height]
-   * @property {any} [valueFormatter]
-   * @property {string} [emptyMessage]
-   * @property {boolean} [legend] - false where the caller already names the series itself
-   */
+  /** One plotted point. `label` is what the x axis shows for it. */
+  type ChartPoint = { label: string; value: number };
 
-  /** @type {Props} */
+  /** One line: its name, its colour, and the points it joins. */
+  type Series = { name: string; color: string; points?: ChartPoint[] };
+
+  type Props = {
+    series?: Series[];
+    height?: number;
+    valueFormatter?: (value: number) => string;
+    emptyMessage?: string;
+    /** false where the caller already names the series itself */
+    legend?: boolean;
+  };
+
   let {
     series = [],
     height = 220,
-    valueFormatter = (v) => String(v),
+    valueFormatter = (v: number) => String(v),
     emptyMessage = '',
     legend = true
-  } = $props();
+  }: Props = $props();
 
   // Nonzero default so the chart renders at a sane size immediately, before the ResizeObserver
   // below reports the real measured width.
   let containerWidth = $state(300);
-  let containerEl = $state();
-  let hoverIndex = $state(null);
-  let resizeObserver;
+  let containerEl = $state<HTMLElement | undefined>();
+  let hoverIndex = $state<number | null>(null);
+  let resizeObserver: ResizeObserver | undefined;
 
   // bind:clientWidth alone does not reliably report the real width the moment this component's
   // container first becomes visible (e.g. a panel that mounts once async data arrives) — Svelte's
@@ -83,11 +88,11 @@
   let viewHeight = $derived(height);
   let innerWidth = $derived(Math.max(1, viewWidth - margin.left - margin.right));
   let innerHeight = $derived(Math.max(1, viewHeight - margin.top - margin.bottom));
-  let allPoints = $derived(series.flatMap((s) => s.points || []));
+  let allPoints = $derived(series.flatMap((s: Series) => s.points || []));
   let hasData = $derived(allPoints.length > 0);
-  let pointCount = $derived(Math.max(1, ...series.map((s) => (s.points || []).length), 1));
-  let rawMax = $derived(Math.max(0, ...allPoints.map((p) => Number(p.value) || 0)));
-  let rawMin = $derived(Math.min(0, ...allPoints.map((p) => Number(p.value) || 0)));
+  let pointCount = $derived(Math.max(1, ...series.map((s: Series) => (s.points || []).length), 1));
+  let rawMax = $derived(Math.max(0, ...allPoints.map((p: ChartPoint) => Number(p.value) || 0)));
+  let rawMin = $derived(Math.min(0, ...allPoints.map((p: ChartPoint) => Number(p.value) || 0)));
   let maxValue = $derived(rawMax === rawMin ? rawMax + 1 : rawMax);
   let minValue = $derived(rawMin);
 
@@ -102,31 +107,38 @@
   // but silently leaves every per-point <circle> frozen at its old position, since the inner
   // each-block never gets told innerWidth/pointCount changed. Same class of bug as the
   // ApiExplorerPage `filtered` reactivity note elsewhere in this codebase.
-  function xFor(index, innerW, count) {
+  function xFor(index: number, innerW: number, count: number) {
     if (count <= 1) {
       return margin.left + innerW / 2;
     }
     return margin.left + (index / (count - 1)) * innerW;
   }
 
-  function yFor(value, innerH, minV, maxV) {
+  function yFor(value: number, innerH: number, minV: number, maxV: number) {
     const range = maxV - minV || 1;
     return margin.top + innerH - ((Number(value) - minV) / range) * innerH;
   }
 
-  function pathFor(points, innerW, count, innerH, minV, maxV) {
+  function pathFor(
+    points: ChartPoint[] | undefined,
+    innerW: number,
+    count: number,
+    innerH: number,
+    minV: number,
+    maxV: number,
+  ) {
     if (!points || points.length === 0) {
       return '';
     }
     return points
       .map(
-        (p, i) =>
+        (p: ChartPoint, i: number) =>
           `${i === 0 ? 'M' : 'L'} ${xFor(i, innerW, count).toFixed(1)} ${yFor(p.value, innerH, minV, maxV).toFixed(1)}`,
       )
       .join(' ');
   }
 
-  function indexFromClientX(clientX) {
+  function indexFromClientX(clientX: number) {
     if (!containerEl || pointCount <= 1) {
       return 0;
     }
@@ -147,7 +159,7 @@
     return Math.min(pointCount - 1, Math.max(0, idx));
   }
 
-  function handleMove(event) {
+  function handleMove(event: MouseEvent) {
     hoverIndex = indexFromClientX(event.clientX);
   }
 
@@ -159,10 +171,10 @@
     $derived(hoverIndex === null
       ? []
       : series
-          .map((s) => ({
+          .map((s: Series) => ({
             name: s.name,
             color: s.color,
-            point: (s.points || [])[hoverIndex],
+            point: (s.points || [])[hoverIndex!],
           }))
           .filter((r) => r.point !== undefined));
 
@@ -170,8 +182,10 @@
   let hoverX = $derived(hoverIndex === null ? 0 : xFor(hoverIndex, innerWidth, pointCount));
   let tooltipAlignRight = $derived(hoverX > viewWidth * 0.6);
 
-  let gridLines = $derived([0, 0.25, 0.5, 0.75, 1].map((t) => margin.top + t * innerHeight));
-  let labelPoints = $derived((series[0]?.points || []).map((p, i) => ({ index: i, label: p.label })));
+  let gridLines = $derived([0, 0.25, 0.5, 0.75, 1].map((t: number) => margin.top + t * innerHeight));
+  let labelPoints = $derived(
+    (series[0]?.points || []).map((p: ChartPoint, i: number) => ({ index: i, label: p.label })),
+  );
   // Thin the x-axis labels so they don't overlap when there are many points.
   let labelStride = $derived(Math.max(1, Math.ceil(labelPoints.length / 8)));
 </script>

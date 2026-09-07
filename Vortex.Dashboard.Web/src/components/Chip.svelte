@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // A removable chip -- an active filter, a selected row, a tag.
   //
   //   <Chip label="wf_act_chase" onremove={() => drop(id)} />
@@ -6,16 +6,16 @@
   import { X } from '@lucide/svelte';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [label]
-   * @property {string} [tone] - '' | 'accent' | 'success' | 'warning' | 'danger'
-   * @property {() => void} [onremove]
-   * @property {import('svelte').Snippet} [children] - richer content in place of `label`
-   */
+  type Props = {
+    label?: string;
+    /** '' | 'accent' | 'success' | 'warning' | 'danger' */
+    tone?: string;
+    onremove?: () => void;
+    /** richer content in place of `label` */
+    children?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
-  let { label = '', tone = '', onremove, children } = $props();
+  let { label = '', tone = '', onremove, children }: Props = $props();
 </script>
 
 <span class="chip" class:accent={tone === 'accent'} class:success={tone === 'success'} class:warning={tone === 'warning'} class:danger={tone === 'danger'}>

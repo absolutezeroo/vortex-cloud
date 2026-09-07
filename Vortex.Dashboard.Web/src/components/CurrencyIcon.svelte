@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The hotel's own 17x17 currency sprite, shown inside a price or reward pill.
   //
   // Imported rather than fetched from a URL: these live in the front-end source tree, so Vite emits
@@ -26,14 +26,16 @@
   };
 
   
-  /**
-   * @typedef {Object} Props
-   * @property {any} [kind]
-   * @property {number} [size] - Drawn at the sprite's own size by default; anything else scales it with pixels kept crisp.
-   */
+  type Props = {
+    kind?: any;
+    /**
+     * Drawn at the sprite's own size by default; anything else scales it with pixels kept
+     * crisp.
+     */
+    size?: number;
+  };
 
-  /** @type {Props} */
-  let { kind = CURRENCY_KIND.points, size = 17 } = $props();
+  let { kind = CURRENCY_KIND.points, size = 17 }: Props = $props();
 
   let src = $derived(ICONS[kind] ?? null);
 </script>

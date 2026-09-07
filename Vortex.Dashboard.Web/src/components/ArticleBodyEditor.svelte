@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   /**
    * The article body, written the way an article is written: one surface, a toolbar, and the
    * pictures and buttons sitting where they will sit on the site.
@@ -42,13 +42,30 @@
     docToBlocks,
     isAllowedHref,
   } from '../lib/articleBlocks';
+  import type { Block } from '../lib/articleBlocks';
   import { ArticleButton, ArticleImage } from '../lib/articleEditorNodes';
   import { t } from '../lib/i18n';
 
-  let { value = [], onchange, resolveUrl = () => '', onpickimage = null, readonly = false } = $props();
+  type Props = {
+    value?: Block[];
+    onchange?: (blocks: Block[]) => void;
+    /** Turns a stored path into something the browser can show. */
+    resolveUrl?: (path: string) => string;
+    /** Opens the picture browser; called with the setter for whatever is chosen. */
+    onpickimage?: ((apply: (path: string) => void) => void) | null;
+    readonly?: boolean;
+  };
 
-  let host;
-  let editor = $state(null);
+  let {
+    value = [],
+    onchange,
+    resolveUrl = () => '',
+    onpickimage = null,
+    readonly = false,
+  }: Props = $props();
+
+  let host: HTMLElement | undefined;
+  let editor = $state<Editor | null>(null);
   // Bumped on every transaction so the toolbar's pressed states follow the caret. ProseMirror is
   // not reactive and Svelte cannot see inside it.
   let tick = $state(0);
@@ -71,7 +88,7 @@
 
   onMount(() => {
     editor = new Editor({
-      element: host,
+      element: host!,
       editable: !readonly,
       content: blocksToDoc(value),
       extensions: [
@@ -87,11 +104,12 @@
         ArticleImage.configure({
           resolveUrl,
           labels,
-          onBrowse: (apply) => onpickimage?.(apply),
+          onBrowse: (apply: (path: string) => void) => onpickimage?.(apply),
         }),
         ArticleButton.configure({ labels }),
       ],
-      onUpdate: ({ editor: instance }) => onchange?.(docToBlocks(instance.getJSON())),
+      onUpdate: ({ editor: instance }: { editor: Editor }) =>
+        onchange?.(docToBlocks(instance.getJSON() as never)),
       onTransaction: () => (tick += 1),
     });
 

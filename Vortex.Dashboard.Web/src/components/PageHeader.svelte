@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Title, one line of description, and the page's own actions on the right of the title.
   //
   // Written because "Refresh" kept landing in the wrong place: on a page with filters it fell into
@@ -16,16 +16,16 @@
   //     {/snippet}
   //   </PageHeader>
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [title]
-   * @property {string} [description]
-   * @property {import('svelte').Snippet} [icon] - optional glyph before the title
-   * @property {import('svelte').Snippet} [actions] - page-level actions, aligned with the title
-   */
+  type Props = {
+    title?: string;
+    description?: string;
+    /** optional glyph before the title */
+    icon?: import('svelte').Snippet;
+    /** page-level actions, aligned with the title */
+    actions?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
-  let { title = '', description = '', icon, actions } = $props();
+  let { title = '', description = '', icon, actions }: Props = $props();
 </script>
 
 <header class="page-header">

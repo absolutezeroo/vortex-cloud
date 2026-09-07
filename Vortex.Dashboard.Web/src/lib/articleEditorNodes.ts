@@ -115,7 +115,7 @@ function formNode(
     selectable: true,
     draggable: false,
 
-    addOptions() {
+    addOptions(): NodeOptions {
       return { resolveUrl: () => '', onBrowse: null, labels: {} };
     },
 

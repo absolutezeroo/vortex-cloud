@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The actions you can drop on the canvas, grouped and searchable.
   //
   // Sixty-seven of them now, which is exactly why this is a searchable palette and not a select:
@@ -29,14 +29,19 @@
     { key: 'pets', match: /pet/ },
   ];
 
-  function groupOf(name) {
+  /** One action the palette offers. `wired` marks the ones already in the sequence. */
+  type PaletteAction = { name: string; wired?: boolean };
+
+  function groupOf(name: string) {
     return GROUPS.find((g) => g.match.test(name))?.key ?? 'other';
   }
 
   let grouped = $derived.by(() => {
     const term = query.trim().toLowerCase();
-    const matching = actions.filter((a) => !term || a.name.toLowerCase().includes(term));
-    const byGroup = new Map();
+    const matching = actions.filter(
+      (a: PaletteAction) => !term || a.name.toLowerCase().includes(term),
+    );
+    const byGroup = new Map<string, PaletteAction[]>();
 
     for (const action of matching) {
       const key = groupOf(action.name);

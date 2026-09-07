@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Fact } from '../../lib/graph/model';
   // One condition, as a block that can be picked up and dropped under another action.
   //
   // The drag handle is its own element rather than the whole block: the row is full of selects and
@@ -41,11 +42,11 @@
     ondragend,
   } = $props();
 
-  let meta = $derived(facts.find((f) => f.key === filter.factKey) ?? null);
-  let label = (fact) => {
-    const translated = $t(fact.labelKey);
+  let meta = $derived(facts.find((f: Fact) => f.key === filter.factKey) ?? null);
+  let label = (fact: Fact) => {
+    const translated = $t(fact.labelKey ?? fact.key);
 
-    return translated === fact.labelKey ? fact.fallbackLabel : translated;
+    return translated === (fact.labelKey ?? fact.key) ? fact.fallbackLabel : translated;
   };
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The sequence editor, full screen.
   //
   // It lived inside the task drawer, which is a narrow column: three selects and a value field do
@@ -11,16 +11,23 @@
 
   // Rendered on the body, not where it was written: a drawer sets its own stacking context, so a
   // full-screen layer inside one would be trapped in that column.
-  function portal(node) {
+  function portal(node: HTMLElement) {
     document.body.appendChild(node);
 
     return { destroy: () => node.remove() };
   }
 
-  /** @type {{ open: boolean, title: string, onclose: () => void, editor: any }} */
-  let { open = false, title, onclose, ...editor } = $props();
+  type Props = {
+    open?: boolean;
+    title: string;
+    onclose: () => void;
+    /** Everything else is forwarded to the graph, which owns those props. */
+    [key: string]: unknown;
+  };
 
-  function onkeydown(event) {
+  let { open = false, title, onclose, ...editor }: Props = $props();
+
+  function onkeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') onclose();
   }
 </script>
@@ -40,7 +47,8 @@
       </button>
     </header>
 
-    <SequenceGraph {...editor} />
+    <!-- The graph's own props are forwarded whole; this shell adds only the chrome. -->
+    <SequenceGraph {...(editor as any)} />
   </div>
 {/if}
 

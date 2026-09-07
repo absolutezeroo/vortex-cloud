@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The dialog shell every modal in the dashboard was writing out by hand: the fixed layer, the
   // click-to-dismiss backdrop, the panel and its header. Thirteen copies of that markup existed and
   // none of them handled Escape or kept the keyboard inside the dialog, so tabbing out of an open
@@ -15,33 +15,37 @@
   
   
   
-  /**
-   * @typedef {Object} Props
-   * @property {string} [title]
-   * @property {string} [eyebrow]
-   * @property {number} [width] - Panel width in px; the panel still shrinks to the viewport on a narrow screen.
-   * @property {boolean} [dismissible] - Set false for a dialog that must be dismissed with an explicit action.
-   * @property {string} [labelledBy]
-   * @property {boolean} [column] - Lay the panel out as a flex column instead of the default grid. What the pickers want from this
-is a body that scrolls under a header that does not -- a long icon grid should not push the
-search box off the top of the dialog.
-   * @property {import('svelte').Snippet} [header]
-   * @property {import('svelte').Snippet} [children]
-   * @property {import('svelte').Snippet} [actions]
-   * @property {() => void} [onclose] - called when the operator dismisses the dialog
-   */
+  type Props = {
+    title?: string;
+    eyebrow?: string;
+    /** Panel width in px; the panel still shrinks to the viewport on a narrow screen. */
+    width?: number;
+    /** Set false for a dialog that must be dismissed with an explicit action. */
+    dismissible?: boolean;
+    labelledBy?: string;
+    /**
+     * Lay the panel out as a flex column instead of the default grid. What the pickers want
+     * from this is a body that scrolls under a header that does not -- a long icon grid should
+     * not push the search box off the top of the dialog.
+     */
+    column?: boolean;
+    header?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
+    actions?: import('svelte').Snippet;
+    /** called when the operator dismisses the dialog */
+    onclose?: () => void;
+  };
 
   // A full-viewport overlay only works if no ancestor boxes it in: any transform, filter or
   // `contain` between here and the root turns `position: fixed` into "fixed to that ancestor", and
   // the backdrop then dims one section instead of the screen. Where a modal is rendered from is not
   // something its callers should have to think about, so it moves itself out of their subtree.
-  function portal(node) {
+  function portal(node: HTMLElement) {
     document.body.appendChild(node);
 
     return { destroy: () => node.remove() };
   }
 
-  /** @type {Props} */
   let {
     title = '',
     eyebrow = '',
@@ -53,9 +57,9 @@ search box off the top of the dialog.
     children,
     actions,
     onclose
-  } = $props();
+  }: Props = $props();
 
-  let panel = $state();
+  let panel = $state<HTMLElement | undefined>();
 
   function close() {
     if (dismissible) {

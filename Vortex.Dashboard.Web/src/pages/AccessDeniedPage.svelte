@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { deniedRoute } from '../lib/session';
   import { NAV } from '../lib/routes';

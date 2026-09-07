@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [title]
-   * @property {string} [message]
-   */
+  type Props = {
+    title?: string;
+    message?: string;
+  };
 
-  /** @type {Props} */
-  let { title = '', message = '' } = $props();
+  let { title = '', message = '' }: Props = $props();
 </script>
 
 <section class="access-denied-notice" role="status" aria-live="polite">

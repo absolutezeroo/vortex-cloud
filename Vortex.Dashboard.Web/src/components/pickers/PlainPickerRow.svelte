@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The row every plain directory shares: a name, an id, and whatever the server thought worth
   // saying about it. Fourteen kinds render through this one file rather than fourteen branches.
   /** @type {{ row: any, onchoose: (row: any) => void }} */

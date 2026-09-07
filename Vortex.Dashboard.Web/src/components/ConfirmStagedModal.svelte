@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The confirm step for the authoring pages, whose forms already contain the audited reason: this
   // reads it back with the summary so the operator sees exactly what is about to be written and
   // under what justification. (The pages that collect the reason at confirm time use
@@ -12,14 +12,13 @@
   import { t } from '../lib/i18n';
 
   
-  /**
-   * @typedef {Object} Props
-   * @property {any} ops - The createWriteOps store driving this dialog.
-   * @property {string} [eyebrow]
-   */
+  type Props = {
+    /** The createWriteOps store driving this dialog. */
+    ops: any;
+    eyebrow?: string;
+  };
 
-  /** @type {Props} */
-  let { ops, eyebrow = '' } = $props();
+  let { ops, eyebrow = '' }: Props = $props();
 </script>
 
 {#if $ops.pending}

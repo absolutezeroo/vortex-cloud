@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The five player operations, bound to a player the page already knows. They used to live on
   // /operations, where each of the five carried its own "Select user" button: giving someone credits
   // and then kicking them meant picking the same player twice, from two cards, with nothing on
@@ -20,22 +20,24 @@
   import { identity } from '../lib/session';
   import { t, translate } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {number|string} playerId
-   * @property {string} [playerName]
-   * @property {boolean} [online]
-   * @property {() => void} [onDone] - called after a write lands, so the page can refresh its timeline
-   */
+  type Props = {
+    playerId: number|string;
+    playerName?: string;
+    online?: boolean;
+    /** called after a write lands, so the page can refresh its timeline */
+    onDone?: () => void;
+  };
 
-  /** @type {Props} */
-  let { playerId, playerName = '', online = false, onDone } = $props();
+  let { playerId, playerName = '', online = false, onDone }: Props = $props();
 
   const ops = createWriteOps(() => onDone?.());
 
   // One bag per action; the player is not in them -- it comes from the page.
   let credits = $state({ amount: '', reason: '' });
-  let activity = $state({ type: '0', amount: '', reason: '' });
+  // `type` is a number: CurrencySelect binds the reward type it writes, and the request sends
+  // Number(type) either way. It was initialised as a string, so it was one until the operator
+  // touched the control and a number after -- the same field holding two types.
+  let activity = $state({ type: 0, amount: '', reason: '' });
   // Silver and emeralds share one form: same grant, different currency.
   let collectibles = $state({ currency: 'silver', amount: '', reason: '' });
   let item = $state({ definitionId: '', defName: '', defSprite: '', defIcon: '', extraData: '', reason: '' });
@@ -47,10 +49,17 @@
   let tradingUnlock = $state({ reason: '' });
   let forensicsPurge = $state({ reason: '' });
 
-  let picker = $state(null);
+  /** Which picker is open, and what to do with what it returns. */
+  type OpenPicker = {
+    kind: string;
+    title: string;
+    onSelect: (chosen: Record<string, any>) => void;
+  };
+
+  let picker = $state<OpenPicker | null>(null);
   // Which operation is open. One at a time: five forms at once was five reasons to fill in for
   // one decision, and the heights never matched.
-  let openAction = $state(null);
+  let openAction = $state<string | null>(null);
 
   let canCredits = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.credits));
   let canActivity = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.activity));
@@ -96,12 +105,19 @@
   // `|| undefined` is the switch between the two paths in `confirm`: a typed reason becomes the
   // audited base, an empty one falls through to the summary. Either way the server's three-character
   // floor is met by a real sentence rather than by whatever the operator could be bothered to type.
-  const stage = (id, title, endpoint, valid, body, summary) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown>,
+    summary: string,
+  ) =>
     ops.ask(endpoint, { playerId: Number(playerId), ...body }, title, summary, {
       key: id,
       valid: valid && positive(playerId),
       invalidMessage: translate('operations.fillFields'),
-      reason: body.reason || undefined,
+      reason: (body.reason as string) || undefined,
     });
 
   function stageCredits() {
@@ -297,7 +313,7 @@
     );
   }
 
-  async function copy(value) {
+  async function copy(value: string | null | undefined) {
     try {
       await navigator.clipboard.writeText(value || '');
     } catch {
@@ -457,7 +473,7 @@
               (picker = {
                 kind: 'furniture',
                 title: translate('operations.selectFurnitureTitle'),
-                onSelect: (f) =>
+                onSelect: (f: Record<string, any>) =>
                   (item = {
                     ...item,
                     definitionId: f.id,

@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Component } from 'svelte';
   import { readParam, writeParams } from '../lib/urlState';
   // In-page tab strip for the admin pages that do several jobs at once. Follows the WAI-ARIA tabs
   // pattern and NN/g's rules for the component: one tab is always selected, switching is instant
@@ -14,38 +15,50 @@
 
   
   
-  /**
-   * @typedef {Object} Props
-   * @property {any} [tabs] - [{ id, label, icon?, count? }] -- `icon` is a lucide component, `count` a badge.
-   * @property {any} [active]
-   * @property {(id: string) => void} [onchange] - receives the newly selected tab id
-   * @property {string} [storageKey] - Remembers the open tab under this key for the session, so a refresh (or coming back from
-another page) lands where the operator left off instead of resetting to the first tab.
-   */
+  /** One tab: `icon` is a lucide component, `count` a badge shown beside the label. */
+  type Tab = {
+    id: string;
+    label: string;
+    /** A lucide component, rendered before the label. */
+    icon?: Component<Record<string, unknown>>;
+    count?: number;
+  };
 
-  /** @type {Props} */
-  let { tabs = [], active = $bindable(tabs[0]?.id ?? ''), storageKey = '', onchange } = $props();
+  type Props = {
+    tabs?: Tab[];
+    /** The open tab's id. Bound, so the page can read and set it. */
+    active?: string;
+    /** receives the newly selected tab id */
+    onchange?: (id: string) => void;
+    /**
+     * Remembers the open tab under this key for the session, so a refresh (or coming back from
+     * another page) lands where the operator left off instead of resetting to the first tab.
+     */
+    storageKey?: string;
+  };
 
-  let buttons = $state([]);
+  let { tabs = [], active = $bindable(tabs[0]?.id ?? ''), storageKey = '', onchange }: Props = $props();
+
+  let buttons = $state<HTMLButtonElement[]>([]);
 
   // ?tab= wins over the remembered one: a link someone sent you names the tab it means, and the tab
   // this browser happened to leave open last week should not quietly override it.
   if (storageKey) {
     const fromUrl = readParam('tab');
 
-    if (fromUrl && tabs.some((t) => t.id === fromUrl)) {
+    if (fromUrl && tabs.some((t: Tab) => t.id === fromUrl)) {
       active = fromUrl;
     } else {
       try {
         const stored = sessionStorage.getItem(`vortex.tabs.${storageKey}`);
-        if (stored && tabs.some((t) => t.id === stored)) active = stored;
+        if (stored && tabs.some((t: Tab) => t.id === stored)) active = stored;
       } catch {
         // Private browsing / quota -- the default tab is a fine fallback.
       }
     }
   }
 
-  function select(id) {
+  function select(id: string) {
     if (id === active) return;
 
     active = id;
@@ -67,9 +80,9 @@ another page) lands where the operator left off instead of resetting to the firs
 
   // Arrow keys move between tabs, Home/End jump to the ends -- the behaviour a keyboard user expects
   // from a tablist, and the reason the strip is buttons rather than links.
-  function onKeydown(event, index) {
+  function onKeydown(event: KeyboardEvent, index: number) {
     const last = tabs.length - 1;
-    let next = null;
+    let next: number | null = null;
 
     if (event.key === 'ArrowRight') next = index === last ? 0 : index + 1;
     else if (event.key === 'ArrowLeft') next = index === 0 ? last : index - 1;
@@ -78,13 +91,13 @@ another page) lands where the operator left off instead of resetting to the firs
     else return;
 
     event.preventDefault();
-    select(tabs[next].id);
-    buttons[next]?.focus();
+    select(tabs[next!].id);
+    buttons[next!]?.focus();
   }
 
   // A tab whose panel is empty is still worth showing -- hiding it would make the page's shape
   // change under the operator -- but it reads as quieter.
-  const isEmpty = (tab) => tab.count === 0;
+  const isEmpty = (tab: { count?: number }) => tab.count === 0;
 </script>
 
 <div class="tabs" role="tablist">

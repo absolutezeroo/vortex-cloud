@@ -1,21 +1,21 @@
-<script>
+<script lang="ts">
   // Shared button — the single button grammar for the whole dashboard. `variant` maps to the
   // .btn-* kit in styles.css (gold primary / neutral ghost / red danger); `size` to .btn-sm.
   // Adopting this across pages removes the historical split where the same action ("Refresh")
   
-  /**
-   * @typedef {Object} Props
-   * @property {string} [variant] - rendered filled on some pages and ghost on others - 'primary' | 'ghost' | 'danger'
-   * @property {string} [size] - 'md' | 'sm'
-   * @property {string} [type]
-   * @property {boolean} [disabled]
-   * @property {any} [title]
-   * @property {any} [ariaLabel]
-   * @property {(event: MouseEvent) => void} [onclick]
-   * @property {import('svelte').Snippet} [children]
-   */
+  type Props = {
+    /** rendered filled on some pages and ghost on others - 'primary' | 'ghost' | 'danger' */
+    variant?: string;
+    /** 'md' | 'sm' */
+    size?: string;
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+    title?: any;
+    ariaLabel?: any;
+    onclick?: (event: MouseEvent) => void;
+    children?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
   let {
     variant = 'primary',
     size = 'md',
@@ -27,7 +27,7 @@
     // the caller's `onclick` is simply passed through to the element below.
     onclick = undefined,
     children
-  } = $props();
+  }: Props = $props();
 </script>
 
 <button

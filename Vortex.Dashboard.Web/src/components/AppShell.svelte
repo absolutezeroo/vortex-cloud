@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Component } from 'svelte';
 
   import { location, push } from 'svelte-spa-router';
   import CommandPalette from './CommandPalette.svelte';
@@ -64,15 +65,13 @@
   import { theme, setTheme, THEMES } from '../lib/theme';
   import { t, locale, setLocale, LOCALES } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {any} logout
-   * @property {boolean} [logoutBusy]
-   * @property {import('svelte').Snippet} [children]
-   */
+  type Props = {
+    logout: any;
+    logoutBusy?: boolean;
+    children?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
-  let { logout, logoutBusy = false, children } = $props();
+  let { logout, logoutBusy = false, children }: Props = $props();
 
   // Keep in sync with the `group` field on NAV entries (routes.js). Groups are domains, not tool
   // kinds: an operator looks for "the quest thing", not for "the editing thing". None may exceed
@@ -89,7 +88,7 @@
     'System',
   ];
 
-  const routeIcons = {
+  const routeIcons: Record<string, Component<Record<string, unknown>>> = {
     '/overview': Activity,
     '/infrastructure': Server,
     '/investigation': Search,
@@ -176,9 +175,21 @@
   // `.add()` / `.delete()` on a plain one signal nothing. Svelte 4 papered over that with a
   // `collapsedGroups = collapsedGroups` self-assignment, which is a no-op under runes -- assigning
   // an identical reference is skipped. That is what silently killed every nav group toggle.
+  /** A nav row as the shell builds it: the route plus what the sidebar needs to draw it. */
+  type NavEntry = {
+    path: string;
+    label: string;
+    short: string;
+    keywords?: string;
+    group: string;
+    allowed: boolean;
+    /** True for a page that can change something; the sidebar marks those. */
+    writes?: boolean;
+  };
+
   const collapsedGroups = loadCollapsedGroups();
 
-  function toggleGroup(id) {
+  function toggleGroup(id: string) {
     if (collapsedGroups.has(id)) {
       collapsedGroups.delete(id);
     } else {
@@ -195,13 +206,17 @@
   // A collapsed group still expands while actively searching, so filter results stay visible.
   // (The set is passed in rather than closed over for readability; under runes either tracks, since
   // a SvelteSet reports its own reads wherever they happen.)
-  function isCollapsed(group, q, groupsCollapsed) {
+  function isCollapsed(
+    group: { id: string },
+    q: string,
+    groupsCollapsed: { has: (id: string) => boolean },
+  ) {
     return groupsCollapsed.has(group.id) && !q.trim();
   }
 
 
 
-  function revealActiveGroup(path) {
+  function revealActiveGroup(path: string) {
     const active = NAV.find((item) => item.path === path);
 
     if (active && collapsedGroups.has(active.group)) {
@@ -212,23 +227,23 @@
   // Matches the label, the short AND the route's `keywords` (routes.js), so the box answers what an
   // operator wants to DO -- "ban", "ducats", "jukebox" -- and not only the name of the page they
   // would have to know already. Everything is accent-folded on both sides.
-  function filterItems(list, q) {
+  function filterItems(list: NavEntry[], q: string) {
     const needle = foldSearch(q.trim());
 
     if (!needle) {
       return list;
     }
 
-    return list.filter((item) =>
+    return list.filter((item: NavEntry) =>
       foldSearch(`${item.label} ${item.short} ${item.keywords || ''}`).includes(needle),
     );
   }
 
-  function iconFor(item) {
+  function iconFor(item: NavEntry) {
     return routeIcons[item.path] || Activity;
   }
 
-  function go(item) {
+  function go(item: NavEntry) {
     if (item.allowed) {
       push(item.path);
     }
@@ -243,7 +258,7 @@
     short: $t(item.shortKey),
     allowed: hasRouteAccess(item, $identity),
   })));
-  let groupLabels = $derived({
+  let groupLabels: Record<string, string> = $derived({
     Live: $t('nav.groupLive'),
     Players: $t('nav.groupPlayers'),
     Moderation: $t('nav.groupModeration'),

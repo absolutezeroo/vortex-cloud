@@ -15,7 +15,13 @@
  */
 
 /** One fact an action records, as the catalogue describes it. */
-export type Fact = { key: string; fallbackLabel: string; kind: string };
+export type Fact = {
+  key: string;
+  /** Translation key; the fallback is shown when the dictionary has no entry for it. */
+  labelKey?: string;
+  fallbackLabel: string;
+  kind: string;
+};
 
 /** One test on a step. `value` holding `$N` is a wire rather than a literal. */
 export type Filter = { factKey: string; value: string };

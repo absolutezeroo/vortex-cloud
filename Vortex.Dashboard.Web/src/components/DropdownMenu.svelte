@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The kit's row-action menu: a trigger, and a list of items where the destructive one is marked.
   // Closes on Escape, on outside click, and after a pick; arrow keys walk the list.
   //
@@ -9,28 +9,27 @@
   //   ]} onpick={(id) => run(id)} />
   import { ChevronDown } from '@lucide/svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [label]
-   * @property {Array<{id: any, label: string, danger?: boolean, disabled?: boolean}>} [items]
-   * @property {(id: any) => void} [onpick]
-   * @property {string} [align] - 'start' | 'end'
-   */
+  type Props = {
+    label?: string;
+    items?: Array<{id: any, label: string, danger?: boolean, disabled?: boolean}>;
+    onpick?: (id: any) => void;
+    /** 'start' | 'end' */
+    align?: string;
+  };
 
-  /** @type {Props} */
-  let { label = '', items = [], onpick, align = 'start' } = $props();
+  let { label = '', items = [], onpick, align = 'start' }: Props = $props();
 
   let open = $state(false);
   let cursor = $state(0);
-  let root = $state();
+  let root = $state<HTMLElement | undefined>();
 
-  function pick(item) {
+  function pick(item: { id: string; disabled?: boolean }) {
     if (item.disabled) return;
     open = false;
     onpick?.(item.id);
   }
 
-  function onKeydown(event) {
+  function onKeydown(event: KeyboardEvent) {
     if (!open) {
       if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
@@ -60,8 +59,8 @@
   $effect(() => {
     if (!open) return;
 
-    const away = (event) => {
-      if (root && !root.contains(event.target)) open = false;
+    const away = (event: PointerEvent) => {
+      if (root && !root.contains(event.target as Node)) open = false;
     };
 
     document.addEventListener('pointerdown', away, true);

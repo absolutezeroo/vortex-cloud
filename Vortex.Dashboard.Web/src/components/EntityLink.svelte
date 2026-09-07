@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { User } from '@lucide/svelte';
   import { t } from '../lib/i18n';
@@ -9,17 +9,16 @@
   // Show the real Habbo avatar head next to a player's name. Resolved lazily + batched via
   // lib/avatars.js; falls back to a neutral head only if the player has no figure. Set avatar={false}
   
-  /**
-   * @typedef {Object} Props
-   * @property {string} [type]
-   * @property {any} id
-   * @property {string} [label]
-   * @property {any} openPlayer
-   * @property {any} openItem
-   * @property {boolean} [avatar] - for tight inline usages where a head would be noise.
-   */
+  type Props = {
+    type?: string;
+    id: any;
+    label?: string;
+    openPlayer: any;
+    openItem: any;
+    /** for tight inline usages where a head would be noise. */
+    avatar?: boolean;
+  };
 
-  /** @type {Props} */
   let {
     type = 'player',
     id,
@@ -27,12 +26,12 @@
     openPlayer,
     openItem,
     avatar = true
-  } = $props();
+  }: Props = $props();
 
   let hasId = $derived(id !== null && id !== undefined && id !== '');
   let numId = $derived(hasId ? Number(id) : null);
   let showAvatar = $derived(type === 'player' && avatar && numId !== null && !Number.isNaN(numId));
-  let avatarUrl = $derived(showAvatar ? $avatarCache.get(numId) : undefined);
+  let avatarUrl = $derived(showAvatar ? $avatarCache.get(numId!) : undefined);
   let resolvedLabel = $derived(
     label || $t(type === 'item' ? 'common.itemHash' : type === 'room' ? 'common.roomHash' : 'common.playerHash', { id }),
   );

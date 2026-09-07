@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // One action on the canvas: what the player did, and what it records.
   //
   // Its conditions are no longer inside it -- they are their own nodes, wired in. What is left here

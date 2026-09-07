@@ -1,19 +1,22 @@
-<script>
+<script lang="ts">
   // Unified empty / loading / error block. Replaces the historical mix of a bare muted <p>, a
   // dashed box, and a colspan table row. `kind` drives the icon + colour; `message` is the copy.
   // Uses the global .empty-state class so it themes with everything else.
   import { Inbox, LoaderCircle, TriangleAlert } from '@lucide/svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [kind] - 'empty' | 'loading' | 'error'
-   * @property {string} [message]
-   */
+  type Props = {
+    /** 'empty' | 'loading' | 'error' */
+    kind?: string;
+    message?: string;
+  };
 
-  /** @type {Props} */
-  let { kind = 'empty', message = '' } = $props();
+  let { kind = 'empty', message = '' }: Props = $props();
 
-  const ICONS = { empty: Inbox, loading: LoaderCircle, error: TriangleAlert };
+  const ICONS: Record<string, typeof Inbox> = {
+    empty: Inbox,
+    loading: LoaderCircle,
+    error: TriangleAlert,
+  };
   let Icon = $derived(ICONS[kind] || Inbox);
 </script>
 

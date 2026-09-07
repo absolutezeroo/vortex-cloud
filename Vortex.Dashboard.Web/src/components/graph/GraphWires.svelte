@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The wires, drawn once behind every node.
   //
   // One SVG for the whole canvas rather than one per connection: they cross each other, so they
@@ -16,7 +16,7 @@
    * enters an input from the left, so following one is never ambiguous even where a dozen cross.
    * The handle length grows with the gap so short hops stay tight and long ones sweep.
    */
-  function path(from, to) {
+  function path(from: { x: number; y: number }, to: { x: number; y: number }) {
     const reach = Math.max(40, Math.abs(to.x - from.x) * 0.5);
 
     return `M ${from.x} ${from.y} C ${from.x + reach} ${from.y}, ${to.x - reach} ${to.y}, ${to.x} ${to.y}`;

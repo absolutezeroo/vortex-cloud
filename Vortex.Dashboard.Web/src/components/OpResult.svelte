@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The single result line for every mutating action (create/update/delete/ban/kick…). Replaces the
   // block that was copy-pasted ~30 times across the Act pages — including its `✅`/`❌` emoji, the one
   // spot in the app that used OS-native emoji among an otherwise all-lucide icon set. Renders a
@@ -10,15 +10,14 @@
   import { describeOpError } from '../lib/opErrors';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {any} [result]
-   * @property {any} [onCopy] - (correlationId) => void — shows a copy button when provided
-   * @property {string} [copyLabel]
-   */
+  type Props = {
+    result?: any;
+    /** (correlationId) => void — shows a copy button when provided */
+    onCopy?: any;
+    copyLabel?: string;
+  };
 
-  /** @type {Props} */
-  let { result = null, onCopy = null, copyLabel = 'Copy' } = $props();
+  let { result = null, onCopy = null, copyLabel = 'Copy' }: Props = $props();
 
   // On success the server sends the literal "ok", which is not a sentence to show an operator. On a
   // refusal it sends the domain's own code (offer_has_products); both need translating before they

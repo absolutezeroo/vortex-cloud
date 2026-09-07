@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Renders whatever lib/toasts.js is holding. Mounted once, in AppShell.
   //
   // aria-live="polite" on the region rather than role="alert" on each toast: a burst of writes

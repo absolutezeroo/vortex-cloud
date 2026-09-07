@@ -1,20 +1,19 @@
-<script>
+<script lang="ts">
   // The kit's toggle. A real <input type="checkbox"> under a drawn track, so it is focusable,
   // announced, and submits with a form -- a div with a click handler is none of those things.
   //
   //   <Switch bind:checked label="Auto-refresh" />
 
-  /**
-   * @typedef {Object} Props
-   * @property {boolean} [checked]
-   * @property {string} [label] - visible text; when empty pass an aria-label instead
-   * @property {string} [ariaLabel]
-   * @property {boolean} [disabled]
-   * @property {(checked: boolean) => void} [onchange]
-   */
+  type Props = {
+    checked?: boolean;
+    /** visible text; when empty pass an aria-label instead */
+    label?: string;
+    ariaLabel?: string;
+    disabled?: boolean;
+    onchange?: (checked: boolean) => void;
+  };
 
-  /** @type {Props} */
-  let { checked = $bindable(false), label = '', ariaLabel = '', disabled = false, onchange } = $props();
+  let { checked = $bindable(false), label = '', ariaLabel = '', disabled = false, onchange }: Props = $props();
 </script>
 
 <label class="switch" class:disabled>

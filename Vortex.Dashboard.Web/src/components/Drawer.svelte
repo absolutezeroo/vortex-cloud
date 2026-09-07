@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The edit surface for the whole dashboard. Every create/edit form used to be spliced into the
   // page itself: a twelve-field panel under the table pushed the list off screen, and a row's edit
   // form expanded inside the grid and broke the cards around it. You lost your place to change one
@@ -24,19 +24,22 @@
   import { t } from '../lib/i18n';
   import { X } from '@lucide/svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [title]
-   * @property {string} [eyebrow] - small label above the title, usually what is being edited
-   * @property {number} [width] - panel width in px; it still shrinks to the viewport on a narrow screen
-   * @property {boolean} [dismissible] - false for an edit that must be resolved with an explicit choice
-   * @property {string} [labelledBy]
-   * @property {() => void} [onclose]
-   * @property {import('svelte').Snippet} [children] - the form
-   * @property {import('svelte').Snippet} [actions] - pinned to the bottom, never scrolls away
-   */
+  type Props = {
+    title?: string;
+    /** small label above the title, usually what is being edited */
+    eyebrow?: string;
+    /** panel width in px; it still shrinks to the viewport on a narrow screen */
+    width?: number;
+    /** false for an edit that must be resolved with an explicit choice */
+    dismissible?: boolean;
+    labelledBy?: string;
+    onclose?: () => void;
+    /** the form */
+    children?: import('svelte').Snippet;
+    /** pinned to the bottom, never scrolls away */
+    actions?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
   let {
     title = '',
     eyebrow = '',
@@ -46,9 +49,9 @@
     onclose,
     children,
     actions,
-  } = $props();
+  }: Props = $props();
 
-  let panel = $state();
+  let panel = $state<HTMLElement | undefined>();
 
   // A CSS animation only ever plays on the way IN: the node is gone the moment the
   // parent's {#if} goes false, so the drawer vanished instead of closing. A transition
@@ -60,16 +63,16 @@
   // Written out rather than reached for from svelte/transition's `fly`: this needs a
   // percentage of the panel's own width, whatever `width` prop it was given, and no
   // opacity change -- a drawer that fades while it slides reads as a dialog, not a panel.
-  function slide(node, { duration = 280 } = {}) {
+  function slide(node: HTMLElement, { duration = 280 } = {}) {
     return {
       duration: REDUCED ? 0 : duration,
       easing: cubicOut,
-      css: (t) => `transform: translateX(${(1 - t) * 100}%)`,
+      css: (t: number) => `transform: translateX(${(1 - t) * 100}%)`,
     };
   }
 
-  function veil(node, { duration = 240 } = {}) {
-    return { duration: REDUCED ? 0 : duration, css: (t) => `opacity: ${t}` };
+  function veil(node: HTMLElement, { duration = 240 } = {}) {
+    return { duration: REDUCED ? 0 : duration, css: (t: number) => `opacity: ${t}` };
   }
 
   // The drawer is the only edit surface in the dashboard, so one guard here covers every form
@@ -78,7 +81,7 @@
   // navigation inside the SPA does not fire beforeunload, and svelte-spa-router has no guard hook.
   let dirty = $state(false);
 
-  function guardUnload(event) {
+  function guardUnload(event: BeforeUnloadEvent) {
     if (!dirty) return;
     event.preventDefault();
     event.returnValue = '';

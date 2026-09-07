@@ -1,21 +1,19 @@
-<script>
+<script lang="ts">
   // A range control with the kit's track and a readout. A real <input type="range"> underneath, so
   // arrow keys, Home/End and Page Up/Down all work without a line of code here.
   //
   //   <Slider bind:value min={0} max={100} label="Drop rate" suffix="%" />
 
-  /**
-   * @typedef {Object} Props
-   * @property {number} [value]
-   * @property {number} [min]
-   * @property {number} [max]
-   * @property {number} [step]
-   * @property {string} [label]
-   * @property {string} [suffix]
-   * @property {boolean} [disabled]
-   */
+  type Props = {
+    value?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    label?: string;
+    suffix?: string;
+    disabled?: boolean;
+  };
 
-  /** @type {Props} */
   let {
     value = $bindable(0),
     min = 0,
@@ -24,7 +22,7 @@
     label = '',
     suffix = '',
     disabled = false,
-  } = $props();
+  }: Props = $props();
 
   // Percentage of the way along, used to colour the filled part of the track.
   let pct = $derived(max > min ? ((Number(value) - min) / (max - min)) * 100 : 0);

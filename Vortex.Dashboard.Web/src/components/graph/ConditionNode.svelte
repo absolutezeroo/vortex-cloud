@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Fact } from '../../lib/graph/model';
   // A condition, as a module of its own.
   //
   // It was a row buried inside an action node, which is where a filter looks like a property of
@@ -42,12 +43,12 @@
 
   // Read from the filter rather than the render snapshot: the select below binds straight into it,
   // so the values list has to follow the fact within the same interaction.
-  let meta = $derived(facts.find((f) => f.key === node.filter.factKey) ?? null);
+  let meta = $derived(facts.find((f: Fact) => f.key === node.filter.factKey) ?? null);
 
-  function label(fact) {
-    const translated = $t(fact.labelKey);
+  function label(fact: Fact) {
+    const translated = $t(fact.labelKey ?? fact.key);
 
-    return translated === fact.labelKey ? fact.fallbackLabel : translated;
+    return translated === (fact.labelKey ?? fact.key) ? fact.fallbackLabel : translated;
   }
 </script>
 

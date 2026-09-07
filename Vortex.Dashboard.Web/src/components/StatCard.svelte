@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Snippet } from 'svelte';
   // Metric tile — icon + label + big counter numeral + optional caption/delta. The upgraded metric
   // card (the legacy .metric-grid still works; this is the richer StatCard). Set `accent` for "money"
   // stats to tint the icon gold. `sub` is the small caption under the number (the old metric-grid
@@ -20,7 +21,7 @@
   } = $props();
 
   // A snippet is a function and text is not, which is the only distinction the markup below needs.
-  const isSnippet = (slot) => typeof slot === 'function';
+  const isSnippet = (slot: unknown): slot is Snippet => typeof slot === 'function';
 
   // The tile is sized for a counter. A word -- "Development", a hostname, a status -- runs past the
   // card at the numeral size, so a long text value drops a size rather than overflowing.

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // A tooltip that appears on hover AND on keyboard focus -- the reason to use this rather than the
   // native `title` attribute, which never shows for a keyboard user and cannot be styled.
   //
@@ -6,15 +6,14 @@
   //     <span class="op-chip">3/50</span>
   //   </Tooltip>
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} text
-   * @property {string} [placement] - 'top' | 'bottom'
-   * @property {import('svelte').Snippet} [children]
-   */
+  type Props = {
+    text: string;
+    /** 'top' | 'bottom' */
+    placement?: string;
+    children?: import('svelte').Snippet;
+  };
 
-  /** @type {Props} */
-  let { text = '', placement = 'top', children } = $props();
+  let { text = '', placement = 'top', children }: Props = $props();
 
   let open = $state(false);
 </script>

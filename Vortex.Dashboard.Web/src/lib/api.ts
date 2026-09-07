@@ -44,13 +44,17 @@ export class ApiError extends Error {
   }
 }
 
-/** How much of an error the helpers below need to read; anything thrown may be shaped like this. */
+/** How much of an error the helpers below read. They take `unknown` -- a caught value is that. */
 type ErrorLike = { code?: string; status?: number; message?: string; connection?: boolean };
+
+const asError = (error: unknown): ErrorLike => (error ?? {}) as ErrorLike;
 
 /** Per-call knobs, distinct from the fetch init the request builds itself. */
 export type RequestOptions = { timeoutMs?: number };
 
-export function isConnectionError(error: ErrorLike | null | undefined): boolean {
+export function isConnectionError(raw: unknown): boolean {
+  const error = asError(raw);
+
   return (
     error?.connection === true ||
     error?.code === 'request_timeout' ||
@@ -59,11 +63,13 @@ export function isConnectionError(error: ErrorLike | null | undefined): boolean 
   );
 }
 
-export function isTimeoutError(error: ErrorLike | null | undefined): boolean {
-  return error?.code === 'request_timeout';
+export function isTimeoutError(raw: unknown): boolean {
+  return asError(raw).code === 'request_timeout';
 }
 
-export function isAuthError(error: ErrorLike | null | undefined): boolean {
+export function isAuthError(raw: unknown): boolean {
+  const error = asError(raw);
+
   return (
     error?.status === 401 ||
     error?.code === 'unauthenticated' ||
@@ -71,7 +77,9 @@ export function isAuthError(error: ErrorLike | null | undefined): boolean {
   );
 }
 
-export function describeApiError(error: ErrorLike | null | undefined): string {
+export function describeApiError(raw: unknown): string {
+  const error = asError(raw);
+
   if (error?.code === 'request_timeout') {
     return translate('errors.requestTimeout');
   }

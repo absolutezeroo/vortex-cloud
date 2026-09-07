@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The expanded view of one audit row: why it happened, and what it did to the data.
   //
   // The "what it did" half is new. Until the change tracker started recording it, a delete audited
@@ -7,13 +7,11 @@
   import { t } from '../lib/i18n';
   import { parseAuditData, describeTarget, fieldTransitions, deletedFields } from '../lib/auditData';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [data]
-   */
+  type Props = {
+    data?: string;
+  };
 
-  /** @type {Props} */
-  let { data = '' } = $props();
+  let { data = '' }: Props = $props();
 
   let parsed = $derived(parseAuditData(data));
   let detailPairs = $derived(parsed.detail

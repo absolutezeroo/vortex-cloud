@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Shown while a lazily-loaded page chunk is in flight (see lib/routes.js). Deliberately quiet: on a
   // local network the chunk usually arrives in a frame or two, and a full-blown skeleton flashing in
   // and out is more distracting than a thin placeholder.

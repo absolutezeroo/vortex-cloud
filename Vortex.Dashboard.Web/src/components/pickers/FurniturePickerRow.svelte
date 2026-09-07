@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { t } from '../../lib/i18n';
 
   /** @type {{ row: any, onchoose: (row: any) => void }} */

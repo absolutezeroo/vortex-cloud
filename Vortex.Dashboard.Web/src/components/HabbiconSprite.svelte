@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // One Habbicon, cropped out of the hotel's spritesheet.
   //
   // Habbicons are not one file each -- the client ships a single sheet plus a metadata file naming
@@ -10,16 +10,18 @@
   // pixel-art frames and a fractional scale turns them to mush.
   import { Image } from '@lucide/svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string|null} [sheet] - Spritesheet URL, or null when no asset pack is installed.
-   * @property {{x: number, y: number}|null} [sprite] - Frame offsets, or null when the pack has no frame for this id.
-   * @property {number} [size] - Frame edge in pixels; must be the pack's own frame size.
-   * @property {string} [alt] - What this Habbicon is, for screen readers and the tooltip.
-   */
+  type Props = {
+    /** Spritesheet URL, or null when no asset pack is installed. */
+    sheet?: string|null;
+    /** Frame offsets, or null when the pack has no frame for this id. */
+    sprite?: {x: number, y: number}|null;
+    /** Frame edge in pixels; must be the pack's own frame size. */
+    size?: number;
+    /** What this Habbicon is, for screen readers and the tooltip. */
+    alt?: string;
+  };
 
-  /** @type {Props} */
-  let { sheet = null, sprite = null, size = 40, alt = '' } = $props();
+  let { sheet = null, sprite = null, size = 40, alt = '' }: Props = $props();
 
   // Both halves are required: a sheet with no frame would draw whatever sits at (0,0) under every id
   // the pack forgot, which is a wrong picture rather than a missing one.
@@ -32,7 +34,7 @@
   class:is-empty={!drawable}
   style="width: {size}px; height: {size}px;"
   style:background-image={drawable ? `url("${sheet}")` : null}
-  style:background-position={drawable ? `${-sprite.x}px ${-sprite.y}px` : null}
+  style:background-position={drawable ? `${-sprite!.x}px ${-sprite!.y}px` : null}
   title={alt}
   role={drawable ? 'img' : null}
   aria-label={drawable ? alt : null}

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { User } from '@lucide/svelte';
   import AssetImage from '../AssetImage.svelte';
   import { t } from '../../lib/i18n';

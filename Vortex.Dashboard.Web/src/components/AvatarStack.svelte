@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Overlapping avatar heads with a "+N" overflow, per the kit. For "who is in this room" or "who
   // touched this ticket", where the count matters more than any individual face.
   //
@@ -6,15 +6,14 @@
   import AssetImage from './AssetImage.svelte';
   import { User } from '@lucide/svelte';
 
-  /**
-   * @typedef {Object} Props
-   * @property {Array<{id?: any, name?: string, avatarUrl?: string}>} [people]
-   * @property {number} [max] - faces shown before the rest collapse into +N
-   * @property {number} [size]
-   */
+  type Props = {
+    people?: Array<{id?: any, name?: string, avatarUrl?: string}>;
+    /** faces shown before the rest collapse into +N */
+    max?: number;
+    size?: number;
+  };
 
-  /** @type {Props} */
-  let { people = [], max = 5, size = 28 } = $props();
+  let { people = [], max = 5, size = 28 }: Props = $props();
 
   let shown = $derived((people || []).slice(0, max));
   let overflow = $derived(Math.max(0, (people || []).length - shown.length));

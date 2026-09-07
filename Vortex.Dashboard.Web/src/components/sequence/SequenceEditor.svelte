@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { Fact } from '../../lib/graph/model';
   // The sequence as blocks you pick up, line up and clip together.
   //
   // Reordering is not cosmetic here: a filter value of `$N` names an earlier step, and the server
@@ -43,16 +44,24 @@
   } = $props();
 
   // What is in the hand, and where the gap is currently open.
-  let carrying = $state(null);
-  let dropTarget = $state(null);
+  /** What the pointer is carrying: a whole step, or one filter out of a step. */
+  type Carried =
+    | { type: 'step'; index: number }
+    | { type: 'filter'; stepIndex: number; filterIndex: number };
+
+  /** Where the gap is currently open. */
+  type DropTarget = { type: string; index?: number; stepIndex?: number; at?: number };
+
+  let carrying = $state<Carried | null>(null);
+  let dropTarget = $state<DropTarget | null>(null);
   let notice = $state('');
 
-  function beginStep(index) {
+  function beginStep(index: number) {
     carrying = { type: 'step', index };
     notice = '';
   }
 
-  function beginFilter(stepIndex, filterIndex) {
+  function beginFilter(stepIndex: number, filterIndex: number) {
     carrying = { type: 'filter', stepIndex, filterIndex };
     notice = '';
   }
@@ -63,34 +72,39 @@
   }
 
   /** A filter can only land under an action that emits the fact it tests. */
-  function accepts(target) {
-    if (!carrying) return false;
+  function accepts(target: DropTarget): boolean {
+    const held = carrying;
 
-    if (carrying.type === 'step') return target.type === 'step';
+    if (!held) return false;
+
+    if (held.type === 'step') return target.type === 'step';
 
     if (target.type !== 'filter-slot') return false;
 
-    const filter = steps[carrying.stepIndex]?.filters?.[carrying.filterIndex];
+    const filter = steps[held.stepIndex]?.filters?.[held.filterIndex];
 
-    return Boolean(filter) && stepAccepts(steps[target.stepIndex], filter.factKey, factsFor);
+    return Boolean(filter) && stepAccepts(steps[target.stepIndex!], filter!.factKey, factsFor);
   }
 
-  function over(event, target) {
+  function over(event: DragEvent, target: DropTarget) {
     if (!accepts(target)) return;
 
     event.preventDefault();
     dropTarget = target;
   }
 
-  function drop(event, target) {
+  function drop(event: DragEvent, target: DropTarget) {
     if (!accepts(target)) return;
 
     event.preventDefault();
 
+    // accepts() already refused a null hand; binding it names that for the compiler too.
+    const held = carrying!;
+
     const result =
-      carrying.type === 'step'
-        ? moveStep(steps, carrying.index, target.index)
-        : moveFilter(steps, carrying.stepIndex, carrying.filterIndex, target.stepIndex);
+      held.type === 'step'
+        ? moveStep(steps, held.index, target.index!)
+        : moveFilter(steps, held.stepIndex, held.filterIndex, target.stepIndex!);
 
     if (result.steps !== steps) onchange(result.steps);
 
@@ -102,7 +116,7 @@
     end();
   }
 
-  function isOpen(target) {
+  function isOpen(target: DropTarget) {
     return (
       dropTarget !== null &&
       dropTarget.type === target.type &&
@@ -138,7 +152,7 @@
         onchange(steps);
       }}
       onremove={() => {
-        onchange(steps.filter((_, i) => i !== stepIndex));
+        onchange(steps.filter((_: unknown, i: number) => i !== stepIndex));
       }}
     >
       <div
@@ -157,12 +171,12 @@
             references={referencesFor(steps, stepIndex, filter.factKey)}
             picked={pickedLabels[`${stepIndex}:${filterIndex}`]}
             picker={pickerFor(
-              factsFor(step.actionCode).find((f) => f.key === filter.factKey) ?? null
+              factsFor(step.actionCode).find((f: Fact) => f.key === filter.factKey) ?? null
             )}
             dragging={carrying?.type === 'filter' &&
               carrying.stepIndex === stepIndex &&
               carrying.filterIndex === filterIndex}
-            onfactchange={(key) => {
+            onfactchange={(key: string) => {
               filter.value = defaultFilterValue(step.actionCode, key);
               filter.op = operatorsFor(step.actionCode, key)[0]?.value ?? 0;
               onchange(steps);
@@ -171,7 +185,7 @@
               onpick(
                 stepIndex,
                 filterIndex,
-                pickerFor(factsFor(step.actionCode).find((f) => f.key === filter.factKey))
+                pickerFor(factsFor(step.actionCode).find((f: Fact) => f.key === filter.factKey))
               )}
             onremove={() => {
               step.filters.splice(filterIndex, 1);

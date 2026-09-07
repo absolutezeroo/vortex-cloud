@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // A sortable table header. A button inside the <th> rather than a click handler on the <th>
   // itself, so it is reachable by keyboard and announced as what it is; aria-sort tells a screen
   // reader which column the table is currently ordered by.
@@ -6,17 +6,24 @@
   //   <SortTh label={$t('x.colCount')} key="count" bind:sort />
   import { ChevronDown, ChevronUp, ChevronsUpDown } from '@lucide/svelte';
   import { toggleSort } from '../lib/tableView';
+  import type { Sort } from '../lib/tableView';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} label
-   * @property {string} key - the row field this column orders by
-   * @property {{ key: string, dir: string }} sort - shared with the other headers of the table
-   * @property {string} [initialDir] - 'desc' for counts, 'asc' for names
-   */
+  type Props = {
+    label: string;
+    /** the row field this column orders by */
+    key: string;
+    /** shared with the other headers of the table */
+    sort: Sort;
+    /** 'desc' for counts, 'asc' for names */
+    initialDir?: 'asc' | 'desc';
+  };
 
-  /** @type {Props} */
-  let { label, key, sort = $bindable({ key: '', dir: 'desc' }), initialDir = 'desc' } = $props();
+  let {
+    label,
+    key,
+    sort = $bindable<Sort>({ key: '', dir: 'desc' }),
+    initialDir = 'desc',
+  }: Props = $props();
 
   let activeDir = $derived(sort.key === key ? sort.dir : '');
 </script>

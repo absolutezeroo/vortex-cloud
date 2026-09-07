@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The search box above a table that is already loaded in full. Says how many rows survived, so a
   // filter that matches nothing reads as "nothing matches" rather than as a table that failed to
   // load.
@@ -7,16 +7,16 @@
   import { Search } from '@lucide/svelte';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [query]
-   * @property {number} [shown] - rows after filtering
-   * @property {number} [total] - rows before filtering
-   * @property {string} [placeholder]
-   */
+  type Props = {
+    query?: string;
+    /** rows after filtering */
+    shown?: number;
+    /** rows before filtering */
+    total?: number;
+    placeholder?: string;
+  };
 
-  /** @type {Props} */
-  let { query = $bindable(''), shown = 0, total = 0, placeholder = '' } = $props();
+  let { query = $bindable(''), shown = 0, total = 0, placeholder = '' }: Props = $props();
 </script>
 
 <div class="table-filter">
