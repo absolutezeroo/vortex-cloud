@@ -23,8 +23,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiNavigator + "/config",
-            (DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.NavigatorConfigAsync(ct)),
+            (NavigatorReads reads, CancellationToken ct) => OkAsync(reads.NavigatorConfigAsync(ct)),
             Capabilities.Dashboard.NavigatorRead,
             TagNavigator
         );
@@ -38,7 +37,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateNavigatorContextRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.SearchCode)
@@ -56,7 +55,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateNavigatorContextRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.ContextId <= 0 || string.IsNullOrWhiteSpace(body.SearchCode)
@@ -74,7 +73,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteNavigatorContextRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.ContextId <= 0
@@ -92,7 +91,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateNavigatorQuickLinkRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.ContextId <= 0 || string.IsNullOrWhiteSpace(body.SearchCode)
@@ -110,7 +109,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateNavigatorQuickLinkRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.QuickLinkId <= 0
@@ -130,7 +129,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteNavigatorQuickLinkRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.QuickLinkId <= 0
@@ -148,7 +147,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateNavigatorFlatCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Name)
@@ -166,7 +165,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateNavigatorFlatCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.CategoryId <= 0 || string.IsNullOrWhiteSpace(body.Name)
@@ -184,7 +183,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteNavigatorFlatCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.CategoryId <= 0
@@ -202,7 +201,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateNavigatorEventCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Name)
@@ -220,7 +219,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateNavigatorEventCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.CategoryId <= 0 || string.IsNullOrWhiteSpace(body.Name)
@@ -238,7 +237,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteNavigatorEventCategoryRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 body.CategoryId <= 0
@@ -256,7 +255,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 SeedNavigatorDefaultsRequest body,
-                DashboardOperationsService ops,
+                NavigatorOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(

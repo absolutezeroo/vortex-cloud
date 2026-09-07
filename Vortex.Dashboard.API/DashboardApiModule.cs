@@ -111,6 +111,8 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<SongOperations>();
         services.TryAddSingleton<FishingReads>();
         services.TryAddSingleton<FishingOperations>();
+        services.TryAddSingleton<NavigatorReads>();
+        services.TryAddSingleton<NavigatorOperations>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Admin;
 using Vortex.Primitives.Navigator.Enums;
 
@@ -12,14 +13,20 @@ namespace Vortex.Dashboard.API.Operations;
 /// reloads the live navigator snapshot after committing, and emits a durable audit event with the
 /// operator's reason — same contract as the catalog/quest operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class NavigatorOperations(
+    OperationRunner runner,
+    INavigatorAdminService navigatorAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly INavigatorAdminService _navigatorAdmin = navigatorAdmin;
+
     public Task<OperationResult> CreateNavigatorContextAsync(
         CreateNavigatorContextRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.context.create",
             actor,
             request.Reason,
@@ -48,7 +55,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.context.update",
             actor,
             request.Reason,
@@ -83,7 +90,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.context.delete",
             actor,
             request.Reason,
@@ -104,7 +111,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.quicklink.create",
             actor,
             request.Reason,
@@ -140,7 +147,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.quicklink.update",
             actor,
             request.Reason,
@@ -177,7 +184,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.quicklink.delete",
             actor,
             request.Reason,
@@ -198,7 +205,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.category.create",
             actor,
             request.Reason,
@@ -231,7 +238,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.category.update",
             actor,
             request.Reason,
@@ -265,7 +272,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.category.delete",
             actor,
             request.Reason,
@@ -286,7 +293,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.eventcategory.create",
             actor,
             request.Reason,
@@ -310,7 +317,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.eventcategory.update",
             actor,
             request.Reason,
@@ -335,7 +342,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.eventcategory.delete",
             actor,
             request.Reason,
@@ -356,7 +363,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.navigator.seed_defaults",
             actor,
             request.Reason,

@@ -20,7 +20,8 @@ namespace Vortex.Dashboard.API.Api;
 /// empty table the operator has to interpret.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     public Task<object> NavigatorConfigAsync(CancellationToken ct) =>
         QueryAsync<object>(
