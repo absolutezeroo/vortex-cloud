@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
@@ -35,40 +36,37 @@ internal sealed class GamedataReads(
     /// <c>modifiedUtc</c> travels back on every write as the caller's expected value: it is what
     /// turns two operators editing at once into a refusal instead of a silently dropped edit.
     /// </remarks>
-    public object GamedataFiles()
+    public GamedataFileList GamedataFiles()
     {
         if (!_gamedata.Available)
         {
-            return new { available = false, files = Array.Empty<object>() };
+            return new GamedataFileList(false, []);
         }
 
-        List<object> files = [];
+        List<GamedataFileRow> files = [];
 
         foreach ((string token, string name) in GamedataDocumentStore.Files)
         {
             JsonNode? root = _gamedata.Read(token, null, out DateTime modified);
 
             files.Add(
-                new
-                {
-                    file = token,
+                new GamedataFileRow(
+                    token,
                     name,
-                    localised = GamedataDocumentStore.IsLocalised(token),
-                    entries = CountEntries(root),
-                    parses = root is not null,
-                    modifiedUtc = modified == default ? (DateTime?)null : modified,
-                    // Filled for furnidata only, and it is what makes the category filter a list of
-                    // what the file actually contains rather than a free-text box nobody can spell.
-                    categories = token == "furnidata" ? FurniCategories(root) : [],
-                }
+                    GamedataDocumentStore.IsLocalised(token),
+                    CountEntries(root),
+                    root is not null,
+                    modified == default ? null : modified,
+                    token == "furnidata" ? FurniCategories(root) : []
+                )
             );
         }
 
-        return new { available = true, files };
+        return new GamedataFileList(true, files);
     }
 
     /// <summary>One page of a file's entries, filtered by <c>search</c>.</summary>
-    public object GamedataEntries(NameValueCollection query)
+    public GamedataEntryPage GamedataEntries(NameValueCollection query)
     {
         string file = query["file"] ?? string.Empty;
         string? language = NullIfBlank(query["lang"]);
@@ -77,23 +75,17 @@ internal sealed class GamedataReads(
 
         if (!GamedataDocumentStore.Files.ContainsKey(file))
         {
-            return new { error = "unknown_file" };
+            return new GamedataEntryPage("unknown_file", null, 0, page, GamedataPageSize, []);
         }
 
         JsonNode? root = _gamedata.Read(file, language, out DateTime modified);
 
         if (root is null)
         {
-            return new
-            {
-                error = "unreadable",
-                modifiedUtc = (DateTime?)null,
-                total = 0,
-                entries = Array.Empty<object>(),
-            };
+            return new GamedataEntryPage("unreadable", null, 0, page, GamedataPageSize, []);
         }
 
-        List<object> matches = file switch
+        List<GamedataEntry> matches = file switch
         {
             "furnidata" => FurnidataEntries(
                 root,
@@ -105,14 +97,14 @@ internal sealed class GamedataReads(
             _ => FlatEntries(root, search),
         };
 
-        return new
-        {
-            modifiedUtc = modified,
-            total = matches.Count,
+        return new GamedataEntryPage(
+            null,
+            modified,
+            matches.Count,
             page,
-            pageSize = GamedataPageSize,
-            entries = matches.Skip((page - 1) * GamedataPageSize).Take(GamedataPageSize),
-        };
+            GamedataPageSize,
+            [.. matches.Skip((page - 1) * GamedataPageSize).Take(GamedataPageSize)]
+        );
     }
 
     /// <summary>
@@ -124,16 +116,16 @@ internal sealed class GamedataReads(
     /// alongside as candidates, because that list already exists for the website and two lists of
     /// languages always end up disagreeing.
     /// </remarks>
-    public object GamedataLanguages()
+    public GamedataLanguageList GamedataLanguages()
     {
         JsonNode? root = _gamedata.Read("variables", null, out DateTime modified);
 
         if (root is not JsonObject variables)
         {
-            return new { available = false, languages = Array.Empty<object>() };
+            return new GamedataLanguageList(false, null, []);
         }
 
-        List<object> languages = [];
+        List<GamedataLanguageRow> languages = [];
 
         foreach (GamedataLanguage language in GamedataLanguageRegistry.Read(variables))
         {
@@ -141,36 +133,28 @@ internal sealed class GamedataReads(
                 _gamedata.TryResolve("texts", language.Code, out string path) && File.Exists(path);
 
             languages.Add(
-                new
-                {
+                new GamedataLanguageRow(
                     language.Id,
                     language.Code,
                     language.Name,
                     language.Url,
                     hasFile,
-                    // What a player types to switch. Shown because a feature nobody can name is a
-                    // feature nobody uses.
-                    command = ":lang " + language.Id,
-                }
+                    ":lang " + language.Id
+                )
             );
         }
 
-        return new
-        {
-            available = true,
-            modifiedUtc = modified,
-            languages,
-        };
+        return new GamedataLanguageList(true, modified, languages);
     }
 
-    private static List<object> FlatEntries(JsonNode root, string search)
+    private static List<GamedataEntry> FlatEntries(JsonNode root, string search)
     {
         if (root is not JsonObject map)
         {
             return [];
         }
 
-        List<object> entries = [];
+        List<GamedataEntry> entries = [];
 
         foreach ((string key, JsonNode? value) in map)
         {
@@ -183,20 +167,36 @@ internal sealed class GamedataReads(
                 continue;
             }
 
-            entries.Add(new { key, value = text });
+            entries.Add(
+                new GamedataEntry(
+                    key,
+                    text,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                )
+            );
         }
 
         return entries;
     }
 
-    private List<object> FurnidataEntries(
+    private List<GamedataEntry> FurnidataEntries(
         JsonNode root,
         string search,
         string? kindFilter,
         string? categoryFilter
     )
     {
-        List<object> entries = [];
+        List<GamedataEntry> entries = [];
 
         foreach (string kind in (string[])["roomitemtypes", "wallitemtypes"])
         {
@@ -244,23 +244,23 @@ internal sealed class GamedataReads(
                 }
 
                 entries.Add(
-                    new
-                    {
+                    new GamedataEntry(
+                        null,
+                        null,
                         kind,
-                        // The position, not the id: 5 ids are duplicated inside roomitemtypes and 577
-                        // are shared with the wall list. Only the position addresses a row.
                         index,
                         id,
                         classname,
                         name,
-                        description = entry["description"]?.ToString() ?? string.Empty,
+                        entry["description"]?.ToString() ?? string.Empty,
                         category,
-                        xdim = entry["xdim"]?.ToString() ?? string.Empty,
-                        ydim = entry["ydim"]?.ToString() ?? string.Empty,
+                        entry["xdim"]?.ToString() ?? string.Empty,
+                        entry["ydim"]?.ToString() ?? string.Empty,
                         // Editing a furniture by class name alone means editing a name in a list of
                         // 55 836. The icon is how an operator knows they have the right one.
-                        iconUrl = _assetUrls.FurniIcon(classname),
-                    }
+                        _assetUrls.FurniIcon(classname),
+                        null
+                    )
                 );
             }
         }
@@ -268,14 +268,14 @@ internal sealed class GamedataReads(
         return entries;
     }
 
-    private static List<object> ProductdataEntries(JsonNode root, string search)
+    private static List<GamedataEntry> ProductdataEntries(JsonNode root, string search)
     {
         if (root["productdata"]?["product"] is not JsonArray list)
         {
             return [];
         }
 
-        List<object> entries = [];
+        List<GamedataEntry> entries = [];
 
         for (int index = 0; index < list.Count; index++)
         {
@@ -293,13 +293,21 @@ internal sealed class GamedataReads(
             }
 
             entries.Add(
-                new
-                {
+                new GamedataEntry(
+                    null,
+                    null,
+                    null,
                     index,
-                    code,
+                    null,
+                    null,
                     name,
-                    description = entry["description"]?.ToString() ?? string.Empty,
-                }
+                    entry["description"]?.ToString() ?? string.Empty,
+                    null,
+                    null,
+                    null,
+                    null,
+                    code
+                )
             );
         }
 

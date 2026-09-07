@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   /**
    * The four files the game client downloads at boot, edited here.
    *
@@ -21,6 +21,21 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import { t } from '../lib/i18n';
+  import type {
+    GamedataEntry,
+    GamedataEntryPage,
+    GamedataFileList,
+    GamedataLanguageList,
+  } from '../lib/apiTypes';
+
+  /** The furnidata columns this page is allowed to edit. */
+  type FurniField = 'name' | 'description' | 'category' | 'xdim' | 'ydim';
+
+  /** What the drawer is editing. One drawer, four shapes -- see the comment on `draft`. */
+  type Draft =
+    | { kind: 'entry'; creating: boolean; key: string; value: string; title: string }
+    | { kind: 'furni'; row: GamedataEntry; field: FurniField; value: string; title: string }
+    | { kind: 'language'; code: string; name: string; title: string };
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -61,24 +76,24 @@
 
   const files = createResource(
     () => ['gamedata-files'],
-    () => apiGet('/api/v1/gamedata')
+    () => apiGet<GamedataFileList>('/api/v1/gamedata')
   );
 
   const languages = createResource(
     () => ['gamedata-languages'],
-    () => apiGet('/api/v1/gamedata/languages')
+    () => apiGet<GamedataLanguageList>('/api/v1/gamedata/languages')
   );
 
   const entries = createResource(
     () => ['gamedata-entries', activeFile, lang, applied, kind, category, page],
     () => {
-      const params = new URLSearchParams({ file: activeFile, page: String(page) });
+      const params = new URLSearchParams({ file: activeFile ?? '', page: String(page) });
       if (applied) params.set('search', applied);
       if (lang) params.set('lang', lang);
       if (kind) params.set('kind', kind);
       if (category) params.set('category', category);
 
-      return apiGet(`/api/v1/gamedata/entries?${params}`);
+      return apiGet<GamedataEntryPage>(`/api/v1/gamedata/entries?${params}`);
     },
     { enabled: () => Boolean(activeFile) }
   );
@@ -102,7 +117,7 @@
     page = 1;
   }
 
-  function onTab(id) {
+  function onTab(id: string) {
     active = id;
     page = 1;
     search = '';
@@ -114,22 +129,28 @@
 
   // `draft` is the only editing state. Four shapes, one drawer: a page where some forms open a panel
   // and others appear inline is a page where an operator has to learn which is which.
-  let draft = $state(null);
+  let draft = $state<Draft | null>(null);
 
-  function openEntry(row) {
-    draft = { kind: 'entry', creating: false, key: row.key, value: row.value, title: row.key };
+  function openEntry(row: GamedataEntry) {
+    draft = {
+      kind: 'entry',
+      creating: false,
+      key: row.key ?? '',
+      value: row.value ?? '',
+      title: row.key ?? '',
+    };
   }
 
   function openNewEntry() {
     draft = { kind: 'entry', creating: true, key: '', value: '', title: $t('gamedata.newEntry') };
   }
 
-  function openFurni(row) {
+  function openFurni(row: GamedataEntry) {
     draft = {
       kind: 'furni',
       row,
       field: 'name',
-      value: row.name,
+      value: row.name ?? '',
       title: `${row.classname} · #${row.id}`,
     };
   }
@@ -146,6 +167,10 @@
   );
 
   function save() {
+    if (draft === null) {
+      return;
+    }
+
     if (draft.kind === 'entry') {
       ops.ask(
         '/api/v1/operations/gamedata/entry',
@@ -158,7 +183,11 @@
         },
         draft.creating ? $t('gamedata.newEntry') : $t('gamedata.saveEntry'),
         $t('gamedata.saveEntrySummary', { key: draft.key.trim(), file: activeFile }),
-        { onSuccess: () => (draft = null) }
+        {
+          onSuccess: () => {
+            draft = null;
+          },
+        }
       );
     } else if (draft.kind === 'furni') {
       ops.ask(
@@ -172,7 +201,11 @@
         },
         $t('gamedata.saveFurni'),
         $t('gamedata.saveFurniSummary', { classname: draft.row.classname, field: draft.field }),
-        { onSuccess: () => (draft = null) }
+        {
+          onSuccess: () => {
+            draft = null;
+          },
+        }
       );
     } else {
       ops.ask(
@@ -180,12 +213,16 @@
         { code: draft.code.trim(), name: draft.name.trim() },
         $t('gamedata.enableLanguage'),
         $t('gamedata.enableLanguageSummary', { code: draft.code.trim() }),
-        { onSuccess: () => (draft = null) }
+        {
+          onSuccess: () => {
+            draft = null;
+          },
+        }
       );
     }
   }
 
-  function deleteEntry(row) {
+  function deleteEntry(row: GamedataEntry) {
     ops.ask(
       '/api/v1/operations/gamedata/entry/delete',
       {
@@ -199,7 +236,7 @@
     );
   }
 
-  function disableLanguage(code) {
+  function disableLanguage(code: string) {
     ops.ask(
       '/api/v1/operations/gamedata/language/delete',
       { code },
@@ -249,7 +286,7 @@
       />
 
       {#if active === 'texts'}
-        <select value={lang} onchange={(e) => ((lang = e.target.value), (page = 1))}>
+        <select value={lang} onchange={(event) => ((lang = event.currentTarget.value), (page = 1))}>
           <option value="">{$t('gamedata.defaultLanguage')}</option>
           {#each declared as entry (entry.code)}
             <option value={entry.code}>{entry.name} ({entry.code})</option>
@@ -258,12 +295,12 @@
       {/if}
 
       {#if active === 'furnidata'}
-        <select value={kind} onchange={(e) => ((kind = e.target.value), (page = 1))}>
+        <select value={kind} onchange={(event) => ((kind = event.currentTarget.value), (page = 1))}>
           <option value="">{$t('gamedata.allKinds')}</option>
           <option value="roomitemtypes">{$t('gamedata.floorItems')}</option>
           <option value="wallitemtypes">{$t('gamedata.wallItems')}</option>
         </select>
-        <select value={category} onchange={(e) => ((category = e.target.value), (page = 1))}>
+        <select value={category} onchange={(event) => ((category = event.currentTarget.value), (page = 1))}>
           <option value="">{$t('gamedata.allCategories')}</option>
           {#each furniCategories as entry (entry)}
             <option value={entry}>{entry}</option>
@@ -361,7 +398,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each rows as row (row.kind + ':' + row.index)}
+            {#each rows as row (`${row.kind}:${row.index}`)}
               <tr>
                 <td><AssetImage src={row.iconUrl} alt="" size={38} fallbackIcon={Image} /></td>
                 <td><code>{row.classname}</code> <span class="muted">#{row.id}</span></td>
@@ -452,15 +489,17 @@
           <p class="muted">{$t('gamedata.editingLanguage', { language: lang })}</p>
         {/if}
       {:else if draft.kind === 'furni'}
+        {@const furni = draft}
         <div class="furni-row">
           <AssetImage src={draft.row.iconUrl} alt="" size={48} fallbackIcon={Image} />
           <span><strong>{draft.row.name}</strong><br /><small class="muted">{draft.row.classname}</small></span>
         </div>
         <div class="op-field">
           <label for="furni-field">{$t('gamedata.field')}</label>
-          <select id="furni-field" value={draft.field} onchange={(e) => {
-            draft.field = e.target.value;
-            draft.value = draft.row[e.target.value] ?? '';
+          <select id="furni-field" value={furni.field} onchange={(event) => {
+            const field = event.currentTarget.value as FurniField;
+
+            draft = { ...furni, field, value: furni.row[field] ?? '' };
           }}>
             <option value="name">name</option>
             <option value="description">description</option>

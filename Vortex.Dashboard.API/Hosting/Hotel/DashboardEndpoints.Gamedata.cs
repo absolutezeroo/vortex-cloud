@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Hotel;
 using Vortex.Dashboard.API.Operations.Hotel.Contracts;
@@ -25,14 +26,14 @@ internal static partial class DashboardEndpoints
 
     public static void MapGamedataReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<GamedataFileList>(
             app,
             ApiGamedata,
             (GamedataReads reads) => Results.Ok(reads.GamedataFiles()),
             Capabilities.Dashboard.OpsGamedataManage,
             TagGamedata
         );
-        MapReadGet(
+        MapReadGet<GamedataEntryPage>(
             app,
             ApiGamedata + "/entries",
             (HttpContext ctx, GamedataReads reads) =>
@@ -40,7 +41,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsGamedataManage,
             TagGamedata
         );
-        MapReadGet(
+        MapReadGet<GamedataLanguageList>(
             app,
             ApiGamedata + "/languages",
             (GamedataReads reads) => Results.Ok(reads.GamedataLanguages()),

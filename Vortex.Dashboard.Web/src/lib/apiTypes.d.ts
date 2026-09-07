@@ -1281,6 +1281,61 @@ export interface FurnitureDirectoryRow {
   iconUrl: string | null;
 }
 
+export interface GamedataEntry {
+  key: string | null;
+  value: string | null;
+  kind: string | null;
+  index: number | null;
+  id: string | null;
+  classname: string | null;
+  name: string | null;
+  description: string | null;
+  category: string | null;
+  xdim: string | null;
+  ydim: string | null;
+  iconUrl: string | null;
+  code: string | null;
+}
+
+export interface GamedataEntryPage {
+  error: string | null;
+  modifiedUtc: string | null;
+  total: number;
+  page: number;
+  pageSize: number;
+  entries: GamedataEntry[];
+}
+
+export interface GamedataFileList {
+  available: boolean;
+  files: GamedataFileRow[];
+}
+
+export interface GamedataFileRow {
+  file: string;
+  name: string;
+  localised: boolean;
+  entries: number;
+  parses: boolean;
+  modifiedUtc: string | null;
+  categories: string[];
+}
+
+export interface GamedataLanguageList {
+  available: boolean;
+  modifiedUtc: string | null;
+  languages: GamedataLanguageRow[];
+}
+
+export interface GamedataLanguageRow {
+  id: string;
+  code: string;
+  name: string;
+  url: string;
+  hasFile: boolean;
+  command: string;
+}
+
 export interface GroupActivityEvent {
   occurredAt: string;
   action: string;
@@ -1700,6 +1755,11 @@ export interface ModerationTotals {
 export interface ModerationWindow {
   since: string;
   until: string;
+}
+
+export interface MysteryBoxColorOptions {
+  count: number;
+  items: string[];
 }
 
 export interface MysteryBoxContent {

@@ -135,6 +135,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(IncidentDetectionSnapshot),
         typeof(RoomPerformanceSnapshot),
         typeof(BackupList),
+        typeof(GamedataFileList),
+        typeof(GamedataEntryPage),
+        typeof(GamedataLanguageList),
+        typeof(MysteryBoxColorOptions),
     ];
 
     [Fact]

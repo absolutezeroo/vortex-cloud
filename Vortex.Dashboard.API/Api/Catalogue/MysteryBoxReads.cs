@@ -39,8 +39,8 @@ internal sealed class MysteryBoxReads(
 
     /// <summary>The colours the client can render, so the admin picks one instead of typing a string
     /// that would silently make a box unpairable.</summary>
-    public object MysteryBoxColorOptions() =>
-        new { count = MysteryBoxColors.All.Length, items = MysteryBoxColors.All };
+    public MysteryBoxColorOptions MysteryBoxColorOptions() =>
+        new(MysteryBoxColors.All.Length, MysteryBoxColors.All);
 
     /// <summary>
     /// The registered box colours and both prize pools, each joined to its furniture definition so

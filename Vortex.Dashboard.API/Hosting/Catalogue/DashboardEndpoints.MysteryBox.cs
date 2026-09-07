@@ -39,7 +39,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
         );
-        MapReadGet(
+        MapReadGet<MysteryBoxColorOptions>(
             app,
             ApiMysteryBox + "/colors",
             (MysteryBoxReads reads) => Results.Ok(reads.MysteryBoxColorOptions()),
