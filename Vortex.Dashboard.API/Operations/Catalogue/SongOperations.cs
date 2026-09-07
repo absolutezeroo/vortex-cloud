@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Sound;
 using Vortex.Primitives.Sound.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -15,14 +16,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// conversion happens here rather than in the browser, so a page that forgets it cannot write a
 /// song a thousand times too short.
 /// </remarks>
-internal sealed partial class DashboardOperationsService
+internal sealed class SongOperations(OperationRunner runner, ISongAdminService songAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly ISongAdminService _songAdmin = songAdmin;
+
     public Task<OperationResult> CreateSongAsync(
         CreateSongRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.songs.create",
             actor,
             request.Reason,
@@ -45,7 +49,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.songs.update",
             actor,
             request.Reason,
@@ -72,7 +76,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.songs.delete",
             actor,
             request.Reason,
@@ -89,7 +93,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.songs.reload",
             actor,
             request.Reason,

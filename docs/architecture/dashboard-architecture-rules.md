@@ -917,6 +917,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | catalogue extracted | 96 methods, 10 deps | 175 methods, 28 deps | 1 (Catalog) | 15 types |
 | polls extracted | 92 methods, 10 deps | 169 methods, 27 deps | 2 (+ Polls) | 17 types |
 | quest content + articles | 86 methods, 10 deps | 156 methods, 25 deps | 4 (+ QuestContent, Articles) | 21 types |
+| songs | 85 methods, 10 deps | 152 methods, 24 deps | 5 (+ Songs) | 23 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

@@ -63,7 +63,6 @@ internal sealed partial class DashboardOperationsService(
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
-    ISongAdminService songAdmin,
     IFishingAdminService fishingAdmin,
     IHabbiconAdminService habbiconAdmin,
     IRewardTrackAdminService rewardTrackAdmin,
@@ -99,7 +98,6 @@ internal sealed partial class DashboardOperationsService(
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
-    private readonly ISongAdminService _songAdmin = songAdmin;
     private readonly IFishingAdminService _fishingAdmin = fishingAdmin;
     private readonly IHabbiconAdminService _habbiconAdmin = habbiconAdmin;
     private readonly IRewardTrackAdminService _rewardTrackAdmin = rewardTrackAdmin;

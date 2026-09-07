@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
 using Vortex.Primitives.Sound;
 
 namespace Vortex.Dashboard.API.Api;
@@ -18,7 +19,8 @@ namespace Vortex.Dashboard.API.Api;
 /// in the hotel carry it, and how many of those are loaded into a jukebox right now. A song with no
 /// disks is one nobody can hear, which is the usual reason a freshly added song "does not work".
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class SongReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     private const int SongsPageSize = 50;
 
@@ -27,7 +29,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string search = (query["search"] ?? string.Empty).Trim();
-                int page = Math.Max(1, ParseInt(query["page"], 1));
+                int page = Math.Max(1, QueryValues.Int(query["page"], 1));
 
                 IQueryable<Database.Entities.Gamedata.SongEntity> rows = db
                     .Songs.AsNoTracking()

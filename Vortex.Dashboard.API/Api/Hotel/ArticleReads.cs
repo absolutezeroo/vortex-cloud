@@ -60,7 +60,7 @@ internal sealed class ArticleReads(
                 string category = (query["category"] ?? string.Empty).Trim();
                 string language = (query["lang"] ?? string.Empty).Trim();
                 string search = (query["q"] ?? string.Empty).Trim();
-                int page = Math.Max(1, ParseInt(query["page"], 1));
+                int page = Math.Max(1, QueryValues.Int(query["page"], 1));
 
                 IQueryable<WebArticleEntity> articles = db
                     .WebArticles.AsNoTracking()
@@ -319,7 +319,7 @@ internal sealed class ArticleReads(
         }
 
         string search = (query["q"] ?? string.Empty).Trim();
-        int page = Math.Max(1, ParseInt(query["page"], 1));
+        int page = Math.Max(1, QueryValues.Int(query["page"], 1));
 
         HashSet<string> all = Directory
             .EnumerateFiles(path)
@@ -368,7 +368,4 @@ internal sealed class ArticleReads(
             items,
         };
     }
-
-    private static int ParseInt(string? value, int fallback) =>
-        int.TryParse(value, out int parsed) ? parsed : fallback;
 }

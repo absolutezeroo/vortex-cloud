@@ -21,8 +21,8 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiSongs,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.SongsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SongReads reads, CancellationToken ct) =>
+                OkAsync(reads.SongsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.SongsRead,
             TagSongs
         );
@@ -35,7 +35,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateSongRequest body,
-                DashboardOperationsService ops,
+                SongOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Name) || body.LengthSeconds <= 0
@@ -52,7 +52,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateSongRequest body,
-                DashboardOperationsService ops,
+                SongOperations ops,
                 CancellationToken ct
             ) =>
                 body.SongId <= 0 || string.IsNullOrWhiteSpace(body.Name) || body.LengthSeconds <= 0
@@ -69,7 +69,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteSongRequest body,
-                DashboardOperationsService ops,
+                SongOperations ops,
                 CancellationToken ct
             ) =>
                 body.SongId <= 0
@@ -86,7 +86,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ReloadSongsRequest body,
-                DashboardOperationsService ops,
+                SongOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(
