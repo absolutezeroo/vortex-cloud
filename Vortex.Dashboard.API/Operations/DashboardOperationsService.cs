@@ -54,9 +54,6 @@ internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
-    IHabbiconAdminService habbiconAdmin,
-    IRewardTrackAdminService rewardTrackAdmin,
-    IRewardTrackCatalog rewardTrackCatalog,
     GamedataDocumentStore gamedata,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
@@ -79,15 +76,11 @@ internal sealed partial class DashboardOperationsService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
-    private readonly IHabbiconAdminService _habbiconAdmin = habbiconAdmin;
-    private readonly IRewardTrackAdminService _rewardTrackAdmin = rewardTrackAdmin;
 
     /// <summary>
     /// Read only, and only to carry a track's current status through an edit that does not set one.
     /// Content writes go through <see cref="_rewardTrackAdmin"/>, which reloads this afterwards.
     /// </summary>
-    private readonly IRewardTrackCatalog _rewardTrackCatalog = rewardTrackCatalog;
-
     private readonly GamedataDocumentStore _gamedata = gamedata;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;

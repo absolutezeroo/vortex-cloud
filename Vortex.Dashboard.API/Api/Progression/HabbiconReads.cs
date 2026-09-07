@@ -20,8 +20,13 @@ namespace Vortex.Dashboard.API.Api;
 /// Counts are aggregated straight from <c>player_habbicons</c> — ownership is the only source of
 /// truth for whether a set is complete, and there is no cached completion column to read instead.
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class HabbiconReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    HabbiconArtwork habbiconArtwork
+) : DashboardReads(dbContextFactory)
 {
+    private readonly HabbiconArtwork _habbiconArtwork = habbiconArtwork;
+
     /// <summary>
     /// Every collection with its members and how the hotel is doing on it: how many players own at
     /// least one entry, and how many own the lot.

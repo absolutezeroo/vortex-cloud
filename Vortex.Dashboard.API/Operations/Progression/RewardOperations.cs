@@ -19,8 +19,18 @@ namespace Vortex.Dashboard.API.Operations;
 /// in-process catalogs and, for reward tracks, tell the players who already have progress that the
 /// content changed under them. A raw write here would be invisible to both.
 /// </remarks>
-internal sealed partial class DashboardOperationsService
+internal sealed class RewardOperations(
+    OperationRunner runner,
+    IHabbiconAdminService habbiconAdmin,
+    IRewardTrackAdminService rewardTrackAdmin,
+    IRewardTrackCatalog rewardTrackCatalog
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IHabbiconAdminService _habbiconAdmin = habbiconAdmin;
+    private readonly IRewardTrackAdminService _rewardTrackAdmin = rewardTrackAdmin;
+    private readonly IRewardTrackCatalog _rewardTrackCatalog = rewardTrackCatalog;
+
     // Habbicons -----------------------------------------------------------------------------
 
     public Task<OperationResult> CreateHabbiconCollectionAsync(
@@ -28,7 +38,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.collection.create",
             actor,
             request.Reason,
@@ -49,7 +59,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.collection.update",
             actor,
             request.Reason,
@@ -70,7 +80,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.collection.delete",
             actor,
             request.Reason,
@@ -91,7 +101,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.create",
             actor,
             request.Reason,
@@ -117,7 +127,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.update",
             actor,
             request.Reason,
@@ -138,7 +148,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.delete",
             actor,
             request.Reason,
@@ -159,7 +169,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.grant",
             actor,
             request.Reason,
@@ -180,7 +190,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.habbicon.revoke",
             actor,
             request.Reason,
@@ -203,7 +213,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.create",
             actor,
             request.Reason,
@@ -224,7 +234,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.update",
             actor,
             request.Reason,
@@ -245,7 +255,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.clone",
             actor,
             request.Reason,
@@ -266,7 +276,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.publish",
             actor,
             request.Reason,
@@ -290,7 +300,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.archive",
             actor,
             request.Reason,
@@ -311,7 +321,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.delete",
             actor,
             request.Reason,
@@ -332,7 +342,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.task.upsert",
             actor,
             request.Reason,
@@ -395,7 +405,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.task.delete",
             actor,
             request.Reason,
@@ -416,7 +426,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.prize.upsert",
             actor,
             request.Reason,
@@ -461,7 +471,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.prize.delete",
             actor,
             request.Reason,
@@ -482,7 +492,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.player.reset",
             actor,
             request.Reason,
@@ -503,7 +513,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.reward_track.player.grant_premium",
             actor,
             request.Reason,

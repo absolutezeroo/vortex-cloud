@@ -16,8 +16,13 @@ namespace Vortex.Dashboard.API.Api;
 /// Read surface for reward-track content and player progression. The CRUD lives in
 /// <c>DashboardOperationsService.RewardTracks.cs</c>; here we only read.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class RewardTrackReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    ISignalVocabulary signalVocabulary
+) : DashboardReads(dbContextFactory)
 {
+    private readonly ISignalVocabulary _signalVocabulary = signalVocabulary;
+
     /// <summary>
     /// The action codes a task can be defined on, and — the part that matters — whether anything
     /// actually raises each one today.

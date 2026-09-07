@@ -28,23 +28,23 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiHabbicons,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.HabbiconCollectionsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, HabbiconReads habbicons, CancellationToken ct) =>
+                OkAsync(habbicons.HabbiconCollectionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.HabbiconsRead,
             TagHabbicons
         );
         MapReadGet(
             app,
             ApiHabbicons + "/sources",
-            (DashboardApiService api) => Results.Ok(api.HabbiconSourceOptions()),
+            (HabbiconReads habbicons) => Results.Ok(habbicons.HabbiconSourceOptions()),
             Capabilities.Dashboard.HabbiconsRead,
             TagHabbicons
         );
         MapReadGet(
             app,
             ApiHabbicons + "/players/{playerId:int}",
-            (int playerId, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlayerHabbiconsAsync(playerId, ct)),
+            (int playerId, HabbiconReads habbicons, CancellationToken ct) =>
+                OkAsync(habbicons.PlayerHabbiconsAsync(playerId, ct)),
             Capabilities.Dashboard.HabbiconsRead,
             TagHabbicons
         );
@@ -55,30 +55,30 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiRewardTracks,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.RewardTracksAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, RewardTrackReads tracks, CancellationToken ct) =>
+                OkAsync(tracks.RewardTracksAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
         MapReadGet(
             app,
             ApiRewardTracks + "/actions",
-            (DashboardApiService api) => Results.Ok(api.RewardTrackActionOptions()),
+            (RewardTrackReads tracks) => Results.Ok(tracks.RewardTrackActionOptions()),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
         MapReadGet(
             app,
             ApiRewardTracks + "/reward-kinds",
-            (DashboardApiService api) => Results.Ok(api.RewardTrackRewardKindOptions()),
+            (RewardTrackReads tracks) => Results.Ok(tracks.RewardTrackRewardKindOptions()),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
         MapReadGet(
             app,
             ApiRewardTracks + "/players/{playerId:int}",
-            (int playerId, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlayerRewardTracksAsync(playerId, ct)),
+            (int playerId, RewardTrackReads tracks, CancellationToken ct) =>
+                OkAsync(tracks.PlayerRewardTracksAsync(playerId, ct)),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
@@ -92,7 +92,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateHabbiconCollectionRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code)
@@ -110,7 +110,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateHabbiconCollectionRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.CollectionId <= 0 || string.IsNullOrWhiteSpace(body.Code)
@@ -128,7 +128,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteHabbiconCollectionRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.CollectionId <= 0
@@ -146,7 +146,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateHabbiconRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code) || body.CollectionId <= 0
@@ -164,7 +164,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateHabbiconRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.HabbiconId <= 0
@@ -184,7 +184,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteHabbiconRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.HabbiconId <= 0
@@ -202,7 +202,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GrantHabbiconRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.PlayerId <= 0 || body.HabbiconId <= 0
@@ -220,7 +220,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 RevokeHabbiconRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.PlayerId <= 0 || body.HabbiconId <= 0
@@ -242,7 +242,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateRewardTrackRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.TrackId)
@@ -260,7 +260,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateRewardTrackRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0 || string.IsNullOrWhiteSpace(body.TrackId)
@@ -278,7 +278,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CloneRewardTrackRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0 || string.IsNullOrWhiteSpace(body.NewTrackId)
@@ -296,7 +296,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 RewardTrackRowRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0
@@ -314,7 +314,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 RewardTrackRowRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0
@@ -332,7 +332,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 RewardTrackRowRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0
@@ -350,7 +350,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpsertRewardTrackTaskRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0
@@ -372,7 +372,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteRewardTrackTaskRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TaskRowId <= 0
@@ -390,7 +390,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpsertRewardTrackPrizeRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.TrackRowId <= 0
@@ -411,7 +411,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteRewardTrackPrizeRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.PrizeRowId <= 0
@@ -429,7 +429,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ResetPlayerRewardTrackRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.PlayerId <= 0 || string.IsNullOrWhiteSpace(body.TrackId)
@@ -447,7 +447,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GrantRewardTrackPremiumRequest body,
-                DashboardOperationsService ops,
+                RewardOperations ops,
                 CancellationToken ct
             ) =>
                 body.PlayerId <= 0 || string.IsNullOrWhiteSpace(body.TrackId)
