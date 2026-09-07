@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.RateLimiting;
@@ -195,88 +197,24 @@ internal sealed class DashboardWebHost(
     }
 
     /// <summary>
-    ///     Everything an endpoint delegate is allowed to ask for by parameter. The web app has its own
-    ///     container, so a type missing from this list is not merely unresolvable — minimal APIs decide
-    ///     what a parameter *is* by asking the container whether it knows the type, and a type it does
-    ///     not know is taken for the request body. On a GET that is fatal, and not at the endpoint:
-    ///     inference runs while the middleware pipeline is being built, so one unlisted service takes
-    ///     down the entire dashboard with "Body was inferred but the method does not allow inferred body
-    ///     parameters". <c>DashboardEndpointServiceTests</c> maps every endpoint against exactly this
-    ///     list so the omission is a failing test rather than a degraded emulator.
-    /// </summary>
-    /// <summary>
     ///     The response header every dashboard reply carries its correlation id in. A header rather
     ///     than only a body field because the refusals that matter most have no body: a 403 from the
     ///     authorization middleware and a 429 from the rate limiter never reach a handler.
     /// </summary>
     internal const string CorrelationHeader = "X-Correlation-Id";
 
-    internal static readonly Type[] ForwardedServiceTypes =
+    /// <summary>
+    ///     Services an endpoint injects directly rather than through a subject's class, plus the
+    ///     dashboard's own infrastructure. Neither kind is discoverable from a base class or a
+    ///     constructor parameter, so each is named.
+    ///     <para>
+    ///     Declared before <see cref="ForwardedServiceTypes" /> on purpose: static fields initialise
+    ///     in declaration order, and the derived list reads this one.
+    ///     </para>
+    /// </summary>
+    private static readonly Type[] DeclaredServiceTypes =
     [
         typeof(DashboardMonitoringReads),
-        // Every subject that has left the two services above for classes of its own has to be listed
-        // here as well — a route parameter this list does not name is taken for a request body, and
-        // the failure is at startup, for the whole dashboard, not at that route.
-        typeof(CatalogReads),
-        typeof(CatalogOperations),
-        typeof(PollReads),
-        typeof(PollOperations),
-        typeof(QuestContentReads),
-        typeof(QuestContentOperations),
-        typeof(ArticleReads),
-        typeof(ArticleOperations),
-        typeof(SongReads),
-        typeof(SongOperations),
-        typeof(FishingReads),
-        typeof(FishingOperations),
-        typeof(NavigatorReads),
-        typeof(NavigatorOperations),
-        typeof(FurnitureReads),
-        typeof(FurnitureOperations),
-        typeof(QuestReads),
-        typeof(QuestOperations),
-        typeof(TargetedOfferReads),
-        typeof(TargetedOfferOperations),
-        typeof(PrizePoolReads),
-        typeof(PrizePoolOperations),
-        typeof(MysteryBoxReads),
-        typeof(MysteryBoxOperations),
-        typeof(StaffReads),
-        typeof(StaffOperations),
-        typeof(ContentOperations),
-        typeof(RewardOperations),
-        typeof(HabbiconReads),
-        typeof(RewardTrackReads),
-        typeof(GamedataReads),
-        typeof(GamedataOperations),
-        typeof(BenchmarkReads),
-        typeof(BenchmarkOperations),
-        typeof(BackupOperations),
-        typeof(ConsoleOperations),
-        typeof(PrivacyOperations),
-        typeof(ModerationOperations),
-        typeof(RoomOperations),
-        typeof(CurrencyOperations),
-        typeof(VouchersOperations),
-        typeof(ConfigReads),
-        typeof(ConfigOperations),
-        typeof(BotReads),
-        typeof(GroupReads),
-        typeof(PetReads),
-        typeof(SocialReads),
-        typeof(WiredReads),
-        typeof(AuditReads),
-        typeof(CfhReads),
-        typeof(ChatlogReads),
-        typeof(CollectibleReads),
-        typeof(PlayerRewardReads),
-        typeof(InventoryReads),
-        typeof(CatalogPurchaseReads),
-        typeof(EconomyReads),
-        typeof(AchievementReads),
-        typeof(AchievementResolutionReads),
-        typeof(SignalDirectoryReads),
-        typeof(DirectoryReads),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),
@@ -285,14 +223,57 @@ internal sealed class DashboardWebHost(
         typeof(DashboardAuditEmitter),
         typeof(IDatabaseBackupService),
         // The console stream endpoint injects this directly rather than going through an operations
-        // service, and an endpoint parameter the container cannot resolve is read as a request body
-        // instead — which fails at startup and takes the whole dashboard with it.
+        // class, and an endpoint parameter the container cannot resolve is read as a request body.
         typeof(ServerConsoleFeed),
-        // The self-service second-factor endpoints inject this directly: they act on the caller's own
-        // account, so there is no operations service between them and it.
+        // The self-service second-factor endpoints act on the caller's own account, so there is no
+        // operations class between them and these.
         typeof(IAccountMfaService),
         typeof(IAccountPasswordService),
     ];
+
+    /// <summary>
+    ///     Everything an endpoint delegate is allowed to ask for by parameter. The web app has its own
+    ///     container, so a type missing from here is not merely unresolvable — minimal APIs decide what
+    ///     a parameter *is* by asking the container whether it knows the type, and a type it does not
+    ///     know is taken for the request body. On a GET that is fatal, and not at the endpoint:
+    ///     inference runs while the middleware pipeline is being built, so one missing service takes
+    ///     down the entire dashboard with "Body was inferred but the method does not allow inferred body
+    ///     parameters". <c>DashboardEndpointServiceTests</c> maps every endpoint against exactly this
+    ///     set so the omission is a failing test rather than a degraded emulator.
+    /// </summary>
+    /// <remarks>
+    ///     Half derived, half declared, and the split is the point. The derived half is every subject's
+    ///     own class, recognised by what it is rather than by being remembered: a read derives
+    ///     <see cref="DashboardReads" />, a write takes an <see cref="OperationRunner" />. That half used
+    ///     to be hand-written and grew by two entries per extracted subject, which is exactly the shape
+    ///     the architecture rules say this mechanism must not take. The declared half is the handful of
+    ///     services the dashboard borrows or injects directly; it does not grow with the subjects, and
+    ///     writing it out says which they are.
+    /// </remarks>
+    internal static readonly Type[] ForwardedServiceTypes = BuildForwardedServiceTypes();
+
+    private static Type[] BuildForwardedServiceTypes() =>
+        [
+            .. typeof(DashboardWebHost)
+                .Assembly.GetTypes()
+                .Where(IsSubjectService)
+                .Concat(DeclaredServiceTypes)
+                .Distinct()
+                .OrderBy(type => type.Name, StringComparer.Ordinal),
+        ];
+
+    /// <summary>A class one subject owns: its reads, or its writes.</summary>
+    private static bool IsSubjectService(Type type) =>
+        type is { IsClass: true, IsAbstract: false, IsGenericTypeDefinition: false }
+        && (
+            typeof(DashboardReads).IsAssignableFrom(type)
+            || type.GetConstructors()
+                .Any(constructor =>
+                    constructor
+                        .GetParameters()
+                        .Any(parameter => parameter.ParameterType == typeof(OperationRunner))
+                )
+        );
 
     /// <summary>
     ///     Shares the dashboard singletons constructed in the parent container with the web app's DI, so

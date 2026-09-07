@@ -910,9 +910,12 @@ Recorded at each step, so the debt is measured instead of felt. Re-take the meas
 
 **Both god services are gone as of 2026-09-07.** Forty-three subjects own their classes; the ten
 and twenty-nine constructor dependencies the two services held are now held by whichever subject
-uses each one. What remains of §37 to watch is the last column: the DI forwarding list grows by
-about two per subject and is the §29 debt, deliberately deferred until the boundaries settled —
-which they now have.
+uses each one.
+
+**§29 settled the same day.** The forwarding list no longer grows with the subjects: the sixty
+entries that did are derived from what the classes are (a read derives `DashboardReads`, a write
+takes an `OperationRunner`), leaving eleven declared for the services endpoints inject directly.
+The last column below therefore stops moving — 71 types, 11 of them written down.
 
 Every row below comes from that script, including the baseline, which was re-measured in a worktree
 at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded.
