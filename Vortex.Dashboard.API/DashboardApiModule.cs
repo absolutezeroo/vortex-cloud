@@ -92,6 +92,9 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardMonitoringReads>();
+        // What every dashboard write goes through. A collaborator, so a subject that becomes its
+        // own operations class takes it directly instead of inheriting a mechanism.
+        services.TryAddSingleton<OperationRunner>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,

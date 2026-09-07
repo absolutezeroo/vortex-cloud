@@ -34,7 +34,7 @@ public sealed class DomainRejectionMessageTests
     [InlineData("a")]
     [InlineData("code2")]
     public void ADomainCodeIsSurfaced(string message) =>
-        DashboardOperationsService.IsDomainCode(message).Should().BeTrue();
+        OperationRunner.IsDomainCode(message).Should().BeTrue();
 
     [Theory]
     // The real ones, quoted. Each of these reached a browser before the guard.
@@ -53,7 +53,7 @@ public sealed class DomainRejectionMessageTests
     [InlineData("")]
     [InlineData(null)]
     public void AnythingElseIsNot(string? message) =>
-        DashboardOperationsService.IsDomainCode(message).Should().BeFalse();
+        OperationRunner.IsDomainCode(message).Should().BeFalse();
 
     /// <summary>
     /// A length cap on top of the shape. A snake_case message long enough to be prose is prose, and
@@ -61,5 +61,5 @@ public sealed class DomainRejectionMessageTests
     /// </summary>
     [Fact]
     public void ACodeShapedSentenceIsStillTooLongToBeACode() =>
-        DashboardOperationsService.IsDomainCode(new string('a', 65)).Should().BeFalse();
+        OperationRunner.IsDomainCode(new string('a', 65)).Should().BeFalse();
 }
