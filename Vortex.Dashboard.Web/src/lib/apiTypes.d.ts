@@ -81,6 +81,116 @@ export interface ArticleTranslation {
   thumbnail: string | null;
 }
 
+export interface BotDetail {
+  id: number;
+  name: string;
+  motto: string;
+  figure: string;
+  avatarUrl: string | null;
+  gender: string;
+  ownerId: number;
+  ownerName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  placed: boolean;
+  x: number;
+  y: number;
+  z: number;
+  rotation: number;
+  skills: number[];
+  skillNames: string[];
+  phrases: string[];
+  autoChat: boolean;
+  chatDelaySeconds: number;
+  mixSentences: boolean;
+  wanders: boolean;
+  dances: boolean;
+  rawSkillsJson: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BotGenderCount {
+  gender: string;
+  count: number;
+}
+
+export interface BotGrowthPoint {
+  bucket: string;
+  label: string;
+  botsCreated: number;
+}
+
+export interface BotListItem {
+  id: number;
+  name: string;
+  motto: string;
+  figure: string;
+  avatarUrl: string | null;
+  gender: string;
+  ownerId: number;
+  ownerName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  placed: boolean;
+  x: number;
+  y: number;
+  z: number;
+  rotation: number;
+  skills: number[];
+  skillNames: string[];
+  phraseCount: number;
+  autoChat: boolean;
+  chatDelaySeconds: number;
+  wanders: boolean;
+  dances: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BotListResponse {
+  page: number;
+  limit: number;
+  offset: number;
+  total: number;
+  count: number;
+  items: BotListItem[];
+}
+
+export interface BotOwnerCount {
+  ownerId: number;
+  ownerName: string | null;
+  botCount: number;
+}
+
+export interface BotRoomCount {
+  roomId: number;
+  roomName: string | null;
+  botCount: number;
+}
+
+export interface BotStats {
+  window: ReportWindow;
+  totals: BotTotals;
+  byGender: BotGenderCount[];
+  growth: BotGrowthPoint[];
+  topOwners: BotOwnerCount[];
+  topRooms: BotRoomCount[];
+}
+
+export interface BotTotals {
+  totalBots: number;
+  placedBots: number;
+  inventoryBots: number;
+  configuredBots: number;
+  chattyBots: number;
+  autoChatBots: number;
+  wanderingBots: number;
+  dancingBots: number;
+  distinctOwners: number;
+  roomsWithBots: number;
+}
+
 export interface CfhCloseReasonCount {
   reason: string;
   count: number;
@@ -234,6 +344,23 @@ export interface GroupTotals {
   totalThreads: number;
   totalPosts: number;
   avgMembersPerGroup: number;
+}
+
+export interface HandItemList {
+  count: number;
+  consumableCount: number;
+  imageTemplate: string | null;
+  items: HandItemRow[];
+}
+
+export interface HandItemRow {
+  id: number;
+  handItemId: number;
+  name: string;
+  nutrition: number;
+  thirst: number;
+  consumable: boolean;
+  imageUrl: string | null;
 }
 
 export interface PetGrowthPoint {

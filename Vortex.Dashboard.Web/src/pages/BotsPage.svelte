@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
 
   // Bots are authored from inside the client, so this page reads. What it adds over the raw table is
@@ -28,18 +28,40 @@
   import Tabs from '../components/Tabs.svelte';
   import { Bot, MessageSquare, MapPin, Users, Hand } from '@lucide/svelte';
   import { t } from '../lib/i18n';
+  import type {
+    BotDetail,
+    BotListItem,
+    BotListResponse,
+    BotStats,
+    HandItemList,
+    HandItemRow,
+  } from '../lib/apiTypes';
+
+  /** The owner filter, held as an {id, name} pair so the button can name who was picked. */
+  type PickedOwner = { id: number; name: string };
+
+  /** The hand-item editor's form. The number inputs bind as strings while being typed. */
+  type HandItemForm = {
+    handItemId: number | string;
+    name: string;
+    nutrition: number | string;
+    thirst: number | string;
+  };
+
+  /** The only four fields a bot can be edited on from here. */
+  type BotDraft = { id: number; name: string; motto: string; figure: string };
 
   const PAGE_SIZE = 40;
 
   let term = $state('');
-  let owner = $state(null);
+  let owner = $state<PickedOwner | null>(null);
   let placedFilter = $state('');
   let page = $state(readNumberParam('page', 1));
 
   $effect(() => {
     writeParams({ page: page > 1 ? page : '' });
   });
-  let selected = $state(null);
+  let selected = $state<number | null>(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
@@ -58,22 +80,24 @@
       if (placedFilter) params.set('placed', placedFilter);
 
       const [list, stats, handItems] = await Promise.all([
-        apiGet(`/api/v1/bots?${params}`),
-        apiGet('/api/v1/bots/stats'),
-        apiGet('/api/v1/hand-items'),
+        apiGet<BotListResponse>(`/api/v1/bots?${params}`),
+        apiGet<BotStats>('/api/v1/bots/stats'),
+        apiGet<HandItemList>('/api/v1/hand-items'),
       ]);
 
       return { list, stats, handItems };
     }
   );
 
-  let { list, stats, handItems } = $derived(bots.data ?? {});
+  let { list, stats, handItems } = $derived(
+    bots.data ?? { list: undefined, stats: undefined, handItems: undefined },
+  );
 
   // The expanded row's bot, keyed by which row is open: selecting a bot IS the request, and a bot
   // looked at once reopens from cache. `enabled` is what keeps it from firing with no selection.
   const detail = createResource(
     () => ['bot', selected],
-    () => apiGet(`/api/v1/bots/${selected}`),
+    () => apiGet<BotDetail>(`/api/v1/bots/${selected}`),
     { enabled: () => selected !== null }
   );
 
@@ -81,9 +105,14 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
-  const emptyHandItem = () => ({ handItemId: 0, name: '', nutrition: 0, thirst: 0 });
+  const emptyHandItem = (): HandItemForm => ({
+    handItemId: 0,
+    name: '',
+    nutrition: 0,
+    thirst: 0,
+  });
   // null means the editor is closed; the drawer is the editor now.
-  let handItemForm = $state(null);
+  let handItemForm = $state<HandItemForm | null>(null);
 
   // The only picture of a hand item is an avatar holding it, and the id decides which. Built from
   // the template so a brand-new id previews before its row exists.
@@ -91,11 +120,11 @@
     $derived(handItemForm?.handItemId && handItems?.imageTemplate
       ? handItems.imageTemplate.replace('{item}', String(Number(handItemForm.handItemId)))
       : null);
-  let botDraft = $state(null);
+  let botDraft = $state<BotDraft | null>(null);
 
   let totalPages = $derived(list ? Math.max(1, Math.ceil((list.total || 0) / (list.limit || PAGE_SIZE))) : 1);
 
-  function goToPage(next) {
+  function goToPage(next: number) {
     page = next;
   }
 
@@ -105,7 +134,7 @@
 
   // The server returns the client's own skill identifiers; map them to copy an operator can read,
   // and show anything unrecognised as-is rather than swallowing it.
-  const SKILL_LABELS = {
+  const SKILL_LABELS: Record<string, string> = {
     dressUp: 'bots.skillDressUp',
     chatter: 'bots.skillChatter',
     randomWalk: 'bots.skillRandomWalk',
@@ -114,7 +143,7 @@
     noPickUp: 'bots.skillNoPickUp',
   };
 
-  function skillLabel(skill) {
+  function skillLabel(skill: string) {
     const key = SKILL_LABELS[skill];
     return key ? $t(key) : skill;
   }
@@ -124,7 +153,49 @@
     search();
   }
 
-  function select(row) {
+  function saveHandItem() {
+    const form = handItemForm!;
+
+    ops.ask(
+      '/api/v1/operations/content/hand-items',
+      {
+        handItemId: Number(form.handItemId),
+        name: form.name,
+        nutrition: Number(form.nutrition) || 0,
+        thirst: Number(form.thirst) || 0,
+      },
+      $t('bots.saveHandItem'),
+      $t('bots.saveHandItemSummary', { id: form.handItemId, name: form.name }),
+      {
+        onSuccess: () => {
+          handItemForm = null;
+        },
+      },
+    );
+  }
+
+  function saveBot() {
+    const draft = botDraft!;
+
+    ops.ask(
+      '/api/v1/operations/content/bots',
+      {
+        botId: draft.id,
+        name: draft.name,
+        motto: draft.motto || '',
+        figure: draft.figure || '',
+      },
+      $t('bots.updateBot'),
+      $t('bots.updateBotSummary', { name: draft.name }),
+      {
+        onSuccess: () => {
+          botDraft = null;
+        },
+      },
+    );
+  }
+
+  function select(row: BotListItem) {
     selected = selected === row.id ? null : row.id;
   }
 
@@ -298,7 +369,15 @@
                     class="ghost-button"
                     disabled={row.placed}
                     title={row.placed ? $t('bots.placedLocked') : ''}
-                    onclick={(event) => { event.stopPropagation(); botDraft = { id: row.id, name: row.name, motto: row.motto, figure: row.figure }; }}
+                    onclick={(event) => {
+                      event.stopPropagation();
+                      botDraft = {
+                        id: row.id,
+                        name: row.name,
+                        motto: row.motto,
+                        figure: row.figure,
+                      };
+                    }}
                   >
                     {$t('bots.edit')}
                   </button>
@@ -482,20 +561,8 @@
     {#snippet actions()}
       <button
         type="button"
-        disabled={!handItemForm.name.trim() || !handItemForm.handItemId}
-        onclick={() =>
-          ops.ask(
-            '/api/v1/operations/content/hand-items',
-            {
-              handItemId: Number(handItemForm.handItemId),
-              name: handItemForm.name,
-              nutrition: Number(handItemForm.nutrition) || 0,
-              thirst: Number(handItemForm.thirst) || 0,
-            },
-            $t('bots.saveHandItem'),
-            $t('bots.saveHandItemSummary', { id: handItemForm.handItemId, name: handItemForm.name }),
-            { onSuccess: () => (handItemForm = null) }
-          )}
+        disabled={!handItemForm?.name.trim() || !handItemForm?.handItemId}
+        onclick={saveHandItem}
       >
         {$t('bots.saveHandItem')}
       </button>
@@ -523,19 +590,7 @@
     {#snippet actions()}
       <button
         type="button"
-        onclick={() =>
-          ops.ask(
-            '/api/v1/operations/content/bots',
-            {
-              botId: botDraft.id,
-              name: botDraft.name,
-              motto: botDraft.motto || '',
-              figure: botDraft.figure || '',
-            },
-            $t('bots.updateBot'),
-            $t('bots.updateBotSummary', { name: botDraft.name }),
-            { onSuccess: () => (botDraft = null) }
-          )}
+        onclick={saveBot}
       >
         {$t('bots.save')}
       </button>
@@ -548,7 +603,7 @@
   <PickerModal
     kind="user"
     title={$t('bots.pickOwner')}
-    onSelect={(picked) => {
+    onSelect={(picked: PickedOwner) => {
       owner = picked;
       pickingOwner = false;
       search();

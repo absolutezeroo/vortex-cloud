@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -19,7 +20,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapBotReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<BotListResponse>(
             app,
             ApiBots,
             (HttpContext ctx, BotReads reads, CancellationToken ct) =>
@@ -27,7 +28,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
-        MapReadGet(
+        MapReadGet<BotStats>(
             app,
             ApiBots + "/stats",
             (HttpContext ctx, BotReads reads, CancellationToken ct) =>
@@ -35,7 +36,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
-        MapReadGet(
+        MapReadGetNullable<BotDetail>(
             app,
             ApiBots + "/{botId:int}",
             (int botId, BotReads reads, CancellationToken ct) =>
@@ -43,7 +44,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
-        MapReadGet(
+        MapReadGet<HandItemList>(
             app,
             ApiHandItems,
             (BotReads reads, CancellationToken ct) => OkAsync(reads.HandItemsAsync(ct)),

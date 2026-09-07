@@ -56,6 +56,10 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/songs", typeof(SongListResponse)),
         ("/api/v1/groups/stats", typeof(GroupStats)),
         ("/api/v1/social/stats", typeof(SocialStats)),
+        ("/api/v1/bots", typeof(BotListResponse)),
+        ("/api/v1/bots/stats", typeof(BotStats)),
+        ("/api/v1/bots/{botId:int}", typeof(BotDetail)),
+        ("/api/v1/hand-items", typeof(HandItemList)),
     ];
 
     [Fact]

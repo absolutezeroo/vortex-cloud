@@ -60,6 +60,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(SongListResponse),
         typeof(GroupStats),
         typeof(SocialStats),
+        typeof(BotListResponse),
+        typeof(BotDetail),
+        typeof(BotStats),
+        typeof(HandItemList),
     ];
 
     [Fact]

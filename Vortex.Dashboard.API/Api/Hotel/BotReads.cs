@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
@@ -32,8 +33,8 @@ internal sealed class BotReads(
 
     /// <summary>Paginated bot roster. Filters: <c>q</c> (name/motto), <c>ownerId</c>, <c>roomId</c>,
     /// and <c>placed</c> (true = standing in a room, false = in its owner's hand).</summary>
-    public Task<object> BotsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<BotListResponse> BotsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<BotListResponse>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -104,54 +105,40 @@ internal sealed class BotReads(
                     )
                     .ConfigureAwait(false);
 
-                var items = rows.Select(b =>
+                List<BotListItem> items = rows.Select(b =>
                     {
                         BotSkillSummary skills = SummarizeBotSkills(b.SkillsJson);
 
-                        return new
-                        {
+                        return new BotListItem(
                             b.Id,
                             b.Name,
                             b.Motto,
                             b.Figure,
-                            avatarUrl = _assetUrls.AvatarImage(b.Figure),
+                            _assetUrls.AvatarImage(b.Figure),
                             b.gender,
-                            ownerId = b.OwnerPlayerEntityId,
-                            ownerName = DisplayNameQueries.ResolvePlayerName(
-                                ownerNames,
-                                b.OwnerPlayerEntityId
-                            ),
-                            roomId = b.RoomEntityId,
-                            roomName = b.RoomEntityId is { } id
-                                ? roomNames.GetValueOrDefault(id)
-                                : null,
-                            placed = b.RoomEntityId is not null,
+                            b.OwnerPlayerEntityId,
+                            DisplayNameQueries.ResolvePlayerName(ownerNames, b.OwnerPlayerEntityId),
+                            b.RoomEntityId,
+                            b.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
+                            b.RoomEntityId is not null,
                             b.X,
                             b.Y,
                             b.Z,
                             b.rotation,
-                            skills = skills.SkillIds,
-                            skillNames = skills.SkillNames,
-                            phraseCount = skills.PhraseCount,
-                            autoChat = skills.AutoChat,
-                            chatDelaySeconds = skills.DelaySeconds,
-                            wanders = skills.Wanders,
-                            dances = skills.Dances,
+                            skills.SkillIds,
+                            skills.SkillNames,
+                            skills.PhraseCount,
+                            skills.AutoChat,
+                            skills.DelaySeconds,
+                            skills.Wanders,
+                            skills.Dances,
                             b.CreatedAt,
-                            b.UpdatedAt,
-                        };
+                            b.UpdatedAt
+                        );
                     })
                     .ToList();
 
-                return new
-                {
-                    page,
-                    limit,
-                    offset,
-                    total,
-                    count = items.Count,
-                    items,
-                };
+                return new BotListResponse(page, limit, offset, total, items.Count, items);
             },
             ct
         );
@@ -159,8 +146,8 @@ internal sealed class BotReads(
     /// <summary>One bot with its decoded chatter phrases and its raw skill blob — the raw blob is
     /// kept because a configuration the decoder does not understand is exactly what an operator
     /// investigating a silent bot needs to see.</summary>
-    public Task<object?> BotDetailAsync(int botId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<BotDetail?> BotDetailAsync(int botId, CancellationToken ct) =>
+        QueryAsync<BotDetail?>(
             async db =>
             {
                 BotEntity? bot = await db
@@ -187,46 +174,42 @@ internal sealed class BotReads(
 
                 BotSkillSummary skills = SummarizeBotSkills(bot.SkillsJson);
 
-                return new
-                {
+                return new BotDetail(
                     bot.Id,
                     bot.Name,
                     bot.Motto,
                     bot.Figure,
-                    avatarUrl = _assetUrls.AvatarImage(bot.Figure),
-                    gender = bot.Gender.ToString(),
-                    ownerId = bot.OwnerPlayerEntityId,
-                    ownerName = DisplayNameQueries.ResolvePlayerName(
-                        ownerNames,
-                        bot.OwnerPlayerEntityId
-                    ),
-                    roomId = bot.RoomEntityId,
-                    roomName = bot.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
-                    placed = bot.RoomEntityId is not null,
+                    _assetUrls.AvatarImage(bot.Figure),
+                    bot.Gender.ToString(),
+                    bot.OwnerPlayerEntityId,
+                    DisplayNameQueries.ResolvePlayerName(ownerNames, bot.OwnerPlayerEntityId),
+                    bot.RoomEntityId,
+                    bot.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
+                    bot.RoomEntityId is not null,
                     bot.X,
                     bot.Y,
                     bot.Z,
-                    rotation = (int)bot.Rotation,
-                    skills = skills.SkillIds,
-                    skillNames = skills.SkillNames,
-                    phrases = skills.Phrases,
-                    autoChat = skills.AutoChat,
-                    chatDelaySeconds = skills.DelaySeconds,
-                    mixSentences = skills.Markov,
-                    wanders = skills.Wanders,
-                    dances = skills.Dances,
-                    rawSkillsJson = bot.SkillsJson,
+                    (int)bot.Rotation,
+                    skills.SkillIds,
+                    skills.SkillNames,
+                    skills.Phrases,
+                    skills.AutoChat,
+                    skills.DelaySeconds,
+                    skills.Markov,
+                    skills.Wanders,
+                    skills.Dances,
+                    bot.SkillsJson,
                     bot.CreatedAt,
-                    bot.UpdatedAt,
-                };
+                    bot.UpdatedAt
+                );
             },
             ct
         );
 
     /// <summary>Bot population health: how many exist, how many are actually standing in a room,
     /// how many were ever configured to say anything, and who owns them.</summary>
-    public Task<object> BotsStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<BotStats> BotsStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<BotStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -262,9 +245,9 @@ internal sealed class BotReads(
                     .Distinct()
                     .Count();
 
-                var byGender = rows.GroupBy(r => r.Gender)
-                    .Select(g => new { gender = g.Key, count = g.Count() })
-                    .OrderByDescending(g => g.count)
+                List<BotGenderCount> byGender = rows.GroupBy(r => r.Gender)
+                    .Select(g => new BotGenderCount(g.Key, g.Count()))
+                    .OrderByDescending(g => g.Count)
                     .ToList();
 
                 Dictionary<DateTime, int> bucketMap = new();
@@ -285,14 +268,13 @@ internal sealed class BotReads(
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var growth = bucketMap
+                List<BotGrowthPoint> growth = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        botsCreated = pair.Value,
-                    })
+                    .Select(pair => new BotGrowthPoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
                 var topOwnerRows = rows.GroupBy(r => r.OwnerId)
@@ -320,46 +302,37 @@ internal sealed class BotReads(
                     )
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new BotStats(
+                    new ReportWindow(since, until, granularity),
+                    new BotTotals(
                         totalBots,
                         placedBots,
-                        inventoryBots = totalBots - placedBots,
+                        totalBots - placedBots,
                         configuredBots,
                         chattyBots,
                         autoChatBots,
                         wanderingBots,
                         dancingBots,
                         distinctOwners,
-                        roomsWithBots,
-                    },
+                        roomsWithBots
+                    ),
                     byGender,
                     growth,
-                    topOwners = topOwnerRows
-                        .Select(o => new
-                        {
+                    topOwnerRows
+                        .Select(o => new BotOwnerCount(
                             o.ownerId,
-                            ownerName = DisplayNameQueries.ResolvePlayerName(ownerNames, o.ownerId),
-                            o.botCount,
-                        })
+                            DisplayNameQueries.ResolvePlayerName(ownerNames, o.ownerId),
+                            o.botCount
+                        ))
                         .ToList(),
-                    topRooms = topRoomRows
-                        .Select(r => new
-                        {
+                    topRoomRows
+                        .Select(r => new BotRoomCount(
                             r.roomId,
-                            roomName = roomNames.GetValueOrDefault(r.roomId),
-                            r.botCount,
-                        })
-                        .ToList(),
-                };
+                            roomNames.GetValueOrDefault(r.roomId),
+                            r.botCount
+                        ))
+                        .ToList()
+                );
             },
             ct
         );
@@ -367,8 +340,8 @@ internal sealed class BotReads(
     /// <summary>The hand-item table: what a pet gets out of each id. Rows only exist for consumables,
     /// so an id missing here is held and passed around but never eaten — which is correct for a
     /// camera and a bug for a plate of food, and the reason the whole table is shown at once.</summary>
-    public Task<object> HandItemsAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<HandItemList> HandItemsAsync(CancellationToken ct) =>
+        QueryAsync<HandItemList>(
             async db =>
             {
                 var rows = await db
@@ -388,27 +361,23 @@ internal sealed class BotReads(
 
                 // A hand item has no icon of its own anywhere in the client: the only picture of one
                 // is an avatar holding it, which is what this renders.
-                var items = rows.Select(h => new
-                    {
+                List<HandItemRow> items = rows.Select(h => new HandItemRow(
                         h.Id,
                         h.HandItemId,
                         h.Name,
                         h.Nutrition,
                         h.Thirst,
                         h.consumable,
-                        imageUrl = _assetUrls.HandItemImage(h.HandItemId),
-                    })
+                        _assetUrls.HandItemImage(h.HandItemId)
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
-                    consumableCount = items.Count(i => i.consumable),
-                    // Lets the editor preview an id that has no row yet -- which is every id being
-                    // added for the first time.
-                    imageTemplate = _assetUrls.HandItemImageTemplate,
-                    items,
-                };
+                return new HandItemList(
+                    items.Count,
+                    items.Count(i => i.Consumable),
+                    _assetUrls.HandItemImageTemplate,
+                    items
+                );
             },
             ct
         );
