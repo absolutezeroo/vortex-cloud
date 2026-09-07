@@ -9,7 +9,8 @@
   
   type Props = {
     src?: any;
-    alt?: string;
+    /** Null when the row it names has none; the component falls back to the icon. */
+    alt?: string | null;
     size?: number;
     /** Lucide icon component shown when there's no image or it fails to load. */
     fallbackIcon?: any;

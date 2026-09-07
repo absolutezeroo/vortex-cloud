@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The currencies a reward may actually be paid in, read from the wallet's own table.
   //
   // Quests and achievement levels store their reward currency as a single int: negative means
@@ -17,24 +17,34 @@
   import CurrencyIcon from './CurrencyIcon.svelte';
   import { t } from '../lib/i18n';
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} [id] - Id for the control, so a page's <label for> still points at it.
-   * @property {number} [value] - The stored reward type: negative for credits, else the point type.
-   * @property {boolean} [credits] - Offer credits. False where the caller grants activity points
-   *   only, so that -1 is not a choice the operator can make by accident.
-   */
+  type Props = {
+    /** Id for the control, so a page's <label for> still points at it. */
+    id?: string;
+    /** The stored reward type: negative for credits, else the point type. */
+    value?: number;
+    /**
+     * Offer credits. False where the caller grants activity points only, so that -1 is not a
+     * choice the operator can make by accident.
+     */
+    credits?: boolean;
+  };
 
-  /** @type {Props} */
-  let { id = '', value = $bindable(-1), credits = true } = $props();
+  let { id = '', value = $bindable(-1), credits = true }: Props = $props();
 
-  let options = $state([]);
+  /** A currency as the wallet's own table describes it. */
+  type CurrencyRow = {
+    type: string;
+    name?: string | null;
+    activityPointType?: number | null;
+  };
+
+  let options = $state<{ value: number; label: string }[]>([]);
   /** Falls back to the raw number box when the list cannot be read — a narrower capability than
    *  this page's own should not cost the operator the field entirely. */
   let unavailable = $state(false);
 
   /** The reward int a currency row is named by; null for currencies the encoding cannot express. */
-  function rewardTypeFor(row) {
+  function rewardTypeFor(row: CurrencyRow): number | null {
     if (row.type === 'Credits') return -1;
     if (row.type === 'ActivityPoints') return row.activityPointType ?? 0;
 
@@ -43,12 +53,17 @@
 
   onMount(async () => {
     try {
-      const data = await apiGet('/api/v1/catalog/currency-types');
+      const data = await apiGet<{ items?: CurrencyRow[] }>(
+        '/api/v1/catalog/currency-types',
+      );
 
       options = (data?.items ?? [])
         .map((row) => ({ row, rewardType: rewardTypeFor(row) }))
         .filter((entry) => entry.rewardType !== null && (credits || entry.rewardType >= 0))
-        .map((entry) => ({ value: entry.rewardType, label: entry.row.name || String(entry.rewardType) }));
+        .map((entry) => ({
+          value: entry.rewardType!,
+          label: entry.row.name || String(entry.rewardType),
+        }));
 
       unavailable = options.length === 0;
     } catch (err) {

@@ -1,8 +1,11 @@
 <script lang="ts">
+  import type { PickerRow } from '../../lib/pickers/directories';
   import { t } from '../../lib/i18n';
 
-  /** @type {{ row: any, onchoose: (row: any) => void }} */
-  let { row, onchoose } = $props();
+  /** What a furniture row draws. The rest of the directory's payload rides along. */
+  type Props = { row: PickerRow; onchoose: (row: PickerRow) => void };
+
+  let { row, onchoose }: Props = $props();
 </script>
 
 <button type="button" class="pick-row" onclick={() => onchoose(row)}>

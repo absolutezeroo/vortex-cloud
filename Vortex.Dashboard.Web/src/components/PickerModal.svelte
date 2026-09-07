@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Modal from './Modal.svelte';
   import { apiGet } from '../lib/api';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
@@ -6,28 +6,21 @@
   import { House, User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { LOGIC_GROUPS } from '../lib/furnitureEnums';
-  import { directoryFor } from '../lib/pickers/directories';
+  import { directoryFor, type PickerRow } from '../lib/pickers/directories';
   import { PICKER_ROWS } from './pickers/index';
   import { t } from '../lib/i18n';
 
-  
-  /**
-   * @typedef {Object} Props
-   * @property {string} [kind] - kind: 'user' | 'furniture' | 'room'
-   * @property {string} [title]
-   * @property {any} onSelect
-   * @property {any} onClose
-   * @property {boolean} [canSelect]
-   */
+    type Props = {
+    /** Which directory to browse; every key of DIRECTORIES is valid. */
+    kind?: string;
+    title?: string;
+    onSelect: (row: PickerRow) => void;
+    onClose: () => void;
+    /** False draws the permission notice instead of a list the caller may not read. */
+    canSelect?: boolean;
+  };
 
-  /** @type {Props} */
-  let {
-    kind = 'user',
-    title = 'Select',
-    onSelect,
-    onClose,
-    canSelect = true
-  } = $props();
+  let { kind = 'user', title = 'Select', onSelect, onClose, canSelect = true }: Props = $props();
 
   // Where the rows come from, how they sort, and which layout draws one -- all declared per
   // directory in lib/pickers/directories.js. This component owns the search, the paging and the
@@ -37,7 +30,10 @@
   const Row = PICKER_ROWS[directory?.row ?? 'plain'];
   const sorts = directory?.sorts ?? [];
 
-  const SORT_LABELS = {
+  /** What every directory endpoint answers with. hasMore is absent on the ones that do not page. */
+  type PickerPage = { items?: PickerRow[]; hasMore?: boolean };
+
+  const SORT_LABELS: Record<string, string> = {
     relevance: 'pickerModal.sortRelevance',
     name: 'pickerModal.sortName',
     id: 'pickerModal.sortId',
@@ -50,7 +46,7 @@
   let sort = $state('relevance');
   let logicFilter = $state('');
   let onlineOnly = $state(false);
-  let rows = $state([]);
+  let rows = $state<PickerRow[]>([]);
   let hasMore = $state(false);
   let loadingMore = $state(false);
   const PAGE_SIZE = 60;
@@ -68,19 +64,19 @@
     }
   });
 
-  const ACCESS_DENIED_KEYS = {
+  const ACCESS_DENIED_KEYS: Record<string, string> = {
     furniture: 'pickerModal.furnitureAccessDenied',
     room: 'pickerModal.roomsAccessDenied',
     user: 'pickerModal.playersAccessDenied',
   };
 
-  const EYEBROW_KEYS = {
+  const EYEBROW_KEYS: Record<string, string> = {
     furniture: 'pickerModal.catalogFurniture',
     room: 'pickerModal.rooms',
     user: 'pickerModal.players',
   };
 
-  const SEARCH_PLACEHOLDER_KEYS = {
+  const SEARCH_PLACEHOLDER_KEYS: Record<string, string> = {
     furniture: 'pickerModal.searchFurniturePlaceholder',
     room: 'pickerModal.searchRoomPlaceholder',
     user: 'pickerModal.searchPlayerPlaceholder',
@@ -90,7 +86,7 @@
 
   // 'relevance' is the server's own default, so it is left out rather than sent as a value the
   // server's switch would have to carry a case for.
-  function params(offset) {
+  function params(offset: number) {
     const parts = [`q=${encodeURIComponent(query.trim())}`, `limit=${PAGE_SIZE}`, `offset=${offset}`];
 
     if (sort !== 'relevance') parts.push(`sort=${encodeURIComponent(sort)}`);
@@ -124,7 +120,7 @@
     }
 
     try {
-      const data = await apiGet(`${endpoint}?${params(0)}`);
+      const data = await apiGet<PickerPage>(`${endpoint}?${params(0)}`);
       rows = data.items || [];
       // The players endpoint does not page; absent hasMore simply means "that is everything".
       hasMore = Boolean(data.hasMore);
@@ -135,7 +131,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       rows = [];
     } finally {
       loading = false;
@@ -150,18 +146,18 @@
     loadingMore = true;
 
     try {
-      const data = await apiGet(`${endpoint}?${params(rows.length)}`);
+      const data = await apiGet<PickerPage>(`${endpoint}?${params(rows.length)}`);
       rows = [...rows, ...(data.items || [])];
       hasMore = Boolean(data.hasMore);
     } catch (err) {
-      error = err.message;
+      error = (err as Error).message;
       hasMore = false;
     } finally {
       loadingMore = false;
     }
   }
 
-  function choose(item) {
+  function choose(item: PickerRow) {
     onSelect?.(item);
     onClose?.();
   }

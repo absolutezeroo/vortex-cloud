@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
   // "Prove it is still you." Shown when the server refuses a critical operation because this session
   // has not verified a second factor recently enough -- minting currency, the staff roster, a console
   // command, a database backup.

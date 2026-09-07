@@ -68,6 +68,36 @@ export const DIRECTORIES: Record<string, Directory> = {
   placedItem: { endpoint: '/api/v1/directory/placed-furniture', row: 'plain' },
 };
 
+/**
+ * One row a directory returns.
+ *
+ * Every directory answers with an id and a name -- that is what makes them one picker rather than
+ * seventeen. Everything below it is a layout extra: the directory whose row component draws it
+ * sends it, and the other nineteen do not, which is why each is optional here rather than split
+ * into a type per directory that the shared picker would then have to choose between.
+ */
+export type PickerRow = {
+  id: number;
+  name: string;
+  /** plain */
+  description?: string | null;
+  /** player */
+  avatarUrl?: string | null;
+  online?: boolean;
+  /** furniture */
+  iconUrl?: string | null;
+  spriteId?: number | null;
+  logic?: string | null;
+  type?: string | null;
+  canTrade?: boolean;
+  /** room */
+  ownerName?: string | null;
+  usersNow?: number | null;
+  playersMax?: number | null;
+  /** Whatever else the directory thought worth saying about it. */
+  [field: string]: unknown;
+};
+
 /** The directory for a kind, or null. Null is a bug the picker reports rather than papers over. */
 export function directoryFor(kind: string): Directory | null {
   return DIRECTORIES[kind] ?? null;

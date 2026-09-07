@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Second-factor enrolment for the signed-in operator. Enrolment is two steps on purpose: /begin
   // hands back a secret and stores nothing, and only a code computed from it turns it into the
   // account's factor. Walking away from this dialog therefore cannot lock anyone out.
@@ -8,13 +8,22 @@
   import Modal from './Modal.svelte';
   import { t } from '../lib/i18n';
 
-  let { onclose, logout } = $props();
+  type Props = {
+    onclose: () => void;
+    /** Sends the operator back to the login screen after a password change. */
+    logout: () => void;
+  };
+
+  let { onclose, logout }: Props = $props();
+
+  /** What /begin hands back: the secret to store and the URI the QR encodes. */
+  type Enrolment = { secret: string; uri: string };
 
   // Two things an operator does to their own account, one dialog: the second factor and the
   // password. Both re-prove the account rather than trusting the session cookie.
   let tab = $state('mfa');
 
-  let enrolment = $state(null);
+  let enrolment = $state<Enrolment | null>(null);
   let qr = $state('');
   let code = $state('');
   let busy = $state(false);
@@ -26,7 +35,7 @@
     identity.set(await apiGet('/api/me'));
   }
 
-  async function run(work) {
+  async function run(work: () => Promise<void>) {
     if (busy) return;
     busy = true;
     error = '';
@@ -42,16 +51,19 @@
 
   const begin = () =>
     run(async () => {
-      enrolment = await apiPost('/api/v1/account/mfa/begin', {});
+      enrolment = await apiPost<Enrolment>('/api/v1/account/mfa/begin', {});
       // Rendered here rather than fetched: a QR of an authenticator secret must never leave the
       // browser, and the dashboard's CSP would refuse the request anyway.
-      qr = await QRCode.toDataURL(enrolment.uri, { margin: 1, width: 200 });
+      qr = await QRCode.toDataURL(enrolment!.uri, { margin: 1, width: 200 });
       code = '';
     });
 
   const enable = () =>
     run(async () => {
-      await apiPost('/api/v1/account/mfa/enable', { secret: enrolment.secret, code });
+      await apiPost('/api/v1/account/mfa/enable', {
+        secret: enrolment!.secret,
+        code,
+      });
       enrolment = null;
       qr = '';
       code = '';
@@ -69,7 +81,7 @@
   let newPassword = $state('');
   let newPasswordRepeat = $state('');
   let passwordCode = $state('');
-  let passwordDone = $state(null);
+  let passwordDone = $state<number | null>(null);
 
   let passwordReady = $derived(
     currentPassword.length > 0 &&
@@ -80,11 +92,14 @@
 
   const changePassword = () =>
     run(async () => {
-      const result = await apiPost('/api/v1/account/password', {
-        currentPassword,
-        newPassword,
-        code: enabled ? passwordCode : undefined,
-      });
+      const result = await apiPost<{ sessionsRevoked?: number }>(
+        '/api/v1/account/password',
+        {
+          currentPassword,
+          newPassword,
+          code: enabled ? passwordCode : undefined,
+        },
+      );
 
       // The change signed this session out along with every other one, so there is nothing left to
       // do here but say so and send the operator back to the login screen.

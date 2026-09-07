@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
   import Modal from './Modal.svelte';
   import { apiGet } from '../lib/api';
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format';
@@ -15,12 +15,85 @@
 
   let loading = $state(false);
   let error = $state('');
-  let data = $state(null);
+  // Two different profiles behind one popup, and neither endpoint has a contract yet: they both
+  // live in DirectoryReads, which still answers `object`. These are what this popup reads, written
+  // from the markup below, and they are meant to be deleted the day the directory is converted.
+  type PlayerProfile = {
+    id: number;
+    name: string;
+    motto?: string | null;
+    status?: string | null;
+    gender?: string | null;
+    avatarUrl?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    inventory?: { total?: number; latest?: InventoryItem[] } | null;
+    ownedRooms?: { total?: number } | null;
+    wallets?: Wallet[] | null;
+    timeline?: { items?: TimelineEntry[] } | null;
+  };
+
+  type Wallet = {
+    currency: string;
+    activityPointType?: number | null;
+    amount?: number | null;
+  };
+
+  type InventoryItem = {
+    itemId: number;
+    definitionName?: string | null;
+    furniIconUrl?: string | null;
+    roomName?: string | null;
+  };
+
+  /**
+   * The forensic rows arrive from two writers, one of which never camel-cased its keys -- hence
+   * every `x || X` pair in the markup. Both spellings are declared rather than one being quietly
+   * assumed, because the fallback is what actually renders half the time.
+   */
+  type TimelineEntry = {
+    occurredAt?: string | null;
+    OccurredAt?: string | null;
+    eventType?: string | null;
+    itemId?: number | null;
+    roomName?: string | null;
+    correlationId?: string | null;
+  };
+
+  type ItemProfile = {
+    itemId: number;
+    total?: number | null;
+    snapshot?: {
+      definitionName?: string | null;
+      furniIconUrl?: string | null;
+      ownerPlayerId?: number | null;
+      ownerName?: string | null;
+      roomId?: number | null;
+      roomName?: string | null;
+    } | null;
+    history?: ItemHistoryRow[] | null;
+  };
+
+  type ItemHistoryRow = TimelineEntry & {
+    actorPlayerId?: number | null;
+    ActorPlayerId?: number | null;
+    actorPlayerName?: string | null;
+    actorName?: string | null;
+    RoomId?: number | null;
+    data?: string | null;
+    Data?: string | null;
+  };
+
+  let data = $state<PlayerProfile | ItemProfile | null>(null);
   let currentKey = $state('');
   let forbidden = $state(false);
 
 
   async function load() {
+    const target = $modal;
+
+    if (!target) return;
+
     loading = true;
     error = '';
     data = null;
@@ -29,9 +102,13 @@
     try {
       // The profile on its own, not the investigation search. That one also assembles the audit
       // trail, the ledger, the chat and the item history — a dozen queries this popup never reads.
-      data = $modal.type === 'item'
-        ? await apiGet(`/api/v1/directory/entity/${encodeURIComponent($modal.id)}`)
-        : await apiGet(`/api/v1/directory/players/${encodeURIComponent($modal.id)}/profile`);
+      data = target.type === 'item'
+        ? await apiGet<ItemProfile>(
+            `/api/v1/directory/entity/${encodeURIComponent(target.id)}`,
+          )
+        : await apiGet<PlayerProfile>(
+            `/api/v1/directory/players/${encodeURIComponent(target.id)}/profile`,
+          );
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -39,7 +116,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       loading = false;
     }
@@ -55,8 +132,10 @@
   });
   // The profile endpoint answers the profile itself, so there is no envelope to unwrap and no
   // discriminator to check: a player id that matches nobody comes back null.
-  let playerProfile = $derived($modal?.type === 'item' ? null : data);
-  let itemProfile = $derived($modal?.type === 'item' ? data : null);
+  let playerProfile = $derived(
+    $modal?.type === 'item' ? null : (data as PlayerProfile | null),
+  );
+  let itemProfile = $derived($modal?.type === 'item' ? (data as ItemProfile | null) : null);
   let forbiddenMessage = $derived($t($modal?.type === 'item' ? 'entityModal.itemAccessDenied' : 'entityModal.playerAccessDenied'));
 </script>
 

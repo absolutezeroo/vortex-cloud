@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Ctrl/Cmd+K from anywhere. The sidebar's search box only ever filtered the sidebar, so finding a
   // player meant: guess which page owns players, go there, find its search box, type the name again.
   // This asks the three directories and the nav at once and jumps straight to the answer.
@@ -11,17 +11,35 @@
   import { identity, openItem } from '../lib/session';
   import { hasDashboardCapability } from '../lib/permissions';
   import { t, translate } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /**
+   * One row the palette can jump to. `kind` is what choose() switches on, and the id means a
+   * different thing for each: a route for a page, an entity id for the other three.
+   */
+  type PaletteEntry = {
+    kind: 'nav' | 'player' | 'room' | 'furniture';
+    id: string | number;
+    label: string;
+    hint: string;
+    online?: boolean;
+    /** Only a nav row is matched locally, so only a nav row carries one. */
+    haystack?: string;
+  };
+
+  /** What the three directories the palette asks answer with. */
+  type Directory = { items?: PickerRow[] };
 
   let open = $state(false);
   let query = $state('');
   let cursor = $state(0);
-  let input = $state();
-  let remote = $state([]);
+  let input = $state<HTMLInputElement>();
+  let remote = $state<PaletteEntry[]>([]);
   let searching = $state(false);
 
   // Bumped on every keystroke so a slow response for "ab" cannot overwrite the results for "abcd".
   let requestId = 0;
-  let debounce = null;
+  let debounce: ReturnType<typeof setTimeout> | undefined;
 
   const KIND_ICONS = { nav: Compass, player: User, room: House, furniture: Package };
 
@@ -32,7 +50,7 @@
   // answers nothing until you already know what to type is a palette for people who do not need it.
   let navPages = $derived(
     NAV.filter((item) => hasDashboardCapability($identity, item.caps)).map((item) => ({
-      kind: 'nav',
+      kind: 'nav' as const,
       id: item.path,
       label: translate(item.labelKey),
       hint: translate(`nav.group${item.group}`),
@@ -51,7 +69,7 @@
 
   let results = $derived([...navMatches, ...remote]);
 
-  let resultsEl = $state();
+  let resultsEl = $state<HTMLElement>();
 
   // The empty palette now lists every page, so the arrow keys can walk the cursor well past the
   // 54vh the panel shows. Without this the selection is simply invisible from row nine on.
@@ -66,7 +84,7 @@
     if (cursor > results.length - 1) cursor = Math.max(0, results.length - 1);
   });
 
-  async function searchRemote(term) {
+  async function searchRemote(term: string) {
     const id = ++requestId;
 
     if (!term) {
@@ -80,29 +98,35 @@
     // One failing directory (a capability the operator lacks, most often) must not blank the other
     // two, so each is settled on its own.
     const [players, rooms, furniture] = await Promise.all([
-      apiGet(`/api/v1/directory/players?q=${encodeURIComponent(term)}&limit=4`).catch(() => null),
-      apiGet(`/api/v1/directory/rooms?q=${encodeURIComponent(term)}&limit=4`).catch(() => null),
-      apiGet(`/api/v1/directory/furniture?q=${encodeURIComponent(term)}&limit=4`).catch(() => null),
+      apiGet<Directory>(
+        `/api/v1/directory/players?q=${encodeURIComponent(term)}&limit=4`,
+      ).catch(() => null),
+      apiGet<Directory>(`/api/v1/directory/rooms?q=${encodeURIComponent(term)}&limit=4`).catch(
+        () => null,
+      ),
+      apiGet<Directory>(
+        `/api/v1/directory/furniture?q=${encodeURIComponent(term)}&limit=4`,
+      ).catch(() => null),
     ]);
 
     if (id !== requestId) return;
 
     remote = [
       ...(players?.items || []).map((p) => ({
-        kind: 'player',
+        kind: 'player' as const,
         id: p.id,
         label: p.name,
         hint: `#${p.id}`,
         online: p.online,
       })),
       ...(rooms?.items || []).map((r) => ({
-        kind: 'room',
+        kind: 'room' as const,
         id: r.id,
         label: r.name,
         hint: r.ownerName ? `#${r.id} - ${r.ownerName}` : `#${r.id}`,
       })),
       ...(furniture?.items || []).map((f) => ({
-        kind: 'furniture',
+        kind: 'furniture' as const,
         id: f.id,
         label: f.name,
         hint: f.logic ? `#${f.id} - ${f.logic}` : `#${f.id}`,
@@ -135,13 +159,13 @@
     remote = [];
   }
 
-  function choose(entry) {
+  function choose(entry: PaletteEntry | undefined) {
     if (!entry) return;
 
     hide();
 
     if (entry.kind === 'nav') {
-      push(entry.id);
+      push(String(entry.id));
     } else if (entry.kind === 'player') {
       // The player page reads ?player= on mount, so this lands on a loaded profile, not a form.
       push(`/investigation?player=${entry.id}`);
@@ -153,7 +177,7 @@
     }
   }
 
-  function onWindowKeydown(event) {
+  function onWindowKeydown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       open ? hide() : show();

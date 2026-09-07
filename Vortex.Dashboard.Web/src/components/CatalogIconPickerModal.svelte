@@ -1,22 +1,20 @@
-<script>
+<script lang="ts">
   import Modal from './Modal.svelte';
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
   import { t, translate } from '../lib/i18n';
 
   // There is no manifest of which catalog icon ids actually have a file on the asset host --
   // the id -> filename pattern (icon_{id}.png) is fixed, but which ids are populated is not.
   // So "browse all available icons" means probing candidate ids and letting the browser's own
   
-  /**
-   * @typedef {Object} Props
-   * @property {string} [title] - <img> load/error events tell us which ones are real, rather than trusting a hardcoded list.
-   * @property {any} onSelect
-   * @property {any} onClose
-   */
+  type Props = {
+    title?: string;
+    onSelect: (id: number) => void;
+    onClose: () => void;
+  };
 
-  /** @type {Props} */
-  let { title = 'Select an icon', onSelect, onClose } = $props();
+  let { title = 'Select an icon', onSelect, onClose }: Props = $props();
 
   const BATCH_SIZE = 60;
 
@@ -26,12 +24,12 @@
   let templateLoading = $state(true);
   let templateError = $state('');
 
-  let probeIds = $state([]);
-  let loadedIds = $state(new Set());
-  let failedIds = $state(new Set());
-  let gridEl = $state();
+  let probeIds = $state<number[]>([]);
+  let loadedIds = $state(new Set<number>());
+  let failedIds = $state(new Set<number>());
+  let gridEl = $state<HTMLElement>();
 
-  function urlFor(id) {
+  function urlFor(id: number) {
     return template.replace('{id}', String(id));
   }
 
@@ -43,7 +41,7 @@
   // Infinite scroll: a sentinel element sits at the end of the grid, and an IntersectionObserver
   // (scoped to the scrollable grid itself via `root`, not the page viewport) triggers the next
   // batch as it scrolls into view -- no "Load more" button to click.
-  function observeSentinel(node) {
+  function observeSentinel(node: HTMLElement) {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
@@ -60,15 +58,15 @@
     };
   }
 
-  function markLoaded(id) {
+  function markLoaded(id: number) {
     loadedIds = new Set(loadedIds).add(id);
   }
 
-  function markFailed(id) {
+  function markFailed(id: number) {
     failedIds = new Set(failedIds).add(id);
   }
 
-  function choose(id) {
+  function choose(id: number) {
     onSelect?.(id);
     onClose?.();
   }
@@ -79,7 +77,9 @@
 
   onMount(async () => {
     try {
-      const data = await apiGet('/api/v1/catalog/icon-template');
+      const data = await apiGet<{ template?: string }>(
+        '/api/v1/catalog/icon-template',
+      );
       template = data.template || '';
       if (!template) {
         templateError = translate('catalogIconPicker.noTemplate');
@@ -87,7 +87,7 @@
         loadMore();
       }
     } catch (err) {
-      templateError = err.code || err.message;
+      templateError = describeApiError(err);
     } finally {
       templateLoading = false;
     }
