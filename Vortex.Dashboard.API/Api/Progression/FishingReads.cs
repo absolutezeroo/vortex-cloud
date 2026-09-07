@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -16,8 +18,13 @@ namespace Vortex.Dashboard.API.Api;
 /// Zones carry their species count, because a zone with none is a spot that can be fished and never
 /// yields anything — the one misconfiguration here that looks exactly like a bug from the outside.
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class FishingReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     public Task<object> FishingContentAsync(CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
@@ -47,7 +54,7 @@ internal sealed partial class DashboardApiService
                         z.Id,
                         z.NameKey,
                         z.FurniClass,
-                        furniIconUrl = BuildFurniIconUrl(z.FurniClass),
+                        furniIconUrl = _assetUrls.FurniIcon(z.FurniClass),
                         z.RequiredLevel,
                         z.MinCatches,
                         z.MaxCatches,
@@ -160,7 +167,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                int limit = Math.Clamp(ParseInt(query["limit"], 25), 1, 100);
+                int limit = Math.Clamp(QueryValues.Int(query["limit"], 25), 1, 100);
 
                 var records = await db
                     .FishingRecords.AsNoTracking()

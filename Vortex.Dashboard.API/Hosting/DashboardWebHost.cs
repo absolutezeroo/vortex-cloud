@@ -229,6 +229,8 @@ internal sealed class DashboardWebHost(
         typeof(ArticleOperations),
         typeof(SongReads),
         typeof(SongOperations),
+        typeof(FishingReads),
+        typeof(FishingOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

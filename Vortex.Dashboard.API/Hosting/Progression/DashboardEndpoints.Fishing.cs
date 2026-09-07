@@ -23,15 +23,15 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiFishing,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.FishingContentAsync(ct)),
+            (FishingReads reads, CancellationToken ct) => OkAsync(reads.FishingContentAsync(ct)),
             Capabilities.Dashboard.FishingRead,
             TagFishing
         );
         MapReadGet(
             app,
             ApiFishing + "/activity",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.FishingActivityAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, FishingReads reads, CancellationToken ct) =>
+                OkAsync(reads.FishingActivityAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FishingRead,
             TagFishing
         );
@@ -45,7 +45,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateFishingZoneRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.NameKey)
@@ -64,7 +64,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateFishingZoneRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.ZoneId <= 0 || string.IsNullOrWhiteSpace(body.NameKey)
@@ -82,7 +82,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteFishingZoneRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.ZoneId <= 0
@@ -101,7 +101,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateFishingSpeciesRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.ZoneId <= 0 || string.IsNullOrWhiteSpace(body.NameKey)
@@ -119,7 +119,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateFishingSpeciesRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.SpeciesId <= 0 || body.ZoneId <= 0
@@ -137,7 +137,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteFishingSpeciesRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.SpeciesId <= 0
@@ -156,7 +156,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateFishingRodTierRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.Quality <= 0 || string.IsNullOrWhiteSpace(body.NameKey)
@@ -174,7 +174,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateFishingRodTierRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.TierId <= 0 || body.Quality <= 0
@@ -192,7 +192,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteFishingRodTierRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.TierId <= 0
@@ -211,7 +211,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateFishingLevelRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.Level <= 0
@@ -229,7 +229,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateFishingLevelRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.LevelId <= 0 || body.Level <= 0
@@ -247,7 +247,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteFishingLevelRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 body.LevelId <= 0
@@ -266,7 +266,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ReloadFishingRequest body,
-                DashboardOperationsService ops,
+                FishingOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(

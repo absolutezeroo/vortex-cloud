@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Fishing;
 using Vortex.Primitives.Fishing.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -10,14 +11,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// <see cref="Vortex.Primitives.Fishing.IFishingAdminService" /> — never a direct DB write — which
 /// commits and then reloads the live definitions, pushing them to everyone currently fishing.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class FishingOperations(OperationRunner runner, IFishingAdminService fishingAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IFishingAdminService _fishingAdmin = fishingAdmin;
+
     public Task<OperationResult> CreateFishingZoneAsync(
         CreateFishingZoneRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.zone.create",
             actor,
             request.Reason,
@@ -47,7 +51,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.zone.update",
             actor,
             request.Reason,
@@ -83,7 +87,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.zone.delete",
             actor,
             request.Reason,
@@ -100,7 +104,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.species.create",
             actor,
             request.Reason,
@@ -127,7 +131,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.species.update",
             actor,
             request.Reason,
@@ -154,7 +158,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.species.delete",
             actor,
             request.Reason,
@@ -175,7 +179,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.rod.create",
             actor,
             request.Reason,
@@ -196,7 +200,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.rod.update",
             actor,
             request.Reason,
@@ -217,7 +221,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.rod.delete",
             actor,
             request.Reason,
@@ -236,7 +240,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.level.create",
             actor,
             request.Reason,
@@ -260,7 +264,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.level.update",
             actor,
             request.Reason,
@@ -285,7 +289,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.level.delete",
             actor,
             request.Reason,
@@ -304,7 +308,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.fishing.reload",
             actor,
             request.Reason,
