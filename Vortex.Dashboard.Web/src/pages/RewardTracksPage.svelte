@@ -4,14 +4,14 @@
   // The whole point of the engine is that a campaign is content, so this page is where one gets
   // built: the track, its tasks and their stages, its milestones and what each hands over, and the
   // lifecycle that puts it in front of the hotel. Nothing here needs a rebuild to take effect.
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { formatDate, formatNumber } from '../lib/format';
+  import { t, translate } from '../lib/i18n';
   import { Blocks, Route, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';

@@ -1,17 +1,17 @@
 ﻿<script>
   import Modal from './Modal.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { compactCorrelation, formatDate, summarizeData } from '../lib/format';
   import EntityLink from './EntityLink.svelte';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
   import CurrencyIcon from './CurrencyIcon.svelte';
-  import { currencyChipClass, currencyKindFromName, currencyLabel } from '../lib/currency.js';
-  import { formatNumber } from '../lib/format.js';
+  import { currencyChipClass, currencyKindFromName, currencyLabel } from '../lib/currency';
+  import { formatNumber } from '../lib/format';
   import { User, Package } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { modal, closeModal, openPlayer, openItem } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { modal, closeModal, openPlayer, openItem } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let error = $state('');

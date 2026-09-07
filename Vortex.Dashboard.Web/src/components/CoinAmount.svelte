@@ -4,7 +4,7 @@
   // glyph (we never fabricate asset URLs; a real sprite can be wired via the `src` prop once a
   // currency-icon template is configured server-side). Numerals use the condensed counter face.
   import { Coins } from '@lucide/svelte';
-  import { formatNumber } from '../lib/format.js';
+  import { formatNumber } from '../lib/format';
 
   /**
    * @typedef {Object} Props

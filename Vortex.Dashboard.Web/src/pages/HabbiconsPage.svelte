@@ -3,19 +3,19 @@
   //
   // Two jobs that are read against completely different questions -- "is this set right?" and "why
   // does this player have that?" -- so they are tabs rather than two screens stacked vertically.
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { formatDate, formatNumber } from '../lib/format';
   import {
     CURRENCY_KIND,
     currencyChipClass,
     currencyKindFromRewardType,
-  } from '../lib/currency.js';
-  import { t, translate } from '../lib/i18n.js';
+  } from '../lib/currency';
+  import { t, translate } from '../lib/i18n';
   import { Smile, Users } from '@lucide/svelte';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';

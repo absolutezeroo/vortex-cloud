@@ -6,7 +6,7 @@
 // editor. This is the part of the drag-and-drop that has to be right.
 
 import assert from 'node:assert/strict';
-import { moveStep, moveFilter, referencedStep } from '../src/lib/sequence/steps.js';
+import { moveStep, moveFilter, referencedStep } from '../src/lib/sequence/steps.ts';
 
 const step = (action, ...values) => ({
   actionCode: action,

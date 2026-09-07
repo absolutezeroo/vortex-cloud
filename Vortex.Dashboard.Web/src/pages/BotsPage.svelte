@@ -1,20 +1,20 @@
 <script>
-  import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import { readNumberParam, writeParams } from '../lib/urlState';
 
   // Bots are authored from inside the client, so this page reads. What it adds over the raw table is
   // the decoded skill blob: a bot whose menu shows no buttons, or one configured to chat but with
   // zero phrases, looks identical in `bots` and completely different here.
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
 
-  import { formatNumber } from '../lib/format.js';
-  import { openPlayer } from '../lib/session.js';
+  import { formatNumber } from '../lib/format';
+  import { openPlayer } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
@@ -27,7 +27,7 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Bot, MessageSquare, MapPin, Users, Hand } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   const PAGE_SIZE = 40;
 

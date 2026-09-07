@@ -9,9 +9,26 @@
  */
 import { Node } from '@tiptap/core';
 
-import { BUTTON_NODE, IMAGE_NODE, isAllowedHref } from './articleBlocks.js';
+import { BUTTON_NODE, IMAGE_NODE, isAllowedHref } from './articleBlocks';
 
-function el(tag, className, text) {
+/** A block's attributes. Each node type names its own; both are strings here. */
+type Attrs = Record<string, any>;
+
+/** What the picture and button forms are told by the editor that hosts them. */
+type NodeOptions = {
+  resolveUrl: (path: string) => string;
+  onBrowse: ((pick: (path: string) => void) => void) | null;
+  labels: Record<string, string>;
+};
+
+/** What a form may do back: read the current attributes, change them, or remove the block. */
+type NodeApi = {
+  attrs: () => Attrs;
+  setAttrs: (patch: Attrs) => void;
+  remove: () => void;
+};
+
+function el(tag: string, className?: string | null, text?: string | null): HTMLElement {
   const node = document.createElement(tag);
 
   if (className) node.className = className;
@@ -20,12 +37,17 @@ function el(tag, className, text) {
   return node;
 }
 
-function field(labelText, value, placeholder, onInput) {
+function field(
+  labelText: string,
+  value: string | null | undefined,
+  placeholder: string,
+  onInput: (value: string) => void,
+) {
   const wrap = el('label', 'ae-field');
 
   wrap.append(el('span', null, labelText));
 
-  const input = el('input');
+  const input = el('input') as HTMLInputElement;
   input.type = 'text';
   input.value = value ?? '';
   input.autocomplete = 'off';
@@ -42,13 +64,18 @@ function field(labelText, value, placeholder, onInput) {
 // An input the writer is typing in must never be overwritten by a redraw. ProseMirror calls
 // `update` on transactions the node had nothing to do with — every keystroke elsewhere in the
 // article — and assigning `.value` there would move the caret to the end of whatever is being typed.
-function syncInput(input, value) {
+function syncInput(input: HTMLInputElement, value: string | null | undefined): void {
   if (document.activeElement !== input && input.value !== (value ?? '')) {
     input.value = value ?? '';
   }
 }
 
-function head(labelText, deleteLabel, onDelete, extra) {
+function head(
+  labelText: string,
+  deleteLabel: string,
+  onDelete: () => void,
+  extra?: HTMLElement,
+): HTMLElement {
   const bar = el('div', 'ae-card-head');
 
   bar.append(el('span', 'chip', labelText));
@@ -59,7 +86,7 @@ function head(labelText, deleteLabel, onDelete, extra) {
 
   // Ghost, not danger. Removing a block is ordinary editing, and the repo's danger fill would make
   // the loudest thing on a picture card the button that throws it away.
-  const remove = el('button', 'ghost-button ae-remove', '×');
+  const remove = el('button', 'ghost-button ae-remove', '×') as HTMLButtonElement;
   remove.type = 'button';
   remove.title = deleteLabel;
   remove.setAttribute('aria-label', deleteLabel);
@@ -75,7 +102,12 @@ function head(labelText, deleteLabel, onDelete, extra) {
  * Shared plumbing: an atom block whose node view is a small form. `build` gets the current
  * attributes and a setter, and returns the DOM plus the function that re-reads it.
  */
-function formNode(name, tag, attributes, build) {
+function formNode(
+  name: string,
+  tag: string,
+  attributes: Attrs,
+  build: (dom: HTMLElement, options: NodeOptions, api: NodeApi) => (attrs: Attrs) => void,
+) {
   return Node.create({
     name,
     group: 'block',
@@ -100,11 +132,11 @@ function formNode(name, tag, attributes, build) {
     },
 
     addNodeView() {
-      return ({ node, editor, getPos }) => {
+      return ({ node, editor, getPos }: any) => {
         const dom = el(tag, 'ae-card');
         dom.contentEditable = 'false';
 
-        const setAttrs = (patch) => {
+        const setAttrs = (patch: Attrs) => {
           const pos = typeof getPos === 'function' ? getPos() : null;
           if (pos == null) return;
 
@@ -131,7 +163,7 @@ function formNode(name, tag, attributes, build) {
           // click in the href box as a click on an atom and moves the selection off the field.
           stopEvent: () => true,
           ignoreMutation: () => true,
-          update(updated) {
+          update(updated: any) {
             if (updated.type.name !== name) return false;
 
             node = updated;
@@ -153,7 +185,7 @@ export const ArticleImage = formNode(
   (dom, options, api) => {
     const labels = options.labels;
 
-    const browse = el('button', 'ghost-button', labels.browse ?? 'Browse');
+    const browse = el('button', 'ghost-button', labels.browse ?? 'Browse') as HTMLButtonElement;
     browse.type = 'button';
     browse.addEventListener('click', () => options.onBrowse?.((path) => api.setAttrs({ src: path })));
 
@@ -180,7 +212,7 @@ export const ArticleImage = formNode(
       preview.replaceChildren();
 
       if (url) {
-        const img = el('img');
+        const img = el('img') as HTMLImageElement;
         img.src = url;
         img.alt = '';
         preview.append(img);

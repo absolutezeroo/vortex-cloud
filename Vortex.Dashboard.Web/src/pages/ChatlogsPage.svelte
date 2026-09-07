@@ -1,15 +1,15 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet, describeApiError } from '../lib/api.js';
-  import { formatDate } from '../lib/format.js';
-  import { readNumberParam, writeParams } from '../lib/urlState.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
+  import { apiGet, describeApiError } from '../lib/api';
+  import { formatDate } from '../lib/format';
+  import { readNumberParam, writeParams } from '../lib/urlState';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Pagination from '../components/Pagination.svelte';
   import PickerModal from '../components/PickerModal.svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let text = $state('');
   let since = $state('');

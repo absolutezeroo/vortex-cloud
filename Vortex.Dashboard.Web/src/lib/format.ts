@@ -1,16 +1,16 @@
 import { get } from 'svelte/store';
-import { locale } from './i18n.js';
+import { locale } from './i18n';
 
 // Dates and numbers follow the language the operator picked in the UI, not the browser and not a
 // hardcoded en-US -- a French operator reading "1,234.5" where the rest of the row says "1 234,5"
 // misreads the magnitude. BCP 47 tags, because Intl wants a region to pick separators.
-const INTL_LOCALES = { en: 'en-US', fr: 'fr-FR' };
+const INTL_LOCALES: Record<string, string> = { en: 'en-US', fr: 'fr-FR' };
 
 function intlLocale() {
   return INTL_LOCALES[get(locale)] || INTL_LOCALES.en;
 }
 
-export function formatDate(value, fallback = '-') {
+export function formatDate(value: string | null | undefined, fallback = '-'): string {
   if (!value) {
     return fallback;
   }
@@ -23,7 +23,7 @@ export function formatDate(value, fallback = '-') {
   return new Date(parsed).toLocaleString(intlLocale());
 }
 
-export function formatNumber(value, decimals = 0) {
+export function formatNumber(value: number | string | null | undefined, decimals = 0): string {
   const numeric = Number(value || 0);
   return new Intl.NumberFormat(intlLocale(), {
     maximumFractionDigits: decimals,
@@ -31,7 +31,7 @@ export function formatNumber(value, decimals = 0) {
   }).format(numeric);
 }
 
-export function formatDuration(seconds) {
+export function formatDuration(seconds: number | string | null | undefined): string {
   const total = Math.max(0, Number(seconds || 0));
   const days = Math.floor(total / 86400);
   const hours = Math.floor((total % 86400) / 3600);
@@ -48,11 +48,11 @@ export function formatDuration(seconds) {
   return `${minutes}m`;
 }
 
-export function compactCorrelation(value) {
+export function compactCorrelation(value: string | null | undefined): string {
   return value ? String(value).substring(0, 8) : '-';
 }
 
-export function summarizeData(value) {
+export function summarizeData(value: unknown): string {
   if (!value) {
     return '-';
   }
@@ -79,7 +79,7 @@ export function summarizeData(value) {
 }
 
 /** A file size an operator reads at a glance -- a database dump is megabytes, not bytes. */
-export function formatBytes(value) {
+export function formatBytes(value: number | string | null | undefined): string {
   const bytes = Number(value);
 
   if (!Number.isFinite(bytes) || bytes < 0) return '-';

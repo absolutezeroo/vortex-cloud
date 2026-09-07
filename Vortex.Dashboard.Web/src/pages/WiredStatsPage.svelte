@@ -1,16 +1,16 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { apiGet } from '../lib/api';
+  import { formatNumber } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Package, Cable, DoorOpen } from '@lucide/svelte';
   import TableFilter from '../components/TableFilter.svelte';
   import SortTh from '../components/SortTh.svelte';
-  import { filterRows, sortRows } from '../lib/tableView.js';
-  import { t } from '../lib/i18n.js';
+  import { filterRows, sortRows } from '../lib/tableView';
+  import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);

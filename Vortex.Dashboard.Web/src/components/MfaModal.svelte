@@ -3,10 +3,10 @@
   // hands back a secret and stores nothing, and only a code computed from it turns it into the
   // account's factor. Walking away from this dialog therefore cannot lock anyone out.
   import QRCode from 'qrcode';
-  import { apiGet, apiPost, describeApiError } from '../lib/api.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet, apiPost, describeApiError } from '../lib/api';
+  import { identity } from '../lib/session';
   import Modal from './Modal.svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let { onclose, logout } = $props();
 

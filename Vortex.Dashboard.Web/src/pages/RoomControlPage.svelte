@@ -1,21 +1,21 @@
 <script>
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { formatDate, compactCorrelation } from '../lib/format.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { formatDate, compactCorrelation } from '../lib/format';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { ChevronDown, ChevronRight } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EntityLink from '../components/EntityLink.svelte';
-  import { identity, openPlayer, openItem } from '../lib/session.js';
+  import { identity, openPlayer, openItem } from '../lib/session';
   import TableFilter from '../components/TableFilter.svelte';
   // Filter only: the rows are read through accessors (roomName/roomPopulation), so there are no
   // stable field names for a key-based sort to name.
-  import { filterRows } from '../lib/tableView.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { filterRows } from '../lib/tableView';
+  import { t, translate } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);

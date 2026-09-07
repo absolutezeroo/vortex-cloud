@@ -15,16 +15,19 @@ import { onDestroy, onMount } from 'svelte';
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function useDialogBehaviour(getPanel, { onClose } = {}) {
-  let previouslyFocused = null;
+export function useDialogBehaviour(
+  getPanel: () => HTMLElement | null | undefined,
+  { onClose }: { onClose?: () => void } = {},
+) {
+  let previouslyFocused: HTMLElement | null = null;
 
   // Read the focusable list on each keypress rather than caching it, so conditional fields -- a
   // duration input that only exists while "permanent" is unchecked -- stay in the cycle.
-  function trapFocus(event) {
+  function trapFocus(event: KeyboardEvent) {
     const panel = getPanel();
-    const focusable = Array.from(panel?.querySelectorAll(FOCUSABLE) ?? []).filter(
-      (el) => el.offsetParent !== null || el === document.activeElement
-    );
+    const focusable = Array.from(
+      panel?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [],
+    ).filter((el) => el.offsetParent !== null || el === document.activeElement);
 
     if (focusable.length === 0) {
       event.preventDefault();
@@ -43,7 +46,7 @@ export function useDialogBehaviour(getPanel, { onClose } = {}) {
     }
   }
 
-  function onKeydown(event) {
+  function onKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.stopPropagation();
       onClose?.();
@@ -56,12 +59,12 @@ export function useDialogBehaviour(getPanel, { onClose } = {}) {
   }
 
   onMount(() => {
-    previouslyFocused = document.activeElement;
+    previouslyFocused = document.activeElement as HTMLElement | null;
 
     // Focus the first control so the operator can start typing; falls back to the panel itself for a
     // dialog that is only text plus a close button.
     const panel = getPanel();
-    const target = panel?.querySelector(FOCUSABLE) ?? panel;
+    const target = panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel;
     target?.focus?.();
 
     window.addEventListener('keydown', onKeydown, true);

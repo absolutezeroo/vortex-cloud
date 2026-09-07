@@ -13,7 +13,7 @@ import {
   readerOf,
   referencedStep,
   toGraph,
-} from '../src/lib/graph/model.js';
+} from '../src/lib/graph/model.ts';
 
 const FACTS = {
   place_item: [

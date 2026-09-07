@@ -10,10 +10,10 @@
     isAuthError,
     isConnectionError,
     logout as apiLogout,
-  } from './lib/api.js';
-  import { connectionIssue, identity, deniedRoute } from './lib/session.js';
-  import { routes } from './lib/routes.js';
-  import { t } from './lib/i18n.js';
+  } from './lib/api';
+  import { connectionIssue, identity, deniedRoute } from './lib/session';
+  import { routes } from './lib/routes';
+  import { t } from './lib/i18n';
   import AppShell from './components/AppShell.svelte';
   import Login from './components/Login.svelte';
   import EntityModal from './components/EntityModal.svelte';

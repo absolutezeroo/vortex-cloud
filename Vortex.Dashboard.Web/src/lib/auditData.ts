@@ -8,13 +8,29 @@
 // `changes` is the before/after of the rows the write actually touched, captured from EF's change
 // tracker (see Vortex.Database/Auditing). It is absent on operations that call a grain or use a bulk
 // statement -- absent meaning "not recorded", never "nothing happened".
-import { translate } from './i18n.js';
+import { translate } from './i18n';
 
-/**
- * @returns {{actor: string, reason: string, detail: object|null, changes: Array, raw: string}}
- */
-export function parseAuditData(value) {
-  const empty = { actor: '', reason: '', detail: null, changes: [], raw: '' };
+/** One row the interceptor recorded before and after a write. */
+export type AuditChange = {
+  table?: string;
+  entity?: string;
+  id?: string | number;
+  operation?: string;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+};
+
+/** An audit event's `data` column, once read. */
+export type ParsedAudit = {
+  actor: string;
+  reason: string;
+  detail: Record<string, unknown> | null;
+  changes: AuditChange[];
+  raw: string;
+};
+
+export function parseAuditData(value: unknown): ParsedAudit {
+  const empty: ParsedAudit = { actor: '', reason: '', detail: null, changes: [], raw: '' };
 
   if (!value) return empty;
 
@@ -44,7 +60,7 @@ export function parseAuditData(value) {
  * The one line the table cell shows. Prefers what the write did to the data over what the operator
  * said about it, because the first is the thing you scan a feed looking for.
  */
-export function summarizeAudit(value) {
+export function summarizeAudit(value: unknown): string {
   const { reason, detail, changes, raw } = parseAuditData(value);
 
   if (changes.length > 0) {
@@ -76,14 +92,14 @@ export function summarizeAudit(value) {
 }
 
 /** `catalog_offers #12` */
-export function describeTarget(change) {
+export function describeTarget(change: AuditChange): string {
   const table = change.table || change.entity || '?';
 
   return change.id ? `${table} #${change.id}` : table;
 }
 
 /** `Credits 2 → 4` for each field that moved. */
-export function fieldTransitions(change) {
+export function fieldTransitions(change: AuditChange): string[] {
   const before = change.before || {};
   const after = change.after || {};
 
@@ -93,14 +109,14 @@ export function fieldTransitions(change) {
 }
 
 /** Every column of a row that no longer exists. */
-export function deletedFields(change) {
+export function deletedFields(change: AuditChange): { key: string; value: string }[] {
   return Object.entries(change.before || {}).map(([key, value]) => ({
     key,
     value: renderScalar(value),
   }));
 }
 
-function renderScalar(value) {
+function renderScalar(value: unknown): string {
   if (value === null || value === undefined || value === '') {
     return translate('common.changeEmpty');
   }

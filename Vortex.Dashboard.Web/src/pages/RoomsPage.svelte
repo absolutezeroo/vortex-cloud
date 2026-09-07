@@ -1,18 +1,18 @@
 ﻿<script>
 
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, summarizeData } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate, summarizeData } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { readParam, readNumberParam, writeParams } from '../lib/urlState.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
+  import { readParam, readNumberParam, writeParams } from '../lib/urlState';
   import Pagination from '../components/Pagination.svelte';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView.js';
+  import { filterRows } from '../lib/tableView';
   import { onMount } from 'svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   // ?room= makes a room timeline a link, and is how the command palette hands one over.
   let roomId = $state(readParam('room'));

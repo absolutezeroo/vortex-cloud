@@ -1,29 +1,29 @@
 <script>
-  import { readParam, readNumberParam, writeParams } from '../lib/urlState.js';
+  import { readParam, readNumberParam, writeParams } from '../lib/urlState';
 
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
   import AssetImage from '../components/AssetImage.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { diffFields } from '../lib/changes.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { diffFields } from '../lib/changes';
   import {
     PRODUCT_TYPES,
     FURNITURE_CATEGORIES,
     USAGE_POLICIES,
     STUFF_DATA_TYPES,
     LOGIC_GROUPS,
-  } from '../lib/furnitureEnums.js';
+  } from '../lib/furnitureEnums';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import Pagination from '../components/Pagination.svelte';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   function emptyForm() {
     return {

@@ -1,16 +1,16 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatNumber } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import LineChart from '../components/LineChart.svelte';
   import EmptyState from '../components/EmptyState.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { t, locale } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
+  import { t, locale } from '../lib/i18n';
   import { get } from 'svelte/store';
   import { Activity, Users, DoorOpen, Sparkles, Cpu, Gauge, TriangleAlert, Timer } from '@lucide/svelte';
 

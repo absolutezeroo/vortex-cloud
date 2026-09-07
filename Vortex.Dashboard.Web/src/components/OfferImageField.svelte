@@ -7,7 +7,7 @@
   import Modal from './Modal.svelte';
   import { Image } from '@lucide/svelte';
   import AssetImage from './AssetImage.svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   
   /**

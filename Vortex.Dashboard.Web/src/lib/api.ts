@@ -1,15 +1,33 @@
 // All dashboard requests are same-origin and authenticated by the HttpOnly session cookie issued by
 // POST /api/login. There is no token to carry; the browser attaches the cookie automatically.
 
-import { connectionIssue } from './session.js';
-import { translate } from './i18n.js';
+import { connectionIssue } from './session';
+import { translate } from './i18n';
+import type { Identity } from './permissions';
 
 const DEFAULT_TIMEOUT_MS = 8000;
 const LOGIN_TIMEOUT_MS = 10000;
 const LOGOUT_TIMEOUT_MS = 3000;
 
+/** What a refusal carries beyond its message. */
+export type ApiErrorOptions = {
+  code?: string;
+  status?: number;
+  path?: string;
+  connection?: boolean;
+  correlationId?: string;
+  cause?: unknown;
+};
+
 export class ApiError extends Error {
-  constructor(message, options = {}) {
+  readonly code: string;
+  readonly status: number;
+  readonly path: string;
+  /** True when the emulator could not be reached at all, as opposed to refusing. */
+  readonly connection: boolean;
+  readonly correlationId: string;
+
+  constructor(message: string, options: ApiErrorOptions = {}) {
     super(message);
     this.name = 'ApiError';
     this.code = options.code || message;
@@ -26,7 +44,13 @@ export class ApiError extends Error {
   }
 }
 
-export function isConnectionError(error) {
+/** How much of an error the helpers below need to read; anything thrown may be shaped like this. */
+type ErrorLike = { code?: string; status?: number; message?: string; connection?: boolean };
+
+/** Per-call knobs, distinct from the fetch init the request builds itself. */
+export type RequestOptions = { timeoutMs?: number };
+
+export function isConnectionError(error: ErrorLike | null | undefined): boolean {
   return (
     error?.connection === true ||
     error?.code === 'request_timeout' ||
@@ -35,11 +59,11 @@ export function isConnectionError(error) {
   );
 }
 
-export function isTimeoutError(error) {
+export function isTimeoutError(error: ErrorLike | null | undefined): boolean {
   return error?.code === 'request_timeout';
 }
 
-export function isAuthError(error) {
+export function isAuthError(error: ErrorLike | null | undefined): boolean {
   return (
     error?.status === 401 ||
     error?.code === 'unauthenticated' ||
@@ -47,7 +71,7 @@ export function isAuthError(error) {
   );
 }
 
-export function describeApiError(error) {
+export function describeApiError(error: ErrorLike | null | undefined): string {
   if (error?.code === 'request_timeout') {
     return translate('errors.requestTimeout');
   }
@@ -87,7 +111,11 @@ export function describeApiError(error) {
   return error?.message || translate('errors.requestFailed');
 }
 
-async function request(path, options, requestOptions = {}) {
+async function request<T>(
+  path: string,
+  options: RequestInit,
+  requestOptions: RequestOptions = {},
+): Promise<T> {
   const timeoutMs = requestOptions.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -102,7 +130,7 @@ async function request(path, options, requestOptions = {}) {
     connectionIssue.set(null);
 
     const wantsJson = response.status !== 204 && response.status !== 205;
-    let data = null;
+    let data: any = null;
 
     if (wantsJson) {
       const contentType = response.headers.get('content-type') || '';
@@ -144,7 +172,7 @@ async function request(path, options, requestOptions = {}) {
       });
     }
 
-    return data;
+    return data as T;
   } catch (e) {
     const error = normalizeRequestError(e, path);
 
@@ -163,12 +191,12 @@ async function request(path, options, requestOptions = {}) {
   }
 }
 
-function normalizeRequestError(error, path) {
+function normalizeRequestError(error: unknown, path: string): ApiError {
   if (error instanceof ApiError) {
     return error;
   }
 
-  if (error?.name === 'AbortError') {
+  if ((error as { name?: string })?.name === 'AbortError') {
     return new ApiError('request_timeout', {
       code: 'request_timeout',
       path,
@@ -195,7 +223,10 @@ function normalizeRequestError(error, path) {
     });
   }
 
-  return error;
+  return new ApiError(
+    error instanceof Error ? error.message : String(error),
+    { path, cause: error },
+  );
 }
 
 /**
@@ -205,35 +236,34 @@ function normalizeRequestError(error, path) {
  *
  * Callers that pass no type get `unknown`, which is honest: an endpoint whose reads still return
  * `object` on the server has no shape to promise.
- *
- * @template {unknown} [T=unknown]
- * @param {string} path
- * @param {object} [options]
- * @returns {Promise<T>}
  */
-export function apiGet(path, options = {}) {
-  return request(path, { headers: { Accept: 'application/json' } }, options);
+export function apiGet<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
+  return request<T>(path, { headers: { Accept: 'application/json' } }, options);
 }
 
-export function apiPost(path, body, options = {}) {
-  return request(
+export function apiPost<T = unknown>(
+  path: string,
+  body?: unknown,
+  options: RequestOptions = {},
+): Promise<T> {
+  return request<T>(
     path,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body ?? {}),
     },
-    options
+    options,
   );
 }
 
-export function getIdentity(options = {}) {
-  return apiGet('/api/me', options);
+export function getIdentity(options: RequestOptions = {}): Promise<Identity> {
+  return apiGet<Identity>('/api/me', options);
 }
 
 // `code` is the second factor, sent only on the retry: the server answers mfa_required to the
 // first attempt when the account has one, and the same credentials go back up with the code.
-export function login(email, password, code) {
+export function login(email: string, password: string, code?: string) {
   return apiPost('/api/login', { email, password, code }, { timeoutMs: LOGIN_TIMEOUT_MS });
 }
 

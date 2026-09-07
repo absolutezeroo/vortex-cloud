@@ -6,7 +6,7 @@
   // value field without starting a drag.
   import { GripVertical, Search, X } from '@lucide/svelte';
   import AssetImage from '../AssetImage.svelte';
-  import { t } from '../../lib/i18n.js';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

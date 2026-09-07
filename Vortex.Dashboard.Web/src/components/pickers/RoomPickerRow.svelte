@@ -1,5 +1,5 @@
 <script>
-  import { t } from '../../lib/i18n.js';
+  import { t } from '../../lib/i18n';
 
   /** @type {{ row: any, onchoose: (row: any) => void }} */
   let { row, onchoose } = $props();

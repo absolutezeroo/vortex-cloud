@@ -8,7 +8,15 @@
 // kind falls back to the neutral amber, so the worst case is a chip that looks like it always did.
 
 /** The kinds we have a colour for. Anything else is `points`, which keeps the default amber. */
-export const CURRENCY_KIND = {
+export type CurrencyKind =
+  | 'credits'
+  | 'duckets'
+  | 'diamonds'
+  | 'silver'
+  | 'emeralds'
+  | 'points';
+
+export const CURRENCY_KIND: Record<CurrencyKind, CurrencyKind> = {
   credits: 'credits',
   duckets: 'duckets',
   diamonds: 'diamonds',
@@ -26,7 +34,7 @@ export const CURRENCY_KIND = {
  * seasonal/GOTW currencies"). Seasonal currencies take numbers of their own per hotel, which is
  * why anything else stays neutral rather than being guessed at.
  */
-export function currencyKindFromRewardType(rewardType) {
+export function currencyKindFromRewardType(rewardType: unknown): CurrencyKind {
   const type = Number(rewardType);
 
   if (!Number.isFinite(type)) return CURRENCY_KIND.points;
@@ -41,7 +49,10 @@ export function currencyKindFromRewardType(rewardType) {
  * The wallet's own encoding, as `currency_types.type` stores it: 1 credits, 2 silver, 3 emeralds,
  * 4 activity points -- and only that last one needs `activityPointType` to say which.
  */
-export function currencyKindFromType(currencyType, activityPointType = null) {
+export function currencyKindFromType(
+  currencyType: unknown,
+  activityPointType: unknown = null,
+): CurrencyKind {
   switch (Number(currencyType)) {
     case 1:
       return CURRENCY_KIND.credits;
@@ -61,21 +72,24 @@ export function currencyKindFromType(currencyType, activityPointType = null) {
  * Matched case-insensitively against the kinds we have a colour for; a seasonal currency nobody has
  * tinted yet falls through to the neutral amber rather than being guessed at.
  */
-export function currencyKindFromName(currencyName, activityPointType) {
+export function currencyKindFromName(
+  currencyName: unknown,
+  activityPointType?: unknown,
+): CurrencyKind {
   const key = String(currencyName ?? '').trim().toLowerCase();
 
   // The ledger stores a plain label, and for every activity point that label is the same word --
   // duckets and diamonds both arrive as "ActivityPoints". The sub-type is what tells them apart.
   if (key === 'activitypoints') return currencyKindFromRewardType(activityPointType ?? NaN);
 
-  return CURRENCY_KIND[key] ?? CURRENCY_KIND.points;
+  return (CURRENCY_KIND as Record<string, CurrencyKind>)[key] ?? CURRENCY_KIND.points;
 }
 
 /** What to call this movement's currency: the stored label, unless it is the activity-point catch-all. */
-export function currencyLabel(currencyName, activityPointType) {
+export function currencyLabel(currencyName: unknown, activityPointType?: unknown): string {
   const key = String(currencyName ?? '').trim().toLowerCase();
 
-  if (key !== 'activitypoints') return currencyName;
+  if (key !== 'activitypoints') return String(currencyName ?? '');
 
   const kind = currencyKindFromRewardType(activityPointType ?? NaN);
 
@@ -83,7 +97,7 @@ export function currencyLabel(currencyName, activityPointType) {
 }
 
 /** The classes for a price/reward pill of this kind. Pair with `.cost-chip` in styles.css. */
-export function currencyChipClass(kind) {
+export function currencyChipClass(kind: CurrencyKind | null | undefined): string {
   return kind && kind !== CURRENCY_KIND.points
     ? `cost-chip cost-chip--${kind}`
     : 'cost-chip';

@@ -32,19 +32,29 @@
 // It still pairs with createWriteOps -- hand it the refresh so a committed write re-reads:
 //   const ops = createWriteOps(bots.refresh);
 import { createQuery, useQueryClient, keepPreviousData } from '@tanstack/svelte-query';
-import { describeApiError } from './api.js';
-import { isPermissionDeniedError } from './permissions.js';
+import { describeApiError } from './api';
+import { isPermissionDeniedError } from './permissions';
 
 /** Reads stay fresh for half a minute; a dashboard operator is reading, not trading. */
 const DEFAULT_STALE_TIME_MS = 30_000;
 
+/** What a read may be told beyond its key and its loader. */
+export type ResourceOptions = {
+  /** False holds the read back entirely -- a page that must not query yet. */
+  enabled?: () => boolean;
+  /** How long a cached read is served without a refetch. */
+  staleTime?: number;
+};
+
 /**
- * @param key () => unknown[] -- the cache identity, re-read whenever the page's filters change.
- * @param loader () => Promise<T> -- the actual request.
- * @param options.enabled () => boolean -- false holds the read back entirely.
- * @param options.staleTime how long a cached read is served without a refetch.
+ * @param key The cache identity, re-read whenever the page's filters change.
+ * @param loader The actual request.
  */
-export function createResource(key, loader, options = {}) {
+export function createResource<T>(
+  key: () => unknown[],
+  loader: () => Promise<T>,
+  options: ResourceOptions = {},
+) {
   const client = useQueryClient();
 
   const query = createQuery(() => ({

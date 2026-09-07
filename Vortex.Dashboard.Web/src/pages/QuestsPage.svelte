@@ -19,12 +19,12 @@
     Trash2,
     Users,
   } from '@lucide/svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { currencyChipClass, currencyKindFromRewardType } from '../lib/currency.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { formatDate, formatDuration, formatNumber } from '../lib/format';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { currencyChipClass, currencyKindFromRewardType } from '../lib/currency';
   import CurrencySelect from '../components/CurrencySelect.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -32,8 +32,8 @@
   import Tabs from '../components/Tabs.svelte';
   import QuestGoalsPanel from '../components/quests/QuestGoalsPanel.svelte';
   import QuestCompletionsPanel from '../components/quests/QuestCompletionsPanel.svelte';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   // One subject, one entry. The quest editor, the community goals and daily tasks, and the
   // completion figures used to be three sidebar entries -- two of which rendered the same word,

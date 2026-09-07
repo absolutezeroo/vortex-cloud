@@ -2,17 +2,17 @@
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { compactCorrelation, formatDate } from '../lib/format.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { positive, nonNegative } from '../lib/validation.js';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { compactCorrelation, formatDate } from '../lib/format';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { positive, nonNegative } from '../lib/validation';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Activity, Coins, Hash, Timer } from '@lucide/svelte';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   const currencyTypes = [
     { value: 1, key: 'vouchers.currencyCredits' },

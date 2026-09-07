@@ -2,18 +2,29 @@
 // form, which works while you are looking at the form and not at all when the write finishes after
 // you have scrolled somewhere else.
 //
-//   import { toast } from '../lib/toasts.js';
+//   import { toast } from '../lib/toasts';
 //   toast.success('Voucher created');
 //   toast.error(describeApiError(err), { timeout: 0 });   // 0 = stays until dismissed
 //
 // The host lives once in AppShell; nothing else needs to render it.
 import { writable } from 'svelte/store';
 
-export const toasts = writable([]);
+export type ToastKind = 'success' | 'info' | 'warning' | 'error';
+
+export type Toast = { id: number; kind: ToastKind; message: string; title: string };
+
+/** How long a toast stays. 0 holds it until dismissed. */
+export type ToastOptions = { timeout?: number; title?: string };
+
+export const toasts = writable<Toast[]>([]);
 
 let nextId = 1;
 
-function push(kind, message, options = {}) {
+function push(
+  kind: ToastKind,
+  message: string,
+  options: ToastOptions = {},
+): number | null {
   if (!message) return null;
 
   const id = nextId++;
@@ -29,13 +40,13 @@ function push(kind, message, options = {}) {
   return id;
 }
 
-export function dismiss(id) {
+export function dismiss(id: number): void {
   toasts.update((list) => list.filter((entry) => entry.id !== id));
 }
 
 export const toast = {
-  success: (message, options) => push('success', message, options),
-  info: (message, options) => push('info', message, options),
-  warning: (message, options) => push('warning', message, options),
-  error: (message, options) => push('error', message, options),
+  success: (message: string, options?: ToastOptions) => push('success', message, options),
+  info: (message: string, options?: ToastOptions) => push('info', message, options),
+  warning: (message: string, options?: ToastOptions) => push('warning', message, options),
+  error: (message: string, options?: ToastOptions) => push('error', message, options),
 };

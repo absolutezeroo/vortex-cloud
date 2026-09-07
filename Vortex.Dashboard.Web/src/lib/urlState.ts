@@ -3,7 +3,7 @@
 // was somewhere you could only arrive by clicking -- not a link you could send to the person who
 // needed to look at it, and not somewhere the back button could return you to.
 //
-//   import { readParam, writeParams } from '../lib/urlState.js';
+//   import { readParam, writeParams } from '../lib/urlState';
 //   let query = $state(readParam('q'));
 //   writeParams({ q: query, page: page > 1 ? page : '' });   // '' removes the parameter
 //
@@ -13,12 +13,12 @@ import { querystring, location as routeLocation, replace } from 'svelte-spa-rout
 import { get } from 'svelte/store';
 
 /** Current value of one query parameter, or `fallback` when it is absent. */
-export function readParam(name, fallback = '') {
+export function readParam(name: string, fallback = ''): string {
   return new URLSearchParams(get(querystring) || '').get(name) ?? fallback;
 }
 
 /** Same, as a number -- for `page=` and other counters. Falls back when absent or not a number. */
-export function readNumberParam(name, fallback = 0) {
+export function readNumberParam(name: string, fallback = 0): number {
   const parsed = Number(readParam(name, ''));
   return Number.isFinite(parsed) && parsed !== 0 ? parsed : fallback;
 }
@@ -30,7 +30,7 @@ export function readNumberParam(name, fallback = 0) {
  * Uses replace, not push: filters are typed a character at a time, and one history entry per
  * keystroke turns the back button into an undo log nobody asked for.
  */
-export function writeParams(patch) {
+export function writeParams(patch: Record<string, unknown>): void {
   const next = new URLSearchParams(get(querystring) || '');
 
   for (const [name, value] of Object.entries(patch)) {

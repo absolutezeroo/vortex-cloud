@@ -7,15 +7,15 @@
   import PickerModal from '../components/PickerModal.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
   import Tabs from '../components/Tabs.svelte';
   import Pagination from '../components/Pagination.svelte';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { formatNumber } from '../lib/format';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   // Only floor/wall entries name a furniture definition; effect and club prizes carry their target
   // in extraParam instead, so the form swaps which field it asks for.

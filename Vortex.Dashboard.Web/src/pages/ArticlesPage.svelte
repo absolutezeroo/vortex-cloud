@@ -13,14 +13,14 @@
   //   - The text, the summary AND the pictures belong to the TRANSLATION, not the article. Habbo's
   //     own promo art is per-language (WebPromo_FanSites_FR.png, Schreibwerkstatt_DE_LargePromo.png),
   //     so a shared header image would put French artwork on a German article.
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { diffFields } from '../lib/changes.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { diffFields } from '../lib/changes';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ArticleBodyEditor from '../components/ArticleBodyEditor.svelte';

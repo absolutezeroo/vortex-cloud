@@ -4,8 +4,8 @@
   // The "what it did" half is new. Until the change tracker started recording it, a delete audited
   // `{ offerId: 12 }` and the row itself was already gone -- there was no copy of it anywhere, which
   // is why "I deleted the wrong offer" had no answer. For a delete this panel is that copy.
-  import { t } from '../lib/i18n.js';
-  import { parseAuditData, describeTarget, fieldTransitions, deletedFields } from '../lib/auditData.js';
+  import { t } from '../lib/i18n';
+  import { parseAuditData, describeTarget, fieldTransitions, deletedFields } from '../lib/auditData';
 
   /**
    * @typedef {Object} Props

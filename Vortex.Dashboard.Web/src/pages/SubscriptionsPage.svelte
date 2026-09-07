@@ -1,18 +1,18 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate, formatNumber } from '../lib/format';
   import LineChart from '../components/LineChart.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import { Sparkles, Timer, ShoppingBag } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { filterRows } from '../lib/tableView';
+  import { t, translate } from '../lib/i18n';
 
   let clubStats = $state(null);
   let clubError = $state('');

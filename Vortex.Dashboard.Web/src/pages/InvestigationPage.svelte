@@ -1,26 +1,26 @@
 ﻿<script>
 
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { compactCorrelation, formatDate, summarizeData } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { User } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
   import PickerModal from '../components/PickerModal.svelte';
   import Pagination from '../components/Pagination.svelte';
   import TableFilter from '../components/TableFilter.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
-  import { currencyChipClass, currencyKindFromName, currencyLabel } from '../lib/currency.js';
-  import { formatNumber } from '../lib/format.js';
-  import { filterRows } from '../lib/tableView.js';
+  import { currencyChipClass, currencyKindFromName, currencyLabel } from '../lib/currency';
+  import { formatNumber } from '../lib/format';
+  import { filterRows } from '../lib/tableView';
   import PlayerOperationsPanel from '../components/PlayerOperationsPanel.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Wrench, ScrollText } from '@lucide/svelte';
-  import { readParam, readNumberParam, writeParams } from '../lib/urlState.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { readParam, readNumberParam, writeParams } from '../lib/urlState';
+  import { t, translate } from '../lib/i18n';
 
   // ?player= makes this page linkable, and is how the command palette hands a player over.
   let query = $state(readParam('player'));

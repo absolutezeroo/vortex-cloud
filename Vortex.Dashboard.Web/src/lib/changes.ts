@@ -13,25 +13,38 @@
 // it a description of what the operator saw and intended, not a proof of what the database held a
 // millisecond before the write. Good enough to read an audit line and understand it; not a substitute
 // for the server recording before/after itself, which is a separate and larger job.
-import { translate } from './i18n.js';
+import { translate } from './i18n';
 
 /** Longer than this and an audit line stops being readable; the detail payload still has the body. */
 const MAX_REASON = 400;
 
+/** One field to compare, and what to call it in the audit line. */
+export type ComparedField = {
+  key: string;
+  label: string;
+  format?: (value: unknown) => string;
+};
+
+/** One field that differs, rendered the way an operator reads it. */
+export type FieldChange = { label: string; from: string; to: string };
+
 /**
  * The fields that actually changed between two objects.
  *
- * @param {object} before Values as loaded (the row on screen).
- * @param {object} after Values as edited (the form).
- * @param {Array<{key: string, label: string, format?: (v: any) => string}>} fields
- *        Which keys to compare and what to call them. Only listed keys are looked at, so a form can
- *        carry scratch state without it leaking into the audit.
- * @returns {Array<{label: string, from: string, to: string}>}
+ * Only listed keys are looked at, so a form can carry scratch state without it leaking into the
+ * audit.
+ *
+ * @param before Values as loaded (the row on screen).
+ * @param after Values as edited (the form).
  */
-export function diffFields(before, after, fields) {
+export function diffFields(
+  before: Record<string, unknown> | null | undefined,
+  after: Record<string, unknown> | null | undefined,
+  fields: ComparedField[],
+): FieldChange[] {
   if (!before || !after || !Array.isArray(fields)) return [];
 
-  return fields.reduce((acc, field) => {
+  return fields.reduce<FieldChange[]>((acc, field) => {
     const from = before[field.key];
     const to = after[field.key];
 
@@ -49,7 +62,7 @@ export function diffFields(before, after, fields) {
  * yes/no, an empty field says so out loud instead of collapsing into whitespace the reader cannot
  * see.
  */
-export function formatValue(value) {
+export function formatValue(value: unknown): string {
   if (value === null || value === undefined || value === '') {
     return translate('common.changeEmpty');
   }
@@ -66,7 +79,7 @@ export function formatValue(value) {
 }
 
 /** `Price: 2 -> 4; Visible: yes -> no` */
-export function formatChanges(changes) {
+export function formatChanges(changes: FieldChange[] | null | undefined): string {
   if (!Array.isArray(changes) || changes.length === 0) return '';
 
   return changes.map((c) => `${c.label}: ${c.from} → ${c.to}`).join('; ');
@@ -75,12 +88,16 @@ export function formatChanges(changes) {
 /**
  * The reason actually posted and audited.
  *
- * @param {string} summary The page's own sentence for the action ("Delete offer #12 sofa_x").
- * @param {Array} changes  From {@link diffFields}; empty for a create or a delete.
- * @param {string} note    The operator's optional free text.
+ * @param summary The page's own sentence for the action ("Delete offer #12 sofa_x").
+ * @param changes From {@link diffFields}; empty for a create or a delete.
+ * @param note The operator's optional free text.
  */
-export function buildAutoReason(summary, changes, note) {
-  const parts = [];
+export function buildAutoReason(
+  summary: string | null | undefined,
+  changes: FieldChange[] | null | undefined,
+  note?: string | null,
+): string {
+  const parts: string[] = [];
   const base = (summary || '').trim();
   const diff = formatChanges(changes);
   const extra = (note || '').trim();
@@ -99,11 +116,14 @@ export function buildAutoReason(summary, changes, note) {
  * a write with neither a summary nor a diff there is nothing to audit but the endpoint, so the note
  * has to carry it and the modal keeps asking for one.
  */
-export function autoReasonSuffices(summary, changes) {
+export function autoReasonSuffices(
+  summary: string | null | undefined,
+  changes: FieldChange[] | null | undefined,
+): boolean {
   return buildAutoReason(summary, changes, '').trim().length >= 3;
 }
 
-function hasChanged(from, to) {
+function hasChanged(from: unknown, to: unknown): boolean {
   if (Array.isArray(from) || Array.isArray(to)) {
     return JSON.stringify(from ?? []) !== JSON.stringify(to ?? []);
   }
@@ -119,7 +139,7 @@ function hasChanged(from, to) {
   return normalise(from) !== normalise(to);
 }
 
-function normalise(value) {
+function normalise(value: unknown): unknown {
   if (value === null || value === undefined) return '';
 
   return typeof value === 'string' ? value.trim() : value;

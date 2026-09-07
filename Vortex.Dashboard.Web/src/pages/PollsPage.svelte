@@ -20,13 +20,13 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import PickerModal from '../components/PickerModal.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { formatDate, formatNumber } from '../lib/format';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
   import type {
     PollDetail,
     PollListItem,

@@ -5,13 +5,13 @@
   import ConfirmReasonModal from '../ConfirmReasonModal.svelte';
   import ConfirmStagedModal from '../ConfirmStagedModal.svelte';
   import OpResult from '../OpResult.svelte';
-  import { apiGet } from '../../lib/api.js';
-  import { formatDate, formatNumber } from '../../lib/format.js';
-  import { CAPABILITIES } from '../../lib/dashboardPermissions.js';
-  import { hasDashboardCapability, isPermissionDeniedError } from '../../lib/permissions.js';
-  import { identity } from '../../lib/session.js';
-  import { t, translate } from '../../lib/i18n.js';
-  import { createWriteOps } from '../../lib/writeOps.js';
+  import { apiGet } from '../../lib/api';
+  import { formatDate, formatNumber } from '../../lib/format';
+  import { CAPABILITIES } from '../../lib/dashboardPermissions';
+  import { hasDashboardCapability, isPermissionDeniedError } from '../../lib/permissions';
+  import { identity } from '../../lib/session';
+  import { t, translate } from '../../lib/i18n';
+  import { createWriteOps } from '../../lib/writeOps';
 
   // Community goals and daily tasks share the quest capability: same domain, same operators, and a
   // brand new capability would have to be granted to every role before anyone could open the page.

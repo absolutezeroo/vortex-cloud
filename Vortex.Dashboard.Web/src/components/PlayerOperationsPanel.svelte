@@ -13,12 +13,12 @@
   import CurrencySelect from './CurrencySelect.svelte';
   import Modal from './Modal.svelte';
   import { Coins, Zap, Gem, Package, UserX } from '@lucide/svelte';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { OPERATION_CAPABILITIES, MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { positive, nonNegative } from '../lib/validation.js';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { createWriteOps } from '../lib/writeOps';
+  import { OPERATION_CAPABILITIES, MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions';
+  import { positive, nonNegative } from '../lib/validation';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

@@ -4,7 +4,7 @@
   //   <Chip label="wf_act_chase" onremove={() => drop(id)} />
   //   <Chip label="read only" />       no onremove: no dismiss affordance is drawn
   import { X } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

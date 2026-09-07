@@ -20,13 +20,13 @@ function readStoredTheme() {
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return VALID_VALUES.includes(stored) ? stored : DEFAULT_THEME;
+    return stored && VALID_VALUES.includes(stored) ? stored : DEFAULT_THEME;
   } catch {
     return DEFAULT_THEME;
   }
 }
 
-function applyTheme(value) {
+function applyTheme(value: string): void {
   if (typeof document === 'undefined') return;
   document.documentElement.setAttribute('data-theme', value);
 
@@ -58,7 +58,7 @@ theme.subscribe((value) => {
   }
 });
 
-export function setTheme(value) {
+export function setTheme(value: string): void {
   if (!VALID_VALUES.includes(value)) return;
   theme.set(value);
 }

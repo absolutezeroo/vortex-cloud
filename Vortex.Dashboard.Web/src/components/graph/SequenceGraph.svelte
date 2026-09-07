@@ -8,9 +8,9 @@
   import ConditionNode from './ConditionNode.svelte';
   import GraphWires from './GraphWires.svelte';
   import NodePalette from './NodePalette.svelte';
-  import { canWire, connect, disconnect, readerOf, toGraph } from '../../lib/graph/model.js';
-  import { moveFilter, moveStep } from '../../lib/sequence/steps.js';
-  import { t } from '../../lib/i18n.js';
+  import { canWire, connect, disconnect, readerOf, toGraph } from '../../lib/graph/model';
+  import { moveFilter, moveStep } from '../../lib/sequence/steps';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

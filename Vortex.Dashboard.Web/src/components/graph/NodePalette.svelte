@@ -4,7 +4,7 @@
   // Sixty-seven of them now, which is exactly why this is a searchable palette and not a select:
   // an operator looking for "the one about guilds" scans a group, and one who knows the name types
   // it. The counts are there so a group that is empty for this hotel says so.
-  import { t } from '../../lib/i18n.js';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

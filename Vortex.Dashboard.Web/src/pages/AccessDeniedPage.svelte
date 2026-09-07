@@ -1,8 +1,8 @@
 <script>
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import { deniedRoute } from '../lib/session.js';
-  import { NAV } from '../lib/routes.js';
-  import { t } from '../lib/i18n.js';
+  import { deniedRoute } from '../lib/session';
+  import { NAV } from '../lib/routes';
+  import { t } from '../lib/i18n';
 
   // The router lands here either after a failed capability guard (deniedRoute is set) or on an
   // unknown hash (deniedRoute empty -> treat as a missing section).

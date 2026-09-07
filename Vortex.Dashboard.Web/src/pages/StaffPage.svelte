@@ -6,12 +6,12 @@
   // here at all.
   import { onMount } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { createWriteOps } from '../lib/writeOps.js';
+  import { apiGet } from '../lib/api';
+  import { formatNumber, formatDate, formatDuration } from '../lib/format';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { createWriteOps } from '../lib/writeOps';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
@@ -22,7 +22,7 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { ShieldCheck, KeyRound, Users, Gavel, User, Check } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);

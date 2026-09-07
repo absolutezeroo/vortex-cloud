@@ -16,18 +16,18 @@
     Trash2,
     Users,
   } from '@lucide/svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   function emptyOfferForm() {
     return {

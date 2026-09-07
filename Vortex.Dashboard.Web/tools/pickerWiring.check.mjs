@@ -14,8 +14,8 @@ import { readFileSync } from 'node:fs';
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 
-const registry = read('../src/lib/pickers/directories.js');
-const rows = read('../src/components/pickers/index.js');
+const registry = read('../src/lib/pickers/directories.ts');
+const rows = read('../src/components/pickers/index.ts');
 const page = read('../src/pages/RewardTracksPage.svelte');
 const routes = read('../../Vortex.Dashboard.API/Hosting/Platform/DashboardEndpoints.Directory.cs');
 

@@ -14,8 +14,57 @@
  * means, because it never decides that.
  */
 
+/** One fact an action records, as the catalogue describes it. */
+export type Fact = { key: string; fallbackLabel: string; kind: string };
+
+/** One test on a step. `value` holding `$N` is a wire rather than a literal. */
+export type Filter = { factKey: string; value: string };
+
+/** One step of a task's sequence. */
+export type Step = { actionCode: string; filters?: Filter[] };
+
+/** Where the operator dragged each node, keyed by node id. */
+export type Layout = Record<string, { x: number; y: number } | undefined>;
+
+export type ActionNode = {
+  type: 'action';
+  id: string;
+  step: Step;
+  index: number;
+  action: string;
+  x: number;
+  y: number;
+  outputs: { key: string; label: string; kind: string }[];
+  filterCount: number;
+};
+
+export type ConditionNode = {
+  type: 'condition';
+  id: string;
+  step: Step;
+  index: number;
+  filterIndex: number;
+  filter: Filter;
+  action: string;
+  fact: string;
+  /** The step a `$N` reads from, or -1 for a literal. */
+  wiredTo: number;
+  x: number;
+  y: number;
+};
+
+export type GraphNode = ActionNode | ConditionNode;
+
+/** flow = the order, applies = what a condition constrains, data = a `$N` reference. */
+export type Wire = {
+  kind: 'flow' | 'applies' | 'data';
+  from: string;
+  to: string;
+  fact?: string;
+};
+
 /** A wire's colour follows the fact it carries, so the same kind reads the same across the canvas. */
-export const PORT_COLOURS = {
+export const PORT_COLOURS: Record<string, string> = {
   RoomId: '#6cb2d1',
   FurnitureId: '#ffc21c',
   PlayerId: '#63c39d',
@@ -28,7 +77,7 @@ export const PORT_COLOURS = {
   OpaqueId: '#8d9096',
 };
 
-export function portColour(kind) {
+export function portColour(kind: string): string {
   return PORT_COLOURS[kind] ?? PORT_COLOURS.OpaqueId;
 }
 
@@ -37,7 +86,7 @@ export function portColour(kind) {
  *
  * @returns the step index, or -1 for a literal.
  */
-export function referencedStep(value) {
+export function referencedStep(value: unknown): number {
   if (typeof value !== 'string' || value.length < 2 || value[0] !== '$') return -1;
 
   const n = Number(value.slice(1));
@@ -61,9 +110,13 @@ export function referencedStep(value) {
  * Positions are laid out left to right when nothing is stored, so an existing task opens as a
  * readable chain rather than a pile at the origin.
  */
-export function toGraph(steps, factsFor, layout = {}) {
-  const nodes = [];
-  const wires = [];
+export function toGraph(
+  steps: Step[] | null | undefined,
+  factsFor: (actionCode: string) => Fact[],
+  layout: Layout = {},
+): { nodes: GraphNode[]; wires: Wire[] } {
+  const nodes: GraphNode[] = [];
+  const wires: Wire[] = [];
 
   (steps ?? []).forEach((step, index) => {
     nodes.push({
@@ -124,7 +177,7 @@ export function toGraph(steps, factsFor, layout = {}) {
 }
 
 /** The action a node belongs to, whichever kind it is. */
-export function stepOf(nodeId) {
+export function stepOf(nodeId: string): number {
   const [, index] = nodeId.split(':');
 
   return Number(index);
@@ -140,7 +193,12 @@ export function stepOf(nodeId) {
  *
  * @returns the step index, or -1.
  */
-export function readerOf(steps, fromIndex, factKey, factsFor) {
+export function readerOf(
+  steps: Step[] | null | undefined,
+  fromIndex: number,
+  factKey: string,
+  factsFor: (actionCode: string) => Fact[],
+): number {
   const found = (steps ?? []).findIndex(
     (step, i) => i > fromIndex && factsFor(step.actionCode).some((fact) => fact.key === factKey)
   );
@@ -156,20 +214,30 @@ export function readerOf(steps, fromIndex, factKey, factsFor) {
  * furniture, not its room. A canvas that let an operator draw either would be drawing a filter the
  * server refuses.
  */
-export function canWire(fromNode, toNode, factKey, filter) {
+export function canWire(
+  fromNode: number,
+  toNode: number,
+  factKey: string,
+  filter: Filter,
+): boolean {
   if (fromNode >= toNode) return false;
 
   return filter.factKey === factKey;
 }
 
 /** Draws the wire: the filter now reads that step's value for its own fact. */
-export function connect(steps, fromNode, toNode, filterIndex) {
+export function connect(
+  steps: Step[],
+  fromNode: number,
+  toNode: number,
+  filterIndex: number,
+): Step[] {
   return steps.map((step, index) =>
     index === toNode
       ? {
           ...step,
-          filters: step.filters.map((filter, i) =>
-            i === filterIndex ? { ...filter, value: `$${fromNode}` } : filter
+          filters: (step.filters ?? []).map((filter, i) =>
+            i === filterIndex ? { ...filter, value: `$${fromNode}` } : filter,
           ),
         }
       : step
@@ -177,13 +245,13 @@ export function connect(steps, fromNode, toNode, filterIndex) {
 }
 
 /** Cuts it: the filter goes back to comparing a literal, which is an empty field to fill. */
-export function disconnect(steps, toNode, filterIndex) {
+export function disconnect(steps: Step[], toNode: number, filterIndex: number): Step[] {
   return connect(steps, -1, toNode, filterIndex).map((step, index) =>
     index === toNode
       ? {
           ...step,
-          filters: step.filters.map((filter, i) =>
-            i === filterIndex ? { ...filter, value: '' } : filter
+          filters: (step.filters ?? []).map((filter, i) =>
+            i === filterIndex ? { ...filter, value: '' } : filter,
           ),
         }
       : step

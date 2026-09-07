@@ -1,5 +1,5 @@
 <script>
-  import { readParam, writeParams } from '../lib/urlState.js';
+  import { readParam, writeParams } from '../lib/urlState';
   // In-page tab strip for the admin pages that do several jobs at once. Follows the WAI-ARIA tabs
   // pattern and NN/g's rules for the component: one tab is always selected, switching is instant
   // (the panels are page state, nothing refetches), and labels stay one or two words in sentence

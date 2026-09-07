@@ -14,7 +14,7 @@
   // real box width fresh) until something forces a re-render. `preserveAspectRatio="none"` makes
   // a stale width harmless: the box still stretches to fit, so points and hover stay aligned.
   import { onMount, onDestroy } from 'svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

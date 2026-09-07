@@ -1,5 +1,5 @@
 <script>
-  import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import { readNumberParam, writeParams } from '../lib/urlState';
 
   import { onMount } from 'svelte';
   import { CheckCircle2, Clock, ListChecks, Trophy } from '@lucide/svelte';
@@ -11,10 +11,10 @@
   import PlayerCell from '../components/PlayerCell.svelte';
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { t } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate, formatNumber } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { t } from '../lib/i18n';
 
   // Read-only, and under the achievements capability rather than one of its own: the statue is a
   // view onto achievement progress, so anyone allowed to read that has no reason to be kept out.

@@ -1,11 +1,11 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate } from '../lib/format';
   import { X } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { t } from '../lib/i18n';
 
   let data = $state(null);
   let error = $state('');

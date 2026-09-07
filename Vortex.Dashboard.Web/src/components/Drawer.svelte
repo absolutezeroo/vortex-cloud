@@ -20,8 +20,8 @@
   //     </Drawer>
   //   {/if}
   import { cubicOut } from 'svelte/easing';
-  import { useDialogBehaviour } from '../lib/dialogBehaviour.js';
-  import { t } from '../lib/i18n.js';
+  import { useDialogBehaviour } from '../lib/dialogBehaviour';
+  import { t } from '../lib/i18n';
   import { X } from '@lucide/svelte';
 
   /**

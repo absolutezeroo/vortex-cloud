@@ -1,20 +1,20 @@
 ﻿<script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate, formatDuration, formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Activity, Cpu, Timer, Hash } from '@lucide/svelte';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { createWriteOps } from '../lib/writeOps.js';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { createWriteOps } from '../lib/writeOps';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { formatBytes } from '../lib/format.js';
+  import { formatBytes } from '../lib/format';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { filterRows } from '../lib/tableView';
+  import { t, translate } from '../lib/i18n';
 
   let data = $state(null);
   let error = $state('');

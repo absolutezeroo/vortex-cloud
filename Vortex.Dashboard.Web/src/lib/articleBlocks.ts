@@ -13,14 +13,40 @@
 // purpose: a mark some future extension introduces is dropped on the way out rather than quietly
 // widening what the column accepts — the server would refuse the row anyway, and refusing it at
 // save time tells the writer nothing about which word did it.
-const MARK_KEYS = { bold: 'b', italic: 'i', underline: 'u', strike: 's' };
+const MARK_KEYS: Record<string, string> = {
+  bold: 'b',
+  italic: 'i',
+  underline: 'u',
+  strike: 's',
+};
+
+/**
+ * One stretch of text with its formatting. `t` is the text; the single-letter keys are the marks,
+ * and `href` a link. Deliberately loose on the extras: the keys are data, not a fixed shape.
+ */
+export type TextRun = { t: string; href?: string } & Record<string, unknown>;
+
+/** The `text` field as stored: a plain string when nothing is formatted, runs when something is. */
+export type StoredText = string | TextRun[];
+
+/** One stored block. The `type` discriminates; the rest is what that block type carries. */
+export type Block = { type: string } & Record<string, unknown>;
+
+/** A ProseMirror node, as much of one as this seam needs to read. */
+export type ProseNode = {
+  type: string;
+  text?: string;
+  attrs?: Record<string, any>;
+  marks?: { type: string; attrs?: Record<string, any> }[];
+  content?: ProseNode[];
+};
 
 export const IMAGE_NODE = 'articleImage';
 export const BUTTON_NODE = 'articleButton';
 
 /** The hrefs a link or a button may carry. Mirrors `WebArticleBody.IsAllowedHref` exactly. */
-export function isAllowedHref(href) {
-  if (!href || !href.trim() || href.length > 2048) return false;
+export function isAllowedHref(href: unknown): href is string {
+  if (typeof href !== 'string' || !href.trim() || href.length > 2048) return false;
   if (href.startsWith('#/')) return true;
   if (href.startsWith('//')) return false;
 
@@ -28,21 +54,21 @@ export function isAllowedHref(href) {
 }
 
 /** The text of a block as a reader would see it, marks removed. For counts and previews. */
-export function plainText(text) {
+export function plainText(text: StoredText | null | undefined): string {
   if (typeof text === 'string') return text;
 
   return Array.isArray(text) ? text.map((run) => run?.t ?? '').join('') : '';
 }
 
-function isBlank(text) {
+function isBlank(text: StoredText | null | undefined): boolean {
   return !plainText(text).trim();
 }
 
 // Two adjacent runs carrying the same formatting are one run. ProseMirror splits text nodes for
 // reasons of its own (a cursor sat there once), and without this a paragraph slowly accumulates
 // fragments that make every saved body look different from the last.
-function sameFormat(a, b) {
-  const keys = (run) =>
+function sameFormat(a: TextRun, b: TextRun): boolean {
+  const keys = (run: TextRun) =>
     Object.keys(run)
       .filter((key) => key !== 't')
       .sort()
@@ -51,7 +77,7 @@ function sameFormat(a, b) {
   return keys(a) === keys(b) && a.href === b.href;
 }
 
-function appendRun(runs, run) {
+function appendRun(runs: TextRun[], run: TextRun): void {
   const last = runs[runs.length - 1];
 
   if (last && sameFormat(last, run)) last.t += run.t;
@@ -62,8 +88,8 @@ function appendRun(runs, run) {
  * A ProseMirror inline sequence, as the `text` field is stored: a plain string when nothing is
  * formatted, an array of runs when something is.
  */
-function runsFromInline(content) {
-  const runs = [];
+function runsFromInline(content: ProseNode[] | null | undefined): StoredText {
+  const runs: TextRun[] = [];
 
   for (const node of content ?? []) {
     // Shift+Enter. Kept as a newline inside a run rather than becoming a block of its own: the
@@ -75,13 +101,14 @@ function runsFromInline(content) {
 
     if (node?.type !== 'text' || !node.text) continue;
 
-    const run = { t: node.text };
+    const run: TextRun = { t: node.text };
 
     for (const mark of node.marks ?? []) {
       const key = MARK_KEYS[mark.type];
 
       if (key) run[key] = true;
-      else if (mark.type === 'link' && isAllowedHref(mark.attrs?.href)) run.href = mark.attrs.href;
+      else if (mark.type === 'link' && isAllowedHref(mark.attrs?.href))
+        run.href = mark.attrs!.href;
     }
 
     appendRun(runs, run);
@@ -98,14 +125,15 @@ function runsFromInline(content) {
 }
 
 /** The inverse: the `text` field as ProseMirror inline content. */
-function inlineFromRuns(text) {
-  const runs = typeof text === 'string' ? [{ t: text }] : Array.isArray(text) ? text : [];
-  const content = [];
+function inlineFromRuns(text: StoredText | null | undefined): ProseNode[] {
+  const runs: TextRun[] =
+    typeof text === 'string' ? [{ t: text }] : Array.isArray(text) ? text : [];
+  const content: ProseNode[] = [];
 
   for (const run of runs) {
     if (!run?.t) continue;
 
-    const marks = [];
+    const marks: { type: string; attrs?: Record<string, any> }[] = [];
 
     for (const [type, key] of Object.entries(MARK_KEYS)) {
       if (run[key]) marks.push({ type });
@@ -114,7 +142,7 @@ function inlineFromRuns(text) {
     if (isAllowedHref(run.href)) marks.push({ type: 'link', attrs: { href: run.href } });
 
     // A newline is a break in the schema, not a character a text node may hold.
-    run.t.split('\n').forEach((part, index) => {
+    run.t.split('\n').forEach((part: string, index: number) => {
       if (index) content.push({ type: 'hardBreak' });
       if (part) content.push({ type: 'text', text: part, ...(marks.length ? { marks } : {}) });
     });
@@ -126,8 +154,8 @@ function inlineFromRuns(text) {
 // A list item may hold several paragraphs. They are flattened into one run sequence separated by
 // breaks rather than kept as separate paragraphs: the stored item is one text, and a nested
 // paragraph array would be a second shape for the public reader to learn.
-function inlineOfListItem(item) {
-  const content = [];
+function inlineOfListItem(item: ProseNode | null | undefined): ProseNode[] {
+  const content: ProseNode[] = [];
 
   for (const child of item?.content ?? []) {
     if (content.length) content.push({ type: 'hardBreak' });
@@ -138,10 +166,21 @@ function inlineOfListItem(item) {
 }
 
 /** The stored body, as a document the editor can load. */
-export function blocksToDoc(blocks) {
-  const content = [];
+export function blocksToDoc(blocks: Block[] | null | undefined): ProseNode {
+  const content: ProseNode[] = [];
 
-  for (const block of Array.isArray(blocks) ? blocks : []) {
+  for (const raw of Array.isArray(blocks) ? blocks : []) {
+    // The switch has already established which block this is; this names what that kind holds.
+    const block = raw as Block & {
+      text?: StoredText;
+      src?: string;
+      caption?: string;
+      label?: string;
+      href?: string;
+      items?: StoredText[];
+      ordered?: boolean;
+    };
+
     switch (block?.type) {
       case 'p':
         content.push({ type: 'paragraph', content: inlineFromRuns(block.text) });
@@ -166,7 +205,7 @@ export function blocksToDoc(blocks) {
       case 'list': {
         // A list with no items does not satisfy the schema (`listItem+`), and ProseMirror throws
         // rather than dropping it — which would lose the editor over one malformed row.
-        const items = (block.items ?? []).map((item) => ({
+        const items = (block.items ?? []).map((item: StoredText) => ({
           type: 'listItem',
           content: [{ type: 'paragraph', content: inlineFromRuns(item) }],
         }));
@@ -190,8 +229,8 @@ export function blocksToDoc(blocks) {
 }
 
 /** The document, as the body to store. */
-export function docToBlocks(doc) {
-  const blocks = [];
+export function docToBlocks(doc: ProseNode | null | undefined): Block[] {
+  const blocks: Block[] = [];
 
   for (const node of doc?.content ?? []) {
     switch (node?.type) {
@@ -223,7 +262,7 @@ export function docToBlocks(doc) {
       case 'bulletList':
       case 'orderedList': {
         const items = (node.content ?? [])
-          .map((item) => runsFromInline(inlineOfListItem(item)))
+          .map((item: ProseNode) => runsFromInline(inlineOfListItem(item)))
           .filter((item) => !isBlank(item));
 
         if (items.length) blocks.push({ type: 'list', ordered: node.type === 'orderedList', items });

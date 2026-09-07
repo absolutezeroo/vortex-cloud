@@ -3,15 +3,15 @@
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { createResource } from '../lib/resource.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { apiGet } from '../lib/api.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { createResource } from '../lib/resource';
+  import { createWriteOps } from '../lib/writeOps';
+  import { apiGet } from '../lib/api';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { filterRows } from '../lib/tableView';
+  import { t, translate } from '../lib/i18n';
   import { get } from 'svelte/store';
   import { Lock, Trash2 } from '@lucide/svelte';
 

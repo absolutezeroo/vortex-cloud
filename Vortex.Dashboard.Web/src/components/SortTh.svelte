@@ -5,7 +5,7 @@
   //
   //   <SortTh label={$t('x.colCount')} key="count" bind:sort />
   import { ChevronDown, ChevronUp, ChevronsUpDown } from '@lucide/svelte';
-  import { toggleSort } from '../lib/tableView.js';
+  import { toggleSort } from '../lib/tableView';
 
   /**
    * @typedef {Object} Props

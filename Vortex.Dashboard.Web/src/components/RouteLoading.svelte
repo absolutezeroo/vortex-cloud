@@ -3,7 +3,7 @@
   // local network the chunk usually arrives in a frame or two, and a full-blown skeleton flashing in
   // and out is more distracting than a thin placeholder.
   import { RefreshCw } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 </script>
 
 <section class="panel route-loading" aria-live="polite" aria-busy="true">

@@ -41,9 +41,9 @@
     blocksToDoc,
     docToBlocks,
     isAllowedHref,
-  } from '../lib/articleBlocks.js';
-  import { ArticleButton, ArticleImage } from '../lib/articleEditorNodes.js';
-  import { t } from '../lib/i18n.js';
+  } from '../lib/articleBlocks';
+  import { ArticleButton, ArticleImage } from '../lib/articleEditorNodes';
+  import { t } from '../lib/i18n';
 
   let { value = [], onchange, resolveUrl = () => '', onpickimage = null, readonly = false } = $props();
 

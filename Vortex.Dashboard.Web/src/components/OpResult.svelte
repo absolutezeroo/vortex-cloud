@@ -6,9 +6,9 @@
   // correlation id. Pass `onCopy` to show a "copy correlation id" button. Guards on `result` so
   // callers can drop it in without an outer {#if}.
   import { CircleCheck, CircleX } from '@lucide/svelte';
-  import { compactCorrelation } from '../lib/format.js';
-  import { describeOpError } from '../lib/opErrors.js';
-  import { t } from '../lib/i18n.js';
+  import { compactCorrelation } from '../lib/format';
+  import { describeOpError } from '../lib/opErrors';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

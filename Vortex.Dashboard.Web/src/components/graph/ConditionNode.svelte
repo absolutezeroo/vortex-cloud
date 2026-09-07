@@ -8,8 +8,8 @@
   // from.
   import { Search, X } from '@lucide/svelte';
   import AssetImage from '../AssetImage.svelte';
-  import { portColour } from '../../lib/graph/model.js';
-  import { t } from '../../lib/i18n.js';
+  import { portColour } from '../../lib/graph/model';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

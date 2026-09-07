@@ -1,14 +1,14 @@
 <script>
   import Modal from './Modal.svelte';
-  import { apiGet } from '../lib/api.js';
+  import { apiGet } from '../lib/api';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
   import { House, User } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { LOGIC_GROUPS } from '../lib/furnitureEnums.js';
-  import { directoryFor } from '../lib/pickers/directories.js';
-  import { PICKER_ROWS } from './pickers/index.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { LOGIC_GROUPS } from '../lib/furnitureEnums';
+  import { directoryFor } from '../lib/pickers/directories';
+  import { PICKER_ROWS } from './pickers/index';
+  import { t } from '../lib/i18n';
 
   
   /**

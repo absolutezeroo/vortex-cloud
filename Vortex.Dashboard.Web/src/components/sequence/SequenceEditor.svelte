@@ -10,8 +10,8 @@
   // drag out of the box, and the repository ships no drag dependency to reuse.
   import ActionBlock from './ActionBlock.svelte';
   import FilterBlock from './FilterBlock.svelte';
-  import { moveFilter, moveStep, stepAccepts } from '../../lib/sequence/steps.js';
-  import { t } from '../../lib/i18n.js';
+  import { moveFilter, moveStep, stepAccepts } from '../../lib/sequence/steps';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

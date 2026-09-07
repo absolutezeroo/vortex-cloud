@@ -18,7 +18,16 @@
  */
 
 /** @type {Record<string, Directory>} */
-export const DIRECTORIES = {
+/** One picker directory: where its rows come from and how they are drawn. */
+export type Directory = {
+  endpoint: string;
+  row: string;
+  /** Absent when the directory offers no ordering of its own. */
+  sorts?: string[];
+  filter?: string;
+};
+
+export const DIRECTORIES: Record<string, Directory> = {
   // The three that predate the reward-track filters, each with its own layout and controls.
   furniture: {
     endpoint: '/api/v1/directory/furniture',
@@ -60,6 +69,6 @@ export const DIRECTORIES = {
 };
 
 /** The directory for a kind, or null. Null is a bug the picker reports rather than papers over. */
-export function directoryFor(kind) {
+export function directoryFor(kind: string): Directory | null {
   return DIRECTORIES[kind] ?? null;
 }

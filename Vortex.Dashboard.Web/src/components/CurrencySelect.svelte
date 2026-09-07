@@ -11,11 +11,11 @@
   // Silver and emeralds are deliberately absent: the reward int has no way to name them, so
   // offering them here would promise a reward the encoding cannot carry.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { currencyKindFromRewardType } from '../lib/currency.js';
+  import { apiGet } from '../lib/api';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { currencyKindFromRewardType } from '../lib/currency';
   import CurrencyIcon from './CurrencyIcon.svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

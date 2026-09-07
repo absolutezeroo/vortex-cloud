@@ -15,7 +15,17 @@
  * remember -- a logic key, a room name, an id -- and having to declare per table which columns are
  * searchable is how a column ends up quietly unsearchable.
  */
-export function filterRows(rows, term, keys = null) {
+/** A table row: whatever the endpoint answered, read by key. */
+export type Row = Record<string, unknown>;
+
+/** Which column the table is ordered by, and which way. */
+export type Sort = { key: string; dir?: 'asc' | 'desc' };
+
+export function filterRows<T extends Row>(
+  rows: T[] | null | undefined,
+  term: string | null | undefined,
+  keys: string[] | null = null,
+): T[] {
   const words = String(term || '')
     .toLowerCase()
     .split(/\s+/)
@@ -40,7 +50,10 @@ export function filterRows(rows, term, keys = null) {
  * `sort.key` empty means "leave the order the server chose" -- which is usually already the useful
  * one (most recent first, biggest first), so it is the default rather than something to switch off.
  */
-export function sortRows(rows, sort) {
+export function sortRows<T extends Row>(
+  rows: T[] | null | undefined,
+  sort: Sort | null | undefined,
+): T[] {
   if (!sort?.key) return rows || [];
 
   const factor = sort.dir === 'asc' ? 1 : -1;
@@ -60,7 +73,11 @@ export function sortRows(rows, sort) {
 }
 
 /** Header click: same column flips direction, a new column starts on the one people expect. */
-export function toggleSort(sort, key, initialDir = 'desc') {
+export function toggleSort(
+  sort: Sort,
+  key: string,
+  initialDir: 'asc' | 'desc' = 'desc',
+): Sort {
   if (sort.key !== key) return { key, dir: initialDir };
   if (sort.dir === initialDir) return { key, dir: initialDir === 'desc' ? 'asc' : 'desc' };
   return { key: '', dir: initialDir };

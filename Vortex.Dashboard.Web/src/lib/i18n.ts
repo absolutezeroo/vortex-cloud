@@ -1,6 +1,6 @@
 import { derived, writable, get } from 'svelte/store';
-import en from './locales/en.js';
-import fr from './locales/fr.js';
+import en from './locales/en';
+import fr from './locales/fr';
 
 // Persisted UI language, independent of the authenticated account -- same pattern as theme.js
 // (local browser preference, applies before login, survives across accounts on one machine).
@@ -8,20 +8,25 @@ import fr from './locales/fr.js';
 // French-speaking operator's browser lands them in French without anyone having to pick it.
 const STORAGE_KEY = 'turbo-dashboard-locale';
 
-const DICTIONARIES = { en, fr };
+type Locale = 'en' | 'fr';
+
+/** What a translation takes: names to substitute into `{placeholders}`. */
+type TranslationParams = Record<string, string | number>;
+
+const DICTIONARIES: Record<Locale, unknown> = { en, fr };
 
 export const LOCALES = [
   { value: 'en', label: 'EN' },
   { value: 'fr', label: 'FR' },
 ];
 
-const VALID_VALUES = LOCALES.map((l) => l.value);
+const VALID_VALUES: string[] = LOCALES.map((l) => l.value);
 
-function detectDefaultLocale() {
+function detectDefaultLocale(): Locale {
   if (typeof localStorage !== 'undefined') {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (VALID_VALUES.includes(stored)) return stored;
+      if (stored && VALID_VALUES.includes(stored)) return stored as Locale;
     } catch {
       // Fall through to browser-language detection.
     }
@@ -34,15 +39,21 @@ function detectDefaultLocale() {
   return 'en';
 }
 
-function resolve(dict, key) {
+function resolve(dict: unknown, key: string): unknown {
   return key
     .split('.')
-    .reduce((node, part) => (node && typeof node === 'object' ? node[part] : undefined), dict);
+    .reduce<unknown>(
+      (node, part) =>
+        node && typeof node === 'object' ? (node as Record<string, unknown>)[part] : undefined,
+      dict,
+    );
 }
 
-function interpolate(str, params) {
+function interpolate(str: string, params?: TranslationParams): string {
   if (!params) return str;
-  return str.replace(/\{(\w+)\}/g, (match, name) => (params[name] !== undefined ? params[name] : match));
+  return str.replace(/\{(\w+)\}/g, (match, name) =>
+    params[name] !== undefined ? String(params[name]) : match,
+  );
 }
 
 export const locale = writable(detectDefaultLocale());
@@ -57,22 +68,26 @@ locale.subscribe((value) => {
   }
 });
 
-export function setLocale(value) {
+export function setLocale(value: string) {
   if (!VALID_VALUES.includes(value)) return;
-  locale.set(value);
+  locale.set(value as Locale);
 }
 
 // Reactive translator for templates: `{$t('audit.title')}` or `{$t('common.giveTo', { name })}`.
 // Missing keys fall back to English, then to the raw key itself (visibly wrong instead of a blank
 // UI, so a missed translation is easy to spot rather than silently disappearing).
-export const t = derived(locale, ($locale) => (key, params) => {
-  const dict = DICTIONARIES[$locale] || DICTIONARIES.en;
-  const value = resolve(dict, key) ?? resolve(DICTIONARIES.en, key) ?? key;
-  return interpolate(value, params);
-});
+export const t = derived(
+  locale,
+  ($locale) =>
+    (key: string, params?: TranslationParams): string => {
+      const dict = DICTIONARIES[$locale] || DICTIONARIES.en;
+      const value = resolve(dict, key) ?? resolve(DICTIONARIES.en, key) ?? key;
+      return interpolate(String(value), params);
+    },
+);
 
 // Non-reactive one-shot translator for use outside components (e.g. inside plain .js helpers that
 // build a string once rather than re-rendering on locale change).
-export function translate(key, params) {
+export function translate(key: string, params?: TranslationParams): string {
   return get(t)(key, params);
 }

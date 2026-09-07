@@ -4,8 +4,8 @@
   // aria-live="polite" on the region rather than role="alert" on each toast: a burst of writes
   // finishing at once should be read after the current sentence, not interrupt four times.
   import { CircleCheck, Info, TriangleAlert, CircleX, X } from '@lucide/svelte';
-  import { toasts, dismiss } from '../lib/toasts.js';
-  import { t } from '../lib/i18n.js';
+  import { toasts, dismiss } from '../lib/toasts';
+  import { t } from '../lib/i18n';
 
   const ICONS = { success: CircleCheck, info: Info, warning: TriangleAlert, error: CircleX };
 </script>

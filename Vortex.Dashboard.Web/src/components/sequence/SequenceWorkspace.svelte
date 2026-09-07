@@ -7,7 +7,7 @@
   // drawer keeps only a summary and the button that opens it.
   import { X } from '@lucide/svelte';
   import SequenceGraph from '../graph/SequenceGraph.svelte';
-  import { t } from '../../lib/i18n.js';
+  import { t } from '../../lib/i18n';
 
   // Rendered on the body, not where it was written: a drawer sets its own stacking context, so a
   // full-screen layer inside one would be trapped in that column.

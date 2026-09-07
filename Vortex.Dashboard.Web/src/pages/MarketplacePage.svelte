@@ -1,16 +1,16 @@
 <script>
 
-  import { apiGet } from '../lib/api.js';
-  import { createResource } from '../lib/resource.js';
-  import { formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { createResource } from '../lib/resource';
+  import { formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { ShoppingCart, ShoppingBag, Coins } from '@lucide/svelte';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { openPlayer, openItem } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   const granularities = ['day', 'month', 'year'];
 

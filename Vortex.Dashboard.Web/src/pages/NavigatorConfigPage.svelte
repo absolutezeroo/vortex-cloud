@@ -7,12 +7,12 @@
   // Every mutation funnels through the same ConfirmReasonModal, so the audited reason cannot be
   // skipped by a stray Enter key on one of the many small forms.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { formatNumber } from '../lib/format';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
@@ -22,7 +22,7 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Compass, LayoutList, FolderTree, CalendarRange } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);

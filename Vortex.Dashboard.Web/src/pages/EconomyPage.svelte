@@ -2,13 +2,13 @@
 
   import { onMount } from 'svelte';
   import PickerModal from '../components/PickerModal.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   let picking = $state(null);
   let playerName = $state('');

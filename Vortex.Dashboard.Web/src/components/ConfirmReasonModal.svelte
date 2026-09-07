@@ -11,8 +11,8 @@
   // a mistyped field in a way "Save this offer?" never did.
   import Modal from './Modal.svelte';
     import { CircleX } from '@lucide/svelte';
-  import { reasonOk } from '../lib/validation.js';
-  import { t } from '../lib/i18n.js';
+  import { reasonOk } from '../lib/validation';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

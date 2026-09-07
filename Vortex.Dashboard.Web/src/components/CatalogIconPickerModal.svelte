@@ -1,8 +1,8 @@
 <script>
   import Modal from './Modal.svelte';
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { t, translate } from '../lib/i18n';
 
   // There is no manifest of which catalog icon ids actually have a file on the asset host --
   // the id -> filename pattern (icon_{id}.png) is fixed, but which ids are populated is not.

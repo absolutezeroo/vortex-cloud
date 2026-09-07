@@ -4,12 +4,12 @@
   // never supply the second -- they have nothing to draw -- so the frame rate here comes from
   // whatever real clients are connected, and the page says so rather than pretending otherwise.
   import { onMount, onDestroy } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { formatNumber, formatDate } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { formatNumber, formatDate } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -19,7 +19,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Gauge, Users, Boxes, TriangleAlert, Activity, Play, History, Monitor } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let loading = false;
   let forbidden = false;

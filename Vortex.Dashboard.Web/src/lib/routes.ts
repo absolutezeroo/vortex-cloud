@@ -9,11 +9,12 @@
 // are imported eagerly -- the overview (every session lands on it) and the access-denied fallback
 // (it is what the router falls back TO, including when a chunk cannot be fetched).
 
+import type { Identity } from './permissions';
 import { wrap } from 'svelte-spa-router/wrap';
 import { get } from 'svelte/store';
-import { identity } from './session.js';
-import { hasDashboardCapability } from './permissions.js';
-import { ROUTE_PERMISSIONS } from './dashboardPermissions.js';
+import { identity } from './session';
+import { hasDashboardCapability } from './permissions';
+import { ROUTE_PERMISSIONS } from './dashboardPermissions';
 
 import OverviewPage from '../pages/OverviewPage.svelte';
 import AccessDeniedPage from '../pages/AccessDeniedPage.svelte';
@@ -22,7 +23,21 @@ import RouteLoading from '../components/RouteLoading.svelte';
 // Accent- and case-insensitive folding for every nav search (sidebar filter and Ctrl+K alike).
 // An operator types "quete" and "peche"; the labels read "Quêtes" and "Pêche", and a plain
 // `includes` on the raw strings finds neither.
-export const foldSearch = (value) =>
+/** One entry of the sidebar, and of the command palette. */
+export type NavItem = {
+  path: string;
+  labelKey: string;
+  shortKey?: string;
+  group: string;
+  keywords: string;
+  caps: string | string[];
+  /** The overview is bundled eagerly; everything else resolves its chunk on demand. */
+  component?: unknown;
+  load?: () => Promise<unknown>;
+  writes?: boolean;
+};
+
+export const foldSearch = (value: string | null | undefined): string =>
   (value || '')
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
@@ -122,11 +137,11 @@ export const NAV = [
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'System', keywords: 'api route endpoint contrat swagger explorer requete http', caps: ROUTE_PERMISSIONS.apiExplorer, load: () => import('../pages/ApiExplorerPage.svelte') },
 ];
 
-const canSee = (caps) => () => hasDashboardCapability(get(identity), caps);
+const canSee = (caps: string | string[]) => () => hasDashboardCapability(get(identity), caps);
 
 // Pass the identity explicitly (e.g. from a reactive `$identity`) to recompute on changes; falls
 // back to the current store value for non-reactive callers such as the router guards.
-export function hasRouteAccess(item, who = get(identity)) {
+export function hasRouteAccess(item: NavItem, who: Identity | null = get(identity)): boolean {
   return hasDashboardCapability(who, item.caps);
 }
 
@@ -136,9 +151,9 @@ export function hasRouteAccess(item, who = get(identity)) {
 // genuinely broken, in which case the router falls through to the access-denied view.
 const RELOADED_KEY = 'vortex.dashboard.chunkReload';
 
-async function loadPage(item) {
+async function loadPage(item: NavItem) {
   try {
-    const module = await item.load();
+    const module = await item.load!();
     sessionStorage.removeItem(RELOADED_KEY);
     return module;
   } catch (err) {
@@ -155,14 +170,19 @@ async function loadPage(item) {
 }
 
 // svelte-spa-router route table. The empty/root hash redirects to the overview entry point.
-export const routes = {};
+// `wrap` is typed for Svelte 4 component constructors; Svelte 5 components are functions, which
+// the router accepts at runtime and its types do not describe yet.
+export const routes: Record<string, unknown> = {};
 
 for (const item of NAV) {
   routes[item.path] = wrap({
     // The overview is bundled eagerly; every other entry resolves its chunk on first navigation.
     ...(item.component
-      ? { component: item.component }
-      : { asyncComponent: () => loadPage(item), loadingComponent: RouteLoading }),
+      ? { component: item.component as never }
+      : {
+          asyncComponent: () => loadPage(item) as never,
+          loadingComponent: RouteLoading as never,
+        }),
     conditions: [canSee(item.caps)],
     userData: { route: item.path },
   });
@@ -171,7 +191,7 @@ for (const item of NAV) {
 // Root hash normalises to the overview entry point (App replaces '/' with '/overview' on boot, but
 // guarding it here keeps the redirect honest if a user lands on '#/' directly).
 routes['/'] = wrap({
-  component: OverviewPage,
+  component: OverviewPage as never,
   conditions: [canSee(ROUTE_PERMISSIONS.overview)],
   userData: { route: '/overview' },
 });

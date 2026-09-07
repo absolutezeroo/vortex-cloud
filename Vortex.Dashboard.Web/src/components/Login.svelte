@@ -1,7 +1,7 @@
 <script>
 
-  import { describeApiError, isConnectionError, login } from '../lib/api.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { describeApiError, isConnectionError, login } from '../lib/api';
+  import { t, translate } from '../lib/i18n';
 
   let { onAuthenticated } = $props();
 

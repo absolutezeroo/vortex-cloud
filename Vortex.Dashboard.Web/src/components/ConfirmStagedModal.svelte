@@ -9,7 +9,7 @@
   //
   //   <ConfirmStagedModal {ops} eyebrow={$t('polls.confirmEyebrow')} />
   import Modal from './Modal.svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   
   /**

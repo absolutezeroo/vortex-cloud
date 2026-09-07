@@ -11,8 +11,12 @@
  * that can be wrong in a way a screenshot never shows.
  */
 
+// The same three shapes the graph model names. Imported rather than redeclared: a second
+// definition of a Step is how the two halves of the editor start disagreeing about one.
+import type { Fact, Filter, Step } from '../graph/model';
+
 /** A filter value of the form `$N`, or -1. */
-export function referencedStep(value) {
+export function referencedStep(value: unknown): number {
   if (typeof value !== 'string' || value.length < 2 || value[0] !== '$') return -1;
 
   const n = Number(value.slice(1));
@@ -27,7 +31,11 @@ export function referencedStep(value) {
  * rather than silently retargeted: the operator moved a block past the thing it depended on, and
  * quietly repointing it at a different step would be worse than an empty field they can see.
  */
-export function moveStep(steps, from, to) {
+export function moveStep(
+  steps: Step[],
+  from: number,
+  to: number,
+): { steps: Step[]; clearedReferences: number } {
   if (from === to || from < 0 || to < 0 || from >= steps.length || to >= steps.length) {
     return { steps, clearedReferences: 0 };
   }
@@ -74,7 +82,13 @@ export function moveStep(steps, from, to) {
  * does not emit that fact would be refused on save. The caller decides whether the drop is legal;
  * this only performs it, and clears a reference the new position cannot satisfy.
  */
-export function moveFilter(steps, fromStep, filterIndex, toStep, toIndex = -1) {
+export function moveFilter(
+  steps: Step[],
+  fromStep: number,
+  filterIndex: number,
+  toStep: number,
+  toIndex = -1,
+): { steps: Step[]; clearedReferences: number } {
   if (fromStep === toStep && (toIndex === -1 || toIndex === filterIndex)) {
     return { steps, clearedReferences: 0 };
   }
@@ -88,7 +102,7 @@ export function moveFilter(steps, fromStep, filterIndex, toStep, toIndex = -1) {
   const landed = survives ? { ...filter } : { ...filter, value: '' };
 
   const moved = steps.map((step, i) => {
-    let filters = [...(step.filters ?? [])];
+    const filters: Filter[] = [...(step.filters ?? [])];
 
     if (i === fromStep) filters.splice(filterIndex, 1);
 
@@ -105,6 +119,10 @@ export function moveFilter(steps, fromStep, filterIndex, toStep, toIndex = -1) {
 }
 
 /** Whether a step may carry a filter on this fact, given what its action emits. */
-export function stepAccepts(step, factKey, factsFor) {
+export function stepAccepts(
+  step: Step,
+  factKey: string,
+  factsFor: (actionCode: string) => Fact[],
+): boolean {
   return factsFor(step.actionCode).some((fact) => fact.key === factKey);
 }

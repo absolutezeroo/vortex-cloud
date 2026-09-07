@@ -5,7 +5,7 @@
   //
   //   <TableFilter bind:query shown={view.length} total={rows.length} />
   import { Search } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props

@@ -7,9 +7,9 @@
   // unless a write was actually refused, and with DashboardStepUpMinutes at its default of 0 nothing
   // ever refuses.
   import Modal from './Modal.svelte';
-  import { apiPost, describeApiError } from '../lib/api.js';
-  import { stepUpRequest, resolveStepUp } from '../lib/stepUp.js';
-  import { t } from '../lib/i18n.js';
+  import { apiPost, describeApiError } from '../lib/api';
+  import { stepUpRequest, resolveStepUp } from '../lib/stepUp';
+  import { t } from '../lib/i18n';
 
   let code = $state('');
   let busy = $state(false);

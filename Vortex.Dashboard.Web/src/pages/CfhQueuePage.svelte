@@ -2,19 +2,19 @@
   import Modal from '../components/Modal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { formatDuration, compactCorrelation } from '../lib/format.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk, positive } from '../lib/validation.js';
+  import { apiGet, apiPost } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { formatDuration, compactCorrelation } from '../lib/format';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { reasonOk, positive } from '../lib/validation';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
-  import { identity, openPlayer, openItem } from '../lib/session.js';
+  import { identity, openPlayer, openItem } from '../lib/session';
   import TableFilter from '../components/TableFilter.svelte';
   import SortTh from '../components/SortTh.svelte';
-  import { filterRows, sortRows } from '../lib/tableView.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { filterRows, sortRows } from '../lib/tableView';
+  import { t, translate } from '../lib/i18n';
 
   const closeReasons = [
     { value: 1, label: 'Useless' },

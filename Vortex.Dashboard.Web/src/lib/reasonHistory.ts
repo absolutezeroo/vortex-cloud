@@ -31,13 +31,13 @@ function readStoredHistory() {
   }
 }
 
-function dedupe(entries) {
+function dedupe(entries: string[]): string[] {
   return Array.from(new Set(entries.map((r) => r.trim()).filter(Boolean)));
 }
 
 export const reasonSuggestions = writable(dedupe([...readStoredHistory(), ...PRESET_REASONS]));
 
-export function rememberReason(reason) {
+export function rememberReason(reason: string | null | undefined): void {
   const trimmed = (reason || '').trim();
   if (!trimmed) return;
 

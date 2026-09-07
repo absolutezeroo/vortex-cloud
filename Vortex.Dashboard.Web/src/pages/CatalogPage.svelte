@@ -18,22 +18,22 @@
   } from '@lucide/svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
-  import { CURRENCY_KIND, currencyChipClass, currencyKindFromRewardType } from '../lib/currency.js';
-  import { formatNumber } from '../lib/format.js';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { nonNegative } from '../lib/validation.js';
-  import { diffFields } from '../lib/changes.js';
-  import { PRODUCT_TYPES } from '../lib/furnitureEnums.js';
+  import { CURRENCY_KIND, currencyChipClass, currencyKindFromRewardType } from '../lib/currency';
+  import { formatNumber } from '../lib/format';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { nonNegative } from '../lib/validation';
+  import { diffFields } from '../lib/changes';
+  import { PRODUCT_TYPES } from '../lib/furnitureEnums';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import CatalogIconPickerModal from '../components/CatalogIconPickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   const CATALOG_TYPES = [
     { value: 0, key: 'catalogAdmin.typeNormal' },

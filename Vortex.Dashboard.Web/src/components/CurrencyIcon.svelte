@@ -9,7 +9,7 @@
   // A currency with no sprite yet falls back to the generic lucide glyph, which is why the chip's
   // colour and its written label both stay: the icon is a third carrier, never the only one.
   import { Coins } from '@lucide/svelte';
-  import { CURRENCY_KIND } from '../lib/currency.js';
+  import { CURRENCY_KIND } from '../lib/currency';
   import creditIcon from '../assets/images/ui_currency_icon_credit.png';
   import ducketIcon from '../assets/images/ui_currency_icon_ducket.png';
   import diamondIcon from '../assets/images/ui_currency_icon_diamond.png';

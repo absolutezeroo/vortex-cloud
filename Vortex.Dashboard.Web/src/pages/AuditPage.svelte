@@ -1,17 +1,17 @@
 <script>
-  import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import { readNumberParam, writeParams } from '../lib/urlState';
   import PickerModal from '../components/PickerModal.svelte';
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { compactCorrelation, formatDate } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { compactCorrelation, formatDate } from '../lib/format';
   import AuditDetail from '../components/AuditDetail.svelte';
-  import { summarizeAudit } from '../lib/auditData.js';
+  import { summarizeAudit } from '../lib/auditData';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Pagination from '../components/Pagination.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer, openItem } from '../lib/session';
+  import { t } from '../lib/i18n';
 
   const categoryOptions = [
     '',

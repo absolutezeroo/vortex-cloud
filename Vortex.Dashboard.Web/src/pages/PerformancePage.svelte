@@ -6,15 +6,15 @@
   // history. The chart's history is therefore accumulated client-side by polling, which is also why
   // it starts empty and fills in: one point per refresh, capped at CHART_POINTS.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber } from '../lib/format.js';
+  import { apiGet } from '../lib/api';
+  import { formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import StatCard from '../components/StatCard.svelte';
   import LineChart from '../components/LineChart.svelte';
   import { Timer, Activity, Repeat } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { t } from '../lib/i18n';
 
   const REFRESH_MS = 5000;
   const CHART_POINTS = 60;

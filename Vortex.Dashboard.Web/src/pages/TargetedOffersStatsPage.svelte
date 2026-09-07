@@ -1,16 +1,16 @@
 <script>
 
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { apiGet } from '../lib/api';
+  import { formatNumber } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import LineChart from '../components/LineChart.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Package, ShoppingBag, Coins, Hash } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   const granularities = ['day', 'month', 'year'];
 

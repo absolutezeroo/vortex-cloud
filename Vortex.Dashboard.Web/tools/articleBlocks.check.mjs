@@ -6,7 +6,7 @@
 
 import assert from 'node:assert/strict';
 
-import { blocksToDoc, docToBlocks, isAllowedHref, plainText } from '../src/lib/articleBlocks.js';
+import { blocksToDoc, docToBlocks, isAllowedHref, plainText } from '../src/lib/articleBlocks.ts';
 
 function roundTrip(blocks) {
   return docToBlocks(blocksToDoc(blocks));

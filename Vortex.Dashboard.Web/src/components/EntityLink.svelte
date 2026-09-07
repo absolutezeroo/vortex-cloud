@@ -1,10 +1,10 @@
 <script>
   import { onMount } from 'svelte';
   import { User } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
   import AssetImage from './AssetImage.svelte';
-  import { avatarCache, resolveAvatar } from '../lib/avatars.js';
-  import { openRoom } from '../lib/session.js';
+  import { avatarCache, resolveAvatar } from '../lib/avatars';
+  import { openRoom } from '../lib/session';
 
   // Show the real Habbo avatar head next to a player's name. Resolved lazily + batched via
   // lib/avatars.js; falls back to a neutral head only if the player has no figure. Set avatar={false}

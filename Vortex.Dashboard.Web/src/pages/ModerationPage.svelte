@@ -1,18 +1,18 @@
 <script>
-  import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import { readNumberParam, writeParams } from '../lib/urlState';
   import PickerModal from '../components/PickerModal.svelte';
 
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { apiGet } from '../lib/api';
+  import { formatDate, formatDuration, formatNumber } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Pagination from '../components/Pagination.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Hash, Activity, TriangleAlert, Timer } from '@lucide/svelte';
-  import { openPlayer, openItem } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { openPlayer, openItem } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   const actionOptions = [
     '',

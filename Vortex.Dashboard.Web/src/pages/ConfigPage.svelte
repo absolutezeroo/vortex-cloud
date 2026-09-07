@@ -4,13 +4,13 @@
   import PageHeader from '../components/PageHeader.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { diffFields } from '../lib/changes.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { diffFields } from '../lib/changes';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
+  import { t, translate } from '../lib/i18n';
 
   let items = $state([]);
   let editValues = $state({});

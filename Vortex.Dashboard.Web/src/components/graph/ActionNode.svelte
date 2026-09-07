@@ -5,8 +5,8 @@
   // is the action itself, the order ports, and one output port per fact it records, which is what a
   // later condition can read.
   import { ChevronLeft, ChevronRight, X } from '@lucide/svelte';
-  import { portColour } from '../../lib/graph/model.js';
-  import { t } from '../../lib/i18n.js';
+  import { portColour } from '../../lib/graph/model';
+  import { t } from '../../lib/i18n';
 
   /**
    * @type {{

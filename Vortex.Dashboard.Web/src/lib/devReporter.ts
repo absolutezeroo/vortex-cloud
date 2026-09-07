@@ -11,13 +11,35 @@
 // Dev only -- main.js imports it behind import.meta.env.DEV, and the endpoint it posts to exists
 // only in the dev server (tools/vite-plugin-ui-reports.js).
 
+/**
+ * What Svelte stamps on every element it creates in dev. Not part of the DOM lib, and the whole
+ * reason a report can name a file and a line instead of a class.
+ */
+declare global {
+  interface Element {
+    __svelte_meta?: { loc?: { file?: string; line?: number } };
+  }
+}
+
+/** The box the operator drew, in viewport coordinates. */
+type Selection = { left: number; top: number; right: number; bottom: number };
+
+/** One stored report, as the dev endpoint keeps it. */
+type StoredReport = {
+  id: string;
+  note?: string;
+  route: string;
+  where?: string;
+  done?: boolean;
+};
+
 const ENDPOINT = '/__ui-report';
 const HOTKEY = 'b'; // with ctrl+shift -- arm the selection
 const HOTKEY_LIST = 'l'; // with ctrl+shift -- open the list
 const HOTKEY_NOTE = 'n'; // with ctrl+shift -- a note about the page, with nothing to point at
 
 /** Classes Svelte adds for style scoping carry no meaning for a human reading the report. */
-const meaningful = (el) =>
+const meaningful = (el: Element): string[] =>
   [...el.classList].filter((c) => !c.startsWith('svelte-'));
 
 /**
@@ -31,10 +53,14 @@ const meaningful = (el) =>
  * node_modules is dropped: an icon resolving to @lucide/svelte/dist/Icon.svelte says nothing
  * about this dashboard, and three of them per card drowned the list.
  */
-function sources(el) {
-  const chain = [];
+function sources(el: Element): string[] {
+  const chain: string[] = [];
 
-  for (let node = el; node && node !== document.body; node = node.parentElement) {
+  for (
+    let node: Element | null = el;
+    node && node !== document.body;
+    node = node.parentElement
+  ) {
     const loc = node.__svelte_meta?.loc;
 
     if (!loc?.file) continue;
@@ -51,10 +77,10 @@ function sources(el) {
   return chain;
 }
 
-const source = (el) => sources(el)[0] ?? null;
+const source = (el: Element): string | null => sources(el)[0] ?? null;
 
 /** The container is the culprit more often than the element -- a row that is a column, a cell too narrow. */
-function parentLayout(el) {
+function parentLayout(el: Element) {
   const p = el.parentElement;
 
   if (!p || p === document.body) return null;
@@ -76,13 +102,15 @@ function parentLayout(el) {
 }
 
 /** What an element IS, in the terms the source uses. */
-function describe(el) {
+function describe(el: Element) {
   const text = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60);
   const cs = getComputedStyle(el);
   const box = el.getBoundingClientRect();
 
   return {
-    tag: el.tagName.toLowerCase() + (el.type ? `[${el.type}]` : ''),
+    tag:
+      el.tagName.toLowerCase() +
+      ((el as HTMLInputElement).type ? `[${(el as HTMLInputElement).type}]` : ''),
     classes: meaningful(el),
     sources: sources(el),
     parent: parentLayout(el),
@@ -113,8 +141,8 @@ function describe(el) {
  * so the list would open with <body> and the page shell every time. Kept: elements whose own box
  * is mostly inside the selection, which is what "I drew a box around this" means.
  */
-function selected(rect) {
-  const out = [];
+function selected(rect: Selection): Element[] {
+  const out: Element[] = [];
 
   for (const el of document.querySelectorAll('body *')) {
     if (el.closest('#ui-reporter')) continue;
@@ -142,7 +170,7 @@ function selected(rect) {
   //
   // Fall back to whatever the box actually crosses, most-covered first, keeping the few smallest
   // -- the smallest element the box touches is nearly always the thing being pointed at.
-  const touched = [];
+  const touched: { el: Element; area: number; covered: number }[] = [];
 
   for(const el of document.querySelectorAll('body *'))
   {
@@ -173,7 +201,7 @@ function selected(rect) {
  * row in a bare panel and measuring it. Shipping the markup with the report removes the step
  * where that has to be retyped from a screenshot.
  */
-function excerpt(elements) {
+function excerpt(elements: Element[]): string | null {
   if (!elements.length) return null;
 
   // The outermost of the selected ones already contains the rest.
@@ -182,7 +210,7 @@ function excerpt(elements) {
   const outer = elements.reduce((a, b) => (a.contains(b) ? a : b), root);
 
   return outer.outerHTML
-    .replace(/ class="([^"]*)"/g, (_, c) => {
+    .replace(/ class="([^"]*)"/g, (_: string, c: string) => {
       const kept = c.split(/\s+/).filter((x) => x && !x.startsWith('svelte-')).join(' ');
 
       return kept ? ` class="${kept}"` : '';
@@ -267,28 +295,30 @@ export function mountDevReporter() {
       border-radius: 5px; background: #00813e; color: #fff; font-weight: 700; }`;
   document.head.appendChild(style);
 
-  const arm = host.querySelector('.r-arm');
-  const veil = host.querySelector('.r-veil');
-  const box = host.querySelector('.r-box');
-  const form = host.querySelector('.r-form');
-  const note = host.querySelector('textarea');
-  const count = host.querySelector('.r-count');
-  const toast = host.querySelector('.r-toast');
-  const list = host.querySelector('.r-list');
-  const rows = host.querySelector('.r-rows');
-  const showAll = host.querySelector('.r-all');
+  // host.innerHTML was assigned immediately above, so each of these exists. Asserting it once
+  // here beats a null check at every use of an element this function created itself.
+  const arm = host.querySelector('.r-arm') as HTMLButtonElement;
+  const veil = host.querySelector('.r-veil') as HTMLElement;
+  const box = host.querySelector('.r-box') as HTMLElement;
+  const form = host.querySelector('.r-form') as HTMLFormElement;
+  const note = host.querySelector('textarea') as HTMLTextAreaElement;
+  const count = host.querySelector('.r-count') as HTMLElement;
+  const toast = host.querySelector('.r-toast') as HTMLElement;
+  const list = host.querySelector('.r-list') as HTMLElement;
+  const rows = host.querySelector('.r-rows') as HTMLElement;
+  const showAll = host.querySelector('.r-all') as HTMLInputElement;
 
-  let start = null;
-  let picked = [];
-  let rect = null;
+  let start: { x: number; y: number } | null = null;
+  let picked: Element[] = [];
+  let rect: Selection | null = null;
 
-  const setArmed = (on) => {
+  const setArmed = (on: boolean) => {
     veil.hidden = !on;
     if (on) arm.setAttribute('data-armed', ''); else arm.removeAttribute('data-armed');
     box.style.width = box.style.height = '0px';
   };
 
-  const say = (text, ok = true) => {
+  const say = (text: string, ok = true) => {
     toast.textContent = text;
     toast.style.background = ok ? '#00813e' : '#c0174e';
     toast.hidden = false;
@@ -302,7 +332,7 @@ export function mountDevReporter() {
    * withdraw it is while looking at the thing, not later in a JSONL file.
    */
   async function refreshList() {
-    let data = [];
+    let data: StoredReport[] = [];
 
     try {
       data = await (await fetch(ENDPOINT)).json();
@@ -343,15 +373,17 @@ export function mountDevReporter() {
         `<button type="button" class="r-toggle">${r.done ? 'rouvrir' : 'traité'}</button>` +
         '<button type="button" class="r-del">supprimer</button>';
 
-      meta.querySelector('.r-toggle').addEventListener('click', () => patch(r.id, { done: !r.done }));
-      meta.querySelector('.r-del').addEventListener('click', () => remove(r.id));
+      meta
+        .querySelector('.r-toggle')!
+        .addEventListener('click', () => patch(r.id, { done: !r.done }));
+      meta.querySelector('.r-del')!.addEventListener('click', () => remove(r.id));
 
       item.append(text, meta);
       rows.append(item);
     }
   }
 
-  async function patch(id, body) {
+  async function patch(id: string, body: Partial<StoredReport>) {
     await fetch(ENDPOINT, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
@@ -360,35 +392,35 @@ export function mountDevReporter() {
     refreshList();
   }
 
-  async function remove(id) {
+  async function remove(id: string) {
     await fetch(`${ENDPOINT}?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
     refreshList();
   }
 
-  const openList = (on) => {
+  const openList = (on: boolean) => {
     list.hidden = !on;
     if (on) refreshList();
   };
 
   showAll.addEventListener('change', refreshList);
-  host.querySelector('.r-close').addEventListener('click', () => openList(false));
+  host.querySelector('.r-close')!.addEventListener('click', () => openList(false));
 
-  arm.addEventListener('click', () => setArmed(veil.hidden));
+  arm.addEventListener('click', () => setArmed(Boolean(veil.hidden)));
   arm.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     setArmed(false);
-    openList(list.hidden);
+    openList(Boolean(list.hidden));
   });
 
   addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === HOTKEY) {
       e.preventDefault();
-      setArmed(veil.hidden);
+      setArmed(Boolean(veil.hidden));
     } else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === HOTKEY_LIST) {
       e.preventDefault();
       setArmed(false);
       form.hidden = true;
-      openList(list.hidden);
+      openList(Boolean(list.hidden));
     } else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === HOTKEY_NOTE) {
       // Not everything has a box round it -- a transition, a flow, a page taken as a whole.
       e.preventDefault();
@@ -405,12 +437,12 @@ export function mountDevReporter() {
     }
   });
 
-  veil.addEventListener('pointerdown', (e) => {
+  veil.addEventListener('pointerdown', (e: PointerEvent) => {
     start = { x: e.clientX, y: e.clientY };
     veil.setPointerCapture(e.pointerId);
   });
 
-  veil.addEventListener('pointermove', (e) => {
+  veil.addEventListener('pointermove', (e: PointerEvent) => {
     if (!start) return;
 
     const x = Math.min(start.x, e.clientX);
@@ -422,7 +454,7 @@ export function mountDevReporter() {
     box.style.height = `${Math.abs(e.clientY - start.y)}px`;
   });
 
-  veil.addEventListener('pointerup', (e) => {
+  veil.addEventListener('pointerup', (e: PointerEvent) => {
     if (!start) return;
 
     rect = {
@@ -451,12 +483,12 @@ export function mountDevReporter() {
     note.focus();
   });
 
-  host.querySelector('.r-cancel').addEventListener('click', () => {
+  host.querySelector('.r-cancel')!.addEventListener('click', () => {
     form.hidden = true;
     setArmed(false);
   });
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', async (e: SubmitEvent) => {
     e.preventDefault();
 
     const report = {
@@ -489,7 +521,9 @@ export function mountDevReporter() {
       say('Signalé');
       if (!list.hidden) refreshList();
     } catch (err) {
-      say(`Échec: ${err.message}`, false);
+      say(`Échec: ${err instanceof Error ? err.message : String(err)}`, false);
     }
   });
 }
+
+export {};

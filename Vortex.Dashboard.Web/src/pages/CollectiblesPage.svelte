@@ -3,20 +3,20 @@
   // whose product code matches no furniture definition makes its collection impossible to complete,
   // and nothing else in the hotel would ever say so.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
 
-  import { formatNumber, formatDate } from '../lib/format.js';
-  import { CURRENCY_KIND, currencyChipClass } from '../lib/currency.js';
+  import { formatNumber, formatDate } from '../lib/format';
+  import { CURRENCY_KIND, currencyChipClass } from '../lib/currency';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer } from '../lib/session.js';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -26,7 +26,7 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Gem, Boxes, TriangleAlert, Trophy, Store, Gift, Hammer, Ticket, Sparkles, Shirt } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   // Three jobs on one page -- the collections, the shop and the collector standings -- and stacking
   // them meant scrolling past two to reach the third.

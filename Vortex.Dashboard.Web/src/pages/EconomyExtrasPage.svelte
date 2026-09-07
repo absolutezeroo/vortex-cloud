@@ -3,16 +3,16 @@
   // outcomes, rentable spaces with who is actually renting them, the currency catalogue with how
   // much of each is held, and the builders-club ladder.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer } from '../lib/session.js';
+  import { formatNumber, formatDate, formatDuration } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
@@ -22,8 +22,8 @@
   import Tabs from '../components/Tabs.svelte';
   import { Ticket, Store, Coins, Hammer } from '@lucide/svelte';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView.js';
-  import { t } from '../lib/i18n.js';
+  import { filterRows } from '../lib/tableView';
+  import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);

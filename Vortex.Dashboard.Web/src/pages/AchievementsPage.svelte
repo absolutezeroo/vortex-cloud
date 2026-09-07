@@ -4,16 +4,16 @@
   // feeds is dead weight that still renders in the client), how far the hotel has climbed each one,
   // and who is ahead.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { createWriteOps } from '../lib/writeOps.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { identity } from '../lib/session.js';
+  import { apiGet } from '../lib/api';
+  import { createWriteOps } from '../lib/writeOps';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { CAPABILITIES } from '../lib/dashboardPermissions';
+  import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { openPlayer } from '../lib/session.js';
+  import { formatNumber } from '../lib/format';
+  import { isPermissionDeniedError } from '../lib/permissions';
+  import { openPlayer } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import Tabs from '../components/Tabs.svelte';
@@ -24,7 +24,7 @@
   import Drawer from '../components/Drawer.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Trophy, Award, Zap, ZapOff, Users, Layers, AlertTriangle } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../lib/i18n';
 
   let category = $state('');
   let loading = $state(false);

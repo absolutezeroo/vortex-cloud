@@ -4,7 +4,7 @@
   // One SVG for the whole canvas rather than one per connection: they cross each other, so they
   // have to share a stacking context, and a bezier that starts at one node and ends at another
   // cannot live inside either of them.
-  import { portColour } from '../../lib/graph/model.js';
+  import { portColour } from '../../lib/graph/model';
 
   /** @type {{ wires: any[], geometry: (wire: any) => any, dragging: any }} */
   let { wires, geometry, dragging = null } = $props();

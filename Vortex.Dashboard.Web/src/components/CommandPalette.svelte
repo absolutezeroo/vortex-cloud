@@ -6,11 +6,11 @@
   // Mounted once, in AppShell -- it is a window-level shortcut, not a page feature.
   import { push } from 'svelte-spa-router';
   import { Search, CornerDownLeft, House, User, Package, Compass } from '@lucide/svelte';
-  import { apiGet } from '../lib/api.js';
-  import { NAV, foldSearch } from '../lib/routes.js';
-  import { identity, openItem } from '../lib/session.js';
-  import { hasDashboardCapability } from '../lib/permissions.js';
-  import { t, translate } from '../lib/i18n.js';
+  import { apiGet } from '../lib/api';
+  import { NAV, foldSearch } from '../lib/routes';
+  import { identity, openItem } from '../lib/session';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import { t, translate } from '../lib/i18n';
 
   let open = $state(false);
   let query = $state('');

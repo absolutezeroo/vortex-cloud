@@ -57,12 +57,12 @@
     SquareTerminal,
     Medal,
   } from '@lucide/svelte';
-  import { identity } from '../lib/session.js';
+  import { identity } from '../lib/session';
   import MfaModal from './MfaModal.svelte';
-  import { NAV, hasRouteAccess, foldSearch } from '../lib/routes.js';
-  import { reasonSuggestions } from '../lib/reasonHistory.js';
-  import { theme, setTheme, THEMES } from '../lib/theme.js';
-  import { t, locale, setLocale, LOCALES } from '../lib/i18n.js';
+  import { NAV, hasRouteAccess, foldSearch } from '../lib/routes';
+  import { reasonSuggestions } from '../lib/reasonHistory';
+  import { theme, setTheme, THEMES } from '../lib/theme';
+  import { t, locale, setLocale, LOCALES } from '../lib/i18n';
 
   /**
    * @typedef {Object} Props
