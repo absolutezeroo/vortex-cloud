@@ -28,7 +28,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 KickPlayerRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -50,7 +50,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 BanPlayerRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -72,7 +72,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UnbanPlayerRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -94,7 +94,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 MutePlayerRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -116,7 +116,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 TradingLockRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -138,7 +138,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 TradingUnlockRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -187,7 +187,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiOperations + "/cfh/queue",
-            async (DashboardOperationsService ops, CancellationToken ct) =>
+            async (ModerationOperations ops, CancellationToken ct) =>
                 Results.Ok(await ops.GetCfhQueueAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsCfhManage,
             TagOperations
@@ -198,7 +198,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 PickCfhTicketsRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -220,7 +220,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CloseCfhTicketsRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -242,7 +242,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ReleaseCfhTicketsRequest body,
-                DashboardOperationsService ops,
+                ModerationOperations ops,
                 CancellationToken ct
             ) =>
             {

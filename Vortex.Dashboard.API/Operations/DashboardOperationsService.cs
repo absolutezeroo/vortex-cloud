@@ -52,24 +52,15 @@ namespace Vortex.Dashboard.API.Operations;
 /// </summary>
 internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
+    StaffActorAccount staffActor,
     ISessionGateway sessionGateway,
-    ICfhTicketService cfhTickets,
     OperationRunner runner,
     IVortexMetrics metrics
 )
 {
-    /// <summary>
-    /// Name of the reserved, account-less player row seeded by the
-    /// <c>SeedDashboardStaffActor</c> migration. Room-scoped moderation grain methods
-    /// (<c>MuteUserAsync</c>/<c>KickUserAsync</c>) require a real <see cref="PlayerId"/> as the
-    /// acting player and reject <see cref="ActionContext.System"/> — this stands in for "the
-    /// dashboard operator" since a web session has no in-game player of its own.
-    /// </summary>
-    private const string StaffActorName = "__dashboard_staff__";
-
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly StaffActorAccount _staffActor = staffActor;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
-    private readonly ICfhTicketService _cfhTickets = cfhTickets;
 
     /// <summary>
     /// Read only, and only to carry a track's current status through an edit that does not set one.
@@ -80,8 +71,6 @@ internal sealed partial class DashboardOperationsService(
     // Kept for GetActiveRoomsAsync, which times a grain call. Auditing a write is the
     // runner's business; this is not a write.
     private readonly IVortexMetrics _metrics = metrics;
-    private readonly SemaphoreSlim _staffActorLock = new(1, 1);
-    private PlayerId? _staffActorPlayerId;
 
     /// <summary>
     /// Forwards to <see cref="OperationRunner"/>, so the twenty-six topic files that still live on
@@ -111,39 +100,7 @@ internal sealed partial class DashboardOperationsService(
             category
         );
 
-    private async Task<PlayerId> ResolveStaffActorPlayerIdAsync(CancellationToken ct)
-    {
-        if (_staffActorPlayerId is { } cached)
-        {
-            return cached;
-        }
-
-        await _staffActorLock.WaitAsync(ct).ConfigureAwait(false);
-
-        try
-        {
-            if (_staffActorPlayerId is { } cachedAfterLock)
-            {
-                return cachedAfterLock;
-            }
-
-            PlayerId? resolved = await _grainFactory
-                .GetPlayerDirectoryGrain()
-                .GetPlayerIdAsync(StaffActorName, ct)
-                .ConfigureAwait(false);
-
-            if (resolved is null)
-            {
-                throw new InvalidOperationException("dashboard_staff_actor_missing");
-            }
-
-            _staffActorPlayerId = resolved.Value;
-
-            return resolved.Value;
-        }
-        finally
-        {
-            _staffActorLock.Release();
-        }
-    }
+    // The lookup lives in StaffActorAccount now; this stays while Rooms is still on this class.
+    private Task<PlayerId> ResolveStaffActorPlayerIdAsync(CancellationToken ct) =>
+        _staffActor.PlayerIdAsync(ct);
 }

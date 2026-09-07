@@ -930,6 +930,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | gamedata | 55 methods, 9 deps | 29 methods, 10 deps | 17 (+ Gamedata) | 45 types |
 | benchmark | 53 methods, 7 deps | 27 methods, 9 deps | 18 (+ Benchmark) | 47 types |
 | backup, console, privacy | 53 methods, 7 deps | 22 methods, 5 deps | 21 (+ Backup, Console, Privacy) | 50 types |
+| moderation | 53 methods, 7 deps | 12 methods, 5 deps | 22 (+ Moderation) | 51 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

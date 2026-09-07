@@ -21,14 +21,26 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class ModerationOperations(
+    OperationRunner runner,
+    ICfhTicketService cfhTickets,
+    ISessionGateway sessionGateway,
+    IGrainFactory grainFactory,
+    StaffActorAccount staffActor
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly ICfhTicketService _cfhTickets = cfhTickets;
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly StaffActorAccount _staffActor = staffActor;
+
     public Task<OperationResult> KickPlayerAsync(
         KickPlayerRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.kick",
             actor,
             request.Reason,
@@ -45,7 +57,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.ban",
             actor,
             request.Reason,
@@ -54,7 +66,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { request.Permanent, request.DurationSeconds },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
                 DateTime bannedUntil = request.Permanent
                     ? SanctionDuration.Permanent
                     : DateTime.UtcNow.AddSeconds(Math.Max(1, request.DurationSeconds ?? 0));
@@ -78,7 +90,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.unban",
             actor,
             request.Reason,
@@ -87,7 +99,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
 
                 bool ok = await _grainFactory
                     .GetPlayerGrain(new PlayerId(request.PlayerId))
@@ -108,7 +120,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.trading_lock",
             actor,
             request.Reason,
@@ -117,7 +129,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { request.Permanent, request.DurationSeconds },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
                 DateTime lockedUntil = request.Permanent
                     ? SanctionDuration.Permanent
                     : DateTime.UtcNow.AddSeconds(Math.Max(1, request.DurationSeconds ?? 0));
@@ -141,7 +153,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.trading_unlock",
             actor,
             request.Reason,
@@ -150,7 +162,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
 
                 bool ok = await _grainFactory
                     .GetPlayerGrain(new PlayerId(request.PlayerId))
@@ -178,7 +190,8 @@ internal sealed partial class DashboardOperationsService
             .GetActiveRoomAsync()
             .ConfigureAwait(false);
 
-        return await ExecuteAsync(
+        return await _runner
+            .ExecuteAsync(
                 "ops.player.mute",
                 actor,
                 request.Reason,
@@ -195,8 +208,7 @@ internal sealed partial class DashboardOperationsService
                         throw new InvalidOperationException("target_not_in_room");
                     }
 
-                    PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c)
-                        .ConfigureAwait(false);
+                    PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
                     ActionContext actorCtx = ActionContext.CreateForPlayer(
                         staffActor,
                         activeRoom.RoomId
@@ -227,7 +239,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.cfh.pick",
             actor,
             "cfh pick",
@@ -236,7 +248,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { request.IssueIds },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
 
                 // Same queue grain the in-client mod tool goes through: an operator picking here
                 // and a moderator picking in the client are two interfaces onto one queue, and
@@ -255,7 +267,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.cfh.close",
             actor,
             "cfh close",
@@ -269,7 +281,7 @@ internal sealed partial class DashboardOperationsService
             },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
 
                 await _grainFactory
                     .GetModerationQueueGrain()
@@ -291,7 +303,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.cfh.release",
             actor,
             "cfh release",
@@ -300,7 +312,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { request.IssueIds },
             work: async c =>
             {
-                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
 
                 await _grainFactory
                     .GetModerationQueueGrain()
