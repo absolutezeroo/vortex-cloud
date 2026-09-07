@@ -314,6 +314,11 @@ time.
   4. `Vortex.Dashboard.Web/src/lib/locales/en.js` **and** `fr.js` — page block **and** `nav.*` labels
      (the two files must stay structurally identical; `en.js` is every other locale's fallback)
 - Required context files:
+  - `docs/architecture/dashboard-architecture-rules.md` — the owner's architecture contract for
+    `Vortex.Dashboard.API`. It outranks case-by-case judgement: an extraction that breaks one of its
+    rules is to be redone even if it compiles and the tests pass. Read it before moving anything in
+    that project, and record the §37 numbers (`node scripts/dashboard-migration-stats.mjs`) after
+    each domain extraction.
   - `docs/walkthroughs/add-a-dashboard-page.md` (full walkthrough, server + front end)
   - an existing pair such as `DashboardEndpoints.Quests.cs` + `DashboardApiService.Quests.cs`
 - Any page that shows or selects furniture, a player, or a group MUST use the existing surfaces --

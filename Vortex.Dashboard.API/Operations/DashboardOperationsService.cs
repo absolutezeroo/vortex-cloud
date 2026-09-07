@@ -54,7 +54,6 @@ internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
-    ICatalogAdminService catalogAdmin,
     ITargetedOfferAdminService targetedOfferAdmin,
     IQuestAdminService questAdmin,
     IPollAdminService pollAdmin,
@@ -94,7 +93,6 @@ internal sealed partial class DashboardOperationsService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
-    private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IQuestAdminService _questAdmin = questAdmin;
     private readonly IPollAdminService _pollAdmin = pollAdmin;
