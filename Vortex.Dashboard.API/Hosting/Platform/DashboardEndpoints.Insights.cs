@@ -89,7 +89,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
-        MapReadGet(
+        MapReadGet<CollectiblesOverview>(
             app,
             ApiCollectibles,
             (CollectibleReads collectible, CancellationToken ct) =>

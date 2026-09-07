@@ -1,9 +1,111 @@
-<script>
+<script lang="ts">
   // NFT collections, their items and the collector scores. The one thing worth flagging: an item
   // whose product code matches no furniture definition makes its collection impossible to complete,
   // and nothing else in the hotel would ever say so.
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
+  import type {
+    CollectiblesOverview,
+    MintableTypeRow,
+    NftAvatarRow,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** One choice of a fixed vocabulary the page draws as a select. */
+  type Choice<T> = { value: T; key: string };
+
+  /**
+   * The seven editors' forms.
+   *
+   * A form field is not the column it saves to: every number binds to an input that hands back a
+   * string while it is being typed, and every date binds to a datetime-local, which speaks local
+   * time with no zone. Hence `number | string` throughout and the Number()/isoLocal() on each read.
+   */
+  type Num = number | string;
+
+  type CollectionForm = {
+    id: number;
+    collectionCode: string;
+    name: string;
+    boostScore: Num;
+    status: Num;
+    rewardProductCode: string;
+    bonusProductCode: string;
+  };
+
+  type ItemForm = {
+    id: number;
+    productCode: string;
+    itemTypeId: string;
+    productTypeId: Num;
+    score: Num;
+    rarity: string;
+    sortOrder: Num;
+  };
+
+  type OfferForm = {
+    id: number;
+    productCode: string;
+    emeraldPrice: Num;
+    isFeatured: boolean;
+    isLimited: boolean;
+    mintLimit: Num;
+    itemTypeId: string;
+    productTypeId: Num;
+    score: Num;
+    rarity: string;
+    enabled: boolean;
+    sortOrder: Num;
+  };
+
+  type ClaimForm = {
+    playerId: Num;
+    playerName: string;
+    productCode: string;
+    setId: string;
+    defaultCollectionName: string;
+    collection: string;
+    claimLimit: Num;
+    validTo: string;
+  };
+
+  type MintableForm = {
+    id: number;
+    productCode: string;
+    stampPrice: Num;
+    startsAt: string;
+    endsAt: string;
+    regionLocked: boolean;
+    limitedEdition: boolean;
+    editionSize: Num;
+    enabled: boolean;
+    sortOrder: Num;
+  };
+
+  type TokenOfferForm = {
+    id: number;
+    productCode: string;
+    silverPrice: Num;
+    amountTokens: Num;
+    enabled: boolean;
+    sortOrder: Num;
+  };
+
+  type AvatarForm = {
+    id: number;
+    avatarCode: string;
+    name: string;
+    figure: string;
+    gender: string;
+    contractKey: string;
+    editionSize: Num;
+    enabled: boolean;
+    sortOrder: Num;
+  };
+
+  /** Who is being given a copy of an avatar, and what for. */
+  type GrantForm = { playerId: Num; playerName: string; note: string };
+
   import { createWriteOps } from '../lib/writeOps';
   import { hasDashboardCapability } from '../lib/permissions';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
@@ -35,14 +137,14 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
-  let expanded = $state(null);
+  let data = $state<CollectiblesOverview | null>(null);
+  let expanded = $state<number | null>(null);
 
   const ops = createWriteOps(refresh);
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
-  const emptyCollection = () => ({
+  const emptyCollection = (): CollectionForm => ({
     id: 0,
     collectionCode: '',
     name: '',
@@ -51,7 +153,7 @@
     rewardProductCode: '',
     bonusProductCode: '',
   });
-  const emptyItem = () => ({
+  const emptyItem = (): ItemForm => ({
     id: 0,
     productCode: '',
     itemTypeId: '',
@@ -61,22 +163,22 @@
     sortOrder: 0,
   });
 
-  let collectionForm = $state(null);
-  let itemForm = $state(null);
+  let collectionForm = $state<CollectionForm | null>(null);
+  let itemForm = $state<ItemForm | null>(null);
 
   // Which furniture picker is open, if any: the collection's two prizes and the collection item all
   // pick from the same catalogue, so they share one modal rather than three.
-  let picking = $state(null);
+  let picking = $state<string | null>(null);
 
   // The icons of the two prizes, remembered from the pick. They are not in `data` like the item
   // icons are -- a prize is a classname on the collection, not a row in its item list -- so without
   // this the admin picks a chair and sees only the word.
-  let rewardIconUrl = $state(null);
-  let bonusIconUrl = $state(null);
+  let rewardIconUrl = $state<string | null>(null);
+  let bonusIconUrl = $state<string | null>(null);
 
   // Only the statuses mean something, and only on this side: the client parses the field and never
   // reads it, so Draft is a collection the server withholds rather than one the client hides.
-  const STATUS_OPTIONS = [
+  const STATUS_OPTIONS: Choice<number>[] = [
     { value: 0, key: 'collectibles.statusDraft' },
     { value: 1, key: 'collectibles.statusVisible' },
     { value: 2, key: 'collectibles.statusArchived' },
@@ -87,7 +189,7 @@
   // broken for no visible reason.
   const RARITY_OPTIONS = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'legendary+'];
 
-  const emptyOffer = () => ({
+  const emptyOffer = (): OfferForm => ({
     id: 0,
     productCode: '',
     emeraldPrice: 0,
@@ -102,9 +204,9 @@
     sortOrder: 0,
   });
 
-  let offerForm = $state(null);
+  let offerForm = $state<OfferForm | null>(null);
 
-  const emptyClaim = () => ({
+  const emptyClaim = (): ClaimForm => ({
     playerId: '',
     playerName: '',
     productCode: '',
@@ -115,17 +217,17 @@
     validTo: '',
   });
 
-  let claimForm = $state(null);
-  let claimIconUrl = $state(null);
+  let claimForm = $state<ClaimForm | null>(null);
+  let claimIconUrl = $state<string | null>(null);
 
   // A window is not optional: the client greys the convert button out once the end date has passed,
   // and says nothing about why. A new type therefore opens now and runs for a year rather than
   // starting empty and being saved unusable.
-  const isoLocal = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+  const isoLocal = (date: Date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000)
     .toISOString()
     .slice(0, 16);
 
-  const emptyMintable = () => {
+  const emptyMintable = (): MintableForm => {
     const now = new Date();
     const inAYear = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
 
@@ -143,9 +245,9 @@
     };
   };
 
-  let mintableForm = $state(null);
+  let mintableForm = $state<MintableForm | null>(null);
 
-  const emptyTokenOffer = () => ({
+  const emptyTokenOffer = (): TokenOfferForm => ({
     id: 0,
     productCode: '',
     silverPrice: 10,
@@ -154,18 +256,18 @@
     sortOrder: 0,
   });
 
-  let tokenOfferForm = $state(null);
+  let tokenOfferForm = $state<TokenOfferForm | null>(null);
 
   // The three the client knows. It switches on this exact string to pick the caption and the tile
   // colours, and has no branch for anything else -- an unknown one prints the word "null" above the
   // avatar, so the field is a list rather than a text box.
-  const COLLECTION_OPTIONS = [
+  const COLLECTION_OPTIONS: Choice<string>[] = [
     { value: 'habbo:avatar', key: 'collectibles.collectionAvatar' },
     { value: 'habbo:clothes', key: 'collectibles.collectionClothes' },
     { value: 'habbo:avatar_genesis', key: 'collectibles.collectionGenesis' },
   ];
 
-  const emptyAvatar = () => ({
+  const emptyAvatar = (): AvatarForm => ({
     id: 0,
     avatarCode: '',
     name: '',
@@ -177,20 +279,20 @@
     sortOrder: 0,
   });
 
-  let avatarForm = $state(null);
+  let avatarForm = $state<AvatarForm | null>(null);
 
   // Who is being given a copy, and what for. Kept beside the avatar it belongs to rather than in one
   // form at the bottom: the note is about this avatar, and an admin handing out prizes at an event
   // is looking at the row, not at a form.
-  let grantAvatar = $state(null);
-  let grantForm = $state(null);
+  let grantAvatar = $state<NftAvatarRow | null>(null);
+  let grantForm = $state<GrantForm | null>(null);
 
-  const startGrant = (avatar) => {
+  const startGrant = (avatar: NftAvatarRow) => {
     grantAvatar = avatar;
     grantForm = { playerId: '', playerName: '', note: '' };
   };
 
-  const editAvatar = (row) => {
+  const editAvatar = (row: NftAvatarRow) => {
     avatarForm = { ...row };
   };
 
@@ -200,7 +302,7 @@
 
   // The editors bind to datetime-local inputs, which speak local time with no zone; the API takes
   // instants. A row loaded for editing therefore has to come back the other way round.
-  const editMintable = (row) => {
+  const editMintable = (row: MintableTypeRow) => {
     mintableForm = {
       ...row,
       startsAt: isoLocal(new Date(row.startsAt)),
@@ -213,7 +315,7 @@
   let offerIconUrl =
     $derived((data?.storeOffers || []).find((o) => o.productCode === offerForm?.productCode)?.iconUrl ?? null);
 
-  const statusLabel = (value) =>
+  const statusLabel = (value: number | string) =>
     $t(STATUS_OPTIONS.find((o) => o.value === Number(value))?.key ?? 'collectibles.statusUnknown');
 
   // The product code is a furniture classname, so it is picked from the real catalogue rather than
@@ -229,7 +331,7 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/collectibles');
+      data = await apiGet<CollectiblesOverview>('/api/v1/collectibles');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -237,7 +339,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -384,7 +486,15 @@
                       class="ghost-button"
                       onclick={(event) => {
                         event.stopPropagation();
-                        collectionForm = { ...collection };
+                        collectionForm = {
+                          id: collection.id,
+                          collectionCode: collection.collectionCode,
+                          name: collection.name,
+                          boostScore: collection.boostScore,
+                          status: collection.status,
+                          rewardProductCode: collection.rewardProductCode ?? '',
+                          bonusProductCode: collection.bonusProductCode ?? '',
+                        };
                         // The prize icons are not in the listing, so they stay blank until the
                         // admin picks again rather than showing the previous collection's.
                         rewardIconUrl = null;
@@ -994,7 +1104,7 @@
                                   { copyId: holder.id },
                                   $t('collectibles.revokeAvatar'),
                                   $t('collectibles.revokeAvatarSummary', {
-                                    code: grantAvatar.avatarCode,
+                                    code: avatar.avatarCode,
                                     name: holder.playerName,
                                   })
                                 )}
@@ -1080,13 +1190,12 @@
   <PickerModal
     kind="user"
     title={$t('operations.selectPlayerTitle')}
-    onSelect={(picked) => {
-      if (picking === 'grantPlayer') {
-        grantForm.playerId = picked.id;
-        grantForm.playerName = picked.name;
-      } else {
-        claimForm.playerId = picked.id;
-        claimForm.playerName = picked.name;
+    onSelect={(picked: PickerRow) => {
+      const target = picking === 'grantPlayer' ? grantForm : claimForm;
+
+      if (target) {
+        target.playerId = Number(picked.id);
+        target.playerName = picked.name;
       }
 
       picking = null;
@@ -1097,21 +1206,21 @@
   <PickerModal
     kind="furniture"
     title={$t('collectibles.pickFurniture')}
-    onSelect={(picked) => {
-      if (picking === 'reward') {
+    onSelect={(picked: PickerRow) => {
+      if (picking === 'reward' && collectionForm) {
         collectionForm.rewardProductCode = picked.name;
         rewardIconUrl = picked.iconUrl ?? null;
-      } else if (picking === 'bonus') {
+      } else if (picking === 'bonus' && collectionForm) {
         collectionForm.bonusProductCode = picked.name;
         bonusIconUrl = picked.iconUrl ?? null;
-      } else if (picking === 'offer') {
+      } else if (picking === 'offer' && offerForm) {
         offerForm.productCode = picked.name;
-      } else if (picking === 'mintable') {
+      } else if (picking === 'mintable' && mintableForm) {
         mintableForm.productCode = picked.name;
-      } else if (picking === 'claim') {
+      } else if (picking === 'claim' && claimForm) {
         claimForm.productCode = picked.name;
         claimIconUrl = picked.iconUrl ?? null;
-      } else {
+      } else if (itemForm) {
         itemForm.productCode = picked.name;
       }
 
@@ -1122,6 +1231,7 @@
 {/if}
 
 {#if canManage && collectionForm}
+  {@const form = collectionForm}
   <Drawer title={$t('collectibles.collectionsTitle')} eyebrow={$t('collectibles.title')} onclose={() => (collectionForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1130,34 +1240,34 @@
         ops.ask(
           '/api/v1/operations/content/collections',
           {
-            collectionId: Number(collectionForm.id) || 0,
-            collectionCode: collectionForm.collectionCode,
-            name: collectionForm.name,
-            boostScore: Number(collectionForm.boostScore) || 0,
-            status: Number(collectionForm.status) || 0,
-            rewardProductCode: collectionForm.rewardProductCode || null,
-            bonusProductCode: collectionForm.bonusProductCode || null,
+            collectionId: Number(form.id) || 0,
+            collectionCode: form.collectionCode,
+            name: form.name,
+            boostScore: Number(form.boostScore) || 0,
+            status: Number(form.status) || 0,
+            rewardProductCode: form.rewardProductCode || null,
+            bonusProductCode: form.bonusProductCode || null,
           },
-          collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection'),
-          $t('collectibles.saveCollectionSummary', { name: collectionForm.name })
+          form.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection'),
+          $t('collectibles.saveCollectionSummary', { name: form.name })
         );
       }}
     >
       <label>
         {$t('collectibles.colCode')}
-        <input autocomplete="off" spellcheck="false" bind:value={collectionForm.collectionCode} />
+        <input autocomplete="off" spellcheck="false" bind:value={form.collectionCode} />
       </label>
       <label>
         {$t('collectibles.colCollection')}
-        <input autocomplete="off" spellcheck="false" bind:value={collectionForm.name} />
+        <input autocomplete="off" spellcheck="false" bind:value={form.name} />
       </label>
       <label>
         {$t('collectibles.colBoost')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={collectionForm.boostScore} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.boostScore} />
       </label>
       <label>
         {$t('collectibles.colStatus')}
-        <select bind:value={collectionForm.status}>
+        <select bind:value={form.status}>
           {#each STATUS_OPTIONS as option}
             <option value={option.value}>{$t(option.key)}</option>
           {/each}
@@ -1167,17 +1277,17 @@
       <label>
         {$t('collectibles.rewardProduct')}
         <span class="cell">
-          <AssetImage src={rewardIconUrl} alt={collectionForm.rewardProductCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={collectionForm.rewardProductCode} placeholder="classname" readonly />
+          <AssetImage src={rewardIconUrl} alt={form.rewardProductCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.rewardProductCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'reward')}>
             {$t('collectibles.pickFurniture')}
           </button>
-          {#if collectionForm.rewardProductCode}
+          {#if form.rewardProductCode}
             <button
               type="button"
               class="ghost-button"
               onclick={() => {
-                collectionForm.rewardProductCode = '';
+                form.rewardProductCode = '';
                 rewardIconUrl = null;
               }}
             >
@@ -1190,17 +1300,17 @@
       <label>
         {$t('collectibles.bonusProduct')}
         <span class="cell">
-          <AssetImage src={bonusIconUrl} alt={collectionForm.bonusProductCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={collectionForm.bonusProductCode} placeholder="classname" readonly />
+          <AssetImage src={bonusIconUrl} alt={form.bonusProductCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.bonusProductCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'bonus')}>
             {$t('collectibles.pickFurniture')}
           </button>
-          {#if collectionForm.bonusProductCode}
+          {#if form.bonusProductCode}
             <button
               type="button"
               class="ghost-button"
               onclick={() => {
-                collectionForm.bonusProductCode = '';
+                form.bonusProductCode = '';
                 bonusIconUrl = null;
               }}
             >
@@ -1213,10 +1323,10 @@
     </form>
   
     {#snippet actions()}
-      <button class="success" type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
-      {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
+      <button class="success" type="submit" disabled={!form.collectionCode.trim() || !form.name.trim()}>
+      {form.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
       </button>
-      {#if collectionForm.id}
+      {#if form.id}
       <button
       type="button"
       class="success"
@@ -1233,6 +1343,7 @@
 {/if}
 
 {#if canManage && itemForm}
+  {@const form = itemForm}
   <Drawer title={$t('collectibles.itemsTitle')} eyebrow={$t('collectibles.title')} onclose={() => (itemForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1241,25 +1352,25 @@
         ops.ask(
           '/api/v1/operations/content/collections/items',
           {
-            itemId: Number(itemForm.id) || 0,
+            itemId: Number(form.id) || 0,
             collectionId: expanded,
-            productCode: itemForm.productCode,
-            itemTypeId: itemForm.itemTypeId || '',
-            productTypeId: Number(itemForm.productTypeId) || 0,
-            score: Number(itemForm.score) || 0,
-            rarity: itemForm.rarity || '',
-            sortOrder: Number(itemForm.sortOrder) || 0,
+            productCode: form.productCode,
+            itemTypeId: form.itemTypeId || '',
+            productTypeId: Number(form.productTypeId) || 0,
+            score: Number(form.score) || 0,
+            rarity: form.rarity || '',
+            sortOrder: Number(form.sortOrder) || 0,
           },
           $t('collectibles.saveItem'),
-          $t('collectibles.saveItemSummary', { code: itemForm.productCode })
+          $t('collectibles.saveItemSummary', { code: form.productCode })
         );
       }}
     >
       <label>
         {$t('collectibles.colItem')}
         <span class="cell">
-          <AssetImage src={itemPreviewUrl} alt={itemForm.productCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={itemForm.productCode} placeholder="classname" readonly />
+          <AssetImage src={itemPreviewUrl} alt={form.productCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'item')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1268,7 +1379,7 @@
       </label>
       <label>
         {$t('collectibles.colRarity')}
-        <select bind:value={itemForm.rarity}>
+        <select bind:value={form.rarity}>
           <option value="">{$t('collectibles.rarityNone')}</option>
           {#each RARITY_OPTIONS as rarity}
             <option value={rarity}>{rarity}</option>
@@ -1278,16 +1389,16 @@
       </label>
       <label>
         {$t('collectibles.colItemScore')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={itemForm.score} min="0" />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.score} min="0" />
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={itemForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.sortOrder} />
       </label>
     </form>
   
     {#snippet actions()}
-      <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
+      <button type="submit" disabled={!form.productCode.trim()}>{$t('collectibles.saveItem')}</button>
       <button type="button" class="success" onclick={() => (itemForm = emptyItem())}>
       {$t('collectibles.newItem')}
       </button>
@@ -1296,6 +1407,7 @@
 {/if}
 
 {#if canManage && offerForm}
+  {@const form = offerForm}
   <Drawer title={$t('collectibles.shopTitle')} eyebrow={$t('collectibles.title')} onclose={() => (offerForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1304,29 +1416,29 @@
         ops.ask(
           '/api/v1/operations/content/store-offers',
           {
-            offerId: Number(offerForm.id) || 0,
-            productCode: offerForm.productCode,
-            emeraldPrice: Number(offerForm.emeraldPrice) || 0,
-            isFeatured: Boolean(offerForm.isFeatured),
-            isLimited: Boolean(offerForm.isLimited),
-            mintLimit: Number(offerForm.mintLimit) || 0,
-            itemTypeId: offerForm.itemTypeId || '',
-            productTypeId: Number(offerForm.productTypeId) || 0,
-            score: Number(offerForm.score) || 0,
-            rarity: offerForm.rarity || '',
-            enabled: Boolean(offerForm.enabled),
-            sortOrder: Number(offerForm.sortOrder) || 0,
+            offerId: Number(form.id) || 0,
+            productCode: form.productCode,
+            emeraldPrice: Number(form.emeraldPrice) || 0,
+            isFeatured: Boolean(form.isFeatured),
+            isLimited: Boolean(form.isLimited),
+            mintLimit: Number(form.mintLimit) || 0,
+            itemTypeId: form.itemTypeId || '',
+            productTypeId: Number(form.productTypeId) || 0,
+            score: Number(form.score) || 0,
+            rarity: form.rarity || '',
+            enabled: Boolean(form.enabled),
+            sortOrder: Number(form.sortOrder) || 0,
           },
-          offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer'),
-          $t('collectibles.saveOfferSummary', { code: offerForm.productCode })
+          form.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer'),
+          $t('collectibles.saveOfferSummary', { code: form.productCode })
         );
       }}
     >
       <label>
         {$t('collectibles.colItem')}
         <span class="cell">
-          <AssetImage src={offerIconUrl} alt={offerForm.productCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={offerForm.productCode} placeholder="classname" readonly />
+          <AssetImage src={offerIconUrl} alt={form.productCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'offer')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1335,17 +1447,17 @@
       </label>
       <label>
         {$t('collectibles.colPrice')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.emeraldPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.emeraldPrice} />
         <small class="muted">{$t('collectibles.priceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colItemScore')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.score} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.score} />
         <small class="muted">{$t('collectibles.offerScoreHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colRarity')}
-        <select bind:value={offerForm.rarity}>
+        <select bind:value={form.rarity}>
           <option value="">{$t('collectibles.rarityNone')}</option>
           {#each RARITY_OPTIONS as rarity}
             <option value={rarity}>{rarity}</option>
@@ -1354,30 +1466,30 @@
       </label>
       <label>
         {$t('collectibles.mintLimit')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.mintLimit} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.mintLimit} />
         <small class="muted">{$t('collectibles.mintLimitHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={offerForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.sortOrder} />
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.isFeatured} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.isFeatured} />
         {$t('collectibles.featured')}
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.isLimited} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.isLimited} />
         {$t('collectibles.limitedEdition')}
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
     </form>
   
     {#snippet actions()}
-      <button class="success" type="submit" disabled={!offerForm.productCode.trim()}>
-      {offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
+      <button class="success" type="submit" disabled={!form.productCode.trim()}>
+      {form.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
       </button>
       <button type="button" class="success" onclick={() => (offerForm = emptyOffer())}>
       {$t('collectibles.newOffer')}
@@ -1387,6 +1499,7 @@
 {/if}
 
 {#if canManage && mintableForm}
+  {@const form = mintableForm}
   <Drawer title={$t('collectibles.mintablesTitle')} eyebrow={$t('collectibles.title')} onclose={() => (mintableForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1395,27 +1508,27 @@
         ops.ask(
           '/api/v1/operations/content/mintable-types',
           {
-            typeId: Number(mintableForm.id) || 0,
-            productCode: mintableForm.productCode,
-            stampPrice: Number(mintableForm.stampPrice) || 0,
-            startsAt: new Date(mintableForm.startsAt).toISOString(),
-            endsAt: new Date(mintableForm.endsAt).toISOString(),
-            regionLocked: Boolean(mintableForm.regionLocked),
-            limitedEdition: Boolean(mintableForm.limitedEdition),
-            editionSize: Number(mintableForm.editionSize) || 0,
-            enabled: Boolean(mintableForm.enabled),
-            sortOrder: Number(mintableForm.sortOrder) || 0,
+            typeId: Number(form.id) || 0,
+            productCode: form.productCode,
+            stampPrice: Number(form.stampPrice) || 0,
+            startsAt: new Date(form.startsAt).toISOString(),
+            endsAt: new Date(form.endsAt).toISOString(),
+            regionLocked: Boolean(form.regionLocked),
+            limitedEdition: Boolean(form.limitedEdition),
+            editionSize: Number(form.editionSize) || 0,
+            enabled: Boolean(form.enabled),
+            sortOrder: Number(form.sortOrder) || 0,
           },
-          mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable'),
-          $t('collectibles.saveMintableSummary', { code: mintableForm.productCode })
+          form.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable'),
+          $t('collectibles.saveMintableSummary', { code: form.productCode })
         );
       }}
     >
       <label>
         {$t('collectibles.colItem')}
         <span class="cell">
-          <AssetImage src={mintableIconUrl} alt={mintableForm.productCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={mintableForm.productCode} placeholder="classname" readonly />
+          <AssetImage src={mintableIconUrl} alt={form.productCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'mintable')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1424,44 +1537,44 @@
       </label>
       <label>
         {$t('collectibles.colStampPrice')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={mintableForm.stampPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.stampPrice} />
         <small class="muted">{$t('collectibles.stampPriceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.opensAt')}
-        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={mintableForm.startsAt} />
+        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={form.startsAt} />
       </label>
       <label>
         {$t('collectibles.closesAt')}
-        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={mintableForm.endsAt} />
+        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={form.endsAt} />
         <small class="muted">{$t('collectibles.windowHelp')}</small>
       </label>
       <label>
         {$t('collectibles.editionSize')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={mintableForm.editionSize} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.editionSize} />
         <small class="muted">{$t('collectibles.editionSizeHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={mintableForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.sortOrder} />
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.limitedEdition} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.limitedEdition} />
         {$t('collectibles.limitedEdition')}
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.regionLocked} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.regionLocked} />
         {$t('collectibles.regionLocked')}
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
     </form>
   
     {#snippet actions()}
-      <button class="success" type="submit" disabled={!mintableForm.productCode.trim()}>
-      {mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
+      <button class="success" type="submit" disabled={!form.productCode.trim()}>
+      {form.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
       </button>
       <button type="button" class="success" onclick={() => (mintableForm = emptyMintable())}>
       {$t('collectibles.newMintable')}
@@ -1471,6 +1584,7 @@
 {/if}
 
 {#if canManage && tokenOfferForm}
+  {@const form = tokenOfferForm}
   <Drawer title={$t('collectibles.tokenOffersTitle')} eyebrow={$t('collectibles.title')} onclose={() => (tokenOfferForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1479,46 +1593,46 @@
         ops.ask(
           '/api/v1/operations/content/mint-token-offers',
           {
-            offerId: Number(tokenOfferForm.id) || 0,
-            productCode: tokenOfferForm.productCode,
-            silverPrice: Number(tokenOfferForm.silverPrice) || 0,
-            amountTokens: Number(tokenOfferForm.amountTokens) || 0,
-            enabled: Boolean(tokenOfferForm.enabled),
-            sortOrder: Number(tokenOfferForm.sortOrder) || 0,
+            offerId: Number(form.id) || 0,
+            productCode: form.productCode,
+            silverPrice: Number(form.silverPrice) || 0,
+            amountTokens: Number(form.amountTokens) || 0,
+            enabled: Boolean(form.enabled),
+            sortOrder: Number(form.sortOrder) || 0,
           },
-          tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer'),
-          $t('collectibles.saveTokenOfferSummary', { code: tokenOfferForm.productCode })
+          form.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer'),
+          $t('collectibles.saveTokenOfferSummary', { code: form.productCode })
         );
       }}
     >
       <label>
         {$t('collectibles.colBundle')}
-        <input autocomplete="off" spellcheck="false" bind:value={tokenOfferForm.productCode} placeholder="stamps_10" />
+        <input autocomplete="off" spellcheck="false" bind:value={form.productCode} placeholder="stamps_10" />
         <small class="muted">{$t('collectibles.tokenProductHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colStamps')}
-        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={tokenOfferForm.amountTokens} />
+        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={form.amountTokens} />
         <small class="muted">{$t('collectibles.amountTokensHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colSilverPrice')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={tokenOfferForm.silverPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.silverPrice} />
         <small class="muted">{$t('collectibles.silverPriceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={tokenOfferForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.sortOrder} />
       </label>
       <label class="check">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={tokenOfferForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
     </form>
   
     {#snippet actions()}
-      <button class="success" type="submit" disabled={!tokenOfferForm.productCode.trim()}>
-      {tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
+      <button class="success" type="submit" disabled={!form.productCode.trim()}>
+      {form.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
       </button>
       <button type="button" class="success" onclick={() => (tokenOfferForm = emptyTokenOffer())}>
       {$t('collectibles.newTokenOffer')}
@@ -1528,6 +1642,7 @@
 {/if}
 
 {#if canManage && claimForm}
+  {@const form = claimForm}
   <Drawer title={$t('collectibles.claimsTitle')} eyebrow={$t('collectibles.title')} onclose={() => (claimForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1536,17 +1651,17 @@
         ops.ask(
           '/api/v1/operations/content/claims',
           {
-            playerId: Number(claimForm.playerId) || 0,
-            productCode: claimForm.productCode,
-            setId: claimForm.setId || '',
-            defaultCollectionName: claimForm.defaultCollectionName || '',
-            collection: claimForm.collection || '',
-            claimLimit: Number(claimForm.claimLimit) || 1,
+            playerId: Number(form.playerId) || 0,
+            productCode: form.productCode,
+            setId: form.setId || '',
+            defaultCollectionName: form.defaultCollectionName || '',
+            collection: form.collection || '',
+            claimLimit: Number(form.claimLimit) || 1,
             validFrom: null,
-            validTo: claimForm.validTo ? new Date(claimForm.validTo).toISOString() : null,
+            validTo: form.validTo ? new Date(form.validTo).toISOString() : null,
           },
           $t('collectibles.addClaim'),
-          $t('collectibles.saveClaimSummary', { code: claimForm.productCode, name: claimForm.playerName || claimForm.playerId })
+          $t('collectibles.saveClaimSummary', { code: form.productCode, name: form.playerName || form.playerId })
         );
       }}
     >
@@ -1556,8 +1671,8 @@
           <button class="ghost-button" type="button" onclick={() => (picking = 'claimPlayer')}>
             {$t('common.selectUser')}
           </button>
-          {#if claimForm.playerId}
-            <span class="op-chip">{claimForm.playerName} <small>#{claimForm.playerId}</small></span>
+          {#if form.playerId}
+            <span class="op-chip">{form.playerName} <small>#{form.playerId}</small></span>
           {:else}
             <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
@@ -1566,8 +1681,8 @@
       <label>
         {$t('collectibles.colItem')}
         <span class="cell">
-          <AssetImage src={claimIconUrl} alt={claimForm.productCode} size={32} />
-          <input autocomplete="off" spellcheck="false" bind:value={claimForm.productCode} placeholder="classname" readonly />
+          <AssetImage src={claimIconUrl} alt={form.productCode} size={32} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'claim')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1576,23 +1691,23 @@
       </label>
       <label>
         {$t('collectibles.colSet')}
-        <input autocomplete="off" spellcheck="false" bind:value={claimForm.setId} placeholder="2025_icy_christmas" />
+        <input autocomplete="off" spellcheck="false" bind:value={form.setId} placeholder="2025_icy_christmas" />
         <small class="muted">{$t('collectibles.setIdHelp')}</small>
       </label>
       <label>
         {$t('collectibles.claimLimit')}
-        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={claimForm.claimLimit} />
+        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={form.claimLimit} />
         <small class="muted">{$t('collectibles.claimLimitHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colExpires')}
-        <input autocomplete="off" spellcheck="false" type="date" bind:value={claimForm.validTo} />
+        <input autocomplete="off" spellcheck="false" type="date" bind:value={form.validTo} />
         <small class="muted">{$t('collectibles.expiresHelp')}</small>
       </label>
     </form>
   
     {#snippet actions()}
-      <button type="submit" disabled={!claimForm.productCode.trim() || !claimForm.playerId} class="success">
+      <button type="submit" disabled={!form.productCode.trim() || !form.playerId} class="success">
       {$t('collectibles.addClaim')}
       </button>
       <button
@@ -1610,6 +1725,8 @@
 {/if}
 
 {#if canManage && grantForm && grantAvatar}
+  {@const form = grantForm}
+  {@const avatar = grantAvatar}
   <Drawer title={$t('collectibles.grantTitle')} eyebrow={$t('collectibles.title')} onclose={() => (grantForm = null)}>
     <form
       class="inline-form editor-form"
@@ -1618,14 +1735,14 @@
         ops.ask(
           '/api/v1/operations/content/nft-avatars/grant',
           {
-            avatarId: grantAvatar.id,
-            playerId: Number(grantForm.playerId) || 0,
-            note: grantForm.note || '',
+            avatarId: avatar.id,
+            playerId: Number(form.playerId) || 0,
+            note: form.note || '',
           },
           $t('collectibles.grantAvatar'),
           $t('collectibles.grantAvatarSummary', {
-            code: grantAvatar.avatarCode,
-            name: grantForm.playerName || grantForm.playerId,
+            code: avatar.avatarCode,
+            name: form.playerName || form.playerId,
           })
         );
       }}
@@ -1636,8 +1753,8 @@
           <button class="ghost-button" type="button" onclick={() => (picking = 'grantPlayer')}>
             {$t('common.selectUser')}
           </button>
-          {#if grantForm.playerId}
-            <span class="op-chip">{grantForm.playerName} <small>#{grantForm.playerId}</small></span>
+          {#if form.playerId}
+            <span class="op-chip">{form.playerName} <small>#{form.playerId}</small></span>
           {:else}
             <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
@@ -1645,13 +1762,13 @@
       </label>
       <label>
         {$t('collectibles.colGrantNote')}
-        <input autocomplete="off" spellcheck="false" bind:value={grantForm.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" bind:value={form.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
         <small class="muted">{$t('collectibles.grantNoteHelp')}</small>
       </label>
     </form>
   
     {#snippet actions()}
-      <button type="submit" disabled={!grantForm.playerId}>{$t('collectibles.grantAvatar')}</button>
+      <button type="submit" disabled={!form.playerId}>{$t('collectibles.grantAvatar')}</button>
       <button type="button" class="ghost-button" onclick={() => (grantAvatar = null)}>
       {$t('common.cancel')}
       </button>
@@ -1660,48 +1777,49 @@
 {/if}
 
 {#if canManage && avatarForm}
+  {@const form = avatarForm}
   <Drawer title={$t('collectibles.avatarsTitle')} eyebrow={$t('collectibles.title')} onclose={() => (avatarForm = null)}>
     <form
       class="inline-form editor-form"
       onsubmit={(event) => {
         event.preventDefault();
         ops.ask(
-          avatarForm.id
+          form.id
             ? '/api/v1/operations/content/nft-avatars/update'
             : '/api/v1/operations/content/nft-avatars',
           {
-            ...(avatarForm.id ? { avatarId: avatarForm.id } : {}),
-            avatarCode: avatarForm.avatarCode,
-            name: avatarForm.name || '',
-            figure: avatarForm.figure,
-            gender: avatarForm.gender,
-            contractKey: avatarForm.contractKey,
-            editionSize: Number(avatarForm.editionSize) || 0,
-            enabled: avatarForm.enabled,
-            sortOrder: Number(avatarForm.sortOrder) || 0,
+            ...(form.id ? { avatarId: form.id } : {}),
+            avatarCode: form.avatarCode,
+            name: form.name || '',
+            figure: form.figure,
+            gender: form.gender,
+            contractKey: form.contractKey,
+            editionSize: Number(form.editionSize) || 0,
+            enabled: form.enabled,
+            sortOrder: Number(form.sortOrder) || 0,
           },
-          avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar'),
-          $t('collectibles.saveAvatarSummary', { code: avatarForm.avatarCode })
+          form.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar'),
+          $t('collectibles.saveAvatarSummary', { code: form.avatarCode })
         );
       }}
     >
       <label>
         {$t('collectibles.colCode')}
-        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.avatarCode} placeholder="halloween_2026_vampire" />
+        <input autocomplete="off" spellcheck="false" bind:value={form.avatarCode} placeholder="halloween_2026_vampire" />
         <small class="muted">{$t('collectibles.avatarCodeHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colName')}
-        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.name} />
+        <input autocomplete="off" spellcheck="false" bind:value={form.name} />
       </label>
       <label>
         {$t('collectibles.colFigure')}
-        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.figure} placeholder="hd-180-1.ch-210-66.lg-270-82" />
+        <input autocomplete="off" spellcheck="false" bind:value={form.figure} placeholder="hd-180-1.ch-210-66.lg-270-82" />
         <small class="muted">{$t('collectibles.avatarFigureHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colGender')}
-        <select bind:value={avatarForm.gender}>
+        <select bind:value={form.gender}>
           <option value="M">M</option>
           <option value="F">F</option>
         </select>
@@ -1709,7 +1827,7 @@
       </label>
       <label>
         {$t('collectibles.colCollection')}
-        <select bind:value={avatarForm.contractKey}>
+        <select bind:value={form.contractKey}>
           {#each COLLECTION_OPTIONS as option}
             <option value={option.value}>{$t(option.key)}</option>
           {/each}
@@ -1718,22 +1836,22 @@
       </label>
       <label>
         {$t('collectibles.colEdition')}
-        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={avatarForm.editionSize} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.editionSize} />
         <small class="muted">{$t('collectibles.avatarEditionHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colSort')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={avatarForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={form.sortOrder} />
       </label>
       <label class="checkbox">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={avatarForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.enabled} />
         {$t('collectibles.enabled')}
       </label>
     </form>
   
     {#snippet actions()}
-      <button class="success" type="submit" disabled={!avatarForm.avatarCode.trim() || !avatarForm.figure.trim()}>
-      {avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
+      <button class="success" type="submit" disabled={!form.avatarCode.trim() || !form.figure.trim()}>
+      {form.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
       </button>
       <button type="button" class="success" onclick={() => (avatarForm = emptyAvatar())}>
       {$t('collectibles.newAvatar')}

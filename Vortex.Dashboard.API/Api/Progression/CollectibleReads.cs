@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Players.Avatar;
@@ -36,8 +37,8 @@ internal sealed class CollectibleReads(
     private static bool IsCollectibleClassname(string productCode) =>
         productCode.StartsWith("nft_", StringComparison.Ordinal);
 
-    public Task<object> CollectiblesAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<CollectiblesOverview> CollectiblesAsync(CancellationToken ct) =>
+        QueryAsync<CollectiblesOverview>(
             async db =>
             {
                 var collections = await db
@@ -90,14 +91,13 @@ internal sealed class CollectibleReads(
                     StringComparer.Ordinal
                 );
 
-                var collectionItems = collections
+                List<CollectionRow> collectionItems = collections
                     .Select(c =>
                     {
                         var owned = items.Where(i => i.collectionId == c.Id).ToList();
                         int unresolved = owned.Count(i => !knownFurniture.Contains(i.ProductCode));
 
-                        return new
-                        {
+                        return new CollectionRow(
                             c.Id,
                             c.CollectionCode,
                             c.Name,
@@ -107,13 +107,12 @@ internal sealed class CollectibleReads(
                             c.Status,
                             c.RewardProductCode,
                             c.BonusProductCode,
-                            itemCount = owned.Count,
-                            totalScore = owned.Sum(i => i.Score),
-                            unresolvedItems = unresolved,
-                            completable = owned.Count > 0 && unresolved == 0,
-                            items = owned
-                                .Select(i => new
-                                {
+                            owned.Count,
+                            owned.Sum(i => i.Score),
+                            unresolved,
+                            owned.Count > 0 && unresolved == 0,
+                            owned
+                                .Select(i => new CollectionItemRow(
                                     i.Id,
                                     i.ProductCode,
                                     i.ItemTypeId,
@@ -121,11 +120,11 @@ internal sealed class CollectibleReads(
                                     i.Score,
                                     i.Rarity,
                                     i.SortOrder,
-                                    resolved = knownFurniture.Contains(i.ProductCode),
-                                    iconUrl = _assetUrls.FurniIcon(i.ProductCode),
-                                })
-                                .ToList(),
-                        };
+                                    knownFurniture.Contains(i.ProductCode),
+                                    _assetUrls.FurniIcon(i.ProductCode)
+                                ))
+                                .ToList()
+                        );
                     })
                     .ToList();
 
@@ -167,9 +166,8 @@ internal sealed class CollectibleReads(
                     StringComparer.Ordinal
                 );
 
-                var storeOffers = offerRows
-                    .Select(o => new
-                    {
+                List<NftStoreOfferRow> storeOffers = offerRows
+                    .Select(o => new NftStoreOfferRow(
                         o.Id,
                         o.ProductCode,
                         o.EmeraldPrice,
@@ -183,15 +181,15 @@ internal sealed class CollectibleReads(
                         o.Rarity,
                         o.Enabled,
                         o.SortOrder,
-                        resolved = knownOfferFurniture.Contains(o.ProductCode),
-                        soldOut = o.MintLimit > 0 && o.SoldCount >= o.MintLimit,
+                        knownOfferFurniture.Contains(o.ProductCode),
+                        o.MintLimit > 0 && o.SoldCount >= o.MintLimit,
                         // The client decides what counts as a collectible purely from the
                         // classname: GroupItem.isNft() is className.indexOf("nft_") == 0. Anything
                         // else is hidden from the inventory's Collectibles category and listed as
                         // ordinary furniture, however it was bought.
-                        isNft = IsCollectibleClassname(o.ProductCode),
-                        iconUrl = _assetUrls.FurniIcon(o.ProductCode),
-                    })
+                        IsCollectibleClassname(o.ProductCode),
+                        _assetUrls.FurniIcon(o.ProductCode)
+                    ))
                     .ToList();
 
                 // The Relics waiting to be collected. Only outstanding ones are listed: a claim the
@@ -223,26 +221,22 @@ internal sealed class CollectibleReads(
                     )
                     .ConfigureAwait(false);
 
-                var claims = claimRows
-                    .Select(c => new
-                    {
+                List<NftClaimRow> claims = claimRows
+                    .Select(c => new NftClaimRow(
                         c.Id,
-                        playerId = c.PlayerEntityId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(
-                            claimNames,
-                            c.PlayerEntityId
-                        ),
+                        c.PlayerEntityId,
+                        DisplayNameQueries.ResolvePlayerName(claimNames, c.PlayerEntityId),
                         c.ProductCode,
                         c.SetId,
                         c.Collection,
                         c.ClaimLimit,
                         c.ClaimedAmount,
-                        remaining = c.ClaimLimit - c.ClaimedAmount,
+                        c.ClaimLimit - c.ClaimedAmount,
                         c.ValidFrom,
                         c.ValidTo,
-                        isNft = IsCollectibleClassname(c.ProductCode),
-                        iconUrl = _assetUrls.FurniIcon(c.ProductCode),
-                    })
+                        IsCollectibleClassname(c.ProductCode),
+                        _assetUrls.FurniIcon(c.ProductCode)
+                    ))
                     .ToList();
 
                 // Minting: what may be converted into a Relic, and what stamps cost. A type naming
@@ -294,9 +288,8 @@ internal sealed class CollectibleReads(
 
                 DateTime now = DateTime.UtcNow;
 
-                var mintableTypes = mintableRows
-                    .Select(t => new
-                    {
+                List<MintableTypeRow> mintableTypes = mintableRows
+                    .Select(t => new MintableTypeRow(
                         t.Id,
                         t.ProductCode,
                         t.StampPrice,
@@ -309,32 +302,33 @@ internal sealed class CollectibleReads(
                         t.SortOrder,
                         // How much of a limited edition is gone. Counted from the Relics that
                         // exist, which is also what the mint checks against.
-                        mintedCount = mintedByCode.GetValueOrDefault(t.ProductCode),
-                        exhausted = t.EditionSize > 0
+                        mintedByCode.GetValueOrDefault(t.ProductCode),
+                        t.EditionSize > 0
                             && mintedByCode.GetValueOrDefault(t.ProductCode) >= t.EditionSize,
-                        resolved = knownMintableFurniture.Contains(t.ProductCode),
+                        knownMintableFurniture.Contains(t.ProductCode),
                         // What the player sees: a type is only convertible while its window is
                         // open, and the client gives no reason for a closed one.
-                        open = t.Enabled && t.StartsAt <= now && t.EndsAt > now,
-                        expired = t.EndsAt <= now,
-                        isNft = IsCollectibleClassname(t.ProductCode),
-                        iconUrl = _assetUrls.FurniIcon(t.ProductCode),
-                    })
+                        t.Enabled
+                            && t.StartsAt <= now
+                            && t.EndsAt > now,
+                        t.EndsAt <= now,
+                        IsCollectibleClassname(t.ProductCode),
+                        _assetUrls.FurniIcon(t.ProductCode)
+                    ))
                     .ToList();
 
-                var tokenOffers = await db
+                List<MintTokenOfferRow> tokenOffers = await db
                     .NftMintTokenOffers.AsNoTracking()
                     .OrderBy(o => o.SortOrder)
                     .ThenBy(o => o.Id)
-                    .Select(o => new
-                    {
+                    .Select(o => new MintTokenOfferRow(
                         o.Id,
                         o.ProductCode,
                         o.SilverPrice,
                         o.AmountTokens,
                         o.Enabled,
-                        o.SortOrder,
-                    })
+                        o.SortOrder
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -387,41 +381,36 @@ internal sealed class CollectibleReads(
                     )
                     .ConfigureAwait(false);
 
-                var assets = assetRows
-                    .Select(a => new
-                    {
+                List<NftAssetRow> assets = assetRows
+                    .Select(a => new NftAssetRow(
                         a.Id,
-                        playerId = a.PlayerEntityId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(
-                            minterNames,
-                            a.PlayerEntityId
-                        ),
+                        a.PlayerEntityId,
+                        DisplayNameQueries.ResolvePlayerName(minterNames, a.PlayerEntityId),
                         a.ProductCode,
                         a.StampCost,
                         a.SerialNumber,
                         a.EditionSize,
-                        mintedAt = a.CreatedAt,
-                        iconUrl = _assetUrls.FurniIcon(a.ProductCode),
-                        history = ledgerRows
+                        a.CreatedAt,
+                        _assetUrls.FurniIcon(a.ProductCode),
+                        ledgerRows
                             .Where(l => l.assetId == a.Id)
-                            .Select(l => new
-                            {
+                            .Select(l => new NftAssetTransfer(
                                 l.Id,
-                                fromPlayer = l.FromPlayerEntityId is null
+                                l.FromPlayerEntityId is null
                                     ? null
                                     : DisplayNameQueries.ResolvePlayerName(
                                         minterNames,
                                         l.FromPlayerEntityId.Value
                                     ),
-                                toPlayer = DisplayNameQueries.ResolvePlayerName(
+                                DisplayNameQueries.ResolvePlayerName(
                                     minterNames,
                                     l.ToPlayerEntityId
                                 ),
                                 l.Reason,
-                                at = l.CreatedAt,
-                            })
-                            .ToList(),
-                    })
+                                l.CreatedAt
+                            ))
+                            .ToList()
+                    ))
                     .ToList();
 
                 int mintedTotal = await db
@@ -512,9 +501,8 @@ internal sealed class CollectibleReads(
                         .ConfigureAwait(false)
                 );
 
-                var nftAvatars = avatarRows
-                    .Select(a => new
-                    {
+                List<NftAvatarRow> nftAvatars = avatarRows
+                    .Select(a => new NftAvatarRow(
                         a.Id,
                         a.AvatarCode,
                         a.Name,
@@ -524,72 +512,60 @@ internal sealed class CollectibleReads(
                         a.EditionSize,
                         a.Enabled,
                         a.SortOrder,
-                        grantedCount = copyRows.Count(c => c.avatarId == a.Id),
-                        exhausted = a.EditionSize > 0
+                        copyRows.Count(c => c.avatarId == a.Id),
+                        a.EditionSize > 0
                             && copyRows.Count(c => c.avatarId == a.Id) >= a.EditionSize,
-                        // The caption the player reads under the tile is built from this string, and
-                        // the client has no branch for one it does not know: it prints the literal
-                        // word "null" instead of a collection name.
-                        knownCollection = NftAvatarCollection.IsKnown(a.ContractKey),
-                        avatarImageUrl = _assetUrls.AvatarImage(a.Figure),
-                        holders = copyRows
+                        // The caption the player reads under the tile is built from this string,
+                        // and the client has no branch for one it does not know: it prints the
+                        // literal word "null" instead of a collection name.
+                        NftAvatarCollection.IsKnown(a.ContractKey),
+                        _assetUrls.AvatarImage(a.Figure),
+                        copyRows
                             .Where(c => c.avatarId == a.Id)
-                            .Select(c => new
-                            {
+                            .Select(c => new NftAvatarHolder(
                                 c.Id,
-                                playerId = c.PlayerEntityId,
-                                playerName = DisplayNameQueries.ResolvePlayerName(
-                                    holderNames,
-                                    c.PlayerEntityId
-                                ),
+                                c.PlayerEntityId,
+                                DisplayNameQueries.ResolvePlayerName(holderNames, c.PlayerEntityId),
                                 c.SerialNumber,
                                 c.GrantNote,
-                                grantedAt = c.CreatedAt,
-                                worn = wornCopyIds.Contains(c.Id),
-                            })
-                            .ToList(),
-                    })
+                                c.CreatedAt,
+                                wornCopyIds.Contains(c.Id)
+                            ))
+                            .ToList()
+                    ))
                     .ToList();
 
-                return new
-                {
-                    totals = new
-                    {
-                        collections = collectionItems.Count,
-                        items = items.Count,
-                        unresolvedItems = collectionItems.Sum(c => c.unresolvedItems),
-                        completableCollections = collectionItems.Count(c => c.completable),
+                return new CollectiblesOverview(
+                    new CollectiblesTotals(
+                        collectionItems.Count,
+                        items.Count,
+                        collectionItems.Sum(c => c.UnresolvedItems),
+                        collectionItems.Count(c => c.Completable),
                         trackedPlayers,
-                        storeOffers = storeOffers.Count,
-                        storeOffersOnSale = storeOffers.Count(o =>
-                            o.Enabled && !o.soldOut && o.resolved
-                        ),
-                        mintableTypes = mintableTypes.Count,
-                        mintableTypesOpen = mintableTypes.Count(t => t.open && t.resolved),
-                        mintedRelics = mintedTotal,
+                        storeOffers.Count,
+                        storeOffers.Count(o => o.Enabled && !o.SoldOut && o.Resolved),
+                        mintableTypes.Count,
+                        mintableTypes.Count(t => t.Open && t.Resolved),
+                        mintedTotal,
                         stampsHeld,
-                        nftAvatars = nftAvatars.Count,
-                        nftAvatarsGranted = nftAvatars.Sum(a => a.grantedCount),
-                    },
-                    collections = collectionItems,
+                        nftAvatars.Count,
+                        nftAvatars.Sum(a => a.GrantedCount)
+                    ),
+                    collectionItems,
                     nftAvatars,
                     storeOffers,
                     mintableTypes,
                     tokenOffers,
                     assets,
                     claims,
-                    topCollectors = collectorRows
-                        .Select(c => new
-                        {
-                            playerId = c.PlayerEntityId,
-                            playerName = DisplayNameQueries.ResolvePlayerName(
-                                names,
-                                c.PlayerEntityId
-                            ),
-                            score = c.HighestScore,
-                        })
-                        .ToList(),
-                };
+                    collectorRows
+                        .Select(c => new CollectorScore(
+                            c.PlayerEntityId,
+                            DisplayNameQueries.ResolvePlayerName(names, c.PlayerEntityId),
+                            c.HighestScore
+                        ))
+                        .ToList()
+                );
             },
             ct
         );

@@ -99,6 +99,7 @@ public sealed class ApiTypeScriptContractTests
         typeof(RewardKindOptions),
         typeof(StaffOverview),
         typeof(StaffAccountSearch),
+        typeof(CollectiblesOverview),
     ];
 
     [Fact]

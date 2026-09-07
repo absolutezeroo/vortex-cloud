@@ -10,8 +10,14 @@ const STORAGE_KEY = 'turbo-dashboard-locale';
 
 type Locale = 'en' | 'fr';
 
-/** What a translation takes: names to substitute into `{placeholders}`. */
-type TranslationParams = Record<string, string | number>;
+/**
+ * What a translation takes: names to substitute into `{placeholders}`.
+ *
+ * Null is allowed because half of what gets interpolated here is a display name, and a display
+ * name is null wherever its row has been deleted. interpolate() already String()s every value,
+ * so the substitution was never the problem -- the type was just narrower than the code.
+ */
+type TranslationParams = Record<string, string | number | null | undefined>;
 
 const DICTIONARIES: Record<Locale, unknown> = { en, fr };
 

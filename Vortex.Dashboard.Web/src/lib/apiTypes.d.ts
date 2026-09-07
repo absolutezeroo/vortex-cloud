@@ -570,6 +570,69 @@ export interface CodeDirectoryRow {
   description: string | null;
 }
 
+export interface CollectiblesOverview {
+  totals: CollectiblesTotals;
+  collections: CollectionRow[];
+  nftAvatars: NftAvatarRow[];
+  storeOffers: NftStoreOfferRow[];
+  mintableTypes: MintableTypeRow[];
+  tokenOffers: MintTokenOfferRow[];
+  assets: NftAssetRow[];
+  claims: NftClaimRow[];
+  topCollectors: CollectorScore[];
+}
+
+export interface CollectiblesTotals {
+  collections: number;
+  items: number;
+  unresolvedItems: number;
+  completableCollections: number;
+  trackedPlayers: number;
+  storeOffers: number;
+  storeOffersOnSale: number;
+  mintableTypes: number;
+  mintableTypesOpen: number;
+  mintedRelics: number;
+  stampsHeld: number;
+  nftAvatars: number;
+  nftAvatarsGranted: number;
+}
+
+export interface CollectionItemRow {
+  id: number;
+  productCode: string;
+  itemTypeId: string;
+  productTypeId: number;
+  score: number;
+  rarity: string;
+  sortOrder: number;
+  resolved: boolean;
+  iconUrl: string | null;
+}
+
+export interface CollectionRow {
+  id: number;
+  collectionCode: string;
+  name: string;
+  boostScore: number;
+  releasedAt: string | null;
+  snapshotAt: string | null;
+  status: number;
+  rewardProductCode: string | null;
+  bonusProductCode: string | null;
+  itemCount: number;
+  totalScore: number;
+  unresolvedItems: number;
+  completable: boolean;
+  items: CollectionItemRow[];
+}
+
+export interface CollectorScore {
+  playerId: number;
+  playerName: string | null;
+  score: number;
+}
+
 export interface CurrencyTypeRow {
   id: number;
   name: string | null;
@@ -1015,6 +1078,35 @@ export interface MarketplaceTotals {
   averagePrice: number;
 }
 
+export interface MintTokenOfferRow {
+  id: number;
+  productCode: string;
+  silverPrice: number;
+  amountTokens: number;
+  enabled: boolean;
+  sortOrder: number;
+}
+
+export interface MintableTypeRow {
+  id: number;
+  productCode: string;
+  stampPrice: number;
+  startsAt: string;
+  endsAt: string;
+  regionLocked: boolean;
+  limitedEdition: boolean;
+  editionSize: number;
+  enabled: boolean;
+  sortOrder: number;
+  mintedCount: number;
+  exhausted: boolean;
+  resolved: boolean;
+  open: boolean;
+  expired: boolean;
+  isNft: boolean;
+  iconUrl: string | null;
+}
+
 export interface ModerationActionCount {
   action: string;
   count: number;
@@ -1102,6 +1194,90 @@ export interface ModerationTotals {
 export interface ModerationWindow {
   since: string;
   until: string;
+}
+
+export interface NftAssetRow {
+  id: number;
+  playerId: number;
+  playerName: string | null;
+  productCode: string;
+  stampCost: number;
+  serialNumber: number;
+  editionSize: number;
+  mintedAt: string;
+  iconUrl: string | null;
+  history: NftAssetTransfer[];
+}
+
+export interface NftAssetTransfer {
+  id: number;
+  fromPlayer: string | null;
+  toPlayer: string | null;
+  reason: string;
+  at: string;
+}
+
+export interface NftAvatarHolder {
+  id: number;
+  playerId: number;
+  playerName: string | null;
+  serialNumber: number;
+  grantNote: string | null;
+  grantedAt: string;
+  worn: boolean;
+}
+
+export interface NftAvatarRow {
+  id: number;
+  avatarCode: string;
+  name: string;
+  figure: string;
+  gender: string;
+  contractKey: string;
+  editionSize: number;
+  enabled: boolean;
+  sortOrder: number;
+  grantedCount: number;
+  exhausted: boolean;
+  knownCollection: boolean;
+  avatarImageUrl: string | null;
+  holders: NftAvatarHolder[];
+}
+
+export interface NftClaimRow {
+  id: number;
+  playerId: number;
+  playerName: string | null;
+  productCode: string;
+  setId: string;
+  collection: string;
+  claimLimit: number;
+  claimedAmount: number;
+  remaining: number;
+  validFrom: string | null;
+  validTo: string | null;
+  isNft: boolean;
+  iconUrl: string | null;
+}
+
+export interface NftStoreOfferRow {
+  id: number;
+  productCode: string;
+  emeraldPrice: number;
+  isFeatured: boolean;
+  isLimited: boolean;
+  mintLimit: number;
+  soldCount: number;
+  itemTypeId: string;
+  productTypeId: number;
+  score: number;
+  rarity: string;
+  enabled: boolean;
+  sortOrder: number;
+  resolved: boolean;
+  soldOut: boolean;
+  isNft: boolean;
+  iconUrl: string | null;
 }
 
 export interface PetGrowthPoint {
