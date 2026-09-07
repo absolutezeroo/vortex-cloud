@@ -360,6 +360,11 @@ export interface BuildersClubTierRow {
   furniLimit: number;
 }
 
+export interface CapabilityGroup {
+  area: string;
+  capabilities: string[];
+}
+
 export interface CatalogOfferSales {
   offerId: number;
   offerName: string;
@@ -1715,6 +1720,21 @@ export interface RoomDirectoryRow {
   lastActive: string;
 }
 
+export interface SanctionPresetKindOption {
+  value: number;
+  label: string;
+}
+
+export interface SanctionPresetRow {
+  id: number;
+  kind: string;
+  presetIndex: number;
+  name: string;
+  durationSeconds: number | null;
+  message: string | null;
+  permanent: boolean;
+}
+
 export interface SocialForums {
   threadsByState: ForumStateCount[];
   postsByState: ForumStateCount[];
@@ -1780,6 +1800,67 @@ export interface SongListResponse {
   page: number;
   pageSize: number;
   items: SongListItem[];
+}
+
+export interface StaffAccountMatch {
+  id: number;
+  email: string;
+  playerNames: string[];
+  roleIds: number[];
+}
+
+export interface StaffAccountSearch {
+  count: number;
+  items: StaffAccountMatch[];
+}
+
+export interface StaffMember {
+  id: number;
+  email: string;
+  createdAt: string;
+  playerNames: string[];
+  players: StaffPlayer[];
+  roles: string[];
+  roleIds: number[];
+}
+
+export interface StaffOverview {
+  totals: StaffTotals;
+  roles: StaffRole[];
+  staff: StaffMember[];
+  presets: SanctionPresetRow[];
+  ungrantedCapabilities: string[];
+  wildcardExists: boolean;
+  allCapabilities: CapabilityGroup[];
+  wildcard: string;
+  presetKinds: SanctionPresetKindOption[];
+}
+
+export interface StaffPlayer {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+}
+
+export interface StaffRole {
+  id: number;
+  key: string;
+  name: string;
+  capabilityCount: number;
+  capabilities: string[];
+  unknownCapabilities: string[];
+  wildcard: boolean;
+  holders: number;
+}
+
+export interface StaffTotals {
+  roleCount: number;
+  staffAccounts: number;
+  declaredCapabilities: number;
+  grantedCapabilities: number;
+  ungrantedCapabilities: number;
+  presetCount: number;
+  activeBans: number;
 }
 
 export interface UntouchedAchievement {

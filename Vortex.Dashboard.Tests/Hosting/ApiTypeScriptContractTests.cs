@@ -97,6 +97,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(PlayerRewardTracks),
         typeof(RewardTrackActionOptions),
         typeof(RewardKindOptions),
+        typeof(StaffOverview),
+        typeof(StaffAccountSearch),
     ];
 
     [Fact]

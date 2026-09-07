@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Who can do what — and now, who gets to do what. The two cross-checks are still the point of the
   // read half: a role granting a capability string the code no longer declares grants nothing, and a
   // declared capability no role grants is a feature nobody can reach. The write half closes the
@@ -7,6 +7,27 @@
   import { onMount } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { apiGet } from '../lib/api';
+  import type {
+    CapabilityGroup,
+    StaffAccountMatch,
+    StaffAccountSearch,
+    StaffOverview,
+    StaffRole,
+  } from '../lib/apiTypes';
+
+  /** The sanction preset editor's form; a duration of null means permanent. */
+  type PresetForm = {
+    id?: number;
+    kind: number | string;
+    presetIndex: number | string;
+    name: string;
+    durationSeconds: number | string | null;
+    message: string;
+  };
+
+  /** Granting a role is three decisions; the wizard holds the answers as they arrive. */
+  type Wizard = { step: 1 | 2 | 3; account: StaffAccountMatch | null; roleId: number };
+
   import { formatNumber, formatDate, formatDuration } from '../lib/format';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
@@ -27,8 +48,8 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
-  let expanded = $state(null);
+  let data = $state<StaffOverview | null>(null);
+  let expanded = $state<number | null>(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
@@ -36,14 +57,19 @@
   let tab = $state('roles');
 
   let roleForm = $state({ key: '', name: '' });
-  let roleDraft = $state(null);
+  let roleDraft = $state<StaffRole | null>(null);
   // Adding a role used to be a form permanently open under the table; it opens in the
   // drawer, where every other create in this dashboard opens.
   let addingRole = $state(false);
   let addingPreset = $state(false); // { id, key, name }
-  let capabilityDraft = $state(null); // { roleId, selected: Set }
-  let presetForm = $state(emptyPreset());
-  let presetDraft = $state(null);
+  /** The role being edited and the keys ticked so far. */
+  let capabilityDraft = $state<{
+    roleId: number;
+    role: StaffRole;
+    selected: SvelteSet<string>;
+  } | null>(null);
+  let presetForm = $state<PresetForm>(emptyPreset());
+  let presetDraft = $state<PresetForm | null>(null);
 
   // One modal drives every write, so the audited reason cannot be skipped on any of the small forms.
   // createWriteOps owns that whole cycle (stage -> confirm with reason -> remember it -> refresh);
@@ -62,7 +88,7 @@
 
 
   let accountQuery = $state('');
-  let accountResults = $state([]);
+  let accountResults = $state<StaffAccountMatch[]>([]);
   let accountSearching = $state(false);
 
   // Granting a role is three decisions -- which account, which role, and is that really what you
@@ -70,7 +96,7 @@
   // table further down. As a wizard each decision gets the whole panel, and the last step states the
   // outcome in a sentence before anything is written.
   const WIZARD_STEPS = ['staff.wizardStepAccount', 'staff.wizardStepRole', 'staff.wizardStepConfirm'];
-  let wizard = $state(null); // { step: 1..3, account, roleId }
+  let wizard = $state<Wizard | null>(null);
 
   function openWizard() {
     accountQuery = '';
@@ -86,7 +112,7 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsStaffManage));
 
-  function emptyPreset() {
+  function emptyPreset(): PresetForm {
     return { kind: 0, presetIndex: 0, name: '', durationSeconds: null, message: '' };
   }
 
@@ -96,7 +122,7 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/staff');
+      data = await apiGet<StaffOverview>('/api/v1/staff');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -104,7 +130,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -117,25 +143,30 @@
     try {
       const params = new URLSearchParams();
       if (accountQuery.trim()) params.set('q', accountQuery.trim());
-      const response = await apiGet(`/api/v1/staff/accounts?${params}`);
+      const response = await apiGet<StaffAccountSearch>(`/api/v1/staff/accounts?${params}`);
       accountResults = response.items || [];
     } catch (err) {
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       accountSearching = false;
     }
   }
 
-  const ask = (endpoint, body, title, summary) => ops.ask(endpoint, body, title, summary);
+  const ask = (
+    endpoint: string,
+    body: Record<string, unknown>,
+    title: string,
+    summary: string,
+  ) => ops.ask(endpoint, body, title, summary);
 
-  function startCapabilityEdit(role) {
+  function startCapabilityEdit(role: StaffRole) {
     expanded = role.id;
     // SvelteSet, not Set: $state proxies this object but NOT a Set held inside it, so the
     // add/delete below would mutate without signalling and no checkbox would move.
     capabilityDraft = { roleId: role.id, role, selected: new SvelteSet(role.capabilities) };
   }
 
-  function toggleCapability(key) {
+  function toggleCapability(key: string) {
     if (!capabilityDraft) return;
 
     if (capabilityDraft.selected.has(key)) {
@@ -145,7 +176,7 @@
     }
   }
 
-  function toggleArea(group, on) {
+  function toggleArea(group: CapabilityGroup, on: boolean) {
     if (!capabilityDraft) return;
 
     for (const key of group.capabilities) {
@@ -154,19 +185,22 @@
     }
   }
 
-  function saveCapabilities(role) {
+  function saveCapabilities(role: StaffRole) {
+    // Only reachable from the editor this draft belongs to.
+    const draft = capabilityDraft!;
+
     ask(
       '/api/v1/operations/staff/roles/capabilities',
-      { roleId: role.id, capabilities: [...capabilityDraft.selected] },
+      { roleId: role.id, capabilities: [...draft.selected] },
       $t('staff.saveCapabilities'),
       $t('staff.saveCapabilitiesSummary', {
         role: role.name,
-        count: capabilityDraft.selected.size,
+        count: draft.selected.size,
       })
     );
   }
 
-  function roleName(id) {
+  function roleName(id: number) {
     return (data?.roles || []).find((r) => r.id === id)?.name ?? `#${id}`;
   }
 
@@ -200,31 +234,31 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <StatCard label={$t('staff.roles')} value={formatNumber(data.totals.roleCount)}>
+    <StatCard label={$t('staff.roles')} value={formatNumber(data?.totals.roleCount)}>
       {#snippet icon()}
         <ShieldCheck size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('staff.accounts')} value={formatNumber(data.totals.staffAccounts)}>
+    <StatCard label={$t('staff.accounts')} value={formatNumber(data?.totals.staffAccounts)}>
       {#snippet icon()}
         <Users size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
     <StatCard
       label={$t('staff.capabilities')}
-      value={formatNumber(data.totals.declaredCapabilities)}
-      sub={$t('staff.grantedCapabilities', { count: formatNumber(data.totals.grantedCapabilities) })}
+      value={formatNumber(data?.totals.declaredCapabilities)}
+      sub={$t('staff.grantedCapabilities', { count: formatNumber(data?.totals.grantedCapabilities) })}
     >
       {#snippet icon()}
         <KeyRound size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('staff.presets')} value={formatNumber(data.totals.presetCount)}>
+    <StatCard label={$t('staff.presets')} value={formatNumber(data?.totals.presetCount)}>
       {#snippet icon()}
         <Gavel size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('staff.activeBans')} value={formatNumber(data.totals.activeBans)}>
+    <StatCard label={$t('staff.activeBans')} value={formatNumber(data?.totals.activeBans)}>
       {#snippet icon()}
         <Gavel size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
@@ -235,9 +269,9 @@
     bind:active={tab}
     storageKey="staff"
     tabs={[
-      { id: 'roles', label: $t('staff.tabRoles'), icon: ShieldCheck, count: data.roles?.length },
-      { id: 'people', label: $t('staff.tabPeople'), icon: Users, count: data.staff?.length },
-      { id: 'presets', label: $t('staff.tabPresets'), icon: Gavel, count: data.presets?.length },
+      { id: 'roles', label: $t('staff.tabRoles'), icon: ShieldCheck, count: data?.roles?.length },
+      { id: 'people', label: $t('staff.tabPeople'), icon: Users, count: data?.staff?.length },
+      { id: 'presets', label: $t('staff.tabPresets'), icon: Gavel, count: data?.presets?.length },
     ]}
   />
 
@@ -262,7 +296,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.roles || [] as role}
+          {#each data?.roles || [] as role}
             <tr class:selected={expanded === role.id}>
               <td>
                 <button type="button" class="link-cell" onclick={() => (expanded = expanded === role.id ? null : role.id)}>
@@ -345,11 +379,11 @@
     <p class="muted">{$t('staff.ungrantedDescription')}</p>
     {#if data.wildcardExists}
       <EmptyState message={$t('staff.wildcardCovers')} />
-    {:else if (data.ungrantedCapabilities || []).length === 0}
+    {:else if (data?.ungrantedCapabilities || []).length === 0}
       <EmptyState message={$t('staff.ungrantedNone')} />
     {:else}
       <div class="cap-list">
-        {#each data.ungrantedCapabilities as cap}
+        {#each data?.ungrantedCapabilities as cap}
           <code class="chip">{cap}</code>
         {/each}
       </div>
@@ -382,7 +416,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.staff || [] as account}
+          {#each data?.staff || [] as account}
             <tr>
               <td>{account.email}</td>
               <td>
@@ -453,7 +487,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.presets || [] as preset}
+          {#each data?.presets || [] as preset}
             <tr>
               <td>{preset.kind}</td>
               <td>{preset.presetIndex}</td>
@@ -468,7 +502,7 @@
                     onclick={() =>
                       (presetDraft = {
                         id: preset.id,
-                        kind: (data.presetKinds || []).find((k) => k.label === preset.kind)?.value ?? 0,
+                        kind: (data?.presetKinds || []).find((k) => k.label === preset.kind)?.value ?? 0,
                         presetIndex: preset.presetIndex,
                         name: preset.name,
                         durationSeconds: preset.durationSeconds,
@@ -504,6 +538,7 @@
 {/if}
 
 {#if roleDraft}
+  {@const draft = roleDraft}
   <Drawer title={$t('staff.rolesTitle')} eyebrow={$t('staff.title')} onclose={() => (roleDraft = null)}>
     <form
       class="inline-form"
@@ -511,18 +546,18 @@
         event.preventDefault();
         ask(
           '/api/v1/operations/staff/roles/update',
-          { roleId: roleDraft.id, key: roleDraft.key, name: roleDraft.name },
+          { roleId: draft.id, key: draft.key, name: draft.name },
           $t('staff.updateRole'),
-          $t('staff.updateRoleSummary', { role: roleDraft.name })
+          $t('staff.updateRoleSummary', { role: draft.name })
         );
       }} id="staffpage-drawer-1">
       <label>
         {$t('staff.colKey')}
-        <input autocomplete="off" spellcheck="false" bind:value={roleDraft.key} required />
+        <input autocomplete="off" spellcheck="false" bind:value={draft.key} required />
       </label>
       <label>
         {$t('staff.colRole')}
-        <input autocomplete="off" spellcheck="false" bind:value={roleDraft.name} required />
+        <input autocomplete="off" spellcheck="false" bind:value={draft.name} required />
       </label>
 </form>
   
@@ -536,18 +571,19 @@
 {/if}
 
 {#if capabilityDraft}
+  {@const draft = capabilityDraft}
   <Drawer title={$t('staff.capabilitiesTitle')} eyebrow={$t('staff.title')} onclose={() => (capabilityDraft = null)}>
     <p class="muted">{$t('staff.capabilityEditorHint')}</p>
     <label class="wildcard-row">
       <input autocomplete="off" spellcheck="false"
         type="checkbox"
-        checked={capabilityDraft.selected.has(data.wildcard)}
-        onchange={() => toggleCapability(data.wildcard)}
+        checked={draft.selected.has(data?.wildcard ?? '')}
+        onchange={() => toggleCapability(data?.wildcard ?? '')}
       />
-      <code>{data.wildcard}</code>
+      <code>{data?.wildcard}</code>
       <span class="muted">{$t('staff.wildcardHint')}</span>
     </label>
-    {#each data.allCapabilities || [] as group}
+    {#each data?.allCapabilities || [] as group}
       <div class="cap-area">
         <div class="cap-area-head">
           <strong>{group.area}</strong>
@@ -563,7 +599,7 @@
             <label class="cap-check">
               <input autocomplete="off" spellcheck="false"
                 type="checkbox"
-                checked={capabilityDraft.selected.has(cap)}
+                checked={draft.selected.has(cap)}
                 onchange={() => toggleCapability(cap)}
               />
               <code>{cap}</code>
@@ -574,20 +610,21 @@
     {/each}
 
     {#snippet actions()}
-      <button type="button" onclick={() => saveCapabilities(capabilityDraft.role)}>
+      <button type="button" onclick={() => saveCapabilities(draft.role)}>
         {$t('staff.saveCapabilities')}
       </button>
       <button type="button" class="ghost-button" onclick={() => (capabilityDraft = null)}>
         {$t('staff.cancel')}
       </button>
       <span class="muted">
-        {$t('staff.selectedCount', { count: capabilityDraft.selected.size })}
+        {$t('staff.selectedCount', { count: draft.selected.size })}
       </span>
     {/snippet}
   </Drawer>
 {/if}
 
 {#if presetDraft}
+  {@const draft = presetDraft}
   <Drawer title={$t('staff.presetsTitle')} eyebrow={$t('staff.title')} onclose={() => (presetDraft = null)}>
     <form
       class="inline-form"
@@ -596,42 +633,42 @@
         ask(
           '/api/v1/operations/staff/presets/update',
           {
-            presetId: presetDraft.id,
-            kind: Number(presetDraft.kind),
-            presetIndex: Number(presetDraft.presetIndex),
-            name: presetDraft.name,
-            durationSeconds: presetDraft.durationSeconds
-              ? Number(presetDraft.durationSeconds)
+            presetId: draft.id,
+            kind: Number(draft.kind),
+            presetIndex: Number(draft.presetIndex),
+            name: draft.name,
+            durationSeconds: draft.durationSeconds
+              ? Number(draft.durationSeconds)
               : null,
-            message: presetDraft.message,
+            message: draft.message,
           },
           $t('staff.updatePreset'),
-          $t('staff.updatePresetSummary', { name: presetDraft.name })
+          $t('staff.updatePresetSummary', { name: draft.name })
         );
       }} id="staffpage-drawer-3">
       <label>
         {$t('staff.colKind')}
-        <select bind:value={presetDraft.kind}>
-          {#each data.presetKinds || [] as kind}
+        <select bind:value={draft.kind}>
+          {#each data?.presetKinds || [] as kind}
             <option value={kind.value}>{kind.label}</option>
           {/each}
         </select>
       </label>
       <label>
         {$t('staff.colIndex')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={presetDraft.presetIndex} min="0" />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={draft.presetIndex} min="0" />
       </label>
       <label>
         {$t('staff.colPresetName')}
-        <input autocomplete="off" spellcheck="false" bind:value={presetDraft.name} required />
+        <input autocomplete="off" spellcheck="false" bind:value={draft.name} required />
       </label>
       <label>
         {$t('staff.durationSeconds')}
-        <input autocomplete="off" spellcheck="false" type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={draft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
       </label>
       <label>
         {$t('staff.colMessage')}
-        <input autocomplete="off" spellcheck="false" bind:value={presetDraft.message} />
+        <input autocomplete="off" spellcheck="false" bind:value={draft.message} />
       </label>
 </form>
   
@@ -960,7 +997,7 @@
         <label>
           {$t('staff.colKind')}
           <select bind:value={presetForm.kind}>
-            {#each data.presetKinds || [] as kind}
+            {#each data?.presetKinds || [] as kind}
               <option value={kind.value}>{kind.label}</option>
             {/each}
           </select>
@@ -992,20 +1029,21 @@
 {/if}
 
 {#if wizard}
+  {@const flow = wizard}
   <Drawer title={$t('staff.addMember')} eyebrow={$t('staff.title')} width={620} onclose={() => (wizard = null)}>
     <ol class="wiz-rail">
       {#each WIZARD_STEPS as stepKey, index}
         {@const number = index + 1}
-        <li class:done={wizard.step > number} class:current={wizard.step === number}>
+        <li class:done={flow.step > number} class:current={flow.step === number}>
           <span class="wiz-dot" aria-hidden="true">
-            {#if wizard.step > number}<Check size={13} strokeWidth={3} />{:else}{number}{/if}
+            {#if flow.step > number}<Check size={13} strokeWidth={3} />{:else}{number}{/if}
           </span>
           <span class="wiz-label">{$t(stepKey)}</span>
         </li>
       {/each}
     </ol>
 
-    {#if wizard.step === 1}
+    {#if flow.step === 1}
       <p class="muted">{$t('staff.wizardAccountHelp')}</p>
       <form
         class="inline-form"
@@ -1031,8 +1069,8 @@
           <button
             type="button"
             class="wiz-option pick-row"
-            class:picked={wizard.account?.id === account.id}
-            onclick={() => (wizard = { ...wizard, account, roleId: 0 })}
+            class:picked={flow.account?.id === account.id}
+            onclick={() => (wizard = { ...flow, account, roleId: 0 })}
           >
             <span class="wiz-option-main">
               <strong>{account.email}</strong>
@@ -1054,18 +1092,18 @@
       </div>
     {/if}
 
-    {#if wizard.step === 2}
-      <p class="muted">{$t('staff.wizardRoleHelp', { email: wizard.account.email })}</p>
+    {#if flow.step === 2}
+      <p class="muted">{$t('staff.wizardRoleHelp', { email: flow.account!.email })}</p>
       <div class="wiz-list">
-        {#each data.roles || [] as role}
-          {@const held = (wizard.account.roleIds || []).includes(role.id)}
+        {#each data?.roles || [] as role}
+          {@const held = (flow.account?.roleIds || []).includes(role.id)}
           <button
             type="button"
             class="wiz-option pick-row"
-            class:picked={wizard.roleId === role.id}
+            class:picked={flow.roleId === role.id}
             disabled={held}
             title={held ? $t('staff.assignAlreadyHeld', { role: role.name }) : ''}
-            onclick={() => (wizard = { ...wizard, roleId: role.id })}
+            onclick={() => (wizard = { ...flow, roleId: role.id })}
           >
             <span class="wiz-option-main">
               <strong>{role.name}</strong>
@@ -1086,34 +1124,34 @@
       </div>
     {/if}
 
-    {#if wizard.step === 3}
+    {#if flow.step === 3}
       <!-- The last thing between an operator and a permission grant should be a sentence, not a
            button whose effect you infer from which row it sits on. -->
       <p class="wiz-recap">
-        {$t('staff.assignSummary', { role: roleName(wizard.roleId), email: wizard.account.email })}
+        {$t('staff.assignSummary', { role: roleName(flow.roleId), email: flow.account!.email })}
       </p>
       <dl class="wiz-recap-grid">
         <dt>{$t('staff.colEmail')}</dt>
-        <dd>{wizard.account.email}</dd>
+        <dd>{flow.account!.email}</dd>
         <dt>{$t('staff.colPlayers')}</dt>
-        <dd>{(wizard.account.playerNames || []).join(', ') || '—'}</dd>
+        <dd>{(flow.account?.playerNames || []).join(', ') || '—'}</dd>
         <dt>{$t('staff.colRole')}</dt>
-        <dd>{roleName(wizard.roleId)}</dd>
+        <dd>{roleName(flow.roleId)}</dd>
       </dl>
     {/if}
 
     {#snippet actions()}
-      {#if wizard.step > 1}
-        <button type="button" class="ghost-button" onclick={() => (wizard = { ...wizard, step: wizard.step - 1 })}>
+      {#if flow.step > 1}
+        <button type="button" class="ghost-button" onclick={() => (wizard = { ...flow, step: (flow.step - 1) as 1 | 2 })}>
           {$t('staff.wizardBack')}
         </button>
       {/if}
-      {#if wizard.step < 3}
+      {#if flow.step < 3}
         <button
           type="button"
           class="success"
           disabled={!wizardCanAdvance}
-          onclick={() => (wizard = { ...wizard, step: wizard.step + 1 })}
+          onclick={() => (wizard = { ...flow, step: (flow.step + 1) as 2 | 3 })}
         >
           {$t('staff.wizardNext')}
         </button>
@@ -1124,9 +1162,9 @@
           onclick={() =>
             ask(
               '/api/v1/operations/staff/assignments',
-              { accountId: wizard.account.id, roleId: wizard.roleId },
+              { accountId: flow.account!.id, roleId: flow.roleId },
               $t('staff.assign'),
-              $t('staff.assignSummary', { role: roleName(wizard.roleId), email: wizard.account.email })
+              $t('staff.assignSummary', { role: roleName(flow.roleId), email: flow.account!.email })
             )}
         >
           {$t('staff.assign')}

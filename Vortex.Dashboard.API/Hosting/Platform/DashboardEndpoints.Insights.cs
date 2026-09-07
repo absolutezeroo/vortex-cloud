@@ -9,6 +9,7 @@ using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -42,14 +43,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.SocialRead,
             TagSocial
         );
-        MapReadGet(
+        MapReadGet<StaffOverview>(
             app,
             ApiStaff,
             (StaffReads staff, CancellationToken ct) => OkAsync(staff.StaffAsync(ct)),
             Capabilities.Dashboard.StaffRead,
             TagStaff
         );
-        MapReadGet(
+        MapReadGet<StaffAccountSearch>(
             app,
             ApiStaff + "/accounts",
             (HttpContext ctx, StaffReads staff, CancellationToken ct) =>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Permissions;
@@ -33,8 +34,11 @@ internal sealed class StaffReads(
     /// player, so the ordinary player picker cannot drive this: it hands back a player id, and two
     /// players can share one account. Matches on email or on any of the account's player names.
     /// </summary>
-    public Task<object> StaffAccountSearchAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<StaffAccountSearch> StaffAccountSearchAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<StaffAccountSearch>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -54,32 +58,29 @@ internal sealed class StaffReads(
                     );
                 }
 
-                var rows = await accounts
+                List<StaffAccountMatch> rows = await accounts
                     .OrderBy(a => a.Email)
                     .Take(limit)
-                    .Select(a => new
-                    {
+                    .Select(a => new StaffAccountMatch(
                         a.Id,
                         a.Email,
-                        playerNames = db
-                            .Players.Where(p => p.PlayerAccountEntityId == a.Id)
+                        db.Players.Where(p => p.PlayerAccountEntityId == a.Id)
                             .Select(p => p.Name)
                             .ToList(),
-                        roleIds = db
-                            .PlayerAccountRoles.Where(r => r.PlayerAccountEntityId == a.Id)
+                        db.PlayerAccountRoles.Where(r => r.PlayerAccountEntityId == a.Id)
                             .Select(r => r.RoleEntityId)
-                            .ToList(),
-                    })
+                            .ToList()
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { count = rows.Count, items = rows };
+                return new StaffAccountSearch(rows.Count, rows);
             },
             ct
         );
 
-    public Task<object> StaffAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<StaffOverview> StaffAsync(CancellationToken ct) =>
+        QueryAsync<StaffOverview>(
             async db =>
             {
                 var roles = await db
@@ -125,24 +126,23 @@ internal sealed class StaffReads(
 
                 HashSet<string> declared = new(Capabilities.All, StringComparer.Ordinal);
 
-                var roleItems = roles
+                List<StaffRole> roleItems = roles
                     .Select(r =>
                     {
                         List<string> caps = capabilitiesByRole.GetValueOrDefault(r.Id, []);
 
-                        return new
-                        {
+                        return new StaffRole(
                             r.Id,
                             r.Key,
                             r.Name,
-                            capabilityCount = caps.Count,
-                            capabilities = caps,
-                            // A key that is not in Capabilities.All grants nothing: the authorization
-                            // check compares against the declared set.
-                            unknownCapabilities = caps.Where(c => !declared.Contains(c)).ToList(),
-                            wildcard = caps.Contains(Capabilities.Wildcard),
-                            holders = holderCountByRole.GetValueOrDefault(r.Id),
-                        };
+                            caps.Count,
+                            caps,
+                            // A key that is not in Capabilities.All grants nothing: the
+                            // authorization check compares against the declared set.
+                            caps.Where(c => !declared.Contains(c)).ToList(),
+                            caps.Contains(Capabilities.Wildcard),
+                            holderCountByRole.GetValueOrDefault(r.Id)
+                        );
                     })
                     .ToList();
 
@@ -194,33 +194,20 @@ internal sealed class StaffReads(
 
                 // An operator recognises a staff member by their habbo, not by the email they signed
                 // up with, so the account carries its avatars.
-                var accounts = accountRows
-                    .Select(a => new
-                    {
-                        a.Id,
-                        a.Email,
-                        a.CreatedAt,
-                        playerNames = a.players.ConvertAll(p => p.Name),
-                        players = a.players.ConvertAll(p => new
-                        {
-                            p.Id,
-                            p.Name,
-                            avatarUrl = _assetUrls.AvatarImage(p.Figure),
-                        }),
-                    })
-                    .ToList();
-
                 Dictionary<int, string> roleNameById = roles.ToDictionary(r => r.Id, r => r.Name);
 
-                var staff = accounts
-                    .Select(a => new
-                    {
+                List<StaffMember> staff = accountRows
+                    .Select(a => new StaffMember(
                         a.Id,
                         a.Email,
                         a.CreatedAt,
-                        a.playerNames,
-                        a.players,
-                        roles = holders
+                        a.players.ConvertAll(p => p.Name),
+                        a.players.ConvertAll(p => new StaffPlayer(
+                            p.Id,
+                            p.Name,
+                            _assetUrls.AvatarImage(p.Figure)
+                        )),
+                        holders
                             .Where(h => h.PlayerAccountEntityId == a.Id)
                             .Select(h =>
                                 roleNameById.GetValueOrDefault(h.RoleEntityId, $"#{h.RoleEntityId}")
@@ -230,32 +217,31 @@ internal sealed class StaffReads(
                         // The ids, not just the names: the roster revokes a role in place now, and
                         // an assignment is addressed by (accountId, roleId). Resolving a name back
                         // to an id in the browser breaks the moment two roles are renamed alike.
-                        roleIds = holders
+                        holders
                             .Where(h => h.PlayerAccountEntityId == a.Id)
                             .Select(h => h.RoleEntityId)
                             .OrderBy(
                                 id => roleNameById.GetValueOrDefault(id, $"#{id}"),
                                 StringComparer.Ordinal
                             )
-                            .ToList(),
-                    })
+                            .ToList()
+                    ))
                     .OrderBy(a => a.Email, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                var presets = await db
+                List<SanctionPresetRow> presets = await db
                     .SanctionPresets.AsNoTracking()
                     .OrderBy(p => p.Kind)
                     .ThenBy(p => p.PresetIndex)
-                    .Select(p => new
-                    {
+                    .Select(p => new SanctionPresetRow(
                         p.Id,
-                        kind = p.Kind.ToString(),
+                        p.Kind.ToString(),
                         p.PresetIndex,
                         p.Name,
                         p.DurationSeconds,
                         p.Message,
-                        permanent = p.DurationSeconds == null,
-                    })
+                        p.DurationSeconds == null
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -267,38 +253,36 @@ internal sealed class StaffReads(
                     .CountAsync(b => b.DeletedAt == null && b.DateExpires > now, ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    totals = new
-                    {
-                        roleCount = roles.Count,
-                        staffAccounts = staff.Count,
-                        declaredCapabilities = Capabilities.All.Count,
-                        grantedCapabilities = granted.Count,
-                        ungrantedCapabilities = ungranted.Count,
-                        presetCount = presets.Count,
-                        activeBans,
-                    },
-                    roles = roleItems,
+                return new StaffOverview(
+                    new StaffTotals(
+                        roles.Count,
+                        staff.Count,
+                        Capabilities.All.Count,
+                        granted.Count,
+                        ungranted.Count,
+                        presets.Count,
+                        activeBans
+                    ),
+                    roleItems,
                     staff,
                     presets,
-                    ungrantedCapabilities = ungranted,
+                    ungranted,
                     wildcardExists,
                     // Every declared capability, grouped by its namespace, so the role editor offers
                     // the real set instead of a free-text box that can store a key granting nothing.
-                    allCapabilities = Capabilities
+                    Capabilities
                         .All.Where(c =>
                             !string.Equals(c, Capabilities.Wildcard, StringComparison.Ordinal)
                         )
                         .OrderBy(c => c, StringComparer.Ordinal)
                         .GroupBy(c => c.Split('.')[0])
-                        .Select(g => new { area = g.Key, capabilities = g.ToList() })
+                        .Select(g => new CapabilityGroup(g.Key, g.ToList()))
                         .ToList(),
-                    wildcard = Capabilities.Wildcard,
-                    presetKinds = Enum.GetValues<SanctionPresetKind>()
-                        .Select(k => new { value = (int)k, label = k.ToString() })
-                        .ToList(),
-                };
+                    Capabilities.Wildcard,
+                    Enum.GetValues<SanctionPresetKind>()
+                        .Select(k => new SanctionPresetKindOption((int)k, k.ToString()))
+                        .ToList()
+                );
             },
             ct
         );

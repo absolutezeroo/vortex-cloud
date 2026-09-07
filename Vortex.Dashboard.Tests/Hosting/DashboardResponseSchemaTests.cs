@@ -94,6 +94,8 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/reward-tracks/actions", typeof(RewardTrackActionOptions)),
         ("/api/v1/reward-tracks/reward-kinds", typeof(RewardKindOptions)),
         ("/api/v1/reward-tracks/players/{playerId:int}", typeof(PlayerRewardTracks)),
+        ("/api/v1/staff", typeof(StaffOverview)),
+        ("/api/v1/staff/accounts", typeof(StaffAccountSearch)),
     ];
 
     [Fact]
