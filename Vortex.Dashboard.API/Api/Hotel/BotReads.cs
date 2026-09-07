@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Bots;
@@ -22,8 +23,13 @@ namespace Vortex.Dashboard.API.Api;
 /// <c>;#;</c> blob — how many phrases it has and whether it speaks on its own.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class BotReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Paginated bot roster. Filters: <c>q</c> (name/motto), <c>ownerId</c>, <c>roomId</c>,
     /// and <c>placed</c> (true = standing in a room, false = in its owner's hand).</summary>
     public Task<object> BotsAsync(NameValueCollection query, CancellationToken ct) =>
@@ -31,8 +37,8 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 40, 200);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 40, 200);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
                 IQueryable<BotEntity> bots = db.Bots.AsNoTracking();
@@ -84,16 +90,16 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> ownerNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(rows.Select(b => (int?)b.OwnerPlayerEntityId)),
+                Dictionary<int, string> ownerNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            rows.Select(b => (int?)b.OwnerPlayerEntityId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(
-                        db,
-                        NormalizeIds(rows.Select(b => b.RoomEntityId)),
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(
+                        DisplayNameQueries.NormalizeIds(rows.Select(b => b.RoomEntityId)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -111,7 +117,10 @@ internal sealed partial class DashboardApiService
                             avatarUrl = _assetUrls.AvatarImage(b.Figure),
                             b.gender,
                             ownerId = b.OwnerPlayerEntityId,
-                            ownerName = ResolvePlayerName(ownerNames, b.OwnerPlayerEntityId),
+                            ownerName = DisplayNameQueries.ResolvePlayerName(
+                                ownerNames,
+                                b.OwnerPlayerEntityId
+                            ),
                             roomId = b.RoomEntityId,
                             roomName = b.RoomEntityId is { } id
                                 ? roomNames.GetValueOrDefault(id)
@@ -164,16 +173,14 @@ internal sealed partial class DashboardApiService
                     return null;
                 }
 
-                Dictionary<int, string> ownerNames = await LoadPlayerNamesAsync(
-                        db,
+                Dictionary<int, string> ownerNames = await db.PlayerNamesAsync(
                         [bot.OwnerPlayerEntityId],
                         ct
                     )
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(
-                        db,
-                        NormalizeIds([bot.RoomEntityId]),
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(
+                        DisplayNameQueries.NormalizeIds([bot.RoomEntityId]),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -189,7 +196,10 @@ internal sealed partial class DashboardApiService
                     avatarUrl = _assetUrls.AvatarImage(bot.Figure),
                     gender = bot.Gender.ToString(),
                     ownerId = bot.OwnerPlayerEntityId,
-                    ownerName = ResolvePlayerName(ownerNames, bot.OwnerPlayerEntityId),
+                    ownerName = DisplayNameQueries.ResolvePlayerName(
+                        ownerNames,
+                        bot.OwnerPlayerEntityId
+                    ),
                     roomId = bot.RoomEntityId,
                     roomName = bot.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
                     placed = bot.RoomEntityId is not null,
@@ -219,8 +229,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<BotStatsRow> rows = await db
                     .Bots.AsNoTracking()
@@ -258,20 +268,20 @@ internal sealed partial class DashboardApiService
                     .ToList();
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (
                     BotStatsRow row in rows.Where(r => r.CreatedAt >= since && r.CreatedAt <= until)
                 )
                 {
-                    DateTime bucket = ResolveCalendarBucket(row.CreatedAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(row.CreatedAt, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -280,7 +290,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         botsCreated = pair.Value,
                     })
                     .ToList();
@@ -291,9 +301,8 @@ internal sealed partial class DashboardApiService
                     .Take(10)
                     .ToList();
 
-                Dictionary<int, string> ownerNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(topOwnerRows.Select(o => (int?)o.ownerId)),
+                Dictionary<int, string> ownerNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(topOwnerRows.Select(o => (int?)o.ownerId)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -305,9 +314,8 @@ internal sealed partial class DashboardApiService
                     .Take(10)
                     .ToList();
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(
-                        db,
-                        NormalizeIds(topRoomRows.Select(r => (int?)r.roomId)),
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(
+                        DisplayNameQueries.NormalizeIds(topRoomRows.Select(r => (int?)r.roomId)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -339,7 +347,7 @@ internal sealed partial class DashboardApiService
                         .Select(o => new
                         {
                             o.ownerId,
-                            ownerName = ResolvePlayerName(ownerNames, o.ownerId),
+                            ownerName = DisplayNameQueries.ResolvePlayerName(ownerNames, o.ownerId),
                             o.botCount,
                         })
                         .ToList(),

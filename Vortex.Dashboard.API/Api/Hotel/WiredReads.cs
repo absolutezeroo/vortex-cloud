@@ -5,12 +5,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class WiredReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Read-only overview of placed wired furniture: how many wired pieces exist, which
     /// rooms lean on wired the most, and the trigger/condition/action/addon mix. There is no
     /// dedicated wired-placement table — every wired-logic furniture definition's <c>Logic</c> key
@@ -54,7 +60,7 @@ internal sealed partial class DashboardApiService
                     {
                         logic = g.Key,
                         count = g.Count(),
-                        furniIconUrl = BuildFurniIconUrl(g.First().Name),
+                        furniIconUrl = _assetUrls.FurniIcon(g.First().Name),
                     })
                     .OrderByDescending(g => g.count)
                     .Take(20)
@@ -68,7 +74,7 @@ internal sealed partial class DashboardApiService
                     .ToList();
 
                 List<int> roomIds = topRoomGroups.Select(g => g.roomId).ToList();
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(db, roomIds, ct)
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(roomIds, ct)
                     .ConfigureAwait(false);
 
                 var topRooms = topRoomGroups

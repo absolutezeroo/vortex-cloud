@@ -23,6 +23,12 @@ namespace Vortex.Dashboard.API.Api;
 /// An empty id set short-circuits rather than issuing an <c>IN ()</c> query — the callers are
 /// list pages where "no room pinned on any row" is the common case.
 /// </para>
+/// <para>
+/// Its boundary, because a shared type is where a catch-all starts: player and room ids, and the
+/// names they resolve to. Normalising an id is here because it exists to feed these lookups — audit
+/// and ledger rows carry player ids as nullable <see cref="long"/>. Anything that is not that
+/// question belongs to whichever subject asks it.
+/// </para>
 /// </remarks>
 internal static class DisplayNameQueries
 {
@@ -53,4 +59,29 @@ internal static class DisplayNameQueries
                 .Where(p => playerIds.Contains(p.Id))
                 .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
                 .ConfigureAwait(false);
+
+    /// <summary>An id that fits, or null. Audit and ledger rows store player ids as nullable longs.</summary>
+    public static int? ToPlayerId(long? playerId) =>
+        playerId is null or < int.MinValue or > int.MaxValue ? null : (int)playerId.Value;
+
+    /// <summary>The distinct, present ids in a column of nullable ids — what the lookups above take.</summary>
+    public static List<int> NormalizeIds(IEnumerable<long?> ids) =>
+        [.. ids.Select(ToPlayerId).Where(id => id.HasValue).Select(id => id!.Value).Distinct()];
+
+    public static List<int> NormalizeIds(IEnumerable<int?> ids) =>
+        [.. ids.Where(id => id.HasValue).Select(id => id!.Value).Distinct()];
+
+    /// <summary>The name for an id, or null when the row points at a player that no longer exists.</summary>
+    public static string? ResolvePlayerName(
+        IReadOnlyDictionary<int, string> playerNames,
+        long? playerId
+    ) => ResolvePlayerName(playerNames, ToPlayerId(playerId));
+
+    public static string? ResolvePlayerName(
+        IReadOnlyDictionary<int, string> playerNames,
+        int? playerId
+    ) =>
+        playerId.HasValue && playerNames.TryGetValue(playerId.Value, out string? playerName)
+            ? playerName
+            : null;
 }

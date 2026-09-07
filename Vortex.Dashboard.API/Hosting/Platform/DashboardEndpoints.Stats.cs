@@ -22,16 +22,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiGroups + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.GroupsStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, GroupReads groups, CancellationToken ct) =>
+                OkAsync(groups.GroupsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.GroupsRead,
             TagStats
         );
         MapReadGet(
             app,
             ApiPets + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PetsStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, PetReads pets, CancellationToken ct) =>
+                OkAsync(pets.PetsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PetsRead,
             TagStats
         );
@@ -54,8 +54,8 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiWired + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.WiredStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, WiredReads wired, CancellationToken ct) =>
+                OkAsync(wired.WiredStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.WiredRead,
             TagStats
         );

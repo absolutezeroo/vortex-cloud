@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Groups;
@@ -12,8 +13,13 @@ using Vortex.Primitives.Observability;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class GroupReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Read-only overview of the guilds/forums domain: population, growth, top guilds, and
     /// recent activity pulled from the existing <c>AuditCategory.Social</c> trail (see
     /// <c>Vortex.Observability/Events/GroupAuditHandlers.cs</c>/<c>GroupForumAuditHandlers.cs</c>) —
@@ -22,8 +28,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 int totalGroups = await db
                     .Groups.AsNoTracking()
@@ -50,18 +56,18 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (DateTime createdAt in createdDates)
                 {
-                    DateTime bucket = ResolveCalendarBucket(createdAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(createdAt, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -70,7 +76,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         groupsCreated = pair.Value,
                     })
                     .ToList();
@@ -143,8 +149,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> actorIds = NormalizeIds(recentActivity.Select(a => a.ActorPlayerId));
-                Dictionary<int, string> actorNames = await LoadPlayerNamesAsync(db, actorIds, ct)
+                List<int> actorIds = DisplayNameQueries.NormalizeIds(
+                    recentActivity.Select(a => a.ActorPlayerId)
+                );
+                Dictionary<int, string> actorNames = await db.PlayerNamesAsync(actorIds, ct)
                     .ConfigureAwait(false);
 
                 var recentActivityWithNames = recentActivity
@@ -152,8 +160,11 @@ internal sealed partial class DashboardApiService
                     {
                         a.OccurredAt,
                         a.Action,
-                        actorPlayerId = ToPlayerId(a.ActorPlayerId),
-                        actorPlayerName = ResolvePlayerName(actorNames, a.ActorPlayerId),
+                        actorPlayerId = DisplayNameQueries.ToPlayerId(a.ActorPlayerId),
+                        actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                            actorNames,
+                            a.ActorPlayerId
+                        ),
                         result = a.Result.ToString(),
                         a.Data,
                     })

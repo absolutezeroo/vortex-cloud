@@ -9,7 +9,8 @@ using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     /// <summary>Read-only overview of the pets domain: population, type/race/rarity distribution,
     /// breeding activity, and average health (energy/nutrition). There is no dedicated pet audit
@@ -18,8 +19,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<PetStatsRow> rows = await db
                     .Pets.AsNoTracking()
@@ -71,20 +72,20 @@ internal sealed partial class DashboardApiService
                     .ToList();
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (
                     PetStatsRow row in rows.Where(r => r.CreatedAt >= since && r.CreatedAt <= until)
                 )
                 {
-                    DateTime bucket = ResolveCalendarBucket(row.CreatedAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(row.CreatedAt, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -93,7 +94,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         petsCreated = pair.Value,
                     })
                     .ToList();
@@ -107,15 +108,20 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> ownerIds = NormalizeIds(topOwners.Select(o => (int?)o.ownerId));
-                Dictionary<int, string> ownerNames = await LoadPlayerNamesAsync(db, ownerIds, ct)
+                List<int> ownerIds = DisplayNameQueries.NormalizeIds(
+                    topOwners.Select(o => (int?)o.ownerId)
+                );
+                Dictionary<int, string> ownerNames = await db.PlayerNamesAsync(ownerIds, ct)
                     .ConfigureAwait(false);
 
                 var topOwnersWithNames = topOwners
                     .Select(o => new
                     {
                         o.ownerId,
-                        ownerName = ResolvePlayerName(ownerNames, (int?)o.ownerId),
+                        ownerName = DisplayNameQueries.ResolvePlayerName(
+                            ownerNames,
+                            (int?)o.ownerId
+                        ),
                         o.petCount,
                     })
                     .ToList();

@@ -128,14 +128,10 @@ internal sealed partial class DashboardApiService(
         JsonValues.Bool(root, propertyName);
 
     private static List<int> NormalizeIds(IEnumerable<long?> ids) =>
-        ids.Select(ToPlayerId)
-            .Where(id => id.HasValue)
-            .Select(id => id.GetValueOrDefault())
-            .Distinct()
-            .ToList();
+        DisplayNameQueries.NormalizeIds(ids);
 
     private static List<int> NormalizeIds(IEnumerable<int?> ids) =>
-        ids.Where(id => id.HasValue).Select(id => id.GetValueOrDefault()).Distinct().ToList();
+        DisplayNameQueries.NormalizeIds(ids);
 
     // The queries themselves live in DisplayNameQueries, which the subjects that have left this
     // class use directly. These two stay as the name the remaining thirty topic files call.
@@ -167,37 +163,17 @@ internal sealed partial class DashboardApiService(
         return Math.Max(1, page);
     }
 
-    private static int? ToPlayerId(long? playerId)
-    {
-        if (playerId is null or < int.MinValue or > int.MaxValue)
-        {
-            return null;
-        }
-
-        return (int)playerId.Value;
-    }
+    private static int? ToPlayerId(long? playerId) => DisplayNameQueries.ToPlayerId(playerId);
 
     private static string? ResolvePlayerName(
         IReadOnlyDictionary<int, string> playerNames,
         long? playerId
-    )
-    {
-        int? normalizedPlayerId = ToPlayerId(playerId);
-
-        return
-            normalizedPlayerId.HasValue
-            && playerNames.TryGetValue(normalizedPlayerId.Value, out string? playerName)
-            ? playerName
-            : null;
-    }
+    ) => DisplayNameQueries.ResolvePlayerName(playerNames, playerId);
 
     private static string? ResolvePlayerName(
         IReadOnlyDictionary<int, string> playerNames,
         int? playerId
-    ) =>
-        playerId.HasValue && playerNames.TryGetValue(playerId.Value, out string? playerName)
-            ? playerName
-            : null;
+    ) => DisplayNameQueries.ResolvePlayerName(playerNames, playerId);
 
     /// <summary>
     ///     Widest span a windowed read will scan. The economy ledger is the fastest-growing table in the

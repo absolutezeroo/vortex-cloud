@@ -21,31 +21,31 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBots,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.BotsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, BotReads reads, CancellationToken ct) =>
+                OkAsync(reads.BotsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
         MapReadGet(
             app,
             ApiBots + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.BotsStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, BotReads reads, CancellationToken ct) =>
+                OkAsync(reads.BotsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
         MapReadGet(
             app,
             ApiBots + "/{botId:int}",
-            (int botId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.BotDetailAsync(botId, ct)),
+            (int botId, BotReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.BotDetailAsync(botId, ct)),
             Capabilities.Dashboard.BotsRead,
             TagBots
         );
         MapReadGet(
             app,
             ApiHandItems,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.HandItemsAsync(ct)),
+            (BotReads reads, CancellationToken ct) => OkAsync(reads.HandItemsAsync(ct)),
             Capabilities.Dashboard.BotsRead,
             TagBots
         );

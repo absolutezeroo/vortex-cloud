@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
@@ -17,15 +18,20 @@ namespace Vortex.Dashboard.API.Api;
 /// count double-counts every friendship — the totals here halve it and say so.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class SocialReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     public Task<object> SocialStatsAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
             {
-                DateTime until = ParseDateTime(query["until"]) ?? DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? until.AddDays(-30);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                DateTime until = TimeWindow.ParseDateTime(query["until"]) ?? DateTime.UtcNow;
+                DateTime since = TimeWindow.ParseDateTime(query["since"]) ?? until.AddDays(-30);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 int friendRows = await db
                     .MessengerFriends.AsNoTracking()
@@ -73,18 +79,18 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (MessageStatsRow row in windowMessages)
                 {
-                    DateTime bucket = ResolveCalendarBucket(row.Timestamp, granularity);
+                    DateTime bucket = TimeWindow.Bucket(row.Timestamp, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -93,7 +99,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         messages = pair.Value,
                     })
                     .ToList();
@@ -115,9 +121,8 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> names = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(
+                Dictionary<int, string> names = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
                             topSenderRows
                                 .Select(s => (int?)s.playerId)
                                 .Concat(topFriendedRows.Select(f => (int?)f.playerId))
@@ -228,9 +233,10 @@ internal sealed partial class DashboardApiService
                         .ConfigureAwait(false)
                 ).ToDictionary(g => g.Id, g => (g.Name, (string?)g.Badge));
 
-                Dictionary<int, string> authorNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(recentThreads.Select(t => (int?)t.authorId)),
+                Dictionary<int, string> authorNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            recentThreads.Select(t => (int?)t.authorId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -263,7 +269,7 @@ internal sealed partial class DashboardApiService
                         .Select(s => new
                         {
                             s.playerId,
-                            playerName = ResolvePlayerName(names, s.playerId),
+                            playerName = DisplayNameQueries.ResolvePlayerName(names, s.playerId),
                             s.messages,
                         })
                         .ToList(),
@@ -271,7 +277,7 @@ internal sealed partial class DashboardApiService
                         .Select(f => new
                         {
                             f.playerId,
-                            playerName = ResolvePlayerName(names, f.playerId),
+                            playerName = DisplayNameQueries.ResolvePlayerName(names, f.playerId),
                             f.friends,
                         })
                         .ToList(),
@@ -310,7 +316,10 @@ internal sealed partial class DashboardApiService
                                 t.LastPostAt,
                                 t.CreatedAt,
                                 t.authorId,
-                                authorName = ResolvePlayerName(authorNames, t.authorId),
+                                authorName = DisplayNameQueries.ResolvePlayerName(
+                                    authorNames,
+                                    t.authorId
+                                ),
                             })
                             .ToList(),
                     },

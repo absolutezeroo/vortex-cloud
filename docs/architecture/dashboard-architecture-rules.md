@@ -933,6 +933,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | moderation | 53 methods, 7 deps | 12 methods, 5 deps | 22 (+ Moderation) | 51 types |
 | rooms | 53 methods, 7 deps | 8 methods, 3 deps | 23 (+ Rooms) | 52 types |
 | **currency, vouchers, config — write service deleted** | 52 methods, 7 deps | **gone** | 26 (+ Currency, Vouchers, Config) | 55 types |
+| bots, groups, pets, social, wired | 44 methods, 7 deps | — | 31 | 60 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

@@ -30,8 +30,8 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiSocial + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.SocialStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SocialReads social, CancellationToken ct) =>
+                OkAsync(social.SocialStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.SocialRead,
             TagSocial
         );
