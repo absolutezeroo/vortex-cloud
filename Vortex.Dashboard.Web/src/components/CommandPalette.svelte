@@ -246,7 +246,8 @@
               <span class="cp-dot" class:on={entry.online} aria-hidden="true"></span>
             {/if}
             {#if index === cursor}
-              {/if}
+              <kbd class="cp-enter">enter</kbd>
+            {/if}
           </button>
         {:else}
           <p class="empty-state" role="status">
@@ -374,6 +375,16 @@
   }
 
   .cp-main small {
+    color: var(--muted);
+  }
+
+  /* Only on the highlighted row: it says which line Enter will run, next to that line. */
+  .cp-row kbd.cp-enter {
+    flex: none;
+    padding: 1px 6px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 11px;
     color: var(--muted);
   }
 

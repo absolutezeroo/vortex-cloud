@@ -80,7 +80,7 @@
     tabindex="-1"
     onclick={close}
   ></button>
-  <section
+  <div
     class="modal-panel"
     class:column
     role="dialog"
@@ -107,7 +107,7 @@
         {@render actions?.()}
       </div>
     {/if}
-  </section>
+  </div>
 </div>
 
 <style>

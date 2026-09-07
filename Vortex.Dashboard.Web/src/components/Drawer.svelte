@@ -107,7 +107,7 @@
     onclick={close}
     transition:veil
   ></button>
-  <section
+  <div
     class="drawer-panel"
     oninput={() => (dirty = true)}
     onchange={() => (dirty = true)}
@@ -140,7 +140,7 @@
         {@render actions()}
       </footer>
     {/if}
-  </section>
+  </div>
 </div>
 
 <style>
