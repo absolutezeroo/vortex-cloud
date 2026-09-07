@@ -218,6 +218,12 @@ export interface BotTotals {
   roomsWithBots: number;
 }
 
+export interface BuildersClubTierRow {
+  id: number;
+  level: number;
+  furniLimit: number;
+}
+
 export interface CatalogOfferSales {
   offerId: number;
   offerName: string;
@@ -402,11 +408,41 @@ export interface ClubSubscriptions {
   lifecycle: ClubSubscriptionLifecycle;
 }
 
+export interface CurrencyTypeRow {
+  id: number;
+  name: string | null;
+  currencyType: string;
+  activityPointType: number | null;
+  enabled: boolean;
+  startingAmount: number;
+  walletRows: number;
+  totalHeld: number;
+}
+
 export interface EconomyCurrencyTotals {
   spend: number;
   earned: number;
   net: number;
   transactionCount: number;
+}
+
+export interface EconomyExtras {
+  totals: EconomyExtrasTotals;
+  ltdSeries: LtdSeriesRow[];
+  rentableSpaces: RentableSpaceRow[];
+  rentableTerms: RentableSpaceTermRow[];
+  currencies: CurrencyTypeRow[];
+  buildersClub: BuildersClubTierRow[];
+}
+
+export interface EconomyExtrasTotals {
+  ltdSeries: number;
+  runningSeries: number;
+  rentableSpaces: number;
+  rentedNow: number;
+  rentableTerms: number;
+  currencies: number;
+  buildersClubTiers: number;
 }
 
 export interface EconomyLedgerEntry {
@@ -555,6 +591,30 @@ export interface HandItemRow {
   thirst: number;
   consumable: boolean;
   imageUrl: string | null;
+}
+
+export interface LtdRaffleResultCount {
+  result: string;
+  count: number;
+}
+
+export interface LtdSeriesRow {
+  id: number;
+  productId: number;
+  productName: string | null;
+  iconUrl: string | null;
+  totalQuantity: number;
+  remainingQuantity: number;
+  sold: number;
+  costCredits: number;
+  raffleWindowSeconds: number;
+  isActive: boolean;
+  hasRaffleFinished: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
+  running: boolean;
+  pendingEntries: number;
+  entriesByResult: LtdRaffleResultCount[];
 }
 
 export interface MarketplaceSalePoint {
@@ -850,6 +910,51 @@ export interface PollTallyEntry {
   count: number;
   share: number;
   retired: boolean;
+}
+
+export interface RentableSpaceAuditEntry {
+  id: number;
+  occurredAt: string;
+  action: string;
+  actorPlayerId: number | null;
+  actorName: string | null;
+  targetPlayerId: number | null;
+  targetName: string | null;
+  roomId: number | null;
+  itemId: number | null;
+  data: string | null;
+  correlationId: string | null;
+}
+
+export interface RentableSpaceAuditPage {
+  activeRentals: number;
+  count: number;
+  page: number;
+  limit: number;
+  total: number;
+  offset: number;
+  items: RentableSpaceAuditEntry[];
+}
+
+export interface RentableSpaceRow {
+  id: number;
+  furnitureId: number;
+  furnitureName: string | null;
+  iconUrl: string | null;
+  renterId: number | null;
+  renterName: string | null;
+  rentedUntil: string | null;
+  rented: boolean;
+  hasTerms: boolean;
+}
+
+export interface RentableSpaceTermRow {
+  id: number;
+  furnitureEntityId: number;
+  price: number;
+  currencyTypeEntityId: number;
+  rentDurationSeconds: number;
+  requiresHc: boolean;
 }
 
 export interface ReportWindow {

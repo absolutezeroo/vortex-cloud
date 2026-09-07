@@ -71,6 +71,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(EconomyLedgerPage),
         typeof(MarketplaceSummary),
         typeof(ClubSubscriptions),
+        typeof(RentableSpaceAuditPage),
+        typeof(EconomyExtras),
     ];
 
     [Fact]

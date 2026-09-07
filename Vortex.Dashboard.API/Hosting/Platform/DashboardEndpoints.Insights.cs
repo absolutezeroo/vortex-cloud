@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression;
@@ -55,7 +56,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.StaffRead,
             TagStaff
         );
-        MapReadGet(
+        MapReadGet<EconomyExtras>(
             app,
             ApiEconomy + "/extras",
             (EconomyReads economy, CancellationToken ct) => OkAsync(economy.EconomyExtrasAsync(ct)),

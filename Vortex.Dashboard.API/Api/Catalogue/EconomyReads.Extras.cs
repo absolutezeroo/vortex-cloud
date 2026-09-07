@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Database.Context;
-using Vortex.Database.Entities.Marketplace;
 
 namespace Vortex.Dashboard.API.Api.Catalogue;
 
@@ -20,8 +20,8 @@ namespace Vortex.Dashboard.API.Api.Catalogue;
 /// </summary>
 internal sealed partial class EconomyReads
 {
-    public Task<object> EconomyExtrasAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<EconomyExtras> EconomyExtrasAsync(CancellationToken ct) =>
+        QueryAsync<EconomyExtras>(
             async db =>
             {
                 DateTime now = DateTime.UtcNow;
@@ -90,47 +90,45 @@ internal sealed partial class EconomyReads
                     .ToDictionaryAsync(x => x.Id, x => x.Name, ct)
                     .ConfigureAwait(false);
 
-                var ltdItems = series
-                    .Select(s => new
-                    {
+                List<LtdSeriesRow> ltdItems = series
+                    .Select(s => new LtdSeriesRow(
                         s.Id,
-                        productId = s.CatalogProductEntityId,
-                        productName = productNames.GetValueOrDefault(s.CatalogProductEntityId),
-                        iconUrl = productNames.TryGetValue(s.CatalogProductEntityId, out string? n)
+                        s.CatalogProductEntityId,
+                        productNames.GetValueOrDefault(s.CatalogProductEntityId),
+                        productNames.TryGetValue(s.CatalogProductEntityId, out string? n)
                             ? _assetUrls.FurniIcon(n)
                             : null,
                         s.TotalQuantity,
                         s.RemainingQuantity,
-                        sold = s.TotalQuantity - s.RemainingQuantity,
+                        s.TotalQuantity - s.RemainingQuantity,
                         s.CostCredits,
                         s.RaffleWindowSeconds,
                         s.IsActive,
                         s.HasRaffleFinished,
                         s.StartsAt,
                         s.EndsAt,
-                        running = s.IsActive
+                        s.IsActive
                             && !s.HasRaffleFinished
                             && (s.StartsAt == null || s.StartsAt <= now)
                             && (s.EndsAt == null || s.EndsAt > now),
-                        pendingEntries = pendingCounts.GetValueOrDefault(s.Id),
-                        entriesByResult = entryRows
+                        pendingCounts.GetValueOrDefault(s.Id),
+                        entryRows
                             .Where(e => e.seriesId == s.Id)
-                            .Select(e => new { e.result, e.count })
-                            .ToList(),
-                    })
+                            .Select(e => new LtdRaffleResultCount(e.result, e.count))
+                            .ToList()
+                    ))
                     .ToList();
 
-                var rentableTerms = await db
+                List<RentableSpaceTermRow> rentableTerms = await db
                     .RentableSpaceTerms.AsNoTracking()
-                    .Select(t => new
-                    {
+                    .Select(t => new RentableSpaceTermRow(
                         t.Id,
                         t.FurnitureEntityId,
                         t.Price,
                         t.CurrencyTypeEntityId,
                         t.RentDurationSeconds,
-                        t.RequiresHc,
-                    })
+                        t.RequiresHc
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -174,86 +172,70 @@ internal sealed partial class EconomyReads
                     .GroupBy(t => t.FurnitureEntityId)
                     .ToDictionary(g => g.Key, g => g.First().Id);
 
-                var rentableItems = rentals
-                    .Select(r => new
-                    {
+                List<RentableSpaceRow> rentableItems = rentals
+                    .Select(r => new RentableSpaceRow(
                         r.Id,
-                        furnitureId = r.FurnitureEntityId,
-                        furnitureName = rentedFurnitureNames.GetValueOrDefault(r.FurnitureEntityId),
-                        iconUrl = rentedFurnitureNames.TryGetValue(
+                        r.FurnitureEntityId,
+                        rentedFurnitureNames.GetValueOrDefault(r.FurnitureEntityId),
+                        rentedFurnitureNames.TryGetValue(
                             r.FurnitureEntityId,
                             out string? rentedName
                         )
                             ? _assetUrls.FurniIcon(rentedName)
                             : null,
-                        renterId = r.RenterPlayerEntityId,
-                        renterName = r.RenterPlayerEntityId is { } renter
+                        r.RenterPlayerEntityId,
+                        r.RenterPlayerEntityId is { } renter
                             ? DisplayNameQueries.ResolvePlayerName(renterNames, renter)
                             : null,
                         r.RentedUntil,
-                        rented = r.RenterPlayerEntityId is not null
+                        r.RenterPlayerEntityId is not null
                             && r.RentedUntil is { } until
                             && until > now,
-                        hasTerms = termsByFurniture.ContainsKey(r.FurnitureEntityId),
-                    })
+                        termsByFurniture.ContainsKey(r.FurnitureEntityId)
+                    ))
                     .ToList();
 
-                var currencies = await db
+                List<CurrencyTypeRow> currencies = await db
                     .CurrencyTypes.AsNoTracking()
                     .OrderBy(c => c.Id)
-                    .Select(c => new
-                    {
+                    .Select(c => new CurrencyTypeRow(
                         c.Id,
                         c.Name,
-                        currencyType = c.CurrencyType.ToString(),
+                        c.CurrencyType.ToString(),
                         c.ActivityPointType,
                         c.Enabled,
                         c.StartingAmount,
-                        walletRows = db.PlayerCurrencies.Count(p => p.CurrencyTypeEntityId == c.Id),
-                        totalHeld = db.PlayerCurrencies.Where(p => p.CurrencyTypeEntityId == c.Id)
+                        db.PlayerCurrencies.Count(p => p.CurrencyTypeEntityId == c.Id),
+                        db.PlayerCurrencies.Where(p => p.CurrencyTypeEntityId == c.Id)
                             .Sum(p => (long?)p.Amount)
-                            ?? 0L,
-                    })
+                            ?? 0L
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var buildersClub = await db
+                List<BuildersClubTierRow> buildersClub = await db
                     .BuildersClubTiers.AsNoTracking()
                     .OrderBy(t => t.Level)
-                    .Select(t => new
-                    {
-                        t.Id,
-                        t.Level,
-                        t.FurniLimit,
-                    })
+                    .Select(t => new BuildersClubTierRow(t.Id, t.Level, t.FurniLimit))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                MarketplaceSettingsEntity? marketplaceSettings = await db
-                    .MarketplaceSettings.AsNoTracking()
-                    .OrderBy(s => s.Id)
-                    .FirstOrDefaultAsync(ct)
-                    .ConfigureAwait(false);
-
-                return new
-                {
-                    totals = new
-                    {
-                        ltdSeries = ltdItems.Count,
-                        runningSeries = ltdItems.Count(s => s.running),
-                        rentableSpaces = rentableItems.Count,
-                        rentedNow = rentableItems.Count(r => r.rented),
-                        rentableTerms = rentableTerms.Count,
-                        currencies = currencies.Count,
-                        buildersClubTiers = buildersClub.Count,
-                    },
-                    ltdSeries = ltdItems,
-                    rentableSpaces = rentableItems,
+                return new EconomyExtras(
+                    new EconomyExtrasTotals(
+                        ltdItems.Count,
+                        ltdItems.Count(s => s.Running),
+                        rentableItems.Count,
+                        rentableItems.Count(r => r.Rented),
+                        rentableTerms.Count,
+                        currencies.Count,
+                        buildersClub.Count
+                    ),
+                    ltdItems,
+                    rentableItems,
                     rentableTerms,
                     currencies,
-                    buildersClub,
-                    marketplaceSettings,
-                };
+                    buildersClub
+                );
             },
             ct
         );

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The economy's smaller tables, each of which had no surface at all: LTD series with their raffle
   // outcomes, rentable spaces with who is actually renting them, the currency catalogue with how
   // much of each is held, and the builders-club ladder.
@@ -24,11 +24,36 @@
   import TableFilter from '../components/TableFilter.svelte';
   import { filterRows } from '../lib/tableView';
   import { t } from '../lib/i18n';
+  import type { EconomyExtras, LtdSeriesRow } from '../lib/apiTypes';
+
+  /**
+   * The three editors' forms. Every number binds to a <input type="number">, which hands back a
+   * string while it is being typed and a number once it is not -- hence both, and the Number()
+   * on every read below.
+   */
+  type CurrencyForm = {
+    id: number;
+    name: string;
+    currencyType: number | string;
+    activityPointType: number | string | null;
+    enabled: boolean;
+    startingAmount: number | string;
+  };
+
+  type TierForm = { level: number | string; furniLimit: number | string };
+
+  type TermsForm = {
+    furnitureId: number | string;
+    price: number | string;
+    currencyTypeId: number | string;
+    rentDurationSeconds: number | string;
+    requiresHc: boolean;
+  };
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<EconomyExtras | null>(null);
 
   // Both grow without bound -- one row per LTD series ever run, one per rented space.
   let ltdQuery = $state('');
@@ -47,7 +72,7 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
-  const emptyCurrency = () => ({
+  const emptyCurrency = (): CurrencyForm => ({
     id: 0,
     name: '',
     currencyType: 0,
@@ -55,8 +80,8 @@
     enabled: true,
     startingAmount: 0,
   });
-  const emptyTier = () => ({ level: 1, furniLimit: 0 });
-  const emptyTerms = () => ({
+  const emptyTier = (): TierForm => ({ level: 1, furniLimit: 0 });
+  const emptyTerms = (): TermsForm => ({
     furnitureId: 0,
     price: 0,
     currencyTypeId: 0,
@@ -64,9 +89,9 @@
     requiresHc: false,
   });
 
-  let currencyForm = $state(null);
-  let tierForm = $state(null);
-  let termsForm = $state(null);
+  let currencyForm = $state<CurrencyForm | null>(null);
+  let tierForm = $state<TierForm | null>(null);
+  let termsForm = $state<TermsForm | null>(null);
 
   // Placed-furniture ids have no picker of their own (the furniture picker searches definitions, not
   // placed items), so the id at least previews the space it points at.
@@ -80,7 +105,7 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/economy/extras');
+      data = await apiGet<EconomyExtras>('/api/v1/economy/extras');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -88,14 +113,14 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
     }
   }
 
-  function resultSummary(row) {
+  function resultSummary(row: LtdSeriesRow) {
     if (!row.entriesByResult || row.entriesByResult.length === 0) return '—';
     return row.entriesByResult.map((e) => `${e.result}: ${formatNumber(e.count)}`).join(', ');
   }
@@ -307,7 +332,7 @@
               <td>{formatNumber(row.totalHeld)}</td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" onclick={() => (currencyForm = { ...row })}>
+                  <button type="button" class="ghost-button" onclick={() => (currencyForm = { ...row, name: row.name ?? '' })}>
                     {$t('economyExtras.edit')}
                   </button>
                 </td>
@@ -322,7 +347,8 @@
   </section>
 
 {#if canManage && currencyForm}
-  <Drawer title={currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')} eyebrow={$t('economyExtras.currenciesTitle')} onclose={() => (currencyForm = null)}>
+  {@const form = currencyForm}
+  <Drawer title={form.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')} eyebrow={$t('economyExtras.currenciesTitle')} onclose={() => (currencyForm = null)}>
         <form id="currency-form"
           class="inline-form"
           onsubmit={(event) => {
@@ -330,43 +356,43 @@
             ops.ask(
               '/api/v1/operations/content/currencies',
               {
-                currencyId: Number(currencyForm.id) || 0,
-                name: currencyForm.name,
-                currencyType: Number(currencyForm.currencyType) || 0,
+                currencyId: Number(form.id) || 0,
+                name: form.name,
+                currencyType: Number(form.currencyType) || 0,
                 activityPointType:
-                  currencyForm.activityPointType === null || currencyForm.activityPointType === ''
+                  form.activityPointType === null || form.activityPointType === ''
                     ? null
-                    : Number(currencyForm.activityPointType),
-                enabled: Boolean(currencyForm.enabled),
-                startingAmount: Number(currencyForm.startingAmount) || 0,
+                    : Number(form.activityPointType),
+                enabled: Boolean(form.enabled),
+                startingAmount: Number(form.startingAmount) || 0,
               },
-              currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency'),
-              $t('economyExtras.saveCurrencySummary', { name: currencyForm.name })
+              form.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency'),
+              $t('economyExtras.saveCurrencySummary', { name: form.name })
             );
           }}
         >
           <label>
             {$t('economyExtras.colCurrency')}
-            <input autocomplete="off" spellcheck="false" bind:value={currencyForm.name} />
+            <input autocomplete="off" spellcheck="false" bind:value={form.name} />
           </label>
           <label>
             {$t('economyExtras.colType')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.currencyType} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.currencyType} min="0" />
           </label>
           <label>
             {$t('economyExtras.colPointType')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.activityPointType} />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.activityPointType} />
           </label>
           <label>
             {$t('economyExtras.colStarting')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.startingAmount} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.startingAmount} min="0" />
           </label>
           <label class="check">
-            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={currencyForm.enabled} />
+            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.enabled} />
             {$t('economyExtras.colEnabled')}
           </label>
-          <button class="success" type="submit" disabled={!currencyForm.name.trim()}>
-            {currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
+          <button class="success" type="submit" disabled={!form.name.trim()}>
+            {form.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
           </button>
         </form>
 
@@ -374,13 +400,14 @@
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}
-      <button class="success" type="submit" form="currency-form" disabled={!currencyForm.name.trim()}>{currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}</button>
+      <button class="success" type="submit" form="currency-form" disabled={!form.name.trim()}>{form.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}</button>
       <button type="button" class="ghost-button" onclick={() => (currencyForm = null)}>{$t('common.cancel')}</button>
     {/snippet}
   </Drawer>
 {/if}
 
 {#if canManage && tierForm}
+  {@const form = tierForm}
   <Drawer title={$t('economyExtras.buildersClubTitle')} eyebrow={$t('economyExtras.editorTitle')} onclose={() => (tierForm = null)}>
         <form id="tier-form"
           class="inline-form"
@@ -388,19 +415,19 @@
             event.preventDefault();
             ops.ask(
               '/api/v1/operations/content/builders-club',
-              { level: Number(tierForm.level), furniLimit: Number(tierForm.furniLimit) },
+              { level: Number(form.level), furniLimit: Number(form.furniLimit) },
               $t('economyExtras.saveTier'),
-              $t('economyExtras.saveTierSummary', { level: tierForm.level, limit: tierForm.furniLimit })
+              $t('economyExtras.saveTierSummary', { level: form.level, limit: form.furniLimit })
             );
           }}
         >
           <label>
             {$t('economyExtras.colLevel')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={tierForm.level} min="1" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.level} min="1" />
           </label>
           <label>
             {$t('economyExtras.colFurniLimit')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={tierForm.furniLimit} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.furniLimit} min="0" />
           </label>
         </form>
 
@@ -415,6 +442,7 @@
 {/if}
 
 {#if canManage && termsForm}
+  {@const form = termsForm}
   <Drawer title={$t('economyExtras.termsEditorTitle')} eyebrow={$t('economyExtras.editorTitle')} onclose={() => (termsForm = null)}>
         <form id="terms-form"
           class="inline-form"
@@ -423,31 +451,31 @@
             ops.ask(
               '/api/v1/operations/content/rentable-terms',
               {
-                furnitureId: Number(termsForm.furnitureId),
-                price: Number(termsForm.price) || 0,
-                currencyTypeId: Number(termsForm.currencyTypeId),
-                rentDurationSeconds: Number(termsForm.rentDurationSeconds),
-                requiresHc: Boolean(termsForm.requiresHc),
+                furnitureId: Number(form.furnitureId),
+                price: Number(form.price) || 0,
+                currencyTypeId: Number(form.currencyTypeId),
+                rentDurationSeconds: Number(form.rentDurationSeconds),
+                requiresHc: Boolean(form.requiresHc),
               },
               $t('economyExtras.saveTerms'),
-              $t('economyExtras.saveTermsSummary', { id: termsForm.furnitureId })
+              $t('economyExtras.saveTermsSummary', { id: form.furnitureId })
             );
           }}
         >
           <label>
             {$t('economyExtras.colFurniture')}
             <span class="cell">
-              <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.furnitureId} min="1" />
+              <input autocomplete="off" spellcheck="false" type="number" bind:value={form.furnitureId} min="1" />
               <AssetImage src={termsPreviewUrl} alt="" size={32} />
             </span>
           </label>
           <label>
             {$t('economyExtras.price')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.price} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.price} min="0" />
           </label>
           <label>
             {$t('economyExtras.colCurrency')}
-            <select bind:value={termsForm.currencyTypeId}>
+            <select bind:value={form.currencyTypeId}>
               <option value={0}>{$t('economyExtras.pickCurrency')}</option>
               {#each data.currencies || [] as currency}
                 <option value={currency.id}>{currency.name || `#${currency.id}`}</option>
@@ -456,10 +484,10 @@
           </label>
           <label>
             {$t('economyExtras.durationSeconds')}
-            <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.rentDurationSeconds} min="1" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={form.rentDurationSeconds} min="1" />
           </label>
           <label class="check">
-            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={termsForm.requiresHc} />
+            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.requiresHc} />
             {$t('economyExtras.requiresHc')}
           </label>
         </form>
@@ -468,7 +496,7 @@
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}
-      <button type="submit" form="terms-form" disabled={!termsForm.furnitureId || !termsForm.currencyTypeId || !termsForm.rentDurationSeconds}>{$t('economyExtras.saveTerms')}</button>
+      <button type="submit" form="terms-form" disabled={!form.furnitureId || !form.currencyTypeId || !form.rentDurationSeconds}>{$t('economyExtras.saveTerms')}</button>
       <button type="button" class="ghost-button" onclick={() => (termsForm = null)}>{$t('common.cancel')}</button>
     {/snippet}
   </Drawer>

@@ -519,8 +519,11 @@ internal sealed partial class EconomyReads(
             ct
         );
 
-    public Task<object> RentableSpacesAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<RentableSpaceAuditPage> RentableSpacesAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<RentableSpaceAuditPage>(
             async db =>
             {
                 int limit = QueryValues.Limit(query["limit"], 50, 500);
@@ -596,38 +599,32 @@ internal sealed partial class EconomyReads(
                 Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
-                var rowsWithNames = rows.Select(r => new
-                    {
-                        r.Id,
-                        r.OccurredAt,
-                        r.Action,
-                        r.ActorPlayerId,
-                        actorName = DisplayNameQueries.ResolvePlayerName(
-                            playerNames,
-                            r.ActorPlayerId
-                        ),
-                        r.TargetPlayerId,
-                        targetName = DisplayNameQueries.ResolvePlayerName(
-                            playerNames,
-                            r.TargetPlayerId
-                        ),
-                        r.RoomId,
-                        r.ItemId,
-                        r.Data,
-                        r.CorrelationId,
-                    })
+                List<RentableSpaceAuditEntry> rowsWithNames = rows.Select(
+                        r => new RentableSpaceAuditEntry(
+                            r.Id,
+                            r.OccurredAt,
+                            r.Action,
+                            r.ActorPlayerId,
+                            DisplayNameQueries.ResolvePlayerName(playerNames, r.ActorPlayerId),
+                            r.TargetPlayerId,
+                            DisplayNameQueries.ResolvePlayerName(playerNames, r.TargetPlayerId),
+                            r.RoomId,
+                            r.ItemId,
+                            r.Data,
+                            r.CorrelationId
+                        )
+                    )
                     .ToList();
 
-                return new
-                {
-                    activeRentals = activeCount,
-                    count = rows.Count,
+                return new RentableSpaceAuditPage(
+                    activeCount,
+                    rows.Count,
                     page,
                     limit,
                     total,
                     offset,
-                    items = rowsWithNames,
-                };
+                    rowsWithNames
+                );
             },
             ct
         );
