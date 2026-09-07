@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Players.Avatar;
 
@@ -18,8 +19,13 @@ namespace Vortex.Dashboard.API.Api;
 /// it.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class CollectibleReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>
     /// Whether the client will treat this furniture as a collectible at all. It decides from the
     /// classname alone — <c>GroupItem.isNft()</c> is <c>className.indexOf("nft_") == 0</c> — and
@@ -116,7 +122,7 @@ internal sealed partial class DashboardApiService
                                     i.Rarity,
                                     i.SortOrder,
                                     resolved = knownFurniture.Contains(i.ProductCode),
-                                    iconUrl = BuildFurniIconUrl(i.ProductCode),
+                                    iconUrl = _assetUrls.FurniIcon(i.ProductCode),
                                 })
                                 .ToList(),
                         };
@@ -184,7 +190,7 @@ internal sealed partial class DashboardApiService
                         // else is hidden from the inventory's Collectibles category and listed as
                         // ordinary furniture, however it was bought.
                         isNft = IsCollectibleClassname(o.ProductCode),
-                        iconUrl = BuildFurniIconUrl(o.ProductCode),
+                        iconUrl = _assetUrls.FurniIcon(o.ProductCode),
                     })
                     .ToList();
 
@@ -209,9 +215,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> claimNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(claimRows.Select(c => (int?)c.PlayerEntityId)),
+                Dictionary<int, string> claimNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            claimRows.Select(c => (int?)c.PlayerEntityId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -221,7 +228,10 @@ internal sealed partial class DashboardApiService
                     {
                         c.Id,
                         playerId = c.PlayerEntityId,
-                        playerName = ResolvePlayerName(claimNames, c.PlayerEntityId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(
+                            claimNames,
+                            c.PlayerEntityId
+                        ),
                         c.ProductCode,
                         c.SetId,
                         c.Collection,
@@ -231,7 +241,7 @@ internal sealed partial class DashboardApiService
                         c.ValidFrom,
                         c.ValidTo,
                         isNft = IsCollectibleClassname(c.ProductCode),
-                        iconUrl = BuildFurniIconUrl(c.ProductCode),
+                        iconUrl = _assetUrls.FurniIcon(c.ProductCode),
                     })
                     .ToList();
 
@@ -308,7 +318,7 @@ internal sealed partial class DashboardApiService
                         open = t.Enabled && t.StartsAt <= now && t.EndsAt > now,
                         expired = t.EndsAt <= now,
                         isNft = IsCollectibleClassname(t.ProductCode),
-                        iconUrl = BuildFurniIconUrl(t.ProductCode),
+                        iconUrl = _assetUrls.FurniIcon(t.ProductCode),
                     })
                     .ToList();
 
@@ -366,9 +376,8 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> minterNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(
+                Dictionary<int, string> minterNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
                             assetRows
                                 .Select(a => (int?)a.PlayerEntityId)
                                 .Concat(ledgerRows.Select(l => l.FromPlayerEntityId))
@@ -383,13 +392,16 @@ internal sealed partial class DashboardApiService
                     {
                         a.Id,
                         playerId = a.PlayerEntityId,
-                        playerName = ResolvePlayerName(minterNames, a.PlayerEntityId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(
+                            minterNames,
+                            a.PlayerEntityId
+                        ),
                         a.ProductCode,
                         a.StampCost,
                         a.SerialNumber,
                         a.EditionSize,
                         mintedAt = a.CreatedAt,
-                        iconUrl = BuildFurniIconUrl(a.ProductCode),
+                        iconUrl = _assetUrls.FurniIcon(a.ProductCode),
                         history = ledgerRows
                             .Where(l => l.assetId == a.Id)
                             .Select(l => new
@@ -397,8 +409,14 @@ internal sealed partial class DashboardApiService
                                 l.Id,
                                 fromPlayer = l.FromPlayerEntityId is null
                                     ? null
-                                    : ResolvePlayerName(minterNames, l.FromPlayerEntityId.Value),
-                                toPlayer = ResolvePlayerName(minterNames, l.ToPlayerEntityId),
+                                    : DisplayNameQueries.ResolvePlayerName(
+                                        minterNames,
+                                        l.FromPlayerEntityId.Value
+                                    ),
+                                toPlayer = DisplayNameQueries.ResolvePlayerName(
+                                    minterNames,
+                                    l.ToPlayerEntityId
+                                ),
                                 l.Reason,
                                 at = l.CreatedAt,
                             })
@@ -425,9 +443,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> names = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(collectorRows.Select(c => (int?)c.PlayerEntityId)),
+                Dictionary<int, string> names = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            collectorRows.Select(c => (int?)c.PlayerEntityId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -476,9 +495,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> holderNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(copyRows.Select(c => (int?)c.PlayerEntityId)),
+                Dictionary<int, string> holderNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            copyRows.Select(c => (int?)c.PlayerEntityId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -518,7 +538,10 @@ internal sealed partial class DashboardApiService
                             {
                                 c.Id,
                                 playerId = c.PlayerEntityId,
-                                playerName = ResolvePlayerName(holderNames, c.PlayerEntityId),
+                                playerName = DisplayNameQueries.ResolvePlayerName(
+                                    holderNames,
+                                    c.PlayerEntityId
+                                ),
                                 c.SerialNumber,
                                 c.GrantNote,
                                 grantedAt = c.CreatedAt,
@@ -559,7 +582,10 @@ internal sealed partial class DashboardApiService
                         .Select(c => new
                         {
                             playerId = c.PlayerEntityId,
-                            playerName = ResolvePlayerName(names, c.PlayerEntityId),
+                            playerName = DisplayNameQueries.ResolvePlayerName(
+                                names,
+                                c.PlayerEntityId
+                            ),
                             score = c.HighestScore,
                         })
                         .ToList(),

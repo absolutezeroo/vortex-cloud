@@ -60,30 +60,32 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPlayerRewards,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlayerRewardsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, PlayerRewardReads playerReward, CancellationToken ct) =>
+                OkAsync(playerReward.PlayerRewardsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagForensics
         );
         MapReadGet(
             app,
             ApiPlayerRewards + "/{playerId:int}",
-            (int playerId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.PlayerRewardDetailAsync(playerId, ct)),
+            (int playerId, PlayerRewardReads playerReward, CancellationToken ct) =>
+                OkNullableAsync(playerReward.PlayerRewardDetailAsync(playerId, ct)),
             Capabilities.Dashboard.PlayersRead,
             TagForensics
         );
         MapReadGet(
             app,
             ApiMonitoring + "/inventory",
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.InventoryAsync(ct)),
+            (InventoryReads inventory, CancellationToken ct) =>
+                OkAsync(inventory.InventoryAsync(ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
         MapReadGet(
             app,
             ApiCollectibles,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.CollectiblesAsync(ct)),
+            (CollectibleReads collectible, CancellationToken ct) =>
+                OkAsync(collectible.CollectiblesAsync(ct)),
             Capabilities.Dashboard.CollectiblesRead,
             TagCollectibles
         );

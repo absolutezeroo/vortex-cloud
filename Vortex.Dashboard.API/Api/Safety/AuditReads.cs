@@ -27,20 +27,21 @@ using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     public Task<object> AuditAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
             {
-                int limit = ParseLimit(query["limit"], 50, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 50, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
                 IQueryable<AuditEventEntity> q = db.AuditEvents.AsNoTracking();
 
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 if (since is not null)
                 {
@@ -103,11 +104,11 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> playerIds = NormalizeIds(
+                List<int> playerIds = DisplayNameQueries.NormalizeIds(
                     rows.SelectMany(a => new[] { a.ActorPlayerId, a.TargetPlayerId })
                 );
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(a => new
@@ -119,9 +120,15 @@ internal sealed partial class DashboardApiService
                         a.severity,
                         a.result,
                         a.ActorPlayerId,
-                        actorName = ResolvePlayerName(playerNames, a.ActorPlayerId),
+                        actorName = DisplayNameQueries.ResolvePlayerName(
+                            playerNames,
+                            a.ActorPlayerId
+                        ),
                         a.TargetPlayerId,
-                        targetName = ResolvePlayerName(playerNames, a.TargetPlayerId),
+                        targetName = DisplayNameQueries.ResolvePlayerName(
+                            playerNames,
+                            a.TargetPlayerId
+                        ),
                         a.RoomId,
                         a.ItemId,
                         a.IpHash,
@@ -148,7 +155,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                (DateTime since, DateTime until) = ResolveWindow(
+                (DateTime since, DateTime until) = TimeWindow.Resolve(
                     query,
                     nowUtc,
                     TimeSpan.FromHours(24)
@@ -159,8 +166,8 @@ internal sealed partial class DashboardApiService
                     since = until.AddDays(-60);
                 }
 
-                int limit = ParseLimit(query["limit"], 80, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 80, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
                 IQueryable<AuditEventEntity> q = db
@@ -228,15 +235,15 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
-                List<int> playerIds = NormalizeIds(
+                List<int> playerIds = DisplayNameQueries.NormalizeIds(
                     events.SelectMany(e => new[] { e.ActorPlayerId, e.TargetPlayerId })
                 );
-                List<int> roomIds = NormalizeIds(events.Select(e => e.RoomId));
+                List<int> roomIds = DisplayNameQueries.NormalizeIds(events.Select(e => e.RoomId));
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(db, roomIds, ct)
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(roomIds, ct)
                     .ConfigureAwait(false);
 
                 HashSet<long> renewedBanEventIds = DetectRenewedBanEventIds(events);
@@ -257,9 +264,15 @@ internal sealed partial class DashboardApiService
                             r.Action,
                             r.Result,
                             r.ActorPlayerId,
-                            actorName = ResolvePlayerName(playerNames, r.ActorPlayerId),
+                            actorName = DisplayNameQueries.ResolvePlayerName(
+                                playerNames,
+                                r.ActorPlayerId
+                            ),
                             r.TargetPlayerId,
-                            targetName = ResolvePlayerName(playerNames, r.TargetPlayerId),
+                            targetName = DisplayNameQueries.ResolvePlayerName(
+                                playerNames,
+                                r.TargetPlayerId
+                            ),
                             r.RoomId,
                             roomName = r.RoomId != null
                             && roomNames.TryGetValue(r.RoomId.Value, out string? roomName)
@@ -299,7 +312,7 @@ internal sealed partial class DashboardApiService
                     .Select(g => new
                     {
                         actorPlayerId = g.Key,
-                        actorName = ResolvePlayerName(playerNames, g.Key),
+                        actorName = DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
                         count = g.Count(),
                     })
                     .ToList();
@@ -313,7 +326,7 @@ internal sealed partial class DashboardApiService
                     .Select(g => new
                     {
                         targetPlayerId = g.Key,
-                        targetName = ResolvePlayerName(playerNames, g.Key),
+                        targetName = DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
                         count = g.Count(),
                     })
                     .ToList();
@@ -354,7 +367,7 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
                 int inactiveBans = totalBans - activeBans;
 
-                TimeSpan bucketSize = ResolveBucketSize(since, until);
+                TimeSpan bucketSize = TimeWindow.BucketSize(since, until);
                 List<ModerationTimelinePoint> timeline = BuildModerationTimeline(
                     events,
                     since,
@@ -471,8 +484,8 @@ internal sealed partial class DashboardApiService
         }
 
         Dictionary<DateTime, int> bucketMap = new Dictionary<DateTime, int>();
-        DateTime cursor = ResolveTimelineBucket(since, bucketSize);
-        DateTime end = ResolveTimelineBucket(until, bucketSize);
+        DateTime cursor = TimeWindow.TimelineBucket(since, bucketSize);
+        DateTime end = TimeWindow.TimelineBucket(until, bucketSize);
 
         while (cursor <= end)
         {
@@ -482,7 +495,7 @@ internal sealed partial class DashboardApiService
 
         foreach (ModerationEventRow evt in events)
         {
-            DateTime bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            DateTime bucket = TimeWindow.TimelineBucket(evt.OccurredAt, bucketSize);
             bucketMap.TryGetValue(bucket, out int count);
             bucketMap[bucket] = count + 1;
         }
@@ -491,7 +504,7 @@ internal sealed partial class DashboardApiService
             .OrderBy(pair => pair.Key)
             .Select(pair => new ModerationTimelinePoint(
                 pair.Key.ToString("O"),
-                FormatTimelineLabel(pair.Key, bucketSize),
+                TimeWindow.TimelineLabel(pair.Key, bucketSize),
                 pair.Value
             ))
             .ToList();

@@ -10,7 +10,8 @@ using Vortex.Primitives.Moderation;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     /// <summary>Read-only overview of the CFH (Call For Help) ticket domain: volume over time,
     /// resolution/sanction rates, top topics, and top reported players — reads straight off
@@ -21,8 +22,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<(
                     DateTime CreatedAt,
@@ -70,13 +71,13 @@ internal sealed partial class DashboardApiService
                     resolutionMinutes.Count > 0 ? Math.Round(resolutionMinutes.Average(), 2) : 0d;
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (
@@ -91,7 +92,7 @@ internal sealed partial class DashboardApiService
                     ) row in rows
                 )
                 {
-                    DateTime bucket = ResolveCalendarBucket(row.CreatedAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(row.CreatedAt, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -100,7 +101,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         ticketsCreated = pair.Value,
                     })
                     .ToList();
@@ -146,19 +147,20 @@ internal sealed partial class DashboardApiService
                     .Take(10)
                     .ToList();
 
-                List<int> reportedIds = NormalizeIds(topReported.Select(r => (int?)r.playerId));
-                Dictionary<int, string> reportedNames = await LoadPlayerNamesAsync(
-                        db,
-                        reportedIds,
-                        ct
-                    )
+                List<int> reportedIds = DisplayNameQueries.NormalizeIds(
+                    topReported.Select(r => (int?)r.playerId)
+                );
+                Dictionary<int, string> reportedNames = await db.PlayerNamesAsync(reportedIds, ct)
                     .ConfigureAwait(false);
 
                 var topReportedWithNames = topReported
                     .Select(r => new
                     {
                         r.playerId,
-                        playerName = ResolvePlayerName(reportedNames, (int?)r.playerId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(
+                            reportedNames,
+                            (int?)r.playerId
+                        ),
                         r.reportCount,
                     })
                     .ToList();

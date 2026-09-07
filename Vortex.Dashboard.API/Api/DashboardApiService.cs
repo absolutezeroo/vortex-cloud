@@ -62,33 +62,18 @@ internal sealed partial class DashboardApiService(
         }
     }
 
-    private static TimeSpan ResolveBucketSize(DateTime since, DateTime until)
-    {
-        TimeSpan span = until - since;
+    private static TimeSpan ResolveBucketSize(DateTime since, DateTime until) =>
+        TimeWindow.BucketSize(since, until);
 
-        if (span <= TimeSpan.FromHours(48))
-        {
-            return TimeSpan.FromHours(1);
-        }
+    private static DateTime ResolveTimelineBucket(DateTime value, TimeSpan bucketSize) =>
+        TimeWindow.TimelineBucket(value, bucketSize);
 
-        if (span <= TimeSpan.FromDays(14))
-        {
-            return TimeSpan.FromDays(1);
-        }
+    // The parsers live in JsonValues, which the subjects that have left this class use directly.
+    private static int? TryParseInt(JsonElement root, string propertyName) =>
+        JsonValues.Int(root, propertyName);
 
-        return TimeSpan.FromDays(7);
-    }
-
-    private static DateTime ResolveTimelineBucket(DateTime value, TimeSpan bucketSize)
-    {
-        if (bucketSize.Ticks <= 0)
-        {
-            return value;
-        }
-
-        long ticks = value.Ticks - (value.Ticks % bucketSize.Ticks);
-        return new DateTime(ticks, value.Kind);
-    }
+    private static bool? TryParseBool(JsonElement root, string propertyName) =>
+        JsonValues.Bool(root, propertyName);
 
     // The implementations live in TimeWindow, which the subjects that have left this class use
     // directly. These stay as the names the remaining topic files call.
@@ -105,27 +90,8 @@ internal sealed partial class DashboardApiService(
     private static string FormatCalendarLabel(DateTime bucket, string granularity) =>
         TimeWindow.Label(bucket, granularity);
 
-    private static string FormatTimelineLabel(DateTime bucket, TimeSpan bucketSize)
-    {
-        if (bucketSize < TimeSpan.FromDays(1))
-        {
-            return bucket.ToString("MM/dd HH:mm");
-        }
-
-        if (bucketSize < TimeSpan.FromDays(14))
-        {
-            return bucket.ToString("MM/dd");
-        }
-
-        return bucket.ToString("yyyy/MM/dd");
-    }
-
-    // The parsers live in JsonValues, which the subjects that have left this class use directly.
-    private static int? TryParseInt(JsonElement root, string propertyName) =>
-        JsonValues.Int(root, propertyName);
-
-    private static bool? TryParseBool(JsonElement root, string propertyName) =>
-        JsonValues.Bool(root, propertyName);
+    private static string FormatTimelineLabel(DateTime bucket, TimeSpan bucketSize) =>
+        TimeWindow.TimelineLabel(bucket, bucketSize);
 
     private static List<int> NormalizeIds(IEnumerable<long?> ids) =>
         DisplayNameQueries.NormalizeIds(ids);

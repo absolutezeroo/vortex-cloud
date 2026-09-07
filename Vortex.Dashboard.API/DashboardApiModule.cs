@@ -149,6 +149,13 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<PetReads>();
         services.TryAddSingleton<SocialReads>();
         services.TryAddSingleton<WiredReads>();
+        services.TryAddSingleton<AuditReads>();
+        services.TryAddSingleton<CfhReads>();
+        services.TryAddSingleton<ChatlogReads>();
+        services.TryAddSingleton<CollectibleReads>();
+        services.TryAddSingleton<PlayerRewardReads>();
+        services.TryAddSingleton<InventoryReads>();
+        services.TryAddSingleton<CatalogPurchaseReads>();
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,
         // it does not write them. So the admin service lives here and is registered here, and a
         // host that does not load this module has no content-authoring path at all -- which is what

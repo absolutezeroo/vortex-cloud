@@ -6,14 +6,20 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Primitives.Observability;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class CatalogPurchaseReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Read-only overview of catalog purchase activity: volume/revenue over time and top
     /// offers sold. Sourced from the <c>economy.catalog_purchase</c> audit trail (see
     /// <c>CatalogPurchasedAuditHandler</c>), which already carries <c>offerId</c>/<c>quantity</c>/
@@ -27,8 +33,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 IQueryable<AuditEventEntity> purchaseEvents = db
                     .AuditEvents.AsNoTracking()
@@ -72,18 +78,18 @@ internal sealed partial class DashboardApiService
                 long totalQuantity = purchases.Sum(p => (long)p.Quantity);
 
                 Dictionary<DateTime, (int count, long credits)> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = (0, 0L);
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (CatalogPurchasePayload p in purchases)
                 {
-                    DateTime bucket = ResolveCalendarBucket(p.OccurredAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(p.OccurredAt, granularity);
                     (int count, long credits) current = bucketMap.GetValueOrDefault(bucket);
                     bucketMap[bucket] = (current.count + 1, current.credits + p.CreditCost);
                 }
@@ -93,7 +99,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         purchaseCount = pair.Value.count,
                         creditsSpent = pair.Value.credits,
                     })
@@ -147,7 +153,7 @@ internal sealed partial class DashboardApiService
                         g.offerId,
                         offerName = offerNames.GetValueOrDefault(g.offerId, $"offer #{g.offerId}"),
                         furniIconUrl = offerFurniNames.TryGetValue(g.offerId, out string? furniName)
-                            ? BuildFurniIconUrl(furniName)
+                            ? _assetUrls.FurniIcon(furniName)
                             : null,
                         g.catalogType,
                         g.purchaseCount,
@@ -213,8 +219,8 @@ internal sealed partial class DashboardApiService
             string catalogType = root.TryGetProperty("catalogType", out JsonElement typeEl)
                 ? typeEl.GetString() ?? "Normal"
                 : "Normal";
-            int quantity = TryParseInt(root, "quantity") ?? 1;
-            int creditCost = TryParseInt(root, "creditCost") ?? 0;
+            int quantity = JsonValues.Int(root, "quantity") ?? 1;
+            int creditCost = JsonValues.Int(root, "creditCost") ?? 0;
 
             return new CatalogPurchasePayload(
                 occurredAt,

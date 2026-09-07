@@ -17,7 +17,8 @@ namespace Vortex.Dashboard.API.Api;
 /// rows is either unseeded or unreachable, and neither shows up anywhere else.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class InventoryReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     public Task<object> InventoryAsync(CancellationToken ct) =>
         QueryAsync<object>(

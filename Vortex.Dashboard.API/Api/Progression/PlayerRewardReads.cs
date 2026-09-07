@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
@@ -19,13 +20,18 @@ namespace Vortex.Dashboard.API.Api;
 /// never sold it.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class PlayerRewardReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     public Task<object> PlayerRewardsAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
             {
-                int limit = ParseLimit(query["limit"], 25, 100);
+                int limit = QueryValues.Limit(query["limit"], 25, 100);
 
                 int totalBadges = await db
                     .PlayerBadges.AsNoTracking()
@@ -149,9 +155,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> names = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(topCollectors.Select(c => (int?)c.playerId)),
+                Dictionary<int, string> names = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            topCollectors.Select(c => (int?)c.playerId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -188,7 +195,7 @@ internal sealed partial class DashboardApiService
                         .Select(c => new
                         {
                             c.playerId,
-                            playerName = ResolvePlayerName(names, c.playerId),
+                            playerName = DisplayNameQueries.ResolvePlayerName(names, c.playerId),
                             c.badges,
                         })
                         .ToList(),

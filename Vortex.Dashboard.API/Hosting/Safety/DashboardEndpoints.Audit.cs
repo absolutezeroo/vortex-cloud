@@ -25,16 +25,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiForensics + "/audit",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AuditAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, AuditReads reads, CancellationToken ct) =>
+                OkAsync(reads.AuditAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
         MapReadGet(
             app,
             ApiForensics + "/moderation/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ModerationStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, AuditReads reads, CancellationToken ct) =>
+                OkAsync(reads.ModerationStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );

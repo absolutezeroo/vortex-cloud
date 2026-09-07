@@ -38,16 +38,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCfh + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.CfhStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, CfhReads cfh, CancellationToken ct) =>
+                OkAsync(cfh.CfhStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CfhRead,
             TagStats
         );
         MapReadGet(
             app,
             ApiCatalog + "/purchases/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.CatalogPurchasesStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, CatalogPurchaseReads catalogPurchase, CancellationToken ct) =>
+                OkAsync(catalogPurchase.CatalogPurchasesStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogPurchasesRead,
             TagStats
         );

@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class ChatlogReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     /// <summary>
     /// Chat search across rooms. The room forensics timeline and the player profile already show
@@ -27,7 +29,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(
+                (DateTime since, DateTime until) = TimeWindow.Resolve(
                     query,
                     DateTime.UtcNow,
                     TimeSpan.FromDays(7)
@@ -45,8 +47,8 @@ internal sealed partial class DashboardApiService
                     );
                 }
 
-                int limit = ParseLimit(query["limit"], 100, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 100, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
                 IQueryable<RoomChatlogEntity> q = db

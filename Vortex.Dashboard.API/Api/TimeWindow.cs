@@ -120,4 +120,56 @@ internal static class TimeWindow
             "month" => bucket.ToString("yyyy-MM"),
             _ => bucket.ToString("yyyy-MM-dd"),
         };
+
+    /// <summary>
+    /// Bucket width for a fixed-interval series: hourly for short windows, daily up to a fortnight,
+    /// weekly beyond. Picked from the window so a chart has a readable number of points whatever
+    /// period was asked for.
+    /// </summary>
+    internal static TimeSpan BucketSize(DateTime since, DateTime until)
+    {
+        TimeSpan span = until - since;
+
+        if (span <= TimeSpan.FromHours(48))
+        {
+            return TimeSpan.FromHours(1);
+        }
+
+        if (span <= TimeSpan.FromDays(14))
+        {
+            return TimeSpan.FromDays(1);
+        }
+
+        return TimeSpan.FromDays(7);
+    }
+
+    /// <summary>
+    /// Rounds to a fixed tick interval, which is what a sub-day series wants. Use <see cref="Bucket"/>
+    /// instead for day/month/year, where months and years are not a fixed number of ticks.
+    /// </summary>
+    internal static DateTime TimelineBucket(DateTime value, TimeSpan bucketSize)
+    {
+        if (bucketSize.Ticks <= 0)
+        {
+            return value;
+        }
+
+        long ticks = value.Ticks - (value.Ticks % bucketSize.Ticks);
+        return new DateTime(ticks, value.Kind);
+    }
+
+    internal static string TimelineLabel(DateTime bucket, TimeSpan bucketSize)
+    {
+        if (bucketSize < TimeSpan.FromDays(1))
+        {
+            return bucket.ToString("MM/dd HH:mm");
+        }
+
+        if (bucketSize < TimeSpan.FromDays(14))
+        {
+            return bucket.ToString("MM/dd");
+        }
+
+        return bucket.ToString("yyyy/MM/dd");
+    }
 }
