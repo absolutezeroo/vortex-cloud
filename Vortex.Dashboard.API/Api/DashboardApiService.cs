@@ -201,31 +201,19 @@ internal sealed partial class DashboardApiService(
     private static List<int> NormalizeIds(IEnumerable<int?> ids) =>
         ids.Where(id => id.HasValue).Select(id => id.GetValueOrDefault()).Distinct().ToList();
 
-    private static async Task<Dictionary<int, string>> LoadPlayerNamesAsync(
+    // The queries themselves live in DisplayNameQueries, which the subjects that have left this
+    // class use directly. These two stay as the name the remaining thirty topic files call.
+    private static Task<Dictionary<int, string>> LoadPlayerNamesAsync(
         VortexDbContext db,
         IReadOnlyList<int> playerIds,
         CancellationToken ct
-    ) =>
-        playerIds.Count == 0
-            ? new Dictionary<int, string>()
-            : await db
-                .Players.AsNoTracking()
-                .Where(p => playerIds.Contains(p.Id))
-                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                .ConfigureAwait(false);
+    ) => db.PlayerNamesAsync(playerIds, ct);
 
-    private static async Task<Dictionary<int, string>> LoadRoomNamesAsync(
+    private static Task<Dictionary<int, string>> LoadRoomNamesAsync(
         VortexDbContext db,
         IReadOnlyList<int> roomIds,
         CancellationToken ct
-    ) =>
-        roomIds.Count == 0
-            ? new Dictionary<int, string>()
-            : await db
-                .Rooms.AsNoTracking()
-                .Where(r => roomIds.Contains(r.Id))
-                .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
-                .ConfigureAwait(false);
+    ) => db.RoomNamesAsync(roomIds, ct);
 
     private static int ParseLimit(string? value, int fallback, int max) =>
         int.TryParse(value, out int n) ? Math.Clamp(n, 1, max) : fallback;

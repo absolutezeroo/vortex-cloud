@@ -5,21 +5,32 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
 using Vortex.Primitives.Polls;
 
 namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
-/// Read + results surface for surveys. Authoring lives in <c>DashboardOperationsService.Polls.cs</c>;
+/// Read + results surface for surveys. Authoring lives in <see cref="Operations.PollOperations"/>;
 /// here we only read. There is no separate analytics table — the funnel comes from
 /// <c>player_polls</c> and the tallies from <c>player_poll_answers</c>, which stores one row per
 /// picked choice, so counting answers is a plain group-by.
 /// </summary>
-internal sealed partial class DashboardApiService
+/// <remarks>
+/// Two dependencies: a context, and the asset URL builder, which only the free-text answers need in
+/// order to show who typed them. The class it left injected ten for every subject.
+/// </remarks>
+internal sealed class PollReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
     /// <summary>How many free-text answers a question shows before the page would become a wall.</summary>
     private const int FreeTextAnswerLimit = 50;
+
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
 
     /// <summary>
     /// The question types an operator may pick, with the ones the client's survey dialog actually
@@ -106,8 +117,7 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(
-                        db,
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(
                         [
                             .. rows.Where(r => r.RoomEntityId != null)
                                 .Select(r => r.RoomEntityId!.Value),
@@ -195,8 +205,7 @@ internal sealed partial class DashboardApiService
                     .ToDictionaryAsync(x => x.QuestionId, x => x.Count, ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(
-                        db,
+                Dictionary<int, string> roomNames = await db.RoomNamesAsync(
                         poll.RoomEntityId is { } pinned ? [pinned] : [],
                         ct
                     )

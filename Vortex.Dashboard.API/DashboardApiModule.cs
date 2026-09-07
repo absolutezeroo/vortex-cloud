@@ -99,6 +99,9 @@ public sealed class DashboardApiModule : IHostPluginModule
         // dependencies for the reads, two for the writes, both visible in their constructors.
         services.TryAddSingleton<CatalogReads>();
         services.TryAddSingleton<CatalogOperations>();
+        // Polls, likewise: two dependencies for the reads, two for the writes.
+        services.TryAddSingleton<PollReads>();
+        services.TryAddSingleton<PollOperations>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,

@@ -221,6 +221,8 @@ internal sealed class DashboardWebHost(
         // the failure is at startup, for the whole dashboard, not at that route.
         typeof(CatalogReads),
         typeof(CatalogOperations),
+        typeof(PollReads),
+        typeof(PollOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

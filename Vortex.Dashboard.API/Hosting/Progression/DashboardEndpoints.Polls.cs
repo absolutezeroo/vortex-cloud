@@ -22,31 +22,31 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPolls,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PollsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, PollReads polls, CancellationToken ct) =>
+                OkAsync(polls.PollsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
         MapReadGet(
             app,
             ApiPolls + "/question-types",
-            (DashboardApiService api) => Results.Ok(api.PollQuestionTypeOptions()),
+            (PollReads polls) => Results.Ok(polls.PollQuestionTypeOptions()),
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
         MapReadGet(
             app,
             ApiPolls + "/{pollId:int}",
-            (int pollId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.PollDetailAsync(pollId, ct)),
+            (int pollId, PollReads polls, CancellationToken ct) =>
+                OkNullableAsync(polls.PollDetailAsync(pollId, ct)),
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
         MapReadGet(
             app,
             ApiPolls + "/{pollId:int}/results",
-            (int pollId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.PollResultsAsync(pollId, ct)),
+            (int pollId, PollReads polls, CancellationToken ct) =>
+                OkNullableAsync(polls.PollResultsAsync(pollId, ct)),
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
@@ -60,7 +60,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreatePollRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -86,7 +86,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdatePollRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -113,7 +113,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeletePollRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -135,7 +135,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreatePollQuestionRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -158,7 +158,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdatePollQuestionRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -185,7 +185,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeletePollQuestionRequest body,
-                DashboardOperationsService ops,
+                PollOperations ops,
                 CancellationToken ct
             ) =>
             {

@@ -56,7 +56,6 @@ internal sealed partial class DashboardOperationsService(
     ICfhTicketService cfhTickets,
     ITargetedOfferAdminService targetedOfferAdmin,
     IQuestAdminService questAdmin,
-    IPollAdminService pollAdmin,
     IQuestContentAdminService questContentAdmin,
     INavigatorAdminService navigatorAdmin,
     IStaffAdminService staffAdmin,
@@ -95,7 +94,6 @@ internal sealed partial class DashboardOperationsService(
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IQuestAdminService _questAdmin = questAdmin;
-    private readonly IPollAdminService _pollAdmin = pollAdmin;
     private readonly IQuestContentAdminService _questContentAdmin = questContentAdmin;
     private readonly INavigatorAdminService _navigatorAdmin = navigatorAdmin;
     private readonly IStaffAdminService _staffAdmin = staffAdmin;

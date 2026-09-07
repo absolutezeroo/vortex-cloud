@@ -9,18 +9,25 @@ using Vortex.Primitives.Polls.Admin;
 namespace Vortex.Dashboard.API.Operations;
 
 /// <summary>
-/// Poll admin operations. Each routes through <see cref="IPollAdminService"/> (never a direct DB
-/// write), which reloads the live survey cache after committing, and emits a durable audit event
-/// with the operator's reason — same contract as the quest operations.
+/// Creating, changing and removing surveys and their questions.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+/// <remarks>
+/// Two dependencies where the service it left took twenty-eight: the runner that audits every write,
+/// and the domain's own poll authoring service. Never a direct DB write — <see cref="IPollAdminService"/>
+/// reloads the live survey cache after committing, so an edited question is served on the next offer
+/// without an emulator restart.
+/// </remarks>
+internal sealed class PollOperations(OperationRunner runner, IPollAdminService pollAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IPollAdminService _pollAdmin = pollAdmin;
+
     public Task<OperationResult> CreatePollAsync(
         CreatePollRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.create",
             actor,
             request.Reason,
@@ -52,7 +59,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.update",
             actor,
             request.Reason,
@@ -84,7 +91,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.delete",
             actor,
             request.Reason,
@@ -110,7 +117,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.question.create",
             actor,
             request.Reason,
@@ -126,19 +133,7 @@ internal sealed partial class DashboardOperationsService
             work: async c =>
             {
                 PollAdminResult result = await _pollAdmin
-                    .CreateQuestionAsync(
-                        new PollQuestionSpec(
-                            request.PollId,
-                            request.ParentQuestionId,
-                            request.SortOrder,
-                            (PollQuestionType)request.QuestionType,
-                            request.QuestionText,
-                            request.QuestionCategory,
-                            request.QuestionAnswerType,
-                            ToChoices(request.Choices)
-                        ),
-                        c
-                    )
+                    .CreateQuestionAsync(ToSpec(request), c)
                     .ConfigureAwait(false);
 
                 if (!result.Success)
@@ -154,7 +149,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.question.update",
             actor,
             request.Reason,
@@ -170,20 +165,7 @@ internal sealed partial class DashboardOperationsService
             work: async c =>
             {
                 PollAdminResult result = await _pollAdmin
-                    .UpdateQuestionAsync(
-                        request.QuestionId,
-                        new PollQuestionSpec(
-                            request.PollId,
-                            request.ParentQuestionId,
-                            request.SortOrder,
-                            (PollQuestionType)request.QuestionType,
-                            request.QuestionText,
-                            request.QuestionCategory,
-                            request.QuestionAnswerType,
-                            ToChoices(request.Choices)
-                        ),
-                        c
-                    )
+                    .UpdateQuestionAsync(request.QuestionId, ToSpec(request), c)
                     .ConfigureAwait(false);
 
                 if (!result.Success)
@@ -199,7 +181,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.poll.question.delete",
             actor,
             request.Reason,
@@ -248,6 +230,30 @@ internal sealed partial class DashboardOperationsService
             request.OfferOnRoomEntry,
             request.RoomId,
             request.SortOrder
+        );
+
+    private static PollQuestionSpec ToSpec(CreatePollQuestionRequest request) =>
+        new(
+            request.PollId,
+            request.ParentQuestionId,
+            request.SortOrder,
+            (PollQuestionType)request.QuestionType,
+            request.QuestionText,
+            request.QuestionCategory,
+            request.QuestionAnswerType,
+            ToChoices(request.Choices)
+        );
+
+    private static PollQuestionSpec ToSpec(UpdatePollQuestionRequest request) =>
+        new(
+            request.PollId,
+            request.ParentQuestionId,
+            request.SortOrder,
+            (PollQuestionType)request.QuestionType,
+            request.QuestionText,
+            request.QuestionCategory,
+            request.QuestionAnswerType,
+            ToChoices(request.Choices)
         );
 
     private static IReadOnlyList<PollChoiceSpec> ToChoices(
