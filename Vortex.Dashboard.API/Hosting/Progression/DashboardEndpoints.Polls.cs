@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Progression;
 using Vortex.Dashboard.API.Operations.Progression.Contracts;
@@ -22,7 +23,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapPollReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<PollListResponse>(
             app,
             ApiPolls,
             (HttpContext ctx, PollReads polls, CancellationToken ct) =>
@@ -30,14 +31,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
-        MapReadGet(
+        MapReadGet<PollQuestionTypeOptions>(
             app,
             ApiPolls + "/question-types",
             (PollReads polls) => Results.Ok(polls.PollQuestionTypeOptions()),
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
-        MapReadGet(
+        MapReadGetNullable<PollDetail>(
             app,
             ApiPolls + "/{pollId:int}",
             (int pollId, PollReads polls, CancellationToken ct) =>
@@ -45,7 +46,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PollsRead,
             TagPolls
         );
-        MapReadGet(
+        MapReadGetNullable<PollResults>(
             app,
             ApiPolls + "/{pollId:int}/results",
             (int pollId, PollReads polls, CancellationToken ct) =>

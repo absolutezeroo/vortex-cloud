@@ -423,12 +423,13 @@ internal static partial class DashboardEndpoints
     // started by the read call at the call site) purely to wrap its result/null-check
     // in a Results.Ok/Json — there is no deadlock risk since nothing here owns or blocks on the task.
 #pragma warning disable VSTHRD003
-    private static async Task<IResult> OkAsync(Task<object> task) =>
+    private static async Task<IResult> OkAsync<TResponse>(Task<TResponse> task) =>
         Results.Ok(await task.ConfigureAwait(false));
 
-    private static async Task<IResult> OkNullableAsync(Task<object?> task)
+    private static async Task<IResult> OkNullableAsync<TResponse>(Task<TResponse?> task)
+        where TResponse : class
     {
-        object? payload = await task.ConfigureAwait(false);
+        TResponse? payload = await task.ConfigureAwait(false);
         return payload is null
             ? Results.Json(new { error = "not_found" }, statusCode: StatusCodes.Status404NotFound)
             : Results.Ok(payload);
@@ -446,6 +447,43 @@ internal static partial class DashboardEndpoints
         string capability,
         string tag
     ) => app.MapGet(path, handler).RequireAuthorization(capability).WithTags(tag);
+
+    /// <summary>
+    /// A read whose response shape is declared, so OpenAPI describes it and the front end can derive
+    /// its types from the document instead of being told the shape twice.
+    /// </summary>
+    /// <remarks>
+    /// The handler returns <see cref="IResult" />, which carries no type information, so the schema
+    /// has to be stated here. That is the whole reason this overload exists: without it the document
+    /// says a route answers 200 and nothing about with what, and a generator reads that as
+    /// <c>unknown</c>. A subject earns it by giving its reads real return types rather than
+    /// <c>object</c>.
+    /// </remarks>
+    private static void MapReadGet<TResponse>(
+        WebApplication app,
+        string path,
+        Delegate handler,
+        string capability,
+        string tag
+    ) =>
+        app.MapGet(path, handler)
+            .RequireAuthorization(capability)
+            .WithTags(tag)
+            .Produces<TResponse>();
+
+    /// <summary>A read that answers 404 when the thing asked for is not there.</summary>
+    private static void MapReadGetNullable<TResponse>(
+        WebApplication app,
+        string path,
+        Delegate handler,
+        string capability,
+        string tag
+    ) =>
+        app.MapGet(path, handler)
+            .RequireAuthorization(capability)
+            .WithTags(tag)
+            .Produces<TResponse>()
+            .Produces(StatusCodes.Status404NotFound);
 
     /// <summary>
     /// Every dashboard write goes through here, so the two checks that used to open each endpoint's

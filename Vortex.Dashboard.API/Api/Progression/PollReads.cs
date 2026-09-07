@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
@@ -37,30 +38,29 @@ internal sealed class PollReads(
     /// renders marked <c>supported</c>. Rating and Binary exist in the client's enum but its content
     /// dialog skips them, so a survey built on those would show the player nothing.
     /// </summary>
-    public object PollQuestionTypeOptions()
+    public PollQuestionTypeOptions PollQuestionTypeOptions()
     {
-        var items = Enum.GetValues<PollQuestionType>()
-            .Select(type => new
-            {
-                id = (int)type,
-                name = type.ToString(),
-                supported = type
-                    is PollQuestionType.SingleChoice
-                        or PollQuestionType.MultipleChoice
-                        or PollQuestionType.TextLine
-                        or PollQuestionType.TextArea,
-                takesChoices = type
-                    is PollQuestionType.SingleChoice
-                        or PollQuestionType.MultipleChoice,
-            })
-            .ToList();
+        List<PollQuestionTypeOption> items =
+        [
+            .. Enum.GetValues<PollQuestionType>()
+                .Select(type => new PollQuestionTypeOption(
+                    (int)type,
+                    type.ToString(),
+                    type
+                        is PollQuestionType.SingleChoice
+                            or PollQuestionType.MultipleChoice
+                            or PollQuestionType.TextLine
+                            or PollQuestionType.TextArea,
+                    type is PollQuestionType.SingleChoice or PollQuestionType.MultipleChoice
+                )),
+        ];
 
-        return new { count = items.Count, items };
+        return new PollQuestionTypeOptions(items.Count, items);
     }
 
     /// <summary>Every survey with its question count and its offer→completion funnel.</summary>
-    public Task<object> PollsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PollListResponse> PollsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<PollListResponse>(
             async db =>
             {
                 bool enabledOnly = string.Equals(
@@ -126,8 +126,9 @@ internal sealed class PollReads(
                     )
                     .ConfigureAwait(false);
 
-                var items = rows.Select(p => new
-                    {
+                List<PollListItem> items =
+                [
+                    .. rows.Select(p => new PollListItem(
                         p.Id,
                         p.Code,
                         p.PollType,
@@ -138,14 +139,14 @@ internal sealed class PollReads(
                         p.NpsPoll,
                         p.Enabled,
                         p.OfferOnRoomEntry,
-                        roomId = p.RoomEntityId,
+                        p.RoomEntityId,
                         // A poll pinned to a deleted room never matches anyone: worth seeing here
                         // rather than wondering why the offer stopped appearing.
-                        roomName = p.RoomEntityId is { } roomId
+                        p.RoomEntityId
+                            is { } roomId
                             ? roomNames.GetValueOrDefault(roomId)
                             : null,
-                        roomMissing = p.RoomEntityId is { } pinned
-                            && !roomNames.ContainsKey(pinned),
+                        p.RoomEntityId is { } pinned && !roomNames.ContainsKey(pinned),
                         p.SortOrder,
                         p.rootQuestionCount,
                         p.followUpCount,
@@ -153,20 +154,21 @@ internal sealed class PollReads(
                         p.startedCount,
                         p.completedCount,
                         p.rejectedCount,
-                        completionRate = Share(p.completedCount, p.offeredCount),
+                        Share(p.completedCount, p.offeredCount),
                         // A survey with no root question is never offered -- the grain skips it.
-                        offerable = p.Enabled && p.rootQuestionCount > 0,
-                    })
-                    .ToList();
+                        p.Enabled
+                            && p.rootQuestionCount > 0
+                    )),
+                ];
 
-                return new { count = items.Count, items };
+                return new PollListResponse(items.Count, items);
             },
             ct
         );
 
     /// <summary>One survey with its full question tree, choices included, ready to edit.</summary>
-    public Task<object?> PollDetailAsync(int pollId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<PollDetail?> PollDetailAsync(int pollId, CancellationToken ct) =>
+        QueryAsync<PollDetail?>(
             async db =>
             {
                 PollEntity? poll = await db
@@ -218,7 +220,7 @@ internal sealed class PollReads(
                     .Where(q => q.ParentQuestionEntityId is not null)
                     .ToLookup(q => q.ParentQuestionEntityId!.Value);
 
-                List<object> tree = questions
+                List<PollQuestionNode> tree = questions
                     .Where(q => q.ParentQuestionEntityId is null)
                     .Select(root =>
                         QuestionNode(
@@ -235,8 +237,7 @@ internal sealed class PollReads(
                     )
                     .ToList();
 
-                return new
-                {
+                return new PollDetail(
                     poll.Id,
                     poll.Code,
                     poll.PollType,
@@ -247,11 +248,11 @@ internal sealed class PollReads(
                     poll.NpsPoll,
                     poll.Enabled,
                     poll.OfferOnRoomEntry,
-                    roomId = poll.RoomEntityId,
-                    roomName = poll.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
+                    poll.RoomEntityId,
+                    poll.RoomEntityId is { } id ? roomNames.GetValueOrDefault(id) : null,
                     poll.SortOrder,
-                    questions = tree,
-                };
+                    tree
+                );
             },
             ct
         );
@@ -260,8 +261,8 @@ internal sealed class PollReads(
     /// What players actually answered: the participation funnel, then per question either a
     /// per-choice tally or the free text they typed.
     /// </summary>
-    public Task<object?> PollResultsAsync(int pollId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<PollResults?> PollResultsAsync(int pollId, CancellationToken ct) =>
+        QueryAsync<PollResults?>(
             async db =>
             {
                 PollEntity? poll = await db
@@ -370,7 +371,7 @@ internal sealed class PollReads(
                     a => a.Answer
                 );
 
-                var questionResults = questions
+                List<PollQuestionResult> questionResults = questions
                     .Select(question =>
                     {
                         List<string> given = [.. answersByQuestion[question.Id]];
@@ -385,11 +386,11 @@ internal sealed class PollReads(
                             is PollQuestionType.SingleChoice
                                 or PollQuestionType.MultipleChoice;
 
-                        object[] tally = takesChoices
-                            ? [.. BuildTally(question, choicesByQuestion, given)]
+                        List<PollTallyEntry> tally = takesChoices
+                            ? BuildTally(question, choicesByQuestion, given)
                             : [];
 
-                        object[] freeText = takesChoices
+                        List<PollFreeTextAnswer> freeText = takesChoices
                             ? []
                             :
                             [
@@ -397,65 +398,58 @@ internal sealed class PollReads(
                                     .Where(a => a.QuestionEntityId == question.Id)
                                     .OrderByDescending(a => a.AnsweredAt)
                                     .Take(FreeTextAnswerLimit)
-                                    .Select(a =>
-                                        (object)
-                                            new
-                                            {
-                                                playerId = a.PlayerEntityId,
-                                                playerName = players.TryGetValue(
-                                                    a.PlayerEntityId,
-                                                    out (string Name, string Figure) player
-                                                )
-                                                    ? player.Name
-                                                    : null,
-                                                avatarUrl = players.TryGetValue(
-                                                    a.PlayerEntityId,
-                                                    out (string Name, string Figure) withFigure
-                                                )
-                                                    ? _assetUrls.AvatarImage(withFigure.Figure)
-                                                    : null,
-                                                answer = a.Answer,
-                                                a.AnsweredAt,
-                                            }
-                                    ),
+                                    .Select(a => new PollFreeTextAnswer(
+                                        a.PlayerEntityId,
+                                        players.TryGetValue(
+                                            a.PlayerEntityId,
+                                            out (string Name, string Figure) player
+                                        )
+                                            ? player.Name
+                                            : null,
+                                        players.TryGetValue(
+                                            a.PlayerEntityId,
+                                            out (string Name, string Figure) withFigure
+                                        )
+                                            ? _assetUrls.AvatarImage(withFigure.Figure)
+                                            : null,
+                                        a.Answer,
+                                        a.AnsweredAt
+                                    )),
                             ];
 
-                        return new
-                        {
+                        return new PollQuestionResult(
                             question.Id,
                             question.QuestionText,
-                            questionType = (int)question.QuestionType,
-                            questionTypeName = question.QuestionType.ToString(),
-                            isFollowUp = question.ParentQuestionEntityId is not null,
-                            parentQuestionId = question.ParentQuestionEntityId,
+                            (int)question.QuestionType,
+                            question.QuestionType.ToString(),
+                            question.ParentQuestionEntityId is not null,
+                            question.ParentQuestionEntityId,
                             question.QuestionCategory,
                             respondents,
-                            answerCount = given.Count,
+                            given.Count,
                             tally,
                             freeText,
-                            freeTextTruncated = !takesChoices && given.Count > FreeTextAnswerLimit,
-                        };
+                            !takesChoices && given.Count > FreeTextAnswerLimit
+                        );
                     })
                     .ToList();
 
-                return new
-                {
+                return new PollResults(
                     poll.Id,
                     poll.Code,
                     poll.Headline,
                     poll.NpsPoll,
-                    funnel = new
-                    {
+                    new PollFunnel(
                         offered,
                         pending,
                         started,
                         completed,
                         rejected,
-                        completionRate = Share(completed, offered),
-                        rejectionRate = Share(rejected, offered),
-                    },
-                    questions = questionResults,
-                };
+                        Share(completed, offered),
+                        Share(rejected, offered)
+                    ),
+                    questionResults
+                );
             },
             ct
         );
@@ -465,7 +459,7 @@ internal sealed class PollReads(
     /// appends any answer that no longer matches a configured choice — which is what an edited
     /// question leaves behind, and would otherwise silently vanish from the totals.
     /// </summary>
-    private static List<object> BuildTally(
+    private static List<PollTallyEntry> BuildTally(
         PollQuestionEntity question,
         ILookup<int, PollQuestionChoiceEntity> choicesByQuestion,
         List<string> given
@@ -475,7 +469,7 @@ internal sealed class PollReads(
             .GroupBy(a => a, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
 
-        List<object> tally = [];
+        List<PollTallyEntry> tally = [];
         HashSet<string> configured = new(StringComparer.Ordinal);
 
         foreach (PollQuestionChoiceEntity choice in choicesByQuestion[question.Id])
@@ -484,64 +478,63 @@ internal sealed class PollReads(
             int count = counts.GetValueOrDefault(choice.Value);
 
             tally.Add(
-                new
-                {
-                    value = choice.Value,
-                    text = choice.ChoiceText,
+                new PollTallyEntry(
+                    choice.Value,
+                    choice.ChoiceText,
                     choice.ChoiceType,
                     count,
-                    share = Share(count, given.Count),
-                    retired = false,
-                }
+                    Share(count, given.Count),
+                    Retired: false
+                )
             );
         }
 
         foreach ((string value, int count) in counts.Where(c => !configured.Contains(c.Key)))
         {
+            // An answer that matches no configured choice: what editing a question leaves behind.
+            // ChoiceType 0 because there is no choice row left to read one from.
             tally.Add(
-                new
-                {
+                new PollTallyEntry(
                     value,
-                    text = value,
-                    ChoiceType = 0,
+                    value,
+                    ChoiceType: 0,
                     count,
-                    share = Share(count, given.Count),
-                    retired = true,
-                }
+                    Share(count, given.Count),
+                    Retired: true
+                )
             );
         }
 
         return tally;
     }
 
-    private static object QuestionNode(
+    private static PollQuestionNode QuestionNode(
         PollQuestionEntity question,
         ILookup<int, PollQuestionChoiceEntity> choicesByQuestion,
         Dictionary<int, int> answerCounts,
-        object[] children
+        IReadOnlyList<PollQuestionNode> children
     ) =>
-        new
-        {
+        new(
             question.Id,
             question.SortOrder,
-            questionType = (int)question.QuestionType,
-            questionTypeName = question.QuestionType.ToString(),
+            (int)question.QuestionType,
+            question.QuestionType.ToString(),
             question.QuestionText,
             question.QuestionCategory,
             question.QuestionAnswerType,
-            answerCount = answerCounts.GetValueOrDefault(question.Id),
-            choices = choicesByQuestion[question.Id]
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Value,
-                    c.ChoiceText,
-                    c.ChoiceType,
-                    c.SortOrder,
-                })
-                .ToList(),
-            children,
-        };
+            answerCounts.GetValueOrDefault(question.Id),
+            [
+                .. choicesByQuestion[question.Id]
+                    .Select(c => new PollChoiceDetail(
+                        c.Id,
+                        c.Value,
+                        c.ChoiceText,
+                        c.ChoiceType,
+                        c.SortOrder
+                    )),
+            ],
+            children
+        );
 
     private static double Share(int part, int total) =>
         total <= 0 ? 0 : Math.Round(part * 100d / total, 1);
