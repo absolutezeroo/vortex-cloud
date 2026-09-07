@@ -1,19 +1,20 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import OpResult from '../components/OpResult.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
-  import { apiGet } from '../lib/api';
+  import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { diffFields } from '../lib/changes';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { ConfigEntryDto, ConfigList } from '../lib/apiTypes';
 
-  let items = $state([]);
-  let editValues = $state({});
+  let items = $state<ConfigEntryDto[]>([]);
+  let editValues = $state<Record<string, string>>({});
   let loading = $state(true);
   let loadError = $state('');
 
@@ -24,29 +25,30 @@
 
   // What the modal is confirming, kept beside the store because the dialog shows the old and new
   // value -- the thing an operator actually re-reads before committing a live config change.
-  let editing = $state(null);
+  /** What the confirm dialog is showing: the key, the new value and why it exists. */
+  let editing = $state<{ key: string; value: string; description: string } | null>(null);
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsManageConfig));
 
   // Preserve the catalog order coming from the API while bucketing into the declared groups.
   let groups = $derived((() => {
-    const order = [];
-    const byGroup = new Map();
+    const order: string[] = [];
+    const byGroup = new Map<string, ConfigEntryDto[]>();
     for (const item of items) {
       if (!byGroup.has(item.group)) {
         byGroup.set(item.group, []);
         order.push(item.group);
       }
-      byGroup.get(item.group).push(item);
+      byGroup.get(item.group)!.push(item);
     }
-    return order.map((name) => ({ name, items: byGroup.get(name) }));
+    return order.map((name) => ({ name, items: byGroup.get(name) ?? [] }));
   })());
 
-  function effectiveValue(item) {
+  function effectiveValue(item: ConfigEntryDto) {
     return item.currentValue ?? item.defaultValue;
   }
 
-  function isDirty(item) {
+  function isDirty(item: ConfigEntryDto) {
     return (editValues[item.key] ?? '') !== effectiveValue(item);
   }
 
@@ -54,9 +56,9 @@
     loading = true;
     loadError = '';
     try {
-      const data = await apiGet('/api/v1/config');
+      const data = await apiGet<ConfigList>('/api/v1/config');
       items = data?.items ?? [];
-      const next = {};
+      const next: Record<string, string> = {};
       for (const item of items) {
         next[item.key] = effectiveValue(item);
       }
@@ -64,7 +66,7 @@
     } catch (err) {
       loadError = isPermissionDeniedError(err)
         ? translate('common.insufficientRights')
-        : err.code || err.message;
+        : describeApiError(err);
     } finally {
       loading = false;
     }
@@ -72,7 +74,7 @@
 
   onMount(load);
 
-  function startSave(item) {
+  function startSave(item: ConfigEntryDto) {
     if (!canManage || !isDirty(item)) {
       return;
     }
@@ -107,7 +109,7 @@
     );
   }
 
-  async function copy(value) {
+  async function copy(value: string | null | undefined) {
     try {
       await navigator.clipboard.writeText(value || '');
     } catch {

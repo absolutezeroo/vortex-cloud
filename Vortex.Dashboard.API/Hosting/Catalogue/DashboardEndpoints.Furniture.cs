@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
@@ -25,7 +26,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapFurnitureReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<FurnitureDefinitionPage>(
             app,
             ApiFurniture + "/definitions",
             (HttpContext ctx, FurnitureReads reads, CancellationToken ct) =>

@@ -81,7 +81,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagForensics
         );
-        MapReadGet(
+        MapReadGet<DashboardInventory>(
             app,
             ApiMonitoring + "/inventory",
             (InventoryReads inventory, CancellationToken ct) =>

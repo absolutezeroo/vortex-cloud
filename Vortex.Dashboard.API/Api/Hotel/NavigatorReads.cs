@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Database.Context;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Enums;
@@ -23,8 +24,8 @@ namespace Vortex.Dashboard.API.Api.Hotel;
 internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)
 {
-    public Task<object> NavigatorConfigAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<NavigatorSetup> NavigatorConfigAsync(CancellationToken ct) =>
+        QueryAsync<NavigatorSetup>(
             async db =>
             {
                 var contexts = await db
@@ -61,12 +62,11 @@ internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContex
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var flatCategories = await db
+                List<NavigatorFlatCategoryRow> flatCategories = await db
                     .NavigatorFlatCategories.AsNoTracking()
                     .OrderBy(c => c.OrderNum)
                     .ThenBy(c => c.Id)
-                    .Select(c => new
-                    {
+                    .Select(c => new NavigatorFlatCategoryRow(
                         c.Id,
                         c.Name,
                         c.Visible,
@@ -76,27 +76,24 @@ internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContex
                         c.StaffOnly,
                         c.MinRank,
                         c.OrderNum,
-                        roomCount = db.Rooms.Count(r =>
+                        db.Rooms.Count(r =>
                             r.NavigatorCategoryEntityId == c.Id && r.DeletedAt == null
-                        ),
-                    })
+                        )
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
                 DateTime now = DateTime.UtcNow;
 
-                var eventCategories = await db
+                List<NavigatorEventCategoryRow> eventCategories = await db
                     .NavigatorEventCategories.AsNoTracking()
                     .OrderBy(c => c.Id)
-                    .Select(c => new
-                    {
+                    .Select(c => new NavigatorEventCategoryRow(
                         c.Id,
                         c.Name,
                         c.Visible,
-                        activeAdCount = db.RoomAdvertisements.Count(a =>
-                            a.CategoryId == c.Id && a.ExpiresAt > now
-                        ),
-                    })
+                        db.RoomAdvertisements.Count(a => a.CategoryId == c.Id && a.ExpiresAt > now)
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -115,27 +112,23 @@ internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContex
                     .OrderBy(view => view, StringComparer.Ordinal)
                     .ToList();
 
-                var emptyTabs = contexts
+                List<NavigatorEmptyTab> emptyTabs = contexts
                     .Where(c => linkCountByContext.GetValueOrDefault(c.Id) == 0)
-                    .Select(c => new { c.Id, c.SearchCode })
+                    .Select(c => new NavigatorEmptyTab(c.Id, c.SearchCode))
                     .ToList();
 
-                var items = contexts
-                    .Select(c => new
-                    {
+                List<NavigatorContextRow> items = contexts
+                    .Select(c => new NavigatorContextRow(
                         c.Id,
                         c.SearchCode,
                         c.Visible,
                         c.queryType,
                         c.queryTypeLabel,
                         c.OrderNum,
-                        knownCode = NavigatorSearchCodes.QueryTypeBySearchCode.ContainsKey(
-                            c.SearchCode
-                        ),
-                        quickLinks = quickLinks
+                        NavigatorSearchCodes.QueryTypeBySearchCode.ContainsKey(c.SearchCode),
+                        quickLinks
                             .Where(q => q.contextId == c.Id)
-                            .Select(q => new
-                            {
+                            .Select(q => new NavigatorQuickLinkRow(
                                 q.Id,
                                 q.SearchCode,
                                 q.Filter,
@@ -143,43 +136,38 @@ internal sealed class NavigatorReads(IDbContextFactory<VortexDbContext> dbContex
                                 q.queryType,
                                 q.queryTypeLabel,
                                 q.OrderNum,
-                                knownCode = NavigatorSearchCodes.QueryTypeBySearchCode.ContainsKey(
-                                    q.SearchCode
-                                ),
-                            })
-                            .ToList(),
-                    })
+                                NavigatorSearchCodes.QueryTypeBySearchCode.ContainsKey(q.SearchCode)
+                            ))
+                            .ToList()
+                    ))
                     .ToList();
 
-                return new
-                {
-                    health = new
-                    {
-                        contextCount = contexts.Count,
-                        quickLinkCount = quickLinks.Count,
-                        flatCategoryCount = flatCategories.Count,
-                        eventCategoryCount = eventCategories.Count,
+                return new NavigatorSetup(
+                    new NavigatorHealth(
+                        contexts.Count,
+                        quickLinks.Count,
+                        flatCategories.Count,
+                        eventCategories.Count,
                         missingTabs,
                         emptyTabs,
-                        seeded = contexts.Count > 0 && quickLinks.Count > 0,
-                    },
-                    contexts = items,
+                        contexts.Count > 0 && quickLinks.Count > 0
+                    ),
+                    items,
                     flatCategories,
                     eventCategories,
-                    searchCodes = NavigatorSearchCodes
+                    NavigatorSearchCodes
                         .QueryTypeBySearchCode.OrderBy(pair => pair.Key, StringComparer.Ordinal)
-                        .Select(pair => new
-                        {
-                            code = pair.Key,
-                            queryType = (int)pair.Value,
-                            queryTypeLabel = pair.Value.ToString(),
-                            topLevel = NavigatorSearchCodes.TopLevelViews.Contains(pair.Key),
-                        })
+                        .Select(pair => new NavigatorSearchCodeOption(
+                            pair.Key,
+                            (int)pair.Value,
+                            pair.Value.ToString(),
+                            NavigatorSearchCodes.TopLevelViews.Contains(pair.Key)
+                        ))
                         .ToList(),
-                    queryTypes = Enum.GetValues<NavigatorQueryType>()
-                        .Select(value => new { value = (int)value, label = value.ToString() })
-                        .ToList(),
-                };
+                    Enum.GetValues<NavigatorQueryType>()
+                        .Select(value => new NavigatorQueryTypeOption((int)value, value.ToString()))
+                        .ToList()
+                );
             },
             ct
         );

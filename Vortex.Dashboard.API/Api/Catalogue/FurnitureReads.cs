@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
@@ -24,11 +25,11 @@ internal sealed class FurnitureReads(
     /// PickerModal/OperationsPage) since that one is called on every keystroke and only needs a
     /// handful of display fields.
     /// </summary>
-    public Task<object> FurnitureDefinitionAdminListAsync(
+    public Task<FurnitureDefinitionPage> FurnitureDefinitionAdminListAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<FurnitureDefinitionPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -94,8 +95,7 @@ internal sealed class FurnitureReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = rows.Select(f => new
-                    {
+                List<FurnitureDefinitionRow> items = rows.Select(f => new FurnitureDefinitionRow(
                         f.Id,
                         f.SpriteId,
                         f.Name,
@@ -121,19 +121,14 @@ internal sealed class FurnitureReads(
                         f.ExtraData,
                         f.stuffDataType,
                         f.stuffDataTypeLabel,
-                        iconUrl = _assetUrls.FurniIcon(f.Name),
-                    })
+                        // Read out of the row above and then dropped from the response, which is why
+                        // the admin page could never show which vending machines are unconfigured.
+                        f.vendingIds,
+                        _assetUrls.FurniIcon(f.Name)
+                    ))
                     .ToList();
 
-                return new
-                {
-                    page,
-                    limit,
-                    offset,
-                    total,
-                    count = items.Count,
-                    items,
-                };
+                return new FurnitureDefinitionPage(page, limit, offset, total, items.Count, items);
             },
             ct
         );

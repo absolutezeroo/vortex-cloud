@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The load test. Two halves that only mean something together: what the run cost the server, and
   // what a real client sitting in the room made of it. Synthetic players supply the first and can
   // never supply the second -- they have nothing to draw -- so the frame rate here comes from
@@ -20,39 +20,51 @@
   import Tabs from '../components/Tabs.svelte';
   import { Gauge, Users, Boxes, TriangleAlert, Activity, Play, History, Monitor } from '@lucide/svelte';
   import { t } from '../lib/i18n';
+  import type { BenchmarkRunView, BenchmarkSampleView, BenchmarkState } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
-  let timer = null;
+  /** One furniture the run will place, as the picker handed it back. */
+  type PickedFurni = { id: number; name: string; iconUrl?: string | null };
+
+  /**
+   * A verdict, normalised. It arrives in two shapes and it is not worth fighting: the live one
+   * comes through the API, which camel-cases everything, and a past one is the report file
+   * served as it sits on disk, which does not.
+   */
+  type Verdict = { grade: string; headline: string; findings: string[] };
+
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state<BenchmarkState | null>(null);
+  let timer: ReturnType<typeof setInterval> | undefined;
 
   const ops = createWriteOps(refresh);
 
-  $: canRun = hasDashboardCapability($identity, CAPABILITIES.opsBenchmarkRun);
-  $: canConfigure = hasDashboardCapability($identity, CAPABILITIES.opsConfigManage);
-  $: running = data?.running ?? false;
+  let canRun = $derived(hasDashboardCapability($identity, CAPABILITIES.opsBenchmarkRun));
+  let canConfigure = $derived(hasDashboardCapability($identity, CAPABILITIES.opsManageConfig));
+  let running = $derived(data?.running ?? false);
   // The switch that decides whether any of this is allowed. Shown at the top rather than left for
   // the operator to discover through a refusal, which is how the first version read.
-  $: enabled = data?.enabled ?? false;
+  let enabled = $derived(data?.enabled ?? false);
 
-  let picking = null;
+  let picking = $state<string | null>(null);
 
   // A past run, loaded whole from its file. The history list carries a headline; the graph needs
   // every sample, and those only exist on disk.
-  let openRun = null;
-  let openRunName = '';
-  let openRunError = '';
+  let openRun = $state<Record<string, any> | null>(null);
+  let openRunName = $state('');
+  let openRunError = $state('');
 
-  async function openHistoryRun(run) {
+  async function openHistoryRun(run: BenchmarkRunView) {
     openRunName = run.fileName;
     openRunError = '';
     openRun = null;
 
     try {
-      openRun = await apiGet(`/api/v1/benchmark/runs/${run.fileName}`);
+      openRun = await apiGet<Record<string, any>>(`/api/v1/benchmark/runs/${run.fileName}`);
     } catch (err) {
-      openRunError = err.message;
+      openRunError = (err as Error).message;
     }
   }
 
@@ -61,7 +73,7 @@
   // disk, which does not. Normalised once here rather than guessed at four call sites.
   const GRADES = ['Good', 'Watch', 'Bad'];
 
-  const verdictOf = (raw) => {
+  const verdictOf = (raw: Record<string, any> | null | undefined): Verdict | null => {
     if (!raw) return null;
 
     const grade = raw.Grade ?? raw.grade;
@@ -73,23 +85,23 @@
     };
   };
 
-  $: liveVerdict = verdictOf(data?.verdict);
-  $: openVerdict = verdictOf(openRun?.verdict);
+  let liveVerdict = $derived(verdictOf(data?.verdict));
+  let openVerdict = $derived(verdictOf(openRun?.verdict));
 
-  const gradeTone = (grade) => {
+  const gradeTone = (grade: string) => {
     if (grade === 'Bad') return 'status-badge--bad';
     if (grade === 'Watch') return 'status-badge--warn';
     if (grade === 'Good') return 'status-badge--ok';
     return 'status-badge--unknown';
   };
 
-  const gradeLabel = (grade) => $t(`benchmark.grade${grade || 'Unknown'}`);
+  const gradeLabel = (grade: string) => $t(`benchmark.grade${grade || 'Unknown'}`);
 
   // Four jobs, four tabs. Stacked down one page they made a column nobody could scan: the switch,
   // the live numbers, the past runs and the form all want to be looked at separately.
-  let tab = 'run';
+  let tab = $state('run');
 
-  let form = {
+  let form = $state({
     players: 50,
     furniture: 200,
     durationSeconds: 60,
@@ -101,10 +113,10 @@
     roomName: '',
     // Empty means "pick a plain floor item for me". Several are interleaved across the floor rather
     // than laid in blocks, which is what a real room looks like to the client's renderer.
-    furni: [],
-  };
+    furni: [] as PickedFurni[],
+  });
 
-  const dropFurni = (id) => {
+  const dropFurni = (id: number) => {
     form.furni = form.furni.filter((item) => item.id !== id);
   };
 
@@ -113,7 +125,7 @@
     error = '';
 
     try {
-      data = await apiGet('/api/v1/benchmark');
+      data = await apiGet<BenchmarkState>('/api/v1/benchmark');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -121,7 +133,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       loading = false;
     }
@@ -134,7 +146,10 @@
     timer = setInterval(refresh, running ? 1000 : 10000);
   }
 
-  $: if (data) schedule();
+  // Re-armed whenever the run's state changes, because the poll interval depends on it.
+  $effect(() => {
+    if (data) schedule();
+  });
 
   onMount(() => {
     void refresh();
@@ -142,7 +157,7 @@
 
   onDestroy(() => clearInterval(timer));
 
-  const phaseTone = (phase) => {
+  const phaseTone = (phase: string) => {
     if (phase === 'Failed') return 'status-badge--bad';
     if (phase === 'Finished') return 'status-badge--ok';
     if (phase === 'Idle') return 'status-badge--unknown';
@@ -151,7 +166,10 @@
 
   // The chart is drawn by hand rather than pulled in: one series over time, a fixed height, and no
   // interaction. A charting library would be more code than the twelve lines below.
-  const points = (samples, pick) => {
+  const points = (
+    samples: readonly any[] | undefined,
+    pick: (sample: any) => number,
+  ) => {
     if (!samples || samples.length < 2) return '';
 
     const values = samples.map(pick);
@@ -167,14 +185,14 @@
       .join(' ');
   };
 
-  $: samples = data?.samples ?? [];
-  $: peakRtt = samples.length ? Math.max(...samples.map((s) => s.rttP95Ms)) : 0;
+  let samples = $derived(data?.samples ?? []);
+  let peakRtt = $derived(samples.length ? Math.max(...samples.map((s) => s.rttP95Ms)) : 0);
 </script>
 
 <section class="panel">
   <div class="panel-head">
       <h2>{$t('benchmark.title')}</h2>
-      <button type="button" on:click={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('benchmark.description')}</p>
 
@@ -201,7 +219,7 @@
         <button
           type="button"
           class="ghost-button"
-          on:click={() =>
+          onclick={() =>
             ops.ask(
               '/api/v1/operations/config',
               { key: 'benchmark.enabled', value: enabled ? 'false' : 'true' },
@@ -264,24 +282,33 @@
 
     <div class="metric-grid">
       <StatCard label={$t('benchmark.connected')} value={formatNumber(data.connectedClients)}>
-        <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <Users size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
       <StatCard label={$t('benchmark.furniturePlaced')} value={formatNumber(data.placedFurniture)}>
-        <Boxes slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <Boxes size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
       <StatCard label={$t('benchmark.worstRtt')} value={`${peakRtt.toFixed(1)} ms`}>
-        <Gauge slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <Gauge size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
       <StatCard label={$t('benchmark.failures')} value={formatNumber(data.summary?.failures ?? 0)}>
-        <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
     </div>
 
     {#if data.reportPath}
+      {@const reportPath = data.reportPath}
       <p class="report">
         {$t('benchmark.reportWritten')}
         <code>{data.reportPath}</code>
-        <button type="button" class="ghost-button" on:click={() => navigator.clipboard?.writeText(data.reportPath)}>
+        <button type="button" class="ghost-button" onclick={() => navigator.clipboard?.writeText(reportPath)}>
           {$t('benchmark.copyPath')}
         </button>
       </p>
@@ -410,13 +437,13 @@
                 </td>
                 <td>
                   <span class="cell">
-                    <button type="button" class="ghost-button" on:click={() => openHistoryRun(run)}>
+                    <button type="button" class="ghost-button" onclick={() => openHistoryRun(run)}>
                       {$t('benchmark.openRun')}
                     </button>
                     <button
                       type="button"
                       class="ghost-button"
-                      on:click={() => navigator.clipboard?.writeText(run.path)}
+                      onclick={() => navigator.clipboard?.writeText(run.path)}
                     >
                       {$t('benchmark.copyPath')}
                     </button>
@@ -494,7 +521,9 @@
 
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
+
           ops.ask(
             '/api/v1/operations/benchmark/start',
             {
@@ -513,13 +542,14 @@
               players: form.players,
               furniture: form.furniture,
               seconds: form.durationSeconds,
-            })
-          )}
+            }),
+          );
+        }}
       >
         <label>
           {$t('benchmark.fieldRoom')}
           <span class="cell">
-            <button type="button" class="ghost-button" on:click={() => (picking = 'room')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'room')}>
               {$t('benchmark.pickRoom')}
             </button>
             {#if form.roomId}
@@ -527,7 +557,7 @@
               <button
                 type="button"
                 class="ghost-button"
-                on:click={() => {
+                onclick={() => {
                   form.roomId = 0;
                   form.roomName = '';
                 }}
@@ -553,7 +583,7 @@
         <label>
           {$t('benchmark.fieldFurniKinds')}
           <span class="cell">
-            <button type="button" class="ghost-button" on:click={() => (picking = 'furni')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'furni')}>
               {$t('benchmark.pickFurni')}
             </button>
             {#if form.furni.length === 0}
@@ -566,7 +596,7 @@
                 <span class="op-chip">
                   <AssetImage src={item.iconUrl} alt={item.name} size={24} />
                   {item.name}
-                  <button type="button" class="chip-remove" on:click={() => dropFurni(item.id)}>×</button>
+                  <button type="button" class="chip-remove" onclick={() => dropFurni(item.id)}>×</button>
                 </span>
               {/each}
             </span>
@@ -601,7 +631,7 @@
             type="button"
             class="ghost-button danger"
             disabled={!running}
-            on:click={() =>
+            onclick={() =>
               ops.ask(
                 '/api/v1/operations/benchmark/stop',
                 {},
@@ -626,8 +656,8 @@
   <PickerModal
     kind="room"
     title={$t('benchmark.pickRoom')}
-    onSelect={(picked) => {
-      form.roomId = picked.id;
+    onSelect={(picked: PickerRow) => {
+      form.roomId = Number(picked.id);
       form.roomName = picked.name;
       picking = null;
     }}
@@ -637,11 +667,13 @@
   <PickerModal
     kind="furniture"
     title={$t('benchmark.pickFurni')}
-    onSelect={(picked) => {
+    onSelect={(picked: PickerRow) => {
       // Kept open would be nicer for picking five in a row, but the modal closes on select and
       // reopening is one click -- not worth forking the shared component over.
-      if (!form.furni.some((item) => item.id === picked.id)) {
-        form.furni = [...form.furni, { id: picked.id, name: picked.name, iconUrl: picked.iconUrl }];
+      const id = Number(picked.id);
+
+      if (!form.furni.some((item) => item.id === id)) {
+        form.furni = [...form.furni, { id, name: picked.name, iconUrl: picked.iconUrl }];
       }
 
       picking = null;

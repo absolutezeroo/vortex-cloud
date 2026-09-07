@@ -244,6 +244,83 @@ export interface BadgeHolderCount {
   equipped: number;
 }
 
+export interface BenchmarkPlanView {
+  players: number;
+  furniture: number;
+  durationSeconds: number;
+  rampSeconds: number;
+  walkIntervalMs: number;
+  chatIntervalMs: number;
+  label: string;
+}
+
+export interface BenchmarkRunView {
+  fileName: string;
+  path: string;
+  sizeBytes: number;
+  writtenAtUtc: string;
+  players: number;
+  furniture: number;
+  durationSeconds: number;
+  label: string;
+  phase: string;
+  roomId: number;
+  borrowedRoom: boolean;
+  peakClients: number;
+  worstRttMs: number;
+  failures: number;
+  grade: string;
+  headline: string;
+}
+
+export interface BenchmarkSampleView {
+  at: string;
+  connectedClients: number;
+  rttMedianMs: number;
+  rttP95Ms: number;
+  packetsReceived: number;
+  bytesReceived: number;
+  failures: number;
+}
+
+export interface BenchmarkState {
+  phase: string;
+  running: boolean;
+  plan: BenchmarkPlanView | null;
+  startedAt: string | null;
+  endedAt: string | null;
+  connectedClients: number;
+  placedFurniture: number;
+  roomId: number;
+  enabled: boolean;
+  borrowedRoom: boolean;
+  error: string | null;
+  residue: string | null;
+  reportPath: string | null;
+  samples: BenchmarkSampleView[];
+  verdict: BenchmarkVerdictView;
+  runs: BenchmarkRunView[];
+  summary: BenchmarkSummaryView | null;
+}
+
+export interface BenchmarkSummaryView {
+  peakClients: number;
+  worstRttMs: number;
+  medianRttMs: number;
+  totalPackets: number;
+  totalBytes: number;
+  failures: number;
+}
+
+export interface BenchmarkVerdictView {
+  grade: string;
+  headline: string;
+  findings: string[];
+  medianRttMs: number;
+  stalls: number;
+  tickBudgetPercent: number;
+}
+
 export interface BotDetail {
   id: number;
   name: string;
@@ -633,6 +710,21 @@ export interface CollectorScore {
   score: number;
 }
 
+export interface ConfigEntryDto {
+  key: string;
+  group: string;
+  description: string;
+  kind: string;
+  defaultValue: string;
+  currentValue: string | null;
+  isOverridden: boolean;
+}
+
+export interface ConfigList {
+  count: number;
+  items: ConfigEntryDto[];
+}
+
 export interface CurrencyTypeRow {
   id: number;
   name: string | null;
@@ -642,6 +734,11 @@ export interface CurrencyTypeRow {
   startingAmount: number;
   walletRows: number;
   totalHeld: number;
+}
+
+export interface DashboardInventory {
+  generatedAt: string;
+  groups: InventoryGroup[];
 }
 
 export interface DirectoryPage {
@@ -871,6 +968,45 @@ export interface ForumThreadSummary {
   authorName: string | null;
 }
 
+export interface FurnitureDefinitionPage {
+  page: number;
+  limit: number;
+  offset: number;
+  total: number;
+  count: number;
+  items: FurnitureDefinitionRow[];
+}
+
+export interface FurnitureDefinitionRow {
+  id: number;
+  spriteId: number;
+  name: string;
+  productType: number;
+  productTypeLabel: string;
+  furniCategory: number;
+  furniCategoryLabel: string;
+  logic: string;
+  totalStates: number;
+  width: number;
+  length: number;
+  stackHeight: number;
+  canStack: boolean;
+  canWalk: boolean;
+  canSit: boolean;
+  canLay: boolean;
+  canRecycle: boolean;
+  canTrade: boolean;
+  canGroup: boolean;
+  canSell: boolean;
+  usagePolicy: number;
+  usagePolicyLabel: string;
+  extraData: string | null;
+  stuffDataType: number;
+  stuffDataTypeLabel: string;
+  vendingIds: string | null;
+  iconUrl: string | null;
+}
+
 export interface FurnitureDirectoryPage {
   count: number;
   total: number;
@@ -1024,6 +1160,18 @@ export interface HandItemRow {
   thirst: number;
   consumable: boolean;
   imageUrl: string | null;
+}
+
+export interface InventoryGroup {
+  key: string;
+  rows: InventoryRow[];
+}
+
+export interface InventoryRow {
+  key: string;
+  count: number;
+  route: string | null;
+  empty: boolean;
 }
 
 export interface LtdRaffleResultCount {
@@ -1194,6 +1342,84 @@ export interface ModerationTotals {
 export interface ModerationWindow {
   since: string;
   until: string;
+}
+
+export interface NavigatorContextRow {
+  id: number;
+  searchCode: string;
+  visible: boolean;
+  queryType: number;
+  queryTypeLabel: string;
+  orderNum: number;
+  knownCode: boolean;
+  quickLinks: NavigatorQuickLinkRow[];
+}
+
+export interface NavigatorEmptyTab {
+  id: number;
+  searchCode: string;
+}
+
+export interface NavigatorEventCategoryRow {
+  id: number;
+  name: string;
+  visible: boolean;
+  activeAdCount: number;
+}
+
+export interface NavigatorFlatCategoryRow {
+  id: number;
+  name: string;
+  visible: boolean;
+  automatic: boolean;
+  automaticCategory: string | null;
+  globalCategory: string | null;
+  staffOnly: boolean;
+  minRank: number;
+  orderNum: number;
+  roomCount: number;
+}
+
+export interface NavigatorHealth {
+  contextCount: number;
+  quickLinkCount: number;
+  flatCategoryCount: number;
+  eventCategoryCount: number;
+  missingTabs: string[];
+  emptyTabs: NavigatorEmptyTab[];
+  seeded: boolean;
+}
+
+export interface NavigatorQueryTypeOption {
+  value: number;
+  label: string;
+}
+
+export interface NavigatorQuickLinkRow {
+  id: number;
+  searchCode: string;
+  filter: string;
+  localization: string;
+  queryType: number;
+  queryTypeLabel: string;
+  orderNum: number;
+  knownCode: boolean;
+}
+
+export interface NavigatorSearchCodeOption {
+  code: string;
+  queryType: number;
+  queryTypeLabel: string;
+  topLevel: boolean;
+}
+
+export interface NavigatorSetup {
+  health: NavigatorHealth;
+  contexts: NavigatorContextRow[];
+  flatCategories: NavigatorFlatCategoryRow[];
+  eventCategories: NavigatorEventCategoryRow[];
+  searchCodes: NavigatorSearchCodeOption[];
+  queryTypes: NavigatorQueryTypeOption[];
 }
 
 export interface NftAssetRow {

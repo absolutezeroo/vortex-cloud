@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api.Catalogue;
@@ -20,15 +21,15 @@ namespace Vortex.Dashboard.API.Api.Catalogue;
 internal sealed class InventoryReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)
 {
-    public Task<object> InventoryAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<DashboardInventory> InventoryAsync(CancellationToken ct) =>
+        QueryAsync<DashboardInventory>(
             async db =>
             {
                 DateTime now = DateTime.UtcNow;
 
                 // Counted in one pass and shaped as {domain, label, count, route} so the panel is a
                 // plain list the front end does not have to keep in sync with this file.
-                List<object> groups =
+                List<InventoryGroup> groups =
                 [
                     Group(
                         "world",
@@ -310,19 +311,13 @@ internal sealed class InventoryReads(IDbContextFactory<VortexDbContext> dbContex
                     ),
                 ];
 
-                return new { generatedAt = now, groups };
+                return new DashboardInventory(now, groups);
             },
             ct
         );
 
-    private static object Group(string key, List<object> rows) => new { key, rows };
+    private static InventoryGroup Group(string key, List<InventoryRow> rows) => new(key, rows);
 
-    private static object Row(string key, int count, string? route) =>
-        new
-        {
-            key,
-            count,
-            route,
-            empty = count == 0,
-        };
+    private static InventoryRow Row(string key, int count, string? route) =>
+        new(key, count, route, count == 0);
 }

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { readParam, readNumberParam, writeParams } from '../lib/urlState';
 
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
@@ -24,8 +24,46 @@
   import Pagination from '../components/Pagination.svelte';
   import { identity } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { FurnitureDefinitionPage, FurnitureDefinitionRow } from '../lib/apiTypes';
+  import type { FieldChange } from '../lib/changes';
 
-  function emptyForm() {
+  /** The definition editor's form; every number binds to an input that hands back a string. */
+  type Num = number | string;
+
+  type DefinitionForm = {
+    spriteId: Num;
+    name: string;
+    productType: Num;
+    furniCategory: Num;
+    logic: string;
+    totalStates: Num;
+    width: Num;
+    length: Num;
+    stackHeight: Num;
+    canStack: boolean;
+    canWalk: boolean;
+    canSit: boolean;
+    canLay: boolean;
+    canRecycle: boolean;
+    canTrade: boolean;
+    canGroup: boolean;
+    canSell: boolean;
+    usagePolicy: Num;
+    extraData: string;
+    stuffDataType: Num;
+  };
+
+  /** The one drawer, open to create or to edit. An edit keeps what the values were, for the audit. */
+  type DefinitionDrawer =
+    | { mode: 'create'; id: null; before?: undefined; form: DefinitionForm }
+    | {
+        mode: 'edit';
+        id: number;
+        before: Record<string, unknown>;
+        form: DefinitionForm;
+      };
+
+  function emptyForm(): DefinitionForm {
     return {
       spriteId: 0,
       name: '',
@@ -67,7 +105,7 @@
   // One drawer for both jobs: { mode: 'create' | 'edit', id, form }. Null means closed, which is
   // also what makes "is anything being edited" a single question rather than two flags that can
   // disagree.
-  let drawer = $state(null);
+  let drawer = $state<DefinitionDrawer | null>(null);
 
   function openCreate() {
     drawer = { mode: 'create', id: null, form: emptyForm() };
@@ -90,7 +128,7 @@
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
       if (query.trim()) params.set('q', query.trim());
 
-      return apiGet(`/api/v1/furniture/definitions?${params}`);
+      return apiGet<FurnitureDefinitionPage>(`/api/v1/furniture/definitions?${params}`);
     }
   );
 
@@ -103,11 +141,11 @@
     page = 1;
   }
 
-  function goToPage(next) {
+  function goToPage(next: number) {
     page = Math.min(totalPages, Math.max(1, next));
   }
 
-  function specFrom(form) {
+  function specFrom(form: DefinitionForm) {
     return {
       spriteId: Number(form.spriteId) || 0,
       name: form.name.trim(),
@@ -134,7 +172,16 @@
 
   // No `reason` is passed: createWriteOps builds the audited sentence from this summary plus the
   // fields that actually changed, and the confirm dialog asks for a note only as an optional extra.
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess, changes = []) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: Record<string, unknown>,
+    summary: string,
+    onSuccess: () => void | Promise<void>,
+    changes: FieldChange[] = [],
+  ) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
@@ -190,7 +237,7 @@
     { key: 'canSell', label: translate('furnitureAdmin.canSell') },
   ];
 
-  function startEdit(item) {
+  function startEdit(item: FurnitureDefinitionRow) {
     drawer = {
       mode: 'edit',
       id: item.id,
@@ -247,7 +294,7 @@
     );
   }
 
-  function stageDelete(item) {
+  function stageDelete(item: FurnitureDefinitionRow) {
     if (!canManage) return;
 
     stage(
@@ -264,7 +311,7 @@
 
 <!-- The create and edit forms were two copies of the same twelve fields, one spliced above the list
      and one inside whichever card was open. They are one snippet now, rendered once, in the drawer. -->
-{#snippet definitionFields(form, prefix)}
+{#snippet definitionFields(form: DefinitionForm, prefix: string)}
   <div class="form-grid">
     <div class="op-field">
       <label for={`${prefix}-sprite`}>{$t('furnitureAdmin.spriteIdRequired')}</label>
@@ -439,7 +486,7 @@
     {/if}
 
     {#snippet actions()}
-      {#if drawer.mode === 'create'}
+      {#if drawer?.mode === 'create'}
         <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create} class="success">{$t('furnitureAdmin.create')}</button>
       {:else}
         <button type="button" onclick={stageUpdate} disabled={$ops.busyKeys.update}>{$t('furnitureAdmin.save')}</button>

@@ -25,7 +25,7 @@ internal sealed class ConfigReads(
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     /// <summary>Every known config key with its catalog metadata and current stored value (if set).</summary>
-    public async Task<object> ConfigListAsync(CancellationToken ct)
+    public async Task<Contracts.ConfigList> ConfigListAsync(CancellationToken ct)
     {
         ImmutableDictionary<string, string> current = await _grainFactory
             .GetServerConfigGrain()
@@ -45,7 +45,7 @@ internal sealed class ConfigReads(
             )),
         ];
 
-        return new { count = items.Length, items };
+        return new Contracts.ConfigList(items.Length, items);
     }
 }
 

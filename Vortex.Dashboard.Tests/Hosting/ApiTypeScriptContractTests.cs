@@ -105,6 +105,11 @@ public sealed class ApiTypeScriptContractTests
         typeof(TargetedOfferFormMeta),
         typeof(TargetedOfferImageList),
         typeof(TargetedOfferStats),
+        typeof(ConfigList),
+        typeof(BenchmarkState),
+        typeof(NavigatorSetup),
+        typeof(DashboardInventory),
+        typeof(FurnitureDefinitionPage),
     ];
 
     [Fact]

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The navigator's own configuration. Unlike every other admin page, the interesting state here is
   // emptiness: an unseeded hotel renders an empty left pane in the client whatever the room list
   // looks like, and a tab with no blocks renders blank. Both are called out at the top, with the
@@ -22,17 +22,53 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Compass, LayoutList, FolderTree, CalendarRange } from '@lucide/svelte';
-  import { t } from '../lib/i18n';
+  import { t, type Translator } from '../lib/i18n';
+  import type {
+    NavigatorQueryTypeOption,
+    NavigatorSearchCodeOption,
+    NavigatorSetup,
+  } from '../lib/apiTypes';
+
+  /** Which of the four tables the one drawer is editing. */
+  type NavigatorKind = 'context' | 'quickLink' | 'category' | 'eventCategory';
+
+  /**
+   * A draft in the drawer.
+   *
+   * One drawer serves four tables, so this is the union of what they hold: `visible` is on all of
+   * them, everything else belongs to one or two. The kind alongside it says which fields the
+   * markup will read, and the operation body reads them back by name.
+   */
+  type NavigatorDraft = {
+    id?: number;
+    visible?: boolean;
+    /** context, quickLink */
+    searchCode?: string;
+    queryType?: number | string;
+    orderNum?: number | string;
+    /** quickLink */
+    contextId?: number;
+    filter?: string;
+    localization?: string;
+    /** category, eventCategory */
+    name?: string;
+    /** category */
+    automatic?: boolean;
+    automaticCategory?: string | null;
+    globalCategory?: string | null;
+    staffOnly?: boolean;
+    minRank?: number | string;
+  };
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<NavigatorSetup | null>(null);
   // Every write goes through createWriteOps: the modal collects the reason, the store posts it,
   // remembers it and refreshes -- this callback is only the page's own "clear the drafts" step.
   // What the one drawer calls itself, per kind. Passed the translator so the title follows a
   // language change like every other label on the page.
-  function editorTitle(kind, translator) {
+  function editorTitle(kind: NavigatorKind, translator: Translator) {
     if (kind === 'context') return translator('navigatorConfig.tabsTitle');
     if (kind === 'quickLink') return translator('navigatorConfig.quickLinksTitle');
     if (kind === 'category') return translator('navigatorConfig.categoriesTitle');
@@ -40,7 +76,7 @@
   }
 
   // The same drawer, opened to create rather than to edit.
-  function addTitle(kind, translator) {
+  function addTitle(kind: NavigatorKind, translator: Translator) {
     if (kind === 'context') return translator('navigatorConfig.addTab');
     if (kind === 'category') return translator('navigatorConfig.addCategory');
     if (kind === 'quickLink') return translator('navigatorConfig.addBlock');
@@ -58,11 +94,11 @@
   });
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsNavigatorManage));
-  let queryTypes = $derived(data?.queryTypes || []);
-  let searchCodes = $derived(data?.searchCodes || []);
+  let queryTypes: NavigatorQueryTypeOption[] = $derived(data?.queryTypes || []);
+  let searchCodes: NavigatorSearchCodeOption[] = $derived(data?.searchCodes || []);
 
-  const newContext = () => ({ searchCode: '', visible: true, queryType: 0, orderNum: 0 });
-  const newQuickLink = (contextId) => ({
+  const newContext = (): NavigatorDraft => ({ searchCode: '', visible: true, queryType: 0, orderNum: 0 });
+  const newQuickLink = (contextId: number): NavigatorDraft => ({
     contextId,
     searchCode: '',
     filter: '',
@@ -70,7 +106,7 @@
     queryType: 0,
     orderNum: 0,
   });
-  const newCategory = () => ({
+  const newCategory = (): NavigatorDraft => ({
     name: '',
     visible: true,
     automatic: false,
@@ -80,19 +116,24 @@
     minRank: 1,
     orderNum: 0,
   });
-  const newEventCategory = () => ({ name: '', visible: true });
+  const newEventCategory = (): NavigatorDraft => ({ name: '', visible: true });
 
   let contextForm = $state(newContext());
-  let quickLinkForms = $state({});
+  let quickLinkForms = $state<Record<number, NavigatorDraft>>({});
   let categoryForm = $state(newCategory());
   let eventCategoryForm = $state(newEventCategory());
-  let editing = $state(null); // { kind, id, draft }
+  let editing = $state<{
+    kind: NavigatorKind;
+    id: number;
+    parentId: number | null;
+    draft: NavigatorDraft;
+  } | null>(null);
   // Which creation form the drawer is showing, if any. Adding used to be a form
   // permanently open at the foot of each section; it opens where editing opens now.
-  let adding = $state(null);
+  let adding = $state<NavigatorKind | null>(null);
   // Which context a new block belongs to. The block editor is the one creator that is
   // per-parent, and the drawer has no `context` in scope once it is out of the loop.
-  let addingContext = $state(null);
+  let addingContext = $state<number | null>(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
@@ -105,9 +146,9 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/navigator/config');
+      data = await apiGet<NavigatorSetup>('/api/v1/navigator/config');
       quickLinkForms = Object.fromEntries(
-        (data.contexts || []).map((c) => [c.id, newQuickLink(c.id)])
+        (data?.contexts || []).map((c) => [c.id, newQuickLink(c.id)]),
       );
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -116,28 +157,33 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
     }
   }
 
-  const ask = (endpoint, body, title, summary) => ops.ask(endpoint, body, title, summary);
+  const ask = (
+    endpoint: string,
+    body: Record<string, unknown>,
+    title: string,
+    summary: string,
+  ) => ops.ask(endpoint, body, title, summary);
 
-  function startEdit(kind, row, parentId = null) {
+  function startEdit(kind: NavigatorKind, row: { id: number }, parentId: number | null = null) {
     // parentId: a quick link belongs to a tab, and the drawer no longer sits inside that tab's
     // markup, so the parent it posts against has to travel with the edit.
     editing = { kind, id: row.id, parentId, draft: { ...row } };
   }
 
-  function queryTypeLabel(value) {
+  function queryTypeLabel(value: number) {
     return queryTypes.find((q) => q.value === value)?.label ?? value;
   }
 
   // Picking a known code should preselect what that code means to the client; the operator can still
   // override it, which is the whole point of the table being configurable.
-  function onCodePicked(draft, code) {
+  function onCodePicked(draft: NavigatorDraft, code: string) {
     draft.searchCode = code;
     const known = searchCodes.find((s) => s.code === code);
     if (known) draft.queryType = known.queryType;
@@ -185,44 +231,44 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <StatCard label={$t('navigatorConfig.tabs')} value={formatNumber(data.health.contextCount)}>
+    <StatCard label={$t('navigatorConfig.tabs')} value={formatNumber(data?.health?.contextCount)}>
       {#snippet icon()}
         <Compass size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('navigatorConfig.blocks')} value={formatNumber(data.health.quickLinkCount)}>
+    <StatCard label={$t('navigatorConfig.blocks')} value={formatNumber(data?.health?.quickLinkCount)}>
       {#snippet icon()}
         <LayoutList size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('navigatorConfig.categories')} value={formatNumber(data.health.flatCategoryCount)}>
+    <StatCard label={$t('navigatorConfig.categories')} value={formatNumber(data?.health?.flatCategoryCount)}>
       {#snippet icon()}
         <FolderTree size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('navigatorConfig.eventCategories')} value={formatNumber(data.health.eventCategoryCount)}>
+    <StatCard label={$t('navigatorConfig.eventCategories')} value={formatNumber(data?.health?.eventCategoryCount)}>
       {#snippet icon()}
         <CalendarRange size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
   </div>
 
-  {#if !data.health.seeded || data.health.missingTabs.length > 0 || data.health.emptyTabs.length > 0}
+  {#if !data?.health.seeded || data?.health.missingTabs.length > 0 || data?.health.emptyTabs.length > 0}
     <section class="panel warn-panel" style="margin-top: 12px;">
       <div class="panel-head"><h2>{$t('navigatorConfig.healthTitle')}</h2></div>
-      {#if !data.health.seeded}
+      {#if !data?.health.seeded}
         <p>{$t('navigatorConfig.notSeeded')}</p>
       {/if}
-      {#if data.health.missingTabs.length > 0}
+      {#if data?.health.missingTabs.length > 0}
         <p>
           {$t('navigatorConfig.missingTabs')}
-          {#each data.health.missingTabs as code}<code class="chip">{code}</code>{/each}
+          {#each data?.health.missingTabs as code}<code class="chip">{code}</code>{/each}
         </p>
       {/if}
-      {#if data.health.emptyTabs.length > 0}
+      {#if data?.health.emptyTabs.length > 0}
         <p>
           {$t('navigatorConfig.emptyTabs')}
-          {#each data.health.emptyTabs as tab}<code class="chip">{tab.searchCode}</code>{/each}
+          {#each data?.health.emptyTabs as tab}<code class="chip">{tab.searchCode}</code>{/each}
         </p>
       {/if}
     </section>
@@ -246,11 +292,11 @@
       {/if}
     </div>
 
-    {#if (data.contexts || []).length === 0}
+    {#if (data?.contexts || []).length === 0}
       <EmptyState message={$t('navigatorConfig.noTabs')} />
     {/if}
 
-    {#each data.contexts || [] as context}
+    {#each data?.contexts || [] as context}
       <article class="tab-card">
         <header>
           <div>
@@ -377,7 +423,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.flatCategories || [] as category}
+          {#each data?.flatCategories || [] as category}
             <tr>
               <td>{category.id}</td>
               <td>{category.name}</td>
@@ -442,7 +488,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.eventCategories || [] as category}
+          {#each data?.eventCategories || [] as category}
             <tr>
               <td>{category.id}</td>
               <td>{category.name}</td>
@@ -483,33 +529,34 @@
 {/if}
 
 {#if editing}
+  {@const open = editing}
   <!-- One drawer for all four editors: `editing` was already a single {kind, id, draft},
        so what used to unfold inside four different lists is one panel that switches on kind. -->
   <Drawer
-    title={editorTitle(editing.kind, $t)}
+    title={editorTitle(open.kind, $t)}
     eyebrow={$t('navigatorConfig.title')}
     onclose={() => (editing = null)}
   >
-    {#if editing.kind === 'context'}
+    {#if open.kind === 'context'}
             <form
               class="edit-grid" id="navigator-editor"
               onsubmit={(event) => {
                 event.preventDefault();
                 ask(
                   '/api/v1/operations/navigator/contexts/update',
-                  { contextId: editing.id, ...editing.draft },
+                  { contextId: open.id, ...open.draft },
                   $t('navigatorConfig.updateTab'),
-                  $t('navigatorConfig.updateTabSummary', { code: editing.draft.searchCode })
+                  $t('navigatorConfig.updateTabSummary', { code: open.draft.searchCode })
                 );
               }}
             >
               <label>
                 {$t('navigatorConfig.searchCode')}
-                <input autocomplete="off" spellcheck="false" bind:value={editing.draft.searchCode} required />
+                <input autocomplete="off" spellcheck="false" bind:value={open.draft.searchCode} required />
               </label>
               <label>
                 {$t('navigatorConfig.queryType')}
-                <select bind:value={editing.draft.queryType}>
+                <select bind:value={open.draft.queryType}>
                   {#each queryTypes as q}
                     <option value={q.value}>{q.label}</option>
                   {/each}
@@ -517,14 +564,14 @@
               </label>
               <label>
                 {$t('navigatorConfig.order')}
-                <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
+                <input autocomplete="off" spellcheck="false" type="number" bind:value={open.draft.orderNum} />
               </label>
               <label class="check">
-                <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
+                <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={open.draft.visible} />
                 {$t('navigatorConfig.visible')}
               </label>
             </form>
-    {:else if editing.kind === 'quickLink'}
+    {:else if open.kind === 'quickLink'}
                         <form
                           class="edit-grid" id="navigator-editor"
                           onsubmit={(event) => {
@@ -532,26 +579,26 @@
                             ask(
                               '/api/v1/operations/navigator/quick-links/update',
                               {
-                                quickLinkId: editing.id,
-                                contextId: editing.parentId,
-                                searchCode: editing.draft.searchCode,
-                                filter: editing.draft.filter || '',
-                                localization: editing.draft.localization || '',
-                                queryType: editing.draft.queryType,
-                                orderNum: editing.draft.orderNum,
+                                quickLinkId: open.id,
+                                contextId: open.parentId,
+                                searchCode: open.draft.searchCode,
+                                filter: open.draft.filter || '',
+                                localization: open.draft.localization || '',
+                                queryType: open.draft.queryType,
+                                orderNum: open.draft.orderNum,
                               },
                               $t('navigatorConfig.updateBlock'),
-                              $t('navigatorConfig.updateBlockSummary', { code: editing.draft.searchCode })
+                              $t('navigatorConfig.updateBlockSummary', { code: open.draft.searchCode })
                             );
                           }}
                         >
                           <label>
                             {$t('navigatorConfig.searchCode')}
-                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.searchCode} required />
+                            <input autocomplete="off" spellcheck="false" bind:value={open.draft.searchCode} required />
                           </label>
                           <label>
                             {$t('navigatorConfig.queryType')}
-                            <select bind:value={editing.draft.queryType}>
+                            <select bind:value={open.draft.queryType}>
                               {#each queryTypes as q}
                                 <option value={q.value}>{q.label}</option>
                               {/each}
@@ -559,52 +606,52 @@
                           </label>
                           <label>
                             {$t('navigatorConfig.colFilter')}
-                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.filter} />
+                            <input autocomplete="off" spellcheck="false" bind:value={open.draft.filter} />
                           </label>
                           <label>
                             {$t('navigatorConfig.colLocalization')}
-                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.localization} />
+                            <input autocomplete="off" spellcheck="false" bind:value={open.draft.localization} />
                           </label>
                           <label>
                             {$t('navigatorConfig.order')}
-                            <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
+                            <input autocomplete="off" spellcheck="false" type="number" bind:value={open.draft.orderNum} />
                           </label>
                         </form>
-    {:else if editing.kind === 'category'}
+    {:else if open.kind === 'category'}
                     <form
                       class="edit-grid" id="navigator-editor"
                       onsubmit={(event) => {
                         event.preventDefault();
                         ask(
                           '/api/v1/operations/navigator/categories/update',
-                          { categoryId: editing.id, ...editing.draft },
+                          { categoryId: open.id, ...open.draft },
                           $t('navigatorConfig.updateCategory'),
-                          $t('navigatorConfig.updateCategorySummary', { name: editing.draft.name })
+                          $t('navigatorConfig.updateCategorySummary', { name: open.draft.name })
                         );
                       }}
                     >
                       <label>
                         {$t('navigatorConfig.colName')}
-                        <input autocomplete="off" spellcheck="false" bind:value={editing.draft.name} required />
+                        <input autocomplete="off" spellcheck="false" bind:value={open.draft.name} required />
                       </label>
                       <label>
                         {$t('navigatorConfig.colMinRank')}
-                        <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.minRank} />
+                        <input autocomplete="off" spellcheck="false" type="number" bind:value={open.draft.minRank} />
                       </label>
                       <label>
                         {$t('navigatorConfig.order')}
-                        <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
+                        <input autocomplete="off" spellcheck="false" type="number" bind:value={open.draft.orderNum} />
                       </label>
                       <label class="check">
-                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={open.draft.visible} />
                         {$t('navigatorConfig.visible')}
                       </label>
                       <label class="check">
-                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.staffOnly} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={open.draft.staffOnly} />
                         {$t('navigatorConfig.colStaffOnly')}
                       </label>
                     </form>
-    {:else if editing.kind === 'eventCategory'}
+    {:else if open.kind === 'eventCategory'}
                     <form
                       class="edit-grid" id="navigator-editor"
                       onsubmit={(event) => {
@@ -612,21 +659,21 @@
                         ask(
                           '/api/v1/operations/navigator/event-categories/update',
                           {
-                            categoryId: editing.id,
-                            name: editing.draft.name,
-                            visible: editing.draft.visible,
+                            categoryId: open.id,
+                            name: open.draft.name,
+                            visible: open.draft.visible,
                           },
                           $t('navigatorConfig.updateEventCategory'),
-                          $t('navigatorConfig.updateEventCategorySummary', { name: editing.draft.name })
+                          $t('navigatorConfig.updateEventCategorySummary', { name: open.draft.name })
                         );
                       }}
                     >
                       <label>
                         {$t('navigatorConfig.colName')}
-                        <input autocomplete="off" spellcheck="false" bind:value={editing.draft.name} required />
+                        <input autocomplete="off" spellcheck="false" bind:value={open.draft.name} required />
                       </label>
                       <label class="check">
-                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={open.draft.visible} />
                         {$t('navigatorConfig.visible')}
                       </label>
                     </form>
@@ -710,8 +757,9 @@
 </style>
 
 {#if adding}
-  <Drawer title={addTitle(adding, $t)} eyebrow={$t('navigatorConfig.title')} onclose={() => (adding = null)}>
-    {#if adding === 'context'}
+  {@const kind = adding}
+  <Drawer title={addTitle(kind, $t)} eyebrow={$t('navigatorConfig.title')} onclose={() => (adding = null)}>
+    {#if kind === 'context'}
     <form
       class="edit-grid" id="navigator-creator"
       onsubmit={(event) => {
@@ -750,7 +798,7 @@
         {$t('navigatorConfig.visible')}
       </label>
       </form>
-    {:else if adding === 'category'}
+    {:else if kind === 'category'}
     <form
       class="edit-grid" id="navigator-creator"
       onsubmit={(event) => {
@@ -780,7 +828,7 @@
         {$t('navigatorConfig.colStaffOnly')}
       </label>
       </form>
-    {:else if adding === 'quickLink'}
+    {:else if kind === 'quickLink'}
           <form
             class="edit-grid" id="navigator-creator"
             onsubmit={(event) => {
@@ -788,21 +836,21 @@
               ask(
                 '/api/v1/operations/navigator/quick-links',
                 {
-                  contextId: addingContext,
-                  searchCode: quickLinkForms[addingContext].searchCode,
-                  filter: quickLinkForms[addingContext].filter || '',
-                  localization: quickLinkForms[addingContext].localization || '',
-                  queryType: quickLinkForms[addingContext].queryType,
-                  orderNum: quickLinkForms[addingContext].orderNum,
+                  contextId: addingContext!,
+                  searchCode: quickLinkForms[addingContext!].searchCode,
+                  filter: quickLinkForms[addingContext!].filter || '',
+                  localization: quickLinkForms[addingContext!].localization || '',
+                  queryType: quickLinkForms[addingContext!].queryType,
+                  orderNum: quickLinkForms[addingContext!].orderNum,
                 },
                 $t('navigatorConfig.addBlock'),
                 $t('navigatorConfig.addBlockSummary', {
-                  code: quickLinkForms[addingContext].searchCode,
+                  code: quickLinkForms[addingContext!].searchCode,
                   // The creator form lives outside the {#each ... as context} loop, so it has the
                   // id the button stored and not the row it came from. Reading `context` here was
                   // an undefined identifier: `npm run build` compiles it to a global lookup and
                   // ships a confirmation dialog that throws when an operator opens it.
-                  tab: (data.contexts || []).find((c) => c.id === addingContext)?.searchCode ?? '',
+                  tab: (data?.contexts || []).find((c) => c.id === addingContext)?.searchCode ?? '',
                 })
               );
             }}
@@ -810,8 +858,8 @@
             <label>
               {$t('navigatorConfig.searchCode')}
               <select
-                value={quickLinkForms[addingContext].searchCode}
-                onchange={(e) => onCodePicked(quickLinkForms[addingContext], e.currentTarget.value)}
+                value={quickLinkForms[addingContext!].searchCode}
+                onchange={(e) => onCodePicked(quickLinkForms[addingContext!], e.currentTarget.value)}
               >
                 <option value="">{$t('navigatorConfig.pickCode')}</option>
                 {#each searchCodes as code}
@@ -821,7 +869,7 @@
             </label>
             <label>
               {$t('navigatorConfig.queryType')}
-              <select bind:value={quickLinkForms[addingContext].queryType}>
+              <select bind:value={quickLinkForms[addingContext!].queryType}>
                 {#each queryTypes as q}
                   <option value={q.value}>{q.label}</option>
                 {/each}
@@ -829,10 +877,10 @@
             </label>
             <label>
               {$t('navigatorConfig.order')}
-              <input autocomplete="off" spellcheck="false" type="number" bind:value={quickLinkForms[addingContext].orderNum} />
+              <input autocomplete="off" spellcheck="false" type="number" bind:value={quickLinkForms[addingContext!].orderNum} />
             </label>
           </form>
-    {:else if adding === 'eventCategory'}
+    {:else if kind === 'eventCategory'}
     <form
       class="edit-grid" id="navigator-creator"
       onsubmit={(event) => {
@@ -861,14 +909,14 @@
         type="submit"
         form="navigator-creator"
         class="success"
-        disabled={adding === 'context'
+        disabled={kind === 'context'
           ? !contextForm.searchCode
-          : adding === 'category'
-            ? !categoryForm.name.trim()
-            : adding === 'quickLink'
-              ? !quickLinkForms[addingContext]?.searchCode
-              : !eventCategoryForm.name.trim()}
-      >{addTitle(adding, $t)}</button>
+          : kind === 'category'
+            ? !categoryForm.name?.trim()
+            : kind === 'quickLink'
+              ? !quickLinkForms[addingContext!]?.searchCode
+              : !eventCategoryForm.name?.trim()}
+      >{addTitle(kind, $t)}</button>
       <button type="button" class="ghost-button" onclick={() => (adding = null)}>{$t('common.cancel')}</button>
     {/snippet}
   </Drawer>

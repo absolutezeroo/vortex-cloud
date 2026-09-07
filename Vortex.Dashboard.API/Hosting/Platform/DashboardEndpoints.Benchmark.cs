@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Platform;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Platform;
 using Vortex.Dashboard.API.Operations.Platform.Contracts;
@@ -35,7 +36,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapBenchmarkReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<BenchmarkState>(
             app,
             ApiBenchmark,
             (BenchmarkReads reads, CancellationToken ct) => OkAsync(reads.BenchmarkAsync(ct)),
