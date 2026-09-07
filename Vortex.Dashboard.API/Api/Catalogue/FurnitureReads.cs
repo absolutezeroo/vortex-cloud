@@ -5,13 +5,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class FurnitureReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>
     /// Paginated furniture-definition admin listing with every field the edit form needs. Kept
     /// separate from <see cref="FurnitureDefinitionsAsync"/> (the compact picker search used by
@@ -26,8 +32,8 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 40, 200);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 40, 200);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
                 IQueryable<FurnitureDefinitionEntity> definitions =
@@ -115,7 +121,7 @@ internal sealed partial class DashboardApiService
                         f.ExtraData,
                         f.stuffDataType,
                         f.stuffDataTypeLabel,
-                        iconUrl = BuildFurniIconUrl(f.Name),
+                        iconUrl = _assetUrls.FurniIcon(f.Name),
                     })
                     .ToList();
 

@@ -9,6 +9,7 @@ using Orleans;
 using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.Admin;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
@@ -22,14 +23,20 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class FurnitureOperations(
+    OperationRunner runner,
+    IFurnitureAdminService furnitureAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
+
     public Task<OperationResult> CreateFurnitureDefinitionAsync(
         CreateFurnitureDefinitionRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.furniture.definition.create",
             actor,
             request.Reason,
@@ -86,7 +93,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.furniture.definition.update",
             actor,
             request.Reason,
@@ -145,7 +152,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.furniture.definition.delete",
             actor,
             request.Reason,
