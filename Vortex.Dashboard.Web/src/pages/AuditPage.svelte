@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
   import PickerModal from '../components/PickerModal.svelte';
   import { onMount } from 'svelte';
@@ -11,7 +11,14 @@
   import Pagination from '../components/Pagination.svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
-  import { t } from '../lib/i18n';
+  import { t, type Translator } from '../lib/i18n';
+  import type { AuditEntry, AuditPage } from '../lib/apiTypes';
+
+  /** Which of the two player filters the picker is filling. */
+  type PickerTarget = 'actor' | 'target';
+
+  /** A row the user picker hands back. */
+  type PickedPlayer = { id: number; name: string };
 
   const categoryOptions = [
     '',
@@ -28,7 +35,7 @@
     'Progression',
   ];
 
-  const categoryColors = {
+  const categoryColors: Record<string, string> = {
     Auth: 'var(--accent)',
     Staff: '#9f6ce1',
     Moderation: 'var(--danger)',
@@ -43,13 +50,13 @@
     other: '#64748b',
   };
 
-  const resultBadgeClass = {
+  const resultBadgeClass: Record<string, string> = {
     Success: 'status-badge--ok',
     Denied: 'status-badge--warn',
     Failed: 'status-badge--bad',
   };
 
-  let picking = $state(null);
+  let picking = $state<PickerTarget | null>(null);
   let actorName = $state('');
   let targetName = $state('');
   let since = $state('');
@@ -60,9 +67,9 @@
   let action = $state('');
   // Which row is open, by index. Reset on every reload -- an index kept across a refetch would
   // expand whatever event happens to land in that slot.
-  let expanded = $state(null);
+  let expanded = $state<number | null>(null);
 
-  function toggle(index) {
+  function toggle(index: number) {
     expanded = expanded === index ? null : index;
   }
   let limit = $state(50);
@@ -72,7 +79,7 @@
     writeParams({ page: page > 1 ? page : '' });
   });
 
-  let rows = $state([]);
+  let rows = $state<AuditEntry[]>([]);
   let total = $state(0);
   let loading = $state(false);
   let error = $state('');
@@ -80,7 +87,7 @@
 
   let totalPages = $derived(Math.max(1, Math.ceil(total / limit)));
 
-  function categoryColor(value) {
+  function categoryColor(value: string) {
     return categoryColors[value] || categoryColors.other;
   }
 
@@ -89,11 +96,11 @@
   // helper that reads $t only inside its body, with $t absent from the template expression's own
   // text, is invisible to Svelte's per-expression dependency tracking and won't re-render on
   // locale change.
-  function categoryLabel(value, translator) {
+  function categoryLabel(value: string, translator: Translator) {
     return value ? translator(`audit.categories.${value}`) : translator('audit.allCategories');
   }
 
-  function resultLabel(value, translator) {
+  function resultLabel(value: string, translator: Translator) {
     if (value === 'Success') return translator('common.resultSuccess');
     if (value === 'Denied') return translator('common.resultDenied');
     if (value === 'Failed') return translator('common.resultFailed');
@@ -119,7 +126,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet(`/api/v1/forensics/audit?${buildParams()}`);
+      const data = await apiGet<AuditPage>(`/api/v1/forensics/audit?${buildParams()}`);
       rows = data.items || [];
       expanded = null;
       total = data.total || 0;
@@ -132,7 +139,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       rows = [];
       total = 0;
     } finally {
@@ -145,7 +152,7 @@
     void refresh();
   }
 
-  function goToPage(next) {
+  function goToPage(next: number) {
     page = Math.min(totalPages, Math.max(1, next));
     void refresh();
   }
@@ -299,9 +306,25 @@
 
 {#if picking}
     {#if picking === 'actor'}
-      <PickerModal kind="user" onSelect={(item) => { actor = String(item.id); actorName = item.name; picking = null; }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="user"
+        onSelect={(item: PickedPlayer) => {
+          actor = String(item.id);
+          actorName = item.name;
+          picking = null;
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
     {#if picking === 'target'}
-      <PickerModal kind="user" onSelect={(item) => { target = String(item.id); targetName = item.name; picking = null; }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="user"
+        onSelect={(item: PickedPlayer) => {
+          target = String(item.id);
+          targetName = item.name;
+          picking = null;
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
 {/if}

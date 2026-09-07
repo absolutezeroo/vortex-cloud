@@ -8,7 +8,8 @@
   import { parseAuditData, describeTarget, fieldTransitions, deletedFields } from '../lib/auditData';
 
   type Props = {
-    data?: string;
+    /** The raw JSON string the audit row stored, null for an event that recorded no payload. */
+    data?: string | null;
   };
 
   let { data = '' }: Props = $props();

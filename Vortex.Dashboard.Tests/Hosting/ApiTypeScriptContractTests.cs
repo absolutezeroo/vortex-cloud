@@ -64,6 +64,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(BotDetail),
         typeof(BotStats),
         typeof(HandItemList),
+        typeof(AuditPage),
+        typeof(ModerationStats),
     ];
 
     [Fact]

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Safety;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
@@ -23,7 +24,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapAuditReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<AuditPage>(
             app,
             ApiForensics + "/audit",
             (HttpContext ctx, AuditReads reads, CancellationToken ct) =>
@@ -31,7 +32,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
-        MapReadGet(
+        MapReadGet<ModerationStats>(
             app,
             ApiForensics + "/moderation/stats",
             (HttpContext ctx, AuditReads reads, CancellationToken ct) =>

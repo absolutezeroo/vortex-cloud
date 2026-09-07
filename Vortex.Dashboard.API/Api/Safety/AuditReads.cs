@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Furniture;
@@ -30,8 +31,8 @@ namespace Vortex.Dashboard.API.Api.Safety;
 internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFactory)
     : DashboardReads(dbContextFactory)
 {
-    public Task<object> AuditAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<AuditPage> AuditAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<AuditPage>(
             async db =>
             {
                 int limit = QueryValues.Limit(query["limit"], 50, 500);
@@ -111,8 +112,7 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
                 Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
-                var rowsWithNames = rows.Select(a => new
-                    {
+                List<AuditEntry> rowsWithNames = rows.Select(a => new AuditEntry(
                         a.Id,
                         a.OccurredAt,
                         a.category,
@@ -120,38 +120,27 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
                         a.severity,
                         a.result,
                         a.ActorPlayerId,
-                        actorName = DisplayNameQueries.ResolvePlayerName(
-                            playerNames,
-                            a.ActorPlayerId
-                        ),
+                        DisplayNameQueries.ResolvePlayerName(playerNames, a.ActorPlayerId),
                         a.TargetPlayerId,
-                        targetName = DisplayNameQueries.ResolvePlayerName(
-                            playerNames,
-                            a.TargetPlayerId
-                        ),
+                        DisplayNameQueries.ResolvePlayerName(playerNames, a.TargetPlayerId),
                         a.RoomId,
                         a.ItemId,
                         a.IpHash,
                         a.CorrelationId,
-                        a.Data,
-                    })
+                        a.Data
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = rows.Count,
-                    page,
-                    limit,
-                    total,
-                    offset,
-                    items = rowsWithNames,
-                };
+                return new AuditPage(rows.Count, page, limit, total, offset, rowsWithNames);
             },
             ct
         );
 
-    public Task<object> ModerationStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<ModerationStats> ModerationStatsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<ModerationStats>(
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
@@ -248,7 +237,7 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
 
                 HashSet<long> renewedBanEventIds = DetectRenewedBanEventIds(events);
 
-                var rowsWithNames = rows.Select(r =>
+                List<ModerationRow> rowsWithNames = rows.Select(r =>
                     {
                         ModerationEventRow? raw = events.FirstOrDefault(e =>
                             e.Id == r.Id && e.OccurredAt == r.OccurredAt
@@ -257,94 +246,80 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
                             ? null
                             : ParseModerationDurationSeconds(raw.Data);
 
-                        return new
-                        {
+                        return new ModerationRow(
                             r.Id,
                             r.OccurredAt,
                             r.Action,
                             r.Result,
                             r.ActorPlayerId,
-                            actorName = DisplayNameQueries.ResolvePlayerName(
-                                playerNames,
-                                r.ActorPlayerId
-                            ),
+                            DisplayNameQueries.ResolvePlayerName(playerNames, r.ActorPlayerId),
                             r.TargetPlayerId,
-                            targetName = DisplayNameQueries.ResolvePlayerName(
-                                playerNames,
-                                r.TargetPlayerId
-                            ),
+                            DisplayNameQueries.ResolvePlayerName(playerNames, r.TargetPlayerId),
                             r.RoomId,
-                            roomName = r.RoomId != null
+                            r.RoomId != null
                             && roomNames.TryGetValue(r.RoomId.Value, out string? roomName)
                                 ? roomName
                                 : null,
                             durationSeconds,
-                            duration = FormatModerationDuration(durationSeconds),
-                            reason = raw is null
-                                ? null
-                                : SummarizeModerationReason(r.Action, raw.Data),
-                            isRenewal = r.Id != 0 && renewedBanEventIds.Contains(r.Id),
-                            r.CorrelationId,
-                        };
+                            FormatModerationDuration(durationSeconds),
+                            raw is null ? null : SummarizeModerationReason(r.Action, raw.Data),
+                            r.Id != 0 && renewedBanEventIds.Contains(r.Id),
+                            r.CorrelationId
+                        );
                     })
                     .ToList();
 
-                var byAction = events
+                List<ModerationActionCount> byAction = events
                     .GroupBy(e => e.Action)
-                    .Select(g => new { action = g.Key, count = g.Count() })
-                    .OrderByDescending(g => g.count)
-                    .ThenBy(g => g.action)
+                    .Select(g => new ModerationActionCount(g.Key, g.Count()))
+                    .OrderByDescending(g => g.Count)
+                    .ThenBy(g => g.Action)
                     .ToList();
 
-                var byResult = events
+                List<ModerationResultCount> byResult = events
                     .GroupBy(e => e.Result)
-                    .Select(g => new { result = g.Key, count = g.Count() })
-                    .OrderByDescending(g => g.count)
-                    .ThenBy(g => g.result)
+                    .Select(g => new ModerationResultCount(g.Key, g.Count()))
+                    .OrderByDescending(g => g.Count)
+                    .ThenBy(g => g.Result)
                     .ToList();
 
-                var topActors = events
+                List<ModerationActorCount> topActors = events
                     .Where(e => e.ActorPlayerId is not null)
                     .GroupBy(e => e.ActorPlayerId!.Value)
                     .OrderByDescending(g => g.Count())
                     .ThenBy(g => g.Key)
                     .Take(8)
-                    .Select(g => new
-                    {
-                        actorPlayerId = g.Key,
-                        actorName = DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
-                        count = g.Count(),
-                    })
+                    .Select(g => new ModerationActorCount(
+                        g.Key,
+                        DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
+                        g.Count()
+                    ))
                     .ToList();
 
-                var topTargets = events
+                List<ModerationTargetCount> topTargets = events
                     .Where(e => e.TargetPlayerId is not null)
                     .GroupBy(e => e.TargetPlayerId!.Value)
                     .OrderByDescending(g => g.Count())
                     .ThenBy(g => g.Key)
                     .Take(8)
-                    .Select(g => new
-                    {
-                        targetPlayerId = g.Key,
-                        targetName = DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
-                        count = g.Count(),
-                    })
+                    .Select(g => new ModerationTargetCount(
+                        g.Key,
+                        DisplayNameQueries.ResolvePlayerName(playerNames, g.Key),
+                        g.Count()
+                    ))
                     .ToList();
 
-                var topRooms = events
+                List<ModerationRoomCount> topRooms = events
                     .Where(e => e.RoomId is not null)
                     .GroupBy(e => e.RoomId!.Value)
                     .OrderByDescending(g => g.Count())
                     .ThenBy(g => g.Key)
                     .Take(8)
-                    .Select(g => new
-                    {
-                        roomId = g.Key,
-                        roomName = roomNames.TryGetValue(g.Key, out string? roomName)
-                            ? roomName
-                            : null,
-                        count = g.Count(),
-                    })
+                    .Select(g => new ModerationRoomCount(
+                        g.Key,
+                        roomNames.TryGetValue(g.Key, out string? roomName) ? roomName : null,
+                        g.Count()
+                    ))
                     .ToList();
 
                 // ponytail: this is why the whole window is materialised rather than paged --
@@ -375,48 +350,36 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
                     bucketSize
                 );
 
-                return new
-                {
-                    window = new { since, until },
-                    totals = new
-                    {
+                return new ModerationStats(
+                    new ModerationWindow(since, until),
+                    new ModerationTotals(
                         total,
                         limit,
                         page,
                         offset,
-                        success = byResult
-                            .FirstOrDefault(r => r.result == AuditResult.Success.ToString())
-                            ?.count
-                            ?? 0,
-                        denied = byResult
-                            .FirstOrDefault(r => r.result == AuditResult.Denied.ToString())
-                            ?.count
-                            ?? 0,
-                        failed = byResult
-                            .FirstOrDefault(r => r.result == AuditResult.Failed.ToString())
-                            ?.count
-                            ?? 0,
-                        retentionRate = totalBans > 0
-                            ? Math.Round((double)activeBans / totalBans, 4)
-                            : 0d,
+                        CountOf(byResult, AuditResult.Success),
+                        CountOf(byResult, AuditResult.Denied),
+                        CountOf(byResult, AuditResult.Failed),
+                        totalBans > 0 ? Math.Round((double)activeBans / totalBans, 4) : 0d,
                         activeBans,
                         inactiveBans,
                         totalBans,
-                        renewalCount = renewedBanEventIds.Count,
-                        averageDurationSeconds = durations.Count > 0
-                            ? Math.Round(durations.Average(), 2)
-                            : 0d,
-                    },
-                    distribution = new { byAction, byResult },
+                        renewedBanEventIds.Count,
+                        durations.Count > 0 ? Math.Round(durations.Average(), 2) : 0d
+                    ),
+                    new ModerationDistribution(byAction, byResult),
                     timeline,
                     topActors,
                     topTargets,
                     topRooms,
-                    rows = rowsWithNames,
-                };
+                    rowsWithNames
+                );
             },
             ct
         );
+
+    private static int CountOf(IReadOnlyList<ModerationResultCount> byResult, AuditResult result) =>
+        byResult.FirstOrDefault(r => r.Result == result.ToString())?.Count ?? 0;
 
     private sealed record ModerationEventRow(
         long Id,
@@ -429,8 +392,6 @@ internal sealed class AuditReads(IDbContextFactory<VortexDbContext> dbContextFac
         string? Data,
         string? CorrelationId
     );
-
-    private sealed record ModerationTimelinePoint(string Bucket, string Label, int Count);
 
     private static HashSet<long> DetectRenewedBanEventIds(IReadOnlyList<ModerationEventRow> events)
     {

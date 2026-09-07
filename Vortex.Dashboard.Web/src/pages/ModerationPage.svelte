@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
   import PickerModal from '../components/PickerModal.svelte';
 
@@ -13,6 +13,22 @@
   import { Hash, Activity, TriangleAlert, Timer } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { ModerationStats } from '../lib/apiTypes';
+
+  /** Which of the three filters the picker is filling. */
+  type PickerTarget = 'actor' | 'target' | 'room';
+
+  /** A row the picker hands back, whether it is a player or a room. */
+  type PickedRow = { id: number; name: string };
+
+  /** One slice of the action pie, already turned into degrees. */
+  type PieSegment = {
+    action: string;
+    count: number;
+    color: string;
+    from: number;
+    to: number;
+  };
 
   const actionOptions = [
     '',
@@ -25,7 +41,7 @@
 
   const resultOptions = ['', 'Success', 'Failed', 'Denied'];
 
-  const actionColors = {
+  const actionColors: Record<string, string> = {
     'moderation.kick': 'var(--accent)',
     'moderation.mute': 'var(--ok)',
     'moderation.ban': 'var(--danger)',
@@ -34,7 +50,7 @@
     other: '#64748b',
   };
 
-  let picking = $state(null);
+  let picking = $state<PickerTarget | null>(null);
   let actorName = $state('');
   let targetName = $state('');
   let roomName = $state('');
@@ -54,14 +70,14 @@
   let loading = $state(false);
   let error = $state('');
   let forbidden = $state(false);
-  let data = $state(null);
+  let data = $state<ModerationStats | null>(null);
 
   let filterSummary = $state('');
   $effect(() => {
     if (!filterSummary) filterSummary = translate('moderation.noDataLoaded');
   });
 
-  function toLocalInputValue(value) {
+  function toLocalInputValue(value: Date | string) {
     if (!value) {
       return '';
     }
@@ -75,7 +91,7 @@
     return adjusted.toISOString().slice(0, 16);
   }
 
-  function currentIso(value) {
+  function currentIso(value: string) {
     if (!value) {
       return '';
     }
@@ -95,7 +111,7 @@
     until = toLocalInputValue(end);
   }
 
-  function csvEscape(value) {
+  function csvEscape(value: unknown) {
     const text = value === null || value === undefined ? '' : String(value);
     if (text.includes('"') || text.includes(',') || text.includes('\n')) {
       return `"${text.replace(/"/g, '""')}"`;
@@ -163,7 +179,9 @@
 
     try {
       const params = buildParams();
-      data = await apiGet(`/api/v1/forensics/moderation/stats?${params.toString()}`);
+      data = await apiGet<ModerationStats>(
+        `/api/v1/forensics/moderation/stats?${params.toString()}`,
+      );
       updateSummary();
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -173,7 +191,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -187,7 +205,7 @@
 
   let totalPages = $derived(Math.max(1, Math.ceil((data?.totals?.total || 0) / Number(limit || 1))));
 
-  function goToPage(next) {
+  function goToPage(next: number) {
     page = Math.min(totalPages, Math.max(1, next));
     void refresh();
   }
@@ -253,7 +271,7 @@
   let totalForPie = $derived(actionDistribution.reduce((sum, item) => sum + (item.count || 0), 0));
   let pieSegments = $derived((() => {
     let cursor = 0;
-    const segments = [];
+    const segments: PieSegment[] = [];
 
     for (const item of actionDistribution) {
       const count = item.count || 0;
@@ -570,12 +588,36 @@
 
 {#if picking}
     {#if picking === 'actor'}
-      <PickerModal kind="user" onSelect={(item) => { actor = String(item.id); actorName = item.name; picking = null; }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="user"
+        onSelect={(item: PickedRow) => {
+          actor = String(item.id);
+          actorName = item.name;
+          picking = null;
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
     {#if picking === 'target'}
-      <PickerModal kind="user" onSelect={(item) => { target = String(item.id); targetName = item.name; picking = null; }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="user"
+        onSelect={(item: PickedRow) => {
+          target = String(item.id);
+          targetName = item.name;
+          picking = null;
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
     {#if picking === 'room'}
-      <PickerModal kind="room" onSelect={(item) => { room = String(item.id); roomName = item.name; picking = null; }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="room"
+        onSelect={(item: PickedRow) => {
+          room = String(item.id);
+          roomName = item.name;
+          picking = null;
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
 {/if}

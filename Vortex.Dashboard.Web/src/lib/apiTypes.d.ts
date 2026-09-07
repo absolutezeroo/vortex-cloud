@@ -81,6 +81,33 @@ export interface ArticleTranslation {
   thumbnail: string | null;
 }
 
+export interface AuditEntry {
+  id: number;
+  occurredAt: string;
+  category: string;
+  action: string;
+  severity: string;
+  result: string;
+  actorPlayerId: number | null;
+  actorName: string | null;
+  targetPlayerId: number | null;
+  targetName: string | null;
+  roomId: number | null;
+  itemId: number | null;
+  ipHash: string | null;
+  correlationId: string | null;
+  data: string | null;
+}
+
+export interface AuditPage {
+  count: number;
+  page: number;
+  limit: number;
+  total: number;
+  offset: number;
+  items: AuditEntry[];
+}
+
 export interface BotDetail {
   id: number;
   name: string;
@@ -361,6 +388,95 @@ export interface HandItemRow {
   thirst: number;
   consumable: boolean;
   imageUrl: string | null;
+}
+
+export interface ModerationActionCount {
+  action: string;
+  count: number;
+}
+
+export interface ModerationActorCount {
+  actorPlayerId: number;
+  actorName: string | null;
+  count: number;
+}
+
+export interface ModerationDistribution {
+  byAction: ModerationActionCount[];
+  byResult: ModerationResultCount[];
+}
+
+export interface ModerationResultCount {
+  result: string;
+  count: number;
+}
+
+export interface ModerationRoomCount {
+  roomId: number;
+  roomName: string | null;
+  count: number;
+}
+
+export interface ModerationRow {
+  id: number;
+  occurredAt: string;
+  action: string;
+  result: string;
+  actorPlayerId: number | null;
+  actorName: string | null;
+  targetPlayerId: number | null;
+  targetName: string | null;
+  roomId: number | null;
+  roomName: string | null;
+  durationSeconds: number | null;
+  duration: string | null;
+  reason: string | null;
+  isRenewal: boolean;
+  correlationId: string | null;
+}
+
+export interface ModerationStats {
+  window: ModerationWindow;
+  totals: ModerationTotals;
+  distribution: ModerationDistribution;
+  timeline: ModerationTimelinePoint[];
+  topActors: ModerationActorCount[];
+  topTargets: ModerationTargetCount[];
+  topRooms: ModerationRoomCount[];
+  rows: ModerationRow[];
+}
+
+export interface ModerationTargetCount {
+  targetPlayerId: number;
+  targetName: string | null;
+  count: number;
+}
+
+export interface ModerationTimelinePoint {
+  bucket: string;
+  label: string;
+  count: number;
+}
+
+export interface ModerationTotals {
+  total: number;
+  limit: number;
+  page: number;
+  offset: number;
+  success: number;
+  denied: number;
+  failed: number;
+  retentionRate: number;
+  activeBans: number;
+  inactiveBans: number;
+  totalBans: number;
+  renewalCount: number;
+  averageDurationSeconds: number;
+}
+
+export interface ModerationWindow {
+  since: string;
+  until: string;
 }
 
 export interface PetGrowthPoint {
