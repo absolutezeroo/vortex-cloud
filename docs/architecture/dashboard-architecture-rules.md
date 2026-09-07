@@ -924,6 +924,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | quests | 77 methods, 10 deps | 120 methods, 20 deps | 9 (+ Quests) | 31 types |
 | targeted offers | 72 methods, 10 deps | 114 methods, 19 deps | 10 (+ TargetedOffers) | 33 types |
 | prize pools + mystery boxes | 67 methods, 10 deps | 98 methods, 17 deps | 12 (+ PrizePools, MysteryBox) | 37 types |
+| staff | 65 methods, 10 deps | 88 methods, 15 deps | 13 (+ Staff) | 39 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

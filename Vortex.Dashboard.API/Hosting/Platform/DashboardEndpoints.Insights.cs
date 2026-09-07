@@ -38,15 +38,15 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiStaff,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.StaffAsync(ct)),
+            (StaffReads staff, CancellationToken ct) => OkAsync(staff.StaffAsync(ct)),
             Capabilities.Dashboard.StaffRead,
             TagStaff
         );
         MapReadGet(
             app,
             ApiStaff + "/accounts",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.StaffAccountSearchAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, StaffReads staff, CancellationToken ct) =>
+                OkAsync(staff.StaffAccountSearchAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.StaffRead,
             TagStaff
         );

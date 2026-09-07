@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Permissions.Admin;
 
@@ -12,14 +13,22 @@ namespace Vortex.Dashboard.API.Operations;
 /// endpoint behind them carries its own <c>OpsStaffManage</c> capability rather than sharing an
 /// ops capability with content editing.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class StaffOperations(
+    OperationRunner runner,
+    IStaffAdminService staffAdmin,
+    IAccountMfaService accountMfa
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IStaffAdminService _staffAdmin = staffAdmin;
+    private readonly IAccountMfaService _accountMfa = accountMfa;
+
     public Task<OperationResult> CreateRoleAsync(
         CreateRoleRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.create",
             actor,
             request.Reason,
@@ -40,7 +49,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.update",
             actor,
             request.Reason,
@@ -66,7 +75,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.delete",
             actor,
             request.Reason,
@@ -83,7 +92,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.capabilities",
             actor,
             request.Reason,
@@ -110,7 +119,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.assign",
             actor,
             request.Reason,
@@ -131,7 +140,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.role.unassign",
             actor,
             request.Reason,
@@ -152,7 +161,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.preset.create",
             actor,
             request.Reason,
@@ -187,7 +196,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.preset.update",
             actor,
             request.Reason,
@@ -218,7 +227,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.preset.delete",
             actor,
             request.Reason,
@@ -257,7 +266,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.staff.mfa.reset",
             actor,
             request.Reason,

@@ -23,7 +23,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateRoleRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Key) || string.IsNullOrWhiteSpace(body.Name)
@@ -40,7 +40,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateRoleRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.RoleId <= 0
@@ -59,7 +59,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteRoleRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.RoleId <= 0
@@ -76,7 +76,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 SetRoleCapabilitiesRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.RoleId <= 0 || body.Capabilities is null
@@ -94,7 +94,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 AssignRoleRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.AccountId <= 0 || body.RoleId <= 0
@@ -111,7 +111,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 AssignRoleRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.AccountId <= 0 || body.RoleId <= 0
@@ -129,7 +129,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateSanctionPresetRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Name) || body.PresetIndex < 0
@@ -147,7 +147,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateSanctionPresetRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.PresetId <= 0 || string.IsNullOrWhiteSpace(body.Name) || body.PresetIndex < 0
@@ -165,7 +165,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteSanctionPresetRequest body,
-                DashboardOperationsService ops,
+                StaffOperations ops,
                 CancellationToken ct
             ) =>
                 body.PresetId <= 0

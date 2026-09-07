@@ -243,6 +243,8 @@ internal sealed class DashboardWebHost(
         typeof(PrizePoolOperations),
         typeof(MysteryBoxReads),
         typeof(MysteryBoxOperations),
+        typeof(StaffReads),
+        typeof(StaffOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

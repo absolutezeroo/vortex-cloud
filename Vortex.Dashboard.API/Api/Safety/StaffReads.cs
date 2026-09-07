@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Permissions;
 
@@ -20,8 +21,13 @@ namespace Vortex.Dashboard.API.Api;
 /// grants is a feature nobody can reach.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class StaffReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>
     /// Account search for the role-assignment form. Roles hang off the <b>account</b>, not the
     /// player, so the ordinary player picker cannot drive this: it hands back a player id, and two
@@ -32,7 +38,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 20, 50);
+                int limit = QueryValues.Limit(query["limit"], 20, 50);
 
                 IQueryable<Database.Entities.Players.PlayerAccountEntity> accounts = db
                     .PlayerAccounts.AsNoTracking()
