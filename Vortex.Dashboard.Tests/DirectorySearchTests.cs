@@ -104,18 +104,7 @@ public sealed class DirectorySearchTests
 
         await using (VortexDbContext db = new(options))
         {
-            db.Players.Add(
-                new PlayerEntity
-                {
-                    Id = 4312,
-                    Name = "Someone",
-                    Motto = "hello",
-                    Figure = "hd-180-1",
-                    Gender = AvatarGenderType.Male,
-                    PlayerStatus = PlayerStatusType.Offline,
-                    PlayerPerks = PlayerPerkFlags.None,
-                }
-            );
+            db.Players.Add(NewPlayer(4312));
             await db.SaveChangesAsync();
         }
 
@@ -125,7 +114,50 @@ public sealed class DirectorySearchTests
         Field(result, "playerProfile").Should().NotBeNull();
     }
 
+    [Fact]
+    public async Task The_profile_endpoint_answers_the_profile_itself()
+    {
+        // Not the search envelope: no "kind", no sections, just what the popup renders. The whole
+        // point of the split is that this caller stops paying for the investigation's queries.
+        DbContextOptions<VortexDbContext> options = NewOptions();
+
+        await using (VortexDbContext db = new(options))
+        {
+            db.Players.Add(NewPlayer(4312));
+            await db.SaveChangesAsync();
+        }
+
+        object? profile = await Api(options)
+            .PlayerProfileAsync(4312, new NameValueCollection(), CancellationToken.None);
+
+        profile.Should().NotBeNull();
+        Field(profile!, "Name").Should().Be("Someone");
+        Kind(profile!).Should().BeNull("the profile is the answer, not a branch of one");
+    }
+
+    [Fact]
+    public async Task The_profile_endpoint_answers_null_for_an_id_that_is_nobody()
+    {
+        // The popup shows its "not found" state on null, so this is the contract it relies on.
+        object? profile = await Api(NewOptions())
+            .PlayerProfileAsync(4312, new NameValueCollection(), CancellationToken.None);
+
+        profile.Should().BeNull();
+    }
+
     // ── Harness ──────────────────────────────────────────────────────────────
+
+    private static PlayerEntity NewPlayer(int id) =>
+        new()
+        {
+            Id = id,
+            Name = "Someone",
+            Motto = "hello",
+            Figure = "hd-180-1",
+            Gender = AvatarGenderType.Male,
+            PlayerStatus = PlayerStatusType.Offline,
+            PlayerPerks = PlayerPerkFlags.None,
+        };
 
     private sealed class TestContextFactory(DbContextOptions<VortexDbContext> options)
         : IDbContextFactory<VortexDbContext>
@@ -146,9 +178,11 @@ public sealed class DirectorySearchTests
     /// <see cref="DashboardAssetUrls"/> for an avatar and a furniture icon, and asks the session
     /// gateway who is online. Passing fakes for the rest would suggest they take part.
     /// </remarks>
-    private static Task<object> Search(DbContextOptions<VortexDbContext> options, string term)
-    {
-        DashboardApiService api = new(
+    private static Task<object> Search(DbContextOptions<VortexDbContext> options, string term) =>
+        Api(options).SearchAsync(new NameValueCollection { ["q"] = term }, CancellationToken.None);
+
+    private static DashboardApiService Api(DbContextOptions<VortexDbContext> options) =>
+        new(
             new TestContextFactory(options),
             null!,
             // The profile answers "is this player connected right now", which is the one thing the
@@ -169,11 +203,6 @@ public sealed class DirectorySearchTests
             null!,
             Options.Create(new ObservabilityConfig())
         );
-
-        NameValueCollection query = new() { ["q"] = term };
-
-        return api.SearchAsync(query, CancellationToken.None);
-    }
 
     /// <summary>The answers are anonymous types, so their fields are read by reflection.</summary>
     private static object? Field(object result, string name) =>

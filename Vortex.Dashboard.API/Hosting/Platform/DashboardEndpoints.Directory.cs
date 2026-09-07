@@ -213,6 +213,19 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
+        // The profile alone, for the popup that opens on any player id in the dashboard. It used to
+        // call /search, which also assembles the audit trail, the ledger, the chat and the item
+        // history — a dozen queries it never reads. Same capability as /search deliberately: the
+        // profile carries the player's recent chat, so serving it under PlayersRead would widen who
+        // can read chatlogs.
+        MapReadGet(
+            app,
+            ApiDirectory + "/players/{playerId:int}/profile",
+            (int playerId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkNullableAsync(api.PlayerProfileAsync(playerId, ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.AuditRead,
+            TagForensics
+        );
         MapReadGet(
             app,
             ApiDirectory + "/rooms/{roomId:int}",

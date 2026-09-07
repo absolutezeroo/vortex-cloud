@@ -27,9 +27,11 @@
     forbidden = false;
 
     try {
+      // The profile on its own, not the investigation search. That one also assembles the audit
+      // trail, the ledger, the chat and the item history — a dozen queries this popup never reads.
       data = $modal.type === 'item'
         ? await apiGet(`/api/v1/directory/entity/${encodeURIComponent($modal.id)}`)
-        : await apiGet(`/api/v1/directory/search?q=${encodeURIComponent($modal.id)}`);
+        : await apiGet(`/api/v1/directory/players/${encodeURIComponent($modal.id)}/profile`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -51,7 +53,9 @@
       void load();
     }
   });
-  let playerProfile = $derived(data?.kind === 'id' ? data.playerProfile : null);
+  // The profile endpoint answers the profile itself, so there is no envelope to unwrap and no
+  // discriminator to check: a player id that matches nobody comes back null.
+  let playerProfile = $derived($modal?.type === 'item' ? null : data);
   let itemProfile = $derived($modal?.type === 'item' ? data : null);
   let forbiddenMessage = $derived($t($modal?.type === 'item' ? 'entityModal.itemAccessDenied' : 'entityModal.playerAccessDenied'));
 </script>
