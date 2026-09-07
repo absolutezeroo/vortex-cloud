@@ -2,17 +2,12 @@
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import { onMount } from 'svelte';
   import {
-    ChartColumn,
     CircleCheck,
     CircleHelp,
-    House,
     ListChecks,
     MessageSquare,
-    Pencil,
-    Plus,
     Split,
     ThumbsDown,
-    Trash2,
   } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';

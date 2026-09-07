@@ -17,7 +17,6 @@
     Gavel,
     Home,
     LineChart,
-    LogOut,
     MessageCircleWarning,
     Package,
     PawPrint,

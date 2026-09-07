@@ -5,7 +5,7 @@
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
   import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
-  import { compactCorrelation, formatDate } from '../lib/format';
+  import { formatDate } from '../lib/format';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { positive, nonNegative } from '../lib/validation';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';

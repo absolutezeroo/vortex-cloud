@@ -5,10 +5,10 @@
   //
   // Mounted once, in AppShell -- it is a window-level shortcut, not a page feature.
   import { push } from 'svelte-spa-router';
-  import { Search, CornerDownLeft, House, User, Package, Compass } from '@lucide/svelte';
+  import { Search, House, User, Package, Compass } from '@lucide/svelte';
   import { apiGet } from '../lib/api';
   import { NAV, foldSearch } from '../lib/routes';
-  import { identity, openItem } from '../lib/session';
+  import { identity } from '../lib/session';
   import { hasDashboardCapability } from '../lib/permissions';
   import { t, translate } from '../lib/i18n';
   import type { PickerRow } from '../lib/pickers/directories';

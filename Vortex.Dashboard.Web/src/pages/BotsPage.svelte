@@ -35,7 +35,6 @@
     BotListResponse,
     BotStats,
     HandItemList,
-    HandItemRow,
   } from '../lib/apiTypes';
 
   /** The owner filter, held as an {id, name} pair so the button can name who was picked. */

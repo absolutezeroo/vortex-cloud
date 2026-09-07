@@ -13,10 +13,7 @@
     Flag,
     Gift,
     ListChecks,
-    Pencil,
-    Plus,
     Target,
-    Trash2,
     Users,
   } from '@lucide/svelte';
   import { apiGet, describeApiError } from '../lib/api';

@@ -9,11 +9,8 @@
     EyeOff,
     Image,
     Package,
-    Pencil,
-    Plus,
     Sparkles,
     Target,
-    Trash2,
     Users,
   } from '@lucide/svelte';
   import { apiGet, describeApiError } from '../lib/api';

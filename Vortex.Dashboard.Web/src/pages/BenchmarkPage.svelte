@@ -20,7 +20,7 @@
   import Tabs from '../components/Tabs.svelte';
   import { Gauge, Users, Boxes, TriangleAlert, Activity, Play, History, Monitor } from '@lucide/svelte';
   import { t } from '../lib/i18n';
-  import type { BenchmarkRunView, BenchmarkSampleView, BenchmarkState } from '../lib/apiTypes';
+  import type { BenchmarkRunView, BenchmarkState } from '../lib/apiTypes';
   import type { PickerRow } from '../lib/pickers/directories';
 
   /** One furniture the run will place, as the picker handed it back. */

@@ -4,10 +4,9 @@
   import { formatDate, formatNumber } from '../lib/format';
   import LineChart from '../components/LineChart.svelte';
   import EntityLink from '../components/EntityLink.svelte';
-  import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import PageHeader from '../components/PageHeader.svelte';
-  import { Sparkles, Timer, ShoppingBag } from '@lucide/svelte';
+  import { Sparkles, Timer } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import TableFilter from '../components/TableFilter.svelte';

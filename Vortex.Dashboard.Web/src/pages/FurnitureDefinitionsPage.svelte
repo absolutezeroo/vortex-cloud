@@ -3,7 +3,7 @@
 
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
+  import { Eye, EyeOff, Image, Package } from '@lucide/svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { apiGet } from '../lib/api';
   import { createResource } from '../lib/resource';

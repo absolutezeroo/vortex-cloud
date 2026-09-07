@@ -13,7 +13,7 @@
   import { filterRows } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
   import { get } from 'svelte/store';
-  import { Lock, Trash2 } from '@lucide/svelte';
+  import { Lock } from '@lucide/svelte';
   import type { ConsoleCommandInfo, RunConsoleCommandResponse } from '../lib/apiTypes';
 
   /** Where a line came from: the server's log, the command typed, or what it printed. */

@@ -12,7 +12,7 @@
   import EmptyState from '../components/EmptyState.svelte';
   import StatCard from '../components/StatCard.svelte';
   import LineChart from '../components/LineChart.svelte';
-  import { Timer, Activity, Repeat } from '@lucide/svelte';
+  import { Timer, Activity } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
   import type { RoomPerformanceSnapshot } from '../lib/apiTypes';

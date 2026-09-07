@@ -5,16 +5,12 @@
   import {
     Activity,
     ChevronRight,
-    Coins,
     Folder,
     FolderOpen,
     Hash,
     Image,
     Package,
-    Pencil,
-    Plus,
     Tag,
-    Trash2,
   } from '@lucide/svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
@@ -164,7 +160,6 @@
   let pagesForbidden = $state(false);
 
   let currentPage = $state<CatalogPageDetail | null>(null);
-  let currentPageLoading = false;
 
   let currencyTypes = $state<TargetedOfferCurrency[]>([]);
   let iconTemplate: string | null = '';
@@ -246,8 +241,6 @@
       return;
     }
 
-    currentPageLoading = true;
-
     try {
       currentPage = await apiGet<CatalogPageDetail>(`/api/v1/catalog/pages/${parentId}`);
     } catch (err) {
@@ -255,8 +248,6 @@
       pagesError = isPermissionDeniedError(err)
         ? translate('common.insufficientRights')
         : describeApiError(err);
-    } finally {
-      currentPageLoading = false;
     }
   }
 

@@ -5,7 +5,7 @@
   import { apiGet, apiPost, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
-  import { formatDuration, compactCorrelation } from '../lib/format';
+  import { formatDuration } from '../lib/format';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { reasonOk, positive } from '../lib/validation';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -27,11 +27,16 @@
     reason: string;
   };
 
-  const closeReasons = [
-    { value: 1, label: 'Useless' },
-    { value: 2, label: 'Sanctioned' },
-    { value: 3, label: 'Resolved' },
-  ];
+  /**
+   * Vortex.Primitives.Moderation.CfhTicketCloseReason. The wire carries the number.
+   *
+   * This was a list of {value, label} pairs that nothing read, while the buttons below passed 1 and
+   * 3 as literals -- so the hotel's vocabulary was written here twice and used neither time. Named
+   * here until the generated contracts carry the enum itself.
+   *
+   * `sanctioned` has no button: closing a ticket that way is not offered anywhere on this page.
+   */
+  const CLOSE_REASON = { useless: 1, sanctioned: 2, resolved: 3 } as const;
 
   let loading = $state(false);
   let forbidden = $state(false);
@@ -207,8 +212,8 @@
             {#if canManage}
               <div class="op-actions">
                 <button type="button" class="ghost-button" onclick={() => pick(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.pick')}</button>
-                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, 3, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.resolve')}</button>
-                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, 1, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.useless')}</button>
+                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, CLOSE_REASON.resolved, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.resolve')}</button>
+                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, CLOSE_REASON.useless, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.useless')}</button>
                 <button type="button" class="ghost-button" onclick={() => release(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.release')}</button>
                 {#if canBan}
                   <button type="button" onclick={() => openBanDraft(entry)}>{$t('cfh.banReportedPlayer')}</button>

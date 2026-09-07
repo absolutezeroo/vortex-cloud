@@ -4,11 +4,7 @@
     Gift,
     Key,
     Package,
-    Pencil,
-    Plus,
-    RefreshCw,
     Sparkles,
-    Trash2,
     TriangleAlert,
   } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';

@@ -4,7 +4,7 @@
   import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
-  import { formatDate, compactCorrelation } from '../lib/format';
+  import { formatDate } from '../lib/format';
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { ChevronDown, ChevronRight } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';

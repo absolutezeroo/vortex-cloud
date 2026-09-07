@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Dices, Link2, Plus, RefreshCw, Trash2 } from '@lucide/svelte';
+  import { Dices, Link2 } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -24,8 +24,7 @@
     PrizePoolStats,
     PrizePoolWeightTotal,
   } from '../lib/apiTypes';
-  import type { PickerRow } from '../lib/pickers/directories';
-
+  
   /** The three creation forms. Number inputs hand back strings while being typed. */
   type PoolForm = {
     code: string;

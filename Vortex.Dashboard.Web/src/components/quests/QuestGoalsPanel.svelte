@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { CalendarCheck, Gift, Pencil, Plus, Target, Trash2, Trophy } from '@lucide/svelte';
+  import { CalendarCheck, Gift, Target, Trophy } from '@lucide/svelte';
   import AccessDeniedNotice from '../AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../ConfirmReasonModal.svelte';
   import ConfirmStagedModal from '../ConfirmStagedModal.svelte';

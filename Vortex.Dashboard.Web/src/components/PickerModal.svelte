@@ -2,9 +2,7 @@
   import Modal from './Modal.svelte';
   import { apiGet } from '../lib/api';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
-  import AssetImage from './AssetImage.svelte';
-  import { House, User } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions';
+    import { isPermissionDeniedError } from '../lib/permissions';
   import { LOGIC_GROUPS } from '../lib/furnitureEnums';
   import { directoryFor, type PickerRow } from '../lib/pickers/directories';
   import { PICKER_ROWS } from './pickers/index';
