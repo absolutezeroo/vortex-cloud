@@ -157,6 +157,35 @@ export interface ChatlogWindow {
   until: string;
 }
 
+export interface ForumGroupRanking {
+  groupId: number;
+  groupName: string | null;
+  badgeUrl: string | null;
+  threads: number;
+  postCount: number;
+  lastPostAt: string | null;
+}
+
+export interface ForumStateCount {
+  state: string;
+  count: number;
+}
+
+export interface ForumThreadSummary {
+  id: number;
+  groupId: number;
+  groupName: string | null;
+  badgeUrl: string | null;
+  subject: string;
+  state: string;
+  isPinned: boolean;
+  postCount: number;
+  lastPostAt: string | null;
+  createdAt: string;
+  authorId: number;
+  authorName: string | null;
+}
+
 export interface GroupActivityEvent {
   occurredAt: string;
   action: string;
@@ -389,6 +418,54 @@ export interface ReportWindow {
   since: string;
   until: string;
   granularity: string;
+}
+
+export interface SocialForums {
+  threadsByState: ForumStateCount[];
+  postsByState: ForumStateCount[];
+  topGroups: ForumGroupRanking[];
+  recentThreads: ForumThreadSummary[];
+}
+
+export interface SocialFriendedCount {
+  playerId: number;
+  playerName: string | null;
+  friends: number;
+}
+
+export interface SocialSenderCount {
+  playerId: number;
+  playerName: string | null;
+  messages: number;
+}
+
+export interface SocialStats {
+  window: ReportWindow;
+  totals: SocialTotals;
+  timeline: SocialTimelinePoint[];
+  topSenders: SocialSenderCount[];
+  topFriended: SocialFriendedCount[];
+  forums: SocialForums;
+}
+
+export interface SocialTimelinePoint {
+  bucket: string;
+  label: string;
+  messages: number;
+}
+
+export interface SocialTotals {
+  friendships: number;
+  friendRows: number;
+  playersWithFriends: number;
+  pendingRequests: number;
+  blockedPairs: number;
+  ignoredPairs: number;
+  totalMessages: number;
+  undelivered: number;
+  windowMessages: number;
+  threads: number;
+  posts: number;
 }
 
 export interface SongListItem {

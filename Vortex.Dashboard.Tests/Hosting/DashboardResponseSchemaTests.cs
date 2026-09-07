@@ -55,6 +55,7 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/chatlogs", typeof(ChatlogPage)),
         ("/api/v1/songs", typeof(SongListResponse)),
         ("/api/v1/groups/stats", typeof(GroupStats)),
+        ("/api/v1/social/stats", typeof(SocialStats)),
     ];
 
     [Fact]

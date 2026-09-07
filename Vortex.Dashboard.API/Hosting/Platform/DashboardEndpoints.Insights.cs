@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression;
 using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Primitives.Permissions;
@@ -31,7 +32,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapInsightReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<SocialStats>(
             app,
             ApiSocial + "/stats",
             (HttpContext ctx, SocialReads social, CancellationToken ct) =>

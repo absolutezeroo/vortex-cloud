@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
@@ -25,8 +26,8 @@ internal sealed class SocialReads(
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
 
-    public Task<object> SocialStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<SocialStats> SocialStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<SocialStats>(
             async db =>
             {
                 DateTime until = TimeWindow.ParseDateTime(query["until"]) ?? DateTime.UtcNow;
@@ -94,14 +95,13 @@ internal sealed class SocialReads(
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var timeline = bucketMap
+                List<SocialTimelinePoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        messages = pair.Value,
-                    })
+                    .Select(pair => new SocialTimelinePoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
                 var topSenderRows = windowMessages
@@ -151,8 +151,8 @@ internal sealed class SocialReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var threadsByState = threadStateRows
-                    .Select(r => new { state = r.state.ToString(), r.count })
+                List<ForumStateCount> threadsByState = threadStateRows
+                    .Select(r => new ForumStateCount(r.state.ToString(), r.count))
                     .ToList();
 
                 var postStateRows = await db
@@ -163,8 +163,8 @@ internal sealed class SocialReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var postsByState = postStateRows
-                    .Select(r => new { state = r.state.ToString(), r.count })
+                List<ForumStateCount> postsByState = postStateRows
+                    .Select(r => new ForumStateCount(r.state.ToString(), r.count))
                     .ToList();
 
                 var topForumRows = await db
@@ -241,18 +241,11 @@ internal sealed class SocialReads(
                     )
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new SocialStats(
+                    new ReportWindow(since, until, granularity),
+                    new SocialTotals(
                         // Both directions are stored, so a friendship is two rows.
-                        friendships = friendRows / 2,
+                        friendRows / 2,
                         friendRows,
                         playersWithFriends,
                         pendingRequests,
@@ -260,53 +253,48 @@ internal sealed class SocialReads(
                         ignoredPairs,
                         totalMessages,
                         undelivered,
-                        windowMessages = windowMessages.Count,
+                        windowMessages.Count,
                         threads,
-                        posts,
-                    },
+                        posts
+                    ),
                     timeline,
-                    topSenders = topSenderRows
-                        .Select(s => new
-                        {
+                    topSenderRows
+                        .Select(s => new SocialSenderCount(
                             s.playerId,
-                            playerName = DisplayNameQueries.ResolvePlayerName(names, s.playerId),
-                            s.messages,
-                        })
+                            DisplayNameQueries.ResolvePlayerName(names, s.playerId),
+                            s.messages
+                        ))
                         .ToList(),
-                    topFriended = topFriendedRows
-                        .Select(f => new
-                        {
+                    topFriendedRows
+                        .Select(f => new SocialFriendedCount(
                             f.playerId,
-                            playerName = DisplayNameQueries.ResolvePlayerName(names, f.playerId),
-                            f.friends,
-                        })
+                            DisplayNameQueries.ResolvePlayerName(names, f.playerId),
+                            f.friends
+                        ))
                         .ToList(),
-                    forums = new
-                    {
+                    new SocialForums(
                         threadsByState,
                         postsByState,
-                        topGroups = topForumRows
-                            .Select(g => new
-                            {
+                        topForumRows
+                            .Select(g => new ForumGroupRanking(
                                 g.groupId,
-                                groupName = groupCards.GetValueOrDefault(g.groupId).Name,
-                                badgeUrl = _assetUrls.GroupBadge(
+                                // A guild deleted out from under its threads is absent here, and
+                                // the tuple a miss returns carries nulls, not an exception.
+                                groupCards.GetValueOrDefault(g.groupId).Name,
+                                _assetUrls.GroupBadge(
                                     groupCards.GetValueOrDefault(g.groupId).Badge
                                 ),
                                 g.threads,
                                 g.postCount,
-                                g.lastPostAt,
-                            })
+                                g.lastPostAt
+                            ))
                             .ToList(),
-                        recentThreads = recentThreads
-                            .Select(t => new
-                            {
+                        recentThreads
+                            .Select(t => new ForumThreadSummary(
                                 t.Id,
-                                groupId = t.GroupEntityId,
-                                groupName = recentGroupCards
-                                    .GetValueOrDefault(t.GroupEntityId)
-                                    .Name,
-                                badgeUrl = _assetUrls.GroupBadge(
+                                t.GroupEntityId,
+                                recentGroupCards.GetValueOrDefault(t.GroupEntityId).Name,
+                                _assetUrls.GroupBadge(
                                     recentGroupCards.GetValueOrDefault(t.GroupEntityId).Badge
                                 ),
                                 t.Subject,
@@ -316,14 +304,11 @@ internal sealed class SocialReads(
                                 t.LastPostAt,
                                 t.CreatedAt,
                                 t.authorId,
-                                authorName = DisplayNameQueries.ResolvePlayerName(
-                                    authorNames,
-                                    t.authorId
-                                ),
-                            })
-                            .ToList(),
-                    },
-                };
+                                DisplayNameQueries.ResolvePlayerName(authorNames, t.authorId)
+                            ))
+                            .ToList()
+                    )
+                );
             },
             ct
         );
