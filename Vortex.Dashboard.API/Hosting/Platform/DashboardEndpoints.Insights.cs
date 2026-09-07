@@ -53,7 +53,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/extras",
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.EconomyExtrasAsync(ct)),
+            (EconomyReads economy, CancellationToken ct) => OkAsync(economy.EconomyExtrasAsync(ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );

@@ -35,7 +35,7 @@ public sealed class DashboardQueryWindowTests
     [Fact]
     public void DefaultsToTheLastThirtyDays()
     {
-        (DateTime since, DateTime until) = DashboardApiService.ResolveWindow(Query(), NOW);
+        (DateTime since, DateTime until) = TimeWindow.Resolve(Query(), NOW);
 
         until.Should().Be(NOW);
         since.Should().Be(NOW.AddDays(-30));
@@ -44,11 +44,7 @@ public sealed class DashboardQueryWindowTests
     [Fact]
     public void HonoursAnExplicitDefaultSpan()
     {
-        (DateTime since, _) = DashboardApiService.ResolveWindow(
-            Query(),
-            NOW,
-            TimeSpan.FromHours(24)
-        );
+        (DateTime since, _) = TimeWindow.Resolve(Query(), NOW, TimeSpan.FromHours(24));
 
         since.Should().Be(NOW.AddHours(-24));
     }
@@ -56,7 +52,7 @@ public sealed class DashboardQueryWindowTests
     [Fact]
     public void SwapsAnInvertedPair()
     {
-        (DateTime since, DateTime until) = DashboardApiService.ResolveWindow(
+        (DateTime since, DateTime until) = TimeWindow.Resolve(
             Query(since: "2026-08-20T00:00:00Z", until: "2026-08-10T00:00:00Z"),
             NOW
         );
@@ -68,7 +64,7 @@ public sealed class DashboardQueryWindowTests
     public void RefusesAWindowWiderThanAYear()
     {
         Action act = () =>
-            DashboardApiService.ResolveWindow(
+            TimeWindow.Resolve(
                 Query(since: "2010-01-01T00:00:00Z", until: "2026-08-23T00:00:00Z"),
                 NOW
             );
@@ -81,7 +77,7 @@ public sealed class DashboardQueryWindowTests
     [InlineData("2026-13-45")]
     public void RefusesAnUnparsableDateInsteadOfDroppingTheFilter(string value)
     {
-        Action act = () => DashboardApiService.ResolveWindow(Query(since: value), NOW);
+        Action act = () => TimeWindow.Resolve(Query(since: value), NOW);
 
         act.Should().Throw<DashboardQueryException>().Which.Error.Should().Be("invalid_date");
     }
@@ -89,7 +85,7 @@ public sealed class DashboardQueryWindowTests
     [Fact]
     public void TreatsAnAbsentValueAsNoFilter()
     {
-        DashboardApiService.ParseDateTime(null).Should().BeNull();
-        DashboardApiService.ParseDateTime("   ").Should().BeNull();
+        TimeWindow.ParseDateTime(null).Should().BeNull();
+        TimeWindow.ParseDateTime("   ").Should().BeNull();
     }
 }

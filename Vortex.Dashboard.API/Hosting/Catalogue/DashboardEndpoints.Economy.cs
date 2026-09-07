@@ -26,39 +26,39 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/ledger",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.EconomyAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
+                OkAsync(reads.EconomyAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
         MapReadGet(
             app,
             ApiEconomy + "/subscriptions",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
+                OkAsync(reads.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
         MapReadGet(
             app,
             ApiEconomy + "/trends",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.EconomyTrendsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
+                OkAsync(reads.EconomyTrendsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
         MapReadGet(
             app,
             ApiEconomy + "/marketplace",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.MarketplaceSummaryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
+                OkAsync(reads.MarketplaceSummaryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
         app.MapGet(
                 ApiV1 + "/rentable-spaces/activity",
-                (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                    OkAsync(api.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
+                (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
+                    OkAsync(reads.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
             )
             .RequireAuthorization(Capabilities.Dashboard.EconomyRead)
             .WithTags(TagEconomy);

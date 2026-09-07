@@ -21,7 +21,7 @@ namespace Vortex.Dashboard.API.Api;
 /// <see cref="Operations.TargetedOfferOperations"/>; here we only read. Purchase analytics come
 /// from the <c>economy.targeted_offer_purchase</c> audit trail (see
 /// <c>TargetedOfferPurchasedAuditHandler</c>), which carries offerId/identifier/quantity/creditCost/
-/// activityPointCost — same shape as <see cref="DashboardApiService.CatalogPurchases.cs"/>.
+/// activityPointCost — same shape as <see cref="CatalogPurchaseReads"/>.
 /// </summary>
 internal sealed class TargetedOfferReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

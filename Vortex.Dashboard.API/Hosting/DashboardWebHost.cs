@@ -213,7 +213,6 @@ internal sealed class DashboardWebHost(
 
     internal static readonly Type[] ForwardedServiceTypes =
     [
-        typeof(DashboardApiService),
         typeof(DashboardMonitoringReads),
         // Every subject that has left the two services above for classes of its own has to be listed
         // here as well — a route parameter this list does not name is taken for a request body, and
@@ -273,6 +272,11 @@ internal sealed class DashboardWebHost(
         typeof(PlayerRewardReads),
         typeof(InventoryReads),
         typeof(CatalogPurchaseReads),
+        typeof(EconomyReads),
+        typeof(AchievementReads),
+        typeof(AchievementResolutionReads),
+        typeof(SignalDirectoryReads),
+        typeof(DirectoryReads),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

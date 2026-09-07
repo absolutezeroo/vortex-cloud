@@ -908,6 +908,12 @@ infrastructures — not one global application artificially divided into files.
 Recorded at each step, so the debt is measured instead of felt. Re-take the measurement with
 `node scripts/dashboard-migration-stats.mjs`.
 
+**Both god services are gone as of 2026-09-07.** Forty-three subjects own their classes; the ten
+and twenty-nine constructor dependencies the two services held are now held by whichever subject
+uses each one. What remains of §37 to watch is the last column: the DI forwarding list grows by
+about two per subject and is the §29 debt, deliberately deferred until the boundaries settled —
+which they now have.
+
 Every row below comes from that script, including the baseline, which was re-measured in a worktree
 at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded.
 
@@ -935,6 +941,8 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | **currency, vouchers, config — write service deleted** | 52 methods, 7 deps | **gone** | 26 (+ Currency, Vouchers, Config) | 55 types |
 | bots, groups, pets, social, wired | 44 methods, 7 deps | — | 31 | 60 types |
 | audit, cfh, chatlogs, collectibles, player rewards, inventory, catalog purchases | 35 methods, 7 deps | — | 38 | 67 types |
+| economy | 26 methods, 7 deps | — | 39 | 68 types |
+| **achievements, resolutions, signal directories, directory — read service deleted** | **gone** | **gone** | 43 | 71 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Groups;
@@ -31,7 +32,8 @@ namespace Vortex.Dashboard.API.Api;
 /// <c>limit</c>, <c>offset</c> and <c>hasMore</c>, so no new component is needed — only a new kind.
 /// </para>
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     /// <summary>Guilds, by name or id.</summary>
     public Task<object> GroupsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
@@ -117,7 +119,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
                 int offset = int.TryParse(query["offset"], out int parsed)
                     ? Math.Max(0, parsed)
                     : 0;
@@ -355,7 +357,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
                 int offset = int.TryParse(query["offset"], out int parsed)
                     ? Math.Max(0, parsed)
                     : 0;
@@ -470,7 +472,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
                 int offset = int.TryParse(query["offset"], out int parsed)
                     ? Math.Max(0, parsed)
                     : 0;
@@ -528,7 +530,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
                 int offset = int.TryParse(query["offset"], out int parsed)
                     ? Math.Max(0, parsed)
                     : 0;

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Furniture;
@@ -29,8 +30,15 @@ using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed class DirectoryReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls,
+    ISessionGateway sessionGateway
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
+
     public Task<object?> ItemAsync(string idText, NameValueCollection query, CancellationToken ct)
     {
         if (!long.TryParse(idText, out long itemId))
@@ -41,15 +49,15 @@ internal sealed partial class DashboardApiService
         return QueryAsync<object?>(
             async db =>
             {
-                int limit = ParseLimit(query["limit"], 50, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 50, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
                 IQueryable<ItemEventEntity> q = db
                     .ItemEvents.AsNoTracking()
                     .Where(i => i.ItemId == itemId);
 
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 if (since is not null)
                 {
@@ -97,7 +105,7 @@ internal sealed partial class DashboardApiService
                         itemSnapshot.definitionName,
                         furniIconUrl = itemSnapshot.definitionName is null
                             ? null
-                            : BuildFurniIconUrl(itemSnapshot.definitionName),
+                            : _assetUrls.FurniIcon(itemSnapshot.definitionName),
                         itemSnapshot.ownerPlayerId,
                         itemSnapshot.ownerName,
                         itemSnapshot.roomId,
@@ -127,20 +135,16 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> rowPlayerIds = NormalizeIds(
+                List<int> rowPlayerIds = DisplayNameQueries.NormalizeIds(
                     rows.SelectMany(r => new[] { r.ActorPlayerId, r.FromOwnerId, r.ToOwnerId })
                 );
 
-                Dictionary<int, string> rowPlayerNames = await LoadPlayerNamesAsync(
-                        db,
-                        rowPlayerIds,
-                        ct
-                    )
+                Dictionary<int, string> rowPlayerNames = await db.PlayerNamesAsync(rowPlayerIds, ct)
                     .ConfigureAwait(false);
 
-                List<int> rowRoomIds = NormalizeIds(rows.Select(r => r.RoomId));
+                List<int> rowRoomIds = DisplayNameQueries.NormalizeIds(rows.Select(r => r.RoomId));
 
-                Dictionary<int, string> rowRoomNames = await LoadRoomNamesAsync(db, rowRoomIds, ct)
+                Dictionary<int, string> rowRoomNames = await db.RoomNamesAsync(rowRoomIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(r => new
@@ -149,11 +153,20 @@ internal sealed partial class DashboardApiService
                         r.OccurredAt,
                         r.eventType,
                         r.ActorPlayerId,
-                        actorPlayerName = ResolvePlayerName(rowPlayerNames, r.ActorPlayerId),
+                        actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                            rowPlayerNames,
+                            r.ActorPlayerId
+                        ),
                         r.FromOwnerId,
-                        fromOwnerName = ResolvePlayerName(rowPlayerNames, r.FromOwnerId),
+                        fromOwnerName = DisplayNameQueries.ResolvePlayerName(
+                            rowPlayerNames,
+                            r.FromOwnerId
+                        ),
                         r.ToOwnerId,
-                        toOwnerName = ResolvePlayerName(rowPlayerNames, r.ToOwnerId),
+                        toOwnerName = DisplayNameQueries.ResolvePlayerName(
+                            rowPlayerNames,
+                            r.ToOwnerId
+                        ),
                         r.RoomId,
                         roomName = r.RoomId != null
                         && rowRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
@@ -194,12 +207,12 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 50, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
@@ -319,9 +332,11 @@ internal sealed partial class DashboardApiService
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        List<int> auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
+        List<int> auditActorIds = DisplayNameQueries.NormalizeIds(
+            auditRows.Select(a => a.ActorPlayerId)
+        );
 
-        Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(db, auditActorIds, ct)
+        Dictionary<int, string> auditActorNames = await db.PlayerNamesAsync(auditActorIds, ct)
             .ConfigureAwait(false);
 
         var auditRowsWithNames = auditRows
@@ -331,7 +346,7 @@ internal sealed partial class DashboardApiService
                 category = a.category,
                 a.Action,
                 a.ActorPlayerId,
-                actorName = ResolvePlayerName(auditActorNames, a.ActorPlayerId),
+                actorName = DisplayNameQueries.ResolvePlayerName(auditActorNames, a.ActorPlayerId),
             })
             .ToList();
 
@@ -395,8 +410,8 @@ internal sealed partial class DashboardApiService
                 PlayerProfileAsync(
                     db,
                     playerId,
-                    ParseDateTime(query["since"]),
-                    ParseDateTime(query["until"]),
+                    TimeWindow.ParseDateTime(query["since"]),
+                    TimeWindow.ParseDateTime(query["until"]),
                     ct
                 ),
             ct
@@ -505,7 +520,7 @@ internal sealed partial class DashboardApiService
                 f.definitionName,
                 furniIconUrl = f.definitionName is null
                     ? null
-                    : BuildFurniIconUrl(f.definitionName),
+                    : _assetUrls.FurniIcon(f.definitionName),
                 f.RoomEntityId,
                 f.roomName,
                 f.roomX,
@@ -569,16 +584,16 @@ internal sealed partial class DashboardApiService
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        List<int> itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
+        List<int> itemRoomIds = DisplayNameQueries.NormalizeIds(itemEvents.Select(i => i.RoomId));
 
-        Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(db, itemRoomIds, ct)
+        Dictionary<int, string> itemRoomNames = await db.RoomNamesAsync(itemRoomIds, ct)
             .ConfigureAwait(false);
 
-        List<int> itemPartyIds = NormalizeIds(
+        List<int> itemPartyIds = DisplayNameQueries.NormalizeIds(
             itemEvents.SelectMany(i => new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId })
         );
 
-        Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(db, itemPartyIds, ct)
+        Dictionary<int, string> itemPartyNames = await db.PlayerNamesAsync(itemPartyIds, ct)
             .ConfigureAwait(false);
 
         var itemEventsWithRooms = itemEvents
@@ -593,11 +608,14 @@ internal sealed partial class DashboardApiService
                     ? roomName
                     : null,
                 i.actorPlayerId,
-                actorPlayerName = ResolvePlayerName(itemPartyNames, i.actorPlayerId),
+                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                    itemPartyNames,
+                    i.actorPlayerId
+                ),
                 i.fromOwnerId,
-                fromOwnerName = ResolvePlayerName(itemPartyNames, i.fromOwnerId),
+                fromOwnerName = DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.fromOwnerId),
                 i.toOwnerId,
-                toOwnerName = ResolvePlayerName(itemPartyNames, i.toOwnerId),
+                toOwnerName = DisplayNameQueries.ResolvePlayerName(itemPartyNames, i.toOwnerId),
                 i.correlationId,
                 i.Data,
             })
@@ -796,20 +814,19 @@ internal sealed partial class DashboardApiService
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        List<int> actorAndTargetIds = NormalizeIds(
+        List<int> actorAndTargetIds = DisplayNameQueries.NormalizeIds(
             asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
         );
 
-        Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(
-                db,
+        Dictionary<int, string> actorAndTargetNames = await db.PlayerNamesAsync(
                 actorAndTargetIds,
                 ct
             )
             .ConfigureAwait(false);
 
-        List<int> auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
+        List<int> auditRoomIds = DisplayNameQueries.NormalizeIds(asActorRows.Select(r => r.RoomId));
 
-        Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(db, auditRoomIds, ct)
+        Dictionary<int, string> auditRoomNames = await db.RoomNamesAsync(auditRoomIds, ct)
             .ConfigureAwait(false);
 
         var asActor = asActorRows
@@ -819,9 +836,15 @@ internal sealed partial class DashboardApiService
                 r.category,
                 r.Action,
                 r.ActorPlayerId,
-                actorPlayerName = ResolvePlayerName(actorAndTargetNames, r.ActorPlayerId),
+                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                    actorAndTargetNames,
+                    r.ActorPlayerId
+                ),
                 r.TargetPlayerId,
-                targetPlayerName = ResolvePlayerName(actorAndTargetNames, r.TargetPlayerId),
+                targetPlayerName = DisplayNameQueries.ResolvePlayerName(
+                    actorAndTargetNames,
+                    r.TargetPlayerId
+                ),
                 r.RoomId,
                 roomName = r.RoomId != null
                 && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
@@ -851,23 +874,23 @@ internal sealed partial class DashboardApiService
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        List<int> itemHistoryRoomIds = NormalizeIds(itemHistoryRows.Select(row => row.RoomId));
+        List<int> itemHistoryRoomIds = DisplayNameQueries.NormalizeIds(
+            itemHistoryRows.Select(row => row.RoomId)
+        );
 
-        List<int> itemHistoryPartyIds = NormalizeIds(
+        List<int> itemHistoryPartyIds = DisplayNameQueries.NormalizeIds(
             itemHistoryRows.SelectMany(row =>
                 new[] { row.ActorPlayerId, row.FromOwnerId, row.ToOwnerId }
             )
         );
 
-        Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(
-                db,
+        Dictionary<int, string> itemHistoryRoomNames = await db.RoomNamesAsync(
                 itemHistoryRoomIds,
                 ct
             )
             .ConfigureAwait(false);
 
-        Dictionary<int, string> itemHistoryPartyNames = await LoadPlayerNamesAsync(
-                db,
+        Dictionary<int, string> itemHistoryPartyNames = await db.PlayerNamesAsync(
                 itemHistoryPartyIds,
                 ct
             )
@@ -885,11 +908,20 @@ internal sealed partial class DashboardApiService
                     ? roomName
                     : null,
                 row.ActorPlayerId,
-                actorPlayerName = ResolvePlayerName(itemHistoryPartyNames, row.ActorPlayerId),
+                actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                    itemHistoryPartyNames,
+                    row.ActorPlayerId
+                ),
                 row.FromOwnerId,
-                fromOwnerName = ResolvePlayerName(itemHistoryPartyNames, row.FromOwnerId),
+                fromOwnerName = DisplayNameQueries.ResolvePlayerName(
+                    itemHistoryPartyNames,
+                    row.FromOwnerId
+                ),
                 row.ToOwnerId,
-                toOwnerName = ResolvePlayerName(itemHistoryPartyNames, row.ToOwnerId),
+                toOwnerName = DisplayNameQueries.ResolvePlayerName(
+                    itemHistoryPartyNames,
+                    row.ToOwnerId
+                ),
                 row.CorrelationId,
                 row.Data,
             })
@@ -990,12 +1022,12 @@ internal sealed partial class DashboardApiService
                     return null;
                 }
 
-                int limit = ParseLimit(query["limit"], 80, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 80, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
                 int take = offset + limit;
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 IQueryable<RoomEntryLogEntity> entriesQuery = db
                     .RoomEntryLogs.AsNoTracking()
@@ -1081,21 +1113,20 @@ internal sealed partial class DashboardApiService
                     {
                         i.CreatedAt,
                         i.EventType,
-                        PlayerId = ToPlayerId(i.ActorPlayerId),
+                        PlayerId = DisplayNameQueries.ToPlayerId(i.ActorPlayerId),
                         PlayerName = (string?)null,
                         i.Message,
-                        TargetPlayerId = ToPlayerId(i.ToOwnerId),
+                        TargetPlayerId = DisplayNameQueries.ToPlayerId(i.ToOwnerId),
                         TargetPlayerName = (string?)null,
                         i.ItemId,
                     })
                     .ToList();
 
-                List<int> itemPlayerIds = NormalizeIds(
+                List<int> itemPlayerIds = DisplayNameQueries.NormalizeIds(
                     itemTimeline.SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
                 );
 
-                Dictionary<int, string> itemPlayerNames = await LoadPlayerNamesAsync(
-                        db,
+                Dictionary<int, string> itemPlayerNames = await db.PlayerNamesAsync(
                         itemPlayerIds,
                         ct
                     )
@@ -1107,11 +1138,16 @@ internal sealed partial class DashboardApiService
                         i.CreatedAt,
                         i.EventType,
                         i.PlayerId,
-                        PlayerName = ResolvePlayerName(itemPlayerNames, i.PlayerId) ?? i.PlayerName,
+                        PlayerName = DisplayNameQueries.ResolvePlayerName(
+                            itemPlayerNames,
+                            i.PlayerId
+                        ) ?? i.PlayerName,
                         i.Message,
                         i.TargetPlayerId,
-                        TargetPlayerName = ResolvePlayerName(itemPlayerNames, i.TargetPlayerId)
-                            ?? i.TargetPlayerName,
+                        TargetPlayerName = DisplayNameQueries.ResolvePlayerName(
+                            itemPlayerNames,
+                            i.TargetPlayerId
+                        ) ?? i.TargetPlayerName,
                         i.ItemId,
                     })
                     .ToList();
@@ -1165,7 +1201,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
 
                 // Without an offset the picker could only ever reach the first page: "Load more" is
                 // driven by hasMore, and a directory that never reports one silently pretends the
@@ -1298,7 +1334,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
                 int offset = int.TryParse(query["offset"], out int parsedOffset)
                     ? Math.Max(0, parsedOffset)
                     : 0;
@@ -1396,7 +1432,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
-                int limit = ParseLimit(query["limit"], 50, 200);
+                int limit = QueryValues.Limit(query["limit"], 50, 200);
 
                 // The picker used to stop at the first page with no way to ask for more, so a hotel
                 // with thousands of definitions could only ever reach the first fifty by name.
@@ -1462,7 +1498,7 @@ internal sealed partial class DashboardApiService
                         length = f.Length,
                         canTrade = f.CanTrade,
                         canSell = f.CanSell,
-                        iconUrl = BuildFurniIconUrl(f.Name),
+                        iconUrl = _assetUrls.FurniIcon(f.Name),
                     })
                     .ToList();
 
@@ -1517,8 +1553,6 @@ internal sealed partial class DashboardApiService
             "logic" => definitions.OrderBy(f => f.Logic).ThenBy(f => f.Name),
             _ => definitions.OrderBy(f => f.Name),
         };
-
-    private string? BuildFurniIconUrl(string name) => _assetUrls.FurniIcon(name);
 
     /// <summary>
     /// The picture of a catalog product, whatever kind of thing it is.

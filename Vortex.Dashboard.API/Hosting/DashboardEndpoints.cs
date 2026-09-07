@@ -420,7 +420,7 @@ internal static partial class DashboardEndpoints
         };
 
     // VSTHRD003: both helpers deliberately await a task handed in by the endpoint delegate (already
-    // started by the DashboardApiService call at the call site) purely to wrap its result/null-check
+    // started by the read call at the call site) purely to wrap its result/null-check
     // in a Results.Ok/Json — there is no deadlock risk since nothing here owns or blocks on the task.
 #pragma warning disable VSTHRD003
     private static async Task<IResult> OkAsync(Task<object> task) =>

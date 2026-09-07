@@ -32,7 +32,7 @@ public sealed class DashboardEconomyQueryTranslationTests
     {
         using VortexDbContext db = OfflineContext();
 
-        string sql = DashboardApiService.EconomyTrendQuery(db, SINCE, UNTIL).ToQueryString();
+        string sql = EconomyReads.EconomyTrendQuery(db, SINCE, UNTIL).ToQueryString();
 
         sql.Should().Contain("GROUP BY");
         sql.Should().Contain("SUM(");
@@ -44,7 +44,7 @@ public sealed class DashboardEconomyQueryTranslationTests
     {
         using VortexDbContext db = OfflineContext();
 
-        string sql = DashboardApiService.SpendCategoryQuery(db, SINCE, UNTIL).ToQueryString();
+        string sql = EconomyReads.SpendCategoryQuery(db, SINCE, UNTIL).ToQueryString();
 
         sql.Should().Contain("GROUP BY");
         sql.Should().Contain("SUM(");
@@ -56,7 +56,7 @@ public sealed class DashboardEconomyQueryTranslationTests
     {
         using VortexDbContext db = OfflineContext();
 
-        string sql = DashboardApiService.MarketplaceSalesQuery(db, SINCE, UNTIL).ToQueryString();
+        string sql = EconomyReads.MarketplaceSalesQuery(db, SINCE, UNTIL).ToQueryString();
 
         sql.Should().Contain("GROUP BY");
         sql.Should().Contain("SUM(");

@@ -8,7 +8,7 @@ namespace Vortex.Dashboard.API.Hosting;
 
 /// <summary>Read-only analytics endpoints for domains that previously had zero dashboard visibility
 /// (guilds, pets, CFH, catalog purchases, wired furniture) — see the individual
-/// <c>DashboardApiService.*.cs</c> partials for what each aggregates and why.</summary>
+/// each subject's <c>*Reads</c> class for what it aggregates and why.</summary>
 internal static partial class DashboardEndpoints
 {
     private const string TagStats = "Stats";

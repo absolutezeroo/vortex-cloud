@@ -127,7 +127,7 @@ public sealed class DirectorySearchTests
             await db.SaveChangesAsync();
         }
 
-        object? profile = await Api(options)
+        object? profile = await Reads(options)
             .PlayerProfileAsync(4312, new NameValueCollection(), CancellationToken.None);
 
         profile.Should().NotBeNull();
@@ -139,7 +139,7 @@ public sealed class DirectorySearchTests
     public async Task The_profile_endpoint_answers_null_for_an_id_that_is_nobody()
     {
         // The popup shows its "not found" state on null, so this is the contract it relies on.
-        object? profile = await Api(NewOptions())
+        object? profile = await Reads(NewOptions())
             .PlayerProfileAsync(4312, new NameValueCollection(), CancellationToken.None);
 
         profile.Should().BeNull();
@@ -174,17 +174,19 @@ public sealed class DirectorySearchTests
     /// Builds the service with only what this path uses.
     /// </summary>
     /// <remarks>
-    /// Four of its seven dependencies are null on purpose: the search reads the database, asks
+    /// Every dependency is real now: the search reads the database, asks
     /// <see cref="DashboardAssetUrls"/> for an avatar and a furniture icon, and asks the session
-    /// gateway who is online. Passing fakes for the rest would suggest they take part.
+    /// gateway who is online. When this lived on a class with ten dependencies, six had to be null
+    /// with a comment explaining that they took no part.
     /// </remarks>
     private static Task<object> Search(DbContextOptions<VortexDbContext> options, string term) =>
-        Api(options).SearchAsync(new NameValueCollection { ["q"] = term }, CancellationToken.None);
+        Reads(options)
+            .SearchAsync(new NameValueCollection { ["q"] = term }, CancellationToken.None);
 
-    private static DashboardApiService Api(DbContextOptions<VortexDbContext> options) =>
+    private static DirectoryReads Reads(DbContextOptions<VortexDbContext> options) =>
         new(
             new TestContextFactory(options),
-            null!,
+            new DashboardAssetUrls(Options.Create(new ObservabilityConfig())),
             // The profile answers "is this player connected right now", which is the one thing the
             // search asks outside the database. Nobody is connected in a test.
             FakeProxy.Create<ISessionGateway>(call =>
@@ -194,11 +196,7 @@ public sealed class DirectorySearchTests
                     nameof(ISessionGateway.GetOnlinePlayerCount) => 0,
                     _ => Array.Empty<PlayerId>(),
                 }
-            ),
-            new DashboardAssetUrls(Options.Create(new ObservabilityConfig())),
-            null!,
-            null!,
-            Options.Create(new ObservabilityConfig())
+            )
         );
 
     /// <summary>The answers are anonymous types, so their fields are read by reflection.</summary>

@@ -25,16 +25,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/search",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.SearchAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkAsync(reads.SearchAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
         MapReadGet(
             app,
             ApiDirectory + "/players",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlayersAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkAsync(reads.PlayersAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
@@ -43,8 +43,8 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/avatars",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AvatarsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkAsync(reads.AvatarsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
@@ -53,16 +53,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/rooms",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.RoomsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkAsync(reads.RoomsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/furniture",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkAsync(reads.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FurnitureRead,
             TagDirectory
         );
@@ -72,144 +72,148 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/groups",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.GroupsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.GroupsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.SocialRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/habbicons",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.HabbiconsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.HabbiconsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.HabbiconsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/habbicon-collections",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.HabbiconCollectionsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(
+                    signalDirectory.HabbiconCollectionsDirectoryAsync(ctx.QueryAsNameValues(), ct)
+                ),
             Capabilities.Dashboard.HabbiconsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/catalog-offers",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.CatalogOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.CatalogOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/navigator-categories",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.NavigatorCategoriesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(
+                    signalDirectory.NavigatorCategoriesDirectoryAsync(ctx.QueryAsNameValues(), ct)
+                ),
             Capabilities.Dashboard.NavigatorRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/badges",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.BadgesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.BadgesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/pet-species",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PetSpeciesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.PetSpeciesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PetsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/polls",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PollsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.PollsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PollsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/quizzes",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.QuizzesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.QuizzesDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/quest-campaigns",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.QuestCampaignsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.QuestCampaignsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/vouchers",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.VouchersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.VouchersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/club-gifts",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ClubGiftsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.ClubGiftsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/nft-store",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.NftStoreDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.NftStoreDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CollectiblesRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/targeted-offers",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.TargetedOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.TargetedOffersDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/forum-threads",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ForumThreadsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.ForumThreadsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.SocialRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/avatar-effects",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AvatarEffectsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.AvatarEffectsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/placed-furniture",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlacedFurnitureDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
+                OkAsync(signalDirectory.PlacedFurnitureDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FurnitureRead,
             TagDirectory
         );
         MapReadGet(
             app,
             ApiDirectory + "/entity/{id}",
-            (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
+            (string id, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -221,16 +225,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/players/{playerId:int}/profile",
-            (int playerId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.PlayerProfileAsync(playerId, ctx.QueryAsNameValues(), ct)),
+            (int playerId, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.PlayerProfileAsync(playerId, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
         MapReadGet(
             app,
             ApiDirectory + "/rooms/{roomId:int}",
-            (int roomId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
+            (int roomId, HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );

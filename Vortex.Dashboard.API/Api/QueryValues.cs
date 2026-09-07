@@ -14,9 +14,8 @@ namespace Vortex.Dashboard.API.Api;
 /// "things reads need" is the catch-all the architecture rules name.
 /// </para>
 /// <para>
-/// <see cref="DashboardApiService"/> keeps private copies of these until its last subject leaves;
-/// switching its remaining topic files over would be a rename across ten files that no longer
-/// exist once the migration finishes.
+/// Every read subject calls these directly. The god service they came from kept private copies
+/// until its last subject left, and went with them.
 /// </para>
 /// </remarks>
 internal static class QueryValues

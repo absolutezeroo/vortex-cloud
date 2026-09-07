@@ -24,7 +24,7 @@ internal sealed class CatalogPurchaseReads(
     /// offers sold. Sourced from the <c>economy.catalog_purchase</c> audit trail (see
     /// <c>CatalogPurchasedAuditHandler</c>), which already carries <c>offerId</c>/<c>quantity</c>/
     /// <c>creditCost</c> in its JSON payload — no new instrumentation needed. Distinct from
-    /// <c>CatalogPage</c> in <see cref="DashboardApiService.Catalog.cs"/>-style admin CRUD, which
+    /// <c>CatalogPage</c> in <see cref="CatalogReads"/>-style admin CRUD, which
     /// manages the catalog structure, not purchase analytics.</summary>
     public Task<object> CatalogPurchasesStatsAsync(
         NameValueCollection query,

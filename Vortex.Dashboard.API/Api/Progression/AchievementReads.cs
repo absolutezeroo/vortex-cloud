@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 
@@ -20,8 +21,13 @@ namespace Vortex.Dashboard.API.Api;
 /// with 0 holders reads as either "nobody got there yet" or "nothing can ever award this".
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class AchievementReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Achievement names a live progression trigger calls today — mirrors
     /// <c>Vortex.Progression.Achievements.AchievementNames</c> and the call sites in
     /// <c>AchievementProgressEventHandlers</c>. Duplicated as strings because the dashboard does not
@@ -255,9 +261,8 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> names = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(topPlayers.Select(p => (int?)p.playerId)),
+                Dictionary<int, string> names = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(topPlayers.Select(p => (int?)p.playerId)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -283,7 +288,7 @@ internal sealed partial class DashboardApiService
                         .Select(p => new
                         {
                             p.playerId,
-                            playerName = ResolvePlayerName(names, p.playerId),
+                            playerName = DisplayNameQueries.ResolvePlayerName(names, p.playerId),
                             p.Level,
                             p.Progress,
                             p.UpdatedAt,
@@ -441,9 +446,8 @@ internal sealed partial class DashboardApiService
                     .Take(15)
                     .ToList();
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(topPlayerRows.Select(p => (int?)p.Key)),
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(topPlayerRows.Select(p => (int?)p.Key)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -452,7 +456,7 @@ internal sealed partial class DashboardApiService
                     .Select(p => new
                     {
                         playerId = p.Key,
-                        playerName = ResolvePlayerName(playerNames, p.Key),
+                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, p.Key),
                         score = p.Value.Score,
                         badges = p.Value.Badges,
                     })

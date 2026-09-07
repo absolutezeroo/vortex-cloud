@@ -37,7 +37,7 @@ internal static class DashboardHttpContextExtensions
 
     /// <summary>
     ///     Adapts the request query into the <see cref="NameValueCollection" /> shape the existing
-    ///     <c>DashboardApiService</c> read methods consume, so those methods stay untouched.
+    ///     the read classes consume, so those methods stay untouched.
     /// </summary>
     public static NameValueCollection QueryAsNameValues(this HttpContext ctx)
     {

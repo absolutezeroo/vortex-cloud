@@ -18,7 +18,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// The health, incident and live-traffic reads behind the overview. Split out of
-/// <see cref="DashboardApiService" /> because it was the reason that class had fourteen constructor
+/// <c>DashboardApiService</c> — now gone — because it was the reason that class had fourteen constructor
 /// parameters: six of them -- the live stats aggregator, incident detection, infrastructure health,
 /// club metrics, client performance metrics and the meter -- were read here and nowhere else, so
 /// every one of the thirty other read partials carried them for nothing.

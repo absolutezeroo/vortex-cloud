@@ -18,7 +18,7 @@ namespace Vortex.Dashboard.API.Api;
 /// without whether anyone is renting it.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed partial class EconomyReads
 {
     public Task<object> EconomyExtrasAsync(CancellationToken ct) =>
         QueryAsync<object>(
@@ -97,7 +97,7 @@ internal sealed partial class DashboardApiService
                         productId = s.CatalogProductEntityId,
                         productName = productNames.GetValueOrDefault(s.CatalogProductEntityId),
                         iconUrl = productNames.TryGetValue(s.CatalogProductEntityId, out string? n)
-                            ? BuildFurniIconUrl(n)
+                            ? _assetUrls.FurniIcon(n)
                             : null,
                         s.TotalQuantity,
                         s.RemainingQuantity,
@@ -162,9 +162,10 @@ internal sealed partial class DashboardApiService
                     .ToDictionaryAsync(x => x.Id, x => x.Name, ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> renterNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(rentals.Select(r => r.RenterPlayerEntityId)),
+                Dictionary<int, string> renterNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(
+                            rentals.Select(r => r.RenterPlayerEntityId)
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -183,11 +184,11 @@ internal sealed partial class DashboardApiService
                             r.FurnitureEntityId,
                             out string? rentedName
                         )
-                            ? BuildFurniIconUrl(rentedName)
+                            ? _assetUrls.FurniIcon(rentedName)
                             : null,
                         renterId = r.RenterPlayerEntityId,
                         renterName = r.RenterPlayerEntityId is { } renter
-                            ? ResolvePlayerName(renterNames, renter)
+                            ? DisplayNameQueries.ResolvePlayerName(renterNames, renter)
                             : null,
                         r.RentedUntil,
                         rented = r.RenterPlayerEntityId is not null

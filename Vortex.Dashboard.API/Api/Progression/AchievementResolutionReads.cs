@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 
 namespace Vortex.Dashboard.API.Api;
@@ -20,8 +22,13 @@ namespace Vortex.Dashboard.API.Api;
 /// live/expired split has to be computed here or it does not exist anywhere.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class AchievementResolutionReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     /// <summary>Offers, plus a completion rate per offer. Optional <c>state</c> filter over the
     /// challenges list: <c>live</c>, <c>completed</c> or <c>expired</c>.</summary>
     public Task<object> AchievementResolutionsAsync(
@@ -143,9 +150,8 @@ internal sealed partial class DashboardApiService
                     .Take(200)
                     .ToList();
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(
-                        db,
-                        NormalizeIds(page.Select(c => (int?)c.PlayerId)),
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(
+                        DisplayNameQueries.NormalizeIds(page.Select(c => (int?)c.PlayerId)),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -157,7 +163,7 @@ internal sealed partial class DashboardApiService
                     {
                         c.Id,
                         playerId = c.PlayerId,
-                        playerName = ResolvePlayerName(playerNames, c.PlayerId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, c.PlayerId),
                         itemId = c.ItemId,
                         achievementId = c.AchievementId,
                         achievementName = definitions.GetValueOrDefault(c.AchievementId)?.Name,

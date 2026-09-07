@@ -21,16 +21,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AchievementsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, AchievementReads reads, CancellationToken ct) =>
+                OkAsync(reads.AchievementsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );
         MapReadGet(
             app,
             ApiAchievements + "/stats",
-            (DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AchievementsStatsAsync(ct)),
+            (AchievementReads reads, CancellationToken ct) =>
+                OkAsync(reads.AchievementsStatsAsync(ct)),
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );
@@ -40,16 +40,22 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements + "/resolutions",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AchievementResolutionsAsync(ctx.QueryAsNameValues(), ct)),
+            (
+                HttpContext ctx,
+                AchievementResolutionReads achievementResolution,
+                CancellationToken ct
+            ) =>
+                OkAsync(
+                    achievementResolution.AchievementResolutionsAsync(ctx.QueryAsNameValues(), ct)
+                ),
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );
         MapReadGet(
             app,
             ApiAchievements + "/{achievementId:int}",
-            (int achievementId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.AchievementDetailAsync(achievementId, ct)),
+            (int achievementId, AchievementReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.AchievementDetailAsync(achievementId, ct)),
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );

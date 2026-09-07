@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Furniture;
@@ -27,19 +28,24 @@ using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+internal sealed partial class EconomyReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     public Task<object> EconomyAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
             {
-                int limit = ParseLimit(query["limit"], 50, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 50, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
                 IQueryable<EconomyLedgerEntity> q = db.EconomyLedger.AsNoTracking();
 
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 if (since is not null)
                 {
@@ -77,9 +83,11 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> playerIds = NormalizeIds(rows.Select(l => (long?)l.PlayerId));
+                List<int> playerIds = DisplayNameQueries.NormalizeIds(
+                    rows.Select(l => (long?)l.PlayerId)
+                );
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(l => new
@@ -87,7 +95,7 @@ internal sealed partial class DashboardApiService
                         l.Id,
                         l.OccurredAt,
                         l.PlayerId,
-                        playerName = ResolvePlayerName(playerNames, l.PlayerId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, l.PlayerId),
                         l.Currency,
                         l.ActivityPointType,
                         l.Delta,
@@ -125,8 +133,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<EconomyTrendRow> rows = await EconomyTrendQuery(db, since, until)
                     .ToListAsync(ct)
@@ -230,8 +238,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 // Summed by the database, one row per (day, seller). Both aggregates below fold up
                 // from that: day is finer than any bucket the timeline offers, and a seller's totals
@@ -249,7 +257,7 @@ internal sealed partial class DashboardApiService
 
                 foreach (MarketplaceSaleRow row in sold)
                 {
-                    DateTime bucket = ResolveCalendarBucket(row.Day, granularity);
+                    DateTime bucket = TimeWindow.Bucket(row.Day, granularity);
                     (int sales, long volume) current = bucketMap.TryGetValue(
                         bucket,
                         out (int sales, long volume) existing
@@ -265,7 +273,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         sales = pair.Value.sales,
                         volume = pair.Value.volume,
                     })
@@ -274,15 +282,17 @@ internal sealed partial class DashboardApiService
                 int soldCount = sold.Sum(s => s.Sales);
                 long soldVolume = sold.Sum(s => s.Volume);
 
-                List<int> sellerIds = NormalizeIds(sold.Select(s => (int?)s.SellerId));
-                Dictionary<int, string> sellerNames = await LoadPlayerNamesAsync(db, sellerIds, ct)
+                List<int> sellerIds = DisplayNameQueries.NormalizeIds(
+                    sold.Select(s => (int?)s.SellerId)
+                );
+                Dictionary<int, string> sellerNames = await db.PlayerNamesAsync(sellerIds, ct)
                     .ConfigureAwait(false);
 
                 var topSellers = sold.GroupBy(s => s.SellerId)
                     .Select(g => new
                     {
                         sellerId = g.Key,
-                        sellerName = ResolvePlayerName(sellerNames, (int?)g.Key),
+                        sellerName = DisplayNameQueries.ResolvePlayerName(sellerNames, (int?)g.Key),
                         sales = g.Sum(s => s.Sales),
                         volume = g.Sum(s => s.Volume),
                     })
@@ -320,7 +330,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                (DateTime since, DateTime until) = ResolveWindow(query, nowUtc);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, nowUtc);
 
                 var subscriptions = await db
                     .PlayerSubscriptions.AsNoTracking()
@@ -335,8 +345,10 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                List<int> playerIds = NormalizeIds(subscriptions.Select(s => (long?)s.playerId));
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                List<int> playerIds = DisplayNameQueries.NormalizeIds(
+                    subscriptions.Select(s => (long?)s.playerId)
+                );
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
                 var activeSubscriptions = subscriptions.Where(s => s.ExpiresAt > nowUtc).ToList();
@@ -421,8 +433,10 @@ internal sealed partial class DashboardApiService
                     ))
                     .ToList();
 
-                List<int> actorIds = NormalizeIds(clubEvents.Select(e => e.ActorPlayerId));
-                Dictionary<int, string> actorNames = await LoadPlayerNamesAsync(db, actorIds, ct)
+                List<int> actorIds = DisplayNameQueries.NormalizeIds(
+                    clubEvents.Select(e => e.ActorPlayerId)
+                );
+                Dictionary<int, string> actorNames = await db.PlayerNamesAsync(actorIds, ct)
                     .ConfigureAwait(false);
 
                 var enrichedEvents = clubEvents
@@ -434,10 +448,10 @@ internal sealed partial class DashboardApiService
                         {
                             e.OccurredAt,
                             e.Action,
-                            actorPlayerId = ToPlayerId(e.ActorPlayerId),
-                            actorPlayerName = ResolvePlayerName(
+                            actorPlayerId = DisplayNameQueries.ToPlayerId(e.ActorPlayerId),
+                            actorPlayerName = DisplayNameQueries.ResolvePlayerName(
                                 actorNames,
-                                ToPlayerId(e.ActorPlayerId)
+                                DisplayNameQueries.ToPlayerId(e.ActorPlayerId)
                             ),
                             payload?.Months,
                             payload?.TotalMonths,
@@ -457,7 +471,7 @@ internal sealed partial class DashboardApiService
                         ? Math.Round((double)renewals / (purchases + renewals), 4)
                         : 0d;
 
-                TimeSpan bucketSize = ResolveBucketSize(since, until);
+                TimeSpan bucketSize = TimeWindow.BucketSize(since, until);
                 List<SubscriptionTimelinePoint> lifecycle = BuildSubscriptionTimeline(
                     clubEvents.Select(e => (e.OccurredAt, e.Action)).ToList(),
                     since,
@@ -502,7 +516,7 @@ internal sealed partial class DashboardApiService
                     .Select(s => new
                     {
                         playerId = s.playerId,
-                        playerName = ResolvePlayerName(playerNames, s.playerId),
+                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, s.playerId),
                         type = s.type.ToString(),
                         level = s.level,
                         totalMonths = s.TotalMonths,
@@ -550,12 +564,12 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                int limit = ParseLimit(query["limit"], 50, 500);
-                int page = ParsePage(query["page"]);
+                int limit = QueryValues.Limit(query["limit"], 50, 500);
+                int page = QueryValues.Page(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
 
-                DateTime? since = ParseDateTime(query["since"]);
-                DateTime? until = ParseDateTime(query["until"]);
+                DateTime? since = TimeWindow.ParseDateTime(query["since"]);
+                DateTime? until = TimeWindow.ParseDateTime(query["until"]);
 
                 IQueryable<AuditEventEntity> q = db
                     .AuditEvents.AsNoTracking()
@@ -616,11 +630,11 @@ internal sealed partial class DashboardApiService
                     )
                     .ConfigureAwait(false);
 
-                List<int> playerIds = NormalizeIds(
+                List<int> playerIds = DisplayNameQueries.NormalizeIds(
                     rows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
                 );
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(r => new
@@ -629,9 +643,15 @@ internal sealed partial class DashboardApiService
                         r.OccurredAt,
                         r.Action,
                         r.ActorPlayerId,
-                        actorName = ResolvePlayerName(playerNames, r.ActorPlayerId),
+                        actorName = DisplayNameQueries.ResolvePlayerName(
+                            playerNames,
+                            r.ActorPlayerId
+                        ),
                         r.TargetPlayerId,
-                        targetName = ResolvePlayerName(playerNames, r.TargetPlayerId),
+                        targetName = DisplayNameQueries.ResolvePlayerName(
+                            playerNames,
+                            r.TargetPlayerId
+                        ),
                         r.RoomId,
                         r.ItemId,
                         r.Data,
@@ -691,8 +711,8 @@ internal sealed partial class DashboardApiService
         Dictionary<DateTime, (int purchases, int renewals, int expired)> bucketMap =
             new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
 
-        DateTime cursor = ResolveTimelineBucket(since, bucketSize);
-        DateTime end = ResolveTimelineBucket(until, bucketSize);
+        DateTime cursor = TimeWindow.TimelineBucket(since, bucketSize);
+        DateTime end = TimeWindow.TimelineBucket(until, bucketSize);
 
         while (cursor <= end)
         {
@@ -702,7 +722,7 @@ internal sealed partial class DashboardApiService
 
         foreach ((DateTime OccurredAt, string Action) evt in events)
         {
-            DateTime bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            DateTime bucket = TimeWindow.TimelineBucket(evt.OccurredAt, bucketSize);
             (int purchases, int renewals, int expired) counts = bucketMap.TryGetValue(
                 bucket,
                 out (int purchases, int renewals, int expired) current
@@ -725,7 +745,7 @@ internal sealed partial class DashboardApiService
             .OrderBy(pair => pair.Key)
             .Select(pair => new SubscriptionTimelinePoint(
                 pair.Key.ToString("O"),
-                FormatTimelineLabel(pair.Key, bucketSize),
+                TimeWindow.TimelineLabel(pair.Key, bucketSize),
                 pair.Value.purchases,
                 pair.Value.renewals,
                 pair.Value.expired
@@ -762,18 +782,18 @@ internal sealed partial class DashboardApiService
     {
         Dictionary<DateTime, (long spend, long earned, int count)> bucketMap = new();
 
-        DateTime cursor = ResolveCalendarBucket(since, granularity);
-        DateTime end = ResolveCalendarBucket(until, granularity);
+        DateTime cursor = TimeWindow.Bucket(since, granularity);
+        DateTime end = TimeWindow.Bucket(until, granularity);
 
         while (cursor <= end)
         {
             bucketMap[cursor] = (0, 0, 0);
-            cursor = NextCalendarBucket(cursor, granularity);
+            cursor = TimeWindow.NextBucket(cursor, granularity);
         }
 
         foreach (EconomyTrendRow row in rows)
         {
-            DateTime bucket = ResolveCalendarBucket(row.Day, granularity);
+            DateTime bucket = TimeWindow.Bucket(row.Day, granularity);
             (long spend, long earned, int count) current = bucketMap.TryGetValue(
                 bucket,
                 out (long spend, long earned, int count) existing
@@ -792,7 +812,7 @@ internal sealed partial class DashboardApiService
             .OrderBy(pair => pair.Key)
             .Select(pair => new EconomyTrendPoint(
                 pair.Key.ToString("O"),
-                FormatCalendarLabel(pair.Key, granularity),
+                TimeWindow.Label(pair.Key, granularity),
                 pair.Value.spend,
                 pair.Value.earned,
                 pair.Value.earned - pair.Value.spend,
@@ -823,11 +843,11 @@ internal sealed partial class DashboardApiService
             JsonElement root = doc.RootElement;
 
             return new ClubSubscriptionPayload(
-                TryParseInt(root, "months"),
-                TryParseInt(root, "totalMonths"),
-                TryParseInt(root, "creditCost"),
-                TryParseBool(root, "isVip"),
-                TryParseBool(root, "isRenewal")
+                JsonValues.Int(root, "months"),
+                JsonValues.Int(root, "totalMonths"),
+                JsonValues.Int(root, "creditCost"),
+                JsonValues.Bool(root, "isVip"),
+                JsonValues.Bool(root, "isRenewal")
             );
         }
         catch

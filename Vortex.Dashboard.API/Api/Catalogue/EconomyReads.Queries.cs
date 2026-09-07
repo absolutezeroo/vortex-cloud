@@ -20,7 +20,7 @@ namespace Vortex.Dashboard.API.Api;
 /// SQL, which is the only cheap way to know the grouping actually happens in the database.
 /// </para>
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed partial class EconomyReads
 {
     /// <summary>
     /// One row per (day, currency) with spend, earnings and transaction count already summed. Day is

@@ -38,17 +38,25 @@ namespace Vortex.Dashboard.API;
 /// pipeline of its own — the audit and error-grouping writers live in <c>ObservabilityModule</c> so
 /// they run regardless of whether the dashboard is enabled.
 /// <para>
-/// <b>How this project is laid out, and the one rule it breaks.</b> Three of its folders —
-/// <c>Api</c>, <c>Hosting</c>, <c>Operations</c> — are each one very large partial class, and its
-/// parts are grouped into <c>Catalogue</c>, <c>Progression</c>, <c>Hotel</c>, <c>Platform</c> and
-/// <c>Safety</c>, the same five families <c>Admin</c> uses. Every part of a partial class must
-/// declare the <em>same</em> namespace, so those subfolders deliberately do not appear in it: a file
-/// in <c>Operations/Catalogue/</c> is still <c>Vortex.Dashboard.API.Operations</c>. Folder equals
-/// namespace everywhere else in this repository, and it cannot here without splitting the class.
+/// <b>How this project is laid out.</b> Every subject owns a <c>*Reads</c> class, a
+/// <c>*Operations</c> class, or both, grouped into the five families <c>Catalogue</c>,
+/// <c>Progression</c>, <c>Hotel</c>, <c>Platform</c> and <c>Safety</c> that <c>Admin</c> also uses.
+/// A subject's constructor is the list of what it actually needs, which is the whole point: the two
+/// god services this replaced took ten and twenty-nine dependencies and handed all of them to every
+/// subject.
 /// </para>
 /// <para>
-/// <c>Admin</c> is the exception that keeps the rule: it holds sixteen separate classes rather than
-/// one, so its subfolders <em>are</em> namespaces.
+/// The folders under <c>Api</c>, <c>Operations</c> and <c>Hosting</c> are not namespaces — those
+/// files declare <c>Vortex.Dashboard.API.Api</c>, <c>.Operations</c> and <c>.Hosting</c> whatever
+/// family folder they sit in. That was forced while they were parts of one partial class; it stays
+/// now because renaming the namespaces is a separate change from moving the code, and
+/// <c>DashboardEndpoints</c> is still one partial class per §19's tolerated case: thin routing, no
+/// dependencies of its own.
+/// </para>
+/// <para>
+/// Writes all go through <see cref="OperationRunner"/>, which carries the audit, correlation id and
+/// reason every operation must produce. It is injected, never inherited, so a subject cannot bend
+/// it. Reads share only <see cref="Api.DashboardReads"/>, which opens a context and nothing else.
 /// </para>
 /// </summary>
 public sealed class DashboardApiModule : IHostPluginModule
@@ -90,7 +98,6 @@ public sealed class DashboardApiModule : IHostPluginModule
         // operator swaps the pack.
         services.TryAddSingleton<HabbiconArtwork>();
         services.TryAddSingleton<DashboardAuditEmitter>();
-        services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardMonitoringReads>();
         // What every dashboard write goes through. A collaborator, so a subject that becomes its
         // own operations class takes it directly instead of inheriting a mechanism.
@@ -156,6 +163,11 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<PlayerRewardReads>();
         services.TryAddSingleton<InventoryReads>();
         services.TryAddSingleton<CatalogPurchaseReads>();
+        services.TryAddSingleton<EconomyReads>();
+        services.TryAddSingleton<AchievementReads>();
+        services.TryAddSingleton<AchievementResolutionReads>();
+        services.TryAddSingleton<SignalDirectoryReads>();
+        services.TryAddSingleton<DirectoryReads>();
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,
         // it does not write them. So the admin service lives here and is registered here, and a
         // host that does not load this module has no content-authoring path at all -- which is what
