@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -9,11 +9,13 @@
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import { t } from '../lib/i18n';
+  import type { EconomyLedgerEntry, EconomyLedgerPage } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
 
-  let picking = $state(null);
+  let picking = $state<'player' | null>(null);
   let playerName = $state('');
   let player = $state('');
-  let rows = $state([]);
+  let rows = $state<EconomyLedgerEntry[]>([]);
   let error = $state('');
   let forbidden = $state(false);
 
@@ -27,7 +29,7 @@
     error = '';
 
     try {
-      const data = await apiGet(`/api/v1/economy/ledger?${params}`);
+      const data = await apiGet<EconomyLedgerPage>(`/api/v1/economy/ledger?${params}`);
       rows = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -36,7 +38,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       rows = [];
     }
   }
@@ -88,6 +90,15 @@
 
 {#if picking}
     {#if picking === 'player'}
-      <PickerModal kind="user" onSelect={(item) => { player = String(item.id); playerName = item.name; picking = null; refresh(); }} onClose={() => (picking = null)} />
+      <PickerModal
+        kind="user"
+        onSelect={(item: PickerRow) => {
+          player = String(item.id);
+          playerName = item.name;
+          picking = null;
+          refresh();
+        }}
+        onClose={() => (picking = null)}
+      />
     {/if}
 {/if}

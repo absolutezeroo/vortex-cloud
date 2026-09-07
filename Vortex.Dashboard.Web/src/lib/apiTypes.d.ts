@@ -331,6 +331,29 @@ export interface EconomyCurrencyTotals {
   transactionCount: number;
 }
 
+export interface EconomyLedgerEntry {
+  id: number;
+  occurredAt: string;
+  playerId: number;
+  playerName: string | null;
+  currency: string;
+  activityPointType: number | null;
+  delta: number;
+  balanceAfter: number;
+  reason: string;
+  refId: number | null;
+  correlationId: string | null;
+}
+
+export interface EconomyLedgerPage {
+  count: number;
+  page: number;
+  limit: number;
+  total: number;
+  offset: number;
+  items: EconomyLedgerEntry[];
+}
+
 export interface EconomySpendCategory {
   currency: string;
   action: string;
@@ -454,6 +477,34 @@ export interface HandItemRow {
   thirst: number;
   consumable: boolean;
   imageUrl: string | null;
+}
+
+export interface MarketplaceSalePoint {
+  bucket: string;
+  label: string;
+  sales: number;
+  volume: number;
+}
+
+export interface MarketplaceSeller {
+  sellerId: number;
+  sellerName: string | null;
+  sales: number;
+  volume: number;
+}
+
+export interface MarketplaceSummary {
+  window: ReportWindow;
+  totals: MarketplaceTotals;
+  timeline: MarketplaceSalePoint[];
+  topSellers: MarketplaceSeller[];
+}
+
+export interface MarketplaceTotals {
+  activeListings: number;
+  soldCount: number;
+  totalVolume: number;
+  averagePrice: number;
 }
 
 export interface ModerationActionCount {

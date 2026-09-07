@@ -68,6 +68,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(ModerationStats),
         typeof(CatalogPurchaseStats),
         typeof(EconomyTrends),
+        typeof(EconomyLedgerPage),
+        typeof(MarketplaceSummary),
     ];
 
     [Fact]

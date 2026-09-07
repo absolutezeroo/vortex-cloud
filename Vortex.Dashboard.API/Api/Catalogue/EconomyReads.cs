@@ -37,8 +37,8 @@ internal sealed partial class EconomyReads(
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
 
-    public Task<object> EconomyAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<EconomyLedgerPage> EconomyAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<EconomyLedgerPage>(
             async db =>
             {
                 int limit = QueryValues.Limit(query["limit"], 50, 500);
@@ -92,31 +92,22 @@ internal sealed partial class EconomyReads(
                 Dictionary<int, string> playerNames = await db.PlayerNamesAsync(playerIds, ct)
                     .ConfigureAwait(false);
 
-                var rowsWithNames = rows.Select(l => new
-                    {
+                List<EconomyLedgerEntry> rowsWithNames = rows.Select(l => new EconomyLedgerEntry(
                         l.Id,
                         l.OccurredAt,
                         l.PlayerId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, l.PlayerId),
+                        DisplayNameQueries.ResolvePlayerName(playerNames, l.PlayerId),
                         l.Currency,
                         l.ActivityPointType,
                         l.Delta,
                         l.BalanceAfter,
                         l.reason,
                         l.RefId,
-                        l.CorrelationId,
-                    })
+                        l.CorrelationId
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = rows.Count,
-                    page,
-                    limit,
-                    total,
-                    offset,
-                    items = rowsWithNames,
-                };
+                return new EconomyLedgerPage(rows.Count, page, limit, total, offset, rowsWithNames);
             },
             ct
         );
@@ -234,8 +225,11 @@ internal sealed partial class EconomyReads(
 
     /// <summary>Marketplace sales summary: active/sold counts, credit volume, a sales timeline, and
     /// top sellers by volume. There is no dashboard visibility into the marketplace today.</summary>
-    public Task<object> MarketplaceSummaryAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<MarketplaceSummary> MarketplaceSummaryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<MarketplaceSummary>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -268,15 +262,14 @@ internal sealed partial class EconomyReads(
                     bucketMap[bucket] = (current.sales + row.Sales, current.volume + row.Volume);
                 }
 
-                var timeline = bucketMap
+                List<MarketplaceSalePoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        sales = pair.Value.sales,
-                        volume = pair.Value.volume,
-                    })
+                    .Select(pair => new MarketplaceSalePoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value.sales,
+                        pair.Value.volume
+                    ))
                     .ToList();
 
                 int soldCount = sold.Sum(s => s.Sales);
@@ -288,39 +281,31 @@ internal sealed partial class EconomyReads(
                 Dictionary<int, string> sellerNames = await db.PlayerNamesAsync(sellerIds, ct)
                     .ConfigureAwait(false);
 
-                var topSellers = sold.GroupBy(s => s.SellerId)
-                    .Select(g => new
-                    {
-                        sellerId = g.Key,
-                        sellerName = DisplayNameQueries.ResolvePlayerName(sellerNames, (int?)g.Key),
-                        sales = g.Sum(s => s.Sales),
-                        volume = g.Sum(s => s.Volume),
-                    })
-                    .OrderByDescending(s => s.volume)
+                List<MarketplaceSeller> topSellers = sold.GroupBy(s => s.SellerId)
+                    .Select(g => new MarketplaceSeller(
+                        g.Key,
+                        DisplayNameQueries.ResolvePlayerName(sellerNames, (int?)g.Key),
+                        g.Sum(s => s.Sales),
+                        g.Sum(s => s.Volume)
+                    ))
+                    .OrderByDescending(s => s.Volume)
                     .Take(10)
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
-                        activeListings = activeCount,
+                return new MarketplaceSummary(
+                    new ReportWindow(since, until, granularity),
+                    new MarketplaceTotals(
+                        activeCount,
                         // sold holds one row per (day, seller) now, so the sale count is the sum of
                         // the grouped counts -- not the row count -- and the mean price is the
                         // volume over that, which is what Average(price) computed before.
                         soldCount,
-                        totalVolume = soldVolume,
-                        averagePrice = soldCount > 0 ? (double)soldVolume / soldCount : 0d,
-                    },
+                        soldVolume,
+                        soldCount > 0 ? (double)soldVolume / soldCount : 0d
+                    ),
                     timeline,
-                    topSellers,
-                };
+                    topSellers
+                );
             },
             ct
         );

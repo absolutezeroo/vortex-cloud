@@ -27,7 +27,7 @@ internal static partial class DashboardEndpoints
 {
     public static void MapEconomyReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<EconomyLedgerPage>(
             app,
             ApiEconomy + "/ledger",
             (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>
@@ -51,7 +51,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
-        MapReadGet(
+        MapReadGet<MarketplaceSummary>(
             app,
             ApiEconomy + "/marketplace",
             (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>

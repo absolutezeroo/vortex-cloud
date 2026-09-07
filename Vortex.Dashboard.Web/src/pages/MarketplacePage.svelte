@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { apiGet } from '../lib/api';
   import { createResource } from '../lib/resource';
@@ -10,13 +10,14 @@
   import StatCard from '../components/StatCard.svelte';
   import { ShoppingCart, ShoppingBag, Coins } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session';
-  import { t } from '../lib/i18n';
+  import { t, type Translator } from '../lib/i18n';
+  import type { MarketplaceSummary } from '../lib/apiTypes';
 
   const granularities = ['day', 'month', 'year'];
 
   // See the AuditPage `categoryLabel` note: translator must be passed explicitly so template call
   // sites stay reactive to locale changes.
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: Translator) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
@@ -24,7 +25,7 @@
   let until = $state('');
   let granularity = $state('day');
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -50,7 +51,7 @@
       if (since) params.set('since', new Date(since).toISOString());
       if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
-      return apiGet(`/api/v1/economy/marketplace?${params}`);
+      return apiGet<MarketplaceSummary>(`/api/v1/economy/marketplace?${params}`);
     }
   );
 

@@ -64,6 +64,8 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/forensics/moderation/stats", typeof(ModerationStats)),
         ("/api/v1/catalog/purchases/stats", typeof(CatalogPurchaseStats)),
         ("/api/v1/economy/trends", typeof(EconomyTrends)),
+        ("/api/v1/economy/ledger", typeof(EconomyLedgerPage)),
+        ("/api/v1/economy/marketplace", typeof(MarketplaceSummary)),
     ];
 
     [Fact]
