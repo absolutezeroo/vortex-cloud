@@ -66,6 +66,7 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/economy/trends", typeof(EconomyTrends)),
         ("/api/v1/economy/ledger", typeof(EconomyLedgerPage)),
         ("/api/v1/economy/marketplace", typeof(MarketplaceSummary)),
+        ("/api/v1/economy/subscriptions", typeof(ClubSubscriptions)),
     ];
 
     [Fact]

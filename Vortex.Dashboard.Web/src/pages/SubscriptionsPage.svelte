@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatDate, formatNumber } from '../lib/format';
@@ -13,8 +13,9 @@
   import TableFilter from '../components/TableFilter.svelte';
   import { filterRows } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
+  import type { ClubSubscriptions } from '../lib/apiTypes';
 
-  let clubStats = $state(null);
+  let clubStats = $state<ClubSubscriptions | null>(null);
   let clubError = $state('');
 
   let byType = $derived(clubStats?.byType || []);
@@ -30,19 +31,23 @@
   // drawing its own bars instead of using the shared chart primitive that ten others use, and
   // that is what made it read as a draft next to them.
   let lifecycleSeries = $derived([
-    { key: 'purchases', name: $t('subscriptions.purchases'), color: 'rgb(var(--accent-rgb))' },
-    { key: 'renewals', name: $t('subscriptions.renewals'), color: 'rgb(var(--ok-rgb))' },
-    { key: 'expired', name: $t('subscriptions.expirations'), color: 'rgb(var(--danger-rgb))' },
+    {
+      key: 'purchases' as const,
+      name: $t('subscriptions.purchases'),
+      color: 'rgb(var(--accent-rgb))',
+    },
+    { key: 'renewals' as const, name: $t('subscriptions.renewals'), color: 'rgb(var(--ok-rgb))' },
+    {
+      key: 'expired' as const,
+      name: $t('subscriptions.expirations'),
+      color: 'rgb(var(--danger-rgb))',
+    },
   ].map((serie) => ({
     name: serie.name,
     color: serie.color,
     points: lifecycle.map((point) => ({ label: point.label, value: point[serie.key] || 0 })),
   })));
 
-  let lifecycleScale = $derived(Math.max(
-    1,
-    ...lifecycle.map((point) => Math.max(point.purchases || 0, point.renewals || 0, point.expired || 0)),
-  ));
   let byMonthsScale = $derived(Math.max(
     1,
     ...byMonths.map((point) => Math.max(point.total || 0, point.purchases || 0, point.renewals || 0)),
@@ -53,12 +58,12 @@
     clubError = '';
 
     try {
-      clubStats = await apiGet('/api/v1/economy/subscriptions');
+      clubStats = await apiGet<ClubSubscriptions>('/api/v1/economy/subscriptions');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         clubError = translate('subscriptions.accessDenied');
       } else {
-        clubError = err.message;
+        clubError = (err as Error).message;
       }
 
       clubStats = null;

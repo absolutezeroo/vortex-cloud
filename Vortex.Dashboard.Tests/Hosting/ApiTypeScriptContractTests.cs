@@ -70,6 +70,7 @@ public sealed class ApiTypeScriptContractTests
         typeof(EconomyTrends),
         typeof(EconomyLedgerPage),
         typeof(MarketplaceSummary),
+        typeof(ClubSubscriptions),
     ];
 
     [Fact]

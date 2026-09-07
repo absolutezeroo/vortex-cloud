@@ -35,7 +35,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
-        MapReadGet(
+        MapReadGet<ClubSubscriptions>(
             app,
             ApiEconomy + "/subscriptions",
             (HttpContext ctx, EconomyReads reads, CancellationToken ct) =>

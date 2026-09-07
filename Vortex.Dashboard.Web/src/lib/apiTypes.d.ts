@@ -324,6 +324,84 @@ export interface ChatlogWindow {
   until: string;
 }
 
+export interface ClubExpiringSubscription {
+  playerId: number;
+  playerName: string | null;
+  type: string;
+  level: number;
+  totalMonths: number;
+  expiresAt: string;
+  remainingDays: number;
+}
+
+export interface ClubLifecyclePoint {
+  bucket: string;
+  label: string;
+  purchases: number;
+  renewals: number;
+  expired: number;
+}
+
+export interface ClubLifecycleTotals {
+  purchases: number;
+  renewals: number;
+  expired: number;
+  renewalShare: number;
+}
+
+export interface ClubMonthsBreakdown {
+  months: number;
+  total: number;
+  purchases: number;
+  renewals: number;
+  expired: number;
+}
+
+export interface ClubSubscriptionEventRow {
+  occurredAt: string;
+  action: string;
+  actorPlayerId: number | null;
+  actorPlayerName: string | null;
+  months: number | null;
+  totalMonths: number | null;
+  creditCost: number | null;
+  isRenewal: boolean | null;
+  isVip: boolean | null;
+}
+
+export interface ClubSubscriptionLifecycle {
+  totals: ClubLifecycleTotals;
+  byMonths: ClubMonthsBreakdown[];
+  recentEvents: ClubSubscriptionEventRow[];
+  timeline: ClubLifecyclePoint[];
+}
+
+export interface ClubSubscriptionTotals {
+  totalSubscriptions: number;
+  activeSubscriptions: number;
+  inactiveSubscriptions: number;
+  expiringIn7Days: number;
+  expiringIn30Days: number;
+  activeRate: number;
+}
+
+export interface ClubSubscriptionTypeBreakdown {
+  type: string;
+  total: number;
+  active: number;
+  inactive: number;
+  averageRemainingDays: number;
+  averageTotalMonths: number;
+}
+
+export interface ClubSubscriptions {
+  window: ModerationWindow;
+  totals: ClubSubscriptionTotals;
+  byType: ClubSubscriptionTypeBreakdown[];
+  topExpiring: ClubExpiringSubscription[];
+  lifecycle: ClubSubscriptionLifecycle;
+}
+
 export interface EconomyCurrencyTotals {
   spend: number;
   earned: number;

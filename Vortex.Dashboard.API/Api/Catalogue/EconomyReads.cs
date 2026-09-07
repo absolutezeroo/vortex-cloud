@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
@@ -310,8 +311,11 @@ internal sealed partial class EconomyReads(
             ct
         );
 
-    public Task<object> ClubSubscriptionsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<ClubSubscriptions> ClubSubscriptionsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<ClubSubscriptions>(
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
@@ -350,7 +354,7 @@ internal sealed partial class EconomyReads(
                         ? Math.Round((double)activeSubscriptions.Count / totalSubscriptions, 4)
                         : 0d;
 
-                var byType = subscriptions
+                List<ClubSubscriptionTypeBreakdown> byType = subscriptions
                     .GroupBy(s => s.type)
                     .Select(g =>
                     {
@@ -370,17 +374,16 @@ internal sealed partial class EconomyReads(
                             2
                         );
 
-                        return new
-                        {
-                            type = g.Key.ToString(),
-                            total = g.Count(),
-                            active = activeByType.Count,
-                            inactive = g.Count() - activeByType.Count,
+                        return new ClubSubscriptionTypeBreakdown(
+                            g.Key.ToString(),
+                            g.Count(),
+                            activeByType.Count,
+                            g.Count() - activeByType.Count,
                             averageRemainingDays,
-                            averageTotalMonths,
-                        };
+                            averageTotalMonths
+                        );
                     })
-                    .OrderBy(x => x.type)
+                    .OrderBy(x => x.Type, StringComparer.Ordinal)
                     .ToList();
 
                 var events = await db
@@ -424,17 +427,16 @@ internal sealed partial class EconomyReads(
                 Dictionary<int, string> actorNames = await db.PlayerNamesAsync(actorIds, ct)
                     .ConfigureAwait(false);
 
-                var enrichedEvents = clubEvents
+                List<ClubSubscriptionEventRow> enrichedEvents = clubEvents
                     .Select(e =>
                     {
                         ClubSubscriptionPayload? payload = ParseClubSubscriptionPayload(e.Data);
 
-                        return new
-                        {
+                        return new ClubSubscriptionEventRow(
                             e.OccurredAt,
                             e.Action,
-                            actorPlayerId = DisplayNameQueries.ToPlayerId(e.ActorPlayerId),
-                            actorPlayerName = DisplayNameQueries.ResolvePlayerName(
+                            DisplayNameQueries.ToPlayerId(e.ActorPlayerId),
+                            DisplayNameQueries.ResolvePlayerName(
                                 actorNames,
                                 DisplayNameQueries.ToPlayerId(e.ActorPlayerId)
                             ),
@@ -442,8 +444,8 @@ internal sealed partial class EconomyReads(
                             payload?.TotalMonths,
                             payload?.CreditCost,
                             payload?.IsRenewal,
-                            payload?.IsVip,
-                        };
+                            payload?.IsVip
+                        );
                     })
                     .OrderByDescending(e => e.OccurredAt)
                     .ToList();
@@ -457,90 +459,62 @@ internal sealed partial class EconomyReads(
                         : 0d;
 
                 TimeSpan bucketSize = TimeWindow.BucketSize(since, until);
-                List<SubscriptionTimelinePoint> lifecycle = BuildSubscriptionTimeline(
+                List<ClubLifecyclePoint> lifecycle = BuildSubscriptionTimeline(
                     clubEvents.Select(e => (e.OccurredAt, e.Action)).ToList(),
                     since,
                     until,
                     bucketSize
                 );
 
-                var byMonths = enrichedEvents
+                List<ClubMonthsBreakdown> byMonths = enrichedEvents
                     .Where(e => e.Months is not null)
                     .GroupBy(e => e.Months!.Value)
-                    .Select(g => new
-                    {
-                        months = g.Key,
-                        total = g.Count(),
-                        purchases = g.Count(e => e.Action == "economy.hc.purchase"),
-                        renewals = g.Count(e => e.Action == "economy.hc.renew"),
-                        expired = g.Count(e => e.Action == "economy.hc.expired"),
-                    })
-                    .OrderBy(g => g.months)
+                    .Select(g => new ClubMonthsBreakdown(
+                        g.Key,
+                        g.Count(),
+                        g.Count(e => e.Action == "economy.hc.purchase"),
+                        g.Count(e => e.Action == "economy.hc.renew"),
+                        g.Count(e => e.Action == "economy.hc.expired")
+                    ))
+                    .OrderBy(g => g.Months)
                     .ToList();
 
-                var recentEvents = enrichedEvents
-                    .Take(30)
-                    .Select(e => new
-                    {
-                        e.OccurredAt,
-                        e.Action,
-                        e.actorPlayerId,
-                        e.actorPlayerName,
-                        e.Months,
-                        e.TotalMonths,
-                        e.CreditCost,
-                        e.IsRenewal,
-                        e.IsVip,
-                    })
-                    .ToList();
+                List<ClubSubscriptionEventRow> recentEvents = enrichedEvents.Take(30).ToList();
 
-                var topExpiring = activeSubscriptions
+                List<ClubExpiringSubscription> topExpiring = activeSubscriptions
                     .Where(s => s.ExpiresAt <= nowUtc.AddDays(14))
                     .OrderBy(s => s.ExpiresAt)
                     .Take(10)
-                    .Select(s => new
-                    {
-                        playerId = s.playerId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, s.playerId),
-                        type = s.type.ToString(),
-                        level = s.level,
-                        totalMonths = s.TotalMonths,
-                        expiresAt = s.ExpiresAt,
-                        remainingDays = Math.Round(
-                            Math.Max(0, (s.ExpiresAt - nowUtc).TotalDays),
-                            2
-                        ),
-                    })
+                    .Select(s => new ClubExpiringSubscription(
+                        s.playerId,
+                        DisplayNameQueries.ResolvePlayerName(playerNames, s.playerId),
+                        s.type.ToString(),
+                        s.level,
+                        s.TotalMonths,
+                        s.ExpiresAt,
+                        Math.Round(Math.Max(0, (s.ExpiresAt - nowUtc).TotalDays), 2)
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new { since, until },
-                    totals = new
-                    {
+                return new ClubSubscriptions(
+                    new ModerationWindow(since, until),
+                    new ClubSubscriptionTotals(
                         totalSubscriptions,
-                        activeSubscriptions = activeSubscriptions.Count,
-                        inactiveSubscriptions = inactiveCount,
+                        activeSubscriptions.Count,
+                        inactiveCount,
                         expiringIn7Days,
                         expiringIn30Days,
-                        activeRate,
-                    },
+                        activeRate
+                    ),
                     byType,
                     topExpiring,
-                    lifecycle = new
-                    {
-                        totals = new
-                        {
-                            purchases,
-                            renewals,
-                            expired,
-                            renewalShare,
-                        },
+                    new ClubSubscriptionLifecycle(
+                        new ClubLifecycleTotals(purchases, renewals, expired, renewalShare),
                         byMonths,
                         recentEvents,
-                        timeline = lifecycle,
-                    },
-                };
+                        lifecycle
+                    )
+                );
             },
             ct
         );
@@ -665,14 +639,6 @@ internal sealed partial class EconomyReads(
         string? Data
     );
 
-    private sealed record SubscriptionTimelinePoint(
-        string Bucket,
-        string Label,
-        int Purchases,
-        int Renewals,
-        int Expired
-    );
-
     private sealed record ClubSubscriptionPayload(
         int? Months,
         int? TotalMonths,
@@ -681,7 +647,7 @@ internal sealed partial class EconomyReads(
         bool? IsRenewal
     );
 
-    private static List<SubscriptionTimelinePoint> BuildSubscriptionTimeline(
+    private static List<ClubLifecyclePoint> BuildSubscriptionTimeline(
         IReadOnlyList<(DateTime OccurredAt, string Action)> events,
         DateTime since,
         DateTime until,
@@ -728,7 +694,7 @@ internal sealed partial class EconomyReads(
 
         return bucketMap
             .OrderBy(pair => pair.Key)
-            .Select(pair => new SubscriptionTimelinePoint(
+            .Select(pair => new ClubLifecyclePoint(
                 pair.Key.ToString("O"),
                 TimeWindow.TimelineLabel(pair.Key, bucketSize),
                 pair.Value.purchases,
