@@ -126,51 +126,12 @@ internal sealed partial class DashboardApiService(
         return bucket.ToString("yyyy/MM/dd");
     }
 
-    private static int? TryParseInt(JsonElement root, string propertyName)
-    {
-        if (!root.TryGetProperty(propertyName, out JsonElement property))
-        {
-            return null;
-        }
+    // The parsers live in JsonValues, which the subjects that have left this class use directly.
+    private static int? TryParseInt(JsonElement root, string propertyName) =>
+        JsonValues.Int(root, propertyName);
 
-        if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out int parsed))
-        {
-            return parsed;
-        }
-
-        if (
-            property.ValueKind == JsonValueKind.String
-            && int.TryParse(property.GetString(), out parsed)
-        )
-        {
-            return parsed;
-        }
-
-        return null;
-    }
-
-    private static bool? TryParseBool(JsonElement root, string propertyName)
-    {
-        if (!root.TryGetProperty(propertyName, out JsonElement property))
-        {
-            return null;
-        }
-
-        if (property.ValueKind == JsonValueKind.True || property.ValueKind == JsonValueKind.False)
-        {
-            return property.GetBoolean();
-        }
-
-        if (
-            property.ValueKind == JsonValueKind.String
-            && bool.TryParse(property.GetString(), out bool parsed)
-        )
-        {
-            return parsed;
-        }
-
-        return null;
-    }
+    private static bool? TryParseBool(JsonElement root, string propertyName) =>
+        JsonValues.Bool(root, propertyName);
 
     private static List<int> NormalizeIds(IEnumerable<long?> ids) =>
         ids.Select(ToPlayerId)

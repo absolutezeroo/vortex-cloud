@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -10,14 +11,20 @@ namespace Vortex.Dashboard.API.Operations;
 /// (never a direct DB write), which reloads the live offer cache after committing, and emits a
 /// durable audit event with the operator's reason — same contract as the catalog operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class TargetedOfferOperations(
+    OperationRunner runner,
+    ITargetedOfferAdminService targetedOfferAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
+
     public Task<OperationResult> CreateTargetedOfferAsync(
         CreateTargetedOfferRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.create",
             actor,
             request.Reason,
@@ -67,7 +74,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.update",
             actor,
             request.Reason,
@@ -118,7 +125,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.delete",
             actor,
             request.Reason,
@@ -144,7 +151,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.product.create",
             actor,
             request.Reason,
@@ -184,7 +191,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.product.update",
             actor,
             request.Reason,
@@ -224,7 +231,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.targeted_offer.product.delete",
             actor,
             request.Reason,

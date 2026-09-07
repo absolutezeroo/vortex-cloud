@@ -7,8 +7,11 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Observability.Configuration;
 using Vortex.Primitives.Observability;
 
 namespace Vortex.Dashboard.API.Api;
@@ -20,8 +23,15 @@ namespace Vortex.Dashboard.API.Api;
 /// <c>TargetedOfferPurchasedAuditHandler</c>), which carries offerId/identifier/quantity/creditCost/
 /// activityPointCost — same shape as <see cref="DashboardApiService.CatalogPurchases.cs"/>.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class TargetedOfferReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls,
+    IOptions<ObservabilityConfig> options
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly ObservabilityConfig _config = options.Value;
+
     /// <summary>Every targeted offer with its bundle size and lifetime purchase totals, ordered like
     /// the client sees them (sort order then id).</summary>
     public Task<object> TargetedOffersAsync(NameValueCollection query, CancellationToken ct) =>
@@ -147,7 +157,7 @@ internal sealed partial class DashboardApiService
                         p.furnitureName,
                         furnitureIconUrl = p.furnitureName is null
                             ? null
-                            : BuildFurniIconUrl(p.furnitureName),
+                            : _assetUrls.FurniIcon(p.furnitureName),
                         p.Quantity,
                     })
                     .ToList();
@@ -289,9 +299,9 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                DateTime until = ParseDateTime(query["until"]) ?? DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? until.AddDays(-30);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                DateTime until = TimeWindow.ParseDateTime(query["until"]) ?? DateTime.UtcNow;
+                DateTime since = TimeWindow.ParseDateTime(query["since"]) ?? until.AddDays(-30);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<(DateTime OccurredAt, string? Data)> events = await db
                     .AuditEvents.AsNoTracking()
@@ -317,18 +327,18 @@ internal sealed partial class DashboardApiService
                 long totalQuantity = purchases.Sum(p => (long)p.Quantity);
 
                 Dictionary<DateTime, (int count, long credits)> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = (0, 0L);
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach (TargetedOfferPurchasePayload p in purchases)
                 {
-                    DateTime bucket = ResolveCalendarBucket(p.OccurredAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(p.OccurredAt, granularity);
                     (int count, long credits) current = bucketMap.GetValueOrDefault(bucket);
                     bucketMap[bucket] = (current.count + 1, current.credits + p.CreditCost);
                 }
@@ -338,7 +348,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         purchaseCount = pair.Value.count,
                         creditsSpent = pair.Value.credits,
                     })
@@ -405,7 +415,7 @@ internal sealed partial class DashboardApiService
                                 : g.identifier
                         ),
                         furniIconUrl = offerFurniNames.TryGetValue(g.offerId, out string? furniName)
-                            ? BuildFurniIconUrl(furniName)
+                            ? _assetUrls.FurniIcon(furniName)
                             : null,
                         g.purchaseCount,
                         g.quantity,
@@ -473,9 +483,9 @@ internal sealed partial class DashboardApiService
             string identifier = root.TryGetProperty("identifier", out JsonElement idEl)
                 ? idEl.GetString() ?? string.Empty
                 : string.Empty;
-            int quantity = TryParseInt(root, "quantity") ?? 1;
-            int creditCost = TryParseInt(root, "creditCost") ?? 0;
-            int activityPointCost = TryParseInt(root, "activityPointCost") ?? 0;
+            int quantity = JsonValues.Int(root, "quantity") ?? 1;
+            int creditCost = JsonValues.Int(root, "creditCost") ?? 0;
+            int activityPointCost = JsonValues.Int(root, "activityPointCost") ?? 0;
 
             return new TargetedOfferPurchasePayload(
                 occurredAt,

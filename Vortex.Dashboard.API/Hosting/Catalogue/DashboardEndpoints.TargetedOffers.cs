@@ -22,39 +22,39 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.TargetedOffersAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, TargetedOfferReads reads, CancellationToken ct) =>
+                OkAsync(reads.TargetedOffersAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
         MapReadGet(
             app,
             ApiTargetedOffers + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.TargetedOffersStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, TargetedOfferReads reads, CancellationToken ct) =>
+                OkAsync(reads.TargetedOffersStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
         MapReadGet(
             app,
             ApiTargetedOffers + "/form-meta",
-            (DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.TargetedOfferFormMetaAsync(ct)),
+            (TargetedOfferReads reads, CancellationToken ct) =>
+                OkAsync(reads.TargetedOfferFormMetaAsync(ct)),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
         MapReadGet(
             app,
             ApiTargetedOffers + "/images",
-            (DashboardApiService api) => Results.Ok(api.TargetedOfferImages()),
+            (TargetedOfferReads reads) => Results.Ok(reads.TargetedOfferImages()),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
         MapReadGet(
             app,
             ApiTargetedOffers + "/{offerId:int}",
-            (int offerId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.TargetedOfferDetailAsync(offerId, ct)),
+            (int offerId, TargetedOfferReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.TargetedOfferDetailAsync(offerId, ct)),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
         );
@@ -68,7 +68,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateTargetedOfferRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -91,7 +91,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateTargetedOfferRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -114,7 +114,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteTargetedOfferRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -137,7 +137,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateTargetedOfferProductRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -160,7 +160,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateTargetedOfferProductRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -183,7 +183,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteTargetedOfferProductRequest body,
-                DashboardOperationsService ops,
+                TargetedOfferOperations ops,
                 CancellationToken ct
             ) =>
             {
