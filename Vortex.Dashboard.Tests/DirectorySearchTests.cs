@@ -174,7 +174,7 @@ public sealed class DirectorySearchTests
     /// Builds the service with only what this path uses.
     /// </summary>
     /// <remarks>
-    /// Seven of its ten dependencies are null on purpose: the search reads the database, asks
+    /// Six of its nine dependencies are null on purpose: the search reads the database, asks
     /// <see cref="DashboardAssetUrls"/> for an avatar and a furniture icon, and asks the session
     /// gateway who is online. Passing fakes for the rest would suggest they take part.
     /// </remarks>
@@ -196,7 +196,6 @@ public sealed class DirectorySearchTests
                 }
             ),
             new DashboardAssetUrls(Options.Create(new ObservabilityConfig())),
-            null!,
             null!,
             null!,
             null!,

@@ -25,22 +25,22 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiGamedata,
-            (DashboardApiService api) => Results.Ok(api.GamedataFiles()),
+            (GamedataReads reads) => Results.Ok(reads.GamedataFiles()),
             Capabilities.Dashboard.OpsGamedataManage,
             TagGamedata
         );
         MapReadGet(
             app,
             ApiGamedata + "/entries",
-            (HttpContext ctx, DashboardApiService api) =>
-                Results.Ok(api.GamedataEntries(ctx.QueryAsNameValues())),
+            (HttpContext ctx, GamedataReads reads) =>
+                Results.Ok(reads.GamedataEntries(ctx.QueryAsNameValues())),
             Capabilities.Dashboard.OpsGamedataManage,
             TagGamedata
         );
         MapReadGet(
             app,
             ApiGamedata + "/languages",
-            (DashboardApiService api) => Results.Ok(api.GamedataLanguages()),
+            (GamedataReads reads) => Results.Ok(reads.GamedataLanguages()),
             Capabilities.Dashboard.OpsGamedataManage,
             TagGamedata
         );
@@ -54,7 +54,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GamedataEntryRequest body,
-                DashboardOperationsService ops,
+                GamedataOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.File) || string.IsNullOrWhiteSpace(body.Key)
@@ -72,7 +72,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GamedataEntryDeleteRequest body,
-                DashboardOperationsService ops,
+                GamedataOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.File) || string.IsNullOrWhiteSpace(body.Key)
@@ -90,7 +90,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GamedataFurniRequest body,
-                DashboardOperationsService ops,
+                GamedataOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Kind) || string.IsNullOrWhiteSpace(body.Field)
@@ -108,7 +108,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GamedataLanguageRequest body,
-                DashboardOperationsService ops,
+                GamedataOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code)
@@ -126,7 +126,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GamedataLanguageRemoveRequest body,
-                DashboardOperationsService ops,
+                GamedataOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code)

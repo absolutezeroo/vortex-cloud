@@ -5,7 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
 using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -17,8 +19,15 @@ namespace Vortex.Dashboard.API.Api;
 /// <see cref="GamedataDocumentStore"/>. furnidata alone is 38 MB and 55 836 entries: sending it to a
 /// browser is not a slow page, it is a page that never renders.
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class GamedataReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls,
+    GamedataDocumentStore gamedata
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly GamedataDocumentStore _gamedata = gamedata;
+
     private const int GamedataPageSize = 50;
 
     /// <summary>The four files, with what a page needs to show and to write safely.</summary>
@@ -64,7 +73,7 @@ internal sealed partial class DashboardApiService
         string file = query["file"] ?? string.Empty;
         string? language = NullIfBlank(query["lang"]);
         string search = (query["search"] ?? string.Empty).Trim();
-        int page = Math.Max(1, ParseInt(query["page"], 1));
+        int page = Math.Max(1, QueryValues.Int(query["page"], 1));
 
         if (!GamedataDocumentStore.Files.ContainsKey(file))
         {
@@ -250,7 +259,7 @@ internal sealed partial class DashboardApiService
                         ydim = entry["ydim"]?.ToString() ?? string.Empty,
                         // Editing a furniture by class name alone means editing a name in a list of
                         // 55 836. The icon is how an operator knows they have the right one.
-                        iconUrl = BuildFurniIconUrl(classname),
+                        iconUrl = _assetUrls.FurniIcon(classname),
                     }
                 );
             }

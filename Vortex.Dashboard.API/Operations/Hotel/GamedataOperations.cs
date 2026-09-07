@@ -22,14 +22,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// row history, so the audit line plus the dated backup is the whole record of who changed what.
 /// </para>
 /// </remarks>
-internal sealed partial class DashboardOperationsService
+internal sealed class GamedataOperations(OperationRunner runner, GamedataDocumentStore gamedata)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly GamedataDocumentStore _gamedata = gamedata;
+
     public Task<OperationResult> SaveGamedataEntryAsync(
         GamedataEntryRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.gamedata.entry.save",
             actor,
             request.Reason,
@@ -71,7 +74,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.gamedata.entry.delete",
             actor,
             request.Reason,
@@ -105,7 +108,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.gamedata.furni.save",
             actor,
             request.Reason,
@@ -158,7 +161,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.gamedata.language.enable",
             actor,
             request.Reason,
@@ -225,7 +228,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.gamedata.language.disable",
             actor,
             request.Reason,
