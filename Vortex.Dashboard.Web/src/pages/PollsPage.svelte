@@ -27,6 +27,7 @@
   import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions';
   import { identity } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
   import type {
     PollDetail,
     PollListItem,
@@ -463,12 +464,12 @@
     );
   }
 
-  function pickRoom(item: { id: number; name: string }) {
+  function pickRoom(item: PickerRow) {
     if (roomPickerFor === 'new') {
-      newPoll.roomId = item.id;
+      newPoll.roomId = Number(item.id);
       newPoll.roomName = item.name;
     } else if (roomPickerFor === 'edit' && editPollForm) {
-      editPollForm.roomId = item.id;
+      editPollForm.roomId = Number(item.id);
       editPollForm.roomName = item.name;
     }
   }

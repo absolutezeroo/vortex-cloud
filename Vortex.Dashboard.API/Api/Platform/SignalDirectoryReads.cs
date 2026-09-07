@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Furniture;
@@ -36,7 +37,10 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     : DashboardReads(dbContextFactory)
 {
     /// <summary>Guilds, by name or id.</summary>
-    public Task<object> GroupsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> GroupsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.Groups.AsNoTracking(),
@@ -48,7 +52,10 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Habbicons, by code or id.</summary>
-    public Task<object> HabbiconsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> HabbiconsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.Habbicons.AsNoTracking().Where(h => h.Enabled),
@@ -60,7 +67,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Habbicon collections. The value a filter stores is the code, not the id.</summary>
-    public Task<object> HabbiconCollectionsDirectoryAsync(
+    public Task<DirectoryPage> HabbiconCollectionsDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -76,7 +83,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Catalogue offers, by localization id.</summary>
-    public Task<object> CatalogOffersDirectoryAsync(
+    public Task<DirectoryPage> CatalogOffersDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -91,7 +98,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Navigator flat categories.</summary>
-    public Task<object> NavigatorCategoriesDirectoryAsync(
+    public Task<DirectoryPage> NavigatorCategoriesDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -114,8 +121,11 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// awarded at least once, which is exactly the set a task can sensibly ask for: a code nobody
     /// has ever held would be a filter nobody can satisfy.
     /// </remarks>
-    public Task<object> BadgesDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<CodeDirectoryPage> BadgesDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<CodeDirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -143,23 +153,21 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = page.Select(code => new
-                    {
-                        id = code,
-                        value = code,
-                        name = code,
-                        description = (string?)null,
-                    })
+                List<CodeDirectoryRow> items = page.Select(code => new CodeDirectoryRow(
+                        code,
+                        code,
+                        code,
+                        null
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
+                return new CodeDirectoryPage(
+                    items.Count,
                     total,
                     offset,
-                    hasMore = offset + items.Count < total,
-                    items,
-                };
+                    offset + items.Count < total,
+                    items
+                );
             },
             ct
         );
@@ -171,8 +179,11 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// A species is not a row of its own: it is the distinct <c>PetType</c> across the palettes the
     /// hotel ships, which is what a task filtering on "a pet of species N" compares against.
     /// </remarks>
-    public Task<object> PetSpeciesDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<DirectoryPage> PetSpeciesDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<DirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -185,33 +196,23 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = types
+                List<DirectoryRow> items = types
                     .Where(t =>
                         term.Length == 0 || t.ToString().Contains(term, StringComparison.Ordinal)
                     )
-                    .Select(t => new
-                    {
-                        id = t,
-                        value = t.ToString(),
-                        name = $"Species {t}",
-                        description = (string?)null,
-                    })
+                    .Select(t => new DirectoryRow(t, t.ToString(), $"Species {t}", null))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
-                    total = items.Count,
-                    offset = 0,
-                    hasMore = false,
-                    items,
-                };
+                return new DirectoryPage(items.Count, items.Count, 0, false, items);
             },
             ct
         );
 
     /// <summary>Polls, by code. A filter stores the code, so that is what the row hands back.</summary>
-    public Task<object> PollsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> PollsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.Polls.AsNoTracking(),
@@ -223,7 +224,10 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Quizzes, by code.</summary>
-    public Task<object> QuizzesDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> QuizzesDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.Quizzes.AsNoTracking(),
@@ -241,13 +245,16 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// A campaign is not a row of its own — quests carry the code — so this is the distinct set,
     /// which is exactly what a filter on "a quest from campaign X" compares against.
     /// </remarks>
-    public Task<object> QuestCampaignsDirectoryAsync(
+    public Task<CodeDirectoryPage> QuestCampaignsDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) => DistinctCodesAsync(query, db => db.Quests.AsNoTracking().Select(q => q.CampaignCode), ct);
 
     /// <summary>Vouchers, by code.</summary>
-    public Task<object> VouchersDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> VouchersDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.Vouchers.AsNoTracking(),
@@ -259,7 +266,10 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Club gifts, by product code.</summary>
-    public Task<object> ClubGiftsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> ClubGiftsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.CatalogClubGifts.AsNoTracking(),
@@ -271,7 +281,10 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Collectibles-store offers, by product code.</summary>
-    public Task<object> NftStoreDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+    public Task<DirectoryPage> NftStoreDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
         PickerPageAsync(
             query,
             db => db.NftStoreOffers.AsNoTracking(),
@@ -283,7 +296,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         );
 
     /// <summary>Targeted offers, by identifier.</summary>
-    public Task<object> TargetedOffersDirectoryAsync(
+    public Task<DirectoryPage> TargetedOffersDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -308,7 +321,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// A thread id looks like a live id and is not: threads outlive the conversation, so "post on
     /// the announcements thread" is a task worth writing and a number nobody can be asked to recall.
     /// </remarks>
-    public Task<object> ForumThreadsDirectoryAsync(
+    public Task<DirectoryPage> ForumThreadsDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -330,7 +343,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// The distinct set is therefore the only honest list, and it is also the only useful one — an
     /// effect nobody has is a filter nobody satisfies.
     /// </remarks>
-    public Task<object> AvatarEffectsDirectoryAsync(
+    public Task<DirectoryPage> AvatarEffectsDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
@@ -349,11 +362,11 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// not a kind of sofa. Useful for a hand-written task about one landmark object, and shown with
     /// its room so two identical sofas can be told apart -- which an id alone never allows.
     /// </remarks>
-    public Task<object> PlacedFurnitureDirectoryAsync(
+    public Task<DirectoryPage> PlacedFurnitureDirectoryAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<DirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -389,35 +402,33 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items2 = page.Select(f => new
-                    {
-                        id = f.Id,
-                        value = f.Id.ToString(),
-                        name = f.Name,
-                        description = $"room #{f.RoomEntityId}",
-                    })
+                List<DirectoryRow> items2 = page.Select(f => new DirectoryRow(
+                        f.Id,
+                        f.Id.ToString(),
+                        f.Name,
+                        $"room #{f.RoomEntityId}"
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = items2.Count,
+                return new DirectoryPage(
+                    items2.Count,
                     total,
                     offset,
-                    hasMore = offset + items2.Count < total,
-                    items = items2,
-                };
+                    offset + items2.Count < total,
+                    items2
+                );
             },
             ct
         );
 
     /// <summary>Distinct numeric ids in circulation, named for a human.</summary>
-    private Task<object> DistinctNumbersAsync(
+    private Task<DirectoryPage> DistinctNumbersAsync(
         NameValueCollection query,
         Func<Database.Context.VortexDbContext, IQueryable<int>> source,
         Func<int, string> name,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<DirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -428,26 +439,13 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = ids.Where(v =>
+                List<DirectoryRow> items = ids.Where(v =>
                         term.Length == 0 || v.ToString().Contains(term, StringComparison.Ordinal)
                     )
-                    .Select(v => new
-                    {
-                        id = v,
-                        value = v.ToString(),
-                        name = name(v),
-                        description = (string?)null,
-                    })
+                    .Select(v => new DirectoryRow(v, v.ToString(), name(v), null))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
-                    total = items.Count,
-                    offset = 0,
-                    hasMore = false,
-                    items,
-                };
+                return new DirectoryPage(items.Count, items.Count, 0, false, items);
             },
             ct
         );
@@ -463,12 +461,12 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// A directory whose values are distinct strings rather than rows: a badge nobody was granted
     /// and a campaign no quest belongs to are both filters nobody can satisfy.
     /// </summary>
-    private Task<object> DistinctCodesAsync(
+    private Task<CodeDirectoryPage> DistinctCodesAsync(
         NameValueCollection query,
         Func<Database.Context.VortexDbContext, IQueryable<string>> source,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<CodeDirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -493,23 +491,21 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = page.Select(code => new
-                    {
-                        id = code,
-                        value = code,
-                        name = code,
-                        description = (string?)null,
-                    })
+                List<CodeDirectoryRow> items = page.Select(code => new CodeDirectoryRow(
+                        code,
+                        code,
+                        code,
+                        null
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
+                return new CodeDirectoryPage(
+                    items.Count,
                     total,
                     offset,
-                    hasMore = offset + items.Count < total,
-                    items,
-                };
+                    offset + items.Count < total,
+                    items
+                );
             },
             ct
         );
@@ -518,7 +514,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
     /// One paged, searchable picker query, so the row-backed directories are one expression each
     /// rather than a dozen copies of the same twenty lines.
     /// </summary>
-    private Task<object> PickerPageAsync<TEntity>(
+    private Task<DirectoryPage> PickerPageAsync<TEntity>(
         NameValueCollection query,
         Func<Database.Context.VortexDbContext, IQueryable<TEntity>> source,
         Func<IQueryable<TEntity>, string, int?, IQueryable<TEntity>> search,
@@ -526,7 +522,7 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
         Func<TEntity, PickerRow> project,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<DirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -550,24 +546,22 @@ internal sealed class SignalDirectoryReads(IDbContextFactory<VortexDbContext> db
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = page.Select(project)
-                    .Select(r => new
-                    {
-                        id = r.Id,
-                        value = r.Value ?? r.Id.ToString(),
-                        name = r.Name,
-                        description = r.Description,
-                    })
+                List<DirectoryRow> items = page.Select(project)
+                    .Select(r => new DirectoryRow(
+                        r.Id,
+                        r.Value ?? r.Id.ToString(),
+                        r.Name,
+                        r.Description
+                    ))
                     .ToList();
 
-                return new
-                {
-                    count = items.Count,
+                return new DirectoryPage(
+                    items.Count,
                     total,
                     offset,
-                    hasMore = offset + items.Count < total,
-                    items,
-                };
+                    offset + items.Count < total,
+                    items
+                );
             },
             ct
         );

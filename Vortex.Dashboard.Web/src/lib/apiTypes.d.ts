@@ -408,6 +408,21 @@ export interface ClubSubscriptions {
   lifecycle: ClubSubscriptionLifecycle;
 }
 
+export interface CodeDirectoryPage {
+  count: number;
+  total: number;
+  offset: number;
+  hasMore: boolean;
+  items: CodeDirectoryRow[];
+}
+
+export interface CodeDirectoryRow {
+  id: string;
+  value: string;
+  name: string;
+  description: string | null;
+}
+
 export interface CurrencyTypeRow {
   id: number;
   name: string | null;
@@ -417,6 +432,21 @@ export interface CurrencyTypeRow {
   startingAmount: number;
   walletRows: number;
   totalHeld: number;
+}
+
+export interface DirectoryPage {
+  count: number;
+  total: number;
+  offset: number;
+  hasMore: boolean;
+  items: DirectoryRow[];
+}
+
+export interface DirectoryRow {
+  id: number;
+  value: string;
+  name: string;
+  description: string | null;
 }
 
 export interface EconomyCurrencyTotals {

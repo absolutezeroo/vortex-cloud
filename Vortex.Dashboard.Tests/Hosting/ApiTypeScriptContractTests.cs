@@ -8,6 +8,7 @@ using System.Text;
 using FluentAssertions;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Xunit;
@@ -73,6 +74,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(ClubSubscriptions),
         typeof(RentableSpaceAuditPage),
         typeof(EconomyExtras),
+        typeof(DirectoryPage),
+        typeof(CodeDirectoryPage),
     ];
 
     [Fact]

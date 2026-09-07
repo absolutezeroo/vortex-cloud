@@ -28,6 +28,7 @@
   import Tabs from '../components/Tabs.svelte';
   import { Bot, MessageSquare, MapPin, Users, Hand } from '@lucide/svelte';
   import { t } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
   import type {
     BotDetail,
     BotListItem,
@@ -511,7 +512,7 @@
                       onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/hand-items/delete',
-                          { id: item.id },
+                          { id: Number(item.id) },
                           $t('bots.deleteHandItem'),
                           $t('bots.deleteHandItemSummary', { name: item.name })
                         )}
@@ -603,8 +604,8 @@
   <PickerModal
     kind="user"
     title={$t('bots.pickOwner')}
-    onSelect={(picked: PickedOwner) => {
-      owner = picked;
+    onSelect={(picked: PickerRow) => {
+      owner = { id: Number(picked.id), name: picked.name };
       pickingOwner = false;
       search();
     }}

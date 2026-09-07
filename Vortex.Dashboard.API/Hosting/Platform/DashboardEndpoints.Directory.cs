@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Platform;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
@@ -70,7 +71,7 @@ internal static partial class DashboardEndpoints
         // The directories behind the reward-track filter pickers. Each replaces an id or a code an
         // operator was expected to type from memory into a filter that saves cleanly and then never
         // matches -- the failure this subsystem exists to prevent, reappearing at the last step.
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/groups",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -78,7 +79,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.SocialRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/habbicons",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -86,7 +87,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.HabbiconsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/habbicon-collections",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -96,7 +97,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.HabbiconsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/catalog-offers",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -104,7 +105,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/navigator-categories",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -114,7 +115,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.NavigatorRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<CodeDirectoryPage>(
             app,
             ApiDirectory + "/badges",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -122,7 +123,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/pet-species",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -130,7 +131,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PetsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/polls",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -138,7 +139,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PollsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/quizzes",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -146,7 +147,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.QuestsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<CodeDirectoryPage>(
             app,
             ApiDirectory + "/quest-campaigns",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -154,7 +155,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.QuestsRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/vouchers",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -162,7 +163,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.EconomyRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/club-gifts",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -170,7 +171,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/nft-store",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -178,7 +179,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CollectiblesRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/targeted-offers",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -186,7 +187,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/forum-threads",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -194,7 +195,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.SocialRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/avatar-effects",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>
@@ -202,7 +203,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<DirectoryPage>(
             app,
             ApiDirectory + "/placed-furniture",
             (HttpContext ctx, SignalDirectoryReads signalDirectory, CancellationToken ct) =>

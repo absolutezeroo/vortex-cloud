@@ -71,14 +71,21 @@ export const DIRECTORIES: Record<string, Directory> = {
 /**
  * One row a directory returns.
  *
- * Every directory answers with an id and a name -- that is what makes them one picker rather than
- * seventeen. Everything below it is a layout extra: the directory whose row component draws it
- * sends it, and the other nineteen do not, which is why each is optional here rather than split
- * into a type per directory that the shared picker would then have to choose between.
+ * Every directory answers with an id, a value and a name -- that is what makes them one picker
+ * rather than twenty. The id is a number for the directories backed by a table and a string for the
+ * two built from distinct codes, where the code IS the id because there is no row behind it; the
+ * generated DirectoryRow and CodeDirectoryRow say which is which per endpoint, and a caller that
+ * needs a number coerces.
+ *
+ * Everything below is a layout extra: the directory whose row component draws it sends it, and the
+ * others do not. The ones that are still optional-and-untyped come from DirectoryReads, which has
+ * not been converted yet -- when it is, they come from the contract like the four above.
  */
 export type PickerRow = {
-  id: number;
+  id: number | string;
   name: string;
+  /** What a filter stores when this row is picked. Absent on the pickers that predate signals. */
+  value?: string;
   /** plain */
   description?: string | null;
   /** player */

@@ -10,6 +10,7 @@
   import Pagination from '../components/Pagination.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { t } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
   import type { ChatlogEntry, ChatlogPage, ChatlogWindow } from '../lib/apiTypes';
 
   let text = $state('');
@@ -227,8 +228,8 @@
   <PickerModal
     kind="user"
     title={$t('chatlogs.pickPlayer')}
-    onSelect={(picked: PickedTarget) => {
-      player = { id: picked.id, name: picked.name };
+    onSelect={(picked: PickerRow) => {
+      player = { id: Number(picked.id), name: picked.name };
       picking = null;
     }}
     onClose={() => (picking = null)}
@@ -237,8 +238,8 @@
   <PickerModal
     kind="room"
     title={$t('chatlogs.pickRoom')}
-    onSelect={(picked: PickedTarget) => {
-      room = { id: picked.id, name: picked.name };
+    onSelect={(picked: PickerRow) => {
+      room = { id: Number(picked.id), name: picked.name };
       picking = null;
     }}
     onClose={() => (picking = null)}

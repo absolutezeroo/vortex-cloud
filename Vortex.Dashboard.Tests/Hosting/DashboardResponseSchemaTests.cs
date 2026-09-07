@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Hosting;
@@ -69,6 +70,9 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/economy/subscriptions", typeof(ClubSubscriptions)),
         ("/api/v1/economy/extras", typeof(EconomyExtras)),
         ("/api/v1/rentable-spaces/activity", typeof(RentableSpaceAuditPage)),
+        ("/api/v1/directory/groups", typeof(DirectoryPage)),
+        ("/api/v1/directory/badges", typeof(CodeDirectoryPage)),
+        ("/api/v1/directory/quest-campaigns", typeof(CodeDirectoryPage)),
     ];
 
     [Fact]

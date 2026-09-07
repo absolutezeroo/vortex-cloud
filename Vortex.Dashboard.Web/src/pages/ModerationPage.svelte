@@ -13,13 +13,13 @@
   import { Hash, Activity, TriangleAlert, Timer } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session';
   import { t, translate } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
   import type { ModerationStats } from '../lib/apiTypes';
 
   /** Which of the three filters the picker is filling. */
   type PickerTarget = 'actor' | 'target' | 'room';
 
   /** A row the picker hands back, whether it is a player or a room. */
-  type PickedRow = { id: number; name: string };
 
   /** One slice of the action pie, already turned into degrees. */
   type PieSegment = {
@@ -590,8 +590,8 @@
     {#if picking === 'actor'}
       <PickerModal
         kind="user"
-        onSelect={(item: PickedRow) => {
-          actor = String(item.id);
+        onSelect={(item: PickerRow) => {
+          actor = String(Number(item.id));
           actorName = item.name;
           picking = null;
         }}
@@ -601,8 +601,8 @@
     {#if picking === 'target'}
       <PickerModal
         kind="user"
-        onSelect={(item: PickedRow) => {
-          target = String(item.id);
+        onSelect={(item: PickerRow) => {
+          target = String(Number(item.id));
           targetName = item.name;
           picking = null;
         }}
@@ -612,8 +612,8 @@
     {#if picking === 'room'}
       <PickerModal
         kind="room"
-        onSelect={(item: PickedRow) => {
-          room = String(item.id);
+        onSelect={(item: PickerRow) => {
+          room = String(Number(item.id));
           roomName = item.name;
           picking = null;
         }}

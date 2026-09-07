@@ -12,13 +12,13 @@
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import { t, type Translator } from '../lib/i18n';
+  import type { PickerRow } from '../lib/pickers/directories';
   import type { AuditEntry, AuditPage } from '../lib/apiTypes';
 
   /** Which of the two player filters the picker is filling. */
   type PickerTarget = 'actor' | 'target';
 
   /** A row the user picker hands back. */
-  type PickedPlayer = { id: number; name: string };
 
   const categoryOptions = [
     '',
@@ -308,8 +308,8 @@
     {#if picking === 'actor'}
       <PickerModal
         kind="user"
-        onSelect={(item: PickedPlayer) => {
-          actor = String(item.id);
+        onSelect={(item: PickerRow) => {
+          actor = String(Number(item.id));
           actorName = item.name;
           picking = null;
         }}
@@ -319,8 +319,8 @@
     {#if picking === 'target'}
       <PickerModal
         kind="user"
-        onSelect={(item: PickedPlayer) => {
-          target = String(item.id);
+        onSelect={(item: PickerRow) => {
+          target = String(Number(item.id));
           targetName = item.name;
           picking = null;
         }}
