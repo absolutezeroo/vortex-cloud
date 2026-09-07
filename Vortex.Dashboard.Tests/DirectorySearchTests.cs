@@ -11,12 +11,12 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Players;
-using Vortex.Primitives.Observability;
-using Vortex.Primitives.Players.Enums;
-using Vortex.Primitives.Rooms.Enums;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Enums;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Tests.Support;
 using Xunit;
 

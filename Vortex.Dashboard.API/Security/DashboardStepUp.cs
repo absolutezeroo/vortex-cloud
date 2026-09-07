@@ -4,11 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Hosting;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
 using Vortex.Primitives.Authentication;
-
-using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Security;
 

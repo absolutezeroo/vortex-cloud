@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
-
 using Vortex.Primitives.Furniture.Enums;
 
 namespace Vortex.Dashboard.API.Infrastructure;
@@ -236,6 +235,7 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             ? uri.GetLeftPart(UriPartial.Authority)
             : null;
     }
+
     /// <summary>
     /// The image for a catalogue product, which is a different asset per product type.
     /// </summary>
@@ -265,5 +265,4 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
 
         return furnitureName is null ? null : FurniIcon(furnitureName);
     }
-
 }

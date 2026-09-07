@@ -35,6 +35,7 @@ internal sealed class CatalogOperations(OperationRunner runner, ICatalogAdminSer
 {
     private readonly OperationRunner _runner = runner;
     private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
+
     public Task<OperationResult> CreateCatalogPageAsync(
         CreateCatalogPageRequest request,
         string actor,

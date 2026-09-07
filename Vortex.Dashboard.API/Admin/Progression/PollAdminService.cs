@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Dashboard.API.Admin.Rules;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
-using Vortex.Dashboard.API.Admin.Rules;
 
 namespace Vortex.Dashboard.API.Admin.Progression;
 

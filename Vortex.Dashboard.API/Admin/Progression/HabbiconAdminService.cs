@@ -11,8 +11,8 @@ using Vortex.Database.Entities.Habbicons;
 using Vortex.Primitives.Habbicons;
 using Vortex.Primitives.Habbicons.Admin;
 using Vortex.Primitives.Habbicons.Snapshots;
-using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.Dashboard.API.Admin.Progression;
 

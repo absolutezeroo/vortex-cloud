@@ -49,8 +49,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/currency-types",
-            (CatalogReads api, CancellationToken ct) =>
-                OkAsync(api.CatalogCurrencyTypesAsync(ct)),
+            (CatalogReads api, CancellationToken ct) => OkAsync(api.CatalogCurrencyTypesAsync(ct)),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
         );

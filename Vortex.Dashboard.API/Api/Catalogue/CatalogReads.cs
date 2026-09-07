@@ -49,6 +49,7 @@ internal sealed class CatalogReads(
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly ObservabilityConfig _config = options.Value;
+
     /// <summary>Pages at one level of one catalog tree. <c>parentId</c> omitted/blank means the root
     /// level (pages with no parent) of the given <c>catalogType</c> (0=Normal, 1=BuildersClub).</summary>
     public Task<object> CatalogPagesAsync(NameValueCollection query, CancellationToken ct)

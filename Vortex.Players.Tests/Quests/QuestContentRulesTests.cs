@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Vortex.Dashboard.API.Admin.Rules;
 using Vortex.Primitives.Quests.Admin;
 using Vortex.Progression.Grains;
 using Xunit;
-using Vortex.Dashboard.API.Admin.Rules;
 
 namespace Vortex.Players.Tests.Quests;
 

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Admin.Hotel;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
 using Vortex.Primitives.Content;
-using Vortex.Dashboard.API.Admin.Hotel;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests;

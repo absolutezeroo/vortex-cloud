@@ -39,7 +39,6 @@ public sealed class ProgressionModule : IHostPluginModule
             sp.GetRequiredService<AccountLevelProvider>()
         );
 
-
         // The interest gate for the three signal consumers. Singletons rather than the consumers
         // themselves, because handlers are not services: the feature processor builds one per
         // invocation, so there would be nothing for the gate to hold. Each publishes the keys of its

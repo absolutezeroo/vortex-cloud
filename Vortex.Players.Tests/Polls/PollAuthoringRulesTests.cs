@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using FluentAssertions;
+using Vortex.Dashboard.API.Admin.Rules;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
 using Vortex.Progression.Grains;
 using Xunit;
-using Vortex.Dashboard.API.Admin.Rules;
 
 namespace Vortex.Players.Tests.Polls;
 

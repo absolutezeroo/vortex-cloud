@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Dashboard.API.Admin.Rules;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Orleans;
@@ -13,7 +14,6 @@ using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
-using Vortex.Dashboard.API.Admin.Rules;
 
 namespace Vortex.Dashboard.API.Admin.Progression;
 
