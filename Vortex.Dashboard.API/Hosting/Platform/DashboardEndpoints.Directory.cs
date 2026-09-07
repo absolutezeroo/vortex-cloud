@@ -32,7 +32,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
-        MapReadGet(
+        MapReadGet<PlayerDirectoryPage>(
             app,
             ApiDirectory + "/players",
             (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -42,7 +42,7 @@ internal static partial class DashboardEndpoints
         );
         // Batch avatar-head resolver (?ids=1,2,3) so every surface that shows a player can render the
         // real head via lib/avatars.js. Users without PlayersRead simply keep the plain name.
-        MapReadGet(
+        MapReadGet<AvatarBatch>(
             app,
             ApiDirectory + "/avatars",
             (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -52,7 +52,7 @@ internal static partial class DashboardEndpoints
         );
         // Room search for the shared picker, so a surface that pins something to a room hands back
         // an id the operator picked rather than typed.
-        MapReadGet(
+        MapReadGet<RoomDirectoryPage>(
             app,
             ApiDirectory + "/rooms",
             (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>
@@ -60,7 +60,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagDirectory
         );
-        MapReadGet(
+        MapReadGet<FurnitureDirectoryPage>(
             app,
             ApiDirectory + "/furniture",
             (HttpContext ctx, DirectoryReads reads, CancellationToken ct) =>

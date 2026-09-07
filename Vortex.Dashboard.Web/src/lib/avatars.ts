@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { apiGet } from './api';
 import { isPermissionDeniedError } from './permissions';
+import type { AvatarBatch } from './apiTypes';
 
 // Session cache of player id -> avatar-head URL (or null when the player has no figure / can't be
 // resolved). Every place that shows a player (EntityLink) asks for its head through resolveAvatar();
@@ -25,7 +26,7 @@ async function flush() {
 
   const next = new Map(get(avatarCache));
   try {
-    const data = await apiGet<{ items?: { id: number; avatarUrl?: string | null }[] }>(
+    const data = await apiGet<AvatarBatch>(
       `/api/v1/directory/avatars?ids=${ids.join(',')}`,
     );
     for (const item of data.items || []) {

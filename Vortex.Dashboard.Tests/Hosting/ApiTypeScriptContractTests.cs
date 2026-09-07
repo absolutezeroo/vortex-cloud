@@ -76,6 +76,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(EconomyExtras),
         typeof(DirectoryPage),
         typeof(CodeDirectoryPage),
+        typeof(PlayerDirectoryPage),
+        typeof(RoomDirectoryPage),
+        typeof(FurnitureDirectoryPage),
+        typeof(AvatarBatch),
     ];
 
     [Fact]

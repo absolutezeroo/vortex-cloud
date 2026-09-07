@@ -108,6 +108,15 @@ export interface AuditPage {
   items: AuditEntry[];
 }
 
+export interface AvatarBatch {
+  items: AvatarBatchRow[];
+}
+
+export interface AvatarBatchRow {
+  id: number;
+  avatarUrl: string | null;
+}
+
 export interface BotDetail {
   id: number;
   name: string;
@@ -556,6 +565,28 @@ export interface ForumThreadSummary {
   authorName: string | null;
 }
 
+export interface FurnitureDirectoryPage {
+  count: number;
+  total: number;
+  offset: number;
+  hasMore: boolean;
+  items: FurnitureDirectoryRow[];
+}
+
+export interface FurnitureDirectoryRow {
+  id: number;
+  spriteId: number;
+  name: string;
+  logic: string;
+  type: string;
+  category: string;
+  width: number;
+  length: number;
+  canTrade: boolean;
+  canSell: boolean;
+  iconUrl: string | null;
+}
+
 export interface GroupActivityEvent {
   occurredAt: string;
   action: string;
@@ -811,6 +842,22 @@ export interface PetTypeCount {
   count: number;
 }
 
+export interface PlayerDirectoryPage {
+  count: number;
+  total: number;
+  offset: number;
+  hasMore: boolean;
+  online: number;
+  items: PlayerDirectoryRow[];
+}
+
+export interface PlayerDirectoryRow {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  online: boolean;
+}
+
 export interface PollChoiceDetail {
   id: number;
   value: string;
@@ -991,6 +1038,23 @@ export interface ReportWindow {
   since: string;
   until: string;
   granularity: string;
+}
+
+export interface RoomDirectoryPage {
+  count: number;
+  total: number;
+  offset: number;
+  hasMore: boolean;
+  items: RoomDirectoryRow[];
+}
+
+export interface RoomDirectoryRow {
+  id: number;
+  name: string;
+  ownerName: string | null;
+  usersNow: number;
+  playersMax: number;
+  lastActive: string;
 }
 
 export interface SocialForums {

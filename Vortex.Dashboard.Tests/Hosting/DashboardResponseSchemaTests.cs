@@ -73,6 +73,10 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/directory/groups", typeof(DirectoryPage)),
         ("/api/v1/directory/badges", typeof(CodeDirectoryPage)),
         ("/api/v1/directory/quest-campaigns", typeof(CodeDirectoryPage)),
+        ("/api/v1/directory/players", typeof(PlayerDirectoryPage)),
+        ("/api/v1/directory/rooms", typeof(RoomDirectoryPage)),
+        ("/api/v1/directory/furniture", typeof(FurnitureDirectoryPage)),
+        ("/api/v1/directory/avatars", typeof(AvatarBatch)),
     ];
 
     [Fact]

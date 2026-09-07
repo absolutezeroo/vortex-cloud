@@ -1,23 +1,3 @@
-/**
- * Every directory the shared picker can browse, one entry each.
- *
- * PickerModal used to hold this itself, and it grew into a component that knew seventeen URLs, the
- * sort vocabulary of each, and four different row layouts in one `{#if kind === ...}` chain. That
- * is how a kind shipped listed in the chain and missing from the URL map: the fallback quietly
- * served the player directory, so a guild picker looked like it worked.
- *
- * Now the shell knows none of it. Adding a directory is one entry here and, only if it needs a
- * layout that does not exist yet, one row component.
- *
- * @typedef {Object} Directory
- * @property {string} endpoint       Where the rows come from.
- * @property {string} row            Which row component renders one: see components/pickers.
- * @property {string[]} [sorts]      The sort vocabulary the server accepts. Omitted means it orders
- *                                   itself, and the sort control is hidden rather than left dead.
- * @property {string} [filter]       An extra filter control this directory supports.
- */
-
-/** @type {Record<string, Directory>} */
 /** One picker directory: where its rows come from and how they are drawn. */
 export type Directory = {
   endpoint: string;
@@ -69,22 +49,21 @@ export const DIRECTORIES: Record<string, Directory> = {
 };
 
 /**
- * One row a directory returns.
+ * One row a directory returns, as the shared picker sees it.
  *
- * Every directory answers with an id, a value and a name -- that is what makes them one picker
- * rather than twenty. The id is a number for the directories backed by a table and a string for the
- * two built from distinct codes, where the code IS the id because there is no row behind it; the
- * generated DirectoryRow and CodeDirectoryRow say which is which per endpoint, and a caller that
- * needs a number coerces.
+ * Twenty endpoints answer this component and the server now names all five of their row shapes --
+ * DirectoryRow, CodeDirectoryRow, PlayerDirectoryRow, RoomDirectoryRow, FurnitureDirectoryRow, all
+ * in apiTypes. They are not one type and cannot be intersected into one: a table-backed directory
+ * sends a numeric id and the two built from distinct codes send the code itself, so `id` is the one
+ * field where the five genuinely disagree. This is the reading view over all of them -- id and name
+ * always, and each layout extra optional because only the directory that draws it sends it.
  *
- * Everything below is a layout extra: the directory whose row component draws it sends it, and the
- * others do not. The ones that are still optional-and-untyped come from DirectoryReads, which has
- * not been converted yet -- when it is, they come from the contract like the four above.
+ * A caller that needs a numeric id coerces, because the picker cannot know which directory answered.
  */
 export type PickerRow = {
   id: number | string;
   name: string;
-  /** What a filter stores when this row is picked. Absent on the pickers that predate signals. */
+  /** What a filter stores when this row is picked. Only the signal directories send one. */
   value?: string;
   /** plain */
   description?: string | null;

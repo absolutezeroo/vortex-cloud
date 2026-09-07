@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
@@ -1193,11 +1194,11 @@ internal sealed class DirectoryReads(
             ct
         );
 
-    public Task<object> PlayersAsync(NameValueCollection query, CancellationToken ct)
+    public Task<PlayerDirectoryPage> PlayersAsync(NameValueCollection query, CancellationToken ct)
     {
         HashSet<int> online = _sessionGateway.GetOnlinePlayerIds().Select(p => p.Value).ToHashSet();
 
-        return QueryAsync<object>(
+        return QueryAsync<PlayerDirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -1285,40 +1286,39 @@ internal sealed class DirectoryReads(
                     rows = rows.Where(p => online.Contains(p.Id)).ToList();
                 }
 
-                var items = rows.Select(p => new
-                    {
-                        id = p.Id,
-                        name = p.Name,
-                        avatarUrl = _assetUrls.AvatarImage(p.Figure),
-                        online = online.Contains(p.Id),
-                    })
+                List<PlayerDirectoryRow> items = rows.Select(p => new PlayerDirectoryRow(
+                        p.Id,
+                        p.Name,
+                        _assetUrls.AvatarImage(p.Figure),
+                        online.Contains(p.Id)
+                    ))
                     .ToList();
 
                 // Online-first is the browsing default; an explicit sort is the operator overriding
                 // it, and re-sorting here would silently undo what they asked for.
                 items = (query["sort"] ?? string.Empty) switch
                 {
-                    "id" => items.OrderBy(p => p.id).ToList(),
-                    "idDesc" => items.OrderByDescending(p => p.id).ToList(),
-                    "name" => items.OrderBy(p => p.name, StringComparer.OrdinalIgnoreCase).ToList(),
+                    "id" => items.OrderBy(p => p.Id).ToList(),
+                    "idDesc" => items.OrderByDescending(p => p.Id).ToList(),
+                    "name" => items.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList(),
                     _ => items
-                        .OrderByDescending(p => p.online)
-                        .ThenBy(p => p.name, StringComparer.OrdinalIgnoreCase)
+                        .OrderByDescending(p => p.Online)
+                        .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
                         .ToList(),
                 };
 
-                return new
-                {
-                    count = items.Count,
+                return new PlayerDirectoryPage(
+                    items.Count,
                     total,
                     offset,
                     // The online filter drops rows after the projection, so the last page can come
                     // back short; comparing against the unfiltered total would offer a "Load more"
                     // that returns nothing. A short page is the end of the list.
-                    hasMore = items.Count == limit && offset + items.Count < total,
-                    online = online.Count,
-                    items,
-                };
+                    items.Count == limit
+                        && offset + items.Count < total,
+                    online.Count,
+                    items
+                );
             },
             ct
         );
@@ -1329,8 +1329,11 @@ internal sealed class DirectoryReads(
     /// term browses the most recently active rooms. Exists so a surface that pins something to a room
     /// (a survey, for one) can hand back an id the operator never had to look up by hand.
     /// </summary>
-    public Task<object> RoomsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<RoomDirectoryPage> RoomsDirectoryAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<RoomDirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -1350,29 +1353,27 @@ internal sealed class DirectoryReads(
 
                 int total = await rooms.CountAsync(ct).ConfigureAwait(false);
 
-                var items = await OrderRooms(rooms, query["sort"])
+                List<RoomDirectoryRow> items = await OrderRooms(rooms, query["sort"])
                     .Skip(offset)
                     .Take(limit)
-                    .Select(r => new
-                    {
-                        id = r.Id,
-                        name = r.Name,
-                        ownerName = r.PlayerEntity != null ? r.PlayerEntity.Name : null,
-                        usersNow = r.UsersNow,
+                    .Select(r => new RoomDirectoryRow(
+                        r.Id,
+                        r.Name,
+                        r.PlayerEntity != null ? r.PlayerEntity.Name : null,
+                        r.UsersNow,
                         r.PlayersMax,
-                        r.LastActive,
-                    })
+                        r.LastActive
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    count = items.Count,
+                return new RoomDirectoryPage(
+                    items.Count,
                     total,
                     offset,
-                    hasMore = offset + items.Count < total,
-                    items,
-                };
+                    offset + items.Count < total,
+                    items
+                );
             },
             ct
         );
@@ -1385,7 +1386,7 @@ internal sealed class DirectoryReads(
     /// <c>lib/avatars.js</c> and caches the result. A player with no figure yields a null url (the UI
     /// falls back to a neutral head), and the id cap keeps a single request bounded.
     /// </summary>
-    public Task<object> AvatarsAsync(NameValueCollection query, CancellationToken ct)
+    public Task<AvatarBatch> AvatarsAsync(NameValueCollection query, CancellationToken ct)
     {
         List<int> ids = (query["ids"] ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -1398,10 +1399,10 @@ internal sealed class DirectoryReads(
 
         if (ids.Count == 0)
         {
-            return Task.FromResult<object>(new { items = Array.Empty<object>() });
+            return Task.FromResult(new AvatarBatch([]));
         }
 
-        return QueryAsync<object>(
+        return QueryAsync<AvatarBatch>(
             async db =>
             {
                 var rows = await db
@@ -1411,24 +1412,23 @@ internal sealed class DirectoryReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = rows.Select(p => new
-                    {
-                        id = p.Id,
-                        avatarUrl = _assetUrls.AvatarImage(p.Figure),
-                    })
+                List<AvatarBatchRow> items = rows.Select(p => new AvatarBatchRow(
+                        p.Id,
+                        _assetUrls.AvatarImage(p.Figure)
+                    ))
                     .ToList();
 
-                return new { items };
+                return new AvatarBatch(items);
             },
             ct
         );
     }
 
-    public Task<object> FurnitureDefinitionsAsync(
+    public Task<FurnitureDirectoryPage> FurnitureDefinitionsAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<FurnitureDirectoryPage>(
             async db =>
             {
                 string term = (query["q"] ?? string.Empty).Trim();
@@ -1486,31 +1486,29 @@ internal sealed class DirectoryReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = rows.Select(f => new
-                    {
-                        id = f.Id,
-                        spriteId = f.SpriteId,
-                        name = f.Name,
-                        logic = f.Logic,
-                        type = f.type,
-                        category = f.category,
-                        width = f.Width,
-                        length = f.Length,
-                        canTrade = f.CanTrade,
-                        canSell = f.CanSell,
-                        iconUrl = _assetUrls.FurniIcon(f.Name),
-                    })
+                List<FurnitureDirectoryRow> items = rows.Select(f => new FurnitureDirectoryRow(
+                        f.Id,
+                        f.SpriteId,
+                        f.Name,
+                        f.Logic,
+                        f.type,
+                        f.category,
+                        f.Width,
+                        f.Length,
+                        f.CanTrade,
+                        f.CanSell,
+                        _assetUrls.FurniIcon(f.Name)
+                    ))
                     .ToList();
 
                 // hasMore rather than a page count: the picker appends, it never jumps.
-                return new
-                {
-                    count = items.Count,
+                return new FurnitureDirectoryPage(
+                    items.Count,
                     total,
                     offset,
-                    hasMore = offset + items.Count < total,
-                    items,
-                };
+                    offset + items.Count < total,
+                    items
+                );
             },
             ct
         );
