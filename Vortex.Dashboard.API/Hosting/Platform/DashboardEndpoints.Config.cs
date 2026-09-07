@@ -10,7 +10,7 @@ namespace Vortex.Dashboard.API.Hosting;
 /// <summary>
 /// Server-config editor surface: read the known-key catalog with live values, and set a single key.
 /// The write is gated to a known key and validated against its declared kind server-side (see
-/// <c>DashboardOperationsService.Config.cs</c>); the grain applies it write-through so the change is
+/// <see cref="Operations.ConfigOperations"/>); the grain applies it write-through so the change is
 /// live for every reader without an emulator restart.
 /// </summary>
 internal static partial class DashboardEndpoints
@@ -23,7 +23,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiConfig,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.ConfigListAsync(ct)),
+            (ConfigReads reads, CancellationToken ct) => OkAsync(reads.ConfigListAsync(ct)),
             Capabilities.Dashboard.ConfigRead,
             TagConfig
         );
@@ -37,7 +37,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 SetConfigRequest body,
-                DashboardOperationsService ops,
+                ConfigOperations ops,
                 CancellationToken ct
             ) =>
             {

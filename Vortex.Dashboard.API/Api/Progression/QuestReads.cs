@@ -13,7 +13,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read + analytics surface for quests. The admin CRUD lives in
-/// <c>DashboardOperationsService.Quests.cs</c>; here we only read. Completion analytics are
+/// <see cref="Operations.QuestOperations"/>; here we only read. Completion analytics are
 /// aggregated from the <c>player_quests</c> table (there is no separate quest-completion audit
 /// trail), keyed on each completed row's <c>CompletedAt</c>.
 /// </summary>

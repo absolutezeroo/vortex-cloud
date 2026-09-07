@@ -215,7 +215,6 @@ internal sealed class DashboardWebHost(
     [
         typeof(DashboardApiService),
         typeof(DashboardMonitoringReads),
-        typeof(DashboardOperationsService),
         // Every subject that has left the two services above for classes of its own has to be listed
         // here as well — a route parameter this list does not name is taken for a request body, and
         // the failure is at startup, for the whole dashboard, not at that route.
@@ -258,6 +257,10 @@ internal sealed class DashboardWebHost(
         typeof(PrivacyOperations),
         typeof(ModerationOperations),
         typeof(RoomOperations),
+        typeof(CurrencyOperations),
+        typeof(VouchersOperations),
+        typeof(ConfigReads),
+        typeof(ConfigOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),
@@ -714,7 +717,7 @@ internal sealed class DashboardWebHost(
         );
 
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
-        // DashboardOperationsService (with correlation id), so for operation routes only failures are
+        // the operations classes (with correlation id), so for operation routes only failures are
         // logged here to avoid duplicate records.
         app.Use(
             async (ctx, next) =>

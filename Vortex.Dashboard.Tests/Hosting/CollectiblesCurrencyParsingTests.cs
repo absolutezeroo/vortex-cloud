@@ -19,7 +19,7 @@ public sealed class CollectiblesCurrencyParsingTests
     [InlineData("Emeralds", CurrencyType.Emeralds)]
     public void AcceptsTheTwoCollectiblesCurrencies(string value, CurrencyType expected)
     {
-        DashboardOperationsService
+        CurrencyOperations
             .TryParseCollectiblesCurrency(value, out CurrencyType currency)
             .Should()
             .BeTrue();
@@ -35,6 +35,6 @@ public sealed class CollectiblesCurrencyParsingTests
     [InlineData(null)]
     public void RefusesEverythingElse(string? value)
     {
-        DashboardOperationsService.TryParseCollectiblesCurrency(value, out _).Should().BeFalse();
+        CurrencyOperations.TryParseCollectiblesCurrency(value, out _).Should().BeFalse();
     }
 }

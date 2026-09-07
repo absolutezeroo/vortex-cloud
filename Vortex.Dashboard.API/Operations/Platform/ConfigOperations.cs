@@ -15,14 +15,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// before it lands — an unknown key or an unparseable value is surfaced to the operator as a
 /// domain-validation failure rather than a generic fault.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class ConfigOperations(OperationRunner runner, IGrainFactory grainFactory)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public Task<OperationResult> SetConfigAsync(
         SetConfigRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.config.set",
             actor,
             request.Reason,

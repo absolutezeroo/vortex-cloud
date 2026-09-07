@@ -6,7 +6,7 @@
 //
 // Append the line it prints to the tracking table in the rulebook after each domain extraction.
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = 'Vortex.Dashboard.API';
@@ -34,7 +34,10 @@ function publicMethods(dir, className) {
 
 /** Primary-constructor parameters, i.e. what the class admits it needs (§3). */
 function constructorDeps(file, className) {
-  const text = readFileSync(join(ROOT, file), 'utf8');
+  const path = join(ROOT, file);
+  // A god service that no longer exists is the goal, not an error.
+  if (!existsSync(path)) return 0;
+  const text = readFileSync(path, 'utf8');
   const start = text.indexOf(`class ${className}(`);
   if (start < 0) return 0;
   const end = text.indexOf('\n)', start);

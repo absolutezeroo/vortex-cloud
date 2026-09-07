@@ -18,7 +18,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read + analytics surface for targeted (personalised/promotional) offers. The admin CRUD lives in
-/// <c>DashboardOperationsService.TargetedOffers.cs</c>; here we only read. Purchase analytics come
+/// <see cref="Operations.TargetedOfferOperations"/>; here we only read. Purchase analytics come
 /// from the <c>economy.targeted_offer_purchase</c> audit trail (see
 /// <c>TargetedOfferPurchasedAuditHandler</c>), which carries offerId/identifier/quantity/creditCost/
 /// activityPointCost — same shape as <see cref="DashboardApiService.CatalogPurchases.cs"/>.

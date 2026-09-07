@@ -15,7 +15,7 @@ internal sealed partial class DashboardApiService
     /// <summary>Read-only overview of the CFH (Call For Help) ticket domain: volume over time,
     /// resolution/sanction rates, top topics, and top reported players — reads straight off
     /// <c>CfhTicketEntity</c>, which is already rich enough on its own (no audit trail needed).
-    /// Separate from <see cref="Vortex.Dashboard.API.Operations.DashboardOperationsService.GetCfhQueueAsync"/>,
+    /// Separate from <see cref="Vortex.Dashboard.API.Operations.ModerationOperations.GetCfhQueueAsync"/>,
     /// which drives the live pick/close/release queue; this is analytics, not actionable state.</summary>
     public Task<object> CfhStatsAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(

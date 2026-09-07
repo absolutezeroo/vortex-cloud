@@ -12,7 +12,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// The four fishing content tables plus what players have done with them, read for the page that
-/// edits them. The writes live in <c>DashboardOperationsService.Fishing.cs</c>.
+/// edits them. The writes live in <see cref="Operations.FishingOperations"/>.
 /// </summary>
 /// <remarks>
 /// Zones carry their species count, because a zone with none is a spot that can be fished and never

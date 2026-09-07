@@ -14,7 +14,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read surface for Habbicon content and ownership. The CRUD lives in
-/// <c>DashboardOperationsService.Habbicons.cs</c>; here we only read.
+/// <see cref="Operations.RewardOperations"/>; here we only read.
 /// </summary>
 /// <remarks>
 /// Counts are aggregated straight from <c>player_habbicons</c> — ownership is the only source of

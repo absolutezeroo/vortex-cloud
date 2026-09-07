@@ -15,7 +15,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read + analytics surface for the mystery box. The admin CRUD lives in
-/// <c>DashboardOperationsService.MysteryBox.cs</c>; here we only read. Open/key analytics come from
+/// <see cref="Operations.MysteryBoxOperations"/>; here we only read. Open/key analytics come from
 /// the <c>audit_events</c> rows the mystery box audit handlers write — there is no dedicated
 /// statistics table, and the key ledger (granted vs consumed) is exactly what tells an operator
 /// whether keys are being farmed.

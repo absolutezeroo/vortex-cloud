@@ -12,7 +12,7 @@ namespace Vortex.Dashboard.API.Hosting;
 /// archive), and the two per-player operations an operator needs.
 /// </summary>
 /// <remarks>
-/// Every write goes through <c>DashboardOperationsService</c>, which routes to the domain's own
+/// Every write goes through <c>RewardOperations</c>, which routes to the domain's own
 /// admin service — those reload the in-process catalogs and, for reward tracks, tell the players
 /// who already have progress that the content changed. Nothing here writes to the database.
 /// </remarks>

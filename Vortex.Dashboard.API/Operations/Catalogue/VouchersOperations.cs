@@ -21,14 +21,17 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class VouchersOperations(OperationRunner runner, IGrainFactory grainFactory)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public Task<OperationResult> CreateVoucherAsync(
         CreateVoucherRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.vouchers.create",
             actor,
             request.Reason,
@@ -74,7 +77,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.vouchers.deactivate",
             actor,
             request.Reason,

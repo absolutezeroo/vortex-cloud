@@ -14,7 +14,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read surface for reward-track content and player progression. The CRUD lives in
-/// <c>DashboardOperationsService.RewardTracks.cs</c>; here we only read.
+/// <see cref="Operations.RewardOperations"/>; here we only read.
 /// </summary>
 internal sealed class RewardTrackReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,

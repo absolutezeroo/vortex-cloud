@@ -139,7 +139,10 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<ModerationOperations>();
         services.TryAddSingleton<StaffActorAccount>();
         services.TryAddSingleton<RoomOperations>();
-        services.TryAddSingleton<DashboardOperationsService>();
+        services.TryAddSingleton<CurrencyOperations>();
+        services.TryAddSingleton<VouchersOperations>();
+        services.TryAddSingleton<ConfigReads>();
+        services.TryAddSingleton<ConfigOperations>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,
         // it does not write them. So the admin service lives here and is registered here, and a

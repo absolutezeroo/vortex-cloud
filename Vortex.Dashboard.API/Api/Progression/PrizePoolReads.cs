@@ -15,7 +15,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read surface for the prize pools. The admin CRUD lives in
-/// <c>DashboardOperationsService.Prizes.cs</c>; here we only read.
+/// <see cref="Operations.PrizePoolOperations"/>; here we only read.
 ///
 /// The share percentages are computed server-side rather than left to the page: an operator typing
 /// weights 6/3/1 has written 60/30/10 and needs to see that, and the competing set is not obvious —

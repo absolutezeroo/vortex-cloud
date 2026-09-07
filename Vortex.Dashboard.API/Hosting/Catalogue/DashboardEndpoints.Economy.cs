@@ -72,7 +72,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GiveCreditsRequest body,
-                DashboardOperationsService ops,
+                CurrencyOperations currencyOps,
                 CancellationToken ct
             ) =>
             {
@@ -82,7 +82,9 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.GiveCreditsAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
+                    await currencyOps
+                        .GiveCreditsAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
                 );
             },
             Capabilities.Dashboard.OpsGrantCurrency,
@@ -94,7 +96,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GiveActivityPointsRequest body,
-                DashboardOperationsService ops,
+                CurrencyOperations currencyOps,
                 CancellationToken ct
             ) =>
             {
@@ -104,7 +106,8 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.GiveActivityPointsAsync(body, ctx.ActorEmail(), ct)
+                    await currencyOps
+                        .GiveActivityPointsAsync(body, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)
                 );
             },
@@ -117,14 +120,14 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GiveCollectiblesCurrencyRequest body,
-                DashboardOperationsService ops,
+                CurrencyOperations currencyOps,
                 CancellationToken ct
             ) =>
             {
                 if (
                     body.PlayerId <= 0
                     || body.Amount <= 0
-                    || !DashboardOperationsService.TryParseCollectiblesCurrency(
+                    || !CurrencyOperations.TryParseCollectiblesCurrency(
                         body.Currency,
                         out CurrencyType currency
                     )
@@ -134,7 +137,8 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.GiveCollectiblesCurrencyAsync(body, currency, ctx.ActorEmail(), ct)
+                    await currencyOps
+                        .GiveCollectiblesCurrencyAsync(body, currency, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)
                 );
             },
@@ -147,7 +151,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GiveFurnitureRequest body,
-                DashboardOperationsService ops,
+                CurrencyOperations currencyOps,
                 CancellationToken ct
             ) =>
             {
@@ -157,7 +161,9 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.GiveFurnitureAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
+                    await currencyOps
+                        .GiveFurnitureAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
                 );
             },
             Capabilities.Dashboard.OpsGrantItem,
@@ -173,7 +179,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateVoucherRequest body,
-                DashboardOperationsService ops,
+                VouchersOperations vouchers,
                 CancellationToken ct
             ) =>
             {
@@ -187,7 +193,9 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.CreateVoucherAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
+                    await vouchers
+                        .CreateVoucherAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
                 );
             },
             Capabilities.Dashboard.OpsManageVouchers,
@@ -199,7 +207,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeactivateVoucherRequest body,
-                DashboardOperationsService ops,
+                VouchersOperations vouchers,
                 CancellationToken ct
             ) =>
             {
@@ -209,7 +217,8 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.DeactivateVoucherAsync(body, ctx.ActorEmail(), ct)
+                    await vouchers
+                        .DeactivateVoucherAsync(body, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)
                 );
             },
@@ -219,8 +228,8 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiOperations + "/vouchers/{code}",
-            async (string code, DashboardOperationsService ops, CancellationToken ct) =>
-                Results.Ok(await ops.GetVoucherSnapshotAsync(code, ct).ConfigureAwait(false)),
+            async (string code, VouchersOperations vouchers, CancellationToken ct) =>
+                Results.Ok(await vouchers.GetVoucherSnapshotAsync(code, ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsManageVouchers,
             TagOperations
         );

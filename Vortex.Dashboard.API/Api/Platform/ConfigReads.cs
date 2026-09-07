@@ -2,7 +2,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Orleans;
+using Vortex.Database.Context;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server;
 
@@ -13,10 +15,15 @@ namespace Vortex.Dashboard.API.Api;
 /// actually been written to the database, so each row is the <see cref="ConfigKeyCatalog"/> descriptor
 /// (default/kind/description/group) joined with the live stored value — letting the dashboard show every
 /// tunable key, its default, and whether an operator has overridden it. Writes live in
-/// <c>DashboardOperationsService.Config.cs</c>.
+/// <see cref="Operations.ConfigOperations"/>.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class ConfigReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IGrainFactory grainFactory
+) : DashboardReads(dbContextFactory)
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     /// <summary>Every known config key with its catalog metadata and current stored value (if set).</summary>
     public async Task<object> ConfigListAsync(CancellationToken ct)
     {

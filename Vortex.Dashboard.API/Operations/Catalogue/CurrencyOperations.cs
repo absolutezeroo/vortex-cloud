@@ -22,14 +22,17 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class CurrencyOperations(OperationRunner runner, IGrainFactory grainFactory)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public Task<OperationResult> GiveCreditsAsync(
         GiveCreditsRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.currency.credits.grant",
             actor,
             request.Reason,
@@ -48,7 +51,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.currency.activitypoints.grant",
             actor,
             request.Reason,
@@ -80,7 +83,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.currency.collectibles.grant",
             actor,
             request.Reason,
@@ -137,7 +140,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.item.grant",
             actor,
             request.Reason,

@@ -12,7 +12,7 @@ namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// The song catalogue, read for the page that edits it. The writes live in
-/// <c>DashboardOperationsService.Songs.cs</c>.
+/// <see cref="Operations.SongOperations"/>.
 /// </summary>
 /// <remarks>
 /// Every song is joined to two counts the operator would otherwise have to guess at: how many disks
