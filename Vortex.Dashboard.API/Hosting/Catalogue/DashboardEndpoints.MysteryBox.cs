@@ -23,22 +23,22 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMysteryBox,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.MysteryBoxAsync(ct)),
+            (MysteryBoxReads reads, CancellationToken ct) => OkAsync(reads.MysteryBoxAsync(ct)),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
         );
         MapReadGet(
             app,
             ApiMysteryBox + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.MysteryBoxStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, MysteryBoxReads reads, CancellationToken ct) =>
+                OkAsync(reads.MysteryBoxStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
         );
         MapReadGet(
             app,
             ApiMysteryBox + "/colors",
-            (DashboardApiService api) => Results.Ok(api.MysteryBoxColorOptions()),
+            (MysteryBoxReads reads) => Results.Ok(reads.MysteryBoxColorOptions()),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
         );
@@ -52,7 +52,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateMysteryBoxPrizeRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -79,7 +79,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateMysteryBoxPrizeRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -107,7 +107,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteMysteryBoxPrizeRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -130,7 +130,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GrantMysteryBoxKeyRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -153,7 +153,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 GrantMysteryBoxRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -179,7 +179,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ReloadMysteryBoxRequest body,
-                DashboardOperationsService ops,
+                MysteryBoxOperations ops,
                 CancellationToken ct
             ) =>
             {

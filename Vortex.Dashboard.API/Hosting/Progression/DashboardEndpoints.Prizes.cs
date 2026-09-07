@@ -17,15 +17,15 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPrizePools,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.PrizePoolsAsync(ct)),
+            (PrizePoolReads reads, CancellationToken ct) => OkAsync(reads.PrizePoolsAsync(ct)),
             Capabilities.Dashboard.PrizePoolsRead,
             TagPrizePools
         );
         MapReadGet(
             app,
             ApiPrizePools + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PrizePoolStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, PrizePoolReads reads, CancellationToken ct) =>
+                OkAsync(reads.PrizePoolStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PrizePoolsRead,
             TagPrizePools
         );
@@ -39,7 +39,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreatePrizePoolRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code) || string.IsNullOrWhiteSpace(body.Name)
@@ -57,7 +57,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdatePrizePoolRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.PoolId <= 0
@@ -77,7 +77,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeletePrizePoolRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.PoolId <= 0
@@ -95,7 +95,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreatePrizeEntryRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.PoolCode)
@@ -115,7 +115,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdatePrizeEntryRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.EntryId <= 0
@@ -136,7 +136,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeletePrizeEntryRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.EntryId <= 0
@@ -154,7 +154,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreatePrizeBindingRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.FurnitureDefinitionId <= 0
@@ -174,7 +174,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdatePrizeBindingRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.BindingId <= 0
@@ -195,7 +195,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeletePrizeBindingRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 body.BindingId <= 0
@@ -213,7 +213,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ReloadPrizePoolsRequest body,
-                DashboardOperationsService ops,
+                PrizePoolOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(

@@ -2,7 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Furniture.Enums;
+using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;
+using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -13,14 +15,22 @@ namespace Vortex.Dashboard.API.Operations;
 /// which reloads the live definition/prize cache after committing, and emits a durable audit event
 /// with the operator's reason — same contract as the catalog/quest operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class MysteryBoxOperations(
+    OperationRunner runner,
+    IMysteryBoxAdminService mysteryBoxAdmin,
+    IPrizePoolAdminService prizePoolAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
+    private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
+
     public Task<OperationResult> CreateMysteryBoxPrizeAsync(
         CreateMysteryBoxPrizeRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.prize.create",
             actor,
             request.Reason,
@@ -66,7 +76,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.prize.update",
             actor,
             request.Reason,
@@ -113,7 +123,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.prize.delete",
             actor,
             request.Reason,
@@ -132,7 +142,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.key.grant",
             actor,
             request.Reason,
@@ -153,7 +163,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.box.grant",
             actor,
             request.Reason,
@@ -180,7 +190,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.mysterybox.reload",
             actor,
             request.Reason,

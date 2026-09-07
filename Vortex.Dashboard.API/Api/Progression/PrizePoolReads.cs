@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Prizes;
 
@@ -20,8 +22,13 @@ namespace Vortex.Dashboard.API.Api;
 /// an entry with no variant competes for every variant of its pool, so its denominator differs from
 /// a variant-locked one.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class PrizePoolReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     private const string PrizeAwardedAction = "prize.awarded";
 
     public Task<object> PrizePoolsAsync(CancellationToken ct) =>
@@ -85,7 +92,7 @@ internal sealed partial class DashboardApiService
                         // An operator recognises a sofa, not definition id 4312.
                         furnitureIconUrl = e.furnitureName is null
                             ? null
-                            : BuildFurniIconUrl(e.furnitureName),
+                            : _assetUrls.FurniIcon(e.furnitureName),
                     })
                     .ToList();
 
@@ -141,7 +148,7 @@ internal sealed partial class DashboardApiService
                         b.furnitureLogic,
                         furnitureIconUrl = b.furnitureName is null
                             ? null
-                            : BuildFurniIconUrl(b.furnitureName),
+                            : _assetUrls.FurniIcon(b.furnitureName),
                     })
                     .ToList();
 

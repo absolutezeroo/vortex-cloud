@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Prizes;
@@ -18,8 +20,13 @@ namespace Vortex.Dashboard.API.Api;
 /// statistics table, and the key ledger (granted vs consumed) is exactly what tells an operator
 /// whether keys are being farmed.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class MysteryBoxReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     private const string MysteryBoxKeyGrantedAction = "mysterybox.key.granted";
     private const string MysteryBoxKeyConsumedAction = "mysterybox.key.consumed";
     private const string MysteryBoxOpenedAction = "mysterybox.opened";
@@ -69,7 +76,7 @@ internal sealed partial class DashboardApiService
                         d.SpriteId,
                         d.TotalStates,
                         // An operator recognises the box, not definition id 4312.
-                        furnitureIconUrl = BuildFurniIconUrl(d.Name),
+                        furnitureIconUrl = _assetUrls.FurniIcon(d.Name),
                     })
                     .ToList();
 
@@ -117,7 +124,7 @@ internal sealed partial class DashboardApiService
                         p.furnitureName,
                         furnitureIconUrl = p.furnitureName is null
                             ? null
-                            : BuildFurniIconUrl(p.furnitureName),
+                            : _assetUrls.FurniIcon(p.furnitureName),
                     })
                     .ToList();
 

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Furniture.Enums;
+using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -12,14 +13,20 @@ namespace Vortex.Dashboard.API.Operations;
 /// reloads the live pool cache after committing, and emits a durable audit event with the operator's
 /// reason — same contract as the catalog/quest operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class PrizePoolOperations(
+    OperationRunner runner,
+    IPrizePoolAdminService prizePoolAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
+
     public Task<OperationResult> CreatePrizePoolAsync(
         CreatePrizePoolRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.create",
             actor,
             request.Reason,
@@ -54,7 +61,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.update",
             actor,
             request.Reason,
@@ -90,7 +97,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.delete",
             actor,
             request.Reason,
@@ -109,7 +116,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.entry.create",
             actor,
             request.Reason,
@@ -154,7 +161,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.entry.update",
             actor,
             request.Reason,
@@ -199,7 +206,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.entry.delete",
             actor,
             request.Reason,
@@ -218,7 +225,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.reload",
             actor,
             request.Reason,
@@ -234,7 +241,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.binding.create",
             actor,
             request.Reason,
@@ -268,7 +275,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.binding.update",
             actor,
             request.Reason,
@@ -303,7 +310,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.prizepool.binding.delete",
             actor,
             request.Reason,
@@ -318,4 +325,18 @@ internal sealed partial class DashboardOperationsService
                 ),
             ct
         );
+
+    /// <summary>The product type arrives as a string from the browser; a value outside the enum must
+    /// fail the request rather than default to Floor and quietly grant the wrong kind of prize. The
+    /// pool travels as its code and is resolved (and rejected when unknown) by the admin service.</summary>
+    private static bool TryParseProductType(string productType, out ProductType parsed) =>
+        Enum.TryParse(productType, ignoreCase: true, out parsed);
+
+    private static void Throw(PrizeAdminResult result)
+    {
+        if (!result.Success)
+        {
+            throw new InvalidOperationException(result.ErrorCode);
+        }
+    }
 }
