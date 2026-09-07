@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;

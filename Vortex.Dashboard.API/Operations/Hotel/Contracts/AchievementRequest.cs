@@ -1,7 +1,7 @@
 using System;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel.Contracts;
 
 /// <summary>
 /// Request bodies for the content operations, each carrying a mandatory audited <c>Reason</c>.

@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 
 /// <summary>Blocked server-side if the page still has child pages or offers under it — delete those
 /// first rather than cascading a silent mass-delete.</summary>

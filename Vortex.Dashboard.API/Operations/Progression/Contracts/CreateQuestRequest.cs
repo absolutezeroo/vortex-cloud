@@ -1,7 +1,7 @@
 using System;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// Request bodies for the dashboard's quest admin operations, each carrying a mandatory audited

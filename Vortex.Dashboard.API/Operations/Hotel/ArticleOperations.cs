@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Primitives.Content;
 
 namespace Vortex.Dashboard.API.Operations.Hotel;

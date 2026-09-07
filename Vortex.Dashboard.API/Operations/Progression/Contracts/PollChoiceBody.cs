@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// One selectable answer. <c>Value</c> is what the client sends back and what the results are keyed

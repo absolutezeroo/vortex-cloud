@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety.Contracts;
 
 /// <summary>
 /// Request bodies for the staff/role operations, each carrying a mandatory audited <c>Reason</c>.

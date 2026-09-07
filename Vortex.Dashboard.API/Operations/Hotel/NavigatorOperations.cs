@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Admin;
 using Vortex.Primitives.Navigator.Enums;

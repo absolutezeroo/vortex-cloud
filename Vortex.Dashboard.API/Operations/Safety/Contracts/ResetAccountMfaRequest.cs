@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety.Contracts;
 
 /// <summary>
 /// Clears another operator's second factor. This is the recovery path for a lost authenticator --

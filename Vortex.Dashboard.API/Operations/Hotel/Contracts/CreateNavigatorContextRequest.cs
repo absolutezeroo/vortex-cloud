@@ -1,6 +1,6 @@
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel.Contracts;
 
 /// <summary>
 /// Request bodies for the navigator configuration operations, each carrying a mandatory audited

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// Request bodies for the dashboard's poll admin operations, each carrying a mandatory audited

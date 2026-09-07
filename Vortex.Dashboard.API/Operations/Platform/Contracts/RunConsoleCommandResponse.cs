@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform.Contracts;
 
 /// <summary>
 ///     The audited outcome plus whatever the command printed. Deliberately flat rather than wrapping

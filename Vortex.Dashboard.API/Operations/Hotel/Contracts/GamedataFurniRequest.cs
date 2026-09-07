@@ -1,7 +1,7 @@
 using System;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel.Contracts;
 
 /// <summary>
 /// One furnidata entry, addressed by its position.

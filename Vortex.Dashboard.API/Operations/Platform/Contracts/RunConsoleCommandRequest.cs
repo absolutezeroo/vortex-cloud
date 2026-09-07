@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform.Contracts;
 
 /// <summary>
 ///     A command line typed into the dashboard console. Unlike writing to a process's stdin, this

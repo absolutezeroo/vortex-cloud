@@ -5,6 +5,7 @@ using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
+using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;

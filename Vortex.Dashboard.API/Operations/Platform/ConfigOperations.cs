@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Dashboard.API.Operations.Platform.Contracts;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server;
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// One test on a signal's facts. <c>Op</c> rather than <c>Operator</c>, which is a keyword in most

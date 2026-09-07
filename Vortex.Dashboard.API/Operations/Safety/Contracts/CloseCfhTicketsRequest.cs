@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety.Contracts;
 
 /// <summary>
 /// Close one or more CFH tickets. <paramref name="Reason"/> is 1=Useless, 2=Sanctioned,

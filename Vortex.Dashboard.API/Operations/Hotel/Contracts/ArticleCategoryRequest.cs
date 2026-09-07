@@ -1,7 +1,7 @@
 using System;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Hotel.Contracts;
 
 /// <summary><paramref name="Labels"/> is a per-language dictionary, e.g.
 /// <c>{"fr":"Campagnes","en":"Campaigns"}</c>.</summary>

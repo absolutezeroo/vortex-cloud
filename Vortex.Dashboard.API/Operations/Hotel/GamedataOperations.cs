@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Primitives.Observability;
 
 namespace Vortex.Dashboard.API.Operations.Hotel;

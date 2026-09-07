@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Progression.Contracts;
 using Vortex.Primitives.Habbicons;
 using Vortex.Primitives.Habbicons.Admin;
 using Vortex.Primitives.RewardTracks;

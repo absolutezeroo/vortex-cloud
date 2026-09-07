@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// A question and its full choice list. <c>Choices</c> replaces whatever the question had: answers

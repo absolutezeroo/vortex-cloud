@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Safety.Contracts;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;

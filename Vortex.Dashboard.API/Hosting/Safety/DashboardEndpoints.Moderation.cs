@@ -14,6 +14,7 @@ using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Safety;
+using Vortex.Dashboard.API.Operations.Safety.Contracts;
 using Vortex.Dashboard.API.Security;
 using Vortex.Primitives.Permissions;
 

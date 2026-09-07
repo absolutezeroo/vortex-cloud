@@ -1,6 +1,6 @@
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 
 /// <summary>
 /// Request bodies for the song catalogue, each carrying a mandatory audited <c>Reason</c>.

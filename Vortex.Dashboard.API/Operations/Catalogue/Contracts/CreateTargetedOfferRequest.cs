@@ -1,7 +1,7 @@
 using System;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 
 /// <summary>
 /// Request bodies for the dashboard's targeted-offer admin operations. Each carries a mandatory

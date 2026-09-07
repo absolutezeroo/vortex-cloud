@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Safety;
+using Vortex.Dashboard.API.Operations.Safety.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform.Contracts;
 
 /// <summary>One operator command as the console page needs to render it.</summary>
 /// <param name="Allowed">

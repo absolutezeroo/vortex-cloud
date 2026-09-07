@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// Everything a create takes, plus the row id — and deliberately not the status. A track's

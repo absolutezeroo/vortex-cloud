@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Catalog.Snapshots;

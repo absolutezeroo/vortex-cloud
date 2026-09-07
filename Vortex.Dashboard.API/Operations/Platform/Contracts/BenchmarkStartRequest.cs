@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Platform.Contracts;
 
 /// <summary>
 /// The load a run should apply. Bounds are checked at the endpoint rather than here — a plan asking

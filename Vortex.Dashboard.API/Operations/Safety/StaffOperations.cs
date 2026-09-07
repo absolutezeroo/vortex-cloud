@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Safety.Contracts;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Permissions.Admin;

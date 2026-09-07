@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety.Contracts;
 
 /// <summary>Room-scoped mute. Only works while the target is currently present in a room — there is
 /// no account-wide chat mute in this codebase.</summary>

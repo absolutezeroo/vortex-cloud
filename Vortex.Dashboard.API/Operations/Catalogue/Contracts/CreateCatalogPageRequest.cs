@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 
 /// <summary>Create a catalog page. <paramref name="CatalogType"/> is 0=Normal, 1=BuildersClub (see
 /// <c>Vortex.Primitives.Catalog.Enums.CatalogType</c>) and cannot be changed after creation — it

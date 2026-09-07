@@ -1,6 +1,6 @@
 using Vortex.Dashboard.API.Hosting;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Progression.Contracts;
 
 /// <summary>
 /// Request bodies for the fishing content tables, each carrying a mandatory audited <c>Reason</c>.

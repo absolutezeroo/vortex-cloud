@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Platform.Contracts;
 using Vortex.Primitives.Console;
 
 namespace Vortex.Dashboard.API.Operations.Platform;

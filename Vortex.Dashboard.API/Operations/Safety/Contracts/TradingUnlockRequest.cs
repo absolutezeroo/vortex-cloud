@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Dashboard.API.Operations;
+namespace Vortex.Dashboard.API.Operations.Safety.Contracts;
 
 /// <summary>Lift an active trading lock.</summary>
 public sealed record TradingUnlockRequest(int PlayerId, string Reason) : IReasonedRequest;

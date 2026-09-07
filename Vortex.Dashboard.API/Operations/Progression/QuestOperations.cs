@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Dashboard.API.Operations.Progression.Contracts;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
