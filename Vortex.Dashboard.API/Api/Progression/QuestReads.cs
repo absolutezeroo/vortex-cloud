@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 
@@ -16,8 +17,13 @@ namespace Vortex.Dashboard.API.Api;
 /// aggregated from the <c>player_quests</c> table (there is no separate quest-completion audit
 /// trail), keyed on each completed row's <c>CompletedAt</c>.
 /// </summary>
-internal sealed partial class DashboardApiService
+internal sealed class QuestReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+
     // Objective types that have a live progression trigger wired (a handler calls ProgressAsync with
     // this type). The others in QuestTypes are defined but not yet fired, so the admin can still pick
     // them but they won't advance until a trigger exists -- surfaced via the "wired" flag.
@@ -214,8 +220,8 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
-                string granularity = NormalizeGranularity(query["granularity"]);
+                (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
+                string granularity = TimeWindow.Granularity(query["granularity"]);
 
                 List<(int QuestId, DateTime CompletedAt)> completions = await db
                     .PlayerQuests.AsNoTracking()
@@ -246,18 +252,18 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
 
                 Dictionary<DateTime, int> bucketMap = new();
-                DateTime cursor = ResolveCalendarBucket(since, granularity);
-                DateTime end = ResolveCalendarBucket(until, granularity);
+                DateTime cursor = TimeWindow.Bucket(since, granularity);
+                DateTime end = TimeWindow.Bucket(until, granularity);
 
                 while (cursor <= end)
                 {
                     bucketMap[cursor] = 0;
-                    cursor = NextCalendarBucket(cursor, granularity);
+                    cursor = TimeWindow.NextBucket(cursor, granularity);
                 }
 
                 foreach ((int _, DateTime completedAt) in completions)
                 {
-                    DateTime bucket = ResolveCalendarBucket(completedAt, granularity);
+                    DateTime bucket = TimeWindow.Bucket(completedAt, granularity);
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
@@ -266,7 +272,7 @@ internal sealed partial class DashboardApiService
                     .Select(pair => new
                     {
                         bucket = pair.Key.ToString("O"),
-                        label = FormatCalendarLabel(pair.Key, granularity),
+                        label = TimeWindow.Label(pair.Key, granularity),
                         completions = pair.Value,
                     })
                     .ToList();

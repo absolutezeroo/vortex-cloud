@@ -22,31 +22,31 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiQuests,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.QuestsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, QuestReads reads, CancellationToken ct) =>
+                OkAsync(reads.QuestsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
         MapReadGet(
             app,
             ApiQuests + "/stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.QuestsStatsAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, QuestReads reads, CancellationToken ct) =>
+                OkAsync(reads.QuestsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
         MapReadGet(
             app,
             ApiQuests + "/types",
-            (DashboardApiService api) => Results.Ok(api.QuestTypeOptions()),
+            (QuestReads reads) => Results.Ok(reads.QuestTypeOptions()),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
         MapReadGet(
             app,
             ApiQuests + "/{questId:int}",
-            (int questId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.QuestDetailAsync(questId, ct)),
+            (int questId, QuestReads reads, CancellationToken ct) =>
+                OkNullableAsync(reads.QuestDetailAsync(questId, ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
         );
@@ -60,7 +60,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateQuestRequest body,
-                DashboardOperationsService ops,
+                QuestOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -86,7 +86,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateQuestRequest body,
-                DashboardOperationsService ops,
+                QuestOperations ops,
                 CancellationToken ct
             ) =>
             {
@@ -113,7 +113,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteQuestRequest body,
-                DashboardOperationsService ops,
+                QuestOperations ops,
                 CancellationToken ct
             ) =>
             {

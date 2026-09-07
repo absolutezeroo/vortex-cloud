@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -10,14 +11,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// (never a direct DB write), which reloads the live quest cache after committing, and emits a durable
 /// audit event with the operator's reason — same contract as the catalog/targeted-offer operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class QuestOperations(OperationRunner runner, IQuestAdminService questAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IQuestAdminService _questAdmin = questAdmin;
+
     public Task<OperationResult> CreateQuestAsync(
         CreateQuestRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.quest.create",
             actor,
             request.Reason,
@@ -71,7 +75,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.quest.update",
             actor,
             request.Reason,
@@ -125,7 +129,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.quest.delete",
             actor,
             request.Reason,

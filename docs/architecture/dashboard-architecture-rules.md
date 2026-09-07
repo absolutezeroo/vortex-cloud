@@ -921,6 +921,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | fishing | 83 methods, 10 deps | 139 methods, 23 deps | 6 (+ Fishing) | 25 types |
 | navigator | 82 methods, 10 deps | 126 methods, 22 deps | 7 (+ Navigator) | 27 types |
 | furniture | 81 methods, 10 deps | 123 methods, 21 deps | 8 (+ Furniture) | 29 types |
+| quests | 77 methods, 10 deps | 120 methods, 20 deps | 9 (+ Quests) | 31 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

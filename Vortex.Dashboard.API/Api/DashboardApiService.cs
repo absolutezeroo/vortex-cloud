@@ -96,39 +96,20 @@ internal sealed partial class DashboardApiService(
         return new DateTime(ticks, value.Kind);
     }
 
-    private static string NormalizeGranularity(string? value) =>
-        (value ?? "").ToLowerInvariant() switch
-        {
-            "month" => "month",
-            "year" => "year",
-            _ => "day",
-        };
+    // The implementations live in TimeWindow, which the subjects that have left this class use
+    // directly. These stay as the names the remaining topic files call.
+    private static string NormalizeGranularity(string? value) => TimeWindow.Granularity(value);
 
     /// <summary>Calendar-aligned bucket for day/month/year — unlike <see cref="ResolveTimelineBucket"/>
     /// this handles variable-length months/years correctly instead of a fixed tick interval.</summary>
     private static DateTime ResolveCalendarBucket(DateTime value, string granularity) =>
-        granularity switch
-        {
-            "year" => new DateTime(value.Year, 1, 1, 0, 0, 0, value.Kind),
-            "month" => new DateTime(value.Year, value.Month, 1, 0, 0, 0, value.Kind),
-            _ => value.Date,
-        };
+        TimeWindow.Bucket(value, granularity);
 
     private static DateTime NextCalendarBucket(DateTime bucket, string granularity) =>
-        granularity switch
-        {
-            "year" => bucket.AddYears(1),
-            "month" => bucket.AddMonths(1),
-            _ => bucket.AddDays(1),
-        };
+        TimeWindow.NextBucket(bucket, granularity);
 
     private static string FormatCalendarLabel(DateTime bucket, string granularity) =>
-        granularity switch
-        {
-            "year" => bucket.ToString("yyyy"),
-            "month" => bucket.ToString("yyyy-MM"),
-            _ => bucket.ToString("yyyy-MM-dd"),
-        };
+        TimeWindow.Label(bucket, granularity);
 
     private static string FormatTimelineLabel(DateTime bucket, TimeSpan bucketSize)
     {
@@ -281,53 +262,12 @@ internal sealed partial class DashboardApiService(
         NameValueCollection query,
         DateTime nowUtc,
         TimeSpan? defaultSpan = null
-    )
-    {
-        DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
-        DateTime since =
-            ParseDateTime(query["since"]) ?? until - (defaultSpan ?? TimeSpan.FromDays(30));
-
-        if (since > until)
-        {
-            (since, until) = (until, since);
-        }
-
-        if (until - since > TimeSpan.FromDays(MAX_WINDOW_DAYS))
-        {
-            throw new DashboardQueryException(
-                "window_too_large",
-                $"since/until must span at most {MAX_WINDOW_DAYS} days."
-            );
-        }
-
-        return (since, until);
-    }
+    ) => TimeWindow.Resolve(query, nowUtc, defaultSpan);
 
     /// <summary>
     ///     Null for an absent value, the parsed instant for a valid one, and a 400 for anything else.
     ///     Returning null on garbage -- the old behaviour -- drops the filter, which widens the query
     ///     instead of rejecting it.
     /// </summary>
-    internal static DateTime? ParseDateTime(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return null;
-        }
-
-        if (DateTimeOffset.TryParse(value, out DateTimeOffset parsedOffset))
-        {
-            return parsedOffset.UtcDateTime;
-        }
-
-        if (DateTime.TryParse(value, out DateTime parsedDate))
-        {
-            return parsedDate;
-        }
-
-        throw new DashboardQueryException(
-            "invalid_date",
-            $"'{value}' is not a date the dashboard can parse."
-        );
-    }
+    internal static DateTime? ParseDateTime(string? value) => TimeWindow.ParseDateTime(value);
 }

@@ -55,7 +55,6 @@ internal sealed partial class DashboardOperationsService(
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
     ITargetedOfferAdminService targetedOfferAdmin,
-    IQuestAdminService questAdmin,
     IStaffAdminService staffAdmin,
     IAccountMfaService accountMfa,
     IContentAdminService contentAdmin,
@@ -87,7 +86,6 @@ internal sealed partial class DashboardOperationsService(
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
-    private readonly IQuestAdminService _questAdmin = questAdmin;
     private readonly IStaffAdminService _staffAdmin = staffAdmin;
     private readonly IAccountMfaService _accountMfa = accountMfa;
     private readonly IContentAdminService _contentAdmin = contentAdmin;
