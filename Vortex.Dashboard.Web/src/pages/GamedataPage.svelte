@@ -112,8 +112,6 @@
     if (id !== 'texts') lang = '';
   }
 
-  // --- one drawer for every form on this page --------------------------------------------------
-
   // `draft` is the only editing state. Four shapes, one drawer: a page where some forms open a panel
   // and others appear inline is a page where an operator has to learn which is which.
   let draft = $state(null);

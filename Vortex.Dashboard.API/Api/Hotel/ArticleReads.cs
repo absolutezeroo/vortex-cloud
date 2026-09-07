@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
@@ -52,8 +53,11 @@ internal sealed class ArticleReads(
     /// by a word in the title. Each row reports which languages it exists in, so a missing
     /// translation is visible without opening the article.
     /// </summary>
-    public Task<object> ArticlesAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<ArticleListResponse> ArticlesAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<ArticleListResponse>(
             async db =>
             {
                 string status = (query["status"] ?? string.Empty).Trim();
@@ -127,46 +131,37 @@ internal sealed class ArticleReads(
 
                 DateTime now = DateTime.UtcNow;
 
-                List<object> items = rows.ConvertAll(a =>
+                List<ArticleListItem> items = rows.ConvertAll(a =>
                 {
                     var mine = translations.Where(t => t.ArticleId == a.Id).ToList();
 
-                    return (object)
-                        new
-                        {
-                            id = a.Id,
-                            slug = a.Slug,
-                            category = a.Category?.Code ?? string.Empty,
-                            status = a.Status.ToString(),
-                            // "Scheduled" is not a stored state — it is Published with a date still
-                            // ahead. The list says so because an editor otherwise sees "Published"
-                            // beside an article nobody can read yet.
-                            scheduled = a.Status == WebArticleStatus.Published
-                                && a.PublishAt != null
-                                && a.PublishAt > now,
-                            publishAt = a.PublishAt,
-                            pinned = a.Pinned,
-                            author = a.AuthorName,
-                            title = mine.Count > 0 ? mine[0].Title : string.Empty,
-                            languages = mine.ConvertAll(t => t.LanguageCode),
-                        };
+                    return new ArticleListItem(
+                        a.Id,
+                        a.Slug,
+                        a.Category?.Code ?? string.Empty,
+                        a.Status.ToString(),
+                        // "Scheduled" is not a stored state -- it is Published with a date still
+                        // ahead. The list says so because an editor otherwise sees "Published"
+                        // beside an article nobody can read yet.
+                        a.Status == WebArticleStatus.Published
+                            && a.PublishAt != null
+                            && a.PublishAt > now,
+                        a.PublishAt,
+                        a.Pinned,
+                        a.AuthorName,
+                        mine.Count > 0 ? mine[0].Title : string.Empty,
+                        mine.ConvertAll(t => t.LanguageCode)
+                    );
                 });
 
-                return new
-                {
-                    total,
-                    page,
-                    pageSize = ARTICLE_PAGE_SIZE,
-                    count = items.Count,
-                    items,
-                };
+                return new ArticleListResponse(total, page, ARTICLE_PAGE_SIZE, items.Count, items);
             },
             ct
         );
 
     /// <summary>One article with every translation it has, which is what the editor loads.</summary>
-    public Task<object?> ArticleDetailAsync(int articleId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<ArticleDetail?> ArticleDetailAsync(int articleId, CancellationToken ct) =>
+        QueryAsync<ArticleDetail?>(
             async db =>
             {
                 WebArticleEntity? article = await db
@@ -180,93 +175,85 @@ internal sealed class ArticleReads(
                     return null;
                 }
 
-                var translations = await db
+                List<ArticleTranslation> translations = await db
                     .WebArticleTranslations.AsNoTracking()
                     .Where(t => t.ArticleId == articleId && t.DeletedAt == null)
                     .OrderBy(t => t.LanguageCode)
-                    .Select(t => new
-                    {
-                        lang = t.LanguageCode,
-                        title = t.Title,
-                        summary = t.Summary,
-                        // Handed over as the stored string. The editor parses it; re-shaping it here
-                        // would be a second opinion on a format that already has one owner.
-                        body = t.BodyJson,
-                        headerImage = t.HeaderImage,
-                        thumbnail = t.Thumbnail,
-                    })
+                    .Select(t => new ArticleTranslation(
+                        t.LanguageCode,
+                        t.Title,
+                        t.Summary,
+                        t.BodyJson,
+                        t.HeaderImage,
+                        t.Thumbnail
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    id = article.Id,
-                    slug = article.Slug,
-                    category = article.Category?.Code ?? string.Empty,
-                    status = article.Status.ToString(),
-                    publishAt = article.PublishAt,
-                    pinned = article.Pinned,
-                    author = article.AuthorName,
-                    translations,
-                };
+                return new ArticleDetail(
+                    article.Id,
+                    article.Slug,
+                    article.Category?.Code ?? string.Empty,
+                    article.Status.ToString(),
+                    article.PublishAt,
+                    article.Pinned,
+                    article.AuthorName,
+                    translations
+                );
             },
             ct
         );
 
     /// <summary>Categories and languages together: the editor needs both to draw a single form, and
     /// two round trips for two small tables is two chances to render half a form.</summary>
-    public Task<object> ArticleFormMetaAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<ArticleFormMeta> ArticleFormMetaAsync(CancellationToken ct) =>
+        QueryAsync<ArticleFormMeta>(
             async db =>
             {
-                var categories = await db
+                List<ArticleCategoryOption> categories = await db
                     .WebArticleCategories.AsNoTracking()
                     .Where(c => c.DeletedAt == null)
                     .OrderBy(c => c.SortOrder)
                     .ThenBy(c => c.Code)
-                    .Select(c => new
-                    {
-                        id = c.Id,
-                        code = c.Code,
-                        labels = c.LabelJson,
-                        sortOrder = c.SortOrder,
-                        enabled = c.Enabled,
-                    })
+                    .Select(c => new ArticleCategoryOption(
+                        c.Id,
+                        c.Code,
+                        c.LabelJson,
+                        c.SortOrder,
+                        c.Enabled
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var languages = await db
+                List<ArticleLanguageOption> languages = await db
                     .WebLanguages.AsNoTracking()
                     .Where(l => l.DeletedAt == null)
                     .OrderBy(l => l.SortOrder)
                     .ThenBy(l => l.Code)
-                    .Select(l => new
-                    {
-                        id = l.Id,
-                        code = l.Code,
-                        label = l.Label,
-                        isDefault = l.IsDefault,
-                        enabled = l.Enabled,
-                        sortOrder = l.SortOrder,
-                    })
+                    .Select(l => new ArticleLanguageOption(
+                        l.Id,
+                        l.Code,
+                        l.Label,
+                        l.IsDefault,
+                        l.Enabled,
+                        l.SortOrder
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new ArticleFormMeta(
                     categories,
                     languages,
-                    imageBase = _assetUrls.ArticleImageBase,
-                    imageDirectories = ArticleImageDirectories,
-                    blockTypes = new[]
-                    {
+                    _assetUrls.ArticleImageBase,
+                    ArticleImageDirectories,
+                    [
                         WebArticleBody.TypeParagraph,
                         WebArticleBody.TypeHeading,
                         WebArticleBody.TypeImage,
                         WebArticleBody.TypeButton,
                         WebArticleBody.TypeRule,
-                    },
-                };
+                    ]
+                );
             },
             ct
         );
@@ -280,46 +267,32 @@ internal sealed class ArticleReads(
     /// are folded into their main image, the same way the targeted-offer picker does it.
     /// Returns nothing when <c>AssetsLocalRoot</c> is unset — the form then takes a typed path.
     /// </remarks>
-    public object ArticleImages(NameValueCollection query)
+    public ArticleImageBrowse ArticleImages(NameValueCollection query)
     {
         string directory = (query["dir"] ?? ArticleImageDirectories[0]).Trim();
 
+        int page = QueryValues.Page(query["page"]);
+
         if (!ArticleImageDirectories.Contains(directory, StringComparer.Ordinal))
         {
-            return new
-            {
-                error = "invalid_directory",
-                count = 0,
-                items = Array.Empty<object>(),
-            };
+            return Nothing(page, "invalid_directory");
         }
 
         string root = _config.AssetsLocalRoot;
 
         if (string.IsNullOrWhiteSpace(root))
         {
-            return new
-            {
-                count = 0,
-                total = 0,
-                items = Array.Empty<object>(),
-            };
+            return Nothing(page);
         }
 
         string path = Path.Combine(root, "c_images", directory);
 
         if (!Directory.Exists(path))
         {
-            return new
-            {
-                count = 0,
-                total = 0,
-                items = Array.Empty<object>(),
-            };
+            return Nothing(page);
         }
 
         string search = (query["q"] ?? string.Empty).Trim();
-        int page = Math.Max(1, QueryValues.Int(query["page"], 1));
 
         HashSet<string> all = Directory
             .EnumerateFiles(path)
@@ -340,7 +313,7 @@ internal sealed class ArticleReads(
             .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        List<object> items = matches
+        List<ArticleImage> items = matches
             .Skip((page - 1) * IMAGE_PAGE_SIZE)
             .Take(IMAGE_PAGE_SIZE)
             .Select(name =>
@@ -348,24 +321,23 @@ internal sealed class ArticleReads(
                 string thumbName =
                     Path.GetFileNameWithoutExtension(name) + ".thumb" + Path.GetExtension(name);
 
-                return (object)
-                    new
-                    {
-                        path = $"/{directory}/{name}",
-                        thumb = all.Contains(thumbName)
-                            ? $"/{directory}/{thumbName}"
-                            : $"/{directory}/{name}",
-                    };
+                return new ArticleImage(
+                    $"/{directory}/{name}",
+                    all.Contains(thumbName) ? $"/{directory}/{thumbName}" : $"/{directory}/{name}"
+                );
             })
             .ToList();
 
-        return new
-        {
-            total = matches.Count,
-            page,
-            pageSize = IMAGE_PAGE_SIZE,
-            count = items.Count,
-            items,
-        };
+        return new ArticleImageBrowse(matches.Count, page, IMAGE_PAGE_SIZE, items.Count, items);
     }
+
+    /// <summary>
+    /// An answer with no pictures in it, carrying the same fields as one that found some.
+    /// </summary>
+    /// <remarks>
+    /// The three ways to find nothing used to answer three different shapes, and the picker made up
+    /// the missing fields itself. It reads the same values off this.
+    /// </remarks>
+    private static ArticleImageBrowse Nothing(int page, string? error = null) =>
+        new(0, page, IMAGE_PAGE_SIZE, 0, [], error);
 }

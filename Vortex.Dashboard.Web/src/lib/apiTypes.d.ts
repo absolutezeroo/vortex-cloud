@@ -1,6 +1,86 @@
 // Generated from the C# response contracts by ApiTypeScriptContractTests.
 // Do not edit: change the records, run the test, copy what it writes.
 
+export interface ArticleCategoryOption {
+  id: number;
+  code: string;
+  labels: string;
+  sortOrder: number;
+  enabled: boolean;
+}
+
+export interface ArticleDetail {
+  id: number;
+  slug: string;
+  category: string;
+  status: string;
+  publishAt: string | null;
+  pinned: boolean;
+  author: string;
+  translations: ArticleTranslation[];
+}
+
+export interface ArticleFormMeta {
+  categories: ArticleCategoryOption[];
+  languages: ArticleLanguageOption[];
+  imageBase: string | null;
+  imageDirectories: string[];
+  blockTypes: string[];
+}
+
+export interface ArticleImage {
+  path: string;
+  thumb: string;
+}
+
+export interface ArticleImageBrowse {
+  total: number;
+  page: number;
+  pageSize: number;
+  count: number;
+  items: ArticleImage[];
+  error: string | null;
+}
+
+export interface ArticleLanguageOption {
+  id: number;
+  code: string;
+  label: string;
+  isDefault: boolean;
+  enabled: boolean;
+  sortOrder: number;
+}
+
+export interface ArticleListItem {
+  id: number;
+  slug: string;
+  category: string;
+  status: string;
+  scheduled: boolean;
+  publishAt: string | null;
+  pinned: boolean;
+  author: string;
+  title: string;
+  languages: string[];
+}
+
+export interface ArticleListResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  count: number;
+  items: ArticleListItem[];
+}
+
+export interface ArticleTranslation {
+  lang: string;
+  title: string;
+  summary: string;
+  body: string;
+  headerImage: string | null;
+  thumbnail: string | null;
+}
+
 export interface PollChoiceDetail {
   id: number;
   value: string;

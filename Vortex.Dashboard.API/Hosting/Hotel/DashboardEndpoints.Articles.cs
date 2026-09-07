@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Hotel;
 using Vortex.Dashboard.API.Operations.Hotel.Contracts;
@@ -22,7 +23,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapArticleReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<ArticleListResponse>(
             app,
             ApiArticles,
             (HttpContext ctx, ArticleReads articles, CancellationToken ct) =>
@@ -30,7 +31,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
-        MapReadGet(
+        MapReadGet<ArticleFormMeta>(
             app,
             ApiArticles + "/meta",
             (ArticleReads articles, CancellationToken ct) =>
@@ -38,7 +39,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
-        MapReadGet(
+        MapReadGet<ArticleImageBrowse>(
             app,
             ApiArticles + "/images",
             (HttpContext ctx, ArticleReads articles) =>
@@ -46,7 +47,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
-        MapReadGet(
+        MapReadGetNullable<ArticleDetail>(
             app,
             ApiArticles + "/{articleId:int}",
             (int articleId, ArticleReads articles, CancellationToken ct) =>

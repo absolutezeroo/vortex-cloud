@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // The website's news, written here and read by Vortex.WebApi's public endpoints.
   //
   // Three jobs on one page, so three tabs rather than three routes: an editor who adds a category
@@ -15,6 +15,16 @@
   //     so a shared header image would put French artwork on a German article.
   import { apiGet } from '../lib/api';
   import { createResource } from '../lib/resource';
+  import type { Block } from '../lib/articleBlocks';
+  import type {
+    ArticleCategoryOption,
+    ArticleDetail,
+    ArticleFormMeta,
+    ArticleImageBrowse,
+    ArticleListItem,
+    ArticleLanguageOption,
+    ArticleListResponse,
+  } from '../lib/apiTypes';
   import { createWriteOps } from '../lib/writeOps';
   import { diffFields } from '../lib/changes';
   import { hasDashboardCapability } from '../lib/permissions';
@@ -46,8 +56,6 @@
 
   let active = $state('articles');
 
-  // --- list ----------------------------------------------------------------------------------
-
   let status = $state('');
   let category = $state('');
   let language = $state('');
@@ -66,37 +74,58 @@
       if (search) params.set('q', search);
       params.set('page', String(page));
 
-      return apiGet(`/api/v1/articles?${params}`);
+      return apiGet<ArticleListResponse>(`/api/v1/articles?${params}`);
     }
   );
 
   const meta = createResource(
     () => ['articles-meta'],
-    () => apiGet('/api/v1/articles/meta')
+    () => apiGet<ArticleFormMeta>('/api/v1/articles/meta')
   );
 
-  let categories = $derived(meta.data?.categories ?? []);
+  let categories: ArticleCategoryOption[] = $derived(meta.data?.categories ?? []);
   let languages = $derived(meta.data?.languages ?? []);
-  let enabledLanguages = $derived(languages.filter((l) => l.enabled));
-  let defaultLanguageCode = $derived(languages.find((l) => l.isDefault)?.code ?? '');
+  let enabledLanguages = $derived(languages.filter((l: ArticleLanguageOption) => l.enabled));
+  let defaultLanguageCode = $derived(
+    languages.find((l: ArticleLanguageOption) => l.isDefault)?.code ?? '',
+  );
   let imageBase = $derived(meta.data?.imageBase ?? '');
   let imageDirectories = $derived(meta.data?.imageDirectories ?? ['web_promo']);
 
   function refreshAll() {
     articles.refresh();
     meta.refresh();
-    if (editing?.id) loadArticle(editing.id);
+    if (editing?.id) loadArticle(editing!.id);
   }
 
   const ops = createWriteOps(refreshAll);
 
-  // --- editor --------------------------------------------------------------------------------
-
   // `editing` is the article being written; null means the list is showing on its own. A new
   // article starts as an object with id 0 so the same form serves both cases.
-  let editing = $state(null);
+  /** The article being edited. A create starts as a blank one with id 0, so one form serves both. */
+  type ArticleForm = {
+    id: number;
+    slug: string;
+    category: string;
+    status: string;
+    publishAt: string;
+    pinned: boolean;
+    author: string;
+  };
+
+  /** One language's draft, as the drawer holds it before it is posted. */
+  type TranslationDraft = {
+    title: string;
+    summary: string;
+    /** The editor's own block vocabulary, as articleBlocks describes it. */
+    body: Block[];
+    headerImage: string;
+    thumbnail: string;
+  };
+
+  let editing = $state<ArticleForm | null>(null);
   let activeLang = $state('');
-  let translations = $state({});
+  let translations = $state<Record<string, TranslationDraft>>({});
   let loadingArticle = $state(false);
 
   // Two halves of the drawer: what is written, and how it is filed. The writing opens first.
@@ -112,12 +141,12 @@
 
   // What was on screen before the operator touched it. Kept so every write can be audited as
   // "field: before → after" without anybody typing a reason.
-  let editingBefore = $state(null);
-  let translationsBefore = $state({});
-  let categoryBefore = $state(null);
-  let languageBefore = $state(null);
+  let editingBefore = $state<ArticleForm | null>(null);
+  let translationsBefore = $state<Record<string, TranslationDraft>>({});
+  let categoryBefore = $state<ArticleCategoryOption | null>(null);
+  let languageBefore = $state<ArticleLanguageOption | null>(null);
 
-  function blankArticle() {
+  function blankArticle(): ArticleForm {
     return {
       id: 0,
       slug: '',
@@ -125,11 +154,11 @@
       status: 'Draft',
       publishAt: '',
       pinned: false,
-      author: $identity?.name ?? $identity?.email ?? '',
+      author: String($identity?.name ?? $identity?.email ?? ''),
     };
   }
 
-  function blankTranslation() {
+  function blankTranslation(): TranslationDraft {
     return { title: '', summary: '', body: [], headerImage: '', thumbnail: '' };
   }
 
@@ -144,13 +173,13 @@
     ensureTranslation(activeLang);
   }
 
-  async function loadArticle(id) {
+  async function loadArticle(id: number) {
     loadingArticle = true;
     editorTab = 'content';
     slugTouched = true;
 
     try {
-      const detail = await apiGet(`/api/v1/articles/${id}`);
+      const detail = await apiGet<ArticleDetail>(`/api/v1/articles/${id}`);
 
       editingBefore = {
         id: detail.id,
@@ -173,15 +202,15 @@
         author: detail.author,
       };
 
-      const next = {};
+      const next: Record<string, TranslationDraft> = {};
 
       for (const row of detail.translations ?? []) {
         next[row.lang] = {
           title: row.title,
           summary: row.summary,
           body: parseBody(row.body),
-          headerImage: row.headerImage,
-          thumbnail: row.thumbnail,
+          headerImage: row.headerImage ?? '',
+          thumbnail: row.thumbnail ?? '',
         };
       }
 
@@ -196,35 +225,35 @@
 
   // A body that will not parse is shown as an empty one rather than throwing: the row was edited
   // outside the application, and losing the editor over it helps nobody.
-  function parseBody(raw) {
+  function parseBody(raw: string | null | undefined): Block[] {
     try {
       const parsed = JSON.parse(raw || '[]');
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed) ? (parsed as Block[]) : [];
     } catch {
       return [];
     }
   }
 
-  function ensureTranslation(lang) {
+  function ensureTranslation(lang: string) {
     if (lang && !translations[lang]) {
       translations = { ...translations, [lang]: blankTranslation() };
     }
   }
 
-  function toLocalInput(iso) {
+  function toLocalInput(iso: string | null | undefined): string {
     if (!iso) return '';
 
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return '';
 
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
   let draft = $derived(activeLang ? translations[activeLang] ?? blankTranslation() : blankTranslation());
 
-  function patchDraft(patch) {
+  function patchDraft(patch: Partial<TranslationDraft>) {
     translations = { ...translations, [activeLang]: { ...draft, ...patch } };
   }
 
@@ -233,15 +262,15 @@
    * a writer types "Abobbados débarque en ville" and the URL becomes abobbados-debarque-en-ville
    * without them ever visiting the Publication tab.
    */
-  function onTitleInput(value) {
+  function onTitleInput(value: string) {
     patchDraft({ title: value });
 
-    if (!editing.id && !slugTouched && activeLang === defaultLanguageCode) {
-      editing.slug = slugify(value);
+    if (editing && !editing.id && !slugTouched && activeLang === defaultLanguageCode) {
+      editing!.slug = slugify(value);
     }
   }
 
-  function slugify(value) {
+  function slugify(value: string | null | undefined): string {
     return (value ?? '')
       // Decompose accents so "débarque" becomes "debarque" rather than losing the letter entirely.
       .normalize('NFD')
@@ -252,12 +281,10 @@
       .slice(0, 128);
   }
 
-  // --- image picker --------------------------------------------------------------------------
-
   // What the picker will do with the path it is given: 'header', 'thumbnail', or — from inside the
   // body editor, which owns its own blocks — the function that puts it there. One modal for all of
   // them; three near-identical pickers is how they drift.
-  let picking = $state(null);
+  let picking = $state<PickerTarget | null>(null);
   let pickerDir = $state('web_promo');
   let pickerSearch = $state('');
   let pickerPage = $state(1);
@@ -265,21 +292,33 @@
   const images = createResource(
     () => ['article-images', pickerDir, pickerSearch, pickerPage, picking !== null],
     () => {
-      if (picking === null) return Promise.resolve({ items: [], total: 0 });
+      if (picking === null) {
+        return Promise.resolve({
+          total: 0,
+          page: 1,
+          pageSize: 60,
+          count: 0,
+          items: [],
+          error: null,
+        } satisfies ArticleImageBrowse);
+      }
 
       const params = new URLSearchParams({ dir: pickerDir, page: String(pickerPage) });
       if (pickerSearch) params.set('q', pickerSearch);
 
-      return apiGet(`/api/v1/articles/images?${params}`);
+      return apiGet<ArticleImageBrowse>(`/api/v1/articles/images?${params}`);
     }
   );
 
-  function openPicker(target) {
+  /** Which field the picker is filling: one of the two named ones, or a callback for a body block. */
+  type PickerTarget = 'header' | 'thumbnail' | ((path: string) => void);
+
+  function openPicker(target: PickerTarget) {
     picking = target;
     pickerPage = 1;
   }
 
-  function choose(path) {
+  function choose(path: string) {
     if (picking === 'header') patchDraft({ headerImage: path });
     else if (picking === 'thumbnail') patchDraft({ thumbnail: path });
     else if (typeof picking === 'function') picking(path);
@@ -289,11 +328,9 @@
 
   // Stored paths are relative to the asset host's c_images tree, which is where the site reads them
   // from; the editor needs the whole URL to show anything.
-  function previewUrl(path) {
+  function previewUrl(path: string | null | undefined) {
     return imageBase && path ? `${imageBase}${path}` : '';
   }
-
-  // --- writes --------------------------------------------------------------------------------
 
   // The audited reason is BUILT, never typed: the page's summary plus the fields that actually
   // changed. An audit line reads "Save the article abobbados — Status: Draft → Published" instead of
@@ -330,22 +367,25 @@
   ]);
 
   function saveArticle() {
+    // The drawer this runs from only exists while an article is open.
+    const article = editing!;
+
     ops.ask(
       '/api/v1/operations/articles',
       {
-        articleId: editing.id,
-        slug: editing.slug,
-        category: editing.category,
-        status: editing.status,
+        articleId: article.id,
+        slug: article.slug,
+        category: article.category,
+        status: article.status,
         // datetime-local has no zone; the server stores UTC, so it is converted here rather than
         // guessed there.
-        publishAt: editing.publishAt ? new Date(editing.publishAt).toISOString() : null,
-        pinned: editing.pinned,
-        author: editing.author,
+        publishAt: article.publishAt ? new Date(article.publishAt).toISOString() : null,
+        pinned: article.pinned,
+        author: article.author,
         translation: articleTranslationPayload,
       },
-      editing.id ? $t('articles.saveArticle') : $t('articles.createArticle'),
-      $t('articles.saveArticleSummary', { slug: editing.slug }),
+      article.id ? $t('articles.saveArticle') : $t('articles.createArticle'),
+      $t('articles.saveArticleSummary', { slug: article.slug }),
       {
         key: 'article',
         changes: [
@@ -356,7 +396,9 @@
             translationFields
           ),
         ],
-        onSuccess: (result) => { if (!editing.id && result?.id) loadArticle(result.id); },
+        onSuccess: (result) => {
+          if (!article.id && result?.id) loadArticle(Number(result.id));
+        },
       }
     );
   }
@@ -382,14 +424,14 @@
   function deleteTranslation() {
     ops.ask(
       '/api/v1/operations/articles/translation/delete',
-      { articleId: editing.id, lang: activeLang },
+      { articleId: editing!.id, lang: activeLang },
       $t('articles.deleteTranslation'),
-      $t('articles.deleteTranslationSummary', { lang: activeLang, slug: editing.slug }),
+      $t('articles.deleteTranslationSummary', { lang: activeLang, slug: editing!.slug }),
       { key: 'translation' }
     );
   }
 
-  function deleteArticle(row) {
+  function deleteArticle(row: ArticleListItem) {
     ops.ask(
       '/api/v1/operations/articles/delete',
       { articleId: row.id },
@@ -398,27 +440,32 @@
     );
   }
 
-  // --- categories and languages ---------------------------------------------------------------
-
   // Null means no drawer open. Same shape as the article editor above: a form only exists while it
   // is being filled, and never as a panel the list has to be scrolled past.
-  let categoryDraft = $state(null);
-  let languageDraft = $state(null);
+  /** The category and language rows being edited, each null while their drawer is closed. */
+  let categoryDraft = $state<ArticleCategoryOption | null>(null);
+  let languageDraft = $state<ArticleLanguageOption | null>(null);
 
-  const blankCategory = () => ({ id: 0, code: '', sortOrder: 0, enabled: true });
+  const blankCategory = (): ArticleCategoryOption => ({
+    id: 0,
+    code: '',
+    labels: '{}',
+    sortOrder: 0,
+    enabled: true,
+  });
 
   // The labels dictionary, edited as one text box per language rather than as raw JSON: the person
   // filing an article under "Campagnes" is a writer, and `{"fr":"…","en":"…"}` is not a field a
   // writer should ever be shown.
-  let categoryLabels = $state({});
+  let categoryLabels = $state<Record<string, string>>({});
 
-  function openCategory(item) {
+  function openCategory(item: ArticleCategoryOption | null) {
     categoryDraft = item ? { ...item } : blankCategory();
     categoryBefore = item ? { ...item } : blankCategory();
     categoryLabels = parseLabels(item?.labels);
   }
 
-  function parseLabels(raw) {
+  function parseLabels(raw: string | null | undefined): Record<string, string> {
     try {
       const parsed = JSON.parse(raw || '{}');
       return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
@@ -428,15 +475,15 @@
   }
 
   /** The labels a table cell can read, in the order the languages are listed. */
-  function labelList(raw) {
+  function labelList(raw: string | null | undefined) {
     const parsed = parseLabels(raw);
 
     return languages
-      .filter((lang) => parsed[lang.code])
-      .map((lang) => ({ code: lang.code, text: parsed[lang.code] }));
+      .filter((lang: ArticleLanguageOption) => parsed[lang.code])
+      .map((lang: ArticleLanguageOption) => ({ code: lang.code, text: parsed[lang.code] }));
   }
 
-  function openLanguage(item) {
+  function openLanguage(item: ArticleLanguageOption | null) {
     languageDraft = item ? { ...item } : blankLanguage();
     languageBefore = item ? { ...item } : blankLanguage();
   }
@@ -451,54 +498,62 @@
   });
 
   function saveCategory() {
+    const category = categoryDraft!;
     const labels = JSON.stringify(
       // Blank boxes are absent labels, not empty ones: an empty string would read as a translated
       // label that happens to say nothing, and the site would print it.
       Object.fromEntries(
-        Object.entries(categoryLabels).filter(([, text]) => (text ?? '').trim().length > 0)
+        Object.entries(categoryLabels).filter(
+          ([, text]) => String(text ?? '').trim().length > 0,
+        )
       )
     );
 
     ops.ask(
       '/api/v1/operations/articles/category',
       {
-        categoryId: categoryDraft.id,
-        code: categoryDraft.code,
+        categoryId: category.id,
+        code: category.code,
         labels,
-        sortOrder: categoryDraft.sortOrder,
-        enabled: categoryDraft.enabled,
+        sortOrder: category.sortOrder,
+        enabled: category.enabled,
       },
       $t('articles.saveCategory'),
-      $t('articles.saveCategorySummary', { code: categoryDraft.code }),
+      $t('articles.saveCategorySummary', { code: category.code }),
       {
         key: 'category',
         changes: diffFields(
-          categoryBefore,
-          { ...categoryDraft, labels },
+          categoryBefore && { ...categoryBefore },
+          { ...category, labels },
           categoryFields
         ),
-        onSuccess: () => (categoryDraft = null),
+        onSuccess: () => {
+          categoryDraft = null;
+        },
       }
     );
   }
 
   function saveLanguage() {
+    const lang = languageDraft!;
     ops.ask(
       '/api/v1/operations/articles/language',
       {
-        languageId: languageDraft.id,
-        code: languageDraft.code,
-        label: languageDraft.label,
-        isDefault: languageDraft.isDefault,
-        enabled: languageDraft.enabled,
-        sortOrder: languageDraft.sortOrder,
+        languageId: languageDraft!.id,
+        code: lang.code,
+        label: lang.label,
+        isDefault: lang.isDefault,
+        enabled: lang.enabled,
+        sortOrder: lang.sortOrder,
       },
       $t('articles.saveLanguage'),
-      $t('articles.saveLanguageSummary', { code: languageDraft.code }),
+      $t('articles.saveLanguageSummary', { code: lang.code }),
       {
         key: 'language',
-        changes: diffFields(languageBefore, languageDraft, languageFields),
-        onSuccess: () => (languageDraft = null),
+        changes: diffFields(languageBefore && { ...languageBefore }, { ...lang }, languageFields),
+        onSuccess: () => {
+          languageDraft = null;
+        },
       }
     );
   }
@@ -594,7 +649,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each articles.data.items as row (row.id)}
+          {#each articles.data!.items as row (row.id)}
             <tr>
               <td>
                 <strong>{row.title || row.slug}</strong>
@@ -633,10 +688,10 @@
       </table>
 
       <Pagination
-        page={articles.data.page}
-        pageCount={Math.max(1, Math.ceil(articles.data.total / articles.data.pageSize))}
-        total={articles.data.total}
-        pageSize={articles.data.pageSize}
+        page={articles.data!.page}
+        pageCount={Math.max(1, Math.ceil(articles.data!.total / articles.data!.pageSize))}
+        total={articles.data!.total}
+        pageSize={articles.data!.pageSize}
         label={$t('articles.tabArticles')}
         prevLabel={$t('common.prev')}
         nextLabel={$t('common.next')}
@@ -651,7 +706,7 @@
     <!-- A drawer, not a panel under the table: the form is long (article fields, then a translation
          per language, then its blocks) and splicing it into the page pushes the list off screen. -->
     <Drawer
-      title={editing.id ? $t('articles.editorTitle') : $t('articles.newArticle')}
+      title={editing!.id ? $t('articles.editorTitle') : $t('articles.newArticle')}
       eyebrow={$t('articles.title')}
       width={860}
       onclose={() => (editing = null)}
@@ -686,14 +741,14 @@
 
         <div class="op-field">
           <label for="translation-title">{$t('articles.articleTitle')}</label>
-          <input autocomplete="off" id="translation-title" value={draft.title} oninput={(e) => onTitleInput(e.target.value)} />
-          {#if !editing.id && editing.slug}
-            <small class="muted">{$t('articles.slugPreview', { slug: editing.slug })}</small>
+          <input autocomplete="off" id="translation-title" value={draft.title} oninput={(e) => onTitleInput((e.target as HTMLInputElement).value)} />
+          {#if !editing.id && editing!.slug}
+            <small class="muted">{$t('articles.slugPreview', { slug: editing!.slug })}</small>
           {/if}
         </div>
         <div class="op-field">
           <label for="translation-summary">{$t('articles.summary')}</label>
-          <textarea id="translation-summary" rows="3" value={draft.summary} oninput={(e) => patchDraft({ summary: e.target.value })}></textarea>
+          <textarea id="translation-summary" rows="3" value={draft.summary} oninput={(e: Event) => patchDraft({ summary: (e.target as HTMLInputElement).value })}></textarea>
         </div>
 
         <div>
@@ -702,7 +757,7 @@
           <div class="op-field">
             <label for="translation-header">{$t('articles.headerImage')}</label>
             <div class="image-row">
-              <input autocomplete="off" spellcheck="false" id="translation-header" value={draft.headerImage} oninput={(e) => patchDraft({ headerImage: e.target.value })} placeholder="/web_promo/…" />
+              <input autocomplete="off" spellcheck="false" id="translation-header" value={draft.headerImage} oninput={(e: Event) => patchDraft({ headerImage: (e.target as HTMLInputElement).value })} placeholder="/web_promo/…" />
               <button type="button" class="ghost-button" onclick={() => openPicker('header')} aria-label={$t('articles.browseImages')}>
                 <Image size={14} strokeWidth={2} aria-hidden="true" />
                 {$t('articles.browse')}
@@ -715,7 +770,7 @@
           <div class="op-field">
             <label for="translation-thumbnail">{$t('articles.thumbnail')}</label>
             <div class="image-row">
-              <input autocomplete="off" spellcheck="false" id="translation-thumbnail" value={draft.thumbnail} oninput={(e) => patchDraft({ thumbnail: e.target.value })} placeholder={$t('articles.thumbnailHelp')} />
+              <input autocomplete="off" spellcheck="false" id="translation-thumbnail" value={draft.thumbnail} oninput={(e: Event) => patchDraft({ thumbnail: (e.target as HTMLInputElement).value })} placeholder={$t('articles.thumbnailHelp')} />
               <button type="button" class="ghost-button" onclick={() => openPicker('thumbnail')} aria-label={$t('articles.browseImages')}>
                 <Image size={14} strokeWidth={2} aria-hidden="true" />
                 {$t('articles.browse')}
@@ -735,7 +790,7 @@
           it re-read the body when the writer switches to another language or opens another article.
           Without the key the German text would be typed over the French document.
         -->
-        {#key `${editing.id ?? 'new'}:${activeLang}`}
+        {#key `${editing!.id ?? 'new'}:${activeLang}`}
           <ArticleBodyEditor
             value={draft.body}
             resolveUrl={previewUrl}
@@ -744,7 +799,7 @@
           />
         {/key}
 
-        {#if editing.id && translationsBefore[activeLang]}
+        {#if editing!.id && translationsBefore[activeLang]}
           <!-- Away from Save, and ghost rather than solid: removing a language is a rare act, and
                the destructive button should not be the biggest thing under a writer's cursor. -->
           <p>
@@ -756,12 +811,12 @@
       {:else}
         <div class="op-field">
           <label for="article-slug">{$t('articles.slug')}</label>
-          <input autocomplete="off" spellcheck="false" id="article-slug" value={editing.slug} oninput={(e) => { slugTouched = true; editing.slug = e.target.value; }} placeholder="abobbados" />
+          <input autocomplete="off" spellcheck="false" id="article-slug" value={editing!.slug} oninput={(e) => { slugTouched = true; editing!.slug = (e.target as HTMLInputElement).value; }} placeholder="abobbados" />
           <small class="muted">{$t('articles.slugHelp')}</small>
         </div>
         <div class="op-field">
           <label for="article-category">{$t('articles.category')}</label>
-          <select id="article-category" bind:value={editing.category}>
+          <select id="article-category" bind:value={editing!.category}>
             {#each categories as item (item.code)}
               <option value={item.code}>{item.code}</option>
             {/each}
@@ -769,7 +824,7 @@
         </div>
         <div class="op-field">
           <label for="article-status">{$t('articles.status')}</label>
-          <select id="article-status" bind:value={editing.status}>
+          <select id="article-status" bind:value={editing!.status}>
             <option value="Draft">{$t('articles.statusDraft')}</option>
             <option value="Published">{$t('articles.statusPublished')}</option>
             <option value="Archived">{$t('articles.statusArchived')}</option>
@@ -777,15 +832,15 @@
         </div>
         <div class="op-field">
           <label for="article-publish-at">{$t('articles.publishAt')}</label>
-          <input autocomplete="off" type="datetime-local" id="article-publish-at" bind:value={editing.publishAt} />
+          <input autocomplete="off" type="datetime-local" id="article-publish-at" bind:value={editing!.publishAt} />
           <small class="muted">{$t('articles.publishAtHelp')}</small>
         </div>
         <div class="op-field">
           <label for="article-author">{$t('articles.author')}</label>
-          <input autocomplete="off" spellcheck="false" id="article-author" bind:value={editing.author} />
+          <input autocomplete="off" spellcheck="false" id="article-author" bind:value={editing!.author} />
         </div>
         <div class="op-checkbox-field">
-          <input type="checkbox" id="article-pinned" bind:checked={editing.pinned} />
+          <input type="checkbox" id="article-pinned" bind:checked={editing!.pinned} />
           <label for="article-pinned">{$t('articles.pinnedLabel')}</label>
         </div>
       {/if}
@@ -797,7 +852,7 @@
       {#snippet actions()}
         {#if canManage}
           <button type="button" onclick={saveArticle} disabled={!canSave}>
-            {editing.id ? $t('articles.saveArticle') : $t('articles.createArticle')}
+            {editing!.id ? $t('articles.saveArticle') : $t('articles.createArticle')}
           </button>
           {#if !canSave}
             <span class="muted">{$t('articles.saveBlocked')}</span>
@@ -872,7 +927,7 @@
     >
       <div class="op-field">
         <label for="category-code">{$t('articles.code')}</label>
-        <input autocomplete="off" spellcheck="false" id="category-code" bind:value={categoryDraft.code} placeholder="campagnes" />
+        <input autocomplete="off" spellcheck="false" id="category-code" bind:value={categoryDraft!.code} placeholder="campagnes" />
       </div>
       <!-- One box per language. What is stored is still a dictionary, but nobody types braces. -->
       {#each enabledLanguages as lang (lang.code)}
@@ -882,7 +937,7 @@
             autocomplete="off"
             id="category-label-{lang.code}"
             value={categoryLabels[lang.code] ?? ''}
-            oninput={(e) => (categoryLabels = { ...categoryLabels, [lang.code]: e.target.value })}
+            oninput={(e) => (categoryLabels = { ...categoryLabels, [lang.code]: (e.target as HTMLInputElement).value })}
             placeholder={lang.isDefault ? 'Campagnes' : ''}
           />
         </div>
@@ -890,17 +945,17 @@
       <small class="muted">{$t('articles.labelsHelp')}</small>
       <div class="op-field">
         <label for="category-order">{$t('articles.sortOrder')}</label>
-        <input autocomplete="off" type="number" id="category-order" bind:value={categoryDraft.sortOrder} />
+        <input autocomplete="off" type="number" id="category-order" bind:value={categoryDraft!.sortOrder} />
       </div>
       <div class="op-checkbox-field">
-        <input type="checkbox" id="category-enabled" bind:checked={categoryDraft.enabled} />
+        <input type="checkbox" id="category-enabled" bind:checked={categoryDraft!.enabled} />
         <label for="category-enabled">{$t('articles.enabled')}</label>
       </div>
 
       {#if $ops.results?.category}<OpResult result={$ops.results.category} />{/if}
 
       {#snippet actions()}
-        <button type="button" onclick={saveCategory} disabled={!categoryDraft.code}>
+        <button type="button" onclick={saveCategory} disabled={!categoryDraft!.code}>
           {$t('articles.saveCategory')}
         </button>
       {/snippet}
@@ -965,36 +1020,36 @@
 
   {#if canManage && languageDraft}
     <Drawer
-      title={languageDraft.id ? $t('common.edit') : $t('articles.newLanguage')}
+      title={languageDraft!.id ? $t('common.edit') : $t('articles.newLanguage')}
       eyebrow={$t('articles.tabLanguages')}
       onclose={() => (languageDraft = null)}
     >
       <div class="op-field">
         <label for="language-code">{$t('articles.code')}</label>
-        <input autocomplete="off" spellcheck="false" id="language-code" bind:value={languageDraft.code} placeholder="fr" />
+        <input autocomplete="off" spellcheck="false" id="language-code" bind:value={languageDraft!.code} placeholder="fr" />
       </div>
       <div class="op-field">
         <label for="language-label">{$t('articles.label')}</label>
-        <input autocomplete="off" id="language-label" bind:value={languageDraft.label} placeholder="Français" />
+        <input autocomplete="off" id="language-label" bind:value={languageDraft!.label} placeholder="Français" />
         <small class="muted">{$t('articles.labelHelp')}</small>
       </div>
       <div class="op-field">
         <label for="language-order">{$t('articles.sortOrder')}</label>
-        <input autocomplete="off" type="number" id="language-order" bind:value={languageDraft.sortOrder} />
+        <input autocomplete="off" type="number" id="language-order" bind:value={languageDraft!.sortOrder} />
       </div>
       <div class="op-checkbox-field">
-        <input type="checkbox" id="language-default" bind:checked={languageDraft.isDefault} />
+        <input type="checkbox" id="language-default" bind:checked={languageDraft!.isDefault} />
         <label for="language-default">{$t('articles.defaultLanguage')}</label>
       </div>
       <div class="op-checkbox-field">
-        <input type="checkbox" id="language-enabled" bind:checked={languageDraft.enabled} />
+        <input type="checkbox" id="language-enabled" bind:checked={languageDraft!.enabled} />
         <label for="language-enabled">{$t('articles.enabled')}</label>
       </div>
 
       {#if $ops.results?.language}<OpResult result={$ops.results.language} />{/if}
 
       {#snippet actions()}
-        <button type="button" onclick={saveLanguage} disabled={!languageDraft.code || !languageDraft.label}>
+        <button type="button" onclick={saveLanguage} disabled={!languageDraft!.code || !languageDraft!.label}>
           {$t('articles.saveLanguage')}
         </button>
       {/snippet}
@@ -1034,7 +1089,7 @@
       <EmptyState message={$t('articles.noImages')} />
     {:else}
       <div class="gallery-grid">
-        {#each images.data.items as image (image.path)}
+        {#each images.data!.items as image (image.path)}
           <button type="button" class="gallery-item" onclick={() => choose(image.path)} title={image.path}>
             <AssetImage src={previewUrl(image.thumb)} alt={image.path} size={80} />
             <span class="gallery-name">{image.path.split('/').pop()}</span>

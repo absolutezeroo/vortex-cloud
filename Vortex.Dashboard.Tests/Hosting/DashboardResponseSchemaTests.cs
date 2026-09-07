@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Observability.Configuration;
@@ -42,6 +43,10 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/polls/question-types", typeof(PollQuestionTypeOptions)),
         ("/api/v1/polls/{pollId:int}", typeof(PollDetail)),
         ("/api/v1/polls/{pollId:int}/results", typeof(PollResults)),
+        ("/api/v1/articles", typeof(ArticleListResponse)),
+        ("/api/v1/articles/meta", typeof(ArticleFormMeta)),
+        ("/api/v1/articles/images", typeof(ArticleImageBrowse)),
+        ("/api/v1/articles/{articleId:int}", typeof(ArticleDetail)),
     ];
 
     [Fact]
@@ -75,6 +80,9 @@ public sealed class DashboardResponseSchemaTests
 
         statuses["/api/v1/polls/{pollId:int}"].Should().Contain(StatusCodes.Status404NotFound);
         statuses["/api/v1/polls/{pollId:int}/results"]
+            .Should()
+            .Contain(StatusCodes.Status404NotFound);
+        statuses["/api/v1/articles/{articleId:int}"]
             .Should()
             .Contain(StatusCodes.Status404NotFound);
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using FluentAssertions;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Xunit;
 
@@ -46,6 +47,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(PollDetail),
         typeof(PollResults),
         typeof(PollQuestionTypeOptions),
+        typeof(ArticleListResponse),
+        typeof(ArticleDetail),
+        typeof(ArticleFormMeta),
+        typeof(ArticleImageBrowse),
     ];
 
     [Fact]

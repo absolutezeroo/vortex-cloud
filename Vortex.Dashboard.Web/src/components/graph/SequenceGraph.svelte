@@ -166,8 +166,6 @@
     window.addEventListener('pointerup', up);
   }
 
-  // --- moving a node ---------------------------------------------------------------------------
-
   function startMove(node: any, event: PointerEvent) {
     event.preventDefault();
     selected = node.id;
@@ -185,8 +183,6 @@
       ports += 1;
     });
   }
-
-  // --- drawing a wire --------------------------------------------------------------------------
 
   /**
    * A wire can be started from either end.
@@ -367,8 +363,6 @@
     );
   }
 
-  // --- the canvas itself -----------------------------------------------------------------------
-
   function startPan(event: PointerEvent) {
     // Middle button, or the background with the left one: the two ways every node editor pans.
     const target = event.target as HTMLElement;
@@ -397,8 +391,6 @@
     zoom = next;
     ports += 1;
   }
-
-  // --- what the palette drops --------------------------------------------------------------------
 
   function addAction(name: string) {
     onchange([...steps, { actionCode: name, filters: [] }]);
