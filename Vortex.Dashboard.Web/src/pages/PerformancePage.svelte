@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Room contention: what the tick actually spends its time on, step by step, plus the latency of
   // the calls every room makes to the (single, global) room directory grain.
   //
@@ -15,6 +15,10 @@
   import { Timer, Activity, Repeat } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
+  import type { RoomPerformanceSnapshot } from '../lib/apiTypes';
+
+  /** One poll's worth of p95s, keyed by step name. The server keeps samples, not history. */
+  type ChartPoint = { label: string; values: Record<string, number> };
 
   const REFRESH_MS = 5000;
   const CHART_POINTS = 60;
@@ -33,16 +37,16 @@
     '#6fbfa8',
   ];
 
-  let data = $state(null);
+  let data = $state<RoomPerformanceSnapshot | null>(null);
   let error = $state('');
   let forbidden = $state(false);
-  let history = $state([]);
+  let history = $state<ChartPoint[]>([]);
 
 
 
 
   // Assignment order, not cost order, so colours are stable while the table re-sorts.
-  let stepOrder = $state([]);
+  let stepOrder = $state<string[]>([]);
 
 
   async function refresh() {
@@ -50,18 +54,20 @@
     error = '';
 
     try {
-      const next = await apiGet('/api/v1/monitoring/room-performance');
+      const next = await apiGet<RoomPerformanceSnapshot>(
+        '/api/v1/monitoring/room-performance',
+      );
       data = next;
 
-      for (const step of next.steps || []) {
+      for (const step of next.steps) {
         if (!stepOrder.includes(step.name)) {
           stepOrder = [...stepOrder, step.name];
         }
       }
 
-      const values = {};
-      for (const step of next.steps || []) {
-        values[step.name] = Number(step.p95Ms || 0);
+      const values: Record<string, number> = {};
+      for (const step of next.steps) {
+        values[step.name] = step.p95Ms;
       }
 
       history = [
@@ -75,7 +81,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     }
   }
 
@@ -84,14 +90,14 @@
     const interval = setInterval(refresh, REFRESH_MS);
     return () => clearInterval(interval);
   });
-  let steps = $derived(data?.steps || []);
-  let directoryCalls = $derived(data?.directoryCalls || []);
-  let tick = $derived(data?.tick || null);
-  let windowSeconds = $derived(data?.windowSeconds || 0);
+  let steps = $derived(data?.steps ?? []);
+  let directoryCalls = $derived(data?.directoryCalls ?? []);
+  let tick = $derived(data?.tick ?? null);
+  let windowSeconds = $derived(data?.windowSeconds ?? 0);
   // A window with zero ticks means nothing is loaded or metrics are off -- distinguish the two so
   // the operator is not left guessing which.
   let idle = $derived((tick?.count || 0) === 0 && steps.length === 0);
-  let colorFor = $derived((name) => {
+  let colorFor = $derived((name: string) => {
     const index = stepOrder.indexOf(name);
     return STEP_COLORS[(index < 0 ? 0 : index) % STEP_COLORS.length];
   });

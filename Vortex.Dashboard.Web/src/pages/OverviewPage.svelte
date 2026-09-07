@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatNumber } from '../lib/format';
@@ -11,22 +11,32 @@
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import { t, locale } from '../lib/i18n';
+  import type { DashboardInventory, DashboardOverview } from '../lib/apiTypes';
+
+  /** One 10s poll, kept client-side: the server answers with a window, not a history. */
+  type TrendSample = {
+    label: string;
+    packetRate: number;
+    errorRate: number;
+    latencyP50: number;
+    at: number;
+  };
   import { get } from 'svelte/store';
   import { Activity, Users, DoorOpen, Sparkles, Cpu, Gauge, TriangleAlert, Timer } from '@lucide/svelte';
 
-  let data = $state(null);
+  let data = $state<DashboardOverview | null>(null);
   let error = $state('');
   let forbidden = $state(false);
-  let trend = $state([]);
+  let trend = $state<TrendSample[]>([]);
   // What the hotel contains, as opposed to how it is behaving. Fetched once (it moves on the scale
   // of an admin edit, not of a tick) and never on the 10s health poll.
-  let inventory = $state(null);
+  let inventory = $state<DashboardInventory | null>(null);
   const maxTrendSamples = 20;
 
-  function addTrendSample(snapshot) {
-    const packetRate = Number(snapshot?.live?.packetsPerSecond ?? 0);
-    const errorRate = Number(snapshot?.live?.errorsPerMinute ?? 0);
-    const p50 = Number(snapshot?.live?.latencyP50Ms ?? 0);
+  function addTrendSample(snapshot: DashboardOverview) {
+    const packetRate = snapshot.live.packetsPerSecond;
+    const errorRate = snapshot.live.errorsPerMinute;
+    const p50 = snapshot.live.latencyP50Ms;
     const label = new Date().toLocaleTimeString(get(locale) === 'fr' ? 'fr-FR' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -53,7 +63,7 @@
     forbidden = false;
     error = '';
     try {
-      data = await apiGet('/api/v1/monitoring/overview');
+      data = await apiGet<DashboardOverview>('/api/v1/monitoring/overview');
       addTrendSample(data);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -62,13 +72,13 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     }
   }
 
   async function loadInventory() {
     try {
-      inventory = await apiGet('/api/v1/monitoring/inventory');
+      inventory = await apiGet<DashboardInventory>('/api/v1/monitoring/inventory');
     } catch {
       // The inventory is a secondary panel: a failure here must not blank the health page.
       inventory = null;
@@ -123,22 +133,22 @@
         <Cpu size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('overview.packetsPerSec')} value={formatNumber(data?.live?.packetsPerSecond, 2)}>
+    <StatCard label={$t('overview.packetsPerSec')} value={formatNumber(data?.live.packetsPerSecond, 2)}>
       {#snippet icon()}
         <Gauge size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('overview.errorsPerMin')} value={formatNumber(data?.live?.errorsPerMinute, 2)}>
+    <StatCard label={$t('overview.errorsPerMin')} value={formatNumber(data?.live.errorsPerMinute, 2)}>
       {#snippet icon()}
         <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('overview.latencyP50')} value={`${formatNumber(data?.live?.latencyP50Ms, 2)} ms`}>
+    <StatCard label={$t('overview.latencyP50')} value={`${formatNumber(data?.live.latencyP50Ms, 2)} ms`}>
       {#snippet icon()}
         <Timer size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('overview.latencyP95')} value={`${formatNumber(data?.live?.latencyP95Ms, 2)} ms`}>
+    <StatCard label={$t('overview.latencyP95')} value={`${formatNumber(data?.live.latencyP95Ms, 2)} ms`}>
       {#snippet icon()}
         <Timer size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
@@ -165,7 +175,7 @@
       <table>
         <thead><tr><th>{$t('overview.colPlayer')}</th><th>{$t('overview.colPacketsMin')}</th></tr></thead>
         <tbody>
-          {#each data?.live?.topAbusers || [] as row}
+          {#each data?.live.topAbusers ?? [] as row}
             <tr>
               <td><EntityLink id={row.playerId} label={`player #${row.playerId}`} {openPlayer} {openItem} /></td>
               <td class="num-cell">{formatNumber(row.packetsPerMinute, 2)}</td>
@@ -184,7 +194,7 @@
       <table>
         <thead><tr><th>{$t('overview.colRoom')}</th><th>{$t('overview.colPacketsMin')}</th></tr></thead>
         <tbody>
-          {#each data?.live?.topRooms || [] as row}
+          {#each data?.live.topRooms ?? [] as row}
             <tr><td>room #{row.roomId}</td><td class="num-cell">{formatNumber(row.packetsPerMinute, 2)}</td></tr>
           {:else}
             <tr><td colspan="2" class="muted">{$t('overview.noRoomTraffic')}</td></tr>
@@ -202,7 +212,7 @@
       <small class="muted">{$t('overview.inventoryHint')}</small>
     </div>
     <div class="inventory-grid">
-      {#each inventory.groups || [] as group}
+      {#each inventory.groups as group}
         <div class="inventory-group">
           <h3>{$t(`overview.inventoryGroup.${group.key}`)}</h3>
           <ul>

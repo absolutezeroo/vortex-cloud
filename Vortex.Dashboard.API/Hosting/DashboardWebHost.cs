@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Vortex.Dashboard.API.Api;
+using Vortex.Dashboard.API.Api.Platform;
 using Vortex.Dashboard.API.Http;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;

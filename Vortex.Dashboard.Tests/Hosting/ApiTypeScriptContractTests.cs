@@ -12,6 +12,7 @@ using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
+using Vortex.Observability.Runtime;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;
@@ -128,6 +129,12 @@ public sealed class ApiTypeScriptContractTests
         typeof(PlayerProfile),
         typeof(ItemProfile),
         typeof(RoomTimeline),
+        typeof(DashboardOverview),
+        typeof(PacketStats),
+        typeof(InfrastructureHealthSnapshot),
+        typeof(IncidentDetectionSnapshot),
+        typeof(RoomPerformanceSnapshot),
+        typeof(BackupList),
     ];
 
     [Fact]
@@ -253,8 +260,23 @@ public sealed class ApiTypeScriptContractTests
         return $"  {property}: \"{value}\";";
     }
 
+    /// <summary>Where a type has to live to be part of the published contract.</summary>
+    /// <remarks>
+    /// The observability snapshots are in the list because they ARE the answer for
+    /// <c>/infrastructure</c>, <c>/incidents</c> and <c>/room-performance</c> -- the read hands back
+    /// what the service produced, untouched. Copying them into records here would be a second
+    /// description of one shape, which is the failure this file exists to prevent.
+    /// </remarks>
+    private static readonly string[] ContractNamespaces =
+    [
+        "Vortex.Dashboard.API.Api",
+        "Vortex.Observability.Runtime",
+    ];
+
     private static bool IsContract(Type type) =>
-        type.Namespace?.StartsWith("Vortex.Dashboard.API.Api", StringComparison.Ordinal) == true;
+        ContractNamespaces.Any(space =>
+            type.Namespace?.StartsWith(space, StringComparison.Ordinal) == true
+        );
 
     /// <summary>The type a collection or a nullable is carrying, or the type itself.</summary>
     private static Type Unwrap(Type type)

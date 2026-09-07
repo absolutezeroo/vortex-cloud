@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatNumber } from '../lib/format';
@@ -7,8 +7,9 @@
   import { Gauge, TriangleAlert, Timer } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
+  import type { PacketStats } from '../lib/apiTypes';
 
-  let data = $state(null);
+  let data = $state<PacketStats | null>(null);
   let error = $state('');
   let forbidden = $state(false);
 
@@ -28,7 +29,7 @@
     error = '';
 
     try {
-      data = await apiGet('/api/v1/monitoring/packet-stats');
+      data = await apiGet<PacketStats>('/api/v1/monitoring/packet-stats');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -36,7 +37,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     }
   }
 

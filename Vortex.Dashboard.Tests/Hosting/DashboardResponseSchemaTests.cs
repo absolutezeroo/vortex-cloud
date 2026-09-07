@@ -16,6 +16,7 @@ using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Observability.Configuration;
+using Vortex.Observability.Runtime;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;
@@ -81,6 +82,12 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/directory/entity/{id}", typeof(ItemProfile)),
         ("/api/v1/directory/players/{playerId:int}/profile", typeof(PlayerProfile)),
         ("/api/v1/directory/rooms/{roomId:int}", typeof(RoomTimeline)),
+        ("/api/v1/monitoring/overview", typeof(DashboardOverview)),
+        ("/api/v1/monitoring/packet-stats", typeof(PacketStats)),
+        ("/api/v1/monitoring/infrastructure", typeof(InfrastructureHealthSnapshot)),
+        ("/api/v1/monitoring/incidents", typeof(IncidentDetectionSnapshot)),
+        ("/api/v1/monitoring/room-performance", typeof(RoomPerformanceSnapshot)),
+        ("/api/v1/database/backups", typeof(BackupList)),
         ("/api/v1/achievements", typeof(AchievementListResponse)),
         ("/api/v1/achievements/stats", typeof(AchievementStats)),
         ("/api/v1/achievements/resolutions", typeof(AchievementResolutions)),

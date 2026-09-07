@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatDate, formatNumber } from '../lib/format';
@@ -7,8 +7,9 @@
   import { Activity, TriangleAlert } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
+  import type { IncidentDetectionSnapshot } from '../lib/apiTypes';
 
-  let data = $state(null);
+  let data = $state<IncidentDetectionSnapshot | null>(null);
   let error = $state('');
   let forbidden = $state(false);
 
@@ -37,7 +38,7 @@
     error = '';
 
     try {
-      data = await apiGet('/api/v1/monitoring/incidents');
+      data = await apiGet<IncidentDetectionSnapshot>('/api/v1/monitoring/incidents');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -45,11 +46,11 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     }
   }
 
-  function severityClass(value) {
+  function severityClass(value: string | null | undefined) {
     const normalized = String(value || '').toLowerCase();
 
     if (normalized === 'critical') {
@@ -63,7 +64,7 @@
     return 'status-badge status-badge--ok';
   }
 
-  function formatRate(value) {
+  function formatRate(value: number | null | undefined) {
     const parsed = Number(value || 0);
 
     return `${formatNumber(parsed, 2)} /min`;
@@ -169,7 +170,7 @@
     {#each signals as signal}
       <article>
         <div class="split-grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 10px;">
-          <strong>{signal.title || signal.code || signal.name}</strong>
+          <strong>{signal.title || signal.code}</strong>
           <span class={severityClass(signal.severity)}>{signal.severity || $t('incidents.healthy')}</span>
         </div>
         <p>{signal.summary}</p>

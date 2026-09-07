@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Vortex.Dashboard.API.Api.Platform.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Platform;
 using Vortex.Dashboard.API.Operations.Platform.Contracts;
@@ -29,25 +30,24 @@ internal static partial class DashboardEndpoints
 
     public static void MapBackupReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<BackupList>(
             app,
             ApiBackup,
             (IDatabaseBackupService backups, CancellationToken ct) =>
                 OkAsync(
-                    Task.FromResult<object>(
-                        new
-                        {
-                            configured = backups.IsConfigured,
-                            items = backups
-                                .List()
-                                .Select(b => new
-                                {
-                                    b.FileName,
-                                    b.SizeBytes,
-                                    b.CreatedUtc,
-                                })
-                                .ToArray(),
-                        }
+                    Task.FromResult(
+                        new BackupList(
+                            backups.IsConfigured,
+                            [
+                                .. backups
+                                    .List()
+                                    .Select(b => new BackupFile(
+                                        b.FileName,
+                                        b.SizeBytes,
+                                        b.CreatedUtc
+                                    )),
+                            ]
+                        )
                     )
                 ),
             Capabilities.Dashboard.OpsDatabaseBackup,

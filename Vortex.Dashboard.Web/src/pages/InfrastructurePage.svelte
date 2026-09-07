@@ -1,4 +1,4 @@
-﻿<script>
+﻿<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { formatDate, formatDuration, formatNumber } from '../lib/format';
@@ -15,8 +15,9 @@
   import TableFilter from '../components/TableFilter.svelte';
   import { filterRows } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
+  import type { BackupList, InfrastructureHealthSnapshot } from '../lib/apiTypes';
 
-  let data = $state(null);
+  let data = $state<InfrastructureHealthSnapshot | null>(null);
   let error = $state('');
   let forbidden = $state(false);
 
@@ -24,11 +25,11 @@
   // kept is bootstrap config on purpose -- a retention an operator can set to zero from the same
   // screen as the mistake is not a safety net. Restoring is not offered here either; rolling the
   // whole database back discards every change since, which belongs in a maintenance window.
-  let backups = $state(null);
+  let backups = $state<BackupList | null>(null);
 
   // One row per dump ever taken, so this is the table that quietly gets long.
   let backupQuery = $state('');
-  let backupView = $derived(filterRows(backups?.items || [], backupQuery));
+  let backupView = $derived(filterRows(backups?.items, backupQuery));
   const backupOps = createWriteOps(loadBackups);
 
   let canBackup = $derived(hasDashboardCapability($identity, CAPABILITIES.opsDatabaseBackup));
@@ -37,7 +38,7 @@
     if (!canBackup) return;
 
     try {
-      backups = await apiGet('/api/v1/database/backups');
+      backups = await apiGet<BackupList>('/api/v1/database/backups');
     } catch {
       // A denied or unreachable listing must not take the rest of the page down with it.
       backups = null;
@@ -53,9 +54,9 @@
       { key: 'backup', danger: false },
     );
   }
-  let silos = $derived(data?.orleansCluster?.silos || []);
+  let silos = $derived(data?.orleansCluster.silos ?? []);
   let siloRows = $derived((() => {
-    const buckets = new Map();
+    const buckets = new Map<string, number>();
 
     for (const silo of silos) {
       const status = (silo.status || 'unknown').trim();
@@ -76,7 +77,9 @@
     forbidden = false;
     error = '';
     try {
-      data = await apiGet('/api/v1/monitoring/infrastructure');
+      data = await apiGet<InfrastructureHealthSnapshot>(
+        '/api/v1/monitoring/infrastructure',
+      );
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -84,11 +87,11 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     }
   }
 
-  function statusClass(status) {
+  function statusClass(status: string | null | undefined) {
     const normalized = String(status || '').toLowerCase();
 
     if (normalized === 'healthy' || normalized === 'running' || normalized === 'active') {
@@ -106,7 +109,7 @@
     return 'status-badge status-badge--unknown';
   }
 
-  function siloColor(status) {
+  function siloColor(status: string) {
     const normalized = String(status || '').trim().toLowerCase();
 
     if (normalized === 'active') {

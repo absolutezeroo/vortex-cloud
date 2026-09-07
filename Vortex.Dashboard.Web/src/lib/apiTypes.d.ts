@@ -195,6 +195,11 @@ export interface ArticleTranslation {
   thumbnail: string | null;
 }
 
+export interface AuditCategoryCount {
+  category: string;
+  count: number;
+}
+
 export interface AuditEntry {
   id: number;
   occurredAt: string;
@@ -229,6 +234,17 @@ export interface AvatarBatch {
 export interface AvatarBatchRow {
   id: number;
   avatarUrl: string | null;
+}
+
+export interface BackupFile {
+  fileName: string;
+  sizeBytes: number;
+  createdUtc: string;
+}
+
+export interface BackupList {
+  configured: boolean;
+  items: BackupFile[];
 }
 
 export interface BadgeCollector {
@@ -961,6 +977,20 @@ export interface DashboardInventory {
   groups: InventoryGroup[];
 }
 
+export interface DashboardOverview {
+  status: string;
+  health: InfrastructureHealthSnapshot;
+  uptimeSeconds: number;
+  managedMemoryMb: number;
+  activeSessions: number;
+  activeRooms: number;
+  activeClubSubscribers: number;
+  incidents: IncidentDetectionSnapshot;
+  live: OverviewLive;
+  auditLastHourByCategory: AuditCategoryCount[];
+  totals: OverviewTotals;
+}
+
 export interface DirectoryPage {
   count: number;
   total: number;
@@ -1384,6 +1414,13 @@ export interface HandItemRow {
   imageUrl: string | null;
 }
 
+export interface HealthComponentSnapshot {
+  name: string;
+  status: string;
+  detail: string;
+  latencyMs: number | null;
+}
+
 export interface IdSearch {
   kind: "id";
   term: string;
@@ -1396,6 +1433,33 @@ export interface IdSearch {
   itemHistory: PlayerItemRow[];
   chats: PlayerChatRow[];
   chestMoves: ChestMoveRow[];
+}
+
+export interface IncidentDetectionSnapshot {
+  overallSeverity: string;
+  signals: IncidentSignal[];
+  topErrorGroups: TopErrorGroupSnapshot[];
+  errorSpikesPerMinute: number;
+  loginFailedSpikesPerMinute: number;
+  generatedAt: string;
+}
+
+export interface IncidentSignal {
+  code: string;
+  severity: string;
+  title: string;
+  summary: string;
+  observed: number;
+  threshold: number;
+  detectedAt: string;
+}
+
+export interface InfrastructureHealthSnapshot {
+  overall: string;
+  database: HealthComponentSnapshot;
+  orleans: HealthComponentSnapshot;
+  runtime: RuntimeHealthSnapshot;
+  orleansCluster: OrleansClusterSnapshot;
 }
 
 export interface InventoryGroup {
@@ -1451,6 +1515,21 @@ export interface ItemSnapshot {
   roomZ: number;
   extraData: string | null;
   updatedAt: string;
+}
+
+export interface LiveAbuserSnapshot {
+  playerId: number;
+  packetsPerMinute: number;
+}
+
+export interface LivePacketOperationSnapshot {
+  operation: string;
+  packetsPerMinute: number;
+}
+
+export interface LiveRoomSnapshot {
+  roomId: number;
+  packetsPerMinute: number;
 }
 
 export interface LtdRaffleResultCount {
@@ -1848,6 +1927,45 @@ export interface NftStoreOfferRow {
   soldOut: boolean;
   isNft: boolean;
   iconUrl: string | null;
+}
+
+export interface OrleansClusterSnapshot {
+  status: string;
+  detail: string;
+  siloCount: number;
+  activeSiloCount: number;
+  silos: OrleansSiloSnapshot[];
+}
+
+export interface OrleansSiloSnapshot {
+  address: string;
+  status: string;
+}
+
+export interface OverviewLive {
+  packetsPerSecond: number;
+  errorsPerMinute: number;
+  latencyP50Ms: number;
+  latencyP95Ms: number;
+  topAbusers: LiveAbuserSnapshot[];
+  topRooms: LiveRoomSnapshot[];
+}
+
+export interface OverviewTotals {
+  audit: number;
+  ledger: number;
+  items: number;
+  performanceSamplesSinceStart: number;
+  asOf: string;
+}
+
+export interface PacketStats {
+  packetsPerSecond: number;
+  errorsPerMinute: number;
+  latencyP50Ms: number;
+  latencyP95Ms: number;
+  topOperations: LivePacketOperationSnapshot[];
+  topFailedOperations: LivePacketOperationSnapshot[];
 }
 
 export interface PetGrowthPoint {
@@ -2691,6 +2809,23 @@ export interface RoomDirectoryRow {
   lastActive: string;
 }
 
+export interface RoomPerformanceSeriesStats {
+  name: string;
+  count: number;
+  p50Ms: number;
+  p95Ms: number;
+  p99Ms: number;
+  sumMs: number;
+  shareOfTickPercent: number;
+}
+
+export interface RoomPerformanceSnapshot {
+  windowSeconds: number;
+  tick: RoomPerformanceSeriesStats;
+  steps: RoomPerformanceSeriesStats[];
+  directoryCalls: RoomPerformanceSeriesStats[];
+}
+
 export interface RoomTimeline {
   room: RoomTimelineHeader;
   page: number;
@@ -2730,6 +2865,20 @@ export interface RoomTimelineTotals {
   entries: number;
   chats: number;
   items: number;
+}
+
+export interface RuntimeHealthSnapshot {
+  status: string;
+  startedAtUtc: string;
+  uptimeSeconds: number;
+  machineName: string;
+  environmentName: string;
+  processId: number;
+  frameworkDescription: string;
+  osDescription: string;
+  processorCount: number;
+  workingSetMb: number;
+  managedMemoryMb: number;
 }
 
 export interface SanctionPresetKindOption {
@@ -2984,6 +3133,21 @@ export interface TargetedOfferTotals {
   totalCreditsSpent: number;
   totalActivityPointsSpent: number;
   totalQuantity: number;
+}
+
+export interface TopErrorGroupSnapshot {
+  fingerprint: string;
+  source: string;
+  operation: string;
+  exceptionType: string;
+  messageSignature: string;
+  sampleMessage: string;
+  totalOccurrences: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  lastActorPlayerId: number | null;
+  lastRoomId: number | null;
+  lastCorrelationId: string | null;
 }
 
 export interface UnknownSearch {
