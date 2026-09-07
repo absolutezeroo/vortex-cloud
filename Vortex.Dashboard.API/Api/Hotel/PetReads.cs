@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Database.Context;
 
 namespace Vortex.Dashboard.API.Api.Hotel;
@@ -15,8 +16,8 @@ internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFacto
     /// <summary>Read-only overview of the pets domain: population, type/race/rarity distribution,
     /// breeding activity, and average health (energy/nutrition). There is no dedicated pet audit
     /// category today, so this reads straight off <c>PetEntity</c> rather than an audit trail.</summary>
-    public Task<object> PetsStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PetStats> PetsStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<PetStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -50,25 +51,20 @@ internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFacto
                     r.ParentOneId is not null || r.ParentTwoId is not null
                 );
 
-                var byType = rows.GroupBy(r => r.Type)
-                    .Select(g => new { type = g.Key, count = g.Count() })
-                    .OrderByDescending(g => g.count)
+                List<PetTypeCount> byType = rows.GroupBy(r => r.Type)
+                    .Select(g => new PetTypeCount(g.Key, g.Count()))
+                    .OrderByDescending(g => g.Count)
                     .ToList();
 
-                var byRace = rows.GroupBy(r => new { r.Type, r.Race })
-                    .Select(g => new
-                    {
-                        type = g.Key.Type,
-                        race = g.Key.Race,
-                        count = g.Count(),
-                    })
-                    .OrderByDescending(g => g.count)
+                List<PetRaceCount> byRace = rows.GroupBy(r => new { r.Type, r.Race })
+                    .Select(g => new PetRaceCount(g.Key.Type, g.Key.Race, g.Count()))
+                    .OrderByDescending(g => g.Count)
                     .Take(20)
                     .ToList();
 
-                var byRarity = rows.GroupBy(r => r.RarityLevel)
-                    .Select(g => new { rarityLevel = g.Key, count = g.Count() })
-                    .OrderBy(g => g.rarityLevel)
+                List<PetRarityCount> byRarity = rows.GroupBy(r => r.RarityLevel)
+                    .Select(g => new PetRarityCount(g.Key, g.Count()))
+                    .OrderBy(g => g.RarityLevel)
                     .ToList();
 
                 Dictionary<DateTime, int> bucketMap = new();
@@ -89,14 +85,13 @@ internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFacto
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var growth = bucketMap
+                List<PetGrowthPoint> growth = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        petsCreated = pair.Value,
-                    })
+                    .Select(pair => new PetGrowthPoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
                 var topOwners = await db
@@ -114,41 +109,30 @@ internal sealed class PetReads(IDbContextFactory<VortexDbContext> dbContextFacto
                 Dictionary<int, string> ownerNames = await db.PlayerNamesAsync(ownerIds, ct)
                     .ConfigureAwait(false);
 
-                var topOwnersWithNames = topOwners
-                    .Select(o => new
-                    {
+                List<PetOwnerCount> topOwnersWithNames = topOwners
+                    .Select(o => new PetOwnerCount(
                         o.ownerId,
-                        ownerName = DisplayNameQueries.ResolvePlayerName(
-                            ownerNames,
-                            (int?)o.ownerId
-                        ),
-                        o.petCount,
-                    })
+                        DisplayNameQueries.ResolvePlayerName(ownerNames, (int?)o.ownerId),
+                        o.petCount
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new PetStats(
+                    new ReportWindow(since, until, granularity),
+                    new PetTotals(
                         totalPets,
                         avgLevel,
                         avgEnergy,
                         avgNutrition,
                         breedablePets,
-                        bredPets,
-                    },
+                        bredPets
+                    ),
                     byType,
                     byRace,
                     byRarity,
                     growth,
-                    topOwners = topOwnersWithNames,
-                };
+                    topOwnersWithNames
+                );
             },
             ct
         );

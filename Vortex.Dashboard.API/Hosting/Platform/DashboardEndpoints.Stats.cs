@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Dashboard.API.Api.Hotel;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Primitives.Permissions;
 
@@ -30,7 +31,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.GroupsRead,
             TagStats
         );
-        MapReadGet(
+        MapReadGet<PetStats>(
             app,
             ApiPets + "/stats",
             (HttpContext ctx, PetReads pets, CancellationToken ct) =>
@@ -54,7 +55,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CatalogPurchasesRead,
             TagStats
         );
-        MapReadGet(
+        MapReadGet<WiredStats>(
             app,
             ApiWired + "/stats",
             (HttpContext ctx, WiredReads wired, CancellationToken ct) =>

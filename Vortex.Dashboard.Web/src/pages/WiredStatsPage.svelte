@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
+  import type { WiredStats } from '../lib/apiTypes';
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -10,21 +11,22 @@
   import TableFilter from '../components/TableFilter.svelte';
   import SortTh from '../components/SortTh.svelte';
   import { filterRows, sortRows } from '../lib/tableView';
+  import type { Sort } from '../lib/tableView';
   import { t } from '../lib/i18n';
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<WiredStats | null>(null);
 
   // One filter + sort per table: byLogic alone is one row per registered logic key, which is the
   // table you cannot read by eye.
   let categoryQuery = $state('');
-  let categorySort = $state({ key: '', dir: 'desc' });
+  let categorySort = $state<Sort>({ key: '', dir: 'desc' });
   let logicQuery = $state('');
-  let logicSort = $state({ key: '', dir: 'desc' });
+  let logicSort = $state<Sort>({ key: '', dir: 'desc' });
   let roomQuery = $state('');
-  let roomSort = $state({ key: '', dir: 'desc' });
+  let roomSort = $state<Sort>({ key: '', dir: 'desc' });
 
   let categoryRows = $derived(data?.byCategory || []);
   let logicRows = $derived(data?.byLogic || []);
@@ -34,7 +36,7 @@
   let logicView = $derived(sortRows(filterRows(logicRows, logicQuery), logicSort));
   let roomView = $derived(sortRows(filterRows(roomRows, roomQuery), roomSort));
 
-  const categoryKeys = {
+  const categoryKeys: Record<string, string> = {
     trigger: 'wiredStats.categoryTrigger',
     condition: 'wiredStats.categoryCondition',
     action: 'wiredStats.categoryAction',
@@ -44,7 +46,7 @@
     other: 'wiredStats.categoryOther',
   };
 
-  function categoryLabel(category, translator) {
+  function categoryLabel(category: string, translator: (key: string) => string) {
     return translator(categoryKeys[category] || 'wiredStats.categoryOther');
   }
 
@@ -54,7 +56,7 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/wired/stats');
+      data = await apiGet<WiredStats>('/api/v1/wired/stats');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -62,7 +64,7 @@
         return;
       }
 
-      error = err.message;
+      error = err instanceof Error ? err.message : String(err);
       data = null;
     } finally {
       loading = false;

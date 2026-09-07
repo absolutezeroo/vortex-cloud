@@ -10,11 +10,15 @@
   // lib/avatars.js; falls back to a neutral head only if the player has no figure. Set avatar={false}
   
   type Props = {
-    type?: string;
-    id: any;
+    type?: 'player' | 'item' | 'room';
+    id: number | string | null | undefined;
     label?: string;
-    openPlayer: any;
-    openItem: any;
+    /**
+     * Both are optional and both are called with `?.`: a table of players passes only the player
+     * one, and declaring them required was a JSDoc habit rather than a fact about the component.
+     */
+    openPlayer?: (id: number | string | null | undefined, label?: string) => void;
+    openItem?: (id: number | string | null | undefined) => void;
     /** for tight inline usages where a head would be noise. */
     avatar?: boolean;
   };
@@ -33,7 +37,7 @@
   let showAvatar = $derived(type === 'player' && avatar && numId !== null && !Number.isNaN(numId));
   let avatarUrl = $derived(showAvatar ? $avatarCache.get(numId!) : undefined);
   let resolvedLabel = $derived(
-    label || $t(type === 'item' ? 'common.itemHash' : type === 'room' ? 'common.roomHash' : 'common.playerHash', { id }),
+    label || $t(type === 'item' ? 'common.itemHash' : type === 'room' ? 'common.roomHash' : 'common.playerHash', { id: id ?? '' }),
   );
 
   onMount(() => {

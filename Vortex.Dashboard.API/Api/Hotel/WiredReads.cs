@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
@@ -27,8 +28,8 @@ internal sealed class WiredReads(
     /// starts with <c>wf_</c>. Per-piece trigger/condition/action configuration lives in each row's
     /// <c>ExtraData</c> JSON blob, which is intentionally not parsed here (opaque, logic-specific
     /// shape) — this endpoint reports placement/category volume, not wired-script contents.</summary>
-    public Task<object> WiredStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<WiredStats> WiredStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<WiredStats>(
             async db =>
             {
                 List<(int RoomEntityId, string Logic, string Name)> placed = await (
@@ -48,21 +49,20 @@ internal sealed class WiredReads(
                 int totalWiredPlaced = placed.Count;
                 int roomsWithWired = placed.Select(p => p.RoomEntityId).Distinct().Count();
 
-                var byCategory = placed
+                List<WiredCategoryCount> byCategory = placed
                     .GroupBy(p => CategorizeWiredLogic(p.Logic))
-                    .Select(g => new { category = g.Key, count = g.Count() })
-                    .OrderByDescending(g => g.count)
+                    .Select(g => new WiredCategoryCount(g.Key, g.Count()))
+                    .OrderByDescending(g => g.Count)
                     .ToList();
 
-                var byLogic = placed
+                List<WiredLogicCount> byLogic = placed
                     .GroupBy(p => p.Logic)
-                    .Select(g => new
-                    {
-                        logic = g.Key,
-                        count = g.Count(),
-                        furniIconUrl = _assetUrls.FurniIcon(g.First().Name),
-                    })
-                    .OrderByDescending(g => g.count)
+                    .Select(g => new WiredLogicCount(
+                        g.Key,
+                        g.Count(),
+                        _assetUrls.FurniIcon(g.First().Name)
+                    ))
+                    .OrderByDescending(g => g.Count)
                     .Take(20)
                     .ToList();
 
@@ -77,22 +77,20 @@ internal sealed class WiredReads(
                 Dictionary<int, string> roomNames = await db.RoomNamesAsync(roomIds, ct)
                     .ConfigureAwait(false);
 
-                var topRooms = topRoomGroups
-                    .Select(g => new
-                    {
+                List<WiredRoomCount> topRooms = topRoomGroups
+                    .Select(g => new WiredRoomCount(
                         g.roomId,
-                        roomName = roomNames.GetValueOrDefault(g.roomId, $"room #{g.roomId}"),
-                        g.wiredCount,
-                    })
+                        roomNames.GetValueOrDefault(g.roomId, $"room #{g.roomId}"),
+                        g.wiredCount
+                    ))
                     .ToList();
 
-                return new
-                {
-                    totals = new { totalWiredPlaced, roomsWithWired },
+                return new WiredStats(
+                    new WiredTotals(totalWiredPlaced, roomsWithWired),
                     byCategory,
                     byLogic,
-                    topRooms,
-                };
+                    topRooms
+                );
             },
             ct
         );

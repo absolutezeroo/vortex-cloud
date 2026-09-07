@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
+  import type { PetStats } from '../lib/apiTypes';
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer } from '../lib/session';
@@ -15,7 +16,7 @@
 
   const granularities = ['day', 'month', 'year'];
 
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: (key: string) => string) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
@@ -25,9 +26,9 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<PetStats | null>(null);
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: string | Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -49,7 +50,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/v1/pets/stats?${params}`);
+      data = await apiGet<PetStats>(`/api/v1/pets/stats?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -57,7 +58,7 @@
         return;
       }
 
-      error = err.message;
+      error = err instanceof Error ? err.message : String(err);
       data = null;
     } finally {
       loading = false;
@@ -125,17 +126,17 @@
         <PawPrint size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('petsStats.avgLevel')} value={data.totals.avgLevel}>
+    <StatCard label={$t('petsStats.avgLevel')} value={String(data.totals.avgLevel)}>
       {#snippet icon()}
         <Hash size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('petsStats.avgEnergy')} value={data.totals.avgEnergy}>
+    <StatCard label={$t('petsStats.avgEnergy')} value={String(data.totals.avgEnergy)}>
       {#snippet icon()}
         <Hash size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-    <StatCard label={$t('petsStats.avgNutrition')} value={data.totals.avgNutrition}>
+    <StatCard label={$t('petsStats.avgNutrition')} value={String(data.totals.avgNutrition)}>
       {#snippet icon()}
         <Hash size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
@@ -197,7 +198,7 @@
         <tbody>
           {#each data.topOwners || [] as row}
             <tr>
-              <td><EntityLink type="player" id={row.ownerId} label={row.ownerName} {openPlayer} /></td>
+              <td><EntityLink type="player" id={row.ownerId} label={row.ownerName ?? undefined} {openPlayer} /></td>
               <td>{formatNumber(row.petCount)}</td>
             </tr>
           {:else}

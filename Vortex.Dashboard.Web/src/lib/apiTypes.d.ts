@@ -81,6 +81,53 @@ export interface ArticleTranslation {
   thumbnail: string | null;
 }
 
+export interface PetGrowthPoint {
+  bucket: string;
+  label: string;
+  petsCreated: number;
+}
+
+export interface PetOwnerCount {
+  ownerId: number;
+  ownerName: string | null;
+  petCount: number;
+}
+
+export interface PetRaceCount {
+  type: number;
+  race: number;
+  count: number;
+}
+
+export interface PetRarityCount {
+  rarityLevel: number;
+  count: number;
+}
+
+export interface PetStats {
+  window: ReportWindow;
+  totals: PetTotals;
+  byType: PetTypeCount[];
+  byRace: PetRaceCount[];
+  byRarity: PetRarityCount[];
+  growth: PetGrowthPoint[];
+  topOwners: PetOwnerCount[];
+}
+
+export interface PetTotals {
+  totalPets: number;
+  avgLevel: number;
+  avgEnergy: number;
+  avgNutrition: number;
+  breedablePets: number;
+  bredPets: number;
+}
+
+export interface PetTypeCount {
+  type: number;
+  count: number;
+}
+
 export interface PollChoiceDetail {
   id: number;
   value: string;
@@ -210,5 +257,40 @@ export interface PollTallyEntry {
   count: number;
   share: number;
   retired: boolean;
+}
+
+export interface ReportWindow {
+  since: string;
+  until: string;
+  granularity: string;
+}
+
+export interface WiredCategoryCount {
+  category: string;
+  count: number;
+}
+
+export interface WiredLogicCount {
+  logic: string;
+  count: number;
+  furniIconUrl: string | null;
+}
+
+export interface WiredRoomCount {
+  roomId: number;
+  roomName: string;
+  wiredCount: number;
+}
+
+export interface WiredStats {
+  totals: WiredTotals;
+  byCategory: WiredCategoryCount[];
+  byLogic: WiredLogicCount[];
+  topRooms: WiredRoomCount[];
+}
+
+export interface WiredTotals {
+  totalWiredPlaced: number;
+  roomsWithWired: number;
 }
 

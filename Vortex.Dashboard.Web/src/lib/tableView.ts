@@ -15,8 +15,19 @@
  * remember -- a logic key, a room name, an id -- and having to declare per table which columns are
  * searchable is how a column ends up quietly unsearchable.
  */
-/** A table row: whatever the endpoint answered, read by key. */
-export type Row = Record<string, unknown>;
+/**
+ * A table row: whatever the endpoint answered, read by key.
+ *
+ * `object` rather than `Record<string, unknown>` on purpose. The rows are now generated response
+ * records, which have no index signature, and requiring one would mean either weakening every
+ * contract or spreading each row at every call site. Reading a key off one is the job of
+ * {@link field} below, which does the widening once.
+ */
+export type Row = object;
+
+/** One column's value, whatever shape the row is. */
+const field = (row: Row | null | undefined, key: string): unknown =>
+  (row as Record<string, unknown> | null | undefined)?.[key];
 
 /** Which column the table is ordered by, and which way. */
 export type Sort = { key: string; dir?: 'asc' | 'desc' };
@@ -34,7 +45,7 @@ export function filterRows<T extends Row>(
   if (!words.length) return rows || [];
 
   return (rows || []).filter((row) => {
-    const haystack = (keys ? keys.map((key) => row?.[key]) : Object.values(row ?? {}))
+    const haystack = (keys ? keys.map((key) => field(row, key)) : Object.values(row ?? {}))
       .filter((value) => value !== null && value !== undefined && typeof value !== 'object')
       .join(' ')
       .toLowerCase();
@@ -59,8 +70,8 @@ export function sortRows<T extends Row>(
   const factor = sort.dir === 'asc' ? 1 : -1;
 
   return [...(rows || [])].sort((left, right) => {
-    const a = left?.[sort.key];
-    const b = right?.[sort.key];
+    const a = field(left, sort.key);
+    const b = field(right, sort.key);
 
     if (a === b) return 0;
     if (a === null || a === undefined) return 1;
