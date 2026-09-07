@@ -11,8 +11,16 @@ namespace Vortex.Dashboard.API.Operations;
 /// it is the hotel answering a question a player is entitled to ask, and the operator running it is
 /// doing paperwork rather than enforcement.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class PrivacyOperations(
+    OperationRunner runner,
+    IForensicsPurgeService forensicsPurge,
+    ILogger<PrivacyOperations> logger
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
+    private readonly ILogger<PrivacyOperations> _logger = logger;
+
     /// <summary>
     /// Scrubs one player's personal content out of the forensic tables. What survives, and why, is
     /// spelled out on <see cref="IForensicsPurgeService"/>.
@@ -27,7 +35,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.player.forensics_purge",
             actor,
             request.Reason,

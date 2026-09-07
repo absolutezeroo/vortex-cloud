@@ -61,7 +61,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateDatabaseBackupRequest body,
-                DashboardOperationsService ops,
+                BackupOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(

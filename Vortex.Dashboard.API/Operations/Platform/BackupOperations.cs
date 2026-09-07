@@ -5,8 +5,14 @@ using Vortex.Database.Backup;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class BackupOperations(
+    OperationRunner runner,
+    IDatabaseBackupService databaseBackups
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
+
     /// <summary>
     /// Takes a dump on demand, on top of whatever the schedule does. Audited like any other
     /// operation: an extra backup is usually taken right before something risky, and knowing which
@@ -17,7 +23,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.database.backup",
             actor,
             request.Reason,

@@ -6,8 +6,14 @@ using Vortex.Primitives.Console;
 
 namespace Vortex.Dashboard.API.Operations;
 
-internal sealed partial class DashboardOperationsService
+internal sealed class ConsoleOperations(
+    OperationRunner runner,
+    IConsoleCommandDispatcher consoleCommands
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IConsoleCommandDispatcher _consoleCommands = consoleCommands;
+
     /// <summary>
     ///     The operator commands, each flagged with whether <paramref name="holdsCapability"/> says
     ///     this caller may run it.
@@ -53,7 +59,8 @@ internal sealed partial class DashboardOperationsService
     {
         List<string> output = [];
 
-        OperationResult result = await ExecuteAsync(
+        OperationResult result = await _runner
+            .ExecuteAsync(
                 "ops.console.run",
                 actor,
                 request.Reason,

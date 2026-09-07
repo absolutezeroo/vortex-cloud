@@ -54,12 +54,8 @@ internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
-    IDatabaseBackupService databaseBackups,
-    IForensicsPurgeService forensicsPurge,
     OperationRunner runner,
-    IVortexMetrics metrics,
-    IConsoleCommandDispatcher consoleCommands,
-    ILogger<DashboardOperationsService> logger
+    IVortexMetrics metrics
 )
 {
     /// <summary>
@@ -79,15 +75,11 @@ internal sealed partial class DashboardOperationsService(
     /// Read only, and only to carry a track's current status through an edit that does not set one.
     /// Content writes go through <see cref="_rewardTrackAdmin"/>, which reloads this afterwards.
     /// </summary>
-    private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
-    private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
     private readonly OperationRunner _runner = runner;
 
     // Kept for GetActiveRoomsAsync, which times a grain call. Auditing a write is the
     // runner's business; this is not a write.
     private readonly IVortexMetrics _metrics = metrics;
-    private readonly IConsoleCommandDispatcher _consoleCommands = consoleCommands;
-    private readonly ILogger<DashboardOperationsService> _logger = logger;
     private readonly SemaphoreSlim _staffActorLock = new(1, 1);
     private PlayerId? _staffActorPlayerId;
 

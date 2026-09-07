@@ -163,7 +163,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 PurgePlayerForensicsRequest body,
-                DashboardOperationsService ops,
+                PrivacyOperations privacy,
                 CancellationToken ct
             ) =>
             {
@@ -176,7 +176,8 @@ internal static partial class DashboardEndpoints
                 }
 
                 return Results.Ok(
-                    await ops.PurgePlayerForensicsAsync(body, ctx.ActorEmail(), ct)
+                    await privacy
+                        .PurgePlayerForensicsAsync(body, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)
                 );
             },
