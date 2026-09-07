@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -8,11 +8,12 @@
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Coins } from '@lucide/svelte';
-  import { t, translate } from '../lib/i18n';
+  import { t, translate, type Translator } from '../lib/i18n';
+  import type { EconomyTrends } from '../lib/apiTypes';
 
   const granularities = ['day', 'month', 'year'];
 
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: Translator) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
@@ -30,9 +31,9 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<EconomyTrends | null>(null);
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -44,7 +45,7 @@
     until = toLocalDateValue(end);
   }
 
-  function colorFor(index) {
+  function colorFor(index: number) {
     return currencyColors[index % currencyColors.length];
   }
 
@@ -62,7 +63,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/v1/economy/trends?${params}`);
+      data = await apiGet<EconomyTrends>(`/api/v1/economy/trends?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -70,7 +71,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -78,6 +79,9 @@
   }
 
   let currencies = $derived(data?.currencies || []);
+  // Derived beside the list rather than read through `data` in the markup: the {#if} above
+  // guards on the currencies, which says nothing about `data` to anyone but a reader.
+  let totals = $derived(data?.totals ?? {});
   let spendSeries = $derived((data?.series || []).map((s, i) => ({
     name: s.currency,
     color: colorFor(i),
@@ -90,7 +94,7 @@
   })));
   let categories = $derived(data?.categories || []);
 
-  function actionLabel(action) {
+  function actionLabel(action: string) {
     // Audit action keys are dotted machine names (e.g. "economy.catalog_purchase") — humanize them
     // rather than showing the raw key.
     return action === 'uncategorized'
@@ -148,12 +152,12 @@
 {#if currencies.length > 0}
   <div class="metric-grid" style="margin-top: 12px;">
     {#each currencies as currency, i}
-      <StatCard label={currency} value={formatNumber(data.totals[currency]?.spend || 0)} color={colorFor(i)}>
+      <StatCard label={currency} value={formatNumber(totals[currency]?.spend || 0)} color={colorFor(i)}>
         {#snippet icon()}
           <Coins size={15} strokeWidth={2} aria-hidden="true" />
         {/snippet}
         {#snippet sub()}
-          <span>{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</span>
+          <span>{$t('economyTrends.spentSuffix')} · {formatNumber(totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</span>
         {/snippet}
       </StatCard>
     {/each}

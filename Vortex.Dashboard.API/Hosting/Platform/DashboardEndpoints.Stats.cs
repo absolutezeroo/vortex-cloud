@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Safety;
@@ -48,7 +49,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.CfhRead,
             TagStats
         );
-        MapReadGet(
+        MapReadGet<CatalogPurchaseStats>(
             app,
             ApiCatalog + "/purchases/stats",
             (HttpContext ctx, CatalogPurchaseReads catalogPurchase, CancellationToken ct) =>

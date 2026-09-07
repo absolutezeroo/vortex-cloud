@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
@@ -26,11 +28,11 @@ internal sealed class CatalogPurchaseReads(
     /// <c>creditCost</c> in its JSON payload — no new instrumentation needed. Distinct from
     /// <c>CatalogPage</c> in <see cref="CatalogReads"/>-style admin CRUD, which
     /// manages the catalog structure, not purchase analytics.</summary>
-    public Task<object> CatalogPurchasesStatsAsync(
+    public Task<CatalogPurchaseStats> CatalogPurchasesStatsAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<CatalogPurchaseStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -94,15 +96,14 @@ internal sealed class CatalogPurchaseReads(
                     bucketMap[bucket] = (current.count + 1, current.credits + p.CreditCost);
                 }
 
-                var timeline = bucketMap
+                List<CatalogPurchasePoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        purchaseCount = pair.Value.count,
-                        creditsSpent = pair.Value.credits,
-                    })
+                    .Select(pair => new CatalogPurchasePoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value.count,
+                        pair.Value.credits
+                    ))
                     .ToList();
 
                 var topOfferGroups = purchases
@@ -147,38 +148,26 @@ internal sealed class CatalogPurchaseReads(
                     .GroupBy(p => p.OfferId)
                     .ToDictionary(g => g.Key, g => g.First().Name);
 
-                var topOffers = topOfferGroups
-                    .Select(g => new
-                    {
+                List<CatalogOfferSales> topOffers = topOfferGroups
+                    .Select(g => new CatalogOfferSales(
                         g.offerId,
-                        offerName = offerNames.GetValueOrDefault(g.offerId, $"offer #{g.offerId}"),
-                        furniIconUrl = offerFurniNames.TryGetValue(g.offerId, out string? furniName)
+                        offerNames.GetValueOrDefault(g.offerId, $"offer #{g.offerId}"),
+                        offerFurniNames.TryGetValue(g.offerId, out string? furniName)
                             ? _assetUrls.FurniIcon(furniName)
                             : null,
                         g.catalogType,
                         g.purchaseCount,
                         g.quantity,
-                        g.creditsSpent,
-                    })
+                        g.creditsSpent
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
-                        purchaseCount,
-                        totalCreditsSpent,
-                        totalQuantity,
-                    },
+                return new CatalogPurchaseStats(
+                    new ReportWindow(since, until, granularity),
+                    new CatalogPurchaseTotals(purchaseCount, totalCreditsSpent, totalQuantity),
                     timeline,
-                    topOffers,
-                };
+                    topOffers
+                );
             },
             ct
         );

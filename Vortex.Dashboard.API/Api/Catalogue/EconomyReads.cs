@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
@@ -129,8 +131,11 @@ internal sealed partial class EconomyReads(
     /// <c>PlayerWalletGrain.DescribeCurrency</c>), so whatever labels are actually in the ledger
     /// (which may not be the enum names) are what should drive the series.
     /// </summary>
-    public Task<object> EconomyTrendsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<EconomyTrends> EconomyTrendsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<EconomyTrends>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -145,20 +150,19 @@ internal sealed partial class EconomyReads(
                     .OrderBy(c => c, StringComparer.Ordinal)
                     .ToArray();
 
-                var series = currencies
-                    .Select(currency => new
-                    {
+                List<EconomyTrendSeries> series = currencies
+                    .Select(currency => new EconomyTrendSeries(
                         currency,
-                        points = BuildEconomyTrendPoints(
+                        BuildEconomyTrendPoints(
                             rows.Where(r => r.Currency == currency).ToList(),
                             since,
                             until,
                             granularity
-                        ),
-                    })
+                        )
+                    ))
                     .ToList();
 
-                var totals = currencies.ToDictionary(
+                Dictionary<string, EconomyCurrencyTotals> totals = currencies.ToDictionary(
                     currency => currency,
                     currency =>
                     {
@@ -168,32 +172,30 @@ internal sealed partial class EconomyReads(
                         long spend = currencyRows.Sum(r => r.Spend);
                         long earned = currencyRows.Sum(r => r.Earned);
 
-                        return new
-                        {
+                        return new EconomyCurrencyTotals(
                             spend,
                             earned,
-                            net = earned - spend,
-                            transactionCount = currencyRows.Sum(r => r.TransactionCount),
-                        };
+                            earned - spend,
+                            currencyRows.Sum(r => r.TransactionCount)
+                        );
                     }
                 );
 
-                List<object> categories = await BuildSpendCategoriesAsync(db, since, until, ct)
-                    .ConfigureAwait(false);
-
-                return new
-                {
-                    window = new
-                    {
+                List<EconomySpendCategory> categories = await BuildSpendCategoriesAsync(
+                        db,
                         since,
                         until,
-                        granularity,
-                    },
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                return new EconomyTrends(
+                    new ReportWindow(since, until, granularity),
                     currencies,
                     series,
                     totals,
-                    categories,
-                };
+                    categories
+                );
             },
             ct
         );
@@ -208,7 +210,7 @@ internal sealed partial class EconomyReads(
     /// <c>IVortexContextAccessor.Current.CorrelationId</c> when the caller doesn't set one
     /// explicitly). Joining on that id attributes each debit to its originating action.
     /// </summary>
-    private static async Task<List<object>> BuildSpendCategoriesAsync(
+    private static async Task<List<EconomySpendCategory>> BuildSpendCategoriesAsync(
         VortexDbContext db,
         DateTime since,
         DateTime until,
@@ -220,15 +222,13 @@ internal sealed partial class EconomyReads(
             .ConfigureAwait(false);
 
         return spendRows
-            .Select(r => new
-            {
-                currency = r.Currency,
-                action = r.Action ?? "uncategorized",
-                spend = r.Spend,
-                transactionCount = r.TransactionCount,
-            })
-            .OrderByDescending(x => x.spend)
-            .Select(x => (object)x)
+            .Select(r => new EconomySpendCategory(
+                r.Currency,
+                r.Action ?? "uncategorized",
+                r.Spend,
+                r.TransactionCount
+            ))
+            .OrderByDescending(x => x.Spend)
             .ToList();
     }
 
@@ -820,15 +820,6 @@ internal sealed partial class EconomyReads(
             ))
             .ToList();
     }
-
-    private sealed record EconomyTrendPoint(
-        string Bucket,
-        string Label,
-        long Spend,
-        long Earned,
-        long Net,
-        int TransactionCount
-    );
 
     private static ClubSubscriptionPayload? ParseClubSubscriptionPayload(string? data)
     {

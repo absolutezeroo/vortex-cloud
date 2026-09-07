@@ -218,6 +218,36 @@ export interface BotTotals {
   roomsWithBots: number;
 }
 
+export interface CatalogOfferSales {
+  offerId: number;
+  offerName: string;
+  furniIconUrl: string | null;
+  catalogType: string;
+  purchaseCount: number;
+  quantity: number;
+  creditsSpent: number;
+}
+
+export interface CatalogPurchasePoint {
+  bucket: string;
+  label: string;
+  purchaseCount: number;
+  creditsSpent: number;
+}
+
+export interface CatalogPurchaseStats {
+  window: ReportWindow;
+  totals: CatalogPurchaseTotals;
+  timeline: CatalogPurchasePoint[];
+  topOffers: CatalogOfferSales[];
+}
+
+export interface CatalogPurchaseTotals {
+  purchaseCount: number;
+  totalCreditsSpent: number;
+  totalQuantity: number;
+}
+
 export interface CfhCloseReasonCount {
   reason: string;
   count: number;
@@ -292,6 +322,42 @@ export interface ChatlogPage {
 export interface ChatlogWindow {
   since: string;
   until: string;
+}
+
+export interface EconomyCurrencyTotals {
+  spend: number;
+  earned: number;
+  net: number;
+  transactionCount: number;
+}
+
+export interface EconomySpendCategory {
+  currency: string;
+  action: string;
+  spend: number;
+  transactionCount: number;
+}
+
+export interface EconomyTrendPoint {
+  bucket: string;
+  label: string;
+  spend: number;
+  earned: number;
+  net: number;
+  transactionCount: number;
+}
+
+export interface EconomyTrendSeries {
+  currency: string;
+  points: EconomyTrendPoint[];
+}
+
+export interface EconomyTrends {
+  window: ReportWindow;
+  currencies: string[];
+  series: EconomyTrendSeries[];
+  totals: Record<string, EconomyCurrencyTotals>;
+  categories: EconomySpendCategory[];
 }
 
 export interface ForumGroupRanking {

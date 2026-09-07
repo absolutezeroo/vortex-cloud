@@ -66,6 +66,8 @@ public sealed class ApiTypeScriptContractTests
         typeof(HandItemList),
         typeof(AuditPage),
         typeof(ModerationStats),
+        typeof(CatalogPurchaseStats),
+        typeof(EconomyTrends),
     ];
 
     [Fact]
@@ -154,12 +156,51 @@ public sealed class ApiTypeScriptContractTests
             return inner.GetElementType()!;
         }
 
+        // A dictionary is an IEnumerable of KeyValuePair, so it has to be answered before the
+        // collection case below -- otherwise its element type is the pair and the front end gets a
+        // KeyValuePair`2[] where the server sends an object.
+        if (DictionaryValue(inner) is { } value)
+        {
+            return value;
+        }
+
         if (inner.IsGenericType && typeof(IEnumerable).IsAssignableFrom(inner))
         {
             return inner.GetGenericArguments()[0];
         }
 
         return inner;
+    }
+
+    /// <summary>
+    /// What a string-keyed dictionary carries, or null when the type is not one.
+    /// </summary>
+    /// <remarks>
+    /// Only string keys: those are the ones System.Text.Json writes as an object, which is the only
+    /// shape TypeScript's Record can describe. A dictionary keyed by anything else would serialise
+    /// differently and is a shape no read here has needed.
+    /// </remarks>
+    private static Type? DictionaryValue(Type type)
+    {
+        if (!type.IsGenericType)
+        {
+            return null;
+        }
+
+        Type definition = type.GetGenericTypeDefinition();
+        bool isDictionary =
+            definition == typeof(Dictionary<,>)
+            || definition == typeof(IDictionary<,>)
+            || definition == typeof(IReadOnlyDictionary<,>);
+
+        if (!isDictionary)
+        {
+            return null;
+        }
+
+        Type[] arguments = type.GetGenericArguments();
+
+        return arguments[0] == typeof(string) ? arguments[1] : null;
     }
 
     private static string TypeScriptFor(PropertyInfo property)
@@ -170,16 +211,23 @@ public sealed class ApiTypeScriptContractTests
             || new NullabilityInfoContext().Create(property).ReadState == NullabilityState.Nullable;
 
         Type inner = Unwrap(type);
+        bool dictionary = DictionaryValue(Nullable.GetUnderlyingType(type) ?? type) is not null;
         bool collection =
-            type.IsArray
-            || (
-                type.IsGenericType
-                && typeof(IEnumerable).IsAssignableFrom(type)
-                && type != typeof(string)
+            !dictionary
+            && (
+                type.IsArray
+                || (
+                    type.IsGenericType
+                    && typeof(IEnumerable).IsAssignableFrom(type)
+                    && type != typeof(string)
+                )
             );
 
         string name = Scalar(inner) ?? inner.Name;
-        string shape = collection ? $"{name}[]" : name;
+        string shape =
+            dictionary ? $"Record<string, {name}>"
+            : collection ? $"{name}[]"
+            : name;
 
         return nullable ? $"{shape} | null" : shape;
     }
