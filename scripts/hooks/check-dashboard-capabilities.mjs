@@ -26,8 +26,11 @@ const warnings = [];
 const fail = (m) => errors.push(m);
 
 const capabilitiesCs = at(root, 'Vortex.Primitives', 'Permissions', 'Capabilities.cs');
-const permissionsJs = at(web, 'dashboardPermissions.js');
-const routesJs = at(web, 'routes.js');
+// .ts since the front end became TypeScript. Node strips the annotations on import, so these are
+// still read as modules rather than parsed as text -- the point of this check is the real exported
+// values, not what a regex can see in the source.
+const permissionsJs = at(web, 'dashboardPermissions.ts');
+const routesJs = at(web, 'routes.ts');
 
 for (const f of [capabilitiesCs, permissionsJs, routesJs]) {
   if (!fs.existsSync(f)) {

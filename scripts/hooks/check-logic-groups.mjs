@@ -16,7 +16,9 @@ import { dirname, join, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '../..');
-const enumsPath = join(root, 'Vortex.Dashboard.Web/src/lib/furnitureEnums.js');
+// .ts since the front end became TypeScript. Read as text, not imported: --write regenerates the
+// LOGIC_GROUPS block in place, which needs the source rather than the evaluated value.
+const enumsPath = join(root, 'Vortex.Dashboard.Web/src/lib/furnitureEnums.ts');
 
 // Groups are derived from the key prefix, which is how the server names them in the first place --
 // no second list to keep in step. Order is the order an operator thinks in: the plain furniture

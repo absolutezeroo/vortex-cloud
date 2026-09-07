@@ -32,7 +32,7 @@ const cmd = (command) => ({ tool_name: 'Bash', tool_input: { command } });
 
 const cases = [
   ['post-edit.mjs', edit('README.md'), 0, 'fichier hors perimetre'],
-  ['post-edit.mjs', edit(path.join('Vortex.Dashboard.Web', 'src', 'lib', 'routes.js')), 0, 'routes.js coherent'],
+  ['post-edit.mjs', edit(path.join('Vortex.Dashboard.Web', 'src', 'lib', 'routes.ts')), 0, 'routes.ts coherent'],
   ['post-edit.mjs', edit(path.join('Vortex.Dashboard.Web', 'src', 'pages', '__HookProbe.svelte')), 2, 'no-undef dans le markup'],
   ['post-edit.mjs', edit(path.join('Vortex.Dashboard.Web', 'src', 'pages', 'AccessDeniedPage.svelte')), 0, 'svelte sain'],
   ['guard-emulator.mjs', cmd('dotnet build Vortex.Main/Vortex.Main.csproj'), 0, 'build normal'],
