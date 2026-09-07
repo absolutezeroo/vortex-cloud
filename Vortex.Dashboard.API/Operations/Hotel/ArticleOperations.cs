@@ -11,14 +11,24 @@ namespace Vortex.Dashboard.API.Operations;
 /// to serve are enforced once, wherever the save came from, and each is audited with its operator's
 /// reason like the rest of the dashboard.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+/// <remarks>
+/// Two dependencies: the runner that audits every write, and the domain's own article authoring
+/// service.
+/// </remarks>
+internal sealed class ArticleOperations(
+    OperationRunner runner,
+    IWebArticleAdminService webArticleAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IWebArticleAdminService _webArticleAdmin = webArticleAdmin;
+
     public Task<OperationResult> SaveArticleAsync(
         ArticleRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.ArticleId > 0 ? "ops.article.update" : "ops.article.create",
             actor,
             request.Reason,
@@ -83,7 +93,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.article.delete",
             actor,
             request.Reason,
@@ -104,7 +114,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.article.translation.delete",
             actor,
             request.Reason,
@@ -125,7 +135,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.CategoryId > 0 ? "ops.article.category.update" : "ops.article.category.create",
             actor,
             request.Reason,
@@ -155,7 +165,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.article.category.delete",
             actor,
             request.Reason,
@@ -176,7 +186,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.LanguageId > 0 ? "ops.article.language.update" : "ops.article.language.create",
             actor,
             request.Reason,
@@ -212,7 +222,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.article.language.delete",
             actor,
             request.Reason,

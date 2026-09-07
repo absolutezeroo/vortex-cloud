@@ -56,12 +56,10 @@ internal sealed partial class DashboardOperationsService(
     ICfhTicketService cfhTickets,
     ITargetedOfferAdminService targetedOfferAdmin,
     IQuestAdminService questAdmin,
-    IQuestContentAdminService questContentAdmin,
     INavigatorAdminService navigatorAdmin,
     IStaffAdminService staffAdmin,
     IAccountMfaService accountMfa,
     IContentAdminService contentAdmin,
-    IWebArticleAdminService webArticleAdmin,
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
@@ -94,12 +92,10 @@ internal sealed partial class DashboardOperationsService(
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IQuestAdminService _questAdmin = questAdmin;
-    private readonly IQuestContentAdminService _questContentAdmin = questContentAdmin;
     private readonly INavigatorAdminService _navigatorAdmin = navigatorAdmin;
     private readonly IStaffAdminService _staffAdmin = staffAdmin;
     private readonly IAccountMfaService _accountMfa = accountMfa;
     private readonly IContentAdminService _contentAdmin = contentAdmin;
-    private readonly IWebArticleAdminService _webArticleAdmin = webArticleAdmin;
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;

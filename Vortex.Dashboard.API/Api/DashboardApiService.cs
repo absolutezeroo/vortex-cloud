@@ -215,6 +215,9 @@ internal sealed partial class DashboardApiService(
         CancellationToken ct
     ) => db.RoomNamesAsync(roomIds, ct);
 
+    private static int ParseInt(string? value, int fallback) =>
+        int.TryParse(value, out int parsed) ? parsed : fallback;
+
     private static int ParseLimit(string? value, int fallback, int max) =>
         int.TryParse(value, out int n) ? Math.Clamp(n, 1, max) : fallback;
 

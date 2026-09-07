@@ -102,6 +102,11 @@ public sealed class DashboardApiModule : IHostPluginModule
         // Polls, likewise: two dependencies for the reads, two for the writes.
         services.TryAddSingleton<PollReads>();
         services.TryAddSingleton<PollOperations>();
+        // Quest content: the reads need nothing but a context.
+        services.TryAddSingleton<QuestContentReads>();
+        services.TryAddSingleton<QuestContentOperations>();
+        services.TryAddSingleton<ArticleReads>();
+        services.TryAddSingleton<ArticleOperations>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // Authoring content is the dashboard's job, not the emulator's: the hotel runs campaigns,

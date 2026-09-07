@@ -6,22 +6,39 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Infrastructure;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Web;
+using Vortex.Observability.Configuration;
 
 namespace Vortex.Dashboard.API.Api;
 
 /// <summary>
 /// Read surface for the website's news. Every write lives in
-/// <c>DashboardOperationsService.Articles.cs</c> and goes through <c>IWebArticleAdminService</c>,
+/// <see cref="Operations.ArticleOperations"/> and goes through <c>IWebArticleAdminService</c>,
 /// which owns the rules; nothing here validates anything.
 /// </summary>
 /// <remarks>
+/// <para>
 /// These reads deliberately show what the public API hides — drafts, articles scheduled for a future
 /// date, every language including the untranslated ones. An editor's list that only showed what is
 /// already live would be useless for the one job the page exists to do.
+/// </para>
+/// <para>
+/// Three dependencies: a context, the asset URL builder for the picture base, and the observability
+/// config for the asset root the picture browser walks.
+/// </para>
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class ArticleReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    DashboardAssetUrls assetUrls,
+    IOptions<ObservabilityConfig> options
+) : DashboardReads(dbContextFactory)
 {
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
+    private readonly ObservabilityConfig _config = options.Value;
+
     /// <summary>Folders under the asset root an article may pick a picture from. A closed list: the
     /// parameter reaches the file system, and "whatever the caller typed" is how that becomes a
     /// directory traversal.</summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Quests;
 
@@ -12,9 +13,14 @@ namespace Vortex.Dashboard.API.Api;
 /// <summary>
 /// Read surface for the content behind the quest system that is not a quest: community goals with
 /// their ladder and standing, and daily-task definitions with their rewards and take-up. Authoring
-/// lives in <c>DashboardOperationsService.QuestContent.cs</c>.
+/// lives in <see cref="Operations.QuestContentOperations"/>.
 /// </summary>
-internal sealed partial class DashboardApiService
+/// <remarks>
+/// One dependency: a context. This subject reads and shapes rows and needs nothing else, which was
+/// invisible while it was one file of a class that injected ten.
+/// </remarks>
+internal sealed class QuestContentReads(IDbContextFactory<VortexDbContext> dbContextFactory)
+    : DashboardReads(dbContextFactory)
 {
     /// <summary>
     /// Every community goal with its ladder and where the hotel currently stands on it. The active

@@ -22,32 +22,32 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiArticles,
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ArticlesAsync(ctx.QueryAsNameValues(), ct)),
+            (HttpContext ctx, ArticleReads articles, CancellationToken ct) =>
+                OkAsync(articles.ArticlesAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
         MapReadGet(
             app,
             ApiArticles + "/meta",
-            (DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ArticleFormMetaAsync(ct)),
+            (ArticleReads articles, CancellationToken ct) =>
+                OkAsync(articles.ArticleFormMetaAsync(ct)),
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
         MapReadGet(
             app,
             ApiArticles + "/images",
-            (HttpContext ctx, DashboardApiService api) =>
-                Results.Ok(api.ArticleImages(ctx.QueryAsNameValues())),
+            (HttpContext ctx, ArticleReads articles) =>
+                Results.Ok(articles.ArticleImages(ctx.QueryAsNameValues())),
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
         MapReadGet(
             app,
             ApiArticles + "/{articleId:int}",
-            (int articleId, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.ArticleDetailAsync(articleId, ct)),
+            (int articleId, ArticleReads articles, CancellationToken ct) =>
+                OkNullableAsync(articles.ArticleDetailAsync(articleId, ct)),
             Capabilities.Dashboard.ArticlesRead,
             TagArticles
         );
@@ -61,7 +61,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ArticleRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Slug) || string.IsNullOrWhiteSpace(body.Category)
@@ -78,7 +78,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteArticleRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(
@@ -93,7 +93,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteArticleTranslationRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(
@@ -109,7 +109,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 ArticleCategoryRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code)
@@ -127,7 +127,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteArticleCategoryRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(
@@ -143,7 +143,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 WebLanguageRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code) || string.IsNullOrWhiteSpace(body.Label)
@@ -161,7 +161,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteWebLanguageRequest body,
-                DashboardOperationsService ops,
+                ArticleOperations ops,
                 CancellationToken ct
             ) =>
                 Results.Ok(

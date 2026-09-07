@@ -23,14 +23,16 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCommunityGoals,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.CommunityGoalsAsync(ct)),
+            (QuestContentReads content, CancellationToken ct) =>
+                OkAsync(content.CommunityGoalsAsync(ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuestContent
         );
         MapReadGet(
             app,
             ApiDailyTasks,
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.DailyTasksAsync(ct)),
+            (QuestContentReads content, CancellationToken ct) =>
+                OkAsync(content.DailyTasksAsync(ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuestContent
         );
@@ -44,7 +46,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateCommunityGoalRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.Code)
@@ -62,7 +64,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateCommunityGoalRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 body.GoalId <= 0 || string.IsNullOrWhiteSpace(body.Code)
@@ -80,7 +82,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteCommunityGoalRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 body.GoalId <= 0
@@ -98,7 +100,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 CreateDailyTaskRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 string.IsNullOrWhiteSpace(body.TaskCode)
@@ -117,7 +119,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 UpdateDailyTaskRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 body.TaskId <= 0
@@ -137,7 +139,7 @@ internal static partial class DashboardEndpoints
             async (
                 HttpContext ctx,
                 DeleteDailyTaskRequest body,
-                DashboardOperationsService ops,
+                QuestContentOperations ops,
                 CancellationToken ct
             ) =>
                 body.TaskId <= 0

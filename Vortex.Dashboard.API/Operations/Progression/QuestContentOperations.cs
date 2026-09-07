@@ -9,18 +9,27 @@ using Vortex.Primitives.Quests.Admin;
 namespace Vortex.Dashboard.API.Operations;
 
 /// <summary>
-/// Community goal and daily-task admin operations. Each routes through
-/// <see cref="IQuestContentAdminService"/> — never a direct DB write — and emits an audit event with
-/// the operator's reason, the same contract the quest and poll operations follow.
+/// Community goal and daily-task admin operations.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+/// <remarks>
+/// Two dependencies: the runner that audits every write, and the domain's own quest-content
+/// authoring service. Never a direct DB write — the same contract the catalogue and poll operations
+/// follow.
+/// </remarks>
+internal sealed class QuestContentOperations(
+    OperationRunner runner,
+    IQuestContentAdminService questContentAdmin
+)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IQuestContentAdminService _questContentAdmin = questContentAdmin;
+
     public Task<OperationResult> CreateCommunityGoalAsync(
         CreateCommunityGoalRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.community_goal.create",
             actor,
             request.Reason,
@@ -46,7 +55,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.community_goal.update",
             actor,
             request.Reason,
@@ -73,7 +82,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.community_goal.delete",
             actor,
             request.Reason,
@@ -94,7 +103,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.daily_task.create",
             actor,
             request.Reason,
@@ -120,7 +129,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.daily_task.update",
             actor,
             request.Reason,
@@ -146,7 +155,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.daily_task.delete",
             actor,
             request.Reason,
