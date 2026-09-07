@@ -10,15 +10,31 @@
   // so `{#snippet value()}` and `value={...}` are the same name arriving by two routes and cannot
   // coexist. Callers that want a currency sprite in front of the number pass a snippet; callers
   // with a plain number keep passing a string, unchanged.
+  /** Text or markup, wherever the comment above says either is accepted. */
+  type Slot = string | number | null | undefined | Snippet;
+
+  type Props = {
+    label?: string;
+    value?: Slot;
+    sub?: Slot;
+    accent?: boolean;
+    /** A coloured change indicator, or null for none. */
+    delta?: { dir: 'up' | 'down' | 'flat'; text: string } | null;
+    /** Optional left-accent stripe, e.g. to match a chart series colour. */
+    color?: string;
+    /** The lucide glyph shown before the label. */
+    icon?: Snippet | null;
+  };
+
   let {
     label = '',
     value = '',
     sub = '',
     accent = false,
-    delta = null, // { dir: 'up' | 'down' | 'flat', text: string }
-    color = '', // optional left-accent stripe, e.g. to match a chart series colour
-    icon = null, // snippet: the lucide glyph shown before the label
-  } = $props();
+    delta = null,
+    color = '',
+    icon = null,
+  }: Props = $props();
 
   // A snippet is a function and text is not, which is the only distinction the markup below needs.
   const isSnippet = (slot: unknown): slot is Snippet => typeof slot === 'function';

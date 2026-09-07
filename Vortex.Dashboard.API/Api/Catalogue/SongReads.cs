@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Database.Context;
 using Vortex.Primitives.Sound;
 
@@ -24,8 +25,8 @@ internal sealed class SongReads(IDbContextFactory<VortexDbContext> dbContextFact
 {
     private const int SongsPageSize = 50;
 
-    public Task<object> SongsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<SongListResponse> SongsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<SongListResponse>(
             async db =>
             {
                 string search = (query["search"] ?? string.Empty).Trim();
@@ -93,24 +94,24 @@ internal sealed class SongReads(IDbContextFactory<VortexDbContext> dbContextFact
                     counts[songId] = (carried + 1, loaded + (disk.InJukebox ? 1 : 0));
                 }
 
-                return new
-                {
+                return new SongListResponse(
                     total,
                     page,
-                    pageSize = SongsPageSize,
-                    items = songs.Select(s => new
-                    {
-                        s.Id,
-                        s.Name,
-                        s.Creator,
-                        s.LengthMs,
-                        lengthSeconds = Math.Round(s.LengthMs / 1000.0, 1),
-                        s.OfficialSongId,
-                        s.Data,
-                        diskCount = counts.GetValueOrDefault(s.Id).Total,
-                        loadedInJukeboxes = counts.GetValueOrDefault(s.Id).Loaded,
-                    }),
-                };
+                    SongsPageSize,
+                    [
+                        .. songs.Select(s => new SongListItem(
+                            s.Id,
+                            s.Name,
+                            s.Creator,
+                            s.LengthMs,
+                            Math.Round(s.LengthMs / 1000.0, 1),
+                            s.OfficialSongId,
+                            s.Data,
+                            counts.GetValueOrDefault(s.Id).Total,
+                            counts.GetValueOrDefault(s.Id).Loaded
+                        )),
+                    ]
+                );
             },
             ct
         );

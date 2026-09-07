@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 
@@ -25,8 +26,8 @@ internal sealed class ChatlogReads(IDbContextFactory<VortexDbContext> dbContextF
     /// not a slow page.
     /// </para>
     /// </summary>
-    public Task<object> ChatlogsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<ChatlogPage> ChatlogsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<ChatlogPage>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(
@@ -78,42 +79,33 @@ internal sealed class ChatlogReads(IDbContextFactory<VortexDbContext> dbContextF
 
                 int total = await q.CountAsync(ct).ConfigureAwait(false);
 
-                var rows = await q.OrderByDescending(c => c.CreatedAt)
+                List<ChatlogEntry> rows = await q.OrderByDescending(c => c.CreatedAt)
                     .Skip(offset)
                     .Take(limit)
-                    .Select(c => new
-                    {
+                    .Select(c => new ChatlogEntry(
                         c.Id,
                         c.CreatedAt,
-                        roomId = c.RoomEntityId,
-                        roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
-                        playerId = c.PlayerEntityId,
-                        playerName = c.PlayerEntity != null ? c.PlayerEntity.Name : null,
-                        targetPlayerId = c.TargetPlayerEntityId,
-                        targetPlayerName = c.TargetPlayerEntity != null
-                            ? c.TargetPlayerEntity.Name
-                            : null,
-                        c.Message,
-                    })
+                        c.RoomEntityId,
+                        c.RoomEntity != null ? c.RoomEntity.Name : null,
+                        c.PlayerEntityId,
+                        c.PlayerEntity != null ? c.PlayerEntity.Name : null,
+                        c.TargetPlayerEntityId,
+                        c.TargetPlayerEntity != null ? c.TargetPlayerEntity.Name : null,
+                        c.Message
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    count = rows.Count,
+                return new ChatlogPage(
+                    rows.Count,
                     page,
                     limit,
                     total,
                     offset,
-                    window = new { since, until },
-                    filters = new
-                    {
-                        q = text,
-                        player = playerId,
-                        room = roomId,
-                    },
-                    items = rows,
-                };
+                    new ChatlogWindow(since, until),
+                    new ChatlogFilters(text, playerId, roomId),
+                    rows
+                );
             },
             ct
         );

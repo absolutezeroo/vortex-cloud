@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Hotel.Contracts;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Database.Context;
 using Vortex.Primitives.Moderation;
 
@@ -18,8 +20,8 @@ internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFacto
     /// <c>CfhTicketEntity</c>, which is already rich enough on its own (no audit trail needed).
     /// Separate from <see cref="Vortex.Dashboard.API.Operations.ModerationOperations.GetCfhQueueAsync"/>,
     /// which drives the live pick/close/release queue; this is analytics, not actionable state.</summary>
-    public Task<object> CfhStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<CfhStats> CfhStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<CfhStats>(
             async db =>
             {
                 (DateTime since, DateTime until) = TimeWindow.Resolve(query, DateTime.UtcNow);
@@ -96,20 +98,19 @@ internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFacto
                     bucketMap[bucket] = bucketMap.GetValueOrDefault(bucket) + 1;
                 }
 
-                var timeline = bucketMap
+                List<CfhTimelinePoint> timeline = bucketMap
                     .OrderBy(pair => pair.Key)
-                    .Select(pair => new
-                    {
-                        bucket = pair.Key.ToString("O"),
-                        label = TimeWindow.Label(pair.Key, granularity),
-                        ticketsCreated = pair.Value,
-                    })
+                    .Select(pair => new CfhTimelinePoint(
+                        pair.Key.ToString("O"),
+                        TimeWindow.Label(pair.Key, granularity),
+                        pair.Value
+                    ))
                     .ToList();
 
-                var byCloseReason = rows.Where(r => r.CloseReason is not null)
+                List<CfhCloseReasonCount> byCloseReason = rows.Where(r => r.CloseReason is not null)
                     .GroupBy(r => r.CloseReason!.Value)
-                    .Select(g => new { reason = g.Key.ToString(), count = g.Count() })
-                    .OrderByDescending(g => g.count)
+                    .Select(g => new CfhCloseReasonCount(g.Key.ToString(), g.Count()))
+                    .OrderByDescending(g => g.Count)
                     .ToList();
 
                 var topTopics = await (
@@ -129,13 +130,12 @@ internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFacto
                     .ToDictionaryAsync(topic => topic.Id, topic => topic.Name, ct)
                     .ConfigureAwait(false);
 
-                var topTopicsWithNames = topTopics
-                    .Select(t => new
-                    {
+                List<CfhTopicCount> topTopicsWithNames = topTopics
+                    .Select(t => new CfhTopicCount(
                         t.topicId,
-                        topicName = topicNames.GetValueOrDefault(t.topicId, $"topic #{t.topicId}"),
-                        t.count,
-                    })
+                        topicNames.GetValueOrDefault(t.topicId, $"topic #{t.topicId}"),
+                        t.count
+                    ))
                     .ToList();
 
                 // Zero means the ticket reported a room and nobody; leaving it in would put a
@@ -153,41 +153,30 @@ internal sealed class CfhReads(IDbContextFactory<VortexDbContext> dbContextFacto
                 Dictionary<int, string> reportedNames = await db.PlayerNamesAsync(reportedIds, ct)
                     .ConfigureAwait(false);
 
-                var topReportedWithNames = topReported
-                    .Select(r => new
-                    {
+                List<CfhReportedPlayer> topReportedWithNames = topReported
+                    .Select(r => new CfhReportedPlayer(
                         r.playerId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(
-                            reportedNames,
-                            (int?)r.playerId
-                        ),
-                        r.reportCount,
-                    })
+                        DisplayNameQueries.ResolvePlayerName(reportedNames, (int?)r.playerId),
+                        r.reportCount
+                    ))
                     .ToList();
 
-                return new
-                {
-                    window = new
-                    {
-                        since,
-                        until,
-                        granularity,
-                    },
-                    totals = new
-                    {
+                return new CfhStats(
+                    new ReportWindow(since, until, granularity),
+                    new CfhTotals(
                         totalTickets,
                         openCount,
                         pickedCount,
                         closedCount,
                         sanctionedCount,
                         sanctionRate,
-                        avgResolutionMinutes,
-                    },
+                        avgResolutionMinutes
+                    ),
                     timeline,
                     byCloseReason,
-                    topTopics = topTopicsWithNames,
-                    topReportedPlayers = topReportedWithNames,
-                };
+                    topTopicsWithNames,
+                    topReportedWithNames
+                );
             },
             ct
         );

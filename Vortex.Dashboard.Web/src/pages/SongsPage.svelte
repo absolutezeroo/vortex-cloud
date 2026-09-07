@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import OpResult from '../components/OpResult.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -13,8 +13,25 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import { t } from '../lib/i18n';
+  import type { SongListItem, SongListResponse } from '../lib/apiTypes';
 
-  let songs = $state([]);
+  /**
+   * The drawer's form. `lengthSeconds` is a string while it is being typed into a number input and
+   * a number once loaded from a row, so it holds both rather than lying about either.
+   */
+  type SongForm = {
+    name: string;
+    creator: string;
+    lengthSeconds: string | number;
+    officialSongId: string;
+    data: string;
+  };
+
+  type SongDrawer =
+    | { mode: 'create'; id: null; before?: undefined; form: SongForm }
+    | { mode: 'edit'; id: number; before: SongForm; form: SongForm };
+
+  let songs = $state<SongListItem[]>([]);
   let total = $state(0);
   let page = $state(1);
   let pageSize = $state(50);
@@ -26,14 +43,14 @@
 
   // Editing happens in the drawer, never in the page: a form spliced under the table pushes the
   // list off screen, which is the thing you were looking at when you decided to change a number.
-  let drawer = $state(null);
+  let drawer = $state<SongDrawer | null>(null);
 
   const ops = createWriteOps(async () => {
     drawer = null;
     await load();
   });
 
-  function emptySong() {
+  function emptySong(): SongForm {
     return { name: '', creator: '', lengthSeconds: '', officialSongId: '', data: '' };
   }
 
@@ -50,12 +67,12 @@
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsSongsManage));
   let pageCount = $derived(Math.max(1, Math.ceil(total / pageSize)));
   let canSave = $derived(
-    Boolean(drawer?.form.name.trim()) && Number(drawer?.form.lengthSeconds) > 0
+    Boolean(drawer?.form.name.trim()) && Number(drawer?.form.lengthSeconds) > 0,
   );
 
   // Milliseconds on the wire and in the table; an operator reads 2:08 off a track. The conversion
   // is the server's on the way in, and this is the way out.
-  function lengthLabel(song) {
+  function lengthLabel(song: SongListItem) {
     const seconds = Math.round(song.lengthMs / 1000);
     const minutes = Math.floor(seconds / 60);
 
@@ -66,8 +83,8 @@
     drawer = { mode: 'create', id: null, form: emptySong() };
   }
 
-  function openEdit(song) {
-    const form = {
+  function openEdit(song: SongListItem) {
+    const form: SongForm = {
         name: song.name,
       creator: song.creator,
       lengthSeconds: Math.round(song.lengthMs / 1000),
@@ -80,28 +97,30 @@
   }
 
   function save() {
+    // The button that calls this only exists inside the drawer.
+    const open = drawer!;
     const body = {
-      name: drawer.form.name,
-      creator: drawer.form.creator,
-      lengthSeconds: Number(drawer.form.lengthSeconds) || 0,
-      officialSongId: drawer.form.officialSongId,
-      data: drawer.form.data,
+      name: open.form.name,
+      creator: open.form.creator,
+      lengthSeconds: Number(open.form.lengthSeconds) || 0,
+      officialSongId: open.form.officialSongId,
+      data: open.form.data,
     };
 
-    if (drawer.mode === 'edit') {
+    if (open.mode === 'edit') {
       ops.ask(
         '/api/v1/operations/songs/update',
-        { ...body, songId: drawer.id },
-        `${$t('songs.editSong')} #${drawer.id}`,
+        { ...body, songId: open.id },
+        `${$t('songs.editSong')} #${open.id}`,
         $t('songs.updated'),
-        { changes: diffFields(drawer.before, drawer.form, SONG_FIELDS) }
+        { changes: diffFields(open.before, open.form, SONG_FIELDS) },
       );
     } else {
       ops.ask('/api/v1/operations/songs', body, $t('songs.newSong'), $t('songs.created'));
     }
   }
 
-  function remove(song) {
+  function remove(song: SongListItem) {
     ops.ask(
       '/api/v1/operations/songs/delete',
       { songId: song.id },
@@ -119,7 +138,7 @@
 
       if (search.trim()) params.set('search', search.trim());
 
-      const data = await apiGet(`/api/v1/songs?${params}`);
+      const data = await apiGet<SongListResponse>(`/api/v1/songs?${params}`);
 
       songs = data.items ?? [];
       total = data.total ?? 0;
@@ -127,7 +146,7 @@
       denied = false;
     } catch (e) {
       if (isPermissionDeniedError(e)) denied = true;
-      else error = e?.message ?? String(e);
+      else error = (e as Error)?.message ?? String(e);
     } finally {
       loading = false;
     }
@@ -322,7 +341,7 @@
     {#snippet actions()}
       <button
         type="button"
-        class={drawer.mode === 'create' ? 'success' : ''}
+        class={drawer?.mode === 'create' ? 'success' : ''}
         onclick={save}
         disabled={!canSave}
       >

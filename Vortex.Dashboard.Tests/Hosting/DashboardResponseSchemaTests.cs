@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Observability.Configuration;
 using Xunit;
@@ -49,6 +51,9 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/articles/{articleId:int}", typeof(ArticleDetail)),
         ("/api/v1/wired/stats", typeof(WiredStats)),
         ("/api/v1/pets/stats", typeof(PetStats)),
+        ("/api/v1/cfh/stats", typeof(CfhStats)),
+        ("/api/v1/chatlogs", typeof(ChatlogPage)),
+        ("/api/v1/songs", typeof(SongListResponse)),
     ];
 
     [Fact]

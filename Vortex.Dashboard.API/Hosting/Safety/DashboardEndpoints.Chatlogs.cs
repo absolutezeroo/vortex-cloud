@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Safety;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -20,7 +21,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapChatlogReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<ChatlogPage>(
             app,
             ApiChatlogs,
             (HttpContext ctx, ChatlogReads reads, CancellationToken ct) =>

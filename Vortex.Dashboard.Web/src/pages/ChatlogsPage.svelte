@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiGet, describeApiError } from '../lib/api';
   import { formatDate } from '../lib/format';
@@ -10,6 +10,7 @@
   import Pagination from '../components/Pagination.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { t } from '../lib/i18n';
+  import type { ChatlogEntry, ChatlogPage, ChatlogWindow } from '../lib/apiTypes';
 
   let text = $state('');
   let since = $state('');
@@ -19,13 +20,15 @@
 
   // Held as {id, name} pairs from the picker: the search is by id, so a rename cannot orphan a
   // saved filter, and the operator still sees who they picked.
-  let player = $state(null);
-  let room = $state(null);
-  let picking = $state(null);
+  type PickedTarget = { id: number; name: string };
 
-  let rows = $state([]);
+  let player = $state<PickedTarget | null>(null);
+  let room = $state<PickedTarget | null>(null);
+  let picking = $state<'player' | 'room' | null>(null);
+
+  let rows = $state<ChatlogEntry[]>([]);
   let total = $state(0);
-  let resultWindow = $state(null);
+  let resultWindow = $state<ChatlogWindow | null>(null);
   let loading = $state(false);
   let error = $state('');
   let forbidden = $state(false);
@@ -61,7 +64,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet(`/api/v1/chatlogs?${buildParams()}`);
+      const data = await apiGet<ChatlogPage>(`/api/v1/chatlogs?${buildParams()}`);
       rows = data.items || [];
       total = data.total || 0;
       resultWindow = data.window || null;
@@ -87,7 +90,7 @@
     void refresh();
   }
 
-  function goToPage(next) {
+  function goToPage(next: number) {
     page = Math.min(totalPages, Math.max(1, next));
     void refresh();
   }
@@ -224,7 +227,7 @@
   <PickerModal
     kind="user"
     title={$t('chatlogs.pickPlayer')}
-    onSelect={(picked) => {
+    onSelect={(picked: PickedTarget) => {
       player = { id: picked.id, name: picked.name };
       picking = null;
     }}
@@ -234,7 +237,7 @@
   <PickerModal
     kind="room"
     title={$t('chatlogs.pickRoom')}
-    onSelect={(picked) => {
+    onSelect={(picked: PickedTarget) => {
       room = { id: picked.id, name: picked.name };
       picking = null;
     }}

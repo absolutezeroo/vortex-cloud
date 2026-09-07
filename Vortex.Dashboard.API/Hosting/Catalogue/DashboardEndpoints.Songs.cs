@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Catalogue;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
@@ -21,7 +22,7 @@ internal static partial class DashboardEndpoints
     private const string ApiSongs = ApiV1 + "/songs";
 
     public static void MapSongReads(WebApplication app) =>
-        MapReadGet(
+        MapReadGet<SongListResponse>(
             app,
             ApiSongs,
             (HttpContext ctx, SongReads reads, CancellationToken ct) =>

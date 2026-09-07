@@ -73,6 +73,10 @@ export function setLocale(value: string) {
   locale.set(value as Locale);
 }
 
+// A page that builds a label in a helper takes the translator itself rather than the locale, so the
+// call site stays reactive; this is the type of what it receives.
+export type Translator = (key: string, params?: TranslationParams) => string;
+
 // Reactive translator for templates: `{$t('audit.title')}` or `{$t('common.giveTo', { name })}`.
 // Missing keys fall back to English, then to the raw key itself (visibly wrong instead of a blank
 // UI, so a missed translation is easy to spot rather than silently disappearing).

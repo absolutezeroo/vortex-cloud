@@ -12,7 +12,8 @@
   type Props = {
     type?: 'player' | 'item' | 'room';
     id: number | string | null | undefined;
-    label?: string;
+    /** Null when the row it names has been deleted; the fallback below covers it. */
+    label?: string | null;
     /**
      * Both are optional and both are called with `?.`: a table of players passes only the player
      * one, and declaring them required was a JSDoc habit rather than a fact about the component.
@@ -56,7 +57,7 @@
       return;
     }
 
-    openPlayer?.(id, label);
+    openPlayer?.(id, label ?? undefined);
   }
 </script>
 

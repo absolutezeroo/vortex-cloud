@@ -6,6 +6,7 @@ using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Dashboard.API.Api.Hotel;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Safety;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -39,7 +40,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PetsRead,
             TagStats
         );
-        MapReadGet(
+        MapReadGet<CfhStats>(
             app,
             ApiCfh + "/stats",
             (HttpContext ctx, CfhReads cfh, CancellationToken ct) =>

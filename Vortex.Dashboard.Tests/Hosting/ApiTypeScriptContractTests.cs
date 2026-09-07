@@ -6,8 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using FluentAssertions;
+using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression.Contracts;
+using Vortex.Dashboard.API.Api.Safety.Contracts;
 using Xunit;
 
 namespace Vortex.Dashboard.Tests.Hosting;
@@ -53,6 +55,9 @@ public sealed class ApiTypeScriptContractTests
         typeof(ArticleImageBrowse),
         typeof(WiredStats),
         typeof(PetStats),
+        typeof(CfhStats),
+        typeof(ChatlogPage),
+        typeof(SongListResponse),
     ];
 
     [Fact]

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -11,21 +11,22 @@
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { MessageCircleWarning, Hash, TriangleAlert, Activity, Timer } from '@lucide/svelte';
-  import { t } from '../lib/i18n';
+  import { t, type Translator } from '../lib/i18n';
+  import type { CfhStats } from '../lib/apiTypes';
 
   const granularities = ['day', 'month', 'year'];
 
-  function granularityLabel(value, translator) {
+  function granularityLabel(value: string, translator: Translator) {
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
-  const closeReasonKeys = {
+  const closeReasonKeys: Record<string, string> = {
     Useless: 'cfhStats.reasonUseless',
     Sanctioned: 'cfhStats.reasonSanctioned',
     Resolved: 'cfhStats.reasonResolved',
   };
 
-  function closeReasonLabel(value, translator) {
+  function closeReasonLabel(value: string, translator: Translator) {
     return translator(closeReasonKeys[value] || value);
   }
 
@@ -35,9 +36,9 @@
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
+  let data = $state<CfhStats | null>(null);
 
-  function toLocalDateValue(value) {
+  function toLocalDateValue(value: Date) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
   }
@@ -59,7 +60,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/v1/cfh/stats?${params}`);
+      data = await apiGet<CfhStats>(`/api/v1/cfh/stats?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -67,7 +68,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
@@ -79,7 +80,10 @@
         {
           name: $t('cfhStats.totalTickets'),
           color: 'var(--accent)',
-          points: (data.timeline || []).map((p) => ({ label: p.label, value: p.ticketsCreated })),
+          points: (data.timeline || []).map((p) => ({
+            label: p.label,
+            value: p.ticketsCreated,
+          })),
         },
       ]
     : []);

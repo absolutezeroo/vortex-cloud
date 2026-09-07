@@ -81,6 +81,82 @@ export interface ArticleTranslation {
   thumbnail: string | null;
 }
 
+export interface CfhCloseReasonCount {
+  reason: string;
+  count: number;
+}
+
+export interface CfhReportedPlayer {
+  playerId: number;
+  playerName: string | null;
+  reportCount: number;
+}
+
+export interface CfhStats {
+  window: ReportWindow;
+  totals: CfhTotals;
+  timeline: CfhTimelinePoint[];
+  byCloseReason: CfhCloseReasonCount[];
+  topTopics: CfhTopicCount[];
+  topReportedPlayers: CfhReportedPlayer[];
+}
+
+export interface CfhTimelinePoint {
+  bucket: string;
+  label: string;
+  ticketsCreated: number;
+}
+
+export interface CfhTopicCount {
+  topicId: number;
+  topicName: string;
+  count: number;
+}
+
+export interface CfhTotals {
+  totalTickets: number;
+  openCount: number;
+  pickedCount: number;
+  closedCount: number;
+  sanctionedCount: number;
+  sanctionRate: number;
+  avgResolutionMinutes: number;
+}
+
+export interface ChatlogEntry {
+  id: number;
+  createdAt: string;
+  roomId: number;
+  roomName: string | null;
+  playerId: number;
+  playerName: string | null;
+  targetPlayerId: number | null;
+  targetPlayerName: string | null;
+  message: string;
+}
+
+export interface ChatlogFilters {
+  q: string | null;
+  player: number | null;
+  room: number | null;
+}
+
+export interface ChatlogPage {
+  count: number;
+  page: number;
+  limit: number;
+  total: number;
+  offset: number;
+  window: ChatlogWindow;
+  filters: ChatlogFilters;
+  items: ChatlogEntry[];
+}
+
+export interface ChatlogWindow {
+  since: string;
+  until: string;
+}
+
 export interface PetGrowthPoint {
   bucket: string;
   label: string;
@@ -263,6 +339,25 @@ export interface ReportWindow {
   since: string;
   until: string;
   granularity: string;
+}
+
+export interface SongListItem {
+  id: number;
+  name: string;
+  creator: string;
+  lengthMs: number;
+  lengthSeconds: number;
+  officialSongId: string;
+  data: string;
+  diskCount: number;
+  loadedInJukeboxes: number;
+}
+
+export interface SongListResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: SongListItem[];
 }
 
 export interface WiredCategoryCount {
