@@ -88,6 +88,12 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/fishing/activity", typeof(FishingActivity)),
         ("/api/v1/prize-pools", typeof(PrizePoolContent)),
         ("/api/v1/prize-pools/stats", typeof(PrizePoolStats)),
+        ("/api/v1/player-rewards", typeof(PlayerRewardStats)),
+        ("/api/v1/player-rewards/{playerId:int}", typeof(PlayerRewardDetail)),
+        ("/api/v1/reward-tracks", typeof(RewardTrackList)),
+        ("/api/v1/reward-tracks/actions", typeof(RewardTrackActionOptions)),
+        ("/api/v1/reward-tracks/reward-kinds", typeof(RewardKindOptions)),
+        ("/api/v1/reward-tracks/players/{playerId:int}", typeof(PlayerRewardTracks)),
     ];
 
     [Fact]

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
@@ -27,8 +28,11 @@ internal sealed class PlayerRewardReads(
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
 
-    public Task<object> PlayerRewardsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PlayerRewardStats> PlayerRewardsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<PlayerRewardStats>(
             async db =>
             {
                 int limit = QueryValues.Limit(query["limit"], 25, 100);
@@ -66,14 +70,13 @@ internal sealed class PlayerRewardReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var topBadges = topBadgeRows
-                    .Select(b => new
-                    {
+                List<BadgeHolderCount> topBadges = topBadgeRows
+                    .Select(b => new BadgeHolderCount(
                         b.badgeCode,
-                        badgeUrl = _assetUrls.BadgeImage(b.badgeCode),
+                        _assetUrls.BadgeImage(b.badgeCode),
                         b.holders,
-                        b.equipped,
-                    })
+                        b.equipped
+                    ))
                     .ToList();
 
                 int totalEffects = await db
@@ -107,28 +110,26 @@ internal sealed class PlayerRewardReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var topEffects = topEffectRows
-                    .Select(e => new
-                    {
+                List<EffectOwnerCount> topEffects = topEffectRows
+                    .Select(e => new EffectOwnerCount(
                         e.effectId,
-                        imageUrl = _assetUrls.EffectImage(e.effectId),
+                        _assetUrls.EffectImage(e.effectId),
                         e.owners,
                         e.activated,
-                        e.selected,
-                    })
+                        e.selected
+                    ))
                     .ToList();
 
-                var chatStyles = await db
+                List<ChatStyleRow> chatStyles = await db
                     .PlayerChatStyles.AsNoTracking()
                     .OrderBy(s => s.ClientStyleId)
-                    .Select(s => new
-                    {
+                    .Select(s => new ChatStyleRow(
                         s.Id,
                         s.ClientStyleId,
-                        owners = db.PlayerOwnedChatStyles.Count(o =>
+                        db.PlayerOwnedChatStyles.Count(o =>
                             o.ChatStyleId == s.Id && o.DeletedAt == null
-                        ),
-                    })
+                        )
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -163,51 +164,50 @@ internal sealed class PlayerRewardReads(
                     )
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    totals = new
-                    {
+                int distinctBadgeCodes = await db
+                    .PlayerBadges.AsNoTracking()
+                    .Where(b => b.DeletedAt == null)
+                    .Select(b => b.BadgeCode)
+                    .Distinct()
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new PlayerRewardStats(
+                    new PlayerRewardTotals(
                         totalBadges,
                         equippedBadges,
                         playersWithBadges,
-                        distinctBadgeCodes = await db
-                            .PlayerBadges.AsNoTracking()
-                            .Where(b => b.DeletedAt == null)
-                            .Select(b => b.BadgeCode)
-                            .Distinct()
-                            .CountAsync(ct)
-                            .ConfigureAwait(false),
+                        distinctBadgeCodes,
                         totalEffects,
                         activatedEffects,
                         selectedEffects,
-                        chatStyleCount = chatStyles.Count,
+                        chatStyles.Count,
                         wardrobeOutfits,
-                        wardrobeUsers,
-                    },
+                        wardrobeUsers
+                    ),
                     // The forms below grant ids and codes that may not exist anywhere yet, so they
                     // build their own preview URL from these rather than looking one up.
-                    effectImageTemplate = _assetUrls.EffectImageTemplate,
-                    badgeImageTemplate = _assetUrls.BadgeImageTemplate,
+                    _assetUrls.EffectImageTemplate,
+                    _assetUrls.BadgeImageTemplate,
                     topBadges,
                     topEffects,
                     chatStyles,
-                    topCollectors = topCollectors
-                        .Select(c => new
-                        {
+                    topCollectors
+                        .Select(c => new BadgeCollector(
                             c.playerId,
-                            playerName = DisplayNameQueries.ResolvePlayerName(names, c.playerId),
-                            c.badges,
-                        })
-                        .ToList(),
-                };
+                            DisplayNameQueries.ResolvePlayerName(names, c.playerId),
+                            c.badges
+                        ))
+                        .ToList()
+                );
             },
             ct
         );
 
     /// <summary>Everything one player holds, for the investigation flow: their badges (equipped
     /// first), effects, chat styles and saved outfits in one call.</summary>
-    public Task<object?> PlayerRewardDetailAsync(int playerId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<PlayerRewardDetail?> PlayerRewardDetailAsync(int playerId, CancellationToken ct) =>
+        QueryAsync<PlayerRewardDetail?>(
             async db =>
             {
                 var player = await db
@@ -239,15 +239,14 @@ internal sealed class PlayerRewardReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var badges = badgeRows
-                    .Select(b => new
-                    {
+                List<PlayerBadgeRow> badges = badgeRows
+                    .Select(b => new PlayerBadgeRow(
                         b.Id,
                         b.BadgeCode,
-                        badgeUrl = _assetUrls.BadgeImage(b.BadgeCode),
+                        _assetUrls.BadgeImage(b.BadgeCode),
                         b.SlotId,
-                        b.CreatedAt,
-                    })
+                        b.CreatedAt
+                    ))
                     .ToList();
 
                 var effectRows = await db
@@ -269,50 +268,42 @@ internal sealed class PlayerRewardReads(
 
                 // Rendered on this player's own figure: an effect is only ever seen worn, and worn by
                 // them is what the operator is checking.
-                var effects = effectRows
-                    .Select(e => new
-                    {
+                List<PlayerEffectRow> effects = effectRows
+                    .Select(e => new PlayerEffectRow(
                         e.Id,
                         e.EffectId,
-                        imageUrl = _assetUrls.EffectImage(e.EffectId, player.Figure),
+                        _assetUrls.EffectImage(e.EffectId, player.Figure),
                         e.SubType,
                         e.TotalDuration,
                         e.ActivatedAt,
-                        e.IsSelected,
-                    })
+                        e.IsSelected
+                    ))
                     .ToList();
 
-                var chatStyles = await db
+                List<PlayerChatStyleRow> chatStyles = await db
                     .PlayerOwnedChatStyles.AsNoTracking()
                     .Where(o => o.PlayerEntityId == playerId && o.DeletedAt == null)
-                    .Select(o => new { o.Id, o.ChatStyleId })
+                    .Select(o => new PlayerChatStyleRow(o.Id, o.ChatStyleId))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var outfits = await db
+                List<PlayerOutfitRow> outfits = await db
                     .PlayerWardrobeOutfits.AsNoTracking()
                     .Where(o => o.PlayerEntityId == playerId && o.DeletedAt == null)
                     .OrderBy(o => o.SlotId)
-                    .Select(o => new
-                    {
-                        o.Id,
-                        o.SlotId,
-                        o.Figure,
-                        o.Gender,
-                    })
+                    .Select(o => new PlayerOutfitRow(o.Id, o.SlotId, o.Figure, o.Gender))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new PlayerRewardDetail(
                     playerId,
-                    playerName = name,
-                    avatarUrl = _assetUrls.AvatarImage(player.Figure),
+                    name,
+                    _assetUrls.AvatarImage(player.Figure),
                     badges,
                     effects,
                     chatStyles,
-                    outfits,
-                };
+                    outfits
+                );
             },
             ct
         );

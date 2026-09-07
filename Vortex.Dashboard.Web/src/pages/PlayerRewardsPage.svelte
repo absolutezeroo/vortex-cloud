@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Badges, avatar effects, chat styles and saved outfits. The emulator only ever reads these one
   // player at a time, so the hotel-wide view is the only place a broken grant shows: a badge held by
   // thousands, an effect nobody ever activated, a chat style owned by nobody.
@@ -24,13 +24,18 @@
   import StatCard from '../components/StatCard.svelte';
   import { Award, Sparkles, MessageCircle, Shirt } from '@lucide/svelte';
   import { t } from '../lib/i18n';
+  import type { PlayerRewardDetail, PlayerRewardStats } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** The player whose rewards are open, as the picker handed them back. */
+  type PickedPlayer = { id: number; name: string };
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let data = $state(null);
-  let player = $state(null);
-  let detail = $state(null);
+  let data = $state<PlayerRewardStats | null>(null);
+  let player = $state<PickedPlayer | null>(null);
+  let detail = $state<PlayerRewardDetail | null>(null);
   let detailLoading = $state(false);
   let picking = $state(false);
 
@@ -68,7 +73,7 @@
     forbidden = false;
 
     try {
-      data = await apiGet('/api/v1/player-rewards');
+      data = await apiGet<PlayerRewardStats>('/api/v1/player-rewards');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -76,22 +81,22 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       data = null;
     } finally {
       loading = false;
     }
   }
 
-  async function loadPlayer(picked) {
+  async function loadPlayer(picked: PickedPlayer) {
     player = picked;
     detail = null;
     detailLoading = true;
 
     try {
-      detail = await apiGet(`/api/v1/player-rewards/${picked.id}`);
+      detail = await apiGet<PlayerRewardDetail>(`/api/v1/player-rewards/${picked.id}`);
     } catch (err) {
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       detailLoading = false;
     }
@@ -402,8 +407,9 @@
 {/if}
 
 {#if canManage && player && grantOpen}
+  {@const target = player}
   <Drawer
-    title={$t('playerRewards.grantTitle', { name: player.name })}
+    title={$t('playerRewards.grantTitle', { name: target.name })}
     eyebrow={$t('playerRewards.title')}
     onclose={() => (grantOpen = false)}
   >
@@ -415,9 +421,9 @@
         event.preventDefault();
         ops.ask(
           '/api/v1/operations/content/badges/grant',
-          { playerId: player.id, badgeCode },
+          { playerId: target.id, badgeCode },
           $t('playerRewards.grantBadge'),
-          $t('playerRewards.grantBadgeSummary', { code: badgeCode, name: player.name })
+          $t('playerRewards.grantBadgeSummary', { code: badgeCode, name: target.name })
         );
       }}
     >
@@ -439,9 +445,9 @@
         onclick={() =>
           ops.ask(
             '/api/v1/operations/content/badges/revoke',
-            { playerId: player.id, badgeCode },
+            { playerId: target.id, badgeCode },
             $t('playerRewards.revokeBadge'),
-            $t('playerRewards.revokeBadgeSummary', { code: badgeCode, name: player.name })
+            $t('playerRewards.revokeBadgeSummary', { code: badgeCode, name: target.name })
           )}
       >
         {$t('playerRewards.revokeBadge')}
@@ -454,9 +460,9 @@
         event.preventDefault();
         ops.ask(
           '/api/v1/operations/content/effects/grant',
-          { playerId: player.id, effectId: Number(effectId), durationSeconds: Number(effectDuration) || 0 },
+          { playerId: target.id, effectId: Number(effectId), durationSeconds: Number(effectDuration) || 0 },
           $t('playerRewards.grantEffect'),
-          $t('playerRewards.grantEffectSummary', { id: effectId, name: player.name })
+          $t('playerRewards.grantEffectSummary', { id: effectId, name: target.name })
         );
       }}
     >
@@ -479,9 +485,9 @@
         onclick={() =>
           ops.ask(
             '/api/v1/operations/content/effects/revoke',
-            { playerId: player.id, effectId: Number(effectId), durationSeconds: 0 },
+            { playerId: target.id, effectId: Number(effectId), durationSeconds: 0 },
             $t('playerRewards.revokeEffect'),
-            $t('playerRewards.revokeEffectSummary', { id: effectId, name: player.name })
+            $t('playerRewards.revokeEffectSummary', { id: effectId, name: target.name })
           )}
       >
         {$t('playerRewards.revokeEffect')}
@@ -502,9 +508,9 @@
   <PickerModal
     kind="user"
     title={$t('playerRewards.inspectPlayer')}
-    onSelect={(picked) => {
+    onSelect={(picked: PickerRow) => {
       picking = false;
-      void loadPlayer(picked);
+      void loadPlayer({ id: Number(picked.id), name: picked.name });
     }}
     onClose={() => (picking = false)}
   />

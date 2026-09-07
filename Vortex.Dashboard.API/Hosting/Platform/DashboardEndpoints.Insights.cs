@@ -7,6 +7,7 @@ using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Api.Hotel;
 using Vortex.Dashboard.API.Api.Hotel.Contracts;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Api.Safety;
 using Vortex.Primitives.Permissions;
 
@@ -63,7 +64,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
-        MapReadGet(
+        MapReadGet<PlayerRewardStats>(
             app,
             ApiPlayerRewards,
             (HttpContext ctx, PlayerRewardReads playerReward, CancellationToken ct) =>
@@ -71,7 +72,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagForensics
         );
-        MapReadGet(
+        MapReadGetNullable<PlayerRewardDetail>(
             app,
             ApiPlayerRewards + "/{playerId:int}",
             (int playerId, PlayerRewardReads playerReward, CancellationToken ct) =>

@@ -91,6 +91,12 @@ public sealed class ApiTypeScriptContractTests
         typeof(FishingActivity),
         typeof(PrizePoolContent),
         typeof(PrizePoolStats),
+        typeof(PlayerRewardStats),
+        typeof(PlayerRewardDetail),
+        typeof(RewardTrackList),
+        typeof(PlayerRewardTracks),
+        typeof(RewardTrackActionOptions),
+        typeof(RewardKindOptions),
     ];
 
     [Fact]

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Reward-track campaigns.
   //
   // The whole point of the engine is that a campaign is content, so this page is where one gets
@@ -13,6 +13,94 @@
   import { formatDate, formatNumber } from '../lib/format';
   import { t, translate } from '../lib/i18n';
   import { Blocks, Route, Users } from '@lucide/svelte';
+  import type {
+    FactOption,
+    PlayerRewardTracks,
+    RewardKindOption,
+    RewardKindOptions,
+    RewardTrackActionOption,
+    RewardTrackActionOptions,
+    RewardTrackList,
+    RewardTrackRow,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** One choice of a fixed vocabulary the page draws as a select. */
+  type Choice = { value: number; key: string };
+
+  /** The player whose progress the second tab reads. */
+  type PickedPlayer = { id: number; name: string };
+
+  /**
+   * The four editors' forms. Every number binds to an input that hands back a string while it
+   * is being typed, which is why each read below goes through Number().
+   */
+  type TrackForm = {
+    trackId: string;
+    theme: string;
+    sortOrder: number | string;
+    startsAt: string;
+    progressEndsAt: string;
+    claimEndsAt: string;
+    unlockKind: number | string;
+    unlockValue: string;
+    completionPolicy: number | string;
+    premiumEnabled: boolean;
+    premiumBoostPerMille: number | string;
+    premiumInstantPoints: number | string;
+    premiumCostCredits: number | string;
+    premiumCostDiamonds: number | string;
+    hidden: boolean;
+    campaignCode: string;
+  };
+
+  type LevelForm = {
+    requiredCount: number | string;
+    pointsReward: number | string;
+    premium: boolean;
+  };
+
+  type FilterForm = { factKey: string; op: number | string; value: string };
+
+  type StepForm = { actionCode: string; filters: FilterForm[] };
+
+  type TaskForm = {
+    trackRowId: number;
+    taskId: string;
+    actionCode: string;
+    parameter: string;
+    mode: number | string;
+    premium: boolean;
+    sortOrder: number | string;
+    levels: LevelForm[];
+    steps: StepForm[];
+  };
+
+  type RewardForm = {
+    kind: number | string;
+    rewardTypeId: string;
+    amount: number | string;
+    extraParams: string;
+    sortOrder: number | string;
+  };
+
+  type PrizeForm = {
+    trackRowId: number;
+    prizeId: string;
+    requiredPoints: number | string;
+    premium: boolean;
+    sortOrder: number | string;
+    rewards: RewardForm[];
+  };
+
+  /** An editor open on a row (id set) or on a new one (id null). */
+  type Draft<T> = { id: number | null; form: T };
+
+  /** Which filter's value the picker is filling, addressed by where it sits. */
+  type FilterTarget = { stepIndex: number; filterIndex: number; kind: string };
+
+  /** What the last pick was called, so the drawer can show a name beside the stored id. */
+  type PickedLabel = { name: string; iconUrl?: string | null };
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -31,14 +119,14 @@
 
   // Mirrors TaskProgressMode. Four modes cover every task the official track has; the labels say
   // what each counts rather than naming the enum.
-  const MODES = [
+  const MODES: Choice[] = [
     { value: 0, key: 'rewardTracks.modeCounter' },
     { value: 1, key: 'rewardTracks.modeDistinct' },
     { value: 2, key: 'rewardTracks.modeAbsolute' },
     { value: 3, key: 'rewardTracks.modeHighest' },
   ];
 
-  const UNLOCK_KINDS = [
+  const UNLOCK_KINDS: Choice[] = [
     { value: 0, key: 'rewardTracks.unlockAlways' },
     { value: 1, key: 'rewardTracks.unlockTrackCompleted' },
     { value: 2, key: 'rewardTracks.unlockPrizeClaimed' },
@@ -51,7 +139,7 @@
   // Mirrors StepFilterOperator. Which of these a given fact may use is decided by the server and
   // sent with the fact: `contains` is meaningless on a room id and an exact match is useless on a
   // line a player typed, and the validator refuses both -- so the editor must not offer them.
-  const FILTER_OPERATORS = [
+  const FILTER_OPERATORS: Choice[] = [
     { value: 0, key: 'rewardTracks.filterOpEquals' },
     { value: 1, key: 'rewardTracks.filterOpNotEquals' },
     { value: 2, key: 'rewardTracks.filterOpOneOf' },
@@ -59,14 +147,14 @@
   ];
 
   /** The operators this fact accepts, in the order the server ranked them. */
-  function operatorsFor(actionCode, factKey) {
+  function operatorsFor(actionCode: string, factKey: string): Choice[] {
     const allowed = factMeta(actionCode, factKey)?.operators;
 
     if (!allowed?.length) return FILTER_OPERATORS;
 
     return allowed
       .map((value) => FILTER_OPERATORS.find((op) => op.value === value))
-      .filter(Boolean);
+      .filter((op): op is Choice => op !== undefined);
   }
 
   /**
@@ -75,7 +163,7 @@
    * any action carrying a room id gets the room picker without this list being touched again.
    * `OpaqueId` deliberately has none -- a placed item or a pet has no catalogue to pick from.
    */
-  const PICKER_FOR_KIND = {
+  const PICKER_FOR_KIND: Record<string, string> = {
     FurnitureId: 'furniture',
     RoomId: 'room',
     PlayerId: 'user',
@@ -92,7 +180,7 @@
    * looking at, and a value picked from a list cannot be misspelled.
    * </p>
    */
-  const PICKER_FOR_FACT = {
+  const PICKER_FOR_FACT: Record<string, string> = {
     group: 'group',
     habbicon: 'habbicon',
     collection: 'collection',
@@ -110,7 +198,7 @@
   };
 
   /** The directory this filter can pick from, by fact first and kind second. */
-  function pickerFor(meta) {
+  function pickerFor(meta: FactOption | null) {
     if (!meta) return null;
 
     return PICKER_FOR_FACT[meta.key] ?? PICKER_FOR_KIND[meta.kind] ?? null;
@@ -120,17 +208,17 @@
    * The facts a given action emits, straight from the server: each carries its kind, its label and
    * -- for a closed fact -- the values it accepts. Anything not in here can never match.
    */
-  function factsFor(actionCode) {
+  function factsFor(actionCode: string): FactOption[] {
     return actionOptions.find((a) => a.name === actionCode)?.facts ?? [];
   }
 
   /** One fact's metadata, by key. */
-  function factMeta(actionCode, factKey) {
+  function factMeta(actionCode: string, factKey: string): FactOption | null {
     return factsFor(actionCode).find((f) => f.key === factKey) ?? null;
   }
 
   /** A closed-vocabulary fact starts on a value it accepts; everything else starts empty. */
-  function defaultFilterValue(actionCode, factKey) {
+  function defaultFilterValue(actionCode: string, factKey: string) {
     const meta = factMeta(actionCode, factKey);
 
     return meta?.values?.length ? meta.values[0].value : '';
@@ -141,14 +229,14 @@
    * records that fact, because $N resolves to the same fact key. "The same furniture" only works
    * between two steps that both talk about furniture.
    */
-  function referencesFor(steps, index, factKey) {
+  function referencesFor(steps: StepForm[], index: number, factKey: string) {
     return steps
       .slice(0, index)
       .map((step, i) => ({ value: `$${i}`, index: i, action: step.actionCode }))
       .filter((r) => factsFor(r.action).some((f) => f.key === factKey));
   }
 
-  const COMPLETION_POLICIES = [
+  const COMPLETION_POLICIES: Choice[] = [
     { value: 0, key: 'rewardTracks.policyFreeClaimed' },
     { value: 1, key: 'rewardTracks.policyAllClaimed' },
     { value: 2, key: 'rewardTracks.policyMaxPoints' },
@@ -157,22 +245,22 @@
 
   let tab = $state('tracks');
   let search = $state('');
-  let expanded = $state(null);
+  let expanded = $state<number | null>(null);
 
-  let player = $state(null);
+  let player = $state<PickedPlayer | null>(null);
   let pickingPlayer = $state(false);
 
   // Which filter's value the picker is filling, and what the last pick was called. The name and the
   // sprite are shown, never stored: a filter holds the id the handler emits, and the drawer reopens
   // on that id alone.
   let sequenceOpen = $state(false);
-  let pickingFilter = $state(null);
-  let pickedLabels = $state({});
+  let pickingFilter = $state<FilterTarget | null>(null);
+  let pickedLabels = $state<Record<string, PickedLabel>>({});
 
-  let trackDraft = $state(null);
-  let taskDraft = $state(null);
-  let prizeDraft = $state(null);
-  let cloneDraft = $state(null);
+  let trackDraft = $state<Draft<TrackForm> | null>(null);
+  let taskDraft = $state<Draft<TaskForm> | null>(null);
+  let prizeDraft = $state<Draft<PrizeForm> | null>(null);
+  let cloneDraft = $state<{ id: number; newTrackId: string } | null>(null);
 
   const ops = createWriteOps();
 
@@ -183,9 +271,9 @@
     async () => {
       const params = search.trim() ? `?search=${encodeURIComponent(search.trim())}` : '';
       const [list, actions, kinds] = await Promise.all([
-        apiGet(`/api/v1/reward-tracks${params}`),
-        apiGet('/api/v1/reward-tracks/actions'),
-        apiGet('/api/v1/reward-tracks/reward-kinds'),
+        apiGet<RewardTrackList>(`/api/v1/reward-tracks${params}`),
+        apiGet<RewardTrackActionOptions>('/api/v1/reward-tracks/actions'),
+        apiGet<RewardKindOptions>('/api/v1/reward-tracks/reward-kinds'),
       ]);
 
       return { items: list.items ?? [], actions: actions.items ?? [], kinds: kinds.items ?? [] };
@@ -194,7 +282,7 @@
 
   const progress = createResource(
     () => ['reward-tracks-player', player?.id ?? null],
-    () => apiGet(`/api/v1/reward-tracks/players/${player.id}`),
+    () => apiGet<PlayerRewardTracks>(`/api/v1/reward-tracks/players/${player!.id}`),
     { enabled: () => player !== null }
   );
 
@@ -203,13 +291,13 @@
   // to its enclosing block -- so inside `{#if taskDraft}` the name resolved to the footer snippet
   // instead of this array. Iterating a function yields nothing and throws nothing, which is how the
   // action picker shipped as an empty menu.
-  let actionOptions = $derived(tracks.data?.actions ?? []);
-  let kinds = $derived(tracks.data?.kinds ?? []);
+  let actionOptions: RewardTrackActionOption[] = $derived(tracks.data?.actions ?? []);
+  let kinds: RewardKindOption[] = $derived(tracks.data?.kinds ?? []);
   let live = $derived(items.filter((it) => it.status === 'Active').length);
   let participants = $derived(items.reduce((sum, it) => sum + it.participants, 0));
   let premiumHolders = $derived(items.reduce((sum, it) => sum + it.premiumHolders, 0));
 
-  function emptyTrack() {
+  function emptyTrack(): TrackForm {
     return {
       trackId: '',
       theme: 'blue',
@@ -230,7 +318,7 @@
     };
   }
 
-  function emptyTask(trackRowId) {
+  function emptyTask(trackRowId: number): TaskForm {
     return {
       trackRowId,
       taskId: '',
@@ -246,7 +334,7 @@
     };
   }
 
-  function emptyPrize(trackRowId) {
+  function emptyPrize(trackRowId: number): PrizeForm {
     return {
       trackRowId,
       prizeId: '',
@@ -257,36 +345,36 @@
     };
   }
 
-  function toLocal(iso) {
+  function toLocal(iso: string | null | undefined) {
     if (!iso) return '';
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return '';
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
-  function fromLocal(value) {
+  function fromLocal(value: string) {
     if (!value) return null;
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
 
-  function unlockKindValue(name) {
+  function unlockKindValue(name: string) {
     const index = ['Always', 'TrackCompleted', 'PrizeClaimed', 'BadgeOwned', 'AccountAgeDays', 'FeatureFlag'].indexOf(name);
     return index < 0 ? 0 : index;
   }
 
-  function policyValue(name) {
+  function policyValue(name: string) {
     const index = ['AllFreePrizesClaimed', 'AllPrizesClaimed', 'MaxPointsReached', 'AllTasksCompleted'].indexOf(name);
     return index < 0 ? 0 : index;
   }
 
-  function modeValue(name) {
+  function modeValue(name: string) {
     const index = ['Counter', 'Distinct', 'Absolute', 'Highest'].indexOf(name);
     return index < 0 ? 0 : index;
   }
 
-  function trackBody(form, rowId) {
+  function trackBody(form: TrackForm, rowId: number | null) {
     const body = {
       trackId: form.trackId.trim(),
       theme: form.theme,
@@ -412,7 +500,7 @@
     );
   }
 
-  function lifecycle(path, track, title) {
+  function lifecycle(path: string, track: RewardTrackRow, title: string) {
     ops.ask(path, { trackRowId: track.id }, title, track.trackId, {
       onSuccess: () => tracks.refresh(),
     });
@@ -439,7 +527,7 @@
   }
 
   function addLevel() {
-    const levels = taskDraft.form.levels;
+    const levels = taskDraft!.form.levels;
     const last = levels[levels.length - 1];
 
     levels.push({
@@ -450,16 +538,16 @@
   }
 
   function addReward() {
-    prizeDraft.form.rewards.push({
+    prizeDraft!.form.rewards.push({
       kind: 8,
       rewardTypeId: '0',
       amount: 100,
       extraParams: '',
-      sortOrder: prizeDraft.form.rewards.length,
+      sortOrder: prizeDraft!.form.rewards.length,
     });
   }
 
-  function kindHint(kindValue) {
+  function kindHint(kindValue: number | string) {
     return kinds.find((k) => k.value === Number(kindValue))?.target ?? '';
   }
 </script>
@@ -644,7 +732,7 @@
                           <button
                             type="button"
                             class="success"
-                            onclick={() => (taskDraft = { form: emptyTask(track.id) })}
+                            onclick={() => (taskDraft = { id: null, form: emptyTask(track.id) })}
                           >
                             {$t('rewardTracks.newTask')}
                           </button>
@@ -690,6 +778,7 @@
                                     class="ghost-button"
                                     onclick={() =>
                                       (taskDraft = {
+                                        id: null,
                                         form: {
                                           ...task,
                                           trackRowId: track.id,
@@ -738,7 +827,7 @@
                           <button
                             type="button"
                             class="success"
-                            onclick={() => (prizeDraft = { form: emptyPrize(track.id) })}
+                            onclick={() => (prizeDraft = { id: null, form: emptyPrize(track.id) })}
                           >
                             {$t('rewardTracks.newPrize')}
                           </button>
@@ -782,6 +871,7 @@
                                     class="ghost-button"
                                     onclick={() =>
                                       (prizeDraft = {
+                                        id: null,
                                         form: {
                                           ...prize,
                                           trackRowId: track.id,
@@ -841,7 +931,8 @@
       {:else if (progress.data?.items ?? []).length === 0}
         <EmptyState message={$t('rewardTracks.noProgress')} />
       {:else}
-        {#each progress.data.items as row (row.trackId)}
+        {#each progress.data?.items ?? [] as row (row.trackId)}
+          {@const target = player!}
           <div class="panel">
             <div class="panel-head">
               <h3>{row.trackId}</h3>
@@ -854,9 +945,9 @@
                       onclick={() =>
                         ops.ask(
                           '/api/v1/operations/reward-tracks/players/grant-premium',
-                          { playerId: player.id, trackId: row.trackId },
+                          { playerId: target.id, trackId: row.trackId },
                           translate('rewardTracks.grantPremium'),
-                          `${player.name} · ${row.trackId}`,
+                          `${target.name} · ${row.trackId}`,
                           { onSuccess: () => progress.refresh() }
                         )}
                     >
@@ -869,9 +960,9 @@
                     onclick={() =>
                       ops.ask(
                         '/api/v1/operations/reward-tracks/players/reset',
-                        { playerId: player.id, trackId: row.trackId },
+                        { playerId: target.id, trackId: row.trackId },
                         translate('rewardTracks.reset'),
-                        `${player.name} · ${row.trackId}`,
+                        `${target.name} · ${row.trackId}`,
                         { onSuccess: () => progress.refresh() }
                       )}
                   >
@@ -1037,6 +1128,7 @@
 {/if}
 
 {#if taskDraft}
+  {@const draft = taskDraft}
   <Drawer
     title={$t('rewardTracks.saveTask')}
     eyebrow={$t('rewardTracks.title')}
@@ -1044,12 +1136,12 @@
   >
     <label>
       {$t('rewardTracks.taskId')}
-      <input type="text" bind:value={taskDraft.form.taskId} />
+      <input type="text" bind:value={draft.form.taskId} />
     </label>
     <p class="muted small">{$t('rewardTracks.taskIdHint')}</p>
     <label>
       {$t('rewardTracks.mode')}
-      <select bind:value={taskDraft.form.mode}>
+      <select bind:value={draft.form.mode}>
         {#each MODES as mode (mode.value)}
           <option value={mode.value}>{$t(mode.key)}</option>
         {/each}
@@ -1057,7 +1149,7 @@
     </label>
     <label>
       {$t('rewardTracks.parameter')}
-      <input type="text" bind:value={taskDraft.form.parameter} />
+      <input type="text" bind:value={draft.form.parameter} />
     </label>
     <p class="muted small">{$t('rewardTracks.parameterHint')}</p>
 
@@ -1074,8 +1166,8 @@
     <div class="sequence-summary">
       <span>
         {$t('rewardTracks.sequenceSummary', {
-          actions: taskDraft.form.steps.length,
-          conditions: taskDraft.form.steps.reduce((n, s) => n + (s.filters?.length ?? 0), 0),
+          actions: draft.form.steps.length,
+          conditions: draft.form.steps.reduce((n, s) => n + (s.filters?.length ?? 0), 0),
         })}
       </span>
       <button type="button" class="ghost-button" onclick={() => (sequenceOpen = true)}>
@@ -1085,12 +1177,12 @@
     </div>
 
     <label class="checkbox premium-task">
-      <input type="checkbox" bind:checked={taskDraft.form.premium} />
+      <input type="checkbox" bind:checked={draft.form.premium} />
       {$t('rewardTracks.premiumTask')}
     </label>
 
     <h4 class="drawer-section">{$t('rewardTracks.stages')}</h4>
-    {#each taskDraft.form.levels as level, index (index)}
+    {#each draft.form.levels as level, index (index)}
       <div class="level-row">
         <span class="row-label">#{index + 1}</span>
         <input type="number" bind:value={level.requiredCount} placeholder={$t('rewardTracks.required')} />
@@ -1103,8 +1195,8 @@
           type="button"
           class="ghost-button block-remove"
           title={$t('common.remove')}
-          onclick={() => taskDraft.form.levels.splice(index, 1)}
-          disabled={taskDraft.form.levels.length === 1}
+          onclick={() => draft.form.levels.splice(index, 1)}
+          disabled={draft.form.levels.length === 1}
         >
           ×
         </button>
@@ -1122,6 +1214,7 @@
 {/if}
 
 {#if prizeDraft}
+  {@const draft = prizeDraft}
   <Drawer
     title={$t('rewardTracks.savePrize')}
     eyebrow={$t('rewardTracks.title')}
@@ -1129,21 +1222,21 @@
   >
     <label>
       {$t('rewardTracks.prizeId')}
-      <input type="text" bind:value={prizeDraft.form.prizeId} />
+      <input type="text" bind:value={draft.form.prizeId} />
     </label>
     <p class="muted small">{$t('rewardTracks.prizeIdHint')}</p>
     <label>
       {$t('rewardTracks.requiredPoints')}
-      <input type="number" bind:value={prizeDraft.form.requiredPoints} />
+      <input type="number" bind:value={draft.form.requiredPoints} />
     </label>
     <label class="checkbox">
-      <input type="checkbox" bind:checked={prizeDraft.form.premium} />
+      <input type="checkbox" bind:checked={draft.form.premium} />
       {$t('rewardTracks.premiumPrize')}
     </label>
 
     <h4>{$t('rewardTracks.rewards')}</h4>
     <p class="muted small">{$t('rewardTracks.bundleHint')}</p>
-    {#each prizeDraft.form.rewards as reward, index (index)}
+    {#each draft.form.rewards as reward, index (index)}
       <div class="reward-row">
         <select bind:value={reward.kind}>
           {#each kinds as kind (kind.value)}
@@ -1155,8 +1248,8 @@
         <button
           type="button"
           class="danger"
-          onclick={() => prizeDraft.form.rewards.splice(index, 1)}
-          disabled={prizeDraft.form.rewards.length === 1}
+          onclick={() => draft.form.rewards.splice(index, 1)}
+          disabled={draft.form.rewards.length === 1}
         >
           {$t('common.remove')}
         </button>
@@ -1198,11 +1291,12 @@
 {/if}
 
 {#if taskDraft}
+  {@const draft = taskDraft}
   <SequenceWorkspace
     open={sequenceOpen}
     title={$t('rewardTracks.sequence')}
     onclose={() => (sequenceOpen = false)}
-    steps={taskDraft.form.steps}
+    steps={draft.form.steps}
     actions={actionOptions}
     {canManage}
     {factsFor}
@@ -1211,8 +1305,11 @@
     {defaultFilterValue}
     {pickerFor}
     {pickedLabels}
-    onchange={(next) => (taskDraft.form.steps = next)}
-    onpick={(stepIndex, filterIndex, kind) => (pickingFilter = { stepIndex, filterIndex, kind })}
+    onchange={(next: StepForm[]) => {
+      if (taskDraft) draft.form.steps = next;
+    }}
+    onpick={(stepIndex: number, filterIndex: number, kind: string) =>
+      (pickingFilter = { stepIndex, filterIndex, kind })}
   />
 {/if}
 
@@ -1220,16 +1317,19 @@
   <PickerModal
     kind={pickingFilter.kind}
     title={$t('rewardTracks.pickValue')}
-    onSelect={(item) => {
-      const { stepIndex, filterIndex } = pickingFilter;
-      const filter = taskDraft.form.steps[stepIndex].filters[filterIndex];
+    onSelect={(item: PickerRow) => {
+      const { stepIndex, filterIndex } = pickingFilter!;
+      const filter = taskDraft!.form.steps[stepIndex].filters[filterIndex];
       // What the signal carries, which is not always the row's id: a Habbicon collection is
       // filtered by its code, and a badge by the code itself.
       const picked = String(item.value ?? item.id);
       // "One of" is a list, so a pick adds to it; the other operators hold a single value.
       filter.value =
         Number(filter.op) === 2 && filter.value ? `${filter.value},${picked}` : picked;
-      pickedLabels[`${stepIndex}:${filterIndex}`] = { name: item.name, iconUrl: item.iconUrl };
+      pickedLabels[`${stepIndex}:${filterIndex}`] = {
+        name: item.name,
+        iconUrl: item.iconUrl,
+      };
       pickingFilter = null;
     }}
     onClose={() => (pickingFilter = null)}
@@ -1240,8 +1340,8 @@
   <PickerModal
     kind="user"
     title={$t('rewardTracks.pickPlayer')}
-    onSelect={(picked) => {
-      player = picked;
+    onSelect={(picked: PickerRow) => {
+      player = { id: Number(picked.id), name: picked.name };
       pickingPlayer = false;
     }}
     onClose={() => (pickingPlayer = false)}

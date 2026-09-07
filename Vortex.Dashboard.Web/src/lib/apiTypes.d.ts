@@ -231,6 +231,19 @@ export interface AvatarBatchRow {
   avatarUrl: string | null;
 }
 
+export interface BadgeCollector {
+  playerId: number;
+  playerName: string | null;
+  badges: number;
+}
+
+export interface BadgeHolderCount {
+  badgeCode: string;
+  badgeUrl: string | null;
+  holders: number;
+  equipped: number;
+}
+
 export interface BotDetail {
   id: number;
   name: string;
@@ -417,6 +430,12 @@ export interface CfhTotals {
   sanctionedCount: number;
   sanctionRate: number;
   avgResolutionMinutes: number;
+}
+
+export interface ChatStyleRow {
+  id: number;
+  clientStyleId: number;
+  owners: number;
 }
 
 export interface ChatlogEntry {
@@ -648,6 +667,29 @@ export interface EconomyTrends {
   series: EconomyTrendSeries[];
   totals: Record<string, EconomyCurrencyTotals>;
   categories: EconomySpendCategory[];
+}
+
+export interface EffectOwnerCount {
+  effectId: number;
+  imageUrl: string | null;
+  owners: number;
+  activated: number;
+  selected: number;
+}
+
+export interface FactOption {
+  key: string;
+  kind: string;
+  labelKey: string;
+  fallbackLabel: string;
+  operators: number[];
+  values: FactOptionValue[];
+}
+
+export interface FactOptionValue {
+  value: string;
+  labelKey: string;
+  fallbackLabel: string;
 }
 
 export interface FishingActivity {
@@ -1104,6 +1146,19 @@ export interface PetTypeCount {
   count: number;
 }
 
+export interface PlayerBadgeRow {
+  id: number;
+  badgeCode: string;
+  badgeUrl: string | null;
+  slotId: number | null;
+  createdAt: string;
+}
+
+export interface PlayerChatStyleRow {
+  id: number;
+  chatStyleId: number;
+}
+
 export interface PlayerDirectoryPage {
   count: number;
   total: number;
@@ -1120,6 +1175,16 @@ export interface PlayerDirectoryRow {
   online: boolean;
 }
 
+export interface PlayerEffectRow {
+  id: number;
+  effectId: number;
+  imageUrl: string | null;
+  subType: number;
+  totalDuration: number;
+  activatedAt: string | null;
+  isSelected: boolean;
+}
+
 export interface PlayerHabbiconRow {
   habbiconId: number;
   code: string;
@@ -1134,6 +1199,76 @@ export interface PlayerHabbicons {
   playerId: number;
   count: number;
   items: PlayerHabbiconRow[];
+}
+
+export interface PlayerOutfitRow {
+  id: number;
+  slotId: number;
+  figure: string;
+  gender: string;
+}
+
+export interface PlayerRewardDetail {
+  playerId: number;
+  playerName: string;
+  avatarUrl: string | null;
+  badges: PlayerBadgeRow[];
+  effects: PlayerEffectRow[];
+  chatStyles: PlayerChatStyleRow[];
+  outfits: PlayerOutfitRow[];
+}
+
+export interface PlayerRewardStats {
+  totals: PlayerRewardTotals;
+  effectImageTemplate: string | null;
+  badgeImageTemplate: string | null;
+  topBadges: BadgeHolderCount[];
+  topEffects: EffectOwnerCount[];
+  chatStyles: ChatStyleRow[];
+  topCollectors: BadgeCollector[];
+}
+
+export interface PlayerRewardTotals {
+  totalBadges: number;
+  equippedBadges: number;
+  playersWithBadges: number;
+  distinctBadgeCodes: number;
+  totalEffects: number;
+  activatedEffects: number;
+  selectedEffects: number;
+  chatStyleCount: number;
+  wardrobeOutfits: number;
+  wardrobeUsers: number;
+}
+
+export interface PlayerRewardTrackClaimRow {
+  prizeId: string;
+  claimedAt: string;
+  pointsAtClaim: number;
+  granted: string;
+}
+
+export interface PlayerRewardTrackRow {
+  trackId: string;
+  points: number;
+  premiumUnlocked: boolean;
+  premiumUnlockedAt: string | null;
+  completedAt: string | null;
+  contentVersion: number;
+  tasks: PlayerRewardTrackTaskRow[];
+  claims: PlayerRewardTrackClaimRow[];
+}
+
+export interface PlayerRewardTrackTaskRow {
+  taskId: string;
+  progressCount: number;
+  highestPaidLevelIndex: number;
+}
+
+export interface PlayerRewardTracks {
+  playerId: number;
+  count: number;
+  items: PlayerRewardTrackRow[];
 }
 
 export interface PollChoiceDetail {
@@ -1450,6 +1585,117 @@ export interface ResolutionTotals {
   expired: number;
   completionRate: number;
   players: number;
+}
+
+export interface RewardKindOption {
+  name: string;
+  value: number;
+  target: string;
+}
+
+export interface RewardKindOptions {
+  count: number;
+  items: RewardKindOption[];
+}
+
+export interface RewardTrackActionOption {
+  name: string;
+  wired: boolean;
+  facts: FactOption[];
+}
+
+export interface RewardTrackActionOptions {
+  count: number;
+  items: RewardTrackActionOption[];
+}
+
+export interface RewardTrackFilterRow {
+  factKey: string;
+  op: number;
+  value: string;
+}
+
+export interface RewardTrackLevelRow {
+  levelIndex: number;
+  requiredCount: number;
+  pointsReward: number;
+  premium: boolean;
+}
+
+export interface RewardTrackList {
+  count: number;
+  items: RewardTrackRow[];
+}
+
+export interface RewardTrackPrizeRow {
+  id: number;
+  prizeId: string;
+  requiredPoints: number;
+  premium: boolean;
+  sortOrder: number;
+  reachable: boolean;
+  rewards: RewardTrackRewardRow[];
+}
+
+export interface RewardTrackRewardRow {
+  id: number;
+  kind: string;
+  kindValue: number;
+  rewardTypeId: string;
+  amount: number;
+  extraParams: string;
+  sortOrder: number;
+}
+
+export interface RewardTrackRow {
+  id: number;
+  trackId: string;
+  localizationKey: string;
+  theme: string;
+  status: string;
+  sortOrder: number;
+  startsAt: string | null;
+  progressEndsAt: string | null;
+  claimEndsAt: string | null;
+  unlockKind: string;
+  unlockValue: string;
+  completionPolicy: string;
+  premiumEnabled: boolean;
+  premiumBoostPerMille: number;
+  premiumInstantPoints: number;
+  premiumCostCredits: number;
+  premiumCostDiamonds: number;
+  contentVersion: number;
+  hidden: boolean;
+  campaignCode: string;
+  freePointCeiling: number;
+  premiumPointCeiling: number;
+  participants: number;
+  completions: number;
+  premiumHolders: number;
+  prizesClaimed: number;
+  tasks: RewardTrackTaskRow[];
+  prizes: RewardTrackPrizeRow[];
+}
+
+export interface RewardTrackStepRow {
+  stepIndex: number;
+  actionCode: string;
+  filters: RewardTrackFilterRow[];
+}
+
+export interface RewardTrackTaskRow {
+  id: number;
+  taskId: string;
+  localizationKey: string;
+  actionCode: string;
+  wired: boolean;
+  parameter: string;
+  mode: string;
+  premium: boolean;
+  sortOrder: number;
+  steps: RewardTrackStepRow[];
+  levels: RewardTrackLevelRow[];
 }
 
 export interface RoomDirectoryPage {

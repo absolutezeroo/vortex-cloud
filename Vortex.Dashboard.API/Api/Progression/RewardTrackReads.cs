@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.RewardTracks;
 using Vortex.Primitives.RewardTracks;
@@ -32,33 +33,29 @@ internal sealed class RewardTrackReads(
     /// thing this content system can ship. The flag is computed from the handlers that exist in
     /// <c>RewardTrackEventHandlers</c>, so it stops being a lie the moment one is added.
     /// </remarks>
-    public object RewardTrackActionOptions()
+    public RewardTrackActionOptions RewardTrackActionOptions()
     {
         // The action list is declared, not derived from the translators that exist: two actions
         // have no producer today and content may already name them, so deriving would make a task
         // written on one disappear from the editor instead of being flagged inert.
-        List<object> items =
+        List<RewardTrackActionOption> items =
         [
             .. SignalActions
                 .All.OrderBy(name => name, StringComparer.Ordinal)
-                .Select(name =>
-                    (object)
-                        new
-                        {
-                            name,
-                            // Whether anything actually raises this action. Read from the loaded
-                            // translators, so it is a fact rather than a hand-kept list.
-                            wired = _signalVocabulary.ShapesFor(name).Length > 0,
-                            // What a step on this action can filter on, and what a later step can
-                            // point back at, typed so the editor knows which control to draw. The
-                            // shapes come from the translators themselves: a fact the action never
-                            // emits cannot be offered here.
-                            facts = FactsOf(name),
-                        }
-                ),
+                .Select(name => new RewardTrackActionOption(
+                    name,
+                    // Whether anything actually raises this action. Read from the loaded
+                    // translators, so it is a fact rather than a hand-kept list.
+                    _signalVocabulary.ShapesFor(name).Length > 0,
+                    // What a step on this action can filter on, and what a later step can point
+                    // back at, typed so the editor knows which control to draw. The shapes come
+                    // from the translators themselves: a fact the action never emits cannot be
+                    // offered here.
+                    FactsOf(name)
+                )),
         ];
 
-        return new { count = items.Count, items };
+        return new RewardTrackActionOptions(items.Count, items);
     }
 
     /// <summary>
@@ -75,9 +72,9 @@ internal sealed class RewardTrackReads(
     /// a translator among its facts.
     /// </para>
     /// </remarks>
-    private object[] FactsOf(string action)
+    private List<FactOption> FactsOf(string action)
     {
-        Dictionary<string, object> byKey = new(StringComparer.Ordinal);
+        Dictionary<string, FactOption> byKey = new(StringComparer.Ordinal);
 
         foreach (SignalShape shape in _signalVocabulary.ShapesFor(action))
         {
@@ -97,55 +94,46 @@ internal sealed class RewardTrackReads(
         return [.. byKey.Values];
     }
 
-    private static object Describe(FactKey fact) =>
-        new
-        {
-            key = fact.Key,
-            kind = fact.Kind.ToString(),
-            labelKey = fact.LabelKey,
-            fallbackLabel = fact.FallbackLabel,
+    private static FactOption Describe(FactKey fact) =>
+        new(
+            fact.Key,
+            fact.Kind.ToString(),
+            fact.LabelKey,
+            fact.FallbackLabel,
             // Which operators mean anything here. Sent rather than inferred client-side: the
             // validator refuses the others, and an editor that offered them would be inviting a
             // save it knows will fail.
-            operators = FactOperators.For(fact.Kind),
-            values = fact.EnumValues.IsDefaultOrEmpty
+            [.. FactOperators.For(fact.Kind)],
+            fact.EnumValues.IsDefaultOrEmpty
                 ? []
-                : fact
-                    .EnumValues.Select(v =>
-                        (object)
-                            new
-                            {
-                                value = v.Value,
-                                labelKey = v.LabelKey,
-                                fallbackLabel = v.FallbackLabel,
-                            }
-                    )
-                    .ToArray(),
-        };
+                :
+                [
+                    .. fact.EnumValues.Select(v => new FactOptionValue(
+                        v.Value,
+                        v.LabelKey,
+                        v.FallbackLabel
+                    )),
+                ]
+        );
 
     /// <summary>The reward kinds, with the client's own product-type id and what the target field means.</summary>
-    public object RewardTrackRewardKindOptions()
+    public RewardKindOptions RewardTrackRewardKindOptions()
     {
-        List<object> items =
+        List<RewardKindOption> items =
         [
             .. Enum.GetValues<RewardKind>()
-                .Select(k =>
-                    (object)
-                        new
-                        {
-                            name = k.ToString(),
-                            value = (int)k,
-                            target = RewardTargetHint(k),
-                        }
-                ),
+                .Select(k => new RewardKindOption(k.ToString(), (int)k, RewardTargetHint(k))),
         ];
 
-        return new { count = items.Count, items };
+        return new RewardKindOptions(items.Count, items);
     }
 
     /// <summary>Every track, its content, and how the hotel is doing on it.</summary>
-    public Task<object> RewardTracksAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<RewardTrackList> RewardTracksAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<RewardTrackList>(
             async db =>
             {
                 string search = (query["search"] ?? string.Empty).Trim();
@@ -239,7 +227,7 @@ internal sealed class RewardTrackReads(
                     .ToDictionaryAsync(x => x.TrackId, x => x.Claims, ct)
                     .ConfigureAwait(false);
 
-                List<object> items = [];
+                List<RewardTrackRow> items = [];
 
                 foreach (RewardTrackEntity track in tracks)
                 {
@@ -279,114 +267,106 @@ internal sealed class RewardTrackReads(
                     }
 
                     items.Add(
-                        new
-                        {
-                            id = track.Id,
-                            trackId = track.TrackId,
-                            localizationKey = $"reward_track.{track.TrackId}.name",
-                            theme = track.Theme,
-                            status = track.Status.ToString(),
-                            sortOrder = track.SortOrder,
-                            startsAt = track.StartsAt,
-                            progressEndsAt = track.ProgressEndsAt,
-                            claimEndsAt = track.ClaimEndsAt,
-                            unlockKind = track.UnlockKind.ToString(),
-                            unlockValue = track.UnlockValue,
-                            completionPolicy = track.CompletionPolicy.ToString(),
-                            premiumEnabled = track.PremiumEnabled,
-                            premiumBoostPerMille = track.PremiumBoostPerMille,
-                            premiumInstantPoints = track.PremiumInstantPoints,
-                            premiumCostCredits = track.PremiumCostCredits,
-                            premiumCostDiamonds = track.PremiumCostDiamonds,
-                            contentVersion = track.ContentVersion,
-                            hidden = track.Hidden,
-                            campaignCode = track.CampaignCode,
-                            freePointCeiling = freePoints,
-                            premiumPointCeiling = premiumPoints,
+                        new RewardTrackRow(
+                            track.Id,
+                            track.TrackId,
+                            $"reward_track.{track.TrackId}.name",
+                            track.Theme,
+                            track.Status.ToString(),
+                            track.SortOrder,
+                            track.StartsAt,
+                            track.ProgressEndsAt,
+                            track.ClaimEndsAt,
+                            track.UnlockKind.ToString(),
+                            track.UnlockValue,
+                            track.CompletionPolicy.ToString(),
+                            track.PremiumEnabled,
+                            track.PremiumBoostPerMille,
+                            track.PremiumInstantPoints,
+                            track.PremiumCostCredits,
+                            track.PremiumCostDiamonds,
+                            track.ContentVersion,
+                            track.Hidden,
+                            track.CampaignCode,
+                            freePoints,
+                            premiumPoints,
                             participants,
                             completions,
-                            premiumHolders = premium,
-                            prizesClaimed = claims.GetValueOrDefault(track.TrackId),
-                            tasks = trackTasks
-                                .Select(t => new
-                                {
-                                    id = t.Id,
-                                    taskId = t.TaskId,
-                                    localizationKey = $"reward_track.{track.TrackId}.task.{t.TaskId}.name",
-                                    actionCode = t.ActionCode,
-                                    wired = WiredRewardTrackActions.Contains(t.ActionCode),
-                                    parameter = t.Parameter,
-                                    mode = t.Mode.ToString(),
-                                    premium = t.Premium,
-                                    sortOrder = t.SortOrder,
-                                    // Empty for a plain task: the engine builds its single step from
-                                    // the action above, and the editor pre-fills the same way.
-                                    steps = steps
+                            premium,
+                            claims.GetValueOrDefault(track.TrackId),
+                            trackTasks
+                                .Select(t => new RewardTrackTaskRow(
+                                    t.Id,
+                                    t.TaskId,
+                                    $"reward_track.{track.TrackId}.task.{t.TaskId}.name",
+                                    t.ActionCode,
+                                    WiredRewardTrackActions.Contains(t.ActionCode),
+                                    t.Parameter,
+                                    t.Mode.ToString(),
+                                    t.Premium,
+                                    t.SortOrder,
+                                    // Empty for a plain task: the engine builds its single step
+                                    // from the action above, and the editor pre-fills the same way.
+                                    steps
                                         .Where(s => s.RewardTrackTaskEntityId == t.Id)
-                                        .Select(s => new
-                                        {
-                                            stepIndex = s.StepIndex,
-                                            actionCode = s.ActionCode,
-                                            filters = stepFilters
+                                        .Select(s => new RewardTrackStepRow(
+                                            s.StepIndex,
+                                            s.ActionCode,
+                                            stepFilters
                                                 .Where(f => f.RewardTrackTaskStepEntityId == s.Id)
-                                                .Select(f => new
-                                                {
-                                                    factKey = f.FactKey,
-                                                    op = (int)f.Operator,
-                                                    value = f.Value,
-                                                })
-                                                .ToList(),
-                                        })
+                                                .Select(f => new RewardTrackFilterRow(
+                                                    f.FactKey,
+                                                    (int)f.Operator,
+                                                    f.Value
+                                                ))
+                                                .ToList()
+                                        ))
                                         .ToList(),
-                                    levels = levels
+                                    levels
                                         .Where(l => l.RewardTrackTaskEntityId == t.Id)
-                                        .Select(l => new
-                                        {
-                                            levelIndex = l.LevelIndex,
-                                            requiredCount = l.RequiredCount,
-                                            pointsReward = l.PointsReward,
-                                            premium = l.Premium,
-                                        })
-                                        .ToList(),
-                                })
+                                        .Select(l => new RewardTrackLevelRow(
+                                            l.LevelIndex,
+                                            l.RequiredCount,
+                                            l.PointsReward,
+                                            l.Premium
+                                        ))
+                                        .ToList()
+                                ))
                                 .ToList(),
-                            prizes = trackPrizes
-                                .Select(p => new
-                                {
-                                    id = p.Id,
-                                    prizeId = p.PrizeId,
-                                    requiredPoints = p.RequiredPoints,
-                                    premium = p.Premium,
-                                    sortOrder = p.SortOrder,
-                                    reachable = p.RequiredPoints
-                                        <= (p.Premium ? premiumPoints : freePoints),
-                                    rewards = rewards
+                            trackPrizes
+                                .Select(p => new RewardTrackPrizeRow(
+                                    p.Id,
+                                    p.PrizeId,
+                                    p.RequiredPoints,
+                                    p.Premium,
+                                    p.SortOrder,
+                                    p.RequiredPoints <= (p.Premium ? premiumPoints : freePoints),
+                                    rewards
                                         .Where(r => r.RewardTrackPrizeEntityId == p.Id)
-                                        .Select(r => new
-                                        {
-                                            id = r.Id,
-                                            kind = r.Kind.ToString(),
-                                            kindValue = (int)r.Kind,
-                                            rewardTypeId = r.RewardTypeId,
-                                            amount = r.Amount,
-                                            extraParams = r.ExtraParams,
-                                            sortOrder = r.SortOrder,
-                                        })
-                                        .ToList(),
-                                })
-                                .ToList(),
-                        }
+                                        .Select(r => new RewardTrackRewardRow(
+                                            r.Id,
+                                            r.Kind.ToString(),
+                                            (int)r.Kind,
+                                            r.RewardTypeId,
+                                            r.Amount,
+                                            r.ExtraParams,
+                                            r.SortOrder
+                                        ))
+                                        .ToList()
+                                ))
+                                .ToList()
+                        )
                     );
                 }
 
-                return new { count = items.Count, items };
+                return new RewardTrackList(items.Count, items);
             },
             ct
         );
 
     /// <summary>One player's standing on every track they have touched, plus their task progress.</summary>
-    public Task<object> PlayerRewardTracksAsync(int playerId, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PlayerRewardTracks> PlayerRewardTracksAsync(int playerId, CancellationToken ct) =>
+        QueryAsync<PlayerRewardTracks>(
             async db =>
             {
                 List<PlayerRewardTrackEntity> rows = await db
@@ -408,44 +388,40 @@ internal sealed class RewardTrackReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new PlayerRewardTracks(
                     playerId,
-                    count = rows.Count,
-                    items = rows.Select(r => new
-                        {
-                            trackId = r.TrackId,
-                            points = r.Points,
-                            premiumUnlocked = r.PremiumUnlocked,
-                            premiumUnlockedAt = r.PremiumUnlockedAt,
-                            completedAt = r.CompletedAt,
-                            contentVersion = r.ContentVersion,
-                            tasks = tasks
+                    rows.Count,
+                    rows.Select(r => new PlayerRewardTrackRow(
+                            r.TrackId,
+                            r.Points,
+                            r.PremiumUnlocked,
+                            r.PremiumUnlockedAt,
+                            r.CompletedAt,
+                            r.ContentVersion,
+                            tasks
                                 .Where(t => t.TrackId == r.TrackId)
-                                .Select(t => new
-                                {
-                                    taskId = t.TaskId,
-                                    progressCount = t.ProgressCount,
-                                    highestPaidLevelIndex = t.HighestPaidLevelIndex,
-                                })
+                                .Select(t => new PlayerRewardTrackTaskRow(
+                                    t.TaskId,
+                                    t.ProgressCount,
+                                    t.HighestPaidLevelIndex
+                                ))
                                 .ToList(),
-                            claims = claims
+                            claims
                                 .Where(c => c.TrackId == r.TrackId)
-                                .Select(c => new
-                                {
-                                    prizeId = c.PrizeId,
-                                    claimedAt = c.ClaimedAt,
-                                    pointsAtClaim = c.PointsAtClaim,
+                                .Select(c => new PlayerRewardTrackClaimRow(
+                                    c.PrizeId,
+                                    c.ClaimedAt,
+                                    c.PointsAtClaim,
                                     // What was actually handed over, rendered at claim time. The
                                     // prize definition can be rewritten afterwards; this cannot,
                                     // which is what makes "why does this player have that?"
                                     // answerable a year later.
-                                    granted = c.GrantedSummary,
-                                })
-                                .ToList(),
-                        })
-                        .ToList(),
-                };
+                                    c.GrantedSummary
+                                ))
+                                .ToList()
+                        ))
+                        .ToList()
+                );
             },
             ct
         );

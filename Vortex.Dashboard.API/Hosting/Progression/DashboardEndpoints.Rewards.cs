@@ -56,7 +56,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapRewardTrackReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<RewardTrackList>(
             app,
             ApiRewardTracks,
             (HttpContext ctx, RewardTrackReads tracks, CancellationToken ct) =>
@@ -64,21 +64,21 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
-        MapReadGet(
+        MapReadGet<RewardTrackActionOptions>(
             app,
             ApiRewardTracks + "/actions",
             (RewardTrackReads tracks) => Results.Ok(tracks.RewardTrackActionOptions()),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
-        MapReadGet(
+        MapReadGet<RewardKindOptions>(
             app,
             ApiRewardTracks + "/reward-kinds",
             (RewardTrackReads tracks) => Results.Ok(tracks.RewardTrackRewardKindOptions()),
             Capabilities.Dashboard.RewardTracksRead,
             TagRewardTracks
         );
-        MapReadGet(
+        MapReadGet<PlayerRewardTracks>(
             app,
             ApiRewardTracks + "/players/{playerId:int}",
             (int playerId, RewardTrackReads tracks, CancellationToken ct) =>
