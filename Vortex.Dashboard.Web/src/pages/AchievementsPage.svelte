@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Achievement definitions are seeded, not authored here, so this page answers three questions an
   // operator cannot get from the tables: which ladders can advance at all (a definition no trigger
   // feeds is dead weight that still renders in the client), how far the hotel has climbed each one,
@@ -25,15 +25,41 @@
   import StatCard from '../components/StatCard.svelte';
   import { Trophy, Award, Zap, ZapOff, Users, Layers, AlertTriangle } from '@lucide/svelte';
   import { t } from '../lib/i18n';
+  import type {
+    AchievementDetail,
+    AchievementLevel,
+    AchievementListItem,
+    AchievementListResponse,
+    AchievementStats,
+  } from '../lib/apiTypes';
+
+  /** The achievement editor's form; a create starts as one with id 0. */
+  type AchievementForm = {
+    id: number;
+    name: string;
+    category: string;
+    displayMethod: number | string;
+  };
+
+  /** One rung being edited. The number inputs hand back strings while they are being typed. */
+  type LevelForm = {
+    achievementId?: number;
+    level: number | string;
+    badgeCode: string;
+    progressRequirement: number | string;
+    rewardAmount: number | string;
+    rewardType: number;
+    scorePoints: number | string;
+  };
 
   let category = $state('');
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
-  let list = $state(null);
-  let stats = $state(null);
-  let selected = $state(null);
-  let detail = $state(null);
+  let list = $state<AchievementListResponse | null>(null);
+  let stats = $state<AchievementStats | null>(null);
+  let selected = $state<number | null>(null);
+  let detail = $state<AchievementDetail | null>(null);
   let detailLoading = $state(false);
 
   // The definitions list and its editor stay on ONE tab: they are master and detail, read
@@ -50,7 +76,7 @@
   // brand-new one, whose category is blank -- lands on the "new category" branch with its value kept.
   // Set here rather than in an effect: an effect recomputing the choice from the form would snap
   // "new category" straight back to whatever the form still held.
-  function openAchievementEditor(form) {
+  function openAchievementEditor(form: AchievementForm) {
     achievementForm = form;
     categoryChoice = (list?.categories || []).includes(form.category) ? form.category : NEW_CATEGORY;
   }
@@ -64,8 +90,13 @@
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
-  const emptyAchievement = () => ({ id: 0, name: '', category: '', displayMethod: 0 });
-  const emptyLevel = () => ({
+  const emptyAchievement = (): AchievementForm => ({
+    id: 0,
+    name: '',
+    category: '',
+    displayMethod: 0,
+  });
+  const emptyLevel = (): LevelForm => ({
     level: 1,
     badgeCode: '',
     progressRequirement: 1,
@@ -78,8 +109,8 @@
   // the top and the form that edited it sat several hundred pixels below, with nothing tying the
   // two together. They are dialogs now -- a multi-field form with mixed inputs is the case a
   // dialog is for, and it opens attached to the row you clicked.
-  let achievementForm = $state(null);
-  let levelForm = $state(null);
+  let achievementForm = $state<AchievementForm | null>(null);
+  let levelForm = $state<LevelForm | null>(null);
 
   // The badge file is named after the code, so the preview is the honest test of a typed one: a
   // wrong code shows the fallback here exactly as it would show nothing in the client. Built from
@@ -89,9 +120,9 @@
       ? stats.badgeImageTemplate.replace('{badge}', encodeURIComponent(levelForm.badgeCode.trim()))
       : null);
 
-  async function reloadDetail(id) {
+  async function reloadDetail(id: number) {
     try {
-      detail = await apiGet(`/api/v1/achievements/${id}`);
+      detail = await apiGet<AchievementDetail>(`/api/v1/achievements/${id}`);
     } catch {
       detail = null;
     }
@@ -107,8 +138,8 @@
 
     try {
       const [listResult, statsResult] = await Promise.all([
-        apiGet(`/api/v1/achievements?${params}`),
-        apiGet('/api/v1/achievements/stats'),
+        apiGet<AchievementListResponse>(`/api/v1/achievements?${params}`),
+        apiGet<AchievementStats>('/api/v1/achievements/stats'),
       ]);
       list = listResult;
       stats = statsResult;
@@ -120,7 +151,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
       list = null;
       stats = null;
     } finally {
@@ -128,7 +159,7 @@
     }
   }
 
-  async function select(row) {
+  async function select(row: AchievementListItem) {
     if (selected === row.id) {
       selected = null;
       detail = null;
@@ -140,15 +171,15 @@
     detailLoading = true;
 
     try {
-      detail = await apiGet(`/api/v1/achievements/${row.id}`);
+      detail = await apiGet<AchievementDetail>(`/api/v1/achievements/${row.id}`);
     } catch (err) {
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       detailLoading = false;
     }
   }
 
-  function rewardLabel(level) {
+  function rewardLabel(level: Pick<AchievementLevel, 'rewardAmount' | 'rewardKind' | 'rewardType'>) {
     if (!level.rewardAmount) return '—';
     return level.rewardKind === 'credits'
       ? $t('achievements.rewardCredits', { amount: formatNumber(level.rewardAmount) })
@@ -574,8 +605,9 @@
 </datalist>
 
 {#if achievementForm}
+  {@const form = achievementForm}
   <Drawer
-    title={achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
+    title={form.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
     eyebrow={$t('achievements.editorTitle')}
     width={520}
     labelledBy="achievement-form-title"
@@ -583,7 +615,7 @@
   >
     <div class="op-field">
       <label for="achievement-name">{$t('achievements.colName')}</label>
-      <input autocomplete="off" spellcheck="false" id="achievement-name" bind:value={achievementForm.name} placeholder="RoomEntry" />
+      <input autocomplete="off" spellcheck="false" id="achievement-name" bind:value={form.name} placeholder="RoomEntry" />
     </div>
     <div class="op-field">
       <label for="achievement-category">{$t('achievements.colCategory')}</label>
@@ -593,7 +625,7 @@
         id="achievement-category"
         bind:value={categoryChoice}
         onchange={() => {
-          if (categoryChoice !== NEW_CATEGORY) achievementForm.category = categoryChoice;
+          if (categoryChoice !== NEW_CATEGORY) form.category = categoryChoice;
         }}
       >
         {#each list?.categories || [] as c}<option value={c}>{c}</option>{/each}
@@ -603,14 +635,14 @@
     {#if categoryChoice === NEW_CATEGORY}
       <div class="op-field">
         <label for="achievement-category-new">{$t('achievements.categoryNewLabel')}</label>
-        <input autocomplete="off" spellcheck="false" id="achievement-category-new" bind:value={achievementForm.category} placeholder="explore" />
+        <input autocomplete="off" spellcheck="false" id="achievement-category-new" bind:value={form.category} placeholder="explore" />
       </div>
     {/if}
     <div class="op-field">
       <label for="achievement-display">{$t('achievements.displayMethod')}</label>
       <!-- The client only ever asks `displayMethod != 1`, and the one thing it decides is whether the
            progress bar is drawn. A number box invited a value that means nothing. -->
-      <select id="achievement-display" bind:value={achievementForm.displayMethod}>
+      <select id="achievement-display" bind:value={form.displayMethod}>
         <option value={0}>{$t('achievements.displayMethodProgress')}</option>
         <option value={1}>{$t('achievements.displayMethodNoProgress')}</option>
       </select>
@@ -621,21 +653,21 @@
 
       <button class="success"
         type="button"
-        disabled={!achievementForm.name.trim() || !achievementForm.category.trim()}
+        disabled={!form.name.trim() || !form.category.trim()}
         onclick={() =>
         ops.ask(
           '/api/v1/operations/content/achievements',
           {
-            achievementId: Number(achievementForm.id) || 0,
-            name: achievementForm.name,
-            category: achievementForm.category,
-            displayMethod: Number(achievementForm.displayMethod) || 0,
+            achievementId: Number(form.id) || 0,
+            name: form.name,
+            category: form.category,
+            displayMethod: Number(form.displayMethod) || 0,
           },
-          achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
-          $t('achievements.saveSummary', { name: achievementForm.name })
+          form.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
+          $t('achievements.saveSummary', { name: form.name })
         )}
       >
-        {achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
+        {form.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
       </button>
       <button class="ghost-button" type="button" onclick={() => (achievementForm = null)}>
         {$t('common.cancel')}
@@ -646,6 +678,7 @@
 {/if}
 
 {#if levelForm && selected}
+  {@const form = levelForm}
   <Drawer
     title={$t('achievements.levelEditorTitle')}
     eyebrow={$t('achievements.editorTitle')}
@@ -655,51 +688,51 @@
   >
     <div class="op-field">
       <label for="level-number">{$t('achievements.colLevel')}</label>
-      <input autocomplete="off" spellcheck="false" id="level-number" type="number" bind:value={levelForm.level} min="1" />
+      <input autocomplete="off" spellcheck="false" id="level-number" type="number" bind:value={form.level} min="1" />
     </div>
     <div class="op-field">
       <label for="level-badge">{$t('achievements.colBadgeCode')}</label>
       <span class="badge-cell">
-        <input autocomplete="off" spellcheck="false" id="level-badge" bind:value={levelForm.badgeCode} placeholder="ACH_RoomEntry1" />
-        <AssetImage src={badgePreviewUrl} alt={levelForm.badgeCode} size={32} fallbackIcon={Award} />
+        <input autocomplete="off" spellcheck="false" id="level-badge" bind:value={form.badgeCode} placeholder="ACH_RoomEntry1" />
+        <AssetImage src={badgePreviewUrl} alt={form.badgeCode} size={32} fallbackIcon={Award} />
       </span>
     </div>
     <div class="op-field">
       <label for="level-requirement">{$t('achievements.colRequirement')}</label>
-      <input autocomplete="off" spellcheck="false" id="level-requirement" type="number" bind:value={levelForm.progressRequirement} min="1" />
+      <input autocomplete="off" spellcheck="false" id="level-requirement" type="number" bind:value={form.progressRequirement} min="1" />
     </div>
     <div class="op-field">
       <label for="level-reward-amount">{$t('achievements.rewardAmount')}</label>
-      <input autocomplete="off" spellcheck="false" id="level-reward-amount" type="number" bind:value={levelForm.rewardAmount} min="0" />
+      <input autocomplete="off" spellcheck="false" id="level-reward-amount" type="number" bind:value={form.rewardAmount} min="0" />
     </div>
     <div class="op-field">
       <label for="level-reward-type">{$t('achievements.rewardType')}</label>
-      <CurrencySelect id="level-reward-type" bind:value={levelForm.rewardType} />
+      <CurrencySelect id="level-reward-type" bind:value={form.rewardType} />
     </div>
     <div class="op-field">
       <label for="level-score">{$t('achievements.colLevelScore')}</label>
-      <input autocomplete="off" spellcheck="false" id="level-score" type="number" bind:value={levelForm.scorePoints} min="0" />
+      <input autocomplete="off" spellcheck="false" id="level-score" type="number" bind:value={form.scorePoints} min="0" />
     </div>
 
     {#snippet actions()}
 
       <button
         type="button"
-        disabled={!levelForm.badgeCode.trim()}
+        disabled={!form.badgeCode.trim()}
         onclick={() =>
         ops.ask(
           '/api/v1/operations/content/achievements/levels',
           {
             achievementId: selected,
-            level: Number(levelForm.level),
-            badgeCode: levelForm.badgeCode,
-            progressRequirement: Number(levelForm.progressRequirement),
-            rewardAmount: Number(levelForm.rewardAmount),
-            rewardType: Number(levelForm.rewardType),
-            scorePoints: Number(levelForm.scorePoints),
+            level: Number(form.level),
+            badgeCode: form.badgeCode,
+            progressRequirement: Number(form.progressRequirement),
+            rewardAmount: Number(form.rewardAmount),
+            rewardType: Number(form.rewardType),
+            scorePoints: Number(form.scorePoints),
           },
           $t('achievements.saveLevel'),
-          $t('achievements.saveLevelSummary', { level: levelForm.level })
+          $t('achievements.saveLevelSummary', { level: form.level })
         )}
       >
         {$t('achievements.saveLevel')}

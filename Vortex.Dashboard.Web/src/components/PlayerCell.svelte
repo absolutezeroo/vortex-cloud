@@ -7,7 +7,8 @@
   import AssetImage from './AssetImage.svelte';
 
   type Props = {
-    name?: string;
+    /** Null when the player row it names has been deleted. */
+    name?: string | null;
     avatarUrl?: any;
     size?: number;
     children?: import('svelte').Snippet;

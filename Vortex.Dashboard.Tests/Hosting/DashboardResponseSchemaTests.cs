@@ -77,6 +77,10 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/directory/rooms", typeof(RoomDirectoryPage)),
         ("/api/v1/directory/furniture", typeof(FurnitureDirectoryPage)),
         ("/api/v1/directory/avatars", typeof(AvatarBatch)),
+        ("/api/v1/achievements", typeof(AchievementListResponse)),
+        ("/api/v1/achievements/stats", typeof(AchievementStats)),
+        ("/api/v1/achievements/resolutions", typeof(AchievementResolutions)),
+        ("/api/v1/achievements/{achievementId:int}", typeof(AchievementDetail)),
     ];
 
     [Fact]

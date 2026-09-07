@@ -1,6 +1,120 @@
 // Generated from the C# response contracts by ApiTypeScriptContractTests.
 // Do not edit: change the records, run the test, copy what it writes.
 
+export interface AchievementCategoryStats {
+  category: string;
+  achievements: number;
+  levels: number;
+  badgesAwarded: number;
+}
+
+export interface AchievementDetail {
+  id: number;
+  name: string;
+  category: string;
+  displayMethod: number;
+  triggered: boolean;
+  levelCount: number;
+  completedPlayers: number;
+  ladder: AchievementLadderRung[];
+  levelDistribution: AchievementLevelCount[];
+  topPlayers: AchievementTopPlayer[];
+}
+
+export interface AchievementLadderRung {
+  id: number;
+  level: number;
+  badgeCode: string;
+  badgeUrl: string | null;
+  progressRequirement: number;
+  rewardAmount: number;
+  rewardType: number;
+  rewardKind: string;
+  scorePoints: number;
+}
+
+export interface AchievementLevel {
+  level: number;
+  badgeCode: string;
+  badgeUrl: string | null;
+  progressRequirement: number;
+  rewardAmount: number;
+  rewardType: number;
+  rewardKind: string;
+  scorePoints: number;
+}
+
+export interface AchievementLevelCount {
+  level: number;
+  players: number;
+}
+
+export interface AchievementListItem {
+  id: number;
+  name: string;
+  category: string;
+  displayMethod: number;
+  triggered: boolean;
+  levelCount: number;
+  totalScore: number;
+  creditsPayout: number;
+  pointsPayout: number;
+  finalRequirement: number;
+  playersTracked: number;
+  playersStarted: number;
+  playersCompleted: number;
+  badgesAwarded: number;
+  highestLevelReached: number;
+  badgeUrl: string | null;
+  levels: AchievementLevel[];
+}
+
+export interface AchievementListResponse {
+  count: number;
+  categories: string[];
+  items: AchievementListItem[];
+}
+
+export interface AchievementResolutions {
+  offers: ResolutionOffer[];
+  challenges: ResolutionChallenge[];
+  totals: ResolutionTotals;
+  truncated: boolean;
+}
+
+export interface AchievementScorePlayer {
+  playerId: number;
+  playerName: string | null;
+  score: number;
+  badges: number;
+}
+
+export interface AchievementStats {
+  totals: AchievementStatsTotals;
+  byCategory: AchievementCategoryStats[];
+  untouched: UntouchedAchievement[];
+  topPlayers: AchievementScorePlayer[];
+  badgeImageTemplate: string | null;
+}
+
+export interface AchievementStatsTotals {
+  totalAchievements: number;
+  totalLevels: number;
+  triggeredCount: number;
+  untriggeredCount: number;
+  badgesAwarded: number;
+  playersWithProgress: number;
+  maxScoreAvailable: number;
+}
+
+export interface AchievementTopPlayer {
+  playerId: number;
+  playerName: string | null;
+  level: number;
+  progress: number;
+  updatedAt: string;
+}
+
 export interface ArticleCategoryOption {
   id: number;
   code: string;
@@ -1040,6 +1154,52 @@ export interface ReportWindow {
   granularity: string;
 }
 
+export interface ResolutionChallenge {
+  id: number;
+  playerId: number;
+  playerName: string | null;
+  itemId: number;
+  achievementId: number;
+  achievementName: string | null;
+  targetLevel: number;
+  reachedLevel: number;
+  startedAt: string;
+  endsAt: string;
+  completedAt: string | null;
+  badgeCode: string | null;
+  badgeUrl: string | null;
+  state: string;
+}
+
+export interface ResolutionOffer {
+  id: number;
+  achievementId: number;
+  achievementName: string | null;
+  category: string | null;
+  orphaned: boolean;
+  levelCount: number;
+  targetLevelOffset: number;
+  sortOrder: number;
+  enabled: boolean;
+  taken: number;
+  completed: number;
+  live: number;
+  expired: number;
+  completionRate: number;
+}
+
+export interface ResolutionTotals {
+  offers: number;
+  enabledOffers: number;
+  orphanedOffers: number;
+  taken: number;
+  completed: number;
+  live: number;
+  expired: number;
+  completionRate: number;
+  players: number;
+}
+
 export interface RoomDirectoryPage {
   count: number;
   total: number;
@@ -1122,6 +1282,14 @@ export interface SongListResponse {
   page: number;
   pageSize: number;
   items: SongListItem[];
+}
+
+export interface UntouchedAchievement {
+  id: number;
+  name: string;
+  category: string;
+  triggered: boolean;
+  levels: number;
 }
 
 export interface WiredCategoryCount {

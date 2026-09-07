@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
@@ -46,8 +47,11 @@ internal sealed class AchievementReads(
 
     /// <summary>Every achievement definition with its level ladder, total payout and how far the
     /// hotel has actually got through it. Optional <c>category</c> filter.</summary>
-    public Task<object> AchievementsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<AchievementListResponse> AchievementsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<AchievementListResponse>(
             async db =>
             {
                 string category = (query["category"] ?? string.Empty).Trim();
@@ -125,7 +129,7 @@ internal sealed class AchievementReads(
                         )
                     );
 
-                var items = headers
+                List<AchievementListItem> items = headers
                     .Select(a =>
                     {
                         List<AchievementLevelRow> ladder = levelsByAchievement.GetValueOrDefault(
@@ -136,52 +140,44 @@ internal sealed class AchievementReads(
                             progressByAchievement.GetValueOrDefault(a.Id);
                         int levelCount = ladder.Count;
 
-                        return new
-                        {
+                        return new AchievementListItem(
                             a.Id,
                             a.Name,
                             a.Category,
                             a.DisplayMethod,
-                            triggered = TriggeredAchievements.Contains(a.Name),
+                            TriggeredAchievements.Contains(a.Name),
                             levelCount,
-                            totalScore = ladder.Sum(l => l.ScorePoints),
-                            creditsPayout = ladder
-                                .Where(l => l.RewardType < 0)
-                                .Sum(l => l.RewardAmount),
-                            pointsPayout = ladder
-                                .Where(l => l.RewardType >= 0)
-                                .Sum(l => l.RewardAmount),
-                            finalRequirement = levelCount > 0
-                                ? ladder[levelCount - 1].ProgressRequirement
-                                : 0,
-                            playersTracked = progress?.Players ?? 0,
-                            playersStarted = progress?.Started ?? 0,
-                            playersCompleted = progress is null || levelCount == 0
+                            ladder.Sum(l => l.ScorePoints),
+                            ladder.Where(l => l.RewardType < 0).Sum(l => l.RewardAmount),
+                            ladder.Where(l => l.RewardType >= 0).Sum(l => l.RewardAmount),
+                            levelCount > 0 ? ladder[levelCount - 1].ProgressRequirement : 0,
+                            progress?.Players ?? 0,
+                            progress?.Started ?? 0,
+                            progress is null || levelCount == 0
                                 ? 0
                                 : progress
                                     .PlayersAtLevel.Where(p => p.Key >= levelCount)
                                     .Sum(p => p.Value),
-                            badgesAwarded = progress?.LevelsAwarded ?? 0,
-                            highestLevelReached = progress?.MaxLevelReached ?? 0,
+                            progress?.LevelsAwarded ?? 0,
+                            progress?.MaxLevelReached ?? 0,
                             // The badge of the last rung stands for the whole ladder in the list,
                             // the same picture the client puts on the achievement.
-                            badgeUrl = levelCount > 0
+                            levelCount > 0
                                 ? _assetUrls.BadgeImage(ladder[levelCount - 1].BadgeCode)
                                 : null,
-                            levels = ladder
-                                .Select(l => new
-                                {
+                            ladder
+                                .Select(l => new AchievementLevel(
                                     l.Level,
                                     l.BadgeCode,
-                                    badgeUrl = _assetUrls.BadgeImage(l.BadgeCode),
+                                    _assetUrls.BadgeImage(l.BadgeCode),
                                     l.ProgressRequirement,
                                     l.RewardAmount,
                                     l.RewardType,
-                                    rewardKind = l.RewardType < 0 ? "credits" : "activityPoints",
-                                    l.ScorePoints,
-                                })
-                                .ToList(),
-                        };
+                                    l.RewardType < 0 ? "credits" : "activityPoints",
+                                    l.ScorePoints
+                                ))
+                                .ToList()
+                        );
                     })
                     .ToList();
 
@@ -193,20 +189,18 @@ internal sealed class AchievementReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
-                    count = items.Count,
-                    categories,
-                    items,
-                };
+                return new AchievementListResponse(items.Count, categories, items);
             },
             ct
         );
 
     /// <summary>One achievement: its ladder, how many players sit at each level, and the players
     /// furthest along.</summary>
-    public Task<object?> AchievementDetailAsync(int achievementId, CancellationToken ct) =>
-        QueryAsync<object?>(
+    public Task<AchievementDetail?> AchievementDetailAsync(
+        int achievementId,
+        CancellationToken ct
+    ) =>
+        QueryAsync<AchievementDetail?>(
             async db =>
             {
                 AchievementEntity? achievement = await db
@@ -219,29 +213,45 @@ internal sealed class AchievementReads(
                     return null;
                 }
 
-                var ladder = await db
+                // BadgeImage is not translatable to SQL, so the rungs are read first and the
+                // urls attached in a second pass, like every other icon on this dashboard.
+                var ladderRows = await db
                     .AchievementLevels.AsNoTracking()
                     .Where(l => l.AchievementEntityId == achievementId)
                     .OrderBy(l => l.Level)
                     .Select(l => new
                     {
+                        l.Id,
                         l.Level,
                         l.BadgeCode,
                         l.ProgressRequirement,
                         l.RewardAmount,
                         l.RewardType,
-                        rewardKind = l.RewardType < 0 ? "credits" : "activityPoints",
                         l.ScorePoints,
                     })
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var levelDistribution = await db
+                List<AchievementLadderRung> ladder = ladderRows
+                    .Select(l => new AchievementLadderRung(
+                        l.Id,
+                        l.Level,
+                        l.BadgeCode,
+                        _assetUrls.BadgeImage(l.BadgeCode),
+                        l.ProgressRequirement,
+                        l.RewardAmount,
+                        l.RewardType,
+                        l.RewardType < 0 ? "credits" : "activityPoints",
+                        l.ScorePoints
+                    ))
+                    .ToList();
+
+                List<AchievementLevelCount> levelDistribution = await db
                     .PlayerAchievements.AsNoTracking()
                     .Where(p => p.AchievementEntityId == achievementId)
                     .GroupBy(p => p.Level)
-                    .Select(g => new { level = g.Key, players = g.Count() })
-                    .OrderBy(g => g.level)
+                    .Select(g => new AchievementLevelCount(g.Key, g.Count()))
+                    .OrderBy(g => g.Level)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -271,30 +281,28 @@ internal sealed class AchievementReads(
                 int completed =
                     levelCount == 0
                         ? 0
-                        : levelDistribution.Where(d => d.level >= levelCount).Sum(d => d.players);
+                        : levelDistribution.Where(d => d.Level >= levelCount).Sum(d => d.Players);
 
-                return new
-                {
+                return new AchievementDetail(
                     achievement.Id,
                     achievement.Name,
                     achievement.Category,
                     achievement.DisplayMethod,
-                    triggered = TriggeredAchievements.Contains(achievement.Name),
+                    TriggeredAchievements.Contains(achievement.Name),
                     levelCount,
-                    completedPlayers = completed,
+                    completed,
                     ladder,
                     levelDistribution,
-                    topPlayers = topPlayers
-                        .Select(p => new
-                        {
+                    topPlayers
+                        .Select(p => new AchievementTopPlayer(
                             p.playerId,
-                            playerName = DisplayNameQueries.ResolvePlayerName(names, p.playerId),
+                            DisplayNameQueries.ResolvePlayerName(names, p.playerId),
                             p.Level,
                             p.Progress,
-                            p.UpdatedAt,
-                        })
-                        .ToList(),
-                };
+                            p.UpdatedAt
+                        ))
+                        .ToList()
+                );
             },
             ct
         );
@@ -302,8 +310,8 @@ internal sealed class AchievementReads(
     /// <summary>Hotel-wide achievement health: how much of the catalogue is reachable, how many
     /// badges the ladder has actually paid out, the score leaderboard, and — the useful one — the
     /// definitions nobody has ever progressed.</summary>
-    public Task<object> AchievementsStatsAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<AchievementStats> AchievementsStatsAsync(CancellationToken ct) =>
+        QueryAsync<AchievementStats>(
             async db =>
             {
                 var definitions = await db
@@ -358,36 +366,32 @@ internal sealed class AchievementReads(
                     .CountAsync(ct)
                     .ConfigureAwait(false);
 
-                var byCategory = definitions
+                List<AchievementCategoryStats> byCategory = definitions
                     .GroupBy(d => d.Category)
-                    .Select(g => new
-                    {
-                        category = g.Key,
-                        achievements = g.Count(),
-                        levels = g.Sum(d =>
-                            levelsByAchievement.GetValueOrDefault(d.Id)?.levels ?? 0
-                        ),
-                        badgesAwarded = g.Sum(d =>
+                    .Select(g => new AchievementCategoryStats(
+                        g.Key,
+                        g.Count(),
+                        g.Sum(d => levelsByAchievement.GetValueOrDefault(d.Id)?.levels ?? 0),
+                        g.Sum(d =>
                             progressByAchievement.GetValueOrDefault(d.Id)?.levelsAwarded ?? 0
-                        ),
-                    })
-                    .OrderByDescending(g => g.achievements)
+                        )
+                    ))
+                    .OrderByDescending(g => g.Achievements)
                     .ToList();
 
                 // Nobody has ever moved on these: either the trigger is missing, or the requirement
                 // is out of reach. The `triggered` flag separates the two cases.
-                var untouched = definitions
+                List<UntouchedAchievement> untouched = definitions
                     .Where(d => (progressByAchievement.GetValueOrDefault(d.Id)?.players ?? 0) == 0)
-                    .Select(d => new
-                    {
+                    .Select(d => new UntouchedAchievement(
                         d.Id,
                         d.Name,
                         d.Category,
-                        triggered = TriggeredAchievements.Contains(d.Name),
-                        levels = levelsByAchievement.GetValueOrDefault(d.Id)?.levels ?? 0,
-                    })
-                    .OrderBy(d => d.Category)
-                    .ThenBy(d => d.Name)
+                        TriggeredAchievements.Contains(d.Name),
+                        levelsByAchievement.GetValueOrDefault(d.Id)?.levels ?? 0
+                    ))
+                    .OrderBy(d => d.Category, StringComparer.Ordinal)
+                    .ThenBy(d => d.Name, StringComparer.Ordinal)
                     .ToList();
 
                 Dictionary<int, int> scoreByAchievement = levelStats.ToDictionary(
@@ -452,35 +456,32 @@ internal sealed class AchievementReads(
                     )
                     .ConfigureAwait(false);
 
-                var topPlayers = topPlayerRows
-                    .Select(p => new
-                    {
-                        playerId = p.Key,
-                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, p.Key),
-                        score = p.Value.Score,
-                        badges = p.Value.Badges,
-                    })
+                List<AchievementScorePlayer> topPlayers = topPlayerRows
+                    .Select(p => new AchievementScorePlayer(
+                        p.Key,
+                        DisplayNameQueries.ResolvePlayerName(playerNames, p.Key),
+                        p.Value.Score,
+                        p.Value.Badges
+                    ))
                     .ToList();
 
-                return new
-                {
-                    totals = new
-                    {
+                return new AchievementStats(
+                    new AchievementStatsTotals(
                         totalAchievements,
                         totalLevels,
                         triggeredCount,
-                        untriggeredCount = totalAchievements - triggeredCount,
+                        totalAchievements - triggeredCount,
                         badgesAwarded,
                         playersWithProgress,
-                        maxScoreAvailable = scoreByAchievement.Values.Sum(),
-                    },
+                        scoreByAchievement.Values.Sum()
+                    ),
                     byCategory,
                     untouched,
                     topPlayers,
                     // The level editor previews a badge code before its rung exists, so it needs the
                     // template rather than a resolved URL.
-                    badgeImageTemplate = _assetUrls.BadgeImageTemplate,
-                };
+                    _assetUrls.BadgeImageTemplate
+                );
             },
             ct
         );

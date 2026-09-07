@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
@@ -31,11 +32,11 @@ internal sealed class AchievementResolutionReads(
 
     /// <summary>Offers, plus a completion rate per offer. Optional <c>state</c> filter over the
     /// challenges list: <c>live</c>, <c>completed</c> or <c>expired</c>.</summary>
-    public Task<object> AchievementResolutionsAsync(
+    public Task<AchievementResolutions> AchievementResolutionsAsync(
         NameValueCollection query,
         CancellationToken ct
     ) =>
-        QueryAsync<object>(
+        QueryAsync<AchievementResolutions>(
             async db =>
             {
                 string state = (query["state"] ?? string.Empty).Trim().ToLowerInvariant();
@@ -102,7 +103,7 @@ internal sealed class AchievementResolutionReads(
                         )
                     );
 
-                var offerRows = offers
+                List<ResolutionOffer> offerRows = offers
                     .Select(o =>
                     {
                         AchievementEntity? definition = definitions.GetValueOrDefault(
@@ -113,27 +114,24 @@ internal sealed class AchievementResolutionReads(
                         );
                         int taken = tally?.Taken ?? 0;
 
-                        return new
-                        {
+                        return new ResolutionOffer(
                             o.Id,
-                            achievementId = o.AchievementEntityId,
-                            achievementName = definition?.Name,
-                            category = definition?.Category,
+                            o.AchievementEntityId,
+                            definition?.Name,
+                            definition?.Category,
                             // The one thing the table cannot say: this offer never reaches the
                             // picker, because the grain drops rows whose definition is gone.
-                            orphaned = definition is null,
-                            levelCount = levelCounts.GetValueOrDefault(o.AchievementEntityId),
+                            definition is null,
+                            levelCounts.GetValueOrDefault(o.AchievementEntityId),
                             o.TargetLevelOffset,
                             o.SortOrder,
                             o.Enabled,
                             taken,
-                            completed = tally?.Completed ?? 0,
-                            live = tally?.Live ?? 0,
-                            expired = tally?.Expired ?? 0,
-                            completionRate = taken == 0
-                                ? 0d
-                                : Math.Round((tally?.Completed ?? 0) * 100d / taken, 1),
-                        };
+                            tally?.Completed ?? 0,
+                            tally?.Live ?? 0,
+                            tally?.Expired ?? 0,
+                            taken == 0 ? 0d : Math.Round((tally?.Completed ?? 0) * 100d / taken, 1)
+                        );
                     })
                     .ToList();
 
@@ -159,54 +157,49 @@ internal sealed class AchievementResolutionReads(
                 Dictionary<(int Player, int Achievement), int> reachedByPlayer =
                     await LoadReachedLevelsAsync(db, page, ct).ConfigureAwait(false);
 
-                var challengeRows = page.Select(c => new
-                    {
+                List<ResolutionChallenge> challengeRows = page.Select(c => new ResolutionChallenge(
                         c.Id,
-                        playerId = c.PlayerId,
-                        playerName = DisplayNameQueries.ResolvePlayerName(playerNames, c.PlayerId),
-                        itemId = c.ItemId,
-                        achievementId = c.AchievementId,
-                        achievementName = definitions.GetValueOrDefault(c.AchievementId)?.Name,
+                        c.PlayerId,
+                        DisplayNameQueries.ResolvePlayerName(playerNames, c.PlayerId),
+                        c.ItemId,
+                        c.AchievementId,
+                        definitions.GetValueOrDefault(c.AchievementId)?.Name,
                         c.TargetLevel,
-                        reachedLevel = reachedByPlayer.GetValueOrDefault(
-                            (c.PlayerId, c.AchievementId)
-                        ),
+                        reachedByPlayer.GetValueOrDefault((c.PlayerId, c.AchievementId)),
                         c.StartedAt,
                         c.EndsAt,
                         c.CompletedAt,
-                        badgeCode = c.AwardedBadgeCode,
-                        badgeUrl = string.IsNullOrEmpty(c.AwardedBadgeCode)
+                        c.AwardedBadgeCode,
+                        string.IsNullOrEmpty(c.AwardedBadgeCode)
                             ? null
                             : _assetUrls.BadgeImage(c.AwardedBadgeCode),
-                        state = c.CompletedAt is not null ? "completed"
-                        : c.EndsAt > now ? "live"
-                        : "expired",
-                    })
+                        c.CompletedAt is not null ? "completed"
+                            : c.EndsAt > now ? "live"
+                            : "expired"
+                    ))
                     .ToList();
 
                 int totalCompleted = challenges.Count(c => c.CompletedAt is not null);
 
-                return new
-                {
-                    offers = offerRows,
-                    challenges = challengeRows,
-                    totals = new
-                    {
-                        offers = offerRows.Count,
-                        enabledOffers = offerRows.Count(o => o.Enabled),
-                        orphanedOffers = offerRows.Count(o => o.orphaned),
-                        taken = challenges.Count,
-                        completed = totalCompleted,
-                        live = challenges.Count(c => c.CompletedAt is null && c.EndsAt > now),
-                        expired = challenges.Count(c => c.CompletedAt is null && c.EndsAt <= now),
-                        completionRate = challenges.Count == 0
+                return new AchievementResolutions(
+                    offerRows,
+                    challengeRows,
+                    new ResolutionTotals(
+                        offerRows.Count,
+                        offerRows.Count(o => o.Enabled),
+                        offerRows.Count(o => o.Orphaned),
+                        challenges.Count,
+                        totalCompleted,
+                        challenges.Count(c => c.CompletedAt is null && c.EndsAt > now),
+                        challenges.Count(c => c.CompletedAt is null && c.EndsAt <= now),
+                        challenges.Count == 0
                             ? 0d
                             : Math.Round(totalCompleted * 100d / challenges.Count, 1),
                         // Distinct players, not rows: one player can own several statues.
-                        players = challenges.Select(c => c.PlayerId).Distinct().Count(),
-                    },
-                    truncated = filtered.Count() > page.Count,
-                };
+                        challenges.Select(c => c.PlayerId).Distinct().Count()
+                    ),
+                    filtered.Count() > page.Count
+                );
             },
             ct
         );

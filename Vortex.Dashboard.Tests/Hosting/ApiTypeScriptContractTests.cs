@@ -80,6 +80,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(RoomDirectoryPage),
         typeof(FurnitureDirectoryPage),
         typeof(AvatarBatch),
+        typeof(AchievementListResponse),
+        typeof(AchievementDetail),
+        typeof(AchievementStats),
+        typeof(AchievementResolutions),
     ];
 
     [Fact]

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
 
   import { onMount } from 'svelte';
@@ -15,6 +15,12 @@
   import { formatDate, formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
+  import type {
+    AchievementResolutions,
+    ResolutionChallenge,
+    ResolutionOffer,
+    ResolutionTotals,
+  } from '../lib/apiTypes';
 
   // Read-only, and under the achievements capability rather than one of its own: the statue is a
   // view onto achievement progress, so anyone allowed to read that has no reason to be kept out.
@@ -22,9 +28,9 @@
 
   const PAGE_SIZE = 25;
 
-  let offers = $state([]);
-  let challenges = $state([]);
-  let totals = $state(null);
+  let offers = $state<ResolutionOffer[]>([]);
+  let challenges = $state<ResolutionChallenge[]>([]);
+  let totals = $state<ResolutionTotals | null>(null);
   let truncated = $state(false);
   let loading = $state(false);
   let error = $state('');
@@ -46,7 +52,9 @@
 
     try {
       const query = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : '';
-      const data = await apiGet(`/api/v1/achievements/resolutions${query}`);
+      const data = await apiGet<AchievementResolutions>(
+        `/api/v1/achievements/resolutions${query}`,
+      );
 
       offers = data.offers || [];
       challenges = data.challenges || [];
@@ -61,7 +69,7 @@
         return;
       }
 
-      error = err.message;
+      error = (err as Error).message;
     } finally {
       loading = false;
     }
@@ -69,7 +77,7 @@
 
   // The state filter runs server-side because it decides what the 200-row cap keeps; the text
   // search is client-side over whatever came back.
-  function onStateChange(value) {
+  function onStateChange(value: string) {
     stateFilter = value;
     page = 1;
     load();
@@ -90,8 +98,10 @@
   let pageCount = $derived(Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
   let safePage = $derived(Math.min(page, pageCount));
   let pageRows = $derived(filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE));
+  // Reading `search` is what registers the dependency; the assignment is the effect.
   $effect(() => {
-    search, (page = 1);
+    void search;
+    page = 1;
   });
 
   onMount(load);
@@ -295,7 +305,8 @@
         </div>
 
         <Pagination
-          bind:page
+          page={safePage}
+          onchange={(next) => (page = next)}
           {pageCount}
           total={filtered.length}
           pageSize={PAGE_SIZE}

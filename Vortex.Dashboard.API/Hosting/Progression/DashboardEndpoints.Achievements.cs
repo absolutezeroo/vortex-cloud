@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -19,7 +20,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapAchievementReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<AchievementListResponse>(
             app,
             ApiAchievements,
             (HttpContext ctx, AchievementReads reads, CancellationToken ct) =>
@@ -27,7 +28,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );
-        MapReadGet(
+        MapReadGet<AchievementStats>(
             app,
             ApiAchievements + "/stats",
             (AchievementReads reads, CancellationToken ct) =>
@@ -38,7 +39,7 @@ internal static partial class DashboardEndpoints
         // Under the same capability as the rest of achievements rather than its own: the resolution
         // statue is a view onto achievement progress, and an operator allowed to read one has no
         // reason to be kept out of the other.
-        MapReadGet(
+        MapReadGet<AchievementResolutions>(
             app,
             ApiAchievements + "/resolutions",
             (
@@ -52,7 +53,7 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AchievementsRead,
             TagAchievements
         );
-        MapReadGet(
+        MapReadGetNullable<AchievementDetail>(
             app,
             ApiAchievements + "/{achievementId:int}",
             (int achievementId, AchievementReads reads, CancellationToken ct) =>
