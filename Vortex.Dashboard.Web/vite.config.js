@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { uiReports } from './tools/vite-plugin-ui-reports.js';
 
 // `npm run dev` = HMR against the running emulator: Vite serves the SPA, /api is proxied to the
@@ -8,7 +8,9 @@ import { uiReports } from './tools/vite-plugin-ui-reports.js';
 // which is where DashboardEndpoints.MapFrontend serves the embedded copy from.
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/assets/' : '/',
-  plugins: [tailwindcss(), svelte(), uiReports()],
+  // vitePreprocess strips the types out of `<script lang="ts">`. Components without it are
+  // untouched, so the migration is per component rather than a branch.
+  plugins: [tailwindcss(), svelte({ preprocess: vitePreprocess() }), uiReports()],
   server: {
     port: 9001,
     strictPort: true,

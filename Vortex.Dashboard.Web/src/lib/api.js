@@ -198,6 +198,19 @@ function normalizeRequestError(error, path) {
   return error;
 }
 
+/**
+ * A GET that answers JSON. The response type is the caller's to name, from `apiTypes.d.ts` --
+ * generated from the C# contracts, so a renamed field is a type error here rather than an
+ * `undefined` in the markup.
+ *
+ * Callers that pass no type get `unknown`, which is honest: an endpoint whose reads still return
+ * `object` on the server has no shape to promise.
+ *
+ * @template {unknown} [T=unknown]
+ * @param {string} path
+ * @param {object} [options]
+ * @returns {Promise<T>}
+ */
 export function apiGet(path, options = {}) {
   return request(path, { headers: { Accept: 'application/json' } }, options);
 }

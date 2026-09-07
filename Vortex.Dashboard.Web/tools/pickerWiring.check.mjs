@@ -17,7 +17,7 @@ const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const registry = read('../src/lib/pickers/directories.js');
 const rows = read('../src/components/pickers/index.js');
 const page = read('../src/pages/RewardTracksPage.svelte');
-const routes = read('../../Vortex.Dashboard.API/Hosting/DashboardEndpoints.Directory.cs');
+const routes = read('../../Vortex.Dashboard.API/Hosting/Platform/DashboardEndpoints.Directory.cs');
 
 const failures = [];
 

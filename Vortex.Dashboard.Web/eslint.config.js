@@ -9,6 +9,7 @@
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
+import typescript from 'typescript-eslint';
 
 export default [
   js.configs.recommended,
@@ -35,6 +36,15 @@ export default [
       // looks dead within that run but is exactly how the block remembers the previous value on the
       // next one, which is what makes "reset only on closed -> open" work.
       'no-useless-assignment': 'off',
+    },
+  },
+  {
+    // A component migrated to `<script lang="ts">` still has to be parsed for the one rule above,
+    // and the default parser stops at the first type annotation. This teaches it the syntax only:
+    // no type-aware rules, which would need a project reference and are svelte-check's job anyway.
+    files: ['**/*.svelte'],
+    languageOptions: {
+      parserOptions: { parser: typescript.parser },
     },
   },
   {

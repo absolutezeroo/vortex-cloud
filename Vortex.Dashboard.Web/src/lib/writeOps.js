@@ -57,7 +57,25 @@ async function postWithStepUp(endpoint, payload) {
   }
 }
 
+/**
+ * The three maps are keyed by the caller's own `options.key`, so they are dictionaries rather than
+ * fixed shapes. Saying so here is what lets a page in TypeScript read `$ops.errors[key]` without
+ * TypeScript objecting that `{}` has no such property.
+ *
+ * @typedef {object} WriteOpsState
+ * @property {any} pending      the write waiting for confirmation, null when none is
+ * @property {boolean} busy     a confirmed write is in flight
+ * @property {string} error     the last refusal, whatever key it belonged to
+ * @property {any} result       the last answer, whatever key it belonged to
+ * @property {string} key       which key the two above belong to
+ * @property {Record<string, unknown>} results
+ * @property {Record<string, string>} errors
+ * @property {Record<string, boolean>} busyKeys
+ */
+
+/** @param {(endpoint: string) => void} [onSuccess] */
 export function createWriteOps(onSuccess) {
+  /** @type {import('svelte/store').Writable<WriteOpsState>} */
   const state = writable({ ...EMPTY, results: {}, errors: {}, busyKeys: {} });
   let current = null;
 

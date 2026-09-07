@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import { onMount } from 'svelte';
   import {
@@ -27,14 +27,60 @@
   import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
+  import type {
+    PollDetail,
+    PollListItem,
+    PollListResponse,
+    PollQuestionNode,
+    PollQuestionTypeOption,
+    PollQuestionTypeOptions,
+    PollResults,
+  } from '../lib/apiTypes';
 
   // The client's own question types. 1/2 take a choice list; 3/4 are free text. 5 and 6 exist in
   // the client enum but its survey dialog skips them outright, so the server rejects them too --
   // the picker only ever offers what a player can actually answer.
   const CHOICE_TYPES = [1, 2];
 
-  function emptyPollForm() {
+  type PollForm = {
+    // Null while creating. The update endpoint refuses a body without it, so this is not
+    // decoration: the drawer's save reads it back out.
+    id: number | null;
+    code: string;
+    pollType: string;
+    headline: string;
+    summary: string;
+    startMessage: string;
+    endMessage: string;
+    npsPoll: boolean;
+    enabled: boolean;
+    offerOnRoomEntry: boolean;
+    roomId: number | null;
+    roomName: string;
+    sortOrder: number;
+  };
+
+  type ChoiceForm = {
+    value: string;
+    choiceText: string;
+    choiceType: number;
+    sortOrder: number;
+  };
+
+  type QuestionForm = {
+    pollId: number;
+    parentQuestionId: number | null;
+    sortOrder: number;
+    questionType: number;
+    questionText: string;
+    questionCategory: number;
+    questionAnswerType: number;
+    choices: ChoiceForm[];
+  };
+
+  function emptyPollForm(): PollForm {
     return {
+      id: null,
       code: '', pollType: '', headline: '', summary: '',
       startMessage: '', endMessage: '',
       npsPoll: false, enabled: true, offerOnRoomEntry: true,
@@ -42,7 +88,10 @@
     };
   }
 
-  function emptyQuestionForm(pollId, parentQuestionId = null) {
+  function emptyQuestionForm(
+    pollId: number,
+    parentQuestionId: number | null = null,
+  ): QuestionForm {
     return {
       pollId,
       parentQuestionId,
@@ -55,12 +104,12 @@
     };
   }
 
-  function emptyChoice() {
+  function emptyChoice(): ChoiceForm {
     return { value: '', choiceText: '', choiceType: 0, sortOrder: 0 };
   }
 
-  let polls = $state([]);
-  let questionTypes = $state([]);
+  let polls = $state<PollListItem[]>([]);
+  let questionTypes = $state<PollQuestionTypeOption[]>([]);
   let enabledOnly = $state(false);
   let loading = $state(false);
   let error = $state('');
@@ -68,21 +117,21 @@
 
   // One survey is expanded at a time: the detail (question tree) and the results are separate reads,
   // both keyed to the open poll so switching rows never shows one survey's answers under another's.
-  let expandedId = $state(null);
-  let detail = $state(null);
+  let expandedId = $state<number | null>(null);
+  let detail = $state<PollDetail | null>(null);
   let detailError = $state('');
-  let results = $state(null);
+  let results = $state<PollResults | null>(null);
   let resultsError = $state('');
   let showResults = $state(false);
 
   let newPollOpen = $state(false);
   let newPoll = $state(emptyPollForm());
-  let editPollForm = $state(null);
+  let editPollForm = $state<PollForm | null>(null);
 
-  let questionForm = $state(null);
-  let editingQuestionId = $state(null);
+  let questionForm = $state<QuestionForm | null>(null);
+  let editingQuestionId = $state<number | null>(null);
 
-  let roomPickerFor = $state(null);
+  let roomPickerFor = $state<'new' | 'edit' | null>(null);
 
   // Deletes get their own store: they collect the reason in the shared modal (the edits carry it in
   // the form), so the two flows must be able to be staged independently without one modal's pending
@@ -104,7 +153,9 @@
     forbidden = false;
 
     try {
-      const data = await apiGet(`/api/v1/polls${enabledOnly ? '?enabled=true' : ''}`);
+      const data = await apiGet<PollListResponse>(
+        `/api/v1/polls${enabledOnly ? '?enabled=true' : ''}`,
+      );
       polls = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -113,7 +164,7 @@
         return;
       }
 
-      error = err.message;
+      error = err instanceof Error ? err.message : String(err);
       polls = [];
     } finally {
       loading = false;
@@ -124,14 +175,14 @@
   // never empty just because one endpoint hiccuped.
   async function loadQuestionTypes() {
     try {
-      const data = await apiGet('/api/v1/polls/question-types');
+      const data = await apiGet<PollQuestionTypeOptions>('/api/v1/polls/question-types');
       questionTypes = (data.items || []).filter((it) => it.supported);
     } catch {
       questionTypes = [];
     }
   }
 
-  async function openPoll(poll) {
+  async function openPoll(poll: PollListItem) {
     if (expandedId === poll.id) {
       expandedId = null;
       detail = null;
@@ -152,27 +203,27 @@
     await loadDetail(poll.id);
   }
 
-  async function loadDetail(pollId) {
+  async function loadDetail(pollId: number) {
     try {
       detail = await apiGet(`/api/v1/polls/${pollId}`);
     } catch (err) {
-      detailError = err.message;
+      detailError = err instanceof Error ? err.message : String(err);
       detail = null;
     }
   }
 
-  async function loadResults(pollId) {
+  async function loadResults(pollId: number) {
     resultsError = '';
 
     try {
       results = await apiGet(`/api/v1/polls/${pollId}/results`);
     } catch (err) {
-      resultsError = err.message;
+      resultsError = err instanceof Error ? err.message : String(err);
       results = null;
     }
   }
 
-  async function toggleResults(pollId) {
+  async function toggleResults(pollId: number) {
     showResults = true;
 
     if (showResults && !results) {
@@ -180,7 +231,15 @@
     }
   }
 
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+  const stage = (
+    id: string,
+    title: string,
+    endpoint: string,
+    valid: boolean,
+    body: unknown,
+    summary: string,
+    onSuccess: () => void | Promise<void>,
+  ) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
@@ -188,7 +247,7 @@
       onSuccess,
     });
 
-  function pollBody(form, pollId) {
+  function pollBody(form: PollForm, pollId: number | null) {
     const body = {
       code: form.code.trim(),
       pollType: form.pollType.trim(),
@@ -206,7 +265,7 @@
     return pollId === null ? body : { pollId, ...body };
   }
 
-  function pollFormValid(form) {
+  function pollFormValid(form: PollForm) {
     return (
       Boolean(form.code.trim()) &&
       Boolean(form.headline.trim()) &&
@@ -232,8 +291,9 @@
     );
   }
 
-  function startEditPoll(poll) {
+  function startEditPoll(poll: PollListItem | PollDetail) {
     editPollForm = {
+      id: poll.id,
       code: poll.code || '',
       pollType: poll.pollType || '',
       headline: poll.headline || '',
@@ -249,7 +309,7 @@
     };
   }
 
-  function stageUpdatePoll(pollId) {
+  function stageUpdatePoll(pollId: number) {
     if (!canManage || !editPollForm) return;
 
     stage(
@@ -267,7 +327,7 @@
     );
   }
 
-  function questionBody(form, questionId) {
+  function questionBody(form: QuestionForm, questionId: number | null) {
     const takesChoices = CHOICE_TYPES.includes(Number(form.questionType));
 
     const body = {
@@ -295,7 +355,7 @@
     return questionId === null ? body : { questionId, ...body };
   }
 
-  function questionFormValid(form) {
+  function questionFormValid(form: QuestionForm) {
     if (!form.questionText.trim()) return false;
 
     if (!CHOICE_TYPES.includes(Number(form.questionType))) return true;
@@ -305,12 +365,15 @@
     return filled.length > 0 && filled.length === form.choices.filter((c) => c.value.trim() || c.choiceText.trim()).length;
   }
 
-  function startNewQuestion(pollId, parentQuestionId = null) {
+  function startNewQuestion(pollId: number, parentQuestionId: number | null = null) {
     editingQuestionId = null;
     questionForm = emptyQuestionForm(pollId, parentQuestionId);
   }
 
-  function startEditQuestion(pollId, question) {
+  function startEditQuestion(
+    pollId: number,
+    question: PollQuestionNode & { parentQuestionId?: number | null },
+  ) {
     editingQuestionId = question.id;
     questionForm = {
       pollId,
@@ -334,7 +397,7 @@
 
   // Editing a follow-up needs its parent id, which the tree carries structurally rather than on the
   // child row -- so it is threaded in here when the edit starts.
-  function startEditFollowUp(pollId, parentId, child) {
+  function startEditFollowUp(pollId: number, parentId: number, child: PollQuestionNode) {
     startEditQuestion(pollId, { ...child, parentQuestionId: parentId });
   }
 
@@ -342,16 +405,17 @@
     if (!canManage || !questionForm) return;
 
     const isEdit = editingQuestionId !== null;
+    const form = questionForm;
 
     stage(
       isEdit ? `updateQuestion:${editingQuestionId}` : 'createQuestion',
       isEdit ? translate('polls.editQuestion') : translate('polls.newQuestion'),
       isEdit ? '/api/v1/operations/polls/questions/update' : '/api/v1/operations/polls/questions',
-      questionFormValid(questionForm),
-      questionBody(questionForm, editingQuestionId),
-      questionForm.questionText.trim(),
+      questionFormValid(form),
+      questionBody(form, editingQuestionId),
+      form.questionText.trim(),
       async () => {
-        const pollId = questionForm.pollId;
+        const pollId = form.pollId;
         questionForm = null;
         editingQuestionId = null;
         await loadDetail(pollId);
@@ -365,7 +429,14 @@
   // poll_has_answers / question_has_answers are the two refusals an operator hits in practice, and
   // both mean "disable it instead" -- createWriteOps keeps the modal open on them with the code
   // visible rather than closing over the failure.
-  function askDelete(target) {
+  function askDelete(target: {
+    kind: 'poll' | 'question';
+    id: number;
+    // Which poll to reload afterwards. Present on both kinds: deleting a question leaves the
+    // poll open, so the reload needs the poll and not the question.
+    pollId: number;
+    label: string;
+  }) {
     if (!canManage) return;
 
     const isPoll = target.kind === 'poll';
@@ -392,7 +463,7 @@
     );
   }
 
-  function pickRoom(item) {
+  function pickRoom(item: { id: number; name: string }) {
     if (roomPickerFor === 'new') {
       newPoll.roomId = item.id;
       newPoll.roomName = item.name;
@@ -402,13 +473,13 @@
     }
   }
 
-  function clearRoom(form) {
+  function clearRoom(form: PollForm) {
     form.roomId = null;
     form.roomName = '';
     return form;
   }
 
-  function typeLabel(questionType) {
+  function typeLabel(questionType: number) {
     const known = questionTypes.find((it) => it.id === Number(questionType));
     return known ? known.name : `#${questionType}`;
   }
@@ -493,7 +564,7 @@
               {:else}
                 <div class="detail-actions">
                   {#if canManage}
-                    <button type="button" class="ghost-button" onclick={() => (editPollForm ? (editPollForm = null) : startEditPoll(detail))}>
+                    <button type="button" class="ghost-button" onclick={() => (editPollForm ? (editPollForm = null) : startEditPoll(detail!))}>
                       {editPollForm ? $t('polls.cancel') : $t('polls.editPoll')}
                     </button>
                   {/if}
@@ -676,7 +747,10 @@
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
       </div>
-      <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
+      {#if $ops.errors.createPoll}
+        <p class="empty-state danger" role="alert">{$ops.errors.createPoll}</p>
+      {/if}
+      <OpResult result={$ops.results.createPoll} />
     </div>
 
     {#snippet actions()}
@@ -727,7 +801,7 @@
           {editPollForm.roomName || $t('polls.anyRoom')}
         </button>
         {#if editPollForm.roomId}
-          <button type="button" class="ghost-button" onclick={() => (editPollForm = clearRoom(editPollForm))}>
+          <button type="button" class="ghost-button" onclick={() => (editPollForm = clearRoom(editPollForm!))}>
             {$t('polls.clearRoom')}
           </button>
         {/if}
@@ -740,10 +814,13 @@
     <div class="op-field">
       <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
     </div>
-    <OpResult result={$ops.results[`updatePoll:${editPollForm.id}`]} error={$ops.errors[`updatePoll:${editPollForm.id}`]} />
+    {#if $ops.errors[`updatePoll:${editPollForm.id}`]}
+      <p class="empty-state danger" role="alert">{$ops.errors[`updatePoll:${editPollForm.id}`]}</p>
+    {/if}
+    <OpResult result={$ops.results[`updatePoll:${editPollForm.id}`]} />
 
     {#snippet actions()}
-      <button type="button" onclick={() => stageUpdatePoll(editPollForm.id)} disabled={$ops.busyKeys[`updatePoll:${editPollForm.id}`]}>
+      <button type="button" onclick={() => stageUpdatePoll(editPollForm!.id ?? 0)} disabled={$ops.busyKeys[`updatePoll:${editPollForm!.id}`]}>
         {$t('polls.save')}
       </button>
       <button type="button" class="ghost-button" onclick={() => (editPollForm = null)}>{$t('polls.cancel')}</button>
@@ -799,14 +876,14 @@
                 min="0"
                 title={$t('polls.choiceTypeHint')}
                 bind:value={choice.choiceType}
-                disabled={!detail.npsPoll}
+                disabled={!detail!.npsPoll}
               />
               <button
                 type="button"
                 class="ghost-button danger"
                 onclick={() => {
-                  questionForm.choices = questionForm.choices.filter((_, i) => i !== index);
-                  if (questionForm.choices.length === 0) questionForm.choices = [emptyChoice()];
+                  questionForm!.choices = questionForm!.choices.filter((_, i) => i !== index);
+                  if (questionForm!.choices.length === 0) questionForm!.choices = [emptyChoice()];
                 }}
               >
                 {$t('common.delete')}</button>
@@ -815,7 +892,7 @@
           <button
       type="button"
       class="success"
-      onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
+      onclick={() => (questionForm!.choices = [...questionForm!.choices, emptyChoice()])}
           >
             {$t('polls.addChoice')}
           </button>
@@ -823,9 +900,13 @@
         </fieldset>
       {/if}
 
+      {#if $ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+        <p class="empty-state danger" role="alert">
+          {$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+        </p>
+      {/if}
       <OpResult
         result={$ops.results[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
-        error={$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
       />
     </div>
 
