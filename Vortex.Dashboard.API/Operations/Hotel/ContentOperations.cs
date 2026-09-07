@@ -11,14 +11,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// <see cref="IContentAdminService"/> — never a direct DB write — which owns the live-cache reload
 /// each domain needs, and each is audited with the operator's reason.
 /// </summary>
-internal sealed partial class DashboardOperationsService
+internal sealed class ContentOperations(OperationRunner runner, IContentAdminService contentAdmin)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IContentAdminService _contentAdmin = contentAdmin;
+
     public Task<OperationResult> SaveAchievementAsync(
         AchievementRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.AchievementId > 0
                 ? "ops.content.achievement.update"
                 : "ops.content.achievement.create",
@@ -52,7 +55,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.achievement.delete",
             actor,
             request.Reason,
@@ -73,7 +76,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.achievement.level",
             actor,
             request.Reason,
@@ -111,7 +114,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.achievement.level.delete",
             actor,
             request.Reason,
@@ -132,7 +135,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.hand_item.save",
             actor,
             request.Reason,
@@ -161,7 +164,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.hand_item.delete",
             actor,
             request.Reason,
@@ -178,7 +181,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.bot.update",
             actor,
             request.Reason,
@@ -203,7 +206,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.bot.delete",
             actor,
             request.Reason,
@@ -220,7 +223,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.CollectionId > 0
                 ? "ops.content.collection.update"
                 : "ops.content.collection.create",
@@ -256,7 +259,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.OfferId > 0 ? "ops.content.storeoffer.update" : "ops.content.storeoffer.create",
             actor,
             request.Reason,
@@ -300,7 +303,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.storeoffer.delete",
             actor,
             request.Reason,
@@ -321,7 +324,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.TypeId > 0
                 ? "ops.content.mintabletype.update"
                 : "ops.content.mintabletype.create",
@@ -367,7 +370,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.mintabletype.delete",
             actor,
             request.Reason,
@@ -388,7 +391,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.OfferId > 0 ? "ops.content.mintoffer.update" : "ops.content.mintoffer.create",
             actor,
             request.Reason,
@@ -428,7 +431,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.mintoffer.delete",
             actor,
             request.Reason,
@@ -449,7 +452,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.claim.create",
             actor,
             request.Reason,
@@ -487,7 +490,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.claim.delete",
             actor,
             request.Reason,
@@ -506,7 +509,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.collection.delete",
             actor,
             request.Reason,
@@ -527,7 +530,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.ItemId > 0
                 ? "ops.content.collection.item.update"
                 : "ops.content.collection.item.create",
@@ -570,7 +573,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.collection.item.delete",
             actor,
             request.Reason,
@@ -591,7 +594,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             request.CurrencyId > 0 ? "ops.content.currency.update" : "ops.content.currency.create",
             actor,
             request.Reason,
@@ -624,7 +627,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.builders_club.save",
             actor,
             request.Reason,
@@ -648,7 +651,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.builders_club.delete",
             actor,
             request.Reason,
@@ -669,7 +672,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.rentable_terms.save",
             actor,
             request.Reason,
@@ -699,7 +702,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.rentable_terms.delete",
             actor,
             request.Reason,
@@ -720,7 +723,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.nftavatar.create",
             actor,
             request.Reason,
@@ -758,7 +761,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.nftavatar.update",
             actor,
             request.Reason,
@@ -797,7 +800,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.nftavatar.delete",
             actor,
             request.Reason,
@@ -818,7 +821,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.nftavatar.grant",
             actor,
             request.Reason,
@@ -839,7 +842,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.nftavatar.revoke",
             actor,
             request.Reason,
@@ -860,7 +863,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.badge.grant",
             actor,
             request.Reason,
@@ -881,7 +884,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.badge.revoke",
             actor,
             request.Reason,
@@ -902,7 +905,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.effect.grant",
             actor,
             request.Reason,
@@ -928,7 +931,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.content.effect.revoke",
             actor,
             request.Reason,

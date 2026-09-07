@@ -261,13 +261,7 @@ internal static partial class DashboardEndpoints
     private static void Map<TBody>(
         WebApplication app,
         string suffix,
-        Func<
-            DashboardOperationsService,
-            TBody,
-            string,
-            CancellationToken,
-            Task<OperationResult>
-        > run,
+        Func<ContentOperations, TBody, string, CancellationToken, Task<OperationResult>> run,
         Func<TBody, bool> isValid
     )
         where TBody : class
@@ -275,12 +269,7 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsContent + suffix,
-            async (
-                HttpContext ctx,
-                TBody body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
+            async (HttpContext ctx, TBody body, ContentOperations ops, CancellationToken ct) =>
                 !isValid(body)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(await run(ops, body, ctx.ActorEmail(), ct).ConfigureAwait(false)),

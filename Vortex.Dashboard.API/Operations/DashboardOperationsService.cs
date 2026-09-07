@@ -54,7 +54,6 @@ internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
-    IContentAdminService contentAdmin,
     IHabbiconAdminService habbiconAdmin,
     IRewardTrackAdminService rewardTrackAdmin,
     IRewardTrackCatalog rewardTrackCatalog,
@@ -80,7 +79,6 @@ internal sealed partial class DashboardOperationsService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
-    private readonly IContentAdminService _contentAdmin = contentAdmin;
     private readonly IHabbiconAdminService _habbiconAdmin = habbiconAdmin;
     private readonly IRewardTrackAdminService _rewardTrackAdmin = rewardTrackAdmin;
 
