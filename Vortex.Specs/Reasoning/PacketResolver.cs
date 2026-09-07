@@ -374,8 +374,6 @@ public sealed class PacketResolver
         return true;
     }
 
-    // -------------------------------------------------------------- emulator
-
     private static void AddEmulator(
         EmulatorScan scan,
         Dictionary<Identity, List<SourceLayout>> layouts,
@@ -486,8 +484,6 @@ public sealed class PacketResolver
 
         return parts.Count == 0 ? null : string.Join("; ", parts);
     }
-
-    // ---------------------------------------------------------------- client
 
     /// <returns>How many packets had to be skipped for want of a usable identity.</returns>
     private static int AddClient(
@@ -608,8 +604,6 @@ public sealed class PacketResolver
 
         return specs;
     }
-
-    // ------------------------------------------------------------- reference
 
     private static void AddReference(
         ReferenceScan reference,

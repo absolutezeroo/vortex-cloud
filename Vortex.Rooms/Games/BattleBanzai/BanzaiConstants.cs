@@ -16,7 +16,6 @@ public static class BanzaiConstants
     /// <summary>The game's identity. Every Banzai component carries it and the runtime routes on it.</summary>
     public static readonly GameId Game = new("banzai");
 
-    // --- bb_patch1 states (wire-fixed) ---
     public const int TileOff = 0;
     public const int TileNeutral = 1;
 
@@ -26,7 +25,6 @@ public static class BanzaiConstants
     /// <summary>Offset within a team's three states that means "locked" (t*3 + 2).</summary>
     public const int LockedOffset = 2;
 
-    // --- round end ---
     /// <summary>The winning team's locked tiles blink between 0 and their locked state.</summary>
     public const int FlickerCount = 10;
     public const int FlickerIntervalMs = 500;
@@ -34,7 +32,6 @@ public static class BanzaiConstants
     /// <summary>How long the runtime holds the round-ending phase: exactly the celebration.</summary>
     public const int RoundEndMs = FlickerCount * FlickerIntervalMs;
 
-    // --- bb_rnd_tele ---
     public const int TeleportDelayMs = 500;
     public const int TeleportActiveState = 1;
     public const int TeleportIdleState = 0;

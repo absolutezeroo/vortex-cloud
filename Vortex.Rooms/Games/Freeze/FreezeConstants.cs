@@ -20,33 +20,29 @@ public static class FreezeConstants
     /// <summary>The game's identity. Every Freeze component carries it and the runtime routes on it.</summary>
     public static readonly GameId Game = new("freeze");
 
-    // --- avatar effects (wire-fixed) ---
-    // Anchored on the shared aura-set enum so the one Freeze aura base lives in one place.
-    public const int TeamEffectBase = (int)GameAuraSet.Freeze; // Red(1)->40 .. Yellow(4)->43
+    public const int TeamEffectBase = (int)GameAuraSet.Freeze;
+
     public const int FrozenEffect = 12;
+
     public const int ProtectionEffectBonus = 9;
+
     public const int NoEffect = 0;
 
-    // --- game tick + snowball animation timing, in ms (rise now -> blast -> reset) ---
     public const int FreezeTickMs = 1000;
+
     public const int BlastDelayMs = 2000;
+
     public const int ResetDelayMs = 3000;
 
-    // --- furni animation states (wire-fixed) ---
-    // All Freeze furni use the client's IceStorm logic, which decodes a sent value as
-    // actualState = wire / StateWireScale and a deferred-transition delay = wire % StateWireScale.
-    // So a state is put on the wire as `state * StateWireScale`, verified against the es_tile / es_box
-    // furni assets (visualization.xml).
     public const int StateWireScale = 1000;
 
-    // es_tile (freeze_tile): idle=0 (throwable), rise=(blastRadius + 1) in 1..MaxBoost+1, blast=11.
     public const int TileIdle = 0;
+
     public const int TileBlast = 11;
 
-    // es_box (freeze_block): 0=intact (solid), 1=destroyed-empty, 2..7=destroyed showing a power-up icon
-    // (see FreezePowerUps.RevealState), and a collected block is its reveal state + 10 (12..17), which
-    // makes the client play the icon-fade transition.
     public const int BlockIntact = 0;
+
     public const int BlockEmpty = 1;
+
     public const int BlockCollectedOffset = 10;
 }

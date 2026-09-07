@@ -153,8 +153,6 @@ public sealed class RoomGameRuntime
         }
     }
 
-    // ---- composition -------------------------------------------------------
-
     /// <summary>
     /// Plugs a game into the room, creating its first arena. The factory receives the context that
     /// arena's module will use for its whole life, so a module captures it in a readonly field
@@ -198,8 +196,6 @@ public sealed class RoomGameRuntime
     /// <summary>Attaches an event sink (a scoreboard painter, the diagnostics tracer). Sinks see
     /// every arena's events.</summary>
     public void AddSink(IGameEventSink sink) => _sinks.Add(sink);
-
-    // ---- arena discovery ---------------------------------------------------
 
     /// <summary>
     /// Brings the host list in line with the room's furniture: a game that separates its installations
@@ -279,8 +275,6 @@ public sealed class RoomGameRuntime
 
         return ArenaPartition.Single;
     }
-
-    // ---- target resolution -------------------------------------------------
 
     /// <summary>
     /// Which arena a start applies to. Candidates are the arenas that are idle AND whose furniture
@@ -371,8 +365,6 @@ public sealed class RoomGameRuntime
 
         return new ArenaCandidate(host.Id, components, distance);
     }
-
-    // ---- lifecycle ---------------------------------------------------------
 
     /// <summary>
     /// Starts a match on the ONE arena this request resolves to. Returns false when the room offered
@@ -657,8 +649,6 @@ public sealed class RoomGameRuntime
         await TransitionAsync(host, GamePhase.Running, ct);
     }
 
-    // ---- tick --------------------------------------------------------------
-
     /// <summary>
     /// One room frame. Arenas in <see cref="GamePhase.Idle"/> are not called at all unless they asked
     /// to be: at twenty frames a second per room, the overwhelming majority of which host no game,
@@ -726,8 +716,6 @@ public sealed class RoomGameRuntime
             }
         }
     }
-
-    // ---- phase transition --------------------------------------------------
 
     private async Task TransitionAsync(ArenaHost host, GamePhase to, CancellationToken ct)
     {
@@ -841,8 +829,6 @@ public sealed class RoomGameRuntime
         }
     }
 
-    // ---- signals -----------------------------------------------------------
-
     /// <summary>Routes one component signal to the ARENA that owns the component — the game it
     /// belongs to, and within that game the installation its furniture sits in. O(arenas in the
     /// room), which is two or three.</summary>
@@ -899,8 +885,6 @@ public sealed class RoomGameRuntime
 
     public GamePhase PhaseOf(ArenaId arena) => FindHost(arena)?.Phase ?? GamePhase.Idle;
 
-    // ---- participants ------------------------------------------------------
-
     /// <summary>Clears membership when a player leaves the room, so team state never outlives a
     /// player's presence, and lets every arena drop whatever it held for them.</summary>
     public async Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
@@ -936,7 +920,6 @@ public sealed class RoomGameRuntime
         }
     }
 
-    // ---- teams and scores: the room's Habbo-facing surface -------------------
     //
     // Everything below speaks GameTeamColor, and that is deliberate: these are the members the wired
     // boxes, the coloured furniture and IRoomGameAccess use, and a colour is exactly what those
@@ -1032,8 +1015,6 @@ public sealed class RoomGameRuntime
         return null;
     }
 
-    // ---- scoring: the domain path -------------------------------------------
-
     /// <summary>
     /// Applies a game's scoring act. Refused outside a live match — "a finished game cannot accept
     /// score changes" is an invariant here rather than a rule each module remembers — and a no-op
@@ -1102,8 +1083,6 @@ public sealed class RoomGameRuntime
         );
     }
 
-    // ---- events ------------------------------------------------------------
-
     /// <summary>Fans one game event out to every sink, keeping a sink's failure to itself: a broken
     /// scoreboard must not be able to abort a match.</summary>
     internal async Task PublishGameEventAsync(GameEvent evt, CancellationToken ct)
@@ -1164,8 +1143,6 @@ public sealed class RoomGameRuntime
             MemberNames = names,
         };
     }
-
-    // ---- failure containment ------------------------------------------------
 
     private ArenaValidation SafeValidate(ArenaHost host)
     {
@@ -1235,8 +1212,6 @@ public sealed class RoomGameRuntime
     /// <summary>A copy of the host list to fan out over: a game that ends another arena from inside a
     /// hook must not invalidate the enumeration in progress.</summary>
     private List<ArenaHost> Snapshot() => [.. _hosts];
-
-    // ---- room teardown ------------------------------------------------------
 
     /// <summary>
     /// The room is unloading. Every match is torn down through its own cleanup so nothing survives

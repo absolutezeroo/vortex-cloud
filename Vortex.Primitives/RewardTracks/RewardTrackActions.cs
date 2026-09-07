@@ -104,10 +104,6 @@ public static class RewardTrackActions
     /// <summary>Used a Habbicon. (Introduction Track)</summary>
     public const string UseHabbicon = "use_habbicon";
 
-    // ---------------------------------------------------------------------------------------
-    // No Habbo artwork exists for the codes below: a task defined on one draws an empty icon.
-    // ---------------------------------------------------------------------------------------
-
     /// <summary>Completed a trade. No client artwork.</summary>
     public const string CompleteTrade = "complete_trade";
 

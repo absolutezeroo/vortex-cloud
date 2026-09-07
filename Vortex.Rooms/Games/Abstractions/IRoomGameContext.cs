@@ -78,8 +78,6 @@ public interface IRoomGameContext
     /// </summary>
     void KeepTicking();
 
-    // --- tiles ------------------------------------------------------------
-
     int MapWidth { get; }
 
     bool InBounds(int x, int y);
@@ -107,8 +105,6 @@ public interface IRoomGameContext
     /// edge. The room's own tile arithmetic — a game never does index maths on the grid itself.</summary>
     bool TryGetTileInFront(int tileIdx, Rotation direction, out int nextTileIdx);
 
-    // --- participants -----------------------------------------------------
-
     IReadOnlyList<PlayerId> PlayersOn(int tileIdx);
 
     bool TryGetPlayerTile(PlayerId playerId, out int tileIdx);
@@ -135,13 +131,9 @@ public interface IRoomGameContext
     /// <summary>Turns the player to face a coordinate and tells the room.</summary>
     Task FacePlayerAsync(PlayerId playerId, int targetX, int targetY);
 
-    // --- furniture --------------------------------------------------------
-
     /// <summary>Slides a component's furni one hop to another tile, as a roller would: the room's
     /// authoritative position changes first, then the client is told to animate it.</summary>
     Task SlideItemAsync(IGameComponent component, int toTileIdx);
-
-    // --- outward ----------------------------------------------------------
 
     /// <summary>Applies a scoring act and raises the score event. The only way a game changes a
     /// score — a direct write to the team book scores silently, which is what used to make a wired

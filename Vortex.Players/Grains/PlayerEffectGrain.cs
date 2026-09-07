@@ -322,8 +322,6 @@ internal sealed class PlayerEffectGrain(
         }
     }
 
-    // --- helpers ---------------------------------------------------------------------------------
-
     private async Task<ImmutableArray<AvatarEffectSnapshot>> BuildListAsync(
         VortexDbContext dbCtx,
         CancellationToken ct

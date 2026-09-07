@@ -118,8 +118,6 @@ public sealed class ClothingChangeBoothTests
         player.Figure.Should().Be("hd-185-2.ch-210-66.lg-270-82");
     }
 
-    // ---- helpers ------------------------------------------------------------
-
     private static RoomPlayerAvatar Player(AvatarGenderType gender)
     {
         RoomPlayerAvatar avatar = new() { ObjectId = new RoomObjectId(1), PlayerId = new(1) };

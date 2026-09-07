@@ -77,8 +77,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
 
     private readonly record struct TileReset(MatchId Match, List<int> Tiles);
 
-    // ---- validation --------------------------------------------------------
-
     public override ArenaValidation ValidateArena() =>
         ArenaValidation
             .Builder()
@@ -86,8 +84,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             .Prefer("Team gates", _context.Arena.CountOf<ITeamGateComponent>(), required: 2)
             .Prefer("Exit tile", _context.Arena.CountOf<IArenaExitComponent>())
             .Build();
-
-    // ---- lifecycle ---------------------------------------------------------
 
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
@@ -142,8 +138,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
 
         return Task.CompletedTask;
     }
-
-    // ---- tick --------------------------------------------------------------
 
     public override async Task TickAsync(long now, CancellationToken ct)
     {
@@ -211,8 +205,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             await ShowEffectAsync(player);
         }
     }
-
-    // ---- signals -----------------------------------------------------------
 
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
@@ -330,8 +322,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
 
         return RefreshGateCountersAsync();
     }
-
-    // ---- throwing ----------------------------------------------------------
 
     /// <summary>A player double-clicked an arena tile: launch a snowball at it if the rules allow.
     /// The client sends the intent; every check that decides whether it happens is here.</summary>
@@ -516,8 +506,6 @@ public sealed class FreezeGame(IRoomGameContext context) : RoomGameModule(contex
             }
         }
     }
-
-    // ---- ice blocks and power-ups -------------------------------------------
 
     /// <summary>Shatters an intact ice block caught in a blast: it rolls the power-up chance and
     /// either reveals a random power-up or breaks empty, scoring the thrower's team for the kill.

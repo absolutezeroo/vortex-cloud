@@ -269,8 +269,6 @@ public sealed class WiredMembershipBoxTests
         new TestNegativeBadgeCondition(ctx, Config("HC1")).Evaluate(Trigger()).Should().BeTrue();
     }
 
-    // ---- harness -------------------------------------------------------------------------------
-
     private static IWiredProcessingContext Trigger(PlayerId? actor = null)
     {
         TestEvent evt = new()

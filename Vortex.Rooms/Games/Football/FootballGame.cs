@@ -64,8 +64,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     public override GameProfile Profile { get; } =
         new() { Id = FootballConstants.Game, Teams = TeamSet.HabboColours };
 
-    // ---- validation --------------------------------------------------------
-
     /// <summary>
     /// A football match needs a ball and at least two goals of different colours — one goal is a
     /// target nobody defends, and no ball is not a game.
@@ -85,8 +83,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
             .Require("Goals of different colours", CountGoalColours(), required: 2)
             .Build();
     }
-
-    // ---- lifecycle ---------------------------------------------------------
 
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
@@ -121,8 +117,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         await ResetGoalsAsync();
         await RestAllBallsAsync();
     }
-
-    // ---- tick --------------------------------------------------------------
 
     public override async Task TickAsync(long nowMs, CancellationToken ct)
     {
@@ -365,8 +359,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         motion.Stop();
     }
 
-    // ---- signals -----------------------------------------------------------
-
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
         {
@@ -588,8 +580,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
         return seen.Count;
     }
 
-    // ---- IBallSpace: the room, as the physics needs it ----------------------
-
     bool IBallSpace.TryStep(int fromTileIdx, Rotation direction, out int nextTileIdx) =>
         _context.TryGetTileInFront(fromTileIdx, direction, out nextTileIdx);
 
@@ -612,8 +602,6 @@ public sealed class FootballGame(IRoomGameContext context) : RoomGameModule(cont
     private bool IsOpen(int tileIdx) => _context.IsTileOpenForItem(tileIdx);
 
     private bool HasAvatar(int tileIdx) => _context.HasAvatarOn(tileIdx);
-
-    // ---- helpers -----------------------------------------------------------
 
     /// <summary>This ball's motion, minted on first contact. A ball kicked outside a match still
     /// rolls; it just belongs to no match.</summary>

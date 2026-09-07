@@ -71,16 +71,12 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         public long NextDueMs { get; set; }
     }
 
-    // ---- validation --------------------------------------------------------
-
     public override ArenaValidation ValidateArena() =>
         ArenaValidation
             .Builder()
             .Require("Banzai tiles", _context.Arena.CountOf<IArenaTileComponent>())
             .Prefer("Team gates", _context.Arena.CountOf<ITeamGateComponent>(), required: 2)
             .Build();
-
-    // ---- lifecycle ---------------------------------------------------------
 
     public override async Task OnPreparingAsync(GameMatch match, CancellationToken ct)
     {
@@ -156,8 +152,6 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         return Task.CompletedTask;
     }
 
-    // ---- tick --------------------------------------------------------------
-
     public override async Task TickAsync(long nowMs, CancellationToken ct)
     {
         await DrainFlickerAsync(nowMs);
@@ -188,8 +182,6 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
             await _context.RequestMatchEndAsync(ct);
         }
     }
-
-    // ---- signals -----------------------------------------------------------
 
     public override Task OnSignalAsync(GameSignal signal, CancellationToken ct) =>
         signal switch
@@ -329,8 +321,6 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
         // Membership is already cleared by the runtime; only the gate member counts need repainting.
         RefreshGateCountersAsync();
 
-    // ---- teleporters -------------------------------------------------------
-
     private async Task EnqueueTeleportHopAsync(
         PlayerId playerId,
         RoomObjectId sourceItemId,
@@ -452,8 +442,6 @@ public sealed class BanzaiGame(IRoomGameContext context) : RoomGameModule(contex
 
         return null;
     }
-
-    // ---- painting ----------------------------------------------------------
 
     private async Task DrainFlickerAsync(long nowMs)
     {

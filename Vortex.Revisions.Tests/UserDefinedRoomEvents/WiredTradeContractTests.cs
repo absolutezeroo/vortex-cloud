@@ -75,7 +75,6 @@ public sealed class WiredTradeContractTests
             .Should()
             .Be("generic", "an empty layoutType would name an asset that does not exist");
 
-        // --- the rules definition
         packet.PopBoolean().Should().BeTrue("the give side is announced by a flag");
         packet.PopInt().Should().Be(1, "one alternative");
         packet.PopInt().Should().Be(2, "two terms in it");
@@ -94,11 +93,9 @@ public sealed class WiredTradeContractTests
         packet.PopByte().Should().Be(0);
         packet.PopInt().Should().Be(10);
 
-        // --- the mode, and the one int it pulls in
         packet.PopInt().Should().Be(1);
         packet.PopInt().Should().Be(5);
 
-        // --- the three fields that must still land after all of that
         packet.PopBoolean().Should().BeFalse("showRequirementsImmediate");
         packet.PopBoolean().Should().BeTrue("overridePreviousTrade");
         packet.PopInt().Should().Be(300);

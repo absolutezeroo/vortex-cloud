@@ -75,8 +75,6 @@ public sealed class EmulatorAnalyzer(SpecWorkspace workspace, CSharpSourceIndex 
         };
     }
 
-    // ---------------------------------------------------------------- headers
-
     private sealed record HeaderTable(
         IReadOnlyDictionary<string, int> Incoming,
         IReadOnlyDictionary<string, int> Outgoing,
@@ -159,8 +157,6 @@ public sealed class EmulatorAnalyzer(SpecWorkspace workspace, CSharpSourceIndex 
 
         return null;
     }
-
-    // ------------------------------------------------------------------- maps
 
     private sealed record RevisionMapping(
         IReadOnlyDictionary<string, string> ParsersByHeader,
@@ -259,8 +255,6 @@ public sealed class EmulatorAnalyzer(SpecWorkspace workspace, CSharpSourceIndex 
             .Where(m => m.Expression.ToString() is "MessageComposer" or "MessageEvent")
             .Select(m => m.Name.Identifier.ValueText)
             .FirstOrDefault();
-
-    // --------------------------------------------------------------- packets
 
     private IEnumerable<EmulatorIncoming> BuildIncoming(
         HeaderTable headers,
