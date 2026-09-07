@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { Dices, Link2, Plus, RefreshCw, Trash2 } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -16,15 +16,49 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import { t } from '../lib/i18n';
+  import type {
+    PrizePoolBindingRow,
+    PrizePoolContent,
+    PrizePoolEntryRow,
+    PrizePoolRow,
+    PrizePoolStats,
+    PrizePoolWeightTotal,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** The three creation forms. Number inputs hand back strings while being typed. */
+  type PoolForm = {
+    code: string;
+    name: string;
+    variants: string;
+    notes: string;
+    enabled: boolean;
+  };
+
+  type BindingForm = {
+    furnitureDefinitionId: number | string;
+    poolCode: string;
+    hitsRequired: number | string;
+    enabled: boolean;
+  };
+
+  type EntryForm = {
+    variant: string;
+    productType: string;
+    furnitureDefinitionId: number | string;
+    extraParam: string;
+    weight: number | string;
+    enabled: boolean;
+  };
 
   // Only floor/wall entries name a furniture definition; effect and club prizes carry their target
   // in extraParam instead, so the form swaps which field it asks for.
   const FURNITURE_TYPES = ['Floor', 'Wall'];
 
-  let pools = $state([]);
-  let entries = $state([]);
-  let totals = [];
-  let bindings = $state([]);
+  let pools = $state<PrizePoolRow[]>([]);
+  let entries = $state<PrizePoolEntryRow[]>([]);
+  let totals: PrizePoolWeightTotal[] = [];
+  let bindings = $state<PrizePoolBindingRow[]>([]);
 
   let tab = $state('pools');
 
@@ -61,22 +95,22 @@
   ));
   let bindingPools = $derived([...new Set(bindings.map((b) => b.pool))].sort());
 
-  let productTypes = $state([]);
-  let stats = $state(null);
+  let productTypes = $state<string[]>([]);
+  let stats = $state<PrizePoolStats | null>(null);
   let statsDays = $state(7);
 
   let loading = $state(false);
   let denied = $state(false);
   let error = $state('');
 
-  let selectedPoolId = $state(null);
+  let selectedPoolId = $state<number | null>(null);
   let newPool = $state(emptyPool());
   let newEntry = $state(emptyEntry());
   let newBinding = $state(emptyBinding());
 
   // Typing a definition id by hand means looking it up somewhere else first; the furniture
   // picker is what every other page uses for this.
-  let picking = $state(null);
+  let picking = $state<'entry' | 'binding' | null>(null);
 
   // Every write is staged through the shared reason modal; createWriteOps posts it, remembers the
   // reason (which the hand-rolled version here used to drop) and refreshes both reads.
@@ -88,15 +122,15 @@
     await loadStats();
   });
 
-  function emptyPool() {
+  function emptyPool(): PoolForm {
     return { code: '', name: '', variants: '', notes: '', enabled: true };
   }
 
-  function emptyBinding() {
+  function emptyBinding(): BindingForm {
     return { furnitureDefinitionId: '', poolCode: '', hitsRequired: 1, enabled: true };
   }
 
-  function emptyEntry() {
+  function emptyEntry(): EntryForm {
     return {
       variant: '',
       productType: 'Floor',
@@ -115,30 +149,30 @@
   // The share a draw really sees: an entry competes with the pool entries that can be drawn beside
   // it, which for a variantless one is every variant of the pool. The server groups them the same
   // way the picker does, so this only reads the number back.
-  function expectedShare(entry) {
+  function expectedShare(entry: PrizePoolEntryRow) {
     if (!entry.enabled) return null;
     const group = totals.find((g) => g.poolId === entry.poolId && g.variant === entry.variant);
     if (!group || group.totalWeight <= 0) return null;
     return Math.round((entry.weight / group.totalWeight) * 1000) / 10;
   }
 
-  function drawsOf(entry) {
+  function drawsOf(entry: PrizePoolEntryRow) {
     return poolStats?.entries.find((e) => e.entryId === entry.id)?.draws ?? 0;
   }
 
-  function actualShare(entry) {
+  function actualShare(entry: PrizePoolEntryRow) {
     if (!poolStats || poolStats.draws <= 0) return null;
     return Math.round((drawsOf(entry) / poolStats.draws) * 1000) / 10;
   }
 
-  function entryTarget(entry) {
+  function entryTarget(entry: PrizePoolEntryRow) {
     if (FURNITURE_TYPES.includes(entry.productType)) {
       return entry.furnitureName ?? `#${entry.furnitureDefinitionId}`;
     }
     return entry.extraParam || '—';
   }
 
-  function percent(value) {
+  function percent(value: number | null) {
     return value === null ? '—' : `${value}%`;
   }
 
@@ -146,7 +180,7 @@
     loading = true;
     error = '';
     try {
-      const data = await apiGet('/api/v1/prize-pools');
+      const data = await apiGet<PrizePoolContent>('/api/v1/prize-pools');
       pools = data.pools?.items ?? [];
       entries = data.entries?.items ?? [];
       totals = data.totals ?? [];
@@ -156,7 +190,7 @@
       denied = false;
     } catch (e) {
       if (isPermissionDeniedError(e)) denied = true;
-      else error = e?.message ?? String(e);
+      else error = (e as Error)?.message ?? String(e);
     } finally {
       loading = false;
     }
@@ -164,13 +198,19 @@
 
   async function loadStats() {
     try {
-      stats = await apiGet(`/api/v1/prize-pools/stats?days=${statsDays}`);
+      stats = await apiGet<PrizePoolStats>(`/api/v1/prize-pools/stats?days=${statsDays}`);
     } catch {
       stats = null;
     }
   }
 
-  const stage = (title, summary, endpoint, body, danger = false) =>
+  const stage = (
+    title: string,
+    summary: string,
+    endpoint: string,
+    body: Record<string, unknown>,
+    danger = false,
+  ) =>
     ops.ask(endpoint, body, title, summary, { danger });
 
   onMount(async () => {

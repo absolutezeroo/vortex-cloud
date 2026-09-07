@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Progression;
 using Vortex.Dashboard.API.Operations.Progression.Contracts;
@@ -17,14 +18,14 @@ internal static partial class DashboardEndpoints
 
     public static void MapPrizePoolReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<PrizePoolContent>(
             app,
             ApiPrizePools,
             (PrizePoolReads reads, CancellationToken ct) => OkAsync(reads.PrizePoolsAsync(ct)),
             Capabilities.Dashboard.PrizePoolsRead,
             TagPrizePools
         );
-        MapReadGet(
+        MapReadGet<PrizePoolStats>(
             app,
             ApiPrizePools + "/stats",
             (HttpContext ctx, PrizePoolReads reads, CancellationToken ct) =>

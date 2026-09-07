@@ -84,6 +84,10 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/habbicons", typeof(HabbiconCollectionList)),
         ("/api/v1/habbicons/sources", typeof(HabbiconSourceOptions)),
         ("/api/v1/habbicons/players/{playerId:int}", typeof(PlayerHabbicons)),
+        ("/api/v1/fishing", typeof(FishingContent)),
+        ("/api/v1/fishing/activity", typeof(FishingActivity)),
+        ("/api/v1/prize-pools", typeof(PrizePoolContent)),
+        ("/api/v1/prize-pools/stats", typeof(PrizePoolStats)),
     ];
 
     [Fact]

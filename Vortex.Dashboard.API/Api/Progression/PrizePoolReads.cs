@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Primitives.Furniture.Enums;
@@ -31,24 +32,23 @@ internal sealed class PrizePoolReads(
 
     private const string PrizeAwardedAction = "prize.awarded";
 
-    public Task<object> PrizePoolsAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PrizePoolContent> PrizePoolsAsync(CancellationToken ct) =>
+        QueryAsync<PrizePoolContent>(
             async db =>
             {
-                var pools = await db
+                List<PrizePoolRow> pools = await db
                     .PrizePools.AsNoTracking()
                     .OrderBy(p => p.Code)
-                    .Select(p => new
-                    {
+                    .Select(p => new PrizePoolRow(
                         p.Id,
                         p.Code,
                         p.Name,
                         p.Variants,
                         p.Notes,
                         p.Enabled,
-                        isBuiltIn = p.Code == PrizePoolCodes.MysteryBox
-                            || p.Code == PrizePoolCodes.MysteryTrophy,
-                    })
+                        p.Code == PrizePoolCodes.MysteryBox
+                            || p.Code == PrizePoolCodes.MysteryTrophy
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -76,9 +76,8 @@ internal sealed class PrizePoolReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var entryRows = entries
-                    .Select(e => new
-                    {
+                List<PrizePoolEntryRow> entryRows = entries
+                    .Select(e => new PrizePoolEntryRow(
                         e.Id,
                         e.poolId,
                         e.pool,
@@ -90,27 +89,27 @@ internal sealed class PrizePoolReads(
                         e.Enabled,
                         e.furnitureName,
                         // An operator recognises a sofa, not definition id 4312.
-                        furnitureIconUrl = e.furnitureName is null
+                        e.furnitureName
+                            is null
                             ? null
-                            : _assetUrls.FurniIcon(e.furnitureName),
-                    })
+                            : _assetUrls.FurniIcon(e.furnitureName)
+                    ))
                     .ToList();
 
                 // The competing set for an entry is: same pool, and either variantless (competes
                 // everywhere) or locked to the same variant. Computing it per (pool, variant) group
                 // is what makes the number an operator reads match what the picker actually does.
-                var totals = entries
+                List<PrizePoolWeightTotal> totals = entries
                     .Where(e => e.Enabled)
                     .GroupBy(e => new { e.poolId, e.Variant })
-                    .Select(g => new
-                    {
+                    .Select(g => new PrizePoolWeightTotal(
                         g.Key.poolId,
-                        variant = g.Key.Variant,
-                        totalWeight = g.Sum(e => e.Weight),
-                        entries = g.Count(),
-                    })
-                    .OrderBy(g => g.poolId)
-                    .ThenBy(g => g.variant)
+                        g.Key.Variant,
+                        g.Sum(e => e.Weight),
+                        g.Count()
+                    ))
+                    .OrderBy(g => g.PoolId)
+                    .ThenBy(g => g.Variant, StringComparer.Ordinal)
                     .ToList();
 
                 var bindings = await db
@@ -136,9 +135,8 @@ internal sealed class PrizePoolReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var bindingRows = bindings
-                    .Select(b => new
-                    {
+                List<PrizePoolBindingRow> bindingRows = bindings
+                    .Select(b => new PrizePoolBindingRow(
                         b.Id,
                         b.furnitureDefinitionId,
                         b.pool,
@@ -146,26 +144,22 @@ internal sealed class PrizePoolReads(
                         b.Enabled,
                         b.furnitureName,
                         b.furnitureLogic,
-                        furnitureIconUrl = b.furnitureName is null
-                            ? null
-                            : _assetUrls.FurniIcon(b.furnitureName),
-                    })
+                        b.furnitureName is null ? null : _assetUrls.FurniIcon(b.furnitureName)
+                    ))
                     .ToList();
 
-                return new
-                {
-                    pools = new { count = pools.Count, items = pools },
-                    entries = new { count = entryRows.Count, items = entryRows },
+                return new PrizePoolContent(
+                    new PrizePoolList(pools.Count, pools),
+                    new PrizePoolEntryList(entryRows.Count, entryRows),
                     totals,
-                    bindings = new { count = bindingRows.Count, items = bindingRows },
-                    productTypes = new[]
-                    {
+                    new PrizePoolBindingList(bindingRows.Count, bindingRows),
+                    [
                         ProductType.Floor.ToString(),
                         ProductType.Wall.ToString(),
                         ProductType.Effect.ToString(),
                         ProductType.HabboClub.ToString(),
-                    },
-                };
+                    ]
+                );
             },
             ct
         );
@@ -175,8 +169,11 @@ internal sealed class PrizePoolReads(
     /// grant grain writes. This is the half a weights table cannot tell you: a pool can be tuned
     /// correctly and still pay out nothing because the furniture bound to it is unreachable.
     /// </summary>
-    public Task<object> PrizePoolStatsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PrizePoolStats> PrizePoolStatsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<PrizePoolStats>(
             async db =>
             {
                 int days = int.TryParse(query["days"], out int parsed)
@@ -253,34 +250,24 @@ internal sealed class PrizePoolReads(
                     bySource[source] = bySource.GetValueOrDefault(source) + 1;
                 }
 
-                var pools = drawsByPool
-                    .Select(p => new
-                    {
-                        pool = p.Key,
-                        draws = p.Value.Values.Sum(),
-                        entries = p
-                            .Value.OrderByDescending(e => e.Value)
-                            .Select(e => new { entryId = e.Key, draws = e.Value })
+                List<PrizePoolDraws> pools = drawsByPool
+                    .Select(p => new PrizePoolDraws(
+                        p.Key,
+                        p.Value.Values.Sum(),
+                        p.Value.OrderByDescending(e => e.Value)
+                            .Select(e => new PrizeEntryDraws(e.Key, e.Value))
                             .ToList(),
-                        sources = drawsBySource.TryGetValue(
-                            p.Key,
-                            out Dictionary<string, int>? sources
-                        )
+                        drawsBySource.TryGetValue(p.Key, out Dictionary<string, int>? sources)
                             ? sources
                                 .OrderByDescending(s => s.Value)
-                                .Select(s => new { source = s.Key, draws = s.Value })
+                                .Select(s => new PrizeSourceDraws(s.Key, s.Value))
                                 .ToList()
-                            : [],
-                    })
-                    .OrderByDescending(p => p.draws)
+                            : []
+                    ))
+                    .OrderByDescending(p => p.Draws)
                     .ToList();
 
-                return new
-                {
-                    days,
-                    totalDraws = payloads.Count,
-                    pools,
-                };
+                return new PrizePoolStats(days, payloads.Count, pools);
             },
             ct
         );

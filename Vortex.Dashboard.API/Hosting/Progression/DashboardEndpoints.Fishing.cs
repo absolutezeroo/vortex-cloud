@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Progression;
 using Vortex.Dashboard.API.Operations.Progression.Contracts;
@@ -23,14 +24,14 @@ internal static partial class DashboardEndpoints
 
     public static void MapFishingReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<FishingContent>(
             app,
             ApiFishing,
             (FishingReads reads, CancellationToken ct) => OkAsync(reads.FishingContentAsync(ct)),
             Capabilities.Dashboard.FishingRead,
             TagFishing
         );
-        MapReadGet(
+        MapReadGet<FishingActivity>(
             app,
             ApiFishing + "/activity",
             (HttpContext ctx, FishingReads reads, CancellationToken ct) =>

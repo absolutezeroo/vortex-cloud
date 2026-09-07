@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { Fish, Map, Trophy, Waves, Wrench } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -15,12 +15,31 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import { t } from '../lib/i18n';
+  import type {
+    FishingActivity,
+    FishingContent,
+    FishingLevelRow,
+    FishingRodTierRow,
+    FishingSpeciesRow,
+    FishingZoneRow,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
 
-  let zones = $state([]);
-  let species = $state([]);
-  let rodTiers = $state([]);
-  let levels = $state([]);
-  let activity = $state(null);
+  /** Which of the four tables the shared drawer is editing. */
+  type FishingKind = 'zones' | 'species' | 'rods' | 'levels';
+
+  /**
+   * The drawer's form. One drawer serves four tables, so the form is whatever that table's row
+   * is minus its id, and every number binds to an input that hands back a string mid-typing --
+   * which is why the server-side Number() on each field stays.
+   */
+  type FishingForm = Record<string, string | number | boolean | null>;
+
+  let zones = $state<FishingZoneRow[]>([]);
+  let species = $state<FishingSpeciesRow[]>([]);
+  let rodTiers = $state<FishingRodTierRow[]>([]);
+  let levels = $state<FishingLevelRow[]>([]);
+  let activity = $state<FishingActivity | null>(null);
 
   let tab = $state('zones');
   let loading = $state(false);
@@ -37,9 +56,9 @@
 
   // One drawer for all four tables: `kind` says which endpoint the save posts to, so adding a fifth
   // table is a row in ENDPOINTS rather than another form spliced into the page.
-  let drawer = $state(null);
+  let drawer = $state<{ kind: FishingKind; id: number | null; form: FishingForm } | null>(null);
 
-  const ENDPOINTS = {
+  const ENDPOINTS: Record<FishingKind, { path: string; idField: string }> = {
     zones: { path: 'zones', idField: 'zoneId' },
     species: { path: 'species', idField: 'speciesId' },
     rods: { path: 'rod-tiers', idField: 'tierId' },
@@ -51,7 +70,7 @@
     await load();
   });
 
-  function emptyOf(kind) {
+  function emptyOf(kind: FishingKind): FishingForm {
     if (kind === 'zones') {
       return { nameKey: '', furniClass: '', requiredLevel: 0, minCatches: 1, maxCatches: 5 };
     }
@@ -91,7 +110,9 @@
   }
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsFishingManage));
-  let zoneName = $derived((zoneId) => zones.find((z) => z.id === zoneId)?.nameKey ?? `#${zoneId}`);
+  let zoneName = $derived(
+    (zoneId: number) => zones.find((z) => z.id === zoneId)?.nameKey ?? `#${zoneId}`,
+  );
   let visibleSpecies = $derived(
     species.filter((fish) => {
       if (speciesZoneFilter && String(fish.zoneId) !== String(speciesZoneFilter)) return false;
@@ -101,35 +122,37 @@
     })
   );
 
-  function openCreate(kind) {
+  function openCreate(kind: FishingKind) {
     drawer = { kind, id: null, form: emptyOf(kind) };
   }
 
-  function openEdit(kind, row) {
+  function openEdit(kind: FishingKind, row: { id: number }) {
     drawer = { kind, id: row.id, form: { ...row } };
   }
 
   function save() {
-    const { path, idField } = ENDPOINTS[drawer.kind];
+    // The save button only exists inside the drawer.
+    const open = drawer!;
+    const { path, idField } = ENDPOINTS[open.kind];
 
-    if (drawer.id) {
+    if (open.id) {
       ops.ask(
         `/api/v1/operations/fishing/${path}/update`,
-        { ...drawer.form, [idField]: drawer.id },
+        { ...open.form, [idField]: open.id },
         $t('fishing.edit'),
-        $t('fishing.updated')
+        $t('fishing.updated'),
       );
     } else {
       ops.ask(
         `/api/v1/operations/fishing/${path}`,
-        drawer.form,
+        open.form,
         $t('fishing.add'),
-        $t('fishing.created')
+        $t('fishing.created'),
       );
     }
   }
 
-  function remove(kind, id, confirmKey = 'fishing.deleteConfirm') {
+  function remove(kind: FishingKind, id: number, confirmKey = 'fishing.deleteConfirm') {
     const { path, idField } = ENDPOINTS[kind];
 
     ops.ask(
@@ -145,7 +168,7 @@
     loading = true;
     error = '';
     try {
-      const data = await apiGet('/api/v1/fishing');
+      const data = await apiGet<FishingContent>('/api/v1/fishing');
 
       zones = data.zones ?? [];
       species = data.species ?? [];
@@ -153,10 +176,10 @@
       levels = data.levels ?? [];
       denied = false;
 
-      activity = await apiGet('/api/v1/fishing/activity');
+      activity = await apiGet<FishingActivity>('/api/v1/fishing/activity');
     } catch (e) {
       if (isPermissionDeniedError(e)) denied = true;
-      else error = e?.message ?? String(e);
+      else error = (e as Error)?.message ?? String(e);
     } finally {
       loading = false;
     }
@@ -546,9 +569,12 @@
   <PickerModal
     kind="furniture"
     title={$t('fishing.pickFurni')}
-    onSelect={(item) => {
-      drawer.form.furniClass = item.name;
-      drawer.form.furniIconUrl = item.iconUrl;
+    onSelect={(item: PickerRow) => {
+      if (drawer) {
+        drawer.form.furniClass = item.name;
+        drawer.form.furniIconUrl = item.iconUrl ?? null;
+      }
+
       picking = false;
     }}
     onClose={() => (picking = false)}
@@ -573,7 +599,7 @@
           <div class="picker-row">
             <AssetImage
               src={drawer.form.furniIconUrl ?? ''}
-              alt={drawer.form.furniClass}
+              alt={String(drawer.form.furniClass ?? '')}
               size={32}
             />
             <input
@@ -698,7 +724,7 @@
     </div>
 
     {#snippet actions()}
-      <button type="button" class={drawer.id ? '' : 'success'} onclick={save}>
+      <button type="button" class={drawer?.id ? '' : 'success'} onclick={save}>
         {$t('fishing.save')}
       </button>
       <button type="button" class="ghost-button" onclick={() => (drawer = null)}>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 
@@ -25,8 +26,8 @@ internal sealed class FishingReads(
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
 
-    public Task<object> FishingContentAsync(CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<FishingContent> FishingContentAsync(CancellationToken ct) =>
+        QueryAsync<FishingContent>(
             async db =>
             {
                 var zoneRows = await db
@@ -48,18 +49,17 @@ internal sealed class FishingReads(
 
                 // The spot's artwork, so the operator recognises the furni instead of reading a
                 // classname. BuildFurniIconUrl does not translate to SQL, so it is attached after.
-                var zones = zoneRows
-                    .Select(z => new
-                    {
+                List<FishingZoneRow> zones = zoneRows
+                    .Select(z => new FishingZoneRow(
                         z.Id,
                         z.NameKey,
                         z.FurniClass,
-                        furniIconUrl = _assetUrls.FurniIcon(z.FurniClass),
+                        _assetUrls.FurniIcon(z.FurniClass),
                         z.RequiredLevel,
                         z.MinCatches,
                         z.MaxCatches,
-                        z.speciesCount,
-                    })
+                        z.speciesCount
+                    ))
                     .ToList();
 
                 var species = await db
@@ -88,11 +88,10 @@ internal sealed class FishingReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var rodTiers = await db
+                List<FishingRodTierRow> rodTiers = await db
                     .FishingRodTiers.AsNoTracking()
                     .OrderBy(t => t.Quality)
-                    .Select(t => new
-                    {
+                    .Select(t => new FishingRodTierRow(
                         t.Id,
                         t.Quality,
                         t.XpThreshold,
@@ -100,20 +99,15 @@ internal sealed class FishingReads(
                         t.HandItemId,
                         t.CatchMultiplier,
                         t.GoldenMultiplier,
-                        t.HookHavocChance,
-                    })
+                        t.HookHavocChance
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var levels = await db
+                List<FishingLevelRow> levels = await db
                     .FishingLevels.AsNoTracking()
                     .OrderBy(l => l.Level)
-                    .Select(l => new
-                    {
-                        l.Id,
-                        l.Level,
-                        l.XpThreshold,
-                    })
+                    .Select(l => new FishingLevelRow(l.Id, l.Level, l.XpThreshold))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -125,36 +119,36 @@ internal sealed class FishingReads(
                     .GroupBy(s => s.ZoneId)
                     .ToDictionary(g => g.Key, g => g.Sum(s => (long)s.RarityWeight));
 
-                return new
-                {
+                return new FishingContent(
                     zones,
-                    species = species.Select(s => new
-                    {
-                        s.Id,
-                        s.ZoneId,
-                        s.NameKey,
-                        s.RequiredLevel,
-                        s.RarityStars,
-                        s.CatchRate,
-                        catchRatePercent = Math.Round(s.CatchRate / 10.0, 1),
-                        s.RarityWeight,
-                        drawSharePercent = zoneWeights.GetValueOrDefault(s.ZoneId) > 0
-                            ? Math.Round(s.RarityWeight * 100.0 / zoneWeights[s.ZoneId], 1)
-                            : 0,
-                        s.MinWeight,
-                        s.MaxWeight,
-                        s.XpReward,
-                        s.GoldenXpBonus,
-                        s.CurrencyReward,
-                        s.ActiveHours,
-                        s.ActiveWeekdays,
-                        s.ActiveSeasons,
-                        allHours = s.ActiveHours == 0xFFFFFF,
-                        allWeekdays = s.ActiveWeekdays == 0b1111111,
-                    }),
+                    species
+                        .Select(s => new FishingSpeciesRow(
+                            s.Id,
+                            s.ZoneId,
+                            s.NameKey,
+                            s.RequiredLevel,
+                            s.RarityStars,
+                            s.CatchRate,
+                            Math.Round(s.CatchRate / 10.0, 1),
+                            s.RarityWeight,
+                            zoneWeights.GetValueOrDefault(s.ZoneId) > 0
+                                ? Math.Round(s.RarityWeight * 100.0 / zoneWeights[s.ZoneId], 1)
+                                : 0,
+                            s.MinWeight,
+                            s.MaxWeight,
+                            s.XpReward,
+                            s.GoldenXpBonus,
+                            s.CurrencyReward,
+                            s.ActiveHours,
+                            s.ActiveWeekdays,
+                            s.ActiveSeasons,
+                            s.ActiveHours == 0xFFFFFF,
+                            s.ActiveWeekdays == 0b1111111
+                        ))
+                        .ToList(),
                     rodTiers,
-                    levels,
-                };
+                    levels
+                );
             },
             ct
         );
@@ -163,57 +157,55 @@ internal sealed class FishingReads(
     /// What players have actually caught: the records board and the derbies. Read-only — a record is
     /// something that happened, not something an operator sets.
     /// </summary>
-    public Task<object> FishingActivityAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<FishingActivity> FishingActivityAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<FishingActivity>(
             async db =>
             {
                 int limit = Math.Clamp(QueryValues.Int(query["limit"], 25), 1, 100);
 
-                var records = await db
+                List<FishingRecordRow> records = await db
                     .FishingRecords.AsNoTracking()
                     .OrderByDescending(r => r.BestWeight)
                     .Take(limit)
-                    .Select(r => new
-                    {
+                    .Select(r => new FishingRecordRow(
                         r.Id,
                         r.PlayerId,
-                        playerName = db
-                            .Players.Where(p => p.Id == r.PlayerId)
+                        db.Players.Where(p => p.Id == r.PlayerId)
                             .Select(p => p.Name)
                             .FirstOrDefault(),
                         r.SpeciesId,
-                        speciesNameKey = db
-                            .FishingSpecies.Where(s => s.Id == r.SpeciesId)
+                        db.FishingSpecies.Where(s => s.Id == r.SpeciesId)
                             .Select(s => s.NameKey)
                             .FirstOrDefault(),
                         r.BestWeight,
                         r.CaughtCount,
-                        r.BestAt,
-                    })
+                        r.BestAt
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var derbies = await db
+                List<FishingDerbyRow> derbies = await db
                     .FishingDerbies.AsNoTracking()
                     .OrderByDescending(d => d.StartsAt)
                     .Take(limit)
-                    .Select(d => new
-                    {
+                    .Select(d => new FishingDerbyRow(
                         d.Id,
                         d.NameKey,
                         d.StartsAt,
                         d.EndsAt,
-                        entries = db.FishingDerbyEntries.Count(e => e.DerbyId == d.Id),
-                    })
+                        db.FishingDerbyEntries.Count(e => e.DerbyId == d.Id)
+                    ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new FishingActivity(
                     records,
                     derbies,
-                    anglers = await db.FishingPlayerState.CountAsync(ct).ConfigureAwait(false),
-                };
+                    await db.FishingPlayerState.CountAsync(ct).ConfigureAwait(false)
+                );
             },
             ct
         );

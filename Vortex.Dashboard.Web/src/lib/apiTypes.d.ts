@@ -650,6 +650,88 @@ export interface EconomyTrends {
   categories: EconomySpendCategory[];
 }
 
+export interface FishingActivity {
+  records: FishingRecordRow[];
+  derbies: FishingDerbyRow[];
+  anglers: number;
+}
+
+export interface FishingContent {
+  zones: FishingZoneRow[];
+  species: FishingSpeciesRow[];
+  rodTiers: FishingRodTierRow[];
+  levels: FishingLevelRow[];
+}
+
+export interface FishingDerbyRow {
+  id: number;
+  nameKey: string;
+  startsAt: string;
+  endsAt: string;
+  entries: number;
+}
+
+export interface FishingLevelRow {
+  id: number;
+  level: number;
+  xpThreshold: number;
+}
+
+export interface FishingRecordRow {
+  id: number;
+  playerId: number;
+  playerName: string | null;
+  speciesId: number;
+  speciesNameKey: string | null;
+  bestWeight: number;
+  caughtCount: number;
+  bestAt: string;
+}
+
+export interface FishingRodTierRow {
+  id: number;
+  quality: number;
+  xpThreshold: number;
+  nameKey: string;
+  handItemId: number;
+  catchMultiplier: number;
+  goldenMultiplier: number;
+  hookHavocChance: number;
+}
+
+export interface FishingSpeciesRow {
+  id: number;
+  zoneId: number;
+  nameKey: string;
+  requiredLevel: number;
+  rarityStars: number;
+  catchRate: number;
+  catchRatePercent: number;
+  rarityWeight: number;
+  drawSharePercent: number;
+  minWeight: number;
+  maxWeight: number;
+  xpReward: number;
+  goldenXpBonus: number;
+  currencyReward: number;
+  activeHours: number;
+  activeWeekdays: number;
+  activeSeasons: number;
+  allHours: boolean;
+  allWeekdays: boolean;
+}
+
+export interface FishingZoneRow {
+  id: number;
+  nameKey: string;
+  furniClass: string;
+  furniIconUrl: string | null;
+  requiredLevel: number;
+  minCatches: number;
+  maxCatches: number;
+  speciesCount: number;
+}
+
 export interface ForumGroupRanking {
   groupId: number;
   groupName: string | null;
@@ -1183,6 +1265,94 @@ export interface PollTallyEntry {
   count: number;
   share: number;
   retired: boolean;
+}
+
+export interface PrizeEntryDraws {
+  entryId: number;
+  draws: number;
+}
+
+export interface PrizePoolBindingList {
+  count: number;
+  items: PrizePoolBindingRow[];
+}
+
+export interface PrizePoolBindingRow {
+  id: number;
+  furnitureDefinitionId: number;
+  pool: string;
+  hitsRequired: number;
+  enabled: boolean;
+  furnitureName: string | null;
+  furnitureLogic: string | null;
+  furnitureIconUrl: string | null;
+}
+
+export interface PrizePoolContent {
+  pools: PrizePoolList;
+  entries: PrizePoolEntryList;
+  totals: PrizePoolWeightTotal[];
+  bindings: PrizePoolBindingList;
+  productTypes: string[];
+}
+
+export interface PrizePoolDraws {
+  pool: string;
+  draws: number;
+  entries: PrizeEntryDraws[];
+  sources: PrizeSourceDraws[];
+}
+
+export interface PrizePoolEntryList {
+  count: number;
+  items: PrizePoolEntryRow[];
+}
+
+export interface PrizePoolEntryRow {
+  id: number;
+  poolId: number;
+  pool: string;
+  variant: string | null;
+  productType: string;
+  furnitureDefinitionId: number | null;
+  extraParam: string | null;
+  weight: number;
+  enabled: boolean;
+  furnitureName: string | null;
+  furnitureIconUrl: string | null;
+}
+
+export interface PrizePoolList {
+  count: number;
+  items: PrizePoolRow[];
+}
+
+export interface PrizePoolRow {
+  id: number;
+  code: string;
+  name: string;
+  variants: string | null;
+  notes: string | null;
+  enabled: boolean;
+  isBuiltIn: boolean;
+}
+
+export interface PrizePoolStats {
+  days: number;
+  totalDraws: number;
+  pools: PrizePoolDraws[];
+}
+
+export interface PrizePoolWeightTotal {
+  poolId: number;
+  variant: string | null;
+  totalWeight: number;
+  entries: number;
+}
+
+export interface PrizeSourceDraws {
+  source: string;
+  draws: number;
 }
 
 export interface RentableSpaceAuditEntry {

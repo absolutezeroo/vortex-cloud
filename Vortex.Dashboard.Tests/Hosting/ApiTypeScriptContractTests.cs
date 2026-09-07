@@ -87,6 +87,10 @@ public sealed class ApiTypeScriptContractTests
         typeof(HabbiconCollectionList),
         typeof(PlayerHabbicons),
         typeof(HabbiconSourceOptions),
+        typeof(FishingContent),
+        typeof(FishingActivity),
+        typeof(PrizePoolContent),
+        typeof(PrizePoolStats),
     ];
 
     [Fact]
