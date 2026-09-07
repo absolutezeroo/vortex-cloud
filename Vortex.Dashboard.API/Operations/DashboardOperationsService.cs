@@ -56,7 +56,6 @@ internal sealed partial class DashboardOperationsService(
     ICfhTicketService cfhTickets,
     IDatabaseBackupService databaseBackups,
     IForensicsPurgeService forensicsPurge,
-    IBenchmarkService benchmark,
     OperationRunner runner,
     IVortexMetrics metrics,
     IConsoleCommandDispatcher consoleCommands,
@@ -82,7 +81,6 @@ internal sealed partial class DashboardOperationsService(
     /// </summary>
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
-    private readonly IBenchmarkService _benchmark = benchmark;
     private readonly OperationRunner _runner = runner;
 
     // Kept for GetActiveRoomsAsync, which times a grain call. Auditing a write is the

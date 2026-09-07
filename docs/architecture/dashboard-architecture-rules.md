@@ -928,6 +928,7 @@ at `7cd62e01d^`. Hand counts are not comparable to each other and were discarded
 | content | 65 methods, 10 deps | 54 methods, 14 deps | 14 (+ Content) | 40 types |
 | reward tracks + habbicons | 58 methods, 10 deps | 34 methods, 11 deps | 16 (+ RewardTracks, Habbicons) | 43 types |
 | gamedata | 55 methods, 9 deps | 29 methods, 10 deps | 17 (+ Gamedata) | 45 types |
+| benchmark | 53 methods, 7 deps | 27 methods, 9 deps | 18 (+ Benchmark) | 47 types |
 
 The DI forwarding column going **up** while the rest goes down is the §29 debt being paid in
 instalments: each extracted domain adds its two classes to a hand-written list. It is expected to

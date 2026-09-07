@@ -36,19 +36,15 @@ internal sealed partial class DashboardApiService(
     ISessionGateway sessionGateway,
     DashboardAssetUrls assetUrls,
     HabbiconArtwork habbiconArtwork,
-    RoomPerformanceAggregator roomPerformance,
-    IBenchmarkService benchmark,
     ISignalVocabulary signalVocabulary,
     IOptions<ObservabilityConfig> options
 )
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
-    private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly HabbiconArtwork _habbiconArtwork = habbiconArtwork;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
-    private readonly IBenchmarkService _benchmark = benchmark;
     private readonly ISignalVocabulary _signalVocabulary = signalVocabulary;
     private readonly ObservabilityConfig _config = options.Value;
 

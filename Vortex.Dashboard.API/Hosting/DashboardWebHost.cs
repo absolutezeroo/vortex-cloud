@@ -251,6 +251,8 @@ internal sealed class DashboardWebHost(
         typeof(RewardTrackReads),
         typeof(GamedataReads),
         typeof(GamedataOperations),
+        typeof(BenchmarkReads),
+        typeof(BenchmarkOperations),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),
         typeof(DashboardAssetStore),

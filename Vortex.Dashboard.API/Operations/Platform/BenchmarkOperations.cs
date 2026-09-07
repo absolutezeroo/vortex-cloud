@@ -14,14 +14,17 @@ namespace Vortex.Dashboard.API.Operations;
 /// a run makes the hotel slow for everyone in it, so "who did this, when, and why" is the first
 /// question anyone will ask about the ten minutes it was happening.
 /// </remarks>
-internal sealed partial class DashboardOperationsService
+internal sealed class BenchmarkOperations(OperationRunner runner, IBenchmarkService benchmark)
 {
+    private readonly OperationRunner _runner = runner;
+    private readonly IBenchmarkService _benchmark = benchmark;
+
     public Task<OperationResult> StartBenchmarkAsync(
         BenchmarkStartRequest request,
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.benchmark.start",
             actor,
             request.Reason,
@@ -69,7 +72,7 @@ internal sealed partial class DashboardOperationsService
         string actor,
         CancellationToken ct
     ) =>
-        ExecuteAsync(
+        _runner.ExecuteAsync(
             "ops.benchmark.stop",
             actor,
             request.Reason,

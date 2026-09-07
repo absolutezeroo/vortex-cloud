@@ -1,6 +1,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
+using Vortex.Observability.Runtime;
 using Vortex.Primitives.Benchmark;
 
 namespace Vortex.Dashboard.API.Api;
@@ -21,8 +24,15 @@ namespace Vortex.Dashboard.API.Api;
 /// performance surface. Synthetic players cannot supply it, having nothing to draw.
 /// </para>
 /// </remarks>
-internal sealed partial class DashboardApiService
+internal sealed class BenchmarkReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IBenchmarkService benchmark,
+    RoomPerformanceAggregator roomPerformance
+) : DashboardReads(dbContextFactory)
 {
+    private readonly IBenchmarkService _benchmark = benchmark;
+    private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
+
     public async Task<object> BenchmarkAsync(CancellationToken ct)
     {
         await _benchmark.ReadEnabledAsync().ConfigureAwait(false);
