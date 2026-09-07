@@ -81,6 +81,9 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/achievements/stats", typeof(AchievementStats)),
         ("/api/v1/achievements/resolutions", typeof(AchievementResolutions)),
         ("/api/v1/achievements/{achievementId:int}", typeof(AchievementDetail)),
+        ("/api/v1/habbicons", typeof(HabbiconCollectionList)),
+        ("/api/v1/habbicons/sources", typeof(HabbiconSourceOptions)),
+        ("/api/v1/habbicons/players/{playerId:int}", typeof(PlayerHabbicons)),
     ];
 
     [Fact]

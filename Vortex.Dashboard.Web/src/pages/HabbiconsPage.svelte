@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Habbicon content and ownership.
   //
   // Two jobs that are read against completely different questions -- "is this set right?" and "why
@@ -17,6 +17,48 @@
   } from '../lib/currency';
   import { t, translate } from '../lib/i18n';
   import { Smile, Users } from '@lucide/svelte';
+  import type {
+    HabbiconCollectionList,
+    HabbiconCollectionRow,
+    HabbiconRow,
+    PlayerHabbicons,
+    PlayerHabbiconRow,
+  } from '../lib/apiTypes';
+  import type { PickerRow } from '../lib/pickers/directories';
+
+  /** A collection being edited. Dates are local datetime-local strings, not instants. */
+  type CollectionForm = {
+    code: string;
+    sortOrder: number | string;
+    enabled: boolean;
+    hidden: boolean;
+    availableFrom: string;
+    availableUntil: string;
+    priceCredits: number | string;
+    priceActivityPoints: number | string;
+    activityPointType: number;
+    campaignCode: string;
+  };
+
+  /** One Habbicon being edited, same convention. */
+  type HabbiconForm = {
+    code: string;
+    collectionId: number | string;
+    sortOrder: number | string;
+    isCollectionReward: boolean;
+    priceCredits: number | string;
+    priceActivityPoints: number | string;
+    activityPointType: number;
+    enabled: boolean;
+    availableFrom: string;
+    availableUntil: string;
+  };
+
+  /** An editor is open on a row (id set) or on a new one (id null). */
+  type Draft<T> = { id: number | null; form: T };
+
+  /** The player whose ownership the second tab reads. */
+  type PickedPlayer = { id: number; name: string };
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -33,14 +75,14 @@
 
   let tab = $state('collections');
   let search = $state('');
-  let expanded = $state(null);
+  let expanded = $state<number | null>(null);
 
-  let player = $state(null);
+  let player = $state<PickedPlayer | null>(null);
   let pickingPlayer = $state(false);
   let grantHabbiconId = $state('');
 
-  let collectionDraft = $state(null);
-  let habbiconDraft = $state(null);
+  let collectionDraft = $state<Draft<CollectionForm> | null>(null);
+  let habbiconDraft = $state<Draft<HabbiconForm> | null>(null);
 
   const ops = createWriteOps();
 
@@ -50,13 +92,13 @@
     () => ['habbicons', search.trim()],
     () => {
       const params = search.trim() ? `?search=${encodeURIComponent(search.trim())}` : '';
-      return apiGet(`/api/v1/habbicons${params}`);
+      return apiGet<HabbiconCollectionList>(`/api/v1/habbicons${params}`);
     }
   );
 
   const ownership = createResource(
     () => ['habbicons-player', player?.id ?? null],
-    () => apiGet(`/api/v1/habbicons/players/${player.id}`),
+    () => apiGet<PlayerHabbicons>(`/api/v1/habbicons/players/${player!.id}`),
     { enabled: () => player !== null }
   );
 
@@ -75,7 +117,7 @@
   // with nothing to error on. Worth saying on the page rather than only in the seed's header.
   let idWarning = $derived(items.length > 0);
 
-  function emptyCollection() {
+  function emptyCollection(): CollectionForm {
     return {
       code: '',
       sortOrder: 0,
@@ -90,7 +132,7 @@
     };
   }
 
-  function emptyHabbicon(collectionId) {
+  function emptyHabbicon(collectionId: number): HabbiconForm {
     return {
       code: '',
       collectionId,
@@ -105,21 +147,21 @@
     };
   }
 
-  function toLocal(iso) {
+  function toLocal(iso: string | null | undefined) {
     if (!iso) return '';
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return '';
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
-  function fromLocal(value) {
+  function fromLocal(value: string) {
     if (!value) return null;
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
 
-  function collectionBody(form, id) {
+  function collectionBody(form: CollectionForm, id: number | null) {
     const body = {
       code: form.code.trim(),
       sortOrder: Number(form.sortOrder) || 0,
@@ -136,7 +178,7 @@
     return id === null ? body : { collectionId: id, ...body };
   }
 
-  function habbiconBody(form, id) {
+  function habbiconBody(form: HabbiconForm, id: number | null) {
     const body = {
       code: form.code.trim(),
       collectionId: Number(form.collectionId) || 0,
@@ -199,7 +241,7 @@
     );
   }
 
-  function deleteCollection(collection) {
+  function deleteCollection(collection: HabbiconCollectionRow) {
     ops.ask(
       '/api/v1/operations/habbicons/collections/delete',
       { collectionId: collection.id },
@@ -209,7 +251,7 @@
     );
   }
 
-  function deleteHabbicon(habbicon) {
+  function deleteHabbicon(habbicon: HabbiconRow) {
     ops.ask(
       '/api/v1/operations/habbicons/delete',
       { habbiconId: habbicon.id },
@@ -236,12 +278,15 @@
     );
   }
 
-  function revoke(row) {
+  function revoke(row: PlayerHabbiconRow) {
+    // The revoke button only exists on the ownership tab, which only renders with a player picked.
+    const owner = player!;
+
     ops.ask(
       '/api/v1/operations/habbicons/revoke',
-      { playerId: player.id, habbiconId: row.habbiconId },
+      { playerId: owner.id, habbiconId: row.habbiconId },
       translate('habbicons.revoke'),
-      `${player.name} · ${row.code}`,
+      `${owner.name} · ${row.code}`,
       { onSuccess: () => ownership.refresh() }
     );
   }
@@ -253,7 +298,10 @@
   quests use: the colour says which money before the number is read, and the icon is a third carrier
   behind the colour and the written amount, never the only one.
 -->
-{#snippet priceChips(row, emptyLabel)}
+{#snippet priceChips(
+  row: Pick<HabbiconRow, 'priceCredits' | 'priceActivityPoints' | 'activityPointType'>,
+  emptyLabel: string,
+)}
   <div class="chips">
     {#if row.priceCredits}
       <span class={currencyChipClass(CURRENCY_KIND.credits)}>
@@ -570,7 +618,7 @@
                 </tr>
               </thead>
               <tbody>
-                {#each ownership.data.items as row (row.habbiconId)}
+                {#each ownership.data?.items ?? [] as row (row.habbiconId)}
                   <tr>
                     <td>{row.habbiconId}</td>
                     <td>
@@ -734,8 +782,8 @@
   <PickerModal
     kind="user"
     title={$t('habbicons.pickPlayer')}
-    onSelect={(picked) => {
-      player = picked;
+    onSelect={(picked: PickerRow) => {
+      player = { id: Number(picked.id), name: picked.name };
       pickingPlayer = false;
     }}
     onClose={() => (pickingPlayer = false)}

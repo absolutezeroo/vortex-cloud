@@ -751,6 +751,72 @@ export interface GroupTotals {
   avgMembersPerGroup: number;
 }
 
+export interface HabbiconCollectionList {
+  count: number;
+  items: HabbiconCollectionRow[];
+  artwork: HabbiconSheets | null;
+}
+
+export interface HabbiconCollectionRow {
+  id: number;
+  code: string;
+  localizationKey: string;
+  sortOrder: number;
+  enabled: boolean;
+  hidden: boolean;
+  availableFrom: string | null;
+  availableUntil: string | null;
+  priceCredits: number;
+  priceActivityPoints: number;
+  activityPointType: number;
+  campaignCode: string;
+  entryCount: number;
+  rewardHabbiconId: number;
+  rewardCode: string;
+  completedBy: number;
+  sprite: HabbiconSprite | null;
+  habbicons: HabbiconRow[];
+}
+
+export interface HabbiconRow {
+  sprite: HabbiconSprite | null;
+  id: number;
+  code: string;
+  localizationKey: string;
+  collectionId: number;
+  sortOrder: number;
+  isCollectionReward: boolean;
+  priceCredits: number;
+  priceActivityPoints: number;
+  activityPointType: number;
+  enabled: boolean;
+  availableFrom: string | null;
+  availableUntil: string | null;
+  owners: number;
+}
+
+export interface HabbiconSheets {
+  spritesheetUrl: string;
+  collectionSpritesheetUrl: string | null;
+  frameSize: number;
+  collectionIconSize: number;
+}
+
+export interface HabbiconSourceOption {
+  name: string;
+  value: number;
+}
+
+export interface HabbiconSourceOptions {
+  count: number;
+  items: HabbiconSourceOption[];
+}
+
+export interface HabbiconSprite {
+  x: number;
+  y: number;
+}
+
 export interface HandItemList {
   count: number;
   consumableCount: number;
@@ -970,6 +1036,22 @@ export interface PlayerDirectoryRow {
   name: string;
   avatarUrl: string | null;
   online: boolean;
+}
+
+export interface PlayerHabbiconRow {
+  habbiconId: number;
+  code: string;
+  collectionId: number;
+  state: string;
+  source: string;
+  acquiredAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface PlayerHabbicons {
+  playerId: number;
+  count: number;
+  items: PlayerHabbiconRow[];
 }
 
 export interface PollChoiceDetail {

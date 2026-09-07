@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Habbicons;
@@ -31,8 +32,11 @@ internal sealed class HabbiconReads(
     /// Every collection with its members and how the hotel is doing on it: how many players own at
     /// least one entry, and how many own the lot.
     /// </summary>
-    public Task<object> HabbiconCollectionsAsync(NameValueCollection query, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<HabbiconCollectionList> HabbiconCollectionsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<HabbiconCollectionList>(
             async db =>
             {
                 string search = (query["search"] ?? string.Empty).Trim();
@@ -76,7 +80,7 @@ internal sealed class HabbiconReads(
                 // dashboard does too. Null when no pack is installed: the page then lists codes.
                 HabbiconArtworkView? artwork = _habbiconArtwork.Read();
 
-                List<object> items = [];
+                List<HabbiconCollectionRow> items = [];
 
                 foreach (HabbiconCollectionEntity collection in collections)
                 {
@@ -102,53 +106,50 @@ internal sealed class HabbiconReads(
                                 .ConfigureAwait(false);
 
                     items.Add(
-                        new
-                        {
-                            id = collection.Id,
-                            code = collection.Code,
+                        new HabbiconCollectionRow(
+                            collection.Id,
+                            collection.Code,
                             // The client renders habbicon_collection_<code>_name; showing the key
                             // beside the code saves an operator guessing what to add to the texts.
-                            localizationKey = $"habbicon_collection_{collection.Code}_name",
-                            sortOrder = collection.SortOrder,
-                            enabled = collection.Enabled,
-                            hidden = collection.Hidden,
-                            availableFrom = collection.AvailableFrom,
-                            availableUntil = collection.AvailableUntil,
-                            priceCredits = collection.PriceCredits,
-                            priceActivityPoints = collection.PriceActivityPoints,
-                            activityPointType = collection.ActivityPointType,
-                            campaignCode = collection.CampaignCode,
-                            entryCount = entries.Count,
-                            rewardHabbiconId = reward?.Id ?? 0,
-                            rewardCode = reward?.Code ?? string.Empty,
+                            $"habbicon_collection_{collection.Code}_name",
+                            collection.SortOrder,
+                            collection.Enabled,
+                            collection.Hidden,
+                            collection.AvailableFrom,
+                            collection.AvailableUntil,
+                            collection.PriceCredits,
+                            collection.PriceActivityPoints,
+                            collection.ActivityPointType,
+                            collection.CampaignCode,
+                            entries.Count,
+                            reward?.Id ?? 0,
+                            reward?.Code ?? string.Empty,
                             completedBy,
-                            sprite = Sprite(artwork?.Collections, collection.Id),
-                            habbicons = entries
+                            Sprite(artwork?.Collections, collection.Id),
+                            entries
                                 .Select(h => Describe(h, ownersByHabbicon, artwork))
                                 .Concat(
                                     reward is null
                                         ? []
                                         : new[] { Describe(reward, ownersByHabbicon, artwork) }
                                 )
-                                .ToList(),
-                        }
+                                .ToList()
+                        )
                     );
                 }
 
-                return new
-                {
-                    count = items.Count,
+                return new HabbiconCollectionList(
+                    items.Count,
                     items,
-                    artwork = artwork is null
+                    artwork is null
                         ? null
-                        : new
-                        {
-                            spritesheetUrl = artwork.SpritesheetUrl,
-                            collectionSpritesheetUrl = artwork.CollectionSpritesheetUrl,
-                            frameSize = artwork.FrameSize,
-                            collectionIconSize = artwork.CollectionIconSize,
-                        },
-                };
+                        : new HabbiconSheets(
+                            artwork.SpritesheetUrl,
+                            artwork.CollectionSpritesheetUrl,
+                            artwork.FrameSize,
+                            artwork.CollectionIconSize
+                        )
+                );
             },
             ct
         );
@@ -157,8 +158,8 @@ internal sealed class HabbiconReads(
     /// One player's Habbicons, with where each came from and when they last used it. What an
     /// operator opens when somebody asks why they do or do not have something.
     /// </summary>
-    public Task<object> PlayerHabbiconsAsync(int playerId, CancellationToken ct) =>
-        QueryAsync<object>(
+    public Task<PlayerHabbicons> PlayerHabbiconsAsync(int playerId, CancellationToken ct) =>
+        QueryAsync<PlayerHabbicons>(
             async db =>
             {
                 List<PlayerHabbiconEntity> rows = await db
@@ -169,22 +170,20 @@ internal sealed class HabbiconReads(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new
-                {
+                return new PlayerHabbicons(
                     playerId,
-                    count = rows.Count,
-                    items = rows.Select(r => new
-                        {
-                            habbiconId = r.HabbiconEntityId,
-                            code = r.Habbicon?.Code ?? string.Empty,
-                            collectionId = r.Habbicon?.HabbiconCollectionEntityId ?? 0,
-                            state = r.State.ToString(),
-                            source = r.Source.ToString(),
-                            acquiredAt = r.AcquiredAt,
-                            lastUsedAt = r.LastUsedAt,
-                        })
-                        .ToList(),
-                };
+                    rows.Count,
+                    rows.Select(r => new PlayerHabbiconRow(
+                            r.HabbiconEntityId,
+                            r.Habbicon?.Code ?? string.Empty,
+                            r.Habbicon?.HabbiconCollectionEntityId ?? 0,
+                            r.State.ToString(),
+                            r.Source.ToString(),
+                            r.AcquiredAt,
+                            r.LastUsedAt
+                        ))
+                        .ToList()
+                );
             },
             ct
         );
@@ -194,15 +193,15 @@ internal sealed class HabbiconReads(
     /// string. An operator grant is always recorded as <see cref="HabbiconSource.AdminGrant"/>
     /// whatever the form says — this list is for reading the ownership table, not for choosing.
     /// </summary>
-    public object HabbiconSourceOptions()
+    public HabbiconSourceOptions HabbiconSourceOptions()
     {
-        List<object> items =
+        List<HabbiconSourceOption> items =
         [
             .. Enum.GetValues<HabbiconSource>()
-                .Select(s => (object)new { name = s.ToString(), value = (int)s }),
+                .Select(s => new HabbiconSourceOption(s.ToString(), (int)s)),
         ];
 
-        return new { count = items.Count, items };
+        return new HabbiconSourceOptions(items.Count, items);
     }
 
     /// <summary>
@@ -210,31 +209,33 @@ internal sealed class HabbiconReads(
     /// zero offset on purpose: (0,0) is a real frame, so a missing entry that defaulted there would
     /// draw the first Habbicon under every id the pack forgot.
     /// </summary>
-    private static object? Sprite(IReadOnlyDictionary<int, HabbiconFrame>? frames, int id) =>
+    private static HabbiconSprite? Sprite(
+        IReadOnlyDictionary<int, HabbiconFrame>? frames,
+        int id
+    ) =>
         frames is not null && frames.TryGetValue(id, out HabbiconFrame frame)
-            ? new { x = frame.X, y = frame.Y }
+            ? new HabbiconSprite(frame.X, frame.Y)
             : null;
 
-    private static object Describe(
+    private static HabbiconRow Describe(
         HabbiconEntity habbicon,
         IReadOnlyDictionary<int, int> owners,
         HabbiconArtworkView? artwork
     ) =>
-        new
-        {
-            sprite = Sprite(artwork?.Icons, habbicon.Id),
-            id = habbicon.Id,
-            code = habbicon.Code,
-            localizationKey = $"habbicon_{habbicon.Code}_name",
-            collectionId = habbicon.HabbiconCollectionEntityId,
-            sortOrder = habbicon.SortOrder,
-            isCollectionReward = habbicon.IsCollectionReward,
-            priceCredits = habbicon.PriceCredits,
-            priceActivityPoints = habbicon.PriceActivityPoints,
-            activityPointType = habbicon.ActivityPointType,
-            enabled = habbicon.Enabled,
-            availableFrom = habbicon.AvailableFrom,
-            availableUntil = habbicon.AvailableUntil,
-            owners = owners.GetValueOrDefault(habbicon.Id),
-        };
+        new(
+            Sprite(artwork?.Icons, habbicon.Id),
+            habbicon.Id,
+            habbicon.Code,
+            $"habbicon_{habbicon.Code}_name",
+            habbicon.HabbiconCollectionEntityId,
+            habbicon.SortOrder,
+            habbicon.IsCollectionReward,
+            habbicon.PriceCredits,
+            habbicon.PriceActivityPoints,
+            habbicon.ActivityPointType,
+            habbicon.Enabled,
+            habbicon.AvailableFrom,
+            habbicon.AvailableUntil,
+            owners.GetValueOrDefault(habbicon.Id)
+        );
 }

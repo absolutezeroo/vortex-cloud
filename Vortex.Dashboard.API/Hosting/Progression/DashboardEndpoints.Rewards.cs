@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Api.Progression;
+using Vortex.Dashboard.API.Api.Progression.Contracts;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Operations.Progression;
 using Vortex.Dashboard.API.Operations.Progression.Contracts;
@@ -28,7 +29,7 @@ internal static partial class DashboardEndpoints
 
     public static void MapHabbiconReads(WebApplication app)
     {
-        MapReadGet(
+        MapReadGet<HabbiconCollectionList>(
             app,
             ApiHabbicons,
             (HttpContext ctx, HabbiconReads habbicons, CancellationToken ct) =>
@@ -36,14 +37,14 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.HabbiconsRead,
             TagHabbicons
         );
-        MapReadGet(
+        MapReadGet<HabbiconSourceOptions>(
             app,
             ApiHabbicons + "/sources",
             (HabbiconReads habbicons) => Results.Ok(habbicons.HabbiconSourceOptions()),
             Capabilities.Dashboard.HabbiconsRead,
             TagHabbicons
         );
-        MapReadGet(
+        MapReadGet<PlayerHabbicons>(
             app,
             ApiHabbicons + "/players/{playerId:int}",
             (int playerId, HabbiconReads habbicons, CancellationToken ct) =>
