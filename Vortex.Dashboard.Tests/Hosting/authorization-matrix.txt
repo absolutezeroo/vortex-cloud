@@ -217,6 +217,7 @@ POST /api/v1/operations/habbicons/grant -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/revoke -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/update -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/items/grant -> dashboard.ops.item.grant
+POST /api/v1/operations/items/pickup -> dashboard.ops.item.grant
 POST /api/v1/operations/items/revoke -> dashboard.ops.item.grant
 POST /api/v1/operations/mystery-box/boxes -> dashboard.ops.mystery_box.manage
 POST /api/v1/operations/mystery-box/keys -> dashboard.ops.mystery_box.manage

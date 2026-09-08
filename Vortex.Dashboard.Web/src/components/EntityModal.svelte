@@ -16,6 +16,7 @@
   import Tabs from './Tabs.svelte';
   import PlayerOperationsPanel from './PlayerOperationsPanel.svelte';
   import ConfirmStagedModal from './ConfirmStagedModal.svelte';
+  import DropdownMenu from './DropdownMenu.svelte';
   import { createWriteOps } from '../lib/writeOps';
   import { hasDashboardCapability } from '../lib/permissions';
   import {
@@ -48,20 +49,51 @@
     hasDashboardCapability($identity, OPERATION_CAPABILITIES.item),
   );
 
-  function stageTakeBack(item: PlayerProfile['inventory']['latest'][number]) {
+  type InventoryItem = PlayerProfile['inventory']['latest'][number];
+
+  /**
+   * What can be done to one item, and what cannot yet.
+   *
+   * One action per state. A placed item belongs to its room, so the only thing to do with it is
+   * send it back to the hand -- through the room grain, so everyone standing there sees it leave.
+   * Once it is in a hand, deleting it is an ordinary thing to do. The sequence teaches itself and
+   * beats a disabled row explaining why half the menu does nothing.
+   */
+  function itemMenu(item: InventoryItem) {
+    const placed = item.roomEntityId !== null;
+
+    return placed
+      ? [{ id: 'pickup', label: $t('entityModal.pickUp') }]
+      : [{ id: 'delete', label: $t('entityModal.deleteItem'), danger: true }];
+  }
+
+  function runItemAction(action: string, item: InventoryItem) {
     if (!playerProfile) {
+      return;
+    }
+
+    const named = {
+      item: item.itemId,
+      name: item.definitionName ?? '-',
+      player: playerProfile.name,
+    };
+
+    if (action === 'pickup') {
+      itemOps.ask(
+        '/api/v1/operations/items/pickup',
+        { roomId: item.roomEntityId, itemId: item.itemId },
+        translate('entityModal.pickUpTitle'),
+        translate('entityModal.pickUpSummary', { ...named, room: item.roomEntityId ?? 0 }),
+      );
+
       return;
     }
 
     itemOps.ask(
       '/api/v1/operations/items/revoke',
       { playerId: playerProfile.id, itemId: item.itemId },
-      translate('entityModal.takeBackTitle'),
-      translate('entityModal.takeBackSummary', {
-        item: item.itemId,
-        name: item.definitionName ?? '-',
-        player: playerProfile.name,
-      }),
+      translate('entityModal.deleteItemTitle'),
+      translate('entityModal.deleteItemSummary', named),
       { danger: true },
     );
   }
@@ -220,18 +252,12 @@
                 <td>{item.roomName || $t('entityModal.notPlaced')}</td>
                 {#if canTakeItems}
                   <td>
-                    <!-- Disabled rather than hidden while the item is in a room: the server refuses
-                         it with item_is_placed, and a button that vanishes teaches nothing about
-                         why. The title says what to do about it. -->
-                    <button
-                      type="button"
-                      class="ghost-button danger"
-                      disabled={item.roomEntityId !== null || $itemOps.busy}
-                      title={item.roomEntityId !== null ? $t('entityModal.takeBackPlaced') : ''}
-                      onclick={() => stageTakeBack(item)}
-                    >
-                      {$t('entityModal.takeBack')}
-                    </button>
+                    <DropdownMenu
+                      label={$t('entityModal.itemActions')}
+                      align="end"
+                      items={itemMenu(item)}
+                      onpick={(action) => runItemAction(action, item)}
+                    />
                   </td>
                 {/if}
               </tr>

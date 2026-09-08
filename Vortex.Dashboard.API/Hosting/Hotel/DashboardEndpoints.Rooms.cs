@@ -46,6 +46,26 @@ internal static partial class DashboardEndpoints
 
     public static void MapRoomOperations(WebApplication app)
     {
+        // Guarded by the item capability rather than the room one: this moves somebody's property,
+        // and it exists so the revoke's item_is_placed refusal has a way forward.
+        MapPost(
+            app,
+            ApiOperations + "/items/pickup",
+            async (
+                HttpContext ctx,
+                PickUpFurnitureRequest body,
+                RoomOperations ops,
+                CancellationToken ct
+            ) =>
+                body.RoomId <= 0 || body.ItemId <= 0
+                    ? Results.BadRequest(new { error = "invalid_request" })
+                    : Results.Ok(
+                        await ops.PickUpFurnitureAsync(body, ctx.ActorEmail(), ct)
+                            .ConfigureAwait(false)
+                    ),
+            Capabilities.Dashboard.OpsGrantItem,
+            TagOperations
+        );
         MapPost(
             app,
             ApiOperations + "/rooms/close",

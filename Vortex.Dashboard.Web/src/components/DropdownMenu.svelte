@@ -23,6 +23,33 @@
   let cursor = $state(0);
   let root = $state<HTMLElement | undefined>();
 
+  /**
+   * Where the panel sits, in viewport coordinates.
+   *
+   * It used to be absolute, which put it inside whatever box happened to be positioned above it.
+   * In a table cell that box is `.table-wrap`, which scrolls on overflow -- so the menu was clipped
+   * by it and lengthened its scrollbar instead of floating over the page. Fixed coordinates escape
+   * the overflow entirely; the trade-off is that a scroll moves the page out from under the panel,
+   * which is why one closes it.
+   */
+  let at = $state({ top: 0, left: 0, right: 0 });
+
+  function place() {
+    const box = root?.getBoundingClientRect();
+
+    if (box) {
+      at = { top: box.bottom + 4, left: box.left, right: window.innerWidth - box.right };
+    }
+  }
+
+  function toggle() {
+    if (!open) {
+      place();
+    }
+
+    open = !open;
+  }
+
   function pick(item: { id: string; disabled?: boolean }) {
     if (item.disabled) return;
     open = false;
@@ -33,6 +60,7 @@
     if (!open) {
       if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
+        place();
         open = true;
         cursor = 0;
       }
@@ -63,8 +91,19 @@
       if (root && !root.contains(event.target as Node)) open = false;
     };
 
+    // A scroll moves the page under a fixed panel, so it closes rather than floating somewhere
+    // that no longer means anything. Capture: the scroll that matters is an inner one.
+    const gone = () => (open = false);
+
     document.addEventListener('pointerdown', away, true);
-    return () => document.removeEventListener('pointerdown', away, true);
+    document.addEventListener('scroll', gone, true);
+    window.addEventListener('resize', gone);
+
+    return () => {
+      document.removeEventListener('pointerdown', away, true);
+      document.removeEventListener('scroll', gone, true);
+      window.removeEventListener('resize', gone);
+    };
   });
 </script>
 
@@ -74,14 +113,21 @@
     class="ghost-button"
     aria-haspopup="menu"
     aria-expanded={open}
-    onclick={() => (open = !open)}
+    onclick={toggle}
   >
     <span>{label}</span>
     <ChevronDown size={14} strokeWidth={2} aria-hidden="true" />
   </button>
 
   {#if open}
-    <div class="menu" class:end={align === 'end'} role="menu">
+    <div
+      class="menu"
+      class:end={align === 'end'}
+      role="menu"
+      style={align === 'end'
+        ? `top:${at.top}px; right:${at.right}px;`
+        : `top:${at.top}px; left:${at.left}px;`}
+    >
       {#each items as item, index (item.id)}
         <button
           type="button"
@@ -107,9 +153,8 @@
   }
 
   .menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
+    /* Placed from the trigger's rect in script: see `at`. */
+    position: fixed;
     z-index: 90;
     min-width: 180px;
     display: grid;
@@ -123,7 +168,6 @@
 
   .menu.end {
     left: auto;
-    right: 0;
   }
 
   .item {

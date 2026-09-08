@@ -19,6 +19,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations.Hotel;
@@ -125,6 +126,52 @@ internal sealed class RoomOperations(
             },
             ct,
             AuditCategory.Moderation
+        );
+
+    /// <summary>
+    /// Sends a placed item back to its owner's hand.
+    /// </summary>
+    /// <remarks>
+    /// Through the room grain, never around it. A placed item is the room's live state: deleting or
+    /// reassigning its row while the room holds it leaves everyone standing there looking at
+    /// something that no longer exists. Going through the grain is also what makes the item vanish
+    /// from their screens, because the room is what sends that packet.
+    /// <para>
+    /// This is what turns the item-revoke's <c>item_is_placed</c> refusal from a dead end into a
+    /// first step: pick it up, then it is an ordinary item in a hand.
+    /// </para>
+    /// </remarks>
+    public Task<OperationResult> PickUpFurnitureAsync(
+        PickUpFurnitureRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        _runner.ExecuteAsync(
+            "ops.item.pickup",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: request.RoomId,
+            detail: new { request.ItemId },
+            work: async c =>
+            {
+                PlayerId staffActor = await _staffActor.PlayerIdAsync(c).ConfigureAwait(false);
+                RoomId roomId = new(request.RoomId);
+                ActionContext actorCtx = ActionContext.CreateForPlayer(staffActor, roomId);
+
+                bool ok = await _grainFactory
+                    .GetRoomFurni(roomId)
+                    .RemoveItemByIdAsync(actorCtx, new RoomObjectId(request.ItemId), c)
+                    .ConfigureAwait(false);
+
+                if (!ok)
+                {
+                    // The room refused: the id is not in it, or it is not something that can be
+                    // picked up. Either way the row is untouched, which is the point.
+                    throw new InvalidOperationException("pickup_rejected");
+                }
+            },
+            ct
         );
 
     /// <summary>
