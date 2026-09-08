@@ -473,6 +473,8 @@ internal sealed partial class ContentAdminService
             return ContentAdminResult.Fail("badge_not_held");
         }
 
+        // Same as the grant: the badge grain re-reads the table per request rather than caching, so
+        // removing the row is the whole revocation and there is no live copy to chase.
         db.PlayerBadges.Remove(entity);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
@@ -532,6 +534,15 @@ internal sealed partial class ContentAdminService
             return ContentAdminResult.Fail("effect_not_owned");
         }
 
+        // Not symmetric with the grant above, and deliberately so for now: PlayerEffectGrain caches
+        // nothing -- every one of its methods opens a context and reads the table -- so deleting the
+        // row IS the revocation as far as the server is concerned.
+        //
+        // The connected client is the part that goes stale. The grant pushes AvatarEffectAdded;
+        // there is no removal composer and no grain method to route this through, so a player who is
+        // online keeps the effect in their list, and keeps wearing it if it was selected, until they
+        // reconnect. Closing that gap means a composer and a grain method, which is a protocol
+        // change rather than an admin one.
         db.PlayerEffects.Remove(entity);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 

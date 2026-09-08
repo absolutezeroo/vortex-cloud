@@ -82,11 +82,6 @@ export const ROUTE_PERMISSIONS = {
   rooms: [CAPABILITIES.auditRead],
   audit: [CAPABILITIES.auditRead],
   moderation: [CAPABILITIES.auditRead],
-  moderationActions: [
-    CAPABILITIES.opsBanAccount,
-    CAPABILITIES.opsMutePlayer,
-    CAPABILITIES.opsTradingLock,
-  ],
   cfh: [CAPABILITIES.opsCfhManage],
   roomControl: [CAPABILITIES.opsRoomsManage],
   vouchers: [CAPABILITIES.opsManageVouchers],
