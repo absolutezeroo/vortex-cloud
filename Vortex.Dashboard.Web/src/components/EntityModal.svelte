@@ -12,6 +12,14 @@
   import { User, Package } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { modal, closeModal, openPlayer, openItem } from '../lib/session';
+  import { identity } from '../lib/session';
+  import Tabs from './Tabs.svelte';
+  import PlayerOperationsPanel from './PlayerOperationsPanel.svelte';
+  import { hasDashboardCapability } from '../lib/permissions';
+  import {
+    MODERATION_OPERATION_CAPABILITIES,
+    OPERATION_CAPABILITIES,
+  } from '../lib/dashboardPermissions';
   import { t } from '../lib/i18n';
 
   let loading = $state(false);
@@ -19,6 +27,22 @@
   let data = $state<PlayerProfile | ItemProfile | null>(null);
   let currentKey = $state('');
   let forbidden = $state(false);
+
+  // The actions this operator could take on anyone. The panel gates every button on its own
+  // capability; this only decides whether offering the tab at all would be a lie.
+  let canAct = $derived(
+    [...Object.values(OPERATION_CAPABILITIES), ...Object.values(MODERATION_OPERATION_CAPABILITIES)]
+      .some((capability) => hasDashboardCapability($identity, capability)),
+  );
+
+  /** Which half of the player popup is open. Reset per player -- see the effect below. */
+  let tab = $state('identity');
+
+  // $derived, not const: the labels follow the locale the operator switches to.
+  let playerTabs = $derived([
+    { id: 'identity', label: $t('entityModal.identity') },
+    { id: 'actions', label: $t('playerOps.tabActions') },
+  ]);
 
 
   async function load() {
@@ -59,6 +83,9 @@
   $effect(() => {
     if (key && key !== currentKey) {
       currentKey = key;
+      // Opening a different player starts on their identity: landing straight on a ban form for
+      // someone whose name you have not read yet is how the wrong account gets sanctioned.
+      tab = 'identity';
       void load();
     }
   });
@@ -102,6 +129,18 @@
           </small>
         </div>
       </div>
+      {#if canAct}
+        <Tabs tabs={playerTabs} bind:active={tab} />
+      {/if}
+
+      {#if tab === 'actions'}
+        <PlayerOperationsPanel
+          playerId={playerProfile.id}
+          playerName={playerProfile.name}
+          online={playerProfile.online}
+          onDone={load}
+        />
+      {:else}
       <div class="modal-grid">
         <article>
           <span>{$t('entityModal.created')}</span>
@@ -182,6 +221,7 @@
         </table>
         </div>
       </section>
+      {/if}
     {:else if $modal.type === 'item' && itemProfile}
       <div class="modal-grid">
         <article>
