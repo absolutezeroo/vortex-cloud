@@ -712,16 +712,20 @@ small.muted {
   background: var(--danger-bg);
 }
 
+/* A badge annotates something -- a number, a name, a row. It is never the thing itself, so it is
+   sized under the text it sits beside rather than level with it: at the old 0.78rem with 0.24rem of
+   padding it was taller than the numeral it qualified and read as the cell's content. */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 0.24rem 0.58rem;
+  padding: 0.04rem 0.3rem;
   font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.01em;
+  font-size: 0.62rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
@@ -1187,13 +1191,6 @@ button.secondary:active:not(:disabled) {
   line-height: 1.2;
   letter-spacing: 0.4px;
   color: var(--ink);
-}
-
-/* When a metric's "value" is actually a status badge/pill (e.g. the catalog "Visible" tile), keep
-   it at its own small size and baseline instead of being stretched by the 1.5rem numeral line. */
-.metric-grid strong .status-badge,
-.modal-grid strong .status-badge {
-  font-size: 0.78rem;
 }
 
 .metric-grid small,
@@ -3874,13 +3871,21 @@ label:has(> input[type='radio']) {
 /* One border weight across the theme. Keys were 2px and everything around them 1px -- a badge or a
    panel edge beside a button read as a different material. The pill radius goes with it: a chip
    next to a 5px key was the only fully-round thing on the page. */
-.status-badge,
 .status-pill,
 .cost-chip,
 .op-chip {
   border-width: 2px;
   border-style: solid;
   border-radius: 5px;
+}
+
+/* A badge keeps the square corner so it belongs to the same family, but not the key's 2px edge:
+   at 0.6rem that border IS most of the object, and a one-word annotation beside a number should
+   not weigh as much as the number it annotates. */
+.status-badge {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
 }
 
 /* .table-wrap is deliberately absent: it is a scroll container with no border of its own, so
