@@ -61,6 +61,7 @@
   type PickedPlayer = { id: number; name: string };
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import CurrencySelect from '../components/CurrencySelect.svelte';
@@ -387,9 +388,9 @@
         />
       </div>
 
-      {#if collections.loading}
-        <p class="muted">{$t('common.loading')}</p>
-      {:else if items.length === 0}
+      <!-- `&& !loading` rather than a branch of its own: the overlay says the page is busy, and an
+           empty list mid-read means "not answered yet", not "there is nothing". -->
+      {#if items.length === 0 && !collections.loading}
         <EmptyState message={$t('habbicons.noCollections')} />
       {:else}
         <div class="table-wrap">
@@ -804,6 +805,8 @@
 />
 
 <OpResult result={$ops.result} />
+
+<LoadingOverlay show={collections.loading} />
 
 <style>
   /* `.row-actions`, `.table-wrap`, `.filters` spacing and the chips all come from styles.css --

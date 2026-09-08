@@ -33,6 +33,7 @@
   import { t } from '../lib/i18n';
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import ArticleBodyEditor from '../components/ArticleBodyEditor.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -630,9 +631,7 @@
       {/if}
     </div>
 
-    {#if articles.loading}
-      <p class="muted">{$t('common.loading')}</p>
-    {:else if articles.error}
+    {#if articles.error}
       <p class="empty-state danger" role="alert">{articles.error}</p>
     {:else if !(articles.data?.items ?? []).length}
       <EmptyState message={$t('articles.empty')} />
@@ -1127,6 +1126,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={articles.loading} />
 
 <style>
   .block {

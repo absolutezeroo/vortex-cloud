@@ -4,6 +4,7 @@
   import { createResource } from '../lib/resource';
   import { formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
@@ -110,9 +111,7 @@
     </label>
   </form>
 
-  {#if marketplace.loading}
-    <p class="muted">{$t('marketplace.loading')}</p>
-  {:else if marketplace.forbidden}
+  {#if marketplace.forbidden}
     <AccessDeniedNotice message={$t('marketplace.accessDenied')} />
   {:else if marketplace.error}
     <p class="empty-state danger" role="alert">{marketplace.error}</p>
@@ -172,3 +171,5 @@
     </table>
   </div>
 {/if}
+
+<LoadingOverlay show={marketplace.loading} label={$t('marketplace.loading')} />

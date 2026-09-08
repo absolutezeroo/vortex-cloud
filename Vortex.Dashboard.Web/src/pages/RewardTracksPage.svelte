@@ -103,6 +103,7 @@
   type PickedLabel = { name: string; iconUrl?: string | null };
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import Drawer from '../components/Drawer.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -604,9 +605,8 @@
         />
       </div>
 
-      {#if tracks.loading}
-        <p class="muted">{$t('common.loading')}</p>
-      {:else if items.length === 0}
+      <!-- See HabbiconsPage: an empty list while the read is in flight is not an empty list. -->
+      {#if items.length === 0 && !tracks.loading}
         <EmptyState message={$t('rewardTracks.noTracks')} />
       {:else}
         <div class="table-wrap">
@@ -1362,6 +1362,8 @@
 />
 
 <OpResult result={$ops.result} />
+
+<LoadingOverlay show={tracks.loading} />
 
 <style>
   /* `.row-actions`, `.table-wrap` and the chips come from styles.css; only what the sheet has no

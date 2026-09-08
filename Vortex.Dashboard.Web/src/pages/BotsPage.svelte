@@ -11,6 +11,7 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import OpResult from '../components/OpResult.svelte';
 
   import { formatNumber } from '../lib/format';
@@ -244,9 +245,7 @@
     {/if}
   </form>
 
-  {#if bots.loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if bots.forbidden}
+  {#if bots.forbidden}
     <AccessDeniedNotice message={$t('bots.accessDenied')} />
   {:else if bots.error}
     <p class="empty-state danger" role="alert">{bots.error}</p>
@@ -624,6 +623,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={bots.loading} />
 
 <style>
   tr.selected {
