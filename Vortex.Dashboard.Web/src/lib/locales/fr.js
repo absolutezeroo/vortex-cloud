@@ -801,6 +801,10 @@ export default {
     foundSoFar: '{found} icône(s) trouvée(s) pour le moment ({probed} id(s) vérifié(s), {pending} en attente).',
   },
   entityModal: {
+    takeBack: 'Reprendre',
+    takeBackTitle: 'Reprendre un objet',
+    takeBackSummary: "Reprendre l'objet #{item} ({name}) a {player}.",
+    takeBackPlaced: "Pose dans une room — le proprietaire doit d'abord le ramasser.",
     online: 'En ligne',
     offline: 'Hors ligne',
     itemInspector: "Inspecteur d'objet",

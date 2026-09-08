@@ -15,6 +15,8 @@ using Vortex.Dashboard.API.Api.Catalogue;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
+using Vortex.Dashboard.API.Operations.Hotel;
+using Vortex.Dashboard.API.Operations.Hotel.Contracts;
 using Vortex.Dashboard.API.Operations.Catalogue;
 using Vortex.Dashboard.API.Operations.Catalogue.Contracts;
 using Vortex.Dashboard.API.Security;
@@ -172,6 +174,28 @@ internal static partial class DashboardEndpoints
                         .ConfigureAwait(false)
                 );
             },
+            Capabilities.Dashboard.OpsGrantItem,
+            TagOperations
+        );
+        // Same capability as the grant, which is the line badges and effects already draw: whoever
+        // may hand an item out may take it back. A separate one would mean an operator who can
+        // create a mistake but not undo it.
+        MapPost(
+            app,
+            ApiOperations + "/items/revoke",
+            async (
+                HttpContext ctx,
+                RevokeFurnitureRequest body,
+                ContentOperations contentOps,
+                CancellationToken ct
+            ) =>
+                body.PlayerId <= 0 || body.ItemId <= 0
+                    ? Results.BadRequest(new { error = "invalid_request" })
+                    : Results.Ok(
+                        await contentOps
+                            .RevokeFurnitureAsync(body, ctx.ActorEmail(), ct)
+                            .ConfigureAwait(false)
+                    ),
             Capabilities.Dashboard.OpsGrantItem,
             TagOperations
         );

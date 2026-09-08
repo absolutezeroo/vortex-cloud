@@ -549,6 +549,68 @@ internal sealed partial class ContentAdminService
         return ContentAdminResult.Ok(playerId);
     }
 
+    /// <summary>
+    /// Take one item off a player, permanently.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The counterpart of the item grant, which had none: an operator could hand out furniture and
+    /// never take it back, so a mistaken grant needed SQL.
+    /// </para>
+    /// <para>
+    /// Refused while the item sits in a room. A placed item belongs to that room's live state, and
+    /// deleting the row underneath it leaves the room holding an object that no longer exists --
+    /// the same reason <see cref="DeleteBotAsync"/> refuses with <c>bot_is_placed</c>. Picking it
+    /// up first is one click for the owner and keeps a single writer over the item.
+    /// </para>
+    /// <para>
+    /// The inventory grain caches the furniture list from activation, so the row going is only half
+    /// the work: without the reload the player keeps seeing what they owned a moment ago. That is
+    /// the same call the trade path makes after handing items back.
+    /// </para>
+    /// </remarks>
+    public async Task<ContentAdminResult> RevokeFurnitureAsync(
+        int playerId,
+        int itemId,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        FurnitureEntity? item = await db
+            .Furnitures.FirstOrDefaultAsync(f => f.Id == itemId, ct)
+            .ConfigureAwait(false);
+
+        if (item is null)
+        {
+            return ContentAdminResult.Fail("item_not_found");
+        }
+
+        // The owner is checked rather than trusted: the id alone would let a typo take a stranger's
+        // furniture, and the audit entry would name the wrong victim.
+        if (item.PlayerEntityId != playerId)
+        {
+            return ContentAdminResult.Fail("item_not_owned");
+        }
+
+        if (item.RoomEntityId is not null)
+        {
+            return ContentAdminResult.Fail("item_is_placed");
+        }
+
+        db.Furnitures.Remove(item);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await grainFactory
+            .GetInventoryGrain(new PlayerId(playerId))
+            .ReloadFurnitureAsync(ct)
+            .ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(itemId);
+    }
+
     private async Task ReloadCurrenciesAsync(CancellationToken ct)
     {
         try

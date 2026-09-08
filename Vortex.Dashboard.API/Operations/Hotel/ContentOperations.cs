@@ -177,6 +177,34 @@ internal sealed class ContentOperations(OperationRunner runner, IContentAdminSer
             ct
         );
 
+    /// <summary>
+    /// The counterpart of the item grant, which had none.
+    /// </summary>
+    /// <remarks>
+    /// Audited against the player who loses the item rather than the item id alone, so the trail
+    /// reads as "took this from them" instead of "deleted row 40213".
+    /// </remarks>
+    public Task<OperationResult> RevokeFurnitureAsync(
+        RevokeFurnitureRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        _runner.ExecuteAsync(
+            "ops.item.revoke",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new { request.ItemId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .RevokeFurnitureAsync(request.PlayerId, request.ItemId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> UpdateBotAsync(
         BotRequest request,
         string actor,

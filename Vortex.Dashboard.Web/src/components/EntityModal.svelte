@@ -15,12 +15,14 @@
   import { identity } from '../lib/session';
   import Tabs from './Tabs.svelte';
   import PlayerOperationsPanel from './PlayerOperationsPanel.svelte';
+  import ConfirmStagedModal from './ConfirmStagedModal.svelte';
+  import { createWriteOps } from '../lib/writeOps';
   import { hasDashboardCapability } from '../lib/permissions';
   import {
     MODERATION_OPERATION_CAPABILITIES,
     OPERATION_CAPABILITIES,
   } from '../lib/dashboardPermissions';
-  import { t } from '../lib/i18n';
+  import { t, translate } from '../lib/i18n';
 
   let loading = $state(false);
   let error = $state('');
@@ -37,6 +39,32 @@
 
   /** Which half of the player popup is open. Reset per player -- see the effect below. */
   let tab = $state('identity');
+
+  // Taking an item back lives on the rows that list the items, not behind an id field on the
+  // actions tab: the operator is looking at the thing they mean, with its name and its icon.
+  const itemOps = createWriteOps(() => load());
+
+  let canTakeItems = $derived(
+    hasDashboardCapability($identity, OPERATION_CAPABILITIES.item),
+  );
+
+  function stageTakeBack(item: PlayerProfile['inventory']['latest'][number]) {
+    if (!playerProfile) {
+      return;
+    }
+
+    itemOps.ask(
+      '/api/v1/operations/items/revoke',
+      { playerId: playerProfile.id, itemId: item.itemId },
+      translate('entityModal.takeBackTitle'),
+      translate('entityModal.takeBackSummary', {
+        item: item.itemId,
+        name: item.definitionName ?? '-',
+        player: playerProfile.name,
+      }),
+      { danger: true },
+    );
+  }
 
   // $derived, not const: the labels follow the locale the operator switches to.
   let playerTabs = $derived([
@@ -178,7 +206,7 @@
         <h3>{$t('entityModal.recentItems')}</h3>
         <div class="table-wrap">
           <table>
-          <thead><tr><th>{$t('entityModal.colItem')}</th><th>{$t('entityModal.colDefinition')}</th><th>{$t('entityModal.colRoom')}</th></tr></thead>
+          <thead><tr><th>{$t('entityModal.colItem')}</th><th>{$t('entityModal.colDefinition')}</th><th>{$t('entityModal.colRoom')}</th>{#if canTakeItems}<th>{$t('common.actions')}</th>{/if}</tr></thead>
           <tbody>
             {#each playerProfile.inventory.latest as item}
               <tr>
@@ -190,9 +218,25 @@
                   </span>
                 </td>
                 <td>{item.roomName || $t('entityModal.notPlaced')}</td>
+                {#if canTakeItems}
+                  <td>
+                    <!-- Disabled rather than hidden while the item is in a room: the server refuses
+                         it with item_is_placed, and a button that vanishes teaches nothing about
+                         why. The title says what to do about it. -->
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      disabled={item.roomEntityId !== null || $itemOps.busy}
+                      title={item.roomEntityId !== null ? $t('entityModal.takeBackPlaced') : ''}
+                      onclick={() => stageTakeBack(item)}
+                    >
+                      {$t('entityModal.takeBack')}
+                    </button>
+                  </td>
+                {/if}
               </tr>
             {:else}
-              <tr><td colspan="3" class="muted">{$t('entityModal.noInventorySnapshot')}</td></tr>
+              <tr><td colspan={canTakeItems ? 4 : 3} class="muted">{$t('entityModal.noInventorySnapshot')}</td></tr>
             {/each}
           </tbody>
         </table>
@@ -295,6 +339,10 @@
     {:else}
       <p class="empty-state">{$t('entityModal.noProfileFound')}</p>
     {/if}
+
+    <!-- Stacked on top of the popup, which is what the dialog stack in lib/dialogBehaviour exists
+         for: before it, Escape here closed the popup underneath instead of the confirmation. -->
+    <ConfirmStagedModal ops={itemOps} eyebrow={$t('entityModal.takeBackTitle')} />
   </Modal>
 {/if}
 

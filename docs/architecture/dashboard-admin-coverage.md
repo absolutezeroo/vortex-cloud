@@ -112,10 +112,17 @@ effects, currencies, item grant. No new server operation, no new navigation, no 
 reuses `createWriteOps`, the mandatory-reason modal, capability gating and audit as they stand. This
 is the whole of the "not fifty tabs" complaint, answered without touching the emulator.
 
-**Slice 1 — take back what can be given.** `/items/grant` has no counterpart. Removing an item from
-a player is the most asymmetric hole in the surface, and `Furnitures` is exactly the §11.B case: a
-placed item belongs to a live room, so the operation refuses or routes through the room, the way
-`DeleteBotAsync` already refuses with `bot_is_placed`.
+**Slice 1 — take back what can be given. Done.** `/operations/items/revoke`, beside the grant and
+under the same capability — the line badges and effects already draw, so an operator who can create
+a mistake can undo it. It refuses `item_is_placed` while the item stands in a room, exactly as
+`DeleteBotAsync` does, and `item_not_owned` when the id does not belong to the named player, because
+an id alone would let a typo delete a stranger's furniture.
+
+Worth knowing for the next slice: `IInventoryGrain.RemoveFurnitureAsync` looks like the obvious call
+and is the wrong one. It removes the item from an in-memory dictionary and leaves the row — it is a
+*transfer* primitive, for placing, trading and redeeming. Used for a revoke it would hand the item
+straight back on the next reload. The revoke deletes the row and then calls `ReloadFurnitureAsync`,
+which is what the trade path already does after handing items back.
 
 **Slice 2 — forum and guild moderation.** Delete a post, delete a thread, act on a membership
 request, lift a guild ban. Public content that gets reported, and today the only recourse is SQL.

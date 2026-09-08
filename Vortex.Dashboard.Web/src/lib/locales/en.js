@@ -802,6 +802,10 @@ export default {
     foundSoFar: '{found} icon(s) found so far ({probed} id(s) checked, {pending} pending).',
   },
   entityModal: {
+    takeBack: 'Take back',
+    takeBackTitle: 'Take an item back',
+    takeBackSummary: 'Take item #{item} ({name}) back from {player}.',
+    takeBackPlaced: 'Placed in a room — the owner has to pick it up first.',
     online: 'Online',
     offline: 'Offline',
     itemInspector: 'Item inspector',
