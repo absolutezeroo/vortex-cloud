@@ -550,26 +550,6 @@ internal sealed partial class ContentAdminService
     }
 
     /// <summary>
-    /// Take one item off a player, permanently.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The counterpart of the item grant, which had none: an operator could hand out furniture and
-    /// never take it back, so a mistaken grant needed SQL.
-    /// </para>
-    /// <para>
-    /// Refused while the item sits in a room. A placed item belongs to that room's live state, and
-    /// deleting the row underneath it leaves the room holding an object that no longer exists --
-    /// the same reason <see cref="DeleteBotAsync"/> refuses with <c>bot_is_placed</c>. Picking it
-    /// up first is one click for the owner and keeps a single writer over the item.
-    /// </para>
-    /// <para>
-    /// The inventory grain caches the furniture list from activation, so the row going is only half
-    /// the work: without the reload the player keeps seeing what they owned a moment ago. That is
-    /// the same call the trade path makes after handing items back.
-    /// </para>
-    /// </remarks>
-    /// <summary>
     /// Moves one item to another player.
     /// </summary>
     /// <remarks>
@@ -718,6 +698,26 @@ internal sealed partial class ContentAdminService
     private Task ReloadInventoryAsync(int playerId, CancellationToken ct) =>
         grainFactory.GetInventoryGrain(new PlayerId(playerId)).ReloadFurnitureAsync(ct);
 
+    /// <summary>
+    /// Take one item off a player, permanently.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The counterpart of the item grant, which had none: an operator could hand out furniture and
+    /// never take it back, so a mistaken grant needed SQL.
+    /// </para>
+    /// <para>
+    /// Refused while the item sits in a room. A placed item belongs to that room's live state, and
+    /// deleting the row underneath it leaves the room holding an object that no longer exists --
+    /// the same reason <see cref="DeleteBotAsync"/> refuses with <c>bot_is_placed</c>. Picking it
+    /// up first is one click for the owner and keeps a single writer over the item.
+    /// </para>
+    /// <para>
+    /// The inventory grain caches the furniture list from activation, so the row going is only half
+    /// the work: without the reload the player keeps seeing what they owned a moment ago. That is
+    /// the same call the trade path makes after handing items back.
+    /// </para>
+    /// </remarks>
     public async Task<ContentAdminResult> RevokeFurnitureAsync(
         int playerId,
         int itemId,
