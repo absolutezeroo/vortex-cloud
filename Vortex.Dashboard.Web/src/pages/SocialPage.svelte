@@ -9,6 +9,7 @@
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
@@ -115,9 +116,7 @@
     </label>
   </form>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('social.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -322,6 +321,8 @@
     </div>
   </div>
 {/if}
+
+<LoadingOverlay show={loading} />
 
 <style>
   .guild-cell {

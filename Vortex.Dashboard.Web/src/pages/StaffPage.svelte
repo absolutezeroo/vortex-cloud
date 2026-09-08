@@ -34,6 +34,7 @@
   import { identity } from '../lib/session';
   import { createWriteOps } from '../lib/writeOps';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -219,9 +220,7 @@
     {/snippet}
   </PageHeader>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('staff.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -693,6 +692,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
   /* The wizard rail. Every colour is a theme token, so it follows blue/dark/white like the rest of

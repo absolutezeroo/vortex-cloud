@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import Drawer from '../components/Drawer.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -372,9 +373,7 @@
       </div>
     </div>
 
-    {#if loading}
-      <p class="muted">{$t('common.loading')}</p>
-    {:else if error}
+    {#if error}
       <p class="empty-state danger" role="alert">{error}</p>
     {:else if quests.length === 0}
       <p class="empty-state">{$t('quests.noQuests')}</p>
@@ -575,6 +574,8 @@
   onconfirm={deleteOps.confirm}
   oncancel={() => deleteOps.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
   /* Quest card laid out as a column: a header line (icon + title + actions) with the reward/stat

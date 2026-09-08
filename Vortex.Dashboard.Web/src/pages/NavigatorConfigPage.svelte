@@ -14,6 +14,7 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import Drawer from '../components/Drawer.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -216,9 +217,7 @@
     {/snippet}
   </PageHeader>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('navigatorConfig.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -698,6 +697,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
   .tab-card {

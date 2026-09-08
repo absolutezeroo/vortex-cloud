@@ -8,6 +8,7 @@
     TriangleAlert,
   } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -435,9 +436,7 @@
     </div>
     <p class="muted">{$t('mysteryBox.definitionsHint')}</p>
 
-    {#if loading}
-      <p class="muted">{$t('common.loading')}</p>
-    {:else if error}
+    {#if error}
       <p class="empty-state danger" role="alert">{error}</p>
     {:else if definitions.length === 0}
       <p class="empty-state">{$t('mysteryBox.noDefinitions')}</p>
@@ -854,6 +853,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
   .head-actions {

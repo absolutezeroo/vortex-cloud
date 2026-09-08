@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import LineChart from '../components/LineChart.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -119,9 +120,7 @@
     </label>
   </form>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('targetedOffersStats.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -197,3 +196,5 @@
     </div>
   </div>
 {/if}
+
+<LoadingOverlay show={loading} />

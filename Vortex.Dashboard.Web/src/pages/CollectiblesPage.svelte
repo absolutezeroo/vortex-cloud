@@ -111,6 +111,7 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions';
   import { identity } from '../lib/session';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
 
@@ -358,9 +359,7 @@
     {/snippet}
   </PageHeader>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('collectibles.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -1872,6 +1871,8 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
 

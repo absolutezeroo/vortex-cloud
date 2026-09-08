@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Package, Cable, DoorOpen } from '@lucide/svelte';
@@ -83,9 +84,7 @@
   </div>
   <p class="muted">{$t('wiredStats.description')}</p>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('wiredStats.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -166,3 +165,5 @@
     </div>
   </div>
 {/if}
+
+<LoadingOverlay show={loading} />

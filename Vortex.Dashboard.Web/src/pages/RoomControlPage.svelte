@@ -1,5 +1,6 @@
 <script lang="ts">
   import OpResult from '../components/OpResult.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import { onMount } from 'svelte';
   import { apiGet, describeApiError } from '../lib/api';
   import { createWriteOps } from '../lib/writeOps';
@@ -128,9 +129,7 @@
     {$t('roomControl.description')}
   </p>
 
-  {#if loading}
-    <p class="muted">{$t('roomControl.loadingRooms')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('roomControl.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -230,3 +229,5 @@
   onconfirm={ops.confirm}
   oncancel={() => ops.cancel()}
 />
+
+<LoadingOverlay show={loading} label={$t('roomControl.loadingRooms')} />

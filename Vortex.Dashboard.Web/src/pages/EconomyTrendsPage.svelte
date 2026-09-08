@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Coins } from '@lucide/svelte';
@@ -140,9 +141,7 @@
     <button type="submit" disabled={loading} class="warning">{$t('common.filter')}</button>
   </form>
 
-  {#if loading}
-    <p class="muted">{$t('economyTrends.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('economyTrends.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -199,3 +198,5 @@
 {:else if !loading && !forbidden && !error}
   <p class="empty-state" style="margin-top: 12px;">{$t('economyTrends.noActivity')}</p>
 {/if}
+
+<LoadingOverlay show={loading} label={$t('economyTrends.loading')} />

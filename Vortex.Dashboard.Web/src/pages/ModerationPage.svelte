@@ -1,6 +1,7 @@
 <script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
   import PickerModal from '../components/PickerModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -376,9 +377,7 @@
 
   <p class="muted">{filterSummary}</p>
 
-  {#if loading}
-    <p class="muted">{$t('moderation.loadingWindow')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('moderation.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -623,3 +622,5 @@
       />
     {/if}
 {/if}
+
+<LoadingOverlay show={loading} label={$t('moderation.loadingWindow')} />

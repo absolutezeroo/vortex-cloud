@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions';
@@ -236,9 +237,7 @@
       <input autocomplete="off" spellcheck="false" bind:value={lookupCode} placeholder={$t('vouchers.voucherCode')} style="text-transform: uppercase;" />
       <button type="submit" disabled={lookupLoading}>{$t('vouchers.inspect')}</button>
     </form>
-    {#if lookupLoading}
-      <p class="muted">{$t('pickerModal.loading')}</p>
-    {:else if lookupError}
+    {#if lookupError}
       <p class="empty-state danger" role="alert">{lookupError}</p>
     {:else if lookupResult}
       {@const voucher = lookupResult}
@@ -281,3 +280,5 @@
 </div>
 
 <ConfirmStagedModal {ops} eyebrow={$t('vouchers.confirmEyebrow')} />
+
+<LoadingOverlay show={lookupLoading} label={$t('pickerModal.loading')} />

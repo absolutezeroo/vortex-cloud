@@ -1,5 +1,6 @@
 <script lang="ts">
   import Modal from '../components/Modal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { apiGet, apiPost, describeApiError } from '../lib/api';
@@ -172,9 +173,7 @@
   </div>
   <p class="muted">{$t('cfh.description')}</p>
 
-  {#if loading}
-    <p class="muted">{$t('cfh.loadingQueue')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('cfh.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -268,3 +267,5 @@
     {/snippet}
   </Modal>
 {/if}
+
+<LoadingOverlay show={loading} label={$t('cfh.loadingQueue')} />

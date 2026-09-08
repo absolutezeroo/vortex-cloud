@@ -11,6 +11,7 @@
   import { identity } from '../lib/session';
   import { formatNumber, formatDate } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -196,9 +197,7 @@
   </div>
   <p class="muted">{$t('benchmark.description')}</p>
 
-  {#if loading}
-    <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {#if forbidden}
     <AccessDeniedNotice message={$t('benchmark.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
@@ -697,6 +696,8 @@
 />
 
 <OpResult result={$ops.result} />
+
+<LoadingOverlay show={loading} />
 
 <style>
   .verdict {

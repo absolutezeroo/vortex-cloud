@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
@@ -485,9 +486,7 @@
     </div>
 
 
-    {#if loading}
-      <p class="muted">{$t('common.loading')}</p>
-    {:else if error}
+    {#if error}
       <p class="empty-state danger" role="alert">{error}</p>
     {:else if offers.length === 0}
       <p class="empty-state">{$t('targetedOffers.noOffers')}</p>
@@ -883,6 +882,8 @@
   onconfirm={deleteOps.confirm}
   oncancel={() => deleteOps.cancel()}
 />
+
+<LoadingOverlay show={loading} />
 
 <style>
   .active-toggle {
