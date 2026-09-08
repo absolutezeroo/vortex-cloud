@@ -1105,22 +1105,47 @@ button.secondary:active:not(:disabled) {
    across and left the eighth alone on its own line under a full row. A fixed count wraps evenly and
    gives every tile row in the dashboard one rhythm instead of one per viewport width.
    The margin is the tiles telling the sentence above them that they are a separate thing. */
+/* Flex rather than grid, because the last row has to FILL. A grid column count leaves a hole
+   where the row runs out; flex items grow into it, so a trailing pair spreads across the width
+   instead of hugging the left edge under four full-width neighbours. */
 .metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 12px;
 }
 
+.metric-grid > * {
+  /* Four per row by default: the basis is a quarter minus its share of the three gaps. */
+  flex: 1 1 calc(25% - 9px);
+  min-width: 0;
+}
+
+/* Balance the wrap. With n tiles the aim is the fewest rows at four per row, then an even split --
+   so five reads three-and-two rather than four-and-one, and six reads three-and-three. Counting
+   children in CSS is what :has() is for; the alternative is every page passing its own tile count
+   down as a prop. */
+.metric-grid:has(> :nth-child(5):last-child) > *,
+.metric-grid:has(> :nth-child(6):last-child) > *,
+.metric-grid:has(> :nth-child(9):last-child) > * {
+  flex-basis: calc(33.333% - 8px);
+}
+
 @media (max-width: 1180px) {
-  .metric-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .metric-grid > *,
+  .metric-grid:has(> :nth-child(5):last-child) > *,
+  .metric-grid:has(> :nth-child(6):last-child) > *,
+  .metric-grid:has(> :nth-child(9):last-child) > * {
+    flex-basis: calc(50% - 6px);
   }
 }
 
 @media (max-width: 620px) {
-  .metric-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .metric-grid > *,
+  .metric-grid:has(> :nth-child(5):last-child) > *,
+  .metric-grid:has(> :nth-child(6):last-child) > *,
+  .metric-grid:has(> :nth-child(9):last-child) > * {
+    flex-basis: 100%;
   }
 }
 

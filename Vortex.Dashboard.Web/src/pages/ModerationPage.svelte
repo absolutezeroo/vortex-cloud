@@ -429,8 +429,11 @@
       {/snippet}
     </StatCard>
   </div>
+</section>
 
-  <div class="split-grid" style="margin-top: 14px;">
+<!-- No wrapper here. Every block below is already a panel; one more around them draws a border
+     around a row of borders, which is what the whole page did before the totals moved out. -->
+<div class="split-grid" style="margin-top: 12px;">
     <article class="panel">
       <h3>{$t('moderation.actionsDistribution')}</h3>
       <div class="chart-wrap">
@@ -464,7 +467,7 @@
     </article>
   </div>
 
-  <section class="split-grid" style="margin-top: 14px;">
+<section class="split-grid" style="margin-top: 14px;">
     <div class="panel">
       <h3>{$t('moderation.topActors')}</h3>
       <table>
@@ -584,7 +587,6 @@
       />
     {/if}
   </div>
-</section>
 
 {#if picking}
     {#if picking === 'actor'}
