@@ -323,6 +323,11 @@ time.
   - `docs/architecture/dashboard-architecture-rules.md` — the 41 rules that governed dismantling the
     god services. That migration is **complete**; the file is kept for the reasoning behind rules
     still cited by name (§13, §24, §33-35). Where the two disagree, the file above wins.
+  - `docs/architecture/dashboard-admin-coverage.md` — what an operator can actually act on, and the
+    slices that would close the gap. Read it before adding an admin operation: the surface is strong
+    on authoring content and thin on acting for a player, and the entity you are about to touch is
+    probably already listed as read-only or absent. Numbers regenerate with
+    `node scripts/dashboard-admin-coverage.mjs`.
   - `docs/walkthroughs/add-a-dashboard-page.md` (full walkthrough, server + front end)
   - an existing pair such as `DashboardEndpoints.Quests.cs` + `DashboardApiService.Quests.cs`
 - Any page that shows or selects furniture, a player, or a group MUST use the existing surfaces --
