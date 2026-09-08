@@ -15,11 +15,26 @@ import { onDestroy, onMount } from 'svelte';
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/**
+ * The dialogs currently mounted, oldest first. Only the last one answers the keyboard.
+ *
+ * Every instance listens on `window` in the capture phase, so with two dialogs open both handlers
+ * fire and the one that opened FIRST runs first -- Escape closed the dialog underneath instead of
+ * the one on top, and the outer focus trap pulled focus straight back out of the inner panel.
+ * `stopPropagation` cannot help: two listeners on the same node need `stopImmediatePropagation`,
+ * and suppressing the other dialog is the wrong model anyway. Whichever is on top owns the
+ * keyboard; the rest wait their turn.
+ */
+const stack: symbol[] = [];
+
 export function useDialogBehaviour(
   getPanel: () => HTMLElement | null | undefined,
   { onClose }: { onClose?: () => void } = {},
 ) {
+  const token = Symbol('dialog');
   let previouslyFocused: HTMLElement | null = null;
+
+  const isTopmost = () => stack.length > 0 && stack[stack.length - 1] === token;
 
   // Read the focusable list on each keypress rather than caching it, so conditional fields -- a
   // duration input that only exists while "permanent" is unchecked -- stay in the cycle.
@@ -47,6 +62,10 @@ export function useDialogBehaviour(
   }
 
   function onKeydown(event: KeyboardEvent) {
+    if (!isTopmost()) {
+      return;
+    }
+
     if (event.key === 'Escape') {
       event.stopPropagation();
       onClose?.();
@@ -59,6 +78,7 @@ export function useDialogBehaviour(
   }
 
   onMount(() => {
+    stack.push(token);
     previouslyFocused = document.activeElement as HTMLElement | null;
 
     // Focus the first control so the operator can start typing; falls back to the panel itself for a
@@ -71,6 +91,13 @@ export function useDialogBehaviour(
   });
 
   onDestroy(() => {
+    // Spliced by identity rather than popped: dialogs do not always close in the order they opened.
+    const index = stack.lastIndexOf(token);
+
+    if (index >= 0) {
+      stack.splice(index, 1);
+    }
+
     window.removeEventListener('keydown', onKeydown, true);
     previouslyFocused?.focus?.();
   });
