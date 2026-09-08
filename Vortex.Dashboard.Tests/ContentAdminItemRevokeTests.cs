@@ -9,8 +9,8 @@ using Vortex.Dashboard.API.Admin.Hotel;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Content;
-using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Inventory.Grains;
+using Vortex.Primitives.Players.Providers;
 using Vortex.Tests.Support;
 using Xunit;
 

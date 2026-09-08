@@ -220,7 +220,12 @@ internal sealed class ContentOperations(OperationRunner runner, IContentAdminSer
             work: async c =>
                 Throw(
                     await _contentAdmin
-                        .TransferFurnitureAsync(request.PlayerId, request.ToPlayerId, request.ItemId, c)
+                        .TransferFurnitureAsync(
+                            request.PlayerId,
+                            request.ToPlayerId,
+                            request.ItemId,
+                            c
+                        )
                         .ConfigureAwait(false)
                 ),
             ct
