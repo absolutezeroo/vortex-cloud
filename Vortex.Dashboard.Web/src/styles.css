@@ -795,7 +795,7 @@ small.muted {
    any explicit button class (.ghost-button, .btn-*, or a page-local .catalog-tab/.crumb-button/row)
    reliably wins. Without this, `.panel button` (0,1,1) silently overrode `.ghost-button` (0,1,0),
    leaving ghost buttons gold with dark ink — which turned unreadable on the grey :hover. */
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button {
   border: 1px solid var(--button-border);
   border-radius: 8px;
   background: var(--button-bg);
@@ -806,22 +806,22 @@ small.muted {
   transition: background 140ms ease, border-color 140ms ease;
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:hover:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:hover:not(:disabled) {
   background: var(--button-bg-hover);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:active:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:active:not(:disabled) {
   background: var(--button-bg-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:disabled {
   background: var(--button-bg-disabled);
   color: var(--muted);
   cursor: default;
 }
 
 /* Danger and secondary as modifiers, so a page opts in with one class instead of an inline style. */
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.danger,
 button.danger {
   background: var(--button-danger-bg);
   border-color: var(--button-danger-border);
@@ -829,14 +829,14 @@ button.danger {
   color: var(--button-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.danger:hover:not(:disabled),
 button.danger:hover:not(:disabled),
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.danger:active:not(:disabled),
 button.danger:active:not(:disabled) {
   background: var(--button-danger-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:disabled,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.danger:disabled,
 button.danger:disabled {
   background: var(--button-danger-disabled);
 }
@@ -845,7 +845,7 @@ button.danger:disabled {
    so on `blue` (the default) and on `white` an add button and a refresh button both rendered as the
    primary blue — the colour that is supposed to distinguish them simply was not there. Same shape as
    danger and secondary above; the dark theme's own rules are scoped tighter and still win. */
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.success,
 button.success,
 .btn-success,
 .ghost-button.success {
@@ -855,7 +855,7 @@ button.success,
   color: var(--button-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.success:hover:not(:disabled),
 button.success:hover:not(:disabled),
 .btn-success:hover:not(:disabled),
 .ghost-button.success:hover:not(:disabled) {
@@ -863,7 +863,7 @@ button.success:hover:not(:disabled),
   border-color: var(--button-success-border-hover);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.success:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.success:active:not(:disabled),
 button.success:active:not(:disabled),
 .btn-success:active:not(:disabled),
 .ghost-button.success:active:not(:disabled) {
@@ -871,7 +871,7 @@ button.success:active:not(:disabled),
   border-color: var(--button-success-border-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.warning,
 button.warning,
 .btn-warning,
 .ghost-button.warning {
@@ -881,7 +881,7 @@ button.warning,
   color: var(--button-warning-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.warning:hover:not(:disabled),
 button.warning:hover:not(:disabled),
 .btn-warning:hover:not(:disabled),
 .ghost-button.warning:hover:not(:disabled) {
@@ -889,7 +889,7 @@ button.warning:hover:not(:disabled),
   border-color: var(--button-warning-border-hover);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.warning:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.warning:active:not(:disabled),
 button.warning:active:not(:disabled),
 .btn-warning:active:not(:disabled),
 .ghost-button.warning:active:not(:disabled) {
@@ -897,7 +897,7 @@ button.warning:active:not(:disabled),
   border-color: var(--button-warning-border-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.secondary,
 button.secondary {
   background: var(--button-secondary-bg);
   border-color: var(--button-secondary-border);
@@ -905,13 +905,13 @@ button.secondary {
   color: var(--button-secondary-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.secondary:hover:not(:disabled),
 button.secondary:hover:not(:disabled) {
   background: var(--button-secondary-hover);
   color: var(--ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.secondary:active:not(:disabled),
 button.secondary:active:not(:disabled) {
   background: var(--button-secondary-active);
   color: var(--ink);
@@ -971,17 +971,40 @@ button.secondary:active:not(:disabled) {
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
 }
 
+/* A row of filters is a form, not a toolbar strip: the columns need room between them and the
+   labels need room above their fields, or six controls read as one dense band and an operator has
+   to count boxes to find the one they want.
+
+   Four fixed columns rather than auto-fit. auto-fit packs as many as will fit and leaves whatever
+   is over on a line of its own -- seven filters came out six-and-one, with "Limit" stranded under
+   an otherwise full row. A fixed count wraps evenly (seven reads four-and-three) and gives every
+   filter form in the dashboard the same rhythm instead of one per viewport width. */
 .toolbar-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 18px;
+  padding: 4px 2px;
+}
+
+@media (max-width: 1180px) {
+  .toolbar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .toolbar-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .toolbar-grid label {
   display: grid;
-  gap: 4px;
+  gap: 7px;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .toolbar-grid select,
@@ -1078,14 +1101,27 @@ button.secondary:active:not(:disabled) {
   margin-top: 0;
 }
 
+/* Four fixed columns, like the filter grid, and for the same reason: auto-fit packed seven tiles
+   across and left the eighth alone on its own line under a full row. A fixed count wraps evenly and
+   gives every tile row in the dashboard one rhythm instead of one per viewport width.
+   The margin is the tiles telling the sentence above them that they are a separate thing. */
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.metric-grid.compact {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+@media (max-width: 1180px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .metric-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .metric-grid article,
@@ -2478,7 +2514,7 @@ form > .op-actions,
   --field-ink-disabled: #5c6168;
 }
 
-/* Not a key. `:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button` deliberately catches
+/* Not a key. `:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button` deliberately catches
    EVERY button inside a panel, and this app writes its table links, breadcrumbs,
    tabs, expandable rows, tiles and close crosses as buttons too — 23 classes of
    them, counted off the markup rather than guessed. Left in, they took the key
@@ -2506,7 +2542,7 @@ form > .op-actions,
    the rule below, which names them directly. */
 /* --- The key: one geometry, four fills ------------------------------------- */
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn),
 .ghost-button,
 .btn,
 .icon-btn {
@@ -2527,11 +2563,11 @@ form > .op-actions,
    label is fine for "SAVE" and wrong for a room called qsgqsg, which read as "QSGQSG".
    Add `verbatim` to any button whose text comes from data rather than from the interface. */
 .verbatim,
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.verbatim {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button.verbatim {
   text-transform: none;
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn):active:not(:disabled),
 .ghost-button:active:not(:disabled),
 .btn:active:not(:disabled),
 .icon-btn:active:not(:disabled) {
@@ -2539,7 +2575,7 @@ form > .op-actions,
   transform: translate(0, 2px);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:disabled,
 .ghost-button:disabled,
 .btn:disabled,
 .icon-btn:disabled {
@@ -2548,14 +2584,14 @@ form > .op-actions,
 
 /* Blue. The bare button inside a panel/toolbar IS the primary in this app; .btn-primary
    is the same key reached through the shared component. */
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
 .btn-primary {
   background-color: var(--button-bg);
   border-color: var(--button-border);
   color: var(--button-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
 .btn-primary:hover:not(:disabled) {
   background-color: var(--button-bg-hover);
   border-color: var(--button-border-hover);
@@ -2563,7 +2599,7 @@ form > .op-actions,
   filter: none;
 }
 
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
 .btn-primary:active:not(:disabled) {
   background-color: var(--button-bg-active);
   border-color: var(--button-border-active);
@@ -2764,7 +2800,7 @@ select {
    action was a different height depending on which page wrote it. Pinned to the field's
    39px so a toolbar reads as one row of controls. .btn-sm stays deliberately smaller;
    it is the one that means "smaller". */
-:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .btn-sm),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header, .boot-panel, .connection-banner, .login-card) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ae-tool, .btn-sm),
 .ghost-button:not(.btn-sm),
 .btn:not(.btn-sm) {
   padding: 8px 12px;
@@ -3975,3 +4011,68 @@ label:has(> input[type='radio']) {
   min-width: 0;
 }
 
+
+
+/* One picker row, shared by the four row components under components/pickers/.
+     These lived in PickerModal's scoped block while the rows were its own markup. Once the rows
+     became child components the scope hash stopped reaching them, so none of this applied and every
+     row fell through to the filled-button rule -- blue, centred, full width. Component-scoped styles
+     do not cross a component boundary; a shared row language belongs here. */
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  padding: 9px 11px;
+}
+
+.pick-row:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-hover);
+}
+
+.pick-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.pick-dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--muted);
+  box-shadow: 0 0 0 3px rgba(var(--muted-rgb), 0.12);
+}
+
+.pick-dot.on {
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(var(--ok-rgb), 0.18);
+}
+
+.pick-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pick-main small {
+  color: var(--muted);
+}

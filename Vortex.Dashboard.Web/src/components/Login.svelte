@@ -162,21 +162,12 @@
     font-size: 14px;
   }
 
+  /* Height and spacing only: the sign-in button is the dashboard's filled button, and .login-card
+     is listed in that rule now. It used to carry its own fill, border and shadow, which is why the
+     first button an operator ever sees did not match the rest of the product. */
   button {
     margin-top: 4px;
     padding: 11px 12px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    background: var(--button-bg);
-    color: var(--button-ink);
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-    transition: filter 140ms ease;
-  }
-
-  button:hover:not(:disabled) {
-    filter: brightness(1.06);
   }
 
   button:disabled {

@@ -305,62 +305,10 @@
     overflow: auto;
   }
 
-  .pick-row {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-    text-align: left;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--surface-strong);
-    color: var(--ink);
-    padding: 9px 11px;
-  }
 
-  .pick-row:hover {
-    border-color: var(--line-strong);
-    background: var(--surface-hover);
-  }
 
-  .pick-main {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-  }
 
-  .pick-main small {
-    color: var(--muted);
-  }
 
-  .pick-icon {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--line-strong);
-    border-radius: 8px;
-    background: var(--input-bg);
-    color: var(--accent);
-    font-size: 0.72rem;
-    font-weight: 700;
-    object-fit: contain;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
 
-  .pick-dot {
-    width: 10px;
-    height: 10px;
-    flex: 0 0 auto;
-    border-radius: 999px;
-    background: var(--muted);
-    box-shadow: 0 0 0 3px rgba(var(--muted-rgb), 0.12);
-  }
 
-  .pick-dot.on {
-    background: var(--ok);
-    box-shadow: 0 0 0 3px rgba(var(--ok-rgb), 0.18);
-  }
 </style>

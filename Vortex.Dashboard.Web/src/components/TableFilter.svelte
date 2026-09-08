@@ -46,6 +46,10 @@
     margin-bottom: 8px;
   }
 
+  /* The same field the rest of the dashboard draws, with room for the magnifier inside it. The
+     input itself is .bare so it opts out of the global rule; this wrapper has to carry that look
+     instead, and it used to carry an approximation of it -- different tokens, no ring, no insets --
+     which is why the one search box on a page looked like it came from somewhere else. */
   .tf-input {
     display: flex;
     align-items: center;
@@ -53,11 +57,19 @@
     flex: 1;
     min-width: 0;
     max-width: 320px;
-    padding: 0 9px;
-    border: 1px solid var(--line-strong);
+    padding: 0 10px;
+    border: 1px solid var(--field-border);
     border-radius: 8px;
-    background: var(--input-bg);
-    color: var(--muted);
+    background: var(--field-bg);
+    box-shadow: 0 0 0 1px var(--field-ring), inset 0 1px 0 var(--field-border-top),
+      inset 0 -1px 0 var(--field-border-bottom);
+    color: var(--field-ink);
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+  }
+
+  .tf-input:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px #0a325d, inset 0 1px 0 var(--field-border-top);
   }
 
   .tf-input input {
@@ -65,8 +77,8 @@
     min-width: 0;
     border: 0;
     background: transparent;
-    color: var(--ink);
-    padding: 7px 0;
+    color: var(--field-ink);
+    padding: 9px 0;
   }
 
   .tf-input input:focus-visible {

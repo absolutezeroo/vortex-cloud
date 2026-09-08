@@ -264,18 +264,15 @@
     color: var(--muted);
   }
 
+  /* Only the layout. The fill, border, radius and ring come from the one filled-button rule in
+     styles.css, which these two containers are now listed in -- a second copy here is how they
+     ended up flat and a pixel off from every other button in the dashboard. */
   .boot-panel button,
   .connection-banner button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    border: 1px solid rgba(var(--accent-rgb), 0.34);
-    border-radius: 9px;
-    background: var(--button-bg);
-    color: var(--button-ink);
-    padding: 8px 12px;
-    font-weight: 700;
   }
 
   .boot-panel button:disabled,
