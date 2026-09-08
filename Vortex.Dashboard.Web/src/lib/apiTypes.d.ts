@@ -1442,6 +1442,109 @@ export interface GroupTotals {
   avgMembersPerGroup: number;
 }
 
+export interface GuildBanRow {
+  playerId: number;
+  playerName: string | null;
+  blockedById: number;
+  blockedByName: string | null;
+  blockedAt: string;
+}
+
+export interface GuildDirectoryPage {
+  page: number;
+  limit: number;
+  offset: number;
+  total: number;
+  count: number;
+  items: GuildDirectoryRow[];
+}
+
+export interface GuildDirectoryRow {
+  id: number;
+  name: string;
+  badgeUrl: string | null;
+  type: string;
+  ownerId: number;
+  ownerName: string | null;
+  roomId: number;
+  roomName: string | null;
+  members: number;
+  pendingRequests: number;
+  bans: number;
+  threads: number;
+  createdAt: string;
+}
+
+export interface GuildIdentity {
+  id: number;
+  name: string;
+  description: string | null;
+  badgeUrl: string | null;
+  type: string;
+  ownerId: number;
+  ownerName: string | null;
+  roomId: number;
+  roomName: string | null;
+  forumEnabled: boolean;
+  memberCount: number;
+  createdAt: string;
+}
+
+export interface GuildMemberRow {
+  playerId: number;
+  playerName: string | null;
+  rank: string;
+  isOwner: boolean;
+  joinedAt: string;
+}
+
+export interface GuildModeration {
+  guild: GuildIdentity;
+  members: GuildMemberRow[];
+  pendingRequests: GuildRequestRow[];
+  bans: GuildBanRow[];
+  threads: GuildThreadRow[];
+}
+
+export interface GuildPostRow {
+  id: number;
+  threadId: number;
+  message: string;
+  state: string;
+  deleted: boolean;
+  authorId: number;
+  authorName: string | null;
+  adminId: number | null;
+  adminName: string | null;
+  createdAt: string;
+  adminOperationAt: string | null;
+}
+
+export interface GuildRequestRow {
+  playerId: number;
+  playerName: string | null;
+  requestedAt: string;
+}
+
+export interface GuildThreadDetail {
+  guildId: number;
+  guildName: string;
+  thread: GuildThreadRow;
+  posts: GuildPostRow[];
+}
+
+export interface GuildThreadRow {
+  id: number;
+  subject: string;
+  state: string;
+  isPinned: boolean;
+  postCount: number;
+  authorId: number;
+  authorName: string | null;
+  createdAt: string;
+  lastPostAt: string | null;
+}
+
 export interface HabbiconCollectionList {
   count: number;
   items: HabbiconCollectionRow[];

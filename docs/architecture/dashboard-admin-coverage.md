@@ -23,9 +23,9 @@ Put another way, across the 171 entities the hotel persists:
 
 | Bucket | Count | Meaning |
 |---|---:|---|
-| Managed | 77 | an operator can read it and act on it |
-| Read-only | 48 | visible somewhere, no action available |
-| Absent | 46 | not surfaced at all (37 worth a decision, 9 per-player UI state) |
+| Managed | 78 | an operator can read it and act on it |
+| Read-only | 49 | visible somewhere, no action available |
+| Absent | 44 | not surfaced at all (35 worth a decision, 9 per-player UI state) |
 
 These three numbers do not move when an action is added to an entity already counted as managed:
 `Furnitures` counted as managed on the strength of `/items/grant` alone, and it stayed exactly as
@@ -60,7 +60,6 @@ The social layer is almost entirely here.
 
 * **Friends and messaging** — `MessengerFriends`, `MessengerMessages`, `MessengerBlocked`,
   `MessengerIgnored`, `MessengerRequests`
-* **Guilds and their forums** — `Groups`, `GroupMembers`, `GroupForumThreads`, `GroupForumPosts`
 * **Pets** — `Pets`, `PetPalettes`
 * **Player belongings** — `PlayerWardrobeOutfits`, `PlayerOwnedChatStyles`, `PlayerChatStyles`,
   `PlayerSubscriptions`, `PlayerMysteryBoxKeys`, `PlayerMintTokens`
@@ -74,16 +73,16 @@ are live objects an operator can watch and not touch.
 
 ## Absent: the blind spots that deserve a decision
 
-Nine of the 46 are per-player interface state (which navigator categories someone collapsed, their
+Nine of the 44 are per-player interface state (which navigator categories someone collapsed, their
 saved searches, forum read markers). Nobody administers those, and the script excludes them from the
-count that matters. The remaining 37 include:
+count that matters. The remaining 35 include:
 
 | Entity | Why it matters |
 |---|---|
 | `CommerceOperations`, `CommerceReceipts` | real-money commerce, with no surface at all |
 | `WiredChests`, `WiredContracts` | they hold furniture and coins; the movements are visible through `WiredChestTransactions`, the chests themselves are not |
 | `RoomMutes`, `RoomRights`, `RoomRatings` | a room's own moderation state |
-| `GroupMembershipRequests`, `GroupBlockedMembers`, `GroupForumSettings` | joins, guild bans, forum configuration |
+| `GroupForumSettings` | who may read, post and moderate in a guild's forum — the guild owner's own setting, and nothing above them can correct it |
 | `SecurityTickets`, `VoucherRedemptions`, `PlayerPrizeClaims`, `PlayerKickbacks`, `PlayerVaultIncomeRewards` | traces worth auditing |
 | `PlayerWordFilters`, `PlayerClothing`, `PlayerFavouriteRooms` | player content |
 | `MarketplaceSettings` | economy tuning |
@@ -140,10 +139,8 @@ the catalogue does not sell. The price actually paid is recoverable only while t
 in the ledger and still correlated, which is false for anything traded, won or granted — a refund
 that quietly paid zero for those would be worse than one that refuses.
 
-**Still owed here:** only the revoke has tests. Transfer and refund need the same, and the refund's
-ordering — the row leaves before the credit lands, because paying and then failing to remove the
-item is the one sequence that mints a free duplicate — is exactly the kind of invariant that earns
-one.
+All four are tested, the refund's ordering included: the fake wallet reads the database from inside
+the credit call, so a refund that paid before it deleted fails on the count it sees.
 
 Worth knowing for the next slice: `IInventoryGrain.RemoveFurnitureAsync` looks like the obvious call
 and is the wrong one. It removes the item from an in-memory dictionary and leaves the row — it is a
@@ -151,10 +148,34 @@ and is the wrong one. It removes the item from an in-memory dictionary and leave
 straight back on the next reload. The revoke deletes the row and then calls `ReloadFurnitureAsync`,
 which is what the trade path already does after handing items back.
 
-**Slice 2 — forum and guild moderation.** Delete a post, delete a thread, act on a membership
-request, lift a guild ban. Public content that gets reported, and today the only recourse is SQL.
-Forum state is read per request in most paths, so this is closer to §11.A than it looks — confirm
-before building.
+**Slice 2 — forum and guild moderation. Done.** One page, one dialog, four tabs: members, pending
+requests, bans, forum. The §11 question was confirmed rather than assumed — `GroupGrain` and
+`GroupForumGrain` hold no state between calls, each opens its own context — so the reads go straight
+to the tables.
+
+The writes do **not**, and that is the finding worth keeping: every membership change ends in
+`NotifyBaseRoomAsync`, which drops the guild base room's cached roster. That roster is what grants
+build rights. A dashboard kick written straight to the table would leave an ex-member building in a
+guild they are no longer in, and nothing would say so. So the operations call the grain, which is
+§11.B for a reason that has nothing to do with where the row lives.
+
+| Action | Route | Notes |
+|---|---|---|
+| Hide / restore / delete a thread | `/operations/guilds/forum/thread` | thread must belong to the named guild |
+| Hide / restore / delete a post | `/operations/guilds/forum/post` | hide writes `HiddenByAdmin` |
+| Approve / reject a request, remove a member, remove and bar, lift a ban | `/operations/guilds/member` | one endpoint, the action is a field |
+| Disband the guild | `/operations/guilds/delete` | detaches the room and drops its roster |
+
+Two things the build turned up. `GroupForumPostState.HiddenByAdmin` was declared with the enum and
+**written by nothing** — the same shape as `AnomalyFlagged` in slice 6, a vocabulary anticipating a
+feature nobody wrote. It is what the operator's hide writes now, which is how the row says whether
+the guild or the hotel removed a post. And every `VortexEntity` carries a global
+`DeletedAt == null` query filter, so "show the deleted posts" needed `IgnoreQueryFilters` to be true
+rather than merely intended — a read that quietly returned nothing would have looked like an empty
+thread.
+
+The owner cannot be removed, by a guild admin or by an operator: a guild with no owner has nobody
+who can disband or repair it, and disbanding is the operation for that.
 
 **Slice 3 — room moderation state.** `RoomBans` is read-only, `RoomMutes` / `RoomRights` /
 `RoomRatings` are invisible, and an active room holds all of it live. §11.B throughout: these go

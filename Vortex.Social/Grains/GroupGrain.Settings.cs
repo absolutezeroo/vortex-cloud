@@ -139,6 +139,33 @@ internal sealed partial class GroupGrain
             return false;
         }
 
+        return await DeactivateCoreAsync(dbCtx, group, actor.Value, ct).ConfigureAwait(true);
+    }
+
+    public async Task<bool> StaffDeactivateAsync(int actorPlayerId, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
+            g => g.Id == GroupId && g.DeletedAt == null,
+            ct
+        );
+
+        // Only the ownership check differs. Everything the disband has to reach -- the room link,
+        // the member rows, the requests, the cached roster that carries build rights -- is below,
+        // and an operator's version that reimplemented any of it would be the one that forgot the
+        // roster and left ex-members building in a guild that no longer exists.
+        return group is not null
+            && await DeactivateCoreAsync(dbCtx, group, actorPlayerId, ct).ConfigureAwait(true);
+    }
+
+    private async Task<bool> DeactivateCoreAsync(
+        VortexDbContext dbCtx,
+        GroupEntity group,
+        int actorId,
+        CancellationToken ct
+    )
+    {
         DateTime now = DateTime.UtcNow;
         int baseRoomId = group.RoomEntityId;
 
@@ -162,18 +189,14 @@ internal sealed partial class GroupGrain
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _events
-            .PublishAsync(new GroupDeactivatedEvent(actor.Value, GroupId), ct)
+            .PublishAsync(new GroupDeactivatedEvent(actorId, GroupId), ct)
             .ConfigureAwait(true);
 
         // The room is no longer a guild base — drop the cached roster so ex-members immediately
         // lose the build rights the guild was granting them.
         await NotifyRoomAsync(baseRoomId, [], ct).ConfigureAwait(true);
 
-        _logger.LogInformation(
-            "Group {GroupId} deactivated by player {ActorId}",
-            GroupId,
-            actor.Value
-        );
+        _logger.LogInformation("Group {GroupId} deactivated by player {ActorId}", GroupId, actorId);
         return true;
     }
 

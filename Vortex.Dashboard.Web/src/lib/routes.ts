@@ -81,6 +81,7 @@ export const NAV = [
   { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Players', keywords: 'hc habbo club builders bc abonnement subscription vip premium expiration', caps: ROUTE_PERMISSIONS.economy, load: () => import('../pages/SubscriptionsPage.svelte') },
   { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Players', keywords: 'ami friend amitie relation message prive forum thread discussion', caps: ROUTE_PERMISSIONS.social, load: () => import('../pages/SocialPage.svelte'), writes: true },
   { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Players', keywords: 'guilde guild groupe group forum badge membre population', caps: ROUTE_PERMISSIONS.groupsStats, load: () => import('../pages/GroupsStatsPage.svelte') },
+  { path: '/guilds', labelKey: 'nav.guilds', shortKey: 'nav.guildsShort', group: 'Players', keywords: 'guilde guild groupe group forum post thread message membre member demande request ban banni supprimer delete moderation', caps: ROUTE_PERMISSIONS.guilds, load: () => import('../pages/GuildsPage.svelte'), writes: true },
 
   // Moderation is a job, not a property of a player: a CFH ticket belongs to the queue a moderator
   // works through, not to the account page of whoever happened to file it. The chat search sits here

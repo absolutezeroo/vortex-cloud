@@ -563,6 +563,122 @@ internal sealed class GroupForumGrain(
         return BuildPostSnapshot(post, 0, 0, DateTime.UtcNow);
     }
 
+    public async Task<bool> StaffModerateThreadAsync(
+        int actorPlayerId,
+        int threadId,
+        ForumStaffAction action,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        // No LoadForModerationAsync: an operator has no rank in this guild, and the content they are
+        // asked to act on is exactly what the guild's own moderators left standing. The group is
+        // still loaded, so a thread id belonging to another guild is refused rather than moderated.
+        GroupForumThreadEntity? thread = await dbCtx.GroupForumThreads.FirstOrDefaultAsync(
+            t => t.Id == threadId && t.GroupEntityId == GroupId && t.DeletedAt == null,
+            ct
+        );
+
+        if (thread is null)
+        {
+            return false;
+        }
+
+        DateTime now = DateTime.UtcNow;
+
+        if (action == ForumStaffAction.Delete)
+        {
+            thread.DeletedAt = now;
+        }
+        else
+        {
+            thread.State =
+                action == ForumStaffAction.Restore
+                    ? GroupForumThreadState.Open
+                    : GroupForumThreadState.Hidden;
+        }
+
+        thread.AdminPlayerEntityId = actorPlayerId;
+        thread.AdminOperationAt = now;
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        await events
+            .PublishAsync(
+                new ForumThreadModeratedEvent(actorPlayerId, GroupId, thread.Id, (int)thread.State),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        _logger.LogInformation(
+            "Forum thread {ThreadId} in group {GroupId} {Action} by operator {ActorId}",
+            thread.Id,
+            GroupId,
+            action,
+            actorPlayerId
+        );
+
+        return true;
+    }
+
+    public async Task<bool> StaffModeratePostAsync(
+        int actorPlayerId,
+        int postId,
+        ForumStaffAction action,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        GroupForumPostEntity? post = await dbCtx.GroupForumPosts.FirstOrDefaultAsync(
+            p => p.Id == postId && p.GroupEntityId == GroupId && p.DeletedAt == null,
+            ct
+        );
+
+        if (post is null)
+        {
+            return false;
+        }
+
+        DateTime now = DateTime.UtcNow;
+
+        if (action == ForumStaffAction.Delete)
+        {
+            post.DeletedAt = now;
+        }
+        else
+        {
+            // HiddenByAdmin rather than Hidden: both disappear from every read, and the reads only
+            // ever test for Visible, but the two say different things to whoever looks at the row
+            // afterwards. This one was declared with the enum and never written until now.
+            post.State =
+                action == ForumStaffAction.Restore
+                    ? GroupForumPostState.Visible
+                    : GroupForumPostState.HiddenByAdmin;
+        }
+
+        post.AdminPlayerEntityId = actorPlayerId;
+        post.AdminOperationAt = now;
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        await events
+            .PublishAsync(
+                new ForumPostModeratedEvent(actorPlayerId, GroupId, post.Id, (int)post.State),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        _logger.LogInformation(
+            "Forum post {PostId} in group {GroupId} {Action} by operator {ActorId}",
+            post.Id,
+            GroupId,
+            action,
+            actorPlayerId
+        );
+
+        return true;
+    }
+
     public async Task<ForumSnapshot?> UpdateSettingsAsync(
         PlayerId actor,
         int readPermission,

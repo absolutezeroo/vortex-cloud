@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Players;
 
@@ -64,6 +65,31 @@ public interface IGroupForumGrain : IGrainWithIntegerKey
         int threadId,
         int messageId,
         int action,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Hotel-staff moderation of one thread: the same write as <see cref="ModerateThreadAsync"/>
+    /// without the guild's own permission gate, because the actor is an operator rather than a
+    /// member. Returns false when the thread is not this group's, or is already gone.
+    /// </summary>
+    /// <remarks>
+    /// It routes through the grain rather than the table so the moderation stamp, the audit event
+    /// and the guild's single writer stay in one place -- the dashboard's version of an action must
+    /// leave the same trail as the guild's own.
+    /// </remarks>
+    Task<bool> StaffModerateThreadAsync(
+        int actorPlayerId,
+        int threadId,
+        ForumStaffAction action,
+        CancellationToken ct
+    );
+
+    /// <inheritdoc cref="StaffModerateThreadAsync"/>
+    Task<bool> StaffModeratePostAsync(
+        int actorPlayerId,
+        int postId,
+        ForumStaffAction action,
         CancellationToken ct
     );
 

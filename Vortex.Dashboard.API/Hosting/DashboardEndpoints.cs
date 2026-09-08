@@ -190,6 +190,7 @@ internal static partial class DashboardEndpoints
         MapBackupReads(app);
         MapAchievementReads(app);
         MapBotReads(app);
+        MapGuildReads(app);
         MapNavigatorReads(app);
         MapArticleReads(app);
         MapGamedataReads(app);
@@ -222,6 +223,7 @@ internal static partial class DashboardEndpoints
         MapBenchmarkOperations(app);
         MapNavigatorOperations(app);
         MapStaffOperations(app);
+        MapGuildOperations(app);
         MapContentOperations(app);
         MapArticleOperations(app);
         MapGamedataOperations(app);

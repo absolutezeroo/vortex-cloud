@@ -67,6 +67,9 @@ GET /api/v1/gamedata -> dashboard.ops.gamedata.manage
 GET /api/v1/gamedata/entries -> dashboard.ops.gamedata.manage
 GET /api/v1/gamedata/languages -> dashboard.ops.gamedata.manage
 GET /api/v1/groups/stats -> dashboard.groups.read
+GET /api/v1/guilds -> dashboard.ops.guilds.manage
+GET /api/v1/guilds/{guildId:int} -> dashboard.ops.guilds.manage
+GET /api/v1/guilds/{guildId:int}/threads/{threadId:int} -> dashboard.ops.guilds.manage
 GET /api/v1/habbicons -> dashboard.habbicons.read
 GET /api/v1/habbicons/players/{playerId:int} -> dashboard.habbicons.read
 GET /api/v1/habbicons/sources -> dashboard.habbicons.read
@@ -209,6 +212,10 @@ POST /api/v1/operations/gamedata/entry/delete -> dashboard.ops.gamedata.manage
 POST /api/v1/operations/gamedata/furni -> dashboard.ops.gamedata.manage
 POST /api/v1/operations/gamedata/language -> dashboard.ops.gamedata.manage
 POST /api/v1/operations/gamedata/language/delete -> dashboard.ops.gamedata.manage
+POST /api/v1/operations/guilds/delete -> dashboard.ops.guilds.manage
+POST /api/v1/operations/guilds/forum/post -> dashboard.ops.guilds.manage
+POST /api/v1/operations/guilds/forum/thread -> dashboard.ops.guilds.manage
+POST /api/v1/operations/guilds/member -> dashboard.ops.guilds.manage
 POST /api/v1/operations/habbicons -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/collections -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/collections/delete -> dashboard.ops.habbicons.manage

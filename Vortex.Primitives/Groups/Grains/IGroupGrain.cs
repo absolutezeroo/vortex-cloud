@@ -113,4 +113,23 @@ public interface IGroupGrain : IGrainWithIntegerKey
 
     /// <summary>Count of the target member's furni placed in the guild base room.</summary>
     Task<int> GetMemberFurniCountAsync(int targetPlayerId, CancellationToken ct);
+
+    /// <summary>
+    /// One membership action taken by a hotel operator rather than by a guild admin: the same write,
+    /// the same event and the same base-room notification as the guild's own version, with the rank
+    /// check skipped because the actor has no rank here. False when there was nothing to do.
+    /// </summary>
+    Task<bool> StaffMemberActionAsync(
+        int actorPlayerId,
+        int targetPlayerId,
+        GroupStaffAction action,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Disbands the guild on an operator's authority. Identical to <see cref="DeactivateAsync"/>
+    /// down to detaching the room and dropping its cached roster, which is what actually takes the
+    /// guild's build rights away from the players standing in it.
+    /// </summary>
+    Task<bool> StaffDeactivateAsync(int actorPlayerId, CancellationToken ct);
 }

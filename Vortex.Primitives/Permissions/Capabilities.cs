@@ -101,6 +101,17 @@ public static class Capabilities
         public const string OpsCatalogManage = "dashboard.ops.catalog.manage";
         public const string OpsFurnitureManage = "dashboard.ops.furniture.manage";
         public const string GroupsRead = "dashboard.groups.read";
+
+        /// <summary>
+        /// Acting on a guild from outside it: hiding or deleting forum content, answering a
+        /// membership request, lifting a guild ban, removing a member, disbanding the guild.
+        /// </summary>
+        /// <remarks>
+        /// One capability for the guild and its forum because it is one job: the reason an operator
+        /// is in a guild's forum is almost always the reason they are about to remove someone from
+        /// it. Splitting it would mean an operator who can delete the post but not the poster.
+        /// </remarks>
+        public const string OpsGuildsManage = "dashboard.ops.guilds.manage";
         public const string PetsRead = "dashboard.pets.read";
         public const string CfhRead = "dashboard.cfh.read";
 
@@ -275,6 +286,7 @@ public static class Capabilities
             OpsCatalogManage,
             OpsFurnitureManage,
             GroupsRead,
+            OpsGuildsManage,
             PetsRead,
             CfhRead,
             ChatlogsRead,

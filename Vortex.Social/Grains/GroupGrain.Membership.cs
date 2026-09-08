@@ -131,11 +131,30 @@ internal sealed partial class GroupGrain
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
-        if (group is null)
-        {
-            return null;
-        }
 
+        return group is null
+            ? null
+            : await ApproveCoreAsync(dbCtx, group, actor.Value, targetPlayerId, ct)
+                .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// The approval itself, once someone is allowed to make it.
+    /// </summary>
+    /// <remarks>
+    /// Split from the public method so the operator's version above the guild
+    /// (<see cref="StaffMemberActionAsync"/>) runs this exact body rather than its own copy. Two
+    /// copies of a membership write would eventually differ in which event they publish or which
+    /// room they notify, and only one of them would be the one anybody tested.
+    /// </remarks>
+    private async Task<GroupMemberSnapshot?> ApproveCoreAsync(
+        VortexDbContext dbCtx,
+        GroupEntity group,
+        int actorId,
+        int targetPlayerId,
+        CancellationToken ct
+    )
+    {
         GroupMembershipRequestEntity? request = await dbCtx
             .GroupMembershipRequests.Include(r => r.PlayerEntity)
             .FirstOrDefaultAsync(
@@ -164,10 +183,7 @@ internal sealed partial class GroupGrain
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _events
-            .PublishAsync(
-                new GroupMembershipAcceptedEvent(actor.Value, GroupId, targetPlayerId),
-                ct
-            )
+            .PublishAsync(new GroupMembershipAcceptedEvent(actorId, GroupId, targetPlayerId), ct)
             .ConfigureAwait(true);
 
         await NotifyBaseRoomAsync([targetPlayerId], ct).ConfigureAwait(true);
@@ -183,11 +199,18 @@ internal sealed partial class GroupGrain
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        if (await LoadIfAdminAsync(dbCtx, actor, ct) is null)
-        {
-            return false;
-        }
+        return await LoadIfAdminAsync(dbCtx, actor, ct) is not null
+            && await RejectCoreAsync(dbCtx, actor.Value, targetPlayerId, ct).ConfigureAwait(true);
+    }
 
+    /// <inheritdoc cref="ApproveCoreAsync"/>
+    private async Task<bool> RejectCoreAsync(
+        VortexDbContext dbCtx,
+        int actorId,
+        int targetPlayerId,
+        CancellationToken ct
+    )
+    {
         int deleted = await dbCtx
             .GroupMembershipRequests.Where(r =>
                 r.GroupEntityId == GroupId
@@ -203,10 +226,7 @@ internal sealed partial class GroupGrain
         }
 
         await _events
-            .PublishAsync(
-                new GroupMembershipRejectedEvent(actor.Value, GroupId, targetPlayerId),
-                ct
-            )
+            .PublishAsync(new GroupMembershipRejectedEvent(actorId, GroupId, targetPlayerId), ct)
             .ConfigureAwait(true);
 
         return true;
@@ -281,8 +301,26 @@ internal sealed partial class GroupGrain
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
-        // The owner can never be removed.
-        if (group is null || group.OwnerPlayerEntityId == targetPlayerId)
+
+        return group is not null
+            && await KickCoreAsync(dbCtx, group, actor.Value, targetPlayerId, block, ct)
+                .ConfigureAwait(true);
+    }
+
+    /// <inheritdoc cref="ApproveCoreAsync"/>
+    private async Task<bool> KickCoreAsync(
+        VortexDbContext dbCtx,
+        GroupEntity group,
+        int actorId,
+        int targetPlayerId,
+        bool block,
+        CancellationToken ct
+    )
+    {
+        // The owner can never be removed -- not by a guild admin, and not by an operator either: a
+        // guild without an owner has nobody who can disband or repair it. Deleting the guild is the
+        // operation for that, and it is offered separately.
+        if (group.OwnerPlayerEntityId == targetPlayerId)
         {
             return false;
         }
@@ -328,7 +366,7 @@ internal sealed partial class GroupGrain
                     {
                         GroupEntityId = GroupId,
                         PlayerEntityId = targetPlayerId,
-                        BlockedByPlayerEntityId = actor.Value,
+                        BlockedByPlayerEntityId = actorId,
                         GroupEntity = group,
                         PlayerEntity = null!,
                     }
@@ -339,7 +377,7 @@ internal sealed partial class GroupGrain
         }
 
         await _events
-            .PublishAsync(new GroupMemberKickedEvent(actor.Value, GroupId, targetPlayerId), ct)
+            .PublishAsync(new GroupMemberKickedEvent(actorId, GroupId, targetPlayerId), ct)
             .ConfigureAwait(true);
 
         await NotifyBaseRoomAsync([targetPlayerId], ct).ConfigureAwait(true);
@@ -355,11 +393,18 @@ internal sealed partial class GroupGrain
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        if (await LoadIfAdminAsync(dbCtx, actor, ct) is null)
-        {
-            return false;
-        }
+        return await LoadIfAdminAsync(dbCtx, actor, ct) is not null
+            && await UnblockCoreAsync(dbCtx, actor.Value, targetPlayerId, ct).ConfigureAwait(true);
+    }
 
+    /// <inheritdoc cref="ApproveCoreAsync"/>
+    private async Task<bool> UnblockCoreAsync(
+        VortexDbContext dbCtx,
+        int actorId,
+        int targetPlayerId,
+        CancellationToken ct
+    )
+    {
         int removed = await dbCtx
             .GroupBlockedMembers.Where(b =>
                 b.GroupEntityId == GroupId
@@ -378,10 +423,64 @@ internal sealed partial class GroupGrain
             "Player {TargetId} unblocked from group {GroupId} by {ActorId}",
             targetPlayerId,
             GroupId,
-            actor.Value
+            actorId
         );
 
         return true;
+    }
+
+    public async Task<bool> StaffMemberActionAsync(
+        int actorPlayerId,
+        int targetPlayerId,
+        GroupStaffAction action,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        // The guild is still loaded and still has to exist; what is skipped is only the rank check,
+        // which an operator could never pass and which is not what stands between them and this
+        // write -- the dashboard capability is.
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
+            g => g.Id == GroupId && g.DeletedAt == null,
+            ct
+        );
+
+        if (group is null)
+        {
+            return false;
+        }
+
+        return action switch
+        {
+            GroupStaffAction.ApproveRequest => await ApproveCoreAsync(
+                    dbCtx,
+                    group,
+                    actorPlayerId,
+                    targetPlayerId,
+                    ct
+                )
+                .ConfigureAwait(true)
+                is not null,
+            GroupStaffAction.RejectRequest => await RejectCoreAsync(
+                    dbCtx,
+                    actorPlayerId,
+                    targetPlayerId,
+                    ct
+                )
+                .ConfigureAwait(true),
+            GroupStaffAction.Kick or GroupStaffAction.KickAndBlock => await KickCoreAsync(
+                    dbCtx,
+                    group,
+                    actorPlayerId,
+                    targetPlayerId,
+                    action == GroupStaffAction.KickAndBlock,
+                    ct
+                )
+                .ConfigureAwait(true),
+            _ => await UnblockCoreAsync(dbCtx, actorPlayerId, targetPlayerId, ct)
+                .ConfigureAwait(true),
+        };
     }
 
     public async Task<GroupMemberSnapshot?> SetAdminRightsAsync(
