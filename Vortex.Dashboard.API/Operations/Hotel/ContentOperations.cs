@@ -205,6 +205,48 @@ internal sealed class ContentOperations(OperationRunner runner, IContentAdminSer
             ct
         );
 
+    public Task<OperationResult> TransferFurnitureAsync(
+        TransferFurnitureRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        _runner.ExecuteAsync(
+            "ops.item.transfer",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new { request.ItemId, request.ToPlayerId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .TransferFurnitureAsync(request.PlayerId, request.ToPlayerId, request.ItemId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> RefundFurnitureAsync(
+        RefundFurnitureRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        _runner.ExecuteAsync(
+            "ops.item.refund",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new { request.ItemId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .RefundFurnitureAsync(request.PlayerId, request.ItemId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> UpdateBotAsync(
         BotRequest request,
         string actor,

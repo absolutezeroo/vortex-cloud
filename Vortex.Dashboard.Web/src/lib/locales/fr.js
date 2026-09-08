@@ -801,6 +801,13 @@ export default {
     foundSoFar: '{found} icône(s) trouvée(s) pour le moment ({probed} id(s) vérifié(s), {pending} en attente).',
   },
   entityModal: {
+    giveItem: 'Donner a un joueur',
+    giveItemTitle: 'Donner un objet',
+    giveItemSummary: "Donner l'objet #{item} ({name}) de {player} a {target}.",
+    refundItem: 'Rembourser',
+    refundItemTitle: 'Rembourser un objet',
+    refundItemSummary: "Reprendre l'objet #{item} ({name}) a {player} et lui payer le prix catalogue en credits.",
+    itemInRoom: 'dans une room',
     deleteItem: 'Supprimer definitivement',
     deleteItemTitle: 'Supprimer un objet',
     deleteItemSummary: "Supprimer definitivement l'objet #{item} ({name}) appartenant a {player}.",

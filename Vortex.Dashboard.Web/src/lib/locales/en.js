@@ -802,6 +802,13 @@ export default {
     foundSoFar: '{found} icon(s) found so far ({probed} id(s) checked, {pending} pending).',
   },
   entityModal: {
+    giveItem: 'Give to a player',
+    giveItemTitle: 'Give an item away',
+    giveItemSummary: 'Give item #{item} ({name}) from {player} to {target}.',
+    refundItem: 'Refund',
+    refundItemTitle: 'Refund an item',
+    refundItemSummary: 'Take item #{item} ({name}) from {player} and pay them the catalogue price in credits.',
+    itemInRoom: 'in a room',
     deleteItem: 'Delete permanently',
     deleteItemTitle: 'Delete an item',
     deleteItemSummary: 'Permanently delete item #{item} ({name}) owned by {player}.',

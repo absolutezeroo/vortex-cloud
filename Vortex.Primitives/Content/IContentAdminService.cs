@@ -154,6 +154,20 @@ public interface IContentAdminService
     /// </remarks>
     Task<ContentAdminResult> RevokeFurnitureAsync(int playerId, int itemId, CancellationToken ct);
 
+    /// <summary>Moves one item to another player; refused while it stands in a room.</summary>
+    Task<ContentAdminResult> TransferFurnitureAsync(
+        int playerId,
+        int toPlayerId,
+        int itemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Takes one item back and credits the player what the catalogue asks for it today. Refused for
+    /// an item the catalogue does not sell, rather than paying nothing.
+    /// </summary>
+    Task<ContentAdminResult> RefundFurnitureAsync(int playerId, int itemId, CancellationToken ct);
+
     Task<ContentAdminResult> CreateNftAvatarAsync(NftAvatarSpec spec, CancellationToken ct);
 
     Task<ContentAdminResult> UpdateNftAvatarAsync(

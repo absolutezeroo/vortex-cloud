@@ -199,6 +199,46 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsGrantItem,
             TagOperations
         );
+        MapPost(
+            app,
+            ApiOperations + "/items/transfer",
+            async (
+                HttpContext ctx,
+                TransferFurnitureRequest body,
+                ContentOperations contentOps,
+                CancellationToken ct
+            ) =>
+                body.PlayerId <= 0 || body.ToPlayerId <= 0 || body.ItemId <= 0
+                    ? Results.BadRequest(new { error = "invalid_request" })
+                    : Results.Ok(
+                        await contentOps
+                            .TransferFurnitureAsync(body, ctx.ActorEmail(), ct)
+                            .ConfigureAwait(false)
+                    ),
+            Capabilities.Dashboard.OpsGrantItem,
+            TagOperations
+        );
+        // A refund moves money, so it answers to the currency capability as well as the item one --
+        // MapPost takes a single policy, and paying out is the more dangerous half.
+        MapPost(
+            app,
+            ApiOperations + "/items/refund",
+            async (
+                HttpContext ctx,
+                RefundFurnitureRequest body,
+                ContentOperations contentOps,
+                CancellationToken ct
+            ) =>
+                body.PlayerId <= 0 || body.ItemId <= 0
+                    ? Results.BadRequest(new { error = "invalid_request" })
+                    : Results.Ok(
+                        await contentOps
+                            .RefundFurnitureAsync(body, ctx.ActorEmail(), ct)
+                            .ConfigureAwait(false)
+                    ),
+            Capabilities.Dashboard.OpsGrantCurrency,
+            TagOperations
+        );
     }
 
     public static void MapVoucherOperations(WebApplication app)

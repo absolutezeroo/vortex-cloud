@@ -17,6 +17,8 @@
   import PlayerOperationsPanel from './PlayerOperationsPanel.svelte';
   import ConfirmStagedModal from './ConfirmStagedModal.svelte';
   import DropdownMenu from './DropdownMenu.svelte';
+  import PickerModal from './PickerModal.svelte';
+  import type { PickerRow } from '../lib/pickers/directories';
   import { createWriteOps } from '../lib/writeOps';
   import { hasDashboardCapability } from '../lib/permissions';
   import {
@@ -54,17 +56,47 @@
   /**
    * What can be done to one item, and what cannot yet.
    *
-   * One action per state. A placed item belongs to its room, so the only thing to do with it is
-   * send it back to the hand -- through the room grain, so everyone standing there sees it leave.
-   * Once it is in a hand, deleting it is an ordinary thing to do. The sequence teaches itself and
-   * beats a disabled row explaining why half the menu does nothing.
+   * A placed item belongs to its room, so the three that move or destroy it are offered but
+   * disabled until it is back in a hand -- shown rather than hidden, because a menu whose contents
+   * change shape from row to row teaches an operator nothing about what is possible. The suffix
+   * says why in two words instead of a sentence that wraps.
    */
   function itemMenu(item: InventoryItem) {
     const placed = item.roomEntityId !== null;
+    const held = placed ? ` (${$t('entityModal.itemInRoom')})` : '';
 
-    return placed
-      ? [{ id: 'pickup', label: $t('entityModal.pickUp') }]
-      : [{ id: 'delete', label: $t('entityModal.deleteItem'), danger: true }];
+    return [
+      ...(placed ? [{ id: 'pickup', label: $t('entityModal.pickUp') }] : []),
+      { id: 'give', label: $t('entityModal.giveItem') + held, disabled: placed },
+      { id: 'refund', label: $t('entityModal.refundItem') + held, disabled: placed },
+      { id: 'delete', label: $t('entityModal.deleteItem') + held, danger: true, disabled: placed },
+    ];
+  }
+
+  /** The item a player is being picked for. Null while no give is in flight. */
+  let giving = $state<InventoryItem | null>(null);
+
+  function giveTo(target: PickerRow) {
+    const item = giving;
+
+    giving = null;
+
+    if (!playerProfile || !item) {
+      return;
+    }
+
+    itemOps.ask(
+      '/api/v1/operations/items/transfer',
+      { playerId: playerProfile.id, toPlayerId: Number(target.id), itemId: item.itemId },
+      translate('entityModal.giveItemTitle'),
+      translate('entityModal.giveItemSummary', {
+        item: item.itemId,
+        name: item.definitionName ?? '-',
+        player: playerProfile.name,
+        target: target.name,
+      }),
+      { danger: true },
+    );
   }
 
   function runItemAction(action: string, item: InventoryItem) {
@@ -77,6 +109,25 @@
       name: item.definitionName ?? '-',
       player: playerProfile.name,
     };
+
+    if (action === 'give') {
+      // Who receives it is a person, not an id typed from memory: the shared picker finds one.
+      giving = item;
+
+      return;
+    }
+
+    if (action === 'refund') {
+      itemOps.ask(
+        '/api/v1/operations/items/refund',
+        { playerId: playerProfile.id, itemId: item.itemId },
+        translate('entityModal.refundItemTitle'),
+        translate('entityModal.refundItemSummary', named),
+        { danger: true },
+      );
+
+      return;
+    }
 
     if (action === 'pickup') {
       itemOps.ask(
@@ -368,8 +419,17 @@
 
     <!-- Stacked on top of the popup, which is what the dialog stack in lib/dialogBehaviour exists
          for: before it, Escape here closed the popup underneath instead of the confirmation. -->
-    <ConfirmStagedModal ops={itemOps} eyebrow={$t('entityModal.takeBackTitle')} />
+    <ConfirmStagedModal ops={itemOps} eyebrow={$t('entityModal.itemActions')} />
   </Modal>
+
+  {#if giving}
+    <PickerModal
+      kind="user"
+      title={$t('entityModal.giveItemTitle')}
+      onSelect={giveTo}
+      onClose={() => (giving = null)}
+    />
+  {/if}
 {/if}
 
 <style>

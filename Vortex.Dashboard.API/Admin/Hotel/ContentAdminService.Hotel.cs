@@ -569,6 +569,155 @@ internal sealed partial class ContentAdminService
     /// the same call the trade path makes after handing items back.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// Moves one item to another player.
+    /// </summary>
+    /// <remarks>
+    /// Refused while the item is in a room for the same reason the delete is: the room owns a
+    /// placed item, and handing it to someone else underneath would leave the room showing it to
+    /// the wrong name. Both inventories are reloaded -- the one losing it and the one gaining it --
+    /// because each grain caches its own list and only one of them is obvious to remember.
+    /// </remarks>
+    public async Task<ContentAdminResult> TransferFurnitureAsync(
+        int playerId,
+        int toPlayerId,
+        int itemId,
+        CancellationToken ct
+    )
+    {
+        if (playerId == toPlayerId)
+        {
+            return ContentAdminResult.Fail("same_player");
+        }
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        FurnitureEntity? item = await db
+            .Furnitures.FirstOrDefaultAsync(f => f.Id == itemId, ct)
+            .ConfigureAwait(false);
+
+        if (item is null)
+        {
+            return ContentAdminResult.Fail("item_not_found");
+        }
+
+        if (item.PlayerEntityId != playerId)
+        {
+            return ContentAdminResult.Fail("item_not_owned");
+        }
+
+        if (item.RoomEntityId is not null)
+        {
+            return ContentAdminResult.Fail("item_is_placed");
+        }
+
+        bool recipientExists = await db
+            .Players.AnyAsync(p => p.Id == toPlayerId, ct)
+            .ConfigureAwait(false);
+
+        if (!recipientExists)
+        {
+            return ContentAdminResult.Fail("recipient_not_found");
+        }
+
+        item.PlayerEntityId = toPlayerId;
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await ReloadInventoryAsync(playerId, ct).ConfigureAwait(false);
+        await ReloadInventoryAsync(toPlayerId, ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(itemId);
+    }
+
+    /// <summary>
+    /// Takes one item back and pays for it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Paid at what the catalogue asks <em>today</em>, not at what the player paid. The price they
+    /// paid is recoverable only when the purchase is still in the ledger and still correlated, which
+    /// is not true for an item that has been traded, won or granted -- and a refund that silently
+    /// pays zero in those cases would be worse than one that refuses.
+    /// </para>
+    /// <para>
+    /// So an item the catalogue does not sell is refused rather than guessed at, and only credits
+    /// are paid: an offer priced in another currency is a decision about which wallet to top up, and
+    /// that belongs to whoever asks for it, not to a default chosen here.
+    /// </para>
+    /// </remarks>
+    public async Task<ContentAdminResult> RefundFurnitureAsync(
+        int playerId,
+        int itemId,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        FurnitureEntity? item = await db
+            .Furnitures.FirstOrDefaultAsync(f => f.Id == itemId, ct)
+            .ConfigureAwait(false);
+
+        if (item is null)
+        {
+            return ContentAdminResult.Fail("item_not_found");
+        }
+
+        if (item.PlayerEntityId != playerId)
+        {
+            return ContentAdminResult.Fail("item_not_owned");
+        }
+
+        if (item.RoomEntityId is not null)
+        {
+            return ContentAdminResult.Fail("item_is_placed");
+        }
+
+        // The cheapest offer that sells this furniture, so a definition on a discounted page does
+        // not pay out at the price of a bundle that happens to contain it.
+        int? price = await db
+            .CatalogProducts.AsNoTracking()
+            .Where(p => p.FurnitureDefinitionEntityId == item.FurnitureDefinitionEntityId)
+            .Select(p => (int?)p.Offer.CostCredits)
+            .Where(cost => cost > 0)
+            .OrderBy(cost => cost)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        if (price is null or <= 0)
+        {
+            return ContentAdminResult.Fail("no_catalogue_price");
+        }
+
+        db.Furnitures.Remove(item);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await ReloadInventoryAsync(playerId, ct).ConfigureAwait(false);
+
+        // After the row is gone: paying first and then failing to remove the item is the one
+        // ordering that hands out a free duplicate.
+        await grainFactory
+            .GetPlayerWalletGrain(new PlayerId(playerId))
+            .GrantCreditsAsync(price.Value, ct)
+            .ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(price.Value);
+    }
+
+    /// <summary>
+    /// Re-reads one player's furniture into their inventory grain.
+    /// </summary>
+    /// <remarks>
+    /// The list is a cache built at activation, so a row that changed underneath is invisible until
+    /// this runs. Every item write here ends with it, which is why it is one method rather than a
+    /// line each of them has to remember.
+    /// </remarks>
+    private Task ReloadInventoryAsync(int playerId, CancellationToken ct) =>
+        grainFactory.GetInventoryGrain(new PlayerId(playerId)).ReloadFurnitureAsync(ct);
+
     public async Task<ContentAdminResult> RevokeFurnitureAsync(
         int playerId,
         int itemId,
@@ -603,10 +752,7 @@ internal sealed partial class ContentAdminService
         db.Furnitures.Remove(item);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        await grainFactory
-            .GetInventoryGrain(new PlayerId(playerId))
-            .ReloadFurnitureAsync(ct)
-            .ConfigureAwait(false);
+        await ReloadInventoryAsync(playerId, ct).ConfigureAwait(false);
 
         return ContentAdminResult.Ok(itemId);
     }
