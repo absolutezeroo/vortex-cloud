@@ -1507,6 +1507,7 @@ export default {
     gamedataShort: 'external_variables, furnidata, textes',
   },
   gamedata: {
+    fileEmpty: "Ce fichier ne contient encore aucune entree.",
     title: 'Gamedata',
     subtitle: "Les fichiers que le client télécharge au démarrage. Une mauvaise écriture ici, c'est un client qui ne démarre plus — chaque enregistrement garde d'abord une copie datée.",
     noAssetRoot: "Aucune racine d'assets configurée : les fichiers gamedata sont introuvables.",

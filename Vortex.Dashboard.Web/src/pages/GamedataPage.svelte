@@ -102,7 +102,15 @@
   // Only this file's rows. createResource keeps the previous page on screen while the next one
   // travels, and each file is rendered by a different table -- productdata reading a page of texts
   // keyed its rows on an index those rows do not have, and every key came out null.
-  let rows = $derived(entries.data?.file === activeFile ? entries.data.entries : []);
+  //
+  // An answer that does not name a file at all predates that field: show it. A stale row is a much
+  // smaller lie than an empty table under a header that says the file holds 730 entries, and
+  // blanking the page is not an acceptable way to fail.
+  let rows = $derived(
+    entries.data && (!entries.data.file || entries.data.file === activeFile)
+      ? entries.data.entries
+      : [],
+  );
   let total = $derived(entries.data?.total ?? 0);
   let declared = $derived(languages.data?.languages ?? []);
   let furniCategories = $derived(
@@ -386,8 +394,19 @@
         <!-- Said plainly rather than shown as an empty table: a file that does not parse is already
              broken for the client, and "no results" would read as "nothing to edit". -->
         <EmptyState message={$t('gamedata.unparseable', { name: fileMeta.name })} />
+      {:else if entries.loading && !rows.length}
+        <!-- The rows of the file being left are not shown while the next one travels, so this gap is
+             a real one and has to say "loading" rather than "nothing matches". -->
+        <p class="muted">{$t('common.loading')}</p>
       {:else if !rows.length}
-        <EmptyState message={$t('gamedata.noEntries')} />
+        <!-- Two different empty states: a file with nothing in it, and a filter that excluded
+             everything. Saying "nothing matches that search" with an empty search box was the page
+             blaming the operator for its own state. -->
+        <EmptyState
+          message={applied || kind || category
+            ? $t('gamedata.noEntries')
+            : $t('gamedata.fileEmpty')}
+        />
       {:else if active === 'furnidata'}
         <table>
           <thead>

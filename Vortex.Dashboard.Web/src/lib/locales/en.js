@@ -1504,6 +1504,7 @@ export default {
     gamedataShort: 'external_variables, furnidata, texts',
   },
   gamedata: {
+    fileEmpty: 'This file has no entries yet.',
     title: 'Gamedata',
     subtitle: 'The files the game client downloads at boot. A bad save here is a client that will not start — every write keeps a dated copy first.',
     noAssetRoot: 'No asset root is configured, so the gamedata files cannot be found.',
