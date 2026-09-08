@@ -1585,6 +1585,27 @@ export interface InventoryRow {
   empty: boolean;
 }
 
+export interface ItemAnomaly {
+  itemId: number;
+  kind: string;
+  detail: string;
+  occurrences: number;
+  firstSeen: string;
+  lastSeen: string;
+  definitionId: number | null;
+  definitionName: string | null;
+  ownerPlayerId: number | null;
+  ownerName: string | null;
+}
+
+export interface ItemAnomalyScan {
+  since: string;
+  until: string;
+  itemsScanned: number;
+  count: number;
+  items: ItemAnomaly[];
+}
+
 export interface ItemEventRow {
   id: number;
   occurredAt: string;

@@ -74,6 +74,7 @@ public sealed class ApiTypeScriptContractTests
         typeof(HandItemList),
         typeof(AuditPage),
         typeof(ModerationStats),
+        typeof(ItemAnomalyScan),
         typeof(CatalogPurchaseStats),
         typeof(EconomyTrends),
         typeof(EconomyLedgerPage),

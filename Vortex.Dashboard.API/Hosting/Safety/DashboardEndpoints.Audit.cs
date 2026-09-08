@@ -32,6 +32,16 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
+        // Same capability as the audit trail it reads from: this is the audit trail, asked a
+        // different question.
+        MapReadGet<ItemAnomalyScan>(
+            app,
+            ApiForensics + "/item-anomalies",
+            (HttpContext ctx, ItemAnomalyReads reads, CancellationToken ct) =>
+                OkAsync(reads.ScanAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.AuditRead,
+            TagForensics
+        );
         MapReadGet<ModerationStats>(
             app,
             ApiForensics + "/moderation/stats",

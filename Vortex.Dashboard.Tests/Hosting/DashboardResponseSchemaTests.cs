@@ -70,6 +70,7 @@ public sealed class DashboardResponseSchemaTests
         ("/api/v1/hand-items", typeof(HandItemList)),
         ("/api/v1/forensics/audit", typeof(AuditPage)),
         ("/api/v1/forensics/moderation/stats", typeof(ModerationStats)),
+        ("/api/v1/forensics/item-anomalies", typeof(ItemAnomalyScan)),
         ("/api/v1/catalog/purchases/stats", typeof(CatalogPurchaseStats)),
         ("/api/v1/economy/trends", typeof(EconomyTrends)),
         ("/api/v1/economy/ledger", typeof(EconomyLedgerPage)),

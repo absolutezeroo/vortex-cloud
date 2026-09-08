@@ -81,6 +81,7 @@ export const ROUTE_PERMISSIONS = {
   ],
   rooms: [CAPABILITIES.auditRead],
   audit: [CAPABILITIES.auditRead],
+  itemAnomalies: [CAPABILITIES.auditRead],
   moderation: [CAPABILITIES.auditRead],
   cfh: [CAPABILITIES.opsCfhManage],
   roomControl: [CAPABILITIES.opsRoomsManage],

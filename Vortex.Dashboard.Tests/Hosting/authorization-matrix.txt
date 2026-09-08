@@ -60,6 +60,7 @@ GET /api/v1/economy/trends -> dashboard.economy.read
 GET /api/v1/fishing -> dashboard.fishing.read
 GET /api/v1/fishing/activity -> dashboard.fishing.read
 GET /api/v1/forensics/audit -> dashboard.audit.read
+GET /api/v1/forensics/item-anomalies -> dashboard.audit.read
 GET /api/v1/forensics/moderation/stats -> dashboard.audit.read
 GET /api/v1/furniture/definitions -> dashboard.furniture.read
 GET /api/v1/gamedata -> dashboard.ops.gamedata.manage

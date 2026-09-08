@@ -171,6 +171,7 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<SocialReads>();
         services.TryAddSingleton<WiredReads>();
         services.TryAddSingleton<AuditReads>();
+        services.TryAddSingleton<ItemAnomalyReads>();
         services.TryAddSingleton<CfhReads>();
         services.TryAddSingleton<ChatlogReads>();
         services.TryAddSingleton<CollectibleReads>();
