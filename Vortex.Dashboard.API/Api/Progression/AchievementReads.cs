@@ -250,8 +250,9 @@ internal sealed class AchievementReads(
                     .PlayerAchievements.AsNoTracking()
                     .Where(p => p.AchievementEntityId == achievementId)
                     .GroupBy(p => p.Level)
+                    // Ordered before the projection; see the note in MysteryBoxReads.
+                    .OrderBy(g => g.Key)
                     .Select(g => new AchievementLevelCount(g.Key, g.Count()))
-                    .OrderBy(g => g.Level)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 

@@ -113,19 +113,39 @@ internal sealed class GroupReads(
                     ))
                     .ToList();
 
-                List<GroupForumRanking> topByForumActivity = await db
+                // Projected into an anonymous type and mapped afterwards, which is not a style
+                // preference: filtering or ordering AFTER a projection into a positional record is
+                // untranslatable. EF keeps the member bindings of an anonymous type and can push
+                // `.Where(x => x.threadCount > 0)` back down onto the subquery it came from; a
+                // record built through a constructor is opaque to it, so the same clause threw
+                // "could not be translated" and the endpoint answered 500 for every caller.
+                //
+                // Nothing offline catches this: the in-memory provider used by the tests is LINQ to
+                // objects and translates everything happily. It fails against MySQL and only there.
+                var forumActivity = await db
                     .Groups.AsNoTracking()
-                    .Select(g => new GroupForumRanking(
+                    .Select(g => new
+                    {
                         g.Id,
                         g.Name,
-                        db.GroupForumThreads.Count(th => th.GroupEntityId == g.Id),
-                        db.GroupForumPosts.Count(p => p.GroupEntityId == g.Id)
-                    ))
-                    .Where(g => g.ThreadCount > 0 || g.PostCount > 0)
-                    .OrderByDescending(g => g.PostCount)
+                        threadCount = db.GroupForumThreads.Count(th => th.GroupEntityId == g.Id),
+                        postCount = db.GroupForumPosts.Count(p => p.GroupEntityId == g.Id),
+                    })
+                    .Where(g => g.threadCount > 0 || g.postCount > 0)
+                    .OrderByDescending(g => g.postCount)
                     .Take(10)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+
+                List<GroupForumRanking> topByForumActivity =
+                [
+                    .. forumActivity.Select(g => new GroupForumRanking(
+                        g.Id,
+                        g.Name,
+                        g.threadCount,
+                        g.postCount
+                    )),
+                ];
 
                 var recentActivity = await db
                     .AuditEvents.AsNoTracking()

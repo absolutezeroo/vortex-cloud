@@ -208,12 +208,18 @@ internal sealed class MysteryBoxReads(
                     .PlayerMysteryBoxKeys.AsNoTracking()
                     .Where(k => k.DeletedAt == null)
                     .GroupBy(k => k.Color)
+                    // Ordered on the grouping, before the projection rather than after it: a
+                    // positional record is opaque to the query translator, so an operator that
+                    // reads one of its properties has nothing to push back down onto the column it
+                    // came from. See GroupReads, where exactly that shape answered 500 in
+                    // production and passed every test, because the in-memory provider the tests
+                    // use is LINQ to objects and translates anything.
+                    .OrderBy(g => g.Key)
                     .Select(g => new MysteryKeyColorCount(
                         g.Key,
                         g.Count(k => k.ConsumedAt == null),
                         g.Count(k => k.ConsumedAt != null)
                     ))
-                    .OrderBy(g => g.Color)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
