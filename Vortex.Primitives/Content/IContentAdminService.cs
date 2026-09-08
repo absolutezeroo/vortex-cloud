@@ -144,6 +144,16 @@ public interface IContentAdminService
 
     Task<ContentAdminResult> RevokeEffectAsync(int playerId, int effectId, CancellationToken ct);
 
+    /// <summary>
+    /// Takes one item back off a player: the counterpart of the item grant.
+    /// </summary>
+    /// <remarks>
+    /// Refuses while the item stands in a room, which is that room's live state to own, and when
+    /// the id does not belong to <paramref name="playerId"/> -- an id alone would let a typo delete
+    /// a stranger's furniture.
+    /// </remarks>
+    Task<ContentAdminResult> RevokeFurnitureAsync(int playerId, int itemId, CancellationToken ct);
+
     Task<ContentAdminResult> CreateNftAvatarAsync(NftAvatarSpec spec, CancellationToken ct);
 
     Task<ContentAdminResult> UpdateNftAvatarAsync(
