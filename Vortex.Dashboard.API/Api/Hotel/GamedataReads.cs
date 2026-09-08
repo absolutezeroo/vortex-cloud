@@ -75,14 +75,14 @@ internal sealed class GamedataReads(
 
         if (!GamedataDocumentStore.Files.ContainsKey(file))
         {
-            return new GamedataEntryPage("unknown_file", null, 0, page, GamedataPageSize, []);
+            return new GamedataEntryPage(file, "unknown_file", null, 0, page, GamedataPageSize, []);
         }
 
         JsonNode? root = _gamedata.Read(file, language, out DateTime modified);
 
         if (root is null)
         {
-            return new GamedataEntryPage("unreadable", null, 0, page, GamedataPageSize, []);
+            return new GamedataEntryPage(file, "unreadable", null, 0, page, GamedataPageSize, []);
         }
 
         List<GamedataEntry> matches = file switch
@@ -98,6 +98,7 @@ internal sealed class GamedataReads(
         };
 
         return new GamedataEntryPage(
+            file,
             null,
             modified,
             matches.Count,

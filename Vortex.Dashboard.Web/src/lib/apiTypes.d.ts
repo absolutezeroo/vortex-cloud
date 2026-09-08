@@ -1353,6 +1353,7 @@ export interface GamedataEntry {
 }
 
 export interface GamedataEntryPage {
+  file: string;
   error: string | null;
   modifiedUtc: string | null;
   total: number;
