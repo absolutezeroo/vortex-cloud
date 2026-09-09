@@ -44,9 +44,19 @@ public sealed class RoomPersistenceGrain(
     {
         _dirtyItems[snapshot.ObjectId] = snapshot;
 
+        // The marker has to follow the newest snapshot, not accumulate beside it. The two live in
+        // separate collections and only the snapshot was being overwritten, so a pickup followed by
+        // a replacement in the same room inside one DirtyItemsTickMs left the removal marker
+        // standing over a snapshot that says the item is placed -- and the flush wrote
+        // RoomEntityId = null on furniture the player was looking at. It came back in the inventory
+        // on the next room load.
         if (remove)
         {
             _removedItemIds.Add(snapshot.ObjectId);
+        }
+        else
+        {
+            _removedItemIds.Remove(snapshot.ObjectId);
         }
 
         return Task.CompletedTask;
@@ -61,6 +71,11 @@ public sealed class RoomPersistenceGrain(
         foreach (RoomItemSnapshot snapshot in snapshots)
         {
             _dirtyItems[snapshot.ObjectId] = snapshot;
+
+            // The room's own tick path, and the one that carries a replacement. Same rule as the
+            // single enqueue above: a snapshot of an item that is in the room clears any removal
+            // marker left over from the pickup that preceded it.
+            _removedItemIds.Remove(snapshot.ObjectId);
         }
 
         return Task.CompletedTask;

@@ -137,6 +137,63 @@ public sealed class RoomPersistenceLossWindowTests
     }
 
     /// <summary>
+    /// Pick a sofa up and put it straight back down, inside one <c>DirtyItemsTickMs</c>. The removal
+    /// marker and the snapshot live in two collections and only the snapshot was being overwritten,
+    /// so the flush read "removed" over a snapshot that says placed and wrote
+    /// <c>RoomEntityId = null</c> on furniture the player was standing next to. It came back in the
+    /// inventory on the next room load.
+    /// </summary>
+    [Fact]
+    public async Task APickupFollowedByAReplacement_LeavesTheItemInTheRoom()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueRemovalAsync(1);
+        await h.EnqueueAsync(1);
+
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be((int)ROOM);
+    }
+
+    /// <summary>
+    /// And through the room's own tick, which is the path a replacement actually takes:
+    /// <c>MarkDirty</c> collects the item and <c>RoomGrain.FlushDirtyItemsAsync</c> hands the batch
+    /// over as a bulk enqueue — a different method, which had the same gap.
+    /// </summary>
+    [Fact]
+    public async Task ARoomTickAfterAPickup_ClearsTheRemovalToo()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueRemovalAsync(1);
+        await h.EnqueueBatchAsync(1);
+
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().Be((int)ROOM);
+    }
+
+    /// <summary>
+    /// The other direction still works: a replacement followed by a pickup is a pickup. Only the
+    /// newest word about the item counts, whichever way round it came.
+    /// </summary>
+    [Fact]
+    public async Task AReplacementFollowedByAPickup_TakesTheItemOut()
+    {
+        Harness h = new(maxPerFlush: 100);
+
+        await h.EnqueueAsync(1);
+        await h.DeactivateAsync();
+
+        await h.EnqueueBatchAsync(1);
+        await h.EnqueueRemovalAsync(1);
+        await h.DeactivateAsync();
+
+        h.RoomOf(1).Should().BeNull();
+    }
+
+    /// <summary>
     /// PET-TICK-044: the pet stats used to be written by the room itself, from inside its tick.
     /// They come here now, on the clock that already writes the furniture.
     /// </summary>
@@ -278,6 +335,18 @@ public sealed class RoomPersistenceLossWindowTests
 
             return db.Pets.Single(pet => pet.Id == petId).Nutrition;
         }
+
+        /// <summary>
+        /// The room's own tick path: one batch of snapshots of items that are in the room. Separate
+        /// from <see cref="EnqueueAsync" /> because it is a separate method on the grain, and the
+        /// removal marker had to be cleared on both.
+        /// </summary>
+        public Task EnqueueBatchAsync(params int[] objectIds) =>
+            _grain.EnqueueDirtyItemsAsync(
+                new RoomId((int)ROOM),
+                [.. objectIds.Select(Snapshot)],
+                CancellationToken.None
+            );
 
         public Task EnqueueRemovalAsync(int objectId) =>
             _grain.EnqueueDirtyItemAsync(
