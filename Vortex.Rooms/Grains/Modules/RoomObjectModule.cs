@@ -33,32 +33,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
         switch (roomObject)
         {
             case IRoomItem item:
-            {
-                if (!_roomGrain._state.ItemsById.TryAdd(item.ObjectId, item))
-                {
-                    throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
-                }
-
-                if (!_roomGrain._state.OwnerNamesById.TryGetValue(item.OwnerId, out string? value))
-                {
-                    string ownerName = await _roomGrain
-                        ._grainFactory.GetPlayerDirectoryGrain()
-                        .GetPlayerNameAsync(item.OwnerId, ct);
-
-                    value = ownerName;
-                    _roomGrain._state.OwnerNamesById[item.OwnerId] = value;
-                }
-
-                item.SetOwnerName(value ?? string.Empty);
-                item.SetAction(objectId => _roomGrain._state.DirtyItemIds.Add(objectId));
-
-                if (!await AttatchLogicAsync(roomObject, ct) || !_roomGrain.MapModule.AddItem(item))
-                {
-                    return false;
-                }
-
-                break;
-            }
+                return await AttachItemAsync(item, ct);
             case IRoomAvatar avatar:
             {
                 if (!_roomGrain._state.AvatarsByObjectId.TryAdd(avatar.ObjectId, avatar))
@@ -81,6 +56,103 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Publishes an item into the room's live state, or leaves the room exactly as it found it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The item is in <c>ItemsById</c> from the first line, and everything after it can fail: the
+    /// owner-name lookup is a grain call, the logic comes from a provider that can refuse the
+    /// definition's logic name, <c>OnAttachAsync</c> is behaviour code, and the map add answers a
+    /// bool. All of that used to return <c>false</c> or throw with the item left published --
+    /// without a logic, without a footprint, invisible to the client because the add composer is
+    /// only broadcast on success. The item was then a ghost: <c>ItemsById</c> answered for it, so
+    /// every use site dereferenced a null logic, and <c>TryAdd</c> refused to place it again for
+    /// the life of the activation.
+    /// </para>
+    /// <para>
+    /// So the publication is undone on both exits. A caller that gets <c>false</c>, or an exception,
+    /// can be sure the room is as it was.
+    /// </para>
+    /// </remarks>
+    private async Task<bool> AttachItemAsync(IRoomItem item, CancellationToken ct)
+    {
+        if (!_roomGrain._state.ItemsById.TryAdd(item.ObjectId, item))
+        {
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
+        }
+
+        try
+        {
+            if (!_roomGrain._state.OwnerNamesById.TryGetValue(item.OwnerId, out string? value))
+            {
+                string ownerName = await _roomGrain
+                    ._grainFactory.GetPlayerDirectoryGrain()
+                    .GetPlayerNameAsync(item.OwnerId, ct);
+
+                value = ownerName;
+                _roomGrain._state.OwnerNamesById[item.OwnerId] = value;
+            }
+
+            item.SetOwnerName(value ?? string.Empty);
+            item.SetAction(objectId => _roomGrain._state.DirtyItemIds.Add(objectId));
+
+            if (!await AttatchLogicAsync(item, ct) || !_roomGrain.MapModule.AddItem(item))
+            {
+                RollBackItemAttach(item);
+
+                return false;
+            }
+
+            return true;
+        }
+        catch
+        {
+            RollBackItemAttach(item);
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Undoes a partial attach. Takes the footprint back off the map before the identity, because
+    /// <c>RemoveItem</c> reads the item's own coordinates to find the tiles it was registered on.
+    /// </summary>
+    /// <remarks>
+    /// Every step this reverses is optional -- the map add may never have run, the logic may never
+    /// have been created -- and every one of them is safe to reverse twice: removing an id from a
+    /// tile stack that does not hold it, or from an index that never indexed it, is a no-op. That
+    /// is what lets one undo serve every failure point instead of a journal per step.
+    /// </remarks>
+    private void RollBackItemAttach(IRoomItem item)
+    {
+        _roomGrain.MapModule.RemoveItem(item);
+
+        DetachItemFromLiveState(item);
+    }
+
+    /// <summary>
+    /// Takes an item out of the room's identity table and logic index, and stops it marking itself
+    /// dirty. The caller owns the spatial removal and the order it runs in.
+    /// </summary>
+    /// <remarks>
+    /// These three lines were written out by hand at each of the three places an item leaves a room
+    /// -- a pickup, a definition swap, a pet finishing its food -- in the same order every time,
+    /// which is three copies of one invariant and no way to notice when one drifts. Nothing here
+    /// awaits, so no other turn can see the room holding an item in two of the three.
+    ///
+    /// The spatial removal is deliberately not folded in: each caller runs it at a different point
+    /// relative to its own hooks, and a wired box's <c>OnPickupAsync</c> resolves its pile from the
+    /// tile it used to sit on, so moving that step would change what those hooks see.
+    /// </remarks>
+    public void DetachItemFromLiveState(IRoomItem item)
+    {
+        item.SetAction(null);
+
+        _roomGrain._state.ItemsById.Remove(item.ObjectId);
+        _roomGrain._state.ItemIndex.OnItemDetached(item);
     }
 
     public async Task<bool> RemoveObjectAsync(
@@ -108,10 +180,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
                 await item.Logic.OnDetachAsync(ct);
                 await item.Logic.OnPickupAsync(ctx, ct);
 
-                item.SetAction(null);
-
-                _roomGrain._state.ItemsById.Remove(item.ObjectId);
-                _roomGrain._state.ItemIndex.OnItemDetached(item);
+                DetachItemFromLiveState(item);
 
                 RoomItemSnapshot snapshot = item.GetSnapshot();
 

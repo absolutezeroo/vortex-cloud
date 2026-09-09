@@ -1000,9 +1000,8 @@ public sealed partial class RoomPetSystem
         await _roomGrain.SendComposerToRoomAsync(item.GetRemoveComposer(ctx.PlayerId, true));
 
         await item.Logic.OnDetachAsync(ct);
-        item.SetAction(null);
-        _roomGrain._state.ItemsById.Remove(foodItemId);
-        _roomGrain._state.ItemIndex.OnItemDetached(item);
+
+        _roomGrain.ObjectModule.DetachItemFromLiveState(item);
 
         // The row was marked deleted inside the feed transaction, not here — but this is where the
         // last use is spent, so this is where the deletion is announced.

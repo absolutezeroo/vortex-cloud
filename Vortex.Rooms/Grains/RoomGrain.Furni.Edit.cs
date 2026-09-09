@@ -274,10 +274,7 @@ public sealed partial class RoomGrain
 
         await item.Logic.OnDetachAsync(ct);
 
-        item.SetAction(null);
-
-        _state.ItemsById.Remove(objectId);
-        _state.ItemIndex.OnItemDetached(item);
+        ObjectModule.DetachItemFromLiveState(item);
 
         IRoomItem? replacement = definition.ProductType switch
         {

@@ -107,95 +107,14 @@ public sealed class FloorItemPlacementFootprintTests
         ];
 
     /// <summary>
-    /// A floor item whose coordinates actually move when the room sets them — the point of the test
-    /// is which coordinates the map reads and when, so those cannot be a constant.
+    /// The logic arrives from the provider during the attach, the way a real one does — an item that
+    /// turns up with its logic already on it is refused by <c>AttatchLogicAsync</c> and never reaches
+    /// the map, which would make these tests pass on their own.
     /// </summary>
     private static IRoomFloorItem MovableFloorItem(RoomHarness harness, int width, int length)
     {
-        int x = 0;
-        int y = 0;
-        Rotation rotation = Rotation.North;
-        Altitude z = Altitude.Zero;
-        IRoomObjectLogic? attached = null;
+        harness.LogicFactory = TestFloorItems.WorkingLogic;
 
-        // Handed over by the provider during the attach, the way a real one is -- an item that
-        // arrives with its logic already on it is refused by AttatchLogicAsync and never reaches
-        // the map, which would make this test pass on its own.
-        harness.LogicFactory = () =>
-            FakeProxy.Create<IFurnitureFloorLogic>(call =>
-                call.Method.Name switch
-                {
-                    nameof(IFurnitureFloorLogic.CanWalk) => true,
-                    nameof(IFurnitureFloorLogic.CanStack) => true,
-                    nameof(IFurnitureFloorLogic.CanSit) => false,
-                    nameof(IFurnitureFloorLogic.CanLay) => false,
-                    nameof(IFurnitureFloorLogic.GetPostureOffset) => Altitude.Zero,
-                    _ => null,
-                }
-            );
-
-        return FakeProxy.Create<IRoomFloorItem>(call =>
-        {
-            switch (call.Method.Name)
-            {
-                case nameof(IRoomFloorItem.SetPosition):
-                    x = (int)call.Args![0]!;
-                    y = (int)call.Args![1]!;
-
-                    return null;
-                case nameof(IRoomFloorItem.SetPositionZ):
-                    z = (Altitude)call.Args![0]!;
-
-                    return null;
-                case nameof(IRoomFloorItem.SetRotation):
-                    rotation = (Rotation)call.Args![0]!;
-
-                    return null;
-                case nameof(IRoomFloorItem.SetLogic):
-                    attached = (IRoomObjectLogic)call.Args![0]!;
-
-                    return null;
-                default:
-                    return call.Method.Name switch
-                    {
-                        $"get_{nameof(IRoomFloorItem.ObjectId)}" => Placed,
-                        $"get_{nameof(IRoomFloorItem.OwnerId)}" => RoomHarness.Owner,
-                        $"get_{nameof(IRoomFloorItem.X)}" => x,
-                        $"get_{nameof(IRoomFloorItem.Y)}" => y,
-                        $"get_{nameof(IRoomFloorItem.Z)}" => z,
-                        $"get_{nameof(IRoomFloorItem.Height)}" => z,
-                        $"get_{nameof(IRoomFloorItem.Rotation)}" => rotation,
-                        $"get_{nameof(IRoomFloorItem.Logic)}" => attached,
-                        $"get_{nameof(IRoomFloorItem.Definition)}" => Definition(width, length),
-                        _ => null,
-                    };
-            }
-        });
+        return TestFloorItems.Movable(Placed, RoomHarness.Owner, width, length);
     }
-
-    private static FurnitureDefinitionSnapshot Definition(int width, int length) =>
-        new()
-        {
-            Id = 1,
-            SpriteId = 1,
-            Name = "test_item",
-            ProductType = ProductType.Floor,
-            FurniCategory = FurnitureCategory.Default,
-            LogicName = "default",
-            TotalStates = 1,
-            Width = width,
-            Length = length,
-            StackHeight = Altitude.FromInt(1),
-            CanStack = true,
-            CanWalk = true,
-            CanSit = false,
-            CanLay = false,
-            CanRecycle = false,
-            CanTrade = true,
-            CanGroup = false,
-            CanSell = true,
-            UsagePolicy = FurnitureUsageType.Everybody,
-            ExtraData = null,
-            StuffDataType = StuffDataType.LegacyKey,
-        };
 }

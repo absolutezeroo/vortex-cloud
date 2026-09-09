@@ -116,6 +116,31 @@ public sealed class RoomItemIndex
         return logics;
     }
 
+    /// <summary>
+    /// Every item the index currently holds, once each however many buckets it sits in.
+    /// </summary>
+    /// <remarks>
+    /// For checking the invariant in the class summary rather than for gameplay: nothing on a hot
+    /// path wants "all indexed items", and the answer is only meaningful next to
+    /// <see cref="RoomLiveState.ItemsById"/> — an item in here and not in there is a bucket that
+    /// went stale, which is exactly what this cannot notice on its own.
+    /// </remarks>
+    public IEnumerable<IRoomItem> IndexedItems()
+    {
+        HashSet<IRoomItem> seen = [];
+
+        foreach (HashSet<IRoomItem> bucket in _itemsByLogicType.Values)
+        {
+            foreach (IRoomItem item in bucket)
+            {
+                if (seen.Add(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+    }
+
     private Type[] KeysOf(Type logicType)
     {
         if (_keysByLogicType.TryGetValue(logicType, out Type[]? cached))
