@@ -162,12 +162,6 @@ public sealed partial class RoomGrain
         else
         {
             MapModule.MoveFloorItem(floor, tileIdx, Altitude.FromInt(heightHundredths));
-
-            // MoveFloorItem only recomputes the tile it was handed when the item has not actually
-            // moved, which is right for a 1x1 item and wrong for the 4x4, 6x6 and 8x8 tiles in this
-            // family: the rest of their footprint would keep the old height and furniture placed
-            // there would sit at it.
-            RecomputeFootprint(floor);
         }
 
         floor.MarkDirty();
@@ -280,28 +274,6 @@ public sealed partial class RoomGrain
             _logger,
             ct
         );
-
-    private void RecomputeFootprint(IRoomFloorItem floor)
-    {
-        if (
-            !MapModule.GetTileIdForSize(
-                floor.X,
-                floor.Y,
-                floor.Rotation,
-                floor.Definition.Width,
-                floor.Definition.Length,
-                out List<int> tileIds
-            )
-        )
-        {
-            return;
-        }
-
-        foreach (int idx in tileIds)
-        {
-            MapModule.ComputeTile(idx);
-        }
-    }
 
     /// <summary>
     /// The wall furniture a bin button may destroy. Stickies and photos are consumable by design —

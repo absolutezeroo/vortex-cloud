@@ -119,10 +119,44 @@ public sealed partial class RoomMapModule
         {
             item.SetPositionZ(finalZ);
 
-            ComputeTile(tileIdx);
+            RecomputeFootprint(item);
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Recomputes every tile the item stands on, after something about the item changed without it
+    /// moving.
+    /// </summary>
+    /// <remarks>
+    /// A tile's height and its walk/sit/lay flags are derived from the furniture standing on it, so
+    /// anything that changes an item's height or solidity invalidates its whole footprint -- not the
+    /// tile its coordinates name. For a 1x1 those are the same tile, which is why recomputing just
+    /// the one survived: the families where they differ are the 2x2, 4x4 and larger, and the stale
+    /// tiles keep the height and flags they had before the change. The visible version is walking
+    /// through the far half of a gate that just closed.
+    /// </remarks>
+    public void RecomputeFootprint(IRoomFloorItem item)
+    {
+        if (
+            !GetTileIdForSize(
+                item.X,
+                item.Y,
+                item.Rotation,
+                item.Definition.Width,
+                item.Definition.Length,
+                out List<int> tileIds
+            )
+        )
+        {
+            return;
+        }
+
+        foreach (int idx in tileIds)
+        {
+            ComputeTile(idx);
+        }
     }
 
     public bool RollFloorItem(IRoomFloorItem item, int tileIdx, Altitude z)
