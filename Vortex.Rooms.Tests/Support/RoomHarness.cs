@@ -36,6 +36,7 @@ using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
@@ -98,7 +99,11 @@ internal sealed class RoomHarness
             NullLogger<IRoomGrain>.Instance,
             FakeProxy.Create<IRoomModelProvider>(_ => null),
             FakeProxy.Create<IRoomItemsProvider>(_ => null),
-            FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
+            FakeProxy.Create<IRoomObjectLogicProvider>(call =>
+                call.Method.Name == nameof(IRoomObjectLogicProvider.CreateLogicInstance)
+                    ? LogicFactory?.Invoke()
+                    : null
+            ),
             FakeProxy.Create<IRoomAvatarProvider>(_ => null),
             FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
             FakeProxy.Create<IRoomEventListenerProvider>(_ => Array.Empty<IRoomEventListener>()),
@@ -276,6 +281,14 @@ internal sealed class RoomHarness
     /// <summary>Stands in for the behaviours a plugin would register: return true for an event and
     /// the room sees that publish come back cancelled.</summary>
     public Func<IEvent, bool> CancelWhen { get; set; } = _ => false;
+
+    /// <summary>
+    /// What <c>CreateLogicInstance</c> hands back. Null — the default — covers every test that puts
+    /// items straight into the live state and never attaches one; a test going through the real
+    /// attach path sets it before placing, because an item whose logic comes back null fails the
+    /// attach rather than reaching the map.
+    /// </summary>
+    public Func<IRoomObjectLogic>? LogicFactory { get; set; }
 
     /// <summary>
     /// Which Relics each player holds. A test that wants one on the trade table puts it here first,

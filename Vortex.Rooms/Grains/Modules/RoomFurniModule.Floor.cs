@@ -33,10 +33,16 @@ public sealed partial class RoomFurniModule
             throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
-        if (
-            !await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct)
-            || !_roomGrain.MapModule.PlaceFloorItem(item, tileIdx, rot)
-        )
+        // Position before attach, not after. AttatchObjectAsync registers the item's footprint from
+        // the coordinates it is carrying, and an item just materialised out of an inventory snapshot
+        // has none -- so attaching first stamped the footprint at (0, 0), then the real position was
+        // applied and registered a second time. Nothing ever took the first one back: RemoveFloorItem
+        // clears the footprint the item is standing on, and (0, 0) kept the id, its height and its
+        // FurnitureOccupied flag for the life of the activation. RoomGrain.Furni.Edit.cs already
+        // orders the swap path this way, for this reason.
+        _roomGrain.MapModule.PositionFloorItem(item, tileIdx, rot);
+
+        if (!await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct))
         {
             return false;
         }
