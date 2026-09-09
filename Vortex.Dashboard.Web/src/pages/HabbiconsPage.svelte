@@ -62,6 +62,8 @@
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
+  import Pagination from '../components/Pagination.svelte';
+  import { pageOf, pageCountOf, PAGE_SIZE } from '../lib/tableView';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import CurrencySelect from '../components/CurrencySelect.svelte';
@@ -104,6 +106,17 @@
   );
 
   let items = $derived(collections.data?.items ?? []);
+
+  // The endpoint answers every collection -- there is no Take on it -- so the table drew all of them
+  // and asked the operator to scroll.
+  let page = $state(1);
+  let pageCount = $derived(pageCountOf(items));
+  let pageItems = $derived(pageOf(items, page));
+
+  $effect(() => {
+    void search;
+    page = 1;
+  });
   // Null until an asset pack is installed; every sprite then falls back to a placeholder tile.
   let artwork = $derived(collections.data?.artwork ?? null);
   // The ownership tab reads ids out of a different endpoint, so it borrows the collection list's
@@ -407,7 +420,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each items as collection (collection.id)}
+              {#each pageItems as collection (collection.id)}
                 <tr>
                   <td>
                     <div class="named">
@@ -573,6 +586,20 @@
             </tbody>
           </table>
         </div>
+
+        {#if pageCount > 1}
+          <Pagination
+            {page}
+            {pageCount}
+            total={items.length}
+            pageSize={PAGE_SIZE}
+            label={$t('habbicons.paginationLabel')}
+            pageWord={$t('common.page')}
+            prevLabel={$t('common.prev')}
+            nextLabel={$t('common.next')}
+            onchange={(next) => (page = next)}
+          />
+        {/if}
       {/if}
     </div>
   {/if}

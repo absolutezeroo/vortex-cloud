@@ -2308,6 +2308,7 @@ export default {
     tabTracks: 'Tracks',
     tabPlayers: 'Players',
     statTracks: 'Tracks',
+    paginationLabel: 'tracks',
     statLive: 'Live',
     statParticipants: 'Participants',
     statPremium: 'Premium holders',
@@ -2516,6 +2517,7 @@ export default {
     statCollections: 'Collections',
     statHabbicons: 'Habbicons',
     statWithReward: 'Sets with a bonus',
+    paginationLabel: 'collections',
     idWarning:
       'Ids are the client asset pack’s numbering. If they do not line up with habbicons.json, every picture in the album is the wrong one — the codes are the anchor.',
     searchPlaceholder: 'Search a collection code…',

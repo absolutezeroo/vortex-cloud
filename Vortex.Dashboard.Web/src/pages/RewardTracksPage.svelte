@@ -104,6 +104,8 @@
 
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
+  import Pagination from '../components/Pagination.svelte';
+  import { pageOf, pageCountOf, PAGE_SIZE } from '../lib/tableView';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import Drawer from '../components/Drawer.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -288,6 +290,16 @@
   );
 
   let items = $derived(tracks.data?.items ?? []);
+
+  // Same as HabbiconsPage: the endpoint has no Take, so every track was drawn.
+  let page = $state(1);
+  let pageCount = $derived(pageCountOf(items));
+  let pageItems = $derived(pageOf(items, page));
+
+  $effect(() => {
+    void search;
+    page = 1;
+  });
   // NOT `actions`: every Drawer footer here is an `{#snippet actions()}`, and a snippet is hoisted
   // to its enclosing block -- so inside `{#if taskDraft}` the name resolved to the footer snippet
   // instead of this array. Iterating a function yields nothing and throws nothing, which is how the
@@ -623,7 +635,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each items as track (track.id)}
+              {#each pageItems as track (track.id)}
                 <tr>
                   <td>
                     <strong>{track.trackId}</strong>
@@ -911,6 +923,20 @@
             </tbody>
           </table>
         </div>
+
+        {#if pageCount > 1}
+          <Pagination
+            {page}
+            {pageCount}
+            total={items.length}
+            pageSize={PAGE_SIZE}
+            label={$t('rewardTracks.paginationLabel')}
+            pageWord={$t('common.page')}
+            prevLabel={$t('common.prev')}
+            nextLabel={$t('common.next')}
+            onchange={(next) => (page = next)}
+          />
+        {/if}
       {/if}
     </div>
   {/if}

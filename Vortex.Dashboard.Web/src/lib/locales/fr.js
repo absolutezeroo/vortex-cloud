@@ -2316,6 +2316,7 @@ export default {
     tabTracks: 'Parcours',
     tabPlayers: 'Joueurs',
     statTracks: 'Parcours',
+    paginationLabel: 'parcours',
     statLive: 'En ligne',
     statParticipants: 'Participants',
     statPremium: 'Détenteurs premium',
@@ -2526,6 +2527,7 @@ export default {
     statCollections: 'Collections',
     statHabbicons: 'Habbicons',
     statWithReward: 'Sets avec bonus',
+    paginationLabel: 'collections',
     idWarning:
       'Les ids suivent la numérotation du pack client. S’ils ne correspondent pas à habbicons.json, chaque image de l’album est la mauvaise — le code est la référence.',
     searchPlaceholder: 'Chercher un code de collection…',
