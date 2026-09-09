@@ -13,9 +13,12 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session';
-  import TableFilter from '../components/TableFilter.svelte';
+  import FilterBar from '../components/FilterBar.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
   import SortTh from '../components/SortTh.svelte';
-  import { filterRows, sortRows } from '../lib/tableView';
+  import Pagination from '../components/Pagination.svelte';
+  import { filterRows, sortRows, pageOf, pageCountOf, PAGE_SIZE } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
   import type { CfhIssueQueueEntrySnapshot } from '../lib/apiTypes';
   import type { Sort } from '../lib/tableView';
@@ -45,11 +48,56 @@
   let error = $state('');
   let queue = $state<CfhIssueQueueEntrySnapshot[]>([]);
 
-  // The queue is one request, no paging: on a busy hotel it is the table you scroll looking for one
-  // reporter's name.
-  let queueQuery = $state('');
+  // The queue is one request, so the filtering is over what the page already holds. The text box was
+  // all there was, which on a busy hotel means scrolling to find the one ticket somebody asked about.
+  const FILTERS: FilterField[] = [
+    { id: 'q', label: translate('cfh.filterText'), kind: 'text' },
+    { id: 'state', label: translate('cfh.colState'), kind: 'select', options: [] },
+    { id: 'reported', label: translate('cfh.colReported'), kind: 'entity', picker: 'user' },
+    { id: 'reporter', label: translate('cfh.colReporter'), kind: 'entity', picker: 'user' },
+    { id: 'unpicked', label: translate('cfh.filterUnpicked'), kind: 'bool' },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
+
+  // The states that exist are the states the queue answered with, so a hotel whose vocabulary grows
+  // does not need this list edited.
+  let stateOptions = $derived(
+    [...new Set(queue.map((entry) => entry.state))].sort().map((state) => ({
+      value: String(state),
+      label: String(state),
+    })),
+  );
+
+  let fields = $derived(
+    FILTERS.map((field) => (field.id === 'state' ? { ...field, options: stateOptions } : field)),
+  );
+
   let queueSort = $state<Sort>({ key: '', dir: 'desc' });
-  let queueView = $derived(sortRows(filterRows(queue, queueQuery), queueSort));
+  let queueView = $derived(
+    sortRows(
+      filterRows(queue, filters.q).filter((entry) => {
+        if (filters.state && String(entry.state) !== filters.state) return false;
+        if (filters.reported && entry.reportedUserId !== Number(filters.reported)) return false;
+        if (filters.reporter && entry.reporterUserId !== Number(filters.reporter)) return false;
+        if (filters.unpicked && entry.pickerUserId) return false;
+
+        return true;
+      }),
+      queueSort,
+    ),
+  );
+
+  let page = $state(1);
+  let pageCount = $derived(pageCountOf(queueView));
+  let rows = $derived(pageOf(queueView, page));
+
+  // Back to the first page whenever the list underneath changes shape, so a filter does not leave
+  // the operator on a page that no longer exists.
+  $effect(() => {
+    void filters;
+    page = 1;
+  });
 
   // Row-scoped action state, keyed by issueId.
   let rowBusy = $state<Record<number, boolean>>({});
@@ -183,7 +231,11 @@
 </section>
 
 <section class="panel">
-  <TableFilter bind:query={queueQuery} shown={queueView.length} total={queue.length} />
+  <FilterBar {fields} bind:values={filters} />
+</section>
+
+<section class="panel" style="margin-top: 12px;">
+  <p class="muted">{$t('cfh.shown', { shown: queueView.length, total: queue.length })}</p>
 
   <table>
     <thead>
@@ -199,7 +251,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each queueView as entry (entry.issueId)}
+      {#each rows as entry (entry.issueId)}
         <tr>
           <td>#{entry.issueId}</td>
           <td>{entry.state}</td>
@@ -230,6 +282,20 @@
       {/each}
     </tbody>
   </table>
+
+  {#if pageCount > 1}
+    <Pagination
+      {page}
+      {pageCount}
+      total={queueView.length}
+      pageSize={PAGE_SIZE}
+      label={$t('cfh.paginationLabel')}
+      pageWord={$t('common.page')}
+      prevLabel={$t('common.prev')}
+      nextLabel={$t('common.next')}
+      onchange={(next) => (page = next)}
+    />
+  {/if}
 </section>
 
 {#if banDraft}

@@ -13,10 +13,13 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session';
-  import TableFilter from '../components/TableFilter.svelte';
+  import FilterBar from '../components/FilterBar.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
   // Filter only: the rows are read through accessors (roomName/roomPopulation), so there are no
   // stable field names for a key-based sort to name.
-  import { filterRows } from '../lib/tableView';
+  import Pagination from '../components/Pagination.svelte';
+  import { filterRows, pageOf, pageCountOf, PAGE_SIZE } from '../lib/tableView';
   import { t, translate } from '../lib/i18n';
   import type { RoomOccupantSnapshot, RoomSummaryDto } from '../lib/apiTypes';
 
@@ -25,8 +28,58 @@
   let error = $state('');
   let rooms = $state<RoomSummaryDto[]>([]);
 
-  let roomQuery = $state('');
-  let roomView = $derived(filterRows(rooms, roomQuery));
+  // What an operator is actually looking for in a list of live rooms: a name, somebody's rooms, the
+  // busy ones, or the ones that have gone quiet. Until now the page offered the name and nothing
+  // else, so "which rooms are full right now" meant reading every row.
+  const FILTERS: FilterField[] = [
+    { id: 'q', label: translate('roomControl.filterName'), kind: 'text' },
+    { id: 'owner', label: translate('roomControl.filterOwner'), kind: 'entity', picker: 'user' },
+    { id: 'minPop', label: translate('roomControl.filterMinPopulation'), kind: 'number' },
+    {
+      id: 'activity',
+      label: translate('roomControl.filterActivity'),
+      kind: 'select',
+      options: [
+        { value: '5', label: translate('roomControl.activity5') },
+        { value: '30', label: translate('roomControl.activity30') },
+        { value: '120', label: translate('roomControl.activity120') },
+      ],
+    },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
+
+  let roomView = $derived(
+    filterRows(rooms, filters.q).filter((room) => {
+      if (filters.owner && room.ownerId !== Number(filters.owner)) {
+        return false;
+      }
+
+      if (filters.minPop && room.population < Number(filters.minPop)) {
+        return false;
+      }
+
+      if (filters.activity) {
+        const idleMs = Date.now() - new Date(room.lastUpdatedUtc).getTime();
+
+        if (idleMs > Number(filters.activity) * 60_000) {
+          return false;
+        }
+      }
+
+      return true;
+    }),
+  );
+
+  let page = $state(1);
+  let pageCount = $derived(pageCountOf(roomView));
+  let rows = $derived(pageOf(roomView, page));
+
+  // See CfhQueuePage: a filter must not leave the operator standing on a page that no longer exists.
+  $effect(() => {
+    void filters;
+    page = 1;
+  });
 
   // Expanded room id -> occupant list / loading state.
   let expanded = $state<number | null>(null);
@@ -141,7 +194,11 @@
 </section>
 
 <section class="panel">
-  <TableFilter bind:query={roomQuery} shown={roomView.length} total={rooms.length} />
+  <FilterBar fields={FILTERS} bind:values={filters} />
+</section>
+
+<section class="panel" style="margin-top: 12px;">
+  <p class="muted">{$t('roomControl.shown', { shown: roomView.length, total: rooms.length })}</p>
 
   <table>
     <thead>
@@ -154,7 +211,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each roomView as room (room.roomId)}
+      {#each rows as room (room.roomId)}
         <tr>
           <td>
             <button class="ghost-button" type="button" onclick={() => toggleExpand(room.roomId)}>
@@ -213,6 +270,20 @@
       {/each}
     </tbody>
   </table>
+
+  {#if pageCount > 1}
+    <Pagination
+      {page}
+      {pageCount}
+      total={roomView.length}
+      pageSize={PAGE_SIZE}
+      label={$t('roomControl.paginationLabel')}
+      pageWord={$t('common.page')}
+      prevLabel={$t('common.prev')}
+      nextLabel={$t('common.next')}
+      onchange={(next) => (page = next)}
+    />
+  {/if}
 </section>
 
 <ConfirmReasonModal

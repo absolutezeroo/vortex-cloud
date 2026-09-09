@@ -75,6 +75,15 @@ internal sealed class GuildReads(
                     );
                 }
 
+                if (bool.TryParse(query["banned"], out bool banned) && banned)
+                {
+                    guilds = guilds.Where(g =>
+                        db.GroupBlockedMembers.Any(b =>
+                            b.GroupEntityId == g.Id && b.DeletedAt == null
+                        )
+                    );
+                }
+
                 int total = await guilds.CountAsync(ct).ConfigureAwait(false);
 
                 var rows = await guilds

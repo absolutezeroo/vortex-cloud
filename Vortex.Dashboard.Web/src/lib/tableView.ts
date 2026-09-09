@@ -93,3 +93,27 @@ export function toggleSort(
   if (sort.dir === initialDir) return { key, dir: initialDir === 'desc' ? 'asc' : 'desc' };
   return { key: '', dir: initialDir };
 }
+
+/**
+ * How many rows of an already-loaded list to draw at once.
+ *
+ * These lists arrive in one response, so this is not about the request — it is about the table. A
+ * queue with four hundred tickets rendered every one of them into the DOM and asked the operator to
+ * scroll past the ones they were not looking for; the filters above narrow it, and this bounds
+ * whatever is left.
+ */
+export const PAGE_SIZE = 50;
+
+/** The `page`-th slice of `rows`, 1-based. Out-of-range pages clamp rather than answer nothing. */
+export function pageOf<T>(rows: T[] | null | undefined, page: number, size = PAGE_SIZE): T[] {
+  const all = rows || [];
+  const last = pageCountOf(all, size);
+  const current = Math.min(Math.max(1, page || 1), last);
+
+  return all.slice((current - 1) * size, current * size);
+}
+
+/** How many pages `rows` makes — at least one, so an empty list is page 1 of 1 rather than of 0. */
+export function pageCountOf(rows: unknown[] | null | undefined, size = PAGE_SIZE): number {
+  return Math.max(1, Math.ceil((rows?.length ?? 0) / size));
+}

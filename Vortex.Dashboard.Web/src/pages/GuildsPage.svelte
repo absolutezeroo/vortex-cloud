@@ -15,6 +15,9 @@
   import DropdownMenu from '../components/DropdownMenu.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
+  import FilterBar from '../components/FilterBar.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import Modal from '../components/Modal.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -25,7 +28,7 @@
   import Tabs from '../components/Tabs.svelte';
   import { filterRows, sortRows } from '../lib/tableView';
   import { openPlayer, openItem } from '../lib/session';
-  import { t } from '../lib/i18n';
+  import { t, translate } from '../lib/i18n';
   import type { GuildDirectoryPage, GuildModeration, GuildThreadDetail } from '../lib/apiTypes';
   import type { Sort } from '../lib/tableView';
 
@@ -45,16 +48,26 @@
   } as const;
 
   let page = $state(1);
-  let term = $state('');
-  let pendingOnly = $state(false);
 
-  // Filters live in the key, so changing one re-reads without a refresh() call.
+  const FILTERS: FilterField[] = [
+    { id: 'q', label: translate('guilds.search'), kind: 'text', placeholder: translate('guilds.searchPlaceholder') },
+    { id: 'ownerId', label: translate('guilds.colOwner'), kind: 'entity', picker: 'user' },
+    { id: 'pending', label: translate('guilds.withRequests'), kind: 'bool' },
+    { id: 'banned', label: translate('guilds.withBans'), kind: 'bool' },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
+
+  // Filters live in the key, so changing one re-reads without a refresh() call. Every one of them is
+  // a server filter: the list is paged, so narrowing it here would only narrow the page in hand.
   const guilds = createResource(
-    () => ['guilds', page, term, pendingOnly],
+    () => ['guilds', page, filters.q, filters.ownerId, filters.pending, filters.banned],
     () => {
       const params = new URLSearchParams({ page: String(page), limit: '40' });
-      if (term.trim()) params.set('q', term.trim());
-      if (pendingOnly) params.set('pending', 'true');
+      if (filters.q.trim()) params.set('q', filters.q.trim());
+      if (filters.ownerId) params.set('ownerId', filters.ownerId);
+      if (filters.pending) params.set('pending', 'true');
+      if (filters.banned) params.set('banned', 'true');
 
       return apiGet<GuildDirectoryPage>(`/api/v1/guilds?${params}`);
     },
@@ -182,25 +195,9 @@
 </section>
 
 <section class="panel">
-  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); search(); }}>
-    <label>
-      {$t('guilds.search')}
-      <input
-        autocomplete="off"
-        spellcheck="false"
-        type="search"
-        bind:value={term}
-        placeholder={$t('guilds.searchPlaceholder')}
-      />
-    </label>
-    <label>
-      {$t('guilds.pendingOnly')}
-      <select bind:value={pendingOnly} onchange={search}>
-        <option value={false}>{$t('guilds.allGuilds')}</option>
-        <option value={true}>{$t('guilds.withRequests')}</option>
-      </select>
-    </label>
-  </form>
+  <!-- Back to page 1 on any change: page 3 of the old filter is not page 3 of the new one, and
+       landing on an empty page reads as "nothing matches". -->
+  <FilterBar fields={FILTERS} bind:values={filters} onchange={search} />
 
   {#if guilds.forbidden}
     <AccessDeniedNotice message={$t('guilds.accessDenied')} />

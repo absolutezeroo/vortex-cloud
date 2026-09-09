@@ -11,7 +11,8 @@
   import EntityLink from '../components/EntityLink.svelte';
   import PageHeader from '../components/PageHeader.svelte';
   import TableFilter from '../components/TableFilter.svelte';
-  import { filterRows } from '../lib/tableView';
+  import Pagination from '../components/Pagination.svelte';
+  import { filterRows, pageOf, pageCountOf, PAGE_SIZE } from '../lib/tableView';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import { t } from '../lib/i18n';
@@ -35,6 +36,18 @@
       query,
     ),
   );
+
+  // A ninety-day scan of a busy hotel answers thousands of signatures; drawing all of them was one
+  // long page nobody read past the top of.
+  let page = $state(1);
+  let pageCount = $derived(pageCountOf(visible));
+  let pageRows = $derived(pageOf(visible, page));
+
+  $effect(() => {
+    void query;
+    void kindFilter;
+    page = 1;
+  });
 
   // Built from what came back rather than a hardcoded list, so a signature added server-side shows
   // up here without anyone remembering to add it.
@@ -131,7 +144,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each visible as row (`${row.itemId}:${row.kind}`)}
+            {#each pageRows as row (`${row.itemId}:${row.kind}`)}
               <tr>
                 <td>
                   <EntityLink
@@ -167,6 +180,20 @@
           </tbody>
         </table>
       </div>
+
+      {#if pageCount > 1}
+        <Pagination
+          {page}
+          {pageCount}
+          total={visible.length}
+          pageSize={PAGE_SIZE}
+          label={$t('itemAnomalies.paginationLabel')}
+          pageWord={$t('common.page')}
+          prevLabel={$t('common.prev')}
+          nextLabel={$t('common.next')}
+          onchange={(next) => (page = next)}
+        />
+      {/if}
     {:else}
       <EmptyState message={$t('itemAnomalies.nothingFound')} />
     {/if}
