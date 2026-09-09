@@ -16,30 +16,6 @@ namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain
 {
-    public async Task<bool> AddItemAsync(IRoomItem item, CancellationToken ct)
-    {
-        try
-        {
-            if (!await ActionModule.AddItemAsync(item, ct))
-            {
-                return false;
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Failed to add item {ItemId} to room {RoomId}",
-                item.ObjectId,
-                _state.RoomId
-            );
-
-            return false;
-        }
-    }
-
     public async Task<bool> RemoveItemByIdAsync(
         ActionContext ctx,
         RoomObjectId itemId,

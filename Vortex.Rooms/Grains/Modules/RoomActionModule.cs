@@ -18,9 +18,6 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
 
-    public Task<bool> AddItemAsync(IRoomItem item, CancellationToken ct) =>
-        _roomGrain.ObjectModule.AttatchObjectAsync(item, ct);
-
     public async Task<bool> RemoveItemByIdAsync(
         ActionContext ctx,
         RoomObjectId itemId,

@@ -16,7 +16,6 @@ namespace Vortex.Primitives.Rooms.Grains;
 [Alias("Vortex.Primitives.Rooms.Grains.IRoomFurni")]
 public partial interface IRoomFurni : IGrainWithIntegerKey
 {
-    public Task<bool> AddItemAsync(IRoomItem item, CancellationToken ct);
     public Task<bool> RemoveItemByIdAsync(
         ActionContext ctx,
         RoomObjectId itemId,
