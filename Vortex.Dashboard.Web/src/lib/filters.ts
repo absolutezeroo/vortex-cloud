@@ -26,7 +26,7 @@ export type FilterField = {
   id: string;
   label: string;
   /** Defaults to 'text'. */
-  kind?: 'text' | 'number' | 'select' | 'date' | 'bool' | 'entity';
+  kind?: 'text' | 'number' | 'select' | 'date' | 'datetime' | 'bool' | 'entity';
   /** select: the choices. The empty value is added automatically as `anyLabel`. */
   options?: { value: string; label: string }[];
   /** entity: a key of DIRECTORIES ('user', 'room', 'furniture', 'group', ...). */

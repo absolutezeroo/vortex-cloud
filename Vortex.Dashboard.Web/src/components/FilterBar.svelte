@@ -25,6 +25,13 @@
 
   let { fields, values = $bindable(), onchange, urlSync = true }: Props = $props();
 
+  /** Which native input a field kind asks the browser for; anything else is a search box. */
+  const INPUT_TYPES: Record<string, string> = {
+    number: 'number',
+    date: 'date',
+    datetime: 'datetime-local',
+  };
+
   /**
    * Names for the ids picked this session.
    *
@@ -133,7 +140,7 @@
           <input
             autocomplete="off"
             spellcheck="false"
-            type={field.kind === 'number' ? 'number' : field.kind === 'date' ? 'date' : 'search'}
+            type={INPUT_TYPES[field.kind ?? 'text'] ?? 'search'}
             value={values[field.id]}
             placeholder={field.placeholder ?? ''}
             onchange={(event) => set(field, event.currentTarget.value)}

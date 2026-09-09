@@ -1,7 +1,9 @@
 <script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
+  import FilterBar from '../components/FilterBar.svelte';
   import PageHeader from '../components/PageHeader.svelte';
-  import PickerModal from '../components/PickerModal.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
 
   import { onMount } from 'svelte';
@@ -15,13 +17,7 @@
   import { Hash, Activity, TriangleAlert, Timer } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session';
   import { t, translate } from '../lib/i18n';
-  import type { PickerRow } from '../lib/pickers/directories';
   import type { ModerationStats } from '../lib/apiTypes';
-
-  /** Which of the three filters the picker is filling. */
-  type PickerTarget = 'actor' | 'target' | 'room';
-
-  /** A row the picker hands back, whether it is a player or a room. */
 
   /** One slice of the action pie, already turned into degrees. */
   type PieSegment = {
@@ -52,17 +48,36 @@
     other: '#64748b',
   };
 
-  let picking = $state<PickerTarget | null>(null);
-  let actorName = $state('');
-  let targetName = $state('');
-  let roomName = $state('');
-  let since = $state('');
-  let until = $state('');
-  let actor = $state('');
-  let target = $state('');
-  let room = $state('');
-  let action = $state('');
-  let result = $state('');
+  // Seven controls the page drew itself, now declared instead: same questions, plus the address bar
+  // and the chips that say which of them are on.
+  const FILTERS: FilterField[] = [
+    { id: 'since', label: translate('moderation.since'), kind: 'datetime' },
+    { id: 'until', label: translate('moderation.until'), kind: 'datetime' },
+    { id: 'actor', label: translate('moderation.actor'), kind: 'entity', picker: 'user' },
+    { id: 'target', label: translate('moderation.target'), kind: 'entity', picker: 'user' },
+    { id: 'room', label: translate('moderation.room'), kind: 'entity', picker: 'room' },
+    {
+      id: 'action',
+      label: translate('moderation.action'),
+      kind: 'select',
+      anyLabel: translate('moderation.allActions'),
+      // The action IS the label, as it was before: these are the audit's own action keys, and the
+      // page has never had a translation for them. Inventing one here would have printed the path.
+      options: actionOptions.filter(Boolean).map((value) => ({ value, label: value })),
+    },
+    {
+      id: 'result',
+      label: translate('moderation.result'),
+      kind: 'select',
+      anyLabel: translate('moderation.allResults'),
+      options: resultOptions.filter(Boolean).map((value) => ({
+        value,
+        label: translate(`common.result${value}`),
+      })),
+    },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
   let limit = $state('80');
   let page = $state(readNumberParam('page', 1));
 
@@ -109,8 +124,17 @@
   function setDefaults() {
     const end = new Date();
     const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
-    since = toLocalInputValue(start);
-    until = toLocalInputValue(end);
+
+    // Only when the URL did not already name a window: arriving from a shared link means somebody
+    // chose those dates, and overwriting them with "the last day" would answer a different question
+    // than the one they sent.
+    if (!filters.since && !filters.until) {
+      filters = {
+        ...filters,
+        since: toLocalInputValue(start),
+        until: toLocalInputValue(end),
+      };
+    }
   }
 
   function csvEscape(value: unknown) {
@@ -125,34 +149,34 @@
   function buildParams() {
     const params = new URLSearchParams();
 
-    if (since) {
-      const iso = currentIso(since);
+    if (filters.since) {
+      const iso = currentIso(filters.since);
       if (iso) params.set('since', iso);
     }
 
-    if (until) {
-      const iso = currentIso(until);
+    if (filters.until) {
+      const iso = currentIso(filters.until);
       if (iso) params.set('until', iso);
     }
 
-    if (actor.trim()) {
-      params.set('actor', actor.trim());
+    if (filters.actor.trim()) {
+      params.set('actor', filters.actor.trim());
     }
 
-    if (target.trim()) {
-      params.set('target', target.trim());
+    if (filters.target.trim()) {
+      params.set('target', filters.target.trim());
     }
 
-    if (room.trim()) {
-      params.set('room', room.trim());
+    if (filters.room.trim()) {
+      params.set('room', filters.room.trim());
     }
 
-    if (action) {
-      params.set('action', action);
+    if (filters.action) {
+      params.set('action', filters.action);
     }
 
-    if (result) {
-      params.set('result', result);
+    if (filters.result) {
+      params.set('result', filters.result);
     }
 
     if (limit) {
@@ -319,56 +343,21 @@
 
 <section class="panel">
 
-  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
-    <label>
-      {$t('moderation.since')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={since} />
-    </label>
-    <label>
-      {$t('moderation.until')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={until} />
-    </label>
-    <label>
-      {$t('moderation.actor')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'actor')}>
-        {actorName || (actor ? `#${actor}` : $t('moderation.playerIdPlaceholder'))}
-      </button>
-    </label>
-    <label>
-      {$t('moderation.target')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'target')}>
-        {targetName || (target ? `#${target}` : $t('moderation.playerIdPlaceholder'))}
-      </button>
-    </label>
-    <label>
-      {$t('moderation.room')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'room')}>
-        {roomName || (room ? `#${room}` : $t('moderation.roomIdPlaceholder'))}
-      </button>
-    </label>
-    <label>
-      {$t('moderation.action')}
-      <select bind:value={action}>
-        {#each actionOptions as option}
-          <option value={option}>{option || $t('moderation.allActions')}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      {$t('moderation.result')}
-      <select bind:value={result}>
-        {#each resultOptions as option}
-          <option value={option}>{option || $t('moderation.allResults')}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      {$t('moderation.limit')}
-      <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
-    </label>
+  <FilterBar fields={FILTERS} bind:values={filters} onchange={applyFilters} />
 
-    <button type="submit">{$t('common.filter')}</button>
-  </form>
+  <!-- See AuditPage: how many rows come back is a setting, not a question about them. -->
+  <label class="page-size">
+    {$t('moderation.limit')}
+    <input
+      autocomplete="off"
+      spellcheck="false"
+      type="number"
+      min="10"
+      max="500"
+      bind:value={limit}
+      onchange={applyFilters}
+    />
+  </label>
 
 </section>
 
@@ -586,40 +575,20 @@
     {/if}
   </div>
 
-{#if picking}
-    {#if picking === 'actor'}
-      <PickerModal
-        kind="user"
-        onSelect={(item: PickerRow) => {
-          actor = String(Number(item.id));
-          actorName = item.name;
-          picking = null;
-        }}
-        onClose={() => (picking = null)}
-      />
-    {/if}
-    {#if picking === 'target'}
-      <PickerModal
-        kind="user"
-        onSelect={(item: PickerRow) => {
-          target = String(Number(item.id));
-          targetName = item.name;
-          picking = null;
-        }}
-        onClose={() => (picking = null)}
-      />
-    {/if}
-    {#if picking === 'room'}
-      <PickerModal
-        kind="room"
-        onSelect={(item: PickerRow) => {
-          room = String(Number(item.id));
-          roomName = item.name;
-          picking = null;
-        }}
-        onClose={() => (picking = null)}
-      />
-    {/if}
-{/if}
-
 <LoadingOverlay show={loading} label={$t('moderation.loadingWindow')} />
+
+<style>
+  /* See AuditPage: the row count is a setting, so it reads quieter than the filters above it. */
+  .page-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .page-size input {
+    width: 96px;
+  }
+</style>

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
+  import FilterBar from '../components/FilterBar.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import PageHeader from '../components/PageHeader.svelte';
-  import PickerModal from '../components/PickerModal.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
   import { compactCorrelation, formatDate } from '../lib/format';
@@ -12,14 +15,8 @@
   import Pagination from '../components/Pagination.svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
-  import { t, type Translator } from '../lib/i18n';
-  import type { PickerRow } from '../lib/pickers/directories';
+  import { t, translate, type Translator } from '../lib/i18n';
   import type { AuditEntry, AuditPage } from '../lib/apiTypes';
-
-  /** Which of the two player filters the picker is filling. */
-  type PickerTarget = 'actor' | 'target';
-
-  /** A row the user picker hands back. */
 
   const categoryOptions = [
     '',
@@ -57,15 +54,31 @@
     Failed: 'status-badge--bad',
   };
 
-  let picking = $state<PickerTarget | null>(null);
-  let actorName = $state('');
-  let targetName = $state('');
-  let since = $state('');
-  let until = $state('');
-  let actor = $state('');
-  let target = $state('');
-  let category = $state('');
-  let action = $state('');
+  // The page's own filter row, replaced by the shared one: the controls were the same six a
+  // hand-rolled form drew, minus the address bar and minus any way to see what was on.
+  const FILTERS: FilterField[] = [
+    { id: 'since', label: translate('audit.since'), kind: 'datetime' },
+    { id: 'until', label: translate('audit.until'), kind: 'datetime' },
+    { id: 'actor', label: translate('audit.actor'), kind: 'entity', picker: 'user' },
+    { id: 'target', label: translate('audit.target'), kind: 'entity', picker: 'user' },
+    {
+      id: 'category',
+      label: translate('audit.category'),
+      kind: 'select',
+      anyLabel: translate('audit.allCategories'),
+      options: categoryOptions
+        .filter(Boolean)
+        .map((value) => ({ value, label: translate(`audit.categories.${value}`) })),
+    },
+    {
+      id: 'action',
+      label: translate('audit.action'),
+      kind: 'text',
+      placeholder: translate('audit.actionPlaceholder'),
+    },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
   // Which row is open, by index. Reset on every reload -- an index kept across a refetch would
   // expand whatever event happens to land in that slot.
   let expanded = $state<number | null>(null);
@@ -111,12 +124,12 @@
   function buildParams() {
     const params = new URLSearchParams({ limit: String(limit), page: String(page) });
 
-    if (since) params.set('since', new Date(since).toISOString());
-    if (until) params.set('until', new Date(until).toISOString());
-    if (actor.trim()) params.set('actor', actor.trim());
-    if (target.trim()) params.set('target', target.trim());
-    if (category) params.set('category', category);
-    if (action.trim()) params.set('action', action.trim());
+    if (filters.since) params.set('since', new Date(filters.since).toISOString());
+    if (filters.until) params.set('until', new Date(filters.until).toISOString());
+    if (filters.actor.trim()) params.set('actor', filters.actor.trim());
+    if (filters.target.trim()) params.set('target', filters.target.trim());
+    if (filters.category) params.set('category', filters.category);
+    if (filters.action.trim()) params.set('action', filters.action.trim());
 
     return params;
   }
@@ -171,46 +184,22 @@
 
 <section class="panel">
 
-  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
-    <label>
-      {$t('audit.since')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={since} />
-    </label>
-    <label>
-      {$t('audit.until')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={until} />
-    </label>
-    <label>
-      {$t('audit.actor')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'actor')}>
-        {actorName || (actor ? `#${actor}` : $t('audit.playerIdPlaceholder'))}
-      </button>
-    </label>
-    <label>
-      {$t('audit.target')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'target')}>
-        {targetName || (target ? `#${target}` : $t('audit.playerIdPlaceholder'))}
-      </button>
-    </label>
-    <label>
-      {$t('audit.category')}
-      <select bind:value={category}>
-        {#each categoryOptions as option}
-          <option value={option}>{categoryLabel(option, $t)}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      {$t('audit.action')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={action} placeholder={$t('audit.actionPlaceholder')} />
-    </label>
-    <label>
-      {$t('audit.pageSize')}
-      <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
-    </label>
-    <button type="submit">{$t('common.filter')}</button>
-  </form>
+  <FilterBar fields={FILTERS} bind:values={filters} onchange={applyFilters} />
 
+  <!-- Not a filter: it does not narrow the trail, it decides how much of it arrives per request.
+       Left out of the bar so it never appears as a chip beside the things that do narrow it. -->
+  <label class="page-size">
+    {$t('audit.pageSize')}
+    <input
+      autocomplete="off"
+      spellcheck="false"
+      type="number"
+      min="10"
+      max="500"
+      bind:value={limit}
+      onchange={applyFilters}
+    />
+  </label>
 </section>
 
 <section class="panel">
@@ -219,9 +208,9 @@
     <AccessDeniedNotice message={$t('audit.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
-  {:else if loading}
-    <p class="muted">{$t('audit.loadingEvents')}</p>
   {:else}
+    <!-- The count stays put while a reload is in flight; the overlay says the page is busy. The
+         sentence that used to replace it here moved the line under it on every filter. -->
     <p class="muted">{$t('audit.eventsFound', { count: total })}</p>
   {/if}
 
@@ -281,7 +270,24 @@
   {/if}
 </section>
 
+<LoadingOverlay show={loading} label={$t('audit.loadingEvents')} />
+
 <style>
+  /* The page size sits under the filter row, quieter than the fields above it: it is a setting, not
+     a question about the data. */
+  .page-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .page-size input {
+    width: 96px;
+  }
+
   .audit-row {
     cursor: pointer;
   }
@@ -305,27 +311,3 @@
   }
 </style>
 
-{#if picking}
-    {#if picking === 'actor'}
-      <PickerModal
-        kind="user"
-        onSelect={(item: PickerRow) => {
-          actor = String(Number(item.id));
-          actorName = item.name;
-          picking = null;
-        }}
-        onClose={() => (picking = null)}
-      />
-    {/if}
-    {#if picking === 'target'}
-      <PickerModal
-        kind="user"
-        onSelect={(item: PickerRow) => {
-          target = String(Number(item.id));
-          targetName = item.name;
-          picking = null;
-        }}
-        onClose={() => (picking = null)}
-      />
-    {/if}
-{/if}

@@ -9,24 +9,42 @@
   import PageHeader from '../components/PageHeader.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Pagination from '../components/Pagination.svelte';
-  import PickerModal from '../components/PickerModal.svelte';
-  import { t } from '../lib/i18n';
-  import type { PickerRow } from '../lib/pickers/directories';
+  import FilterBar from '../components/FilterBar.svelte';
+  import LoadingOverlay from '../components/LoadingOverlay.svelte';
+  import { readFilterValues } from '../lib/filters';
+  import type { FilterField } from '../lib/filters';
+  import { t, translate } from '../lib/i18n';
   import type { ChatlogEntry, ChatlogPage, ChatlogWindow } from '../lib/apiTypes';
 
-  let text = $state('');
-  let since = $state('');
-  let until = $state('');
+  const FILTERS: FilterField[] = [
+    {
+      id: 'q',
+      label: translate('chatlogs.text'),
+      kind: 'text',
+      placeholder: translate('chatlogs.textPlaceholder'),
+    },
+    {
+      id: 'player',
+      label: translate('chatlogs.player'),
+      kind: 'entity',
+      picker: 'user',
+      anyLabel: translate('chatlogs.anyPlayer'),
+    },
+    {
+      id: 'room',
+      label: translate('chatlogs.room'),
+      kind: 'entity',
+      picker: 'room',
+      anyLabel: translate('chatlogs.anyRoom'),
+    },
+    { id: 'since', label: translate('chatlogs.since'), kind: 'datetime' },
+    { id: 'until', label: translate('chatlogs.until'), kind: 'datetime' },
+  ];
+
+  let filters = $state(readFilterValues(FILTERS));
   let limit = $state(100);
   let page = $state(readNumberParam('page', 1));
 
-  // Held as {id, name} pairs from the picker: the search is by id, so a rename cannot orphan a
-  // saved filter, and the operator still sees who they picked.
-  type PickedTarget = { id: number; name: string };
-
-  let player = $state<PickedTarget | null>(null);
-  let room = $state<PickedTarget | null>(null);
-  let picking = $state<'player' | 'room' | null>(null);
 
   let rows = $state<ChatlogEntry[]>([]);
   let total = $state(0);
@@ -37,8 +55,11 @@
   let searched = $state(false);
 
   let totalPages = $derived(Math.max(1, Math.ceil(total / limit)));
-  // The server refuses an unfiltered search outright, so the button says so before the round trip.
-  let hasFilter = $derived(Boolean(text.trim()) || player !== null || room !== null);
+  // The server refuses an unfiltered search outright, so the page says so before the round trip.
+  // A date window alone is not enough for it -- it wants something to search FOR.
+  let hasFilter = $derived(
+    Boolean(filters.q.trim()) || Boolean(filters.player) || Boolean(filters.room),
+  );
 
   $effect(() => {
     writeParams({ page: page > 1 ? page : '' });
@@ -47,11 +68,11 @@
   function buildParams() {
     const params = new URLSearchParams({ limit: String(limit), page: String(page) });
 
-    if (text.trim()) params.set('q', text.trim());
-    if (player) params.set('player', String(player.id));
-    if (room) params.set('room', String(room.id));
-    if (since) params.set('since', new Date(since).toISOString());
-    if (until) params.set('until', new Date(until).toISOString());
+    if (filters.q.trim()) params.set('q', filters.q.trim());
+    if (filters.player) params.set('player', filters.player);
+    if (filters.room) params.set('room', filters.room);
+    if (filters.since) params.set('since', new Date(filters.since).toISOString());
+    if (filters.until) params.set('until', new Date(filters.until).toISOString());
 
     return params;
   }
@@ -116,49 +137,21 @@
 
 <section class="panel">
 
-  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
-    <label>
-      {$t('chatlogs.text')}
-      <input
-        autocomplete="off"
-        spellcheck="false"
-        type="text"
-        bind:value={text}
-        placeholder={$t('chatlogs.textPlaceholder')}
-      />
-    </label>
-    <label>
-      {$t('chatlogs.player')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'player')}>
-        {player ? player.name : $t('chatlogs.anyPlayer')}
-      </button>
-    </label>
-    <label>
-      {$t('chatlogs.room')}
-      <button type="button" class="picker-button" onclick={() => (picking = 'room')}>
-        {room ? room.name : $t('chatlogs.anyRoom')}
-      </button>
-    </label>
-    <label>
-      {$t('chatlogs.since')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={since} />
-    </label>
-    <label>
-      {$t('chatlogs.until')}
-      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={until} />
-    </label>
-    <label>
-      {$t('chatlogs.pageSize')}
-      <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
-    </label>
-    <button type="submit" disabled={!hasFilter}>{$t('common.filter')}</button>
-    {#if player || room}
-      <button type="button" onclick={() => { player = null; room = null; }}>
-        {$t('chatlogs.clearTargets')}
-      </button>
-    {/if}
-  </form>
+  <FilterBar fields={FILTERS} bind:values={filters} onchange={applyFilters} />
 
+  <!-- See AuditPage: how much of the answer comes back at once is a setting, not a filter. -->
+  <label class="page-size">
+    {$t('chatlogs.pageSize')}
+    <input
+      autocomplete="off"
+      spellcheck="false"
+      type="number"
+      min="10"
+      max="500"
+      bind:value={limit}
+      onchange={applyFilters}
+    />
+  </label>
 </section>
 
 <section class="panel">
@@ -167,8 +160,6 @@
     <AccessDeniedNotice message={$t('chatlogs.accessDenied')} />
   {:else if error}
     <p class="empty-state danger" role="alert">{error}</p>
-  {:else if loading}
-    <p class="muted">{$t('chatlogs.loading')}</p>
   {:else if !hasFilter}
     <p class="muted">{$t('chatlogs.filterRequired')}</p>
   {:else if searched}
@@ -224,31 +215,21 @@
   />
 </section>
 
-{#if picking === 'player'}
-  <PickerModal
-    kind="user"
-    title={$t('chatlogs.pickPlayer')}
-    onSelect={(picked: PickerRow) => {
-      player = { id: Number(picked.id), name: picked.name };
-      picking = null;
-    }}
-    onClose={() => (picking = null)}
-  />
-{:else if picking === 'room'}
-  <PickerModal
-    kind="room"
-    title={$t('chatlogs.pickRoom')}
-    onSelect={(picked: PickerRow) => {
-      room = { id: Number(picked.id), name: picked.name };
-      picking = null;
-    }}
-    onClose={() => (picking = null)}
-  />
-{/if}
+<LoadingOverlay show={loading} label={$t('chatlogs.loading')} />
 
 <style>
-  .picker-button {
-    text-align: left;
+  /* The page size sits under the filter row: a setting, not a question about the data. */
+  .page-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .page-size input {
+    width: 96px;
   }
 
   .message {
