@@ -1,5 +1,6 @@
 <script lang="ts">
   import Modal from '../components/Modal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
@@ -167,11 +168,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('cfh.title')}</h2>
-    <button type="button" class="warning" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('cfh.description')}</p>
+  <PageHeader title={$t('cfh.title')} description={$t('cfh.description')}>
+    {#snippet actions()}
+      <button type="button" class="warning" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('cfh.accessDenied')} />

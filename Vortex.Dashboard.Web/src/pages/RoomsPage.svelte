@@ -3,6 +3,7 @@
   import { apiGet } from '../lib/api';
   import { formatDate, summarizeData } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
@@ -125,9 +126,8 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('roomsTimeline.title')}</h2>
-    <div class="head-actions">
+  <PageHeader title={$t('roomsTimeline.title')} description={$t('roomsTimeline.description')}>
+    {#snippet actions()}
       <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
       <!-- `verbatim` keeps the ghost button exactly as it looks everywhere else and only stops the
            dark theme uppercasing the label, because this label is DATA — a room's name. It shouted
@@ -135,9 +135,8 @@
       <button type="button" class="ghost-button verbatim" onclick={() => (picking = true)}>
         {roomName || (roomId ? `#${roomId}` : $t('roomsTimeline.inspect'))}
       </button>
-    </div>
-  </div>
-  <p class="muted">{$t('roomsTimeline.description')}</p>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <!-- Nothing chosen yet means nothing to say about a room: the panel only exists once it has a

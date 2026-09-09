@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -110,10 +111,14 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('economyTrends.title')}</h2>
-    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
-  </div>
+  <PageHeader title={$t('economyTrends.title')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
+
+  <!-- Left out of the header's `description`: it carries a table name in <code>, and the prop is a
+       string. -->
   <p class="muted">
     {$t('economyTrends.descriptionBefore')} <code>currency_types</code> {$t('economyTrends.descriptionAfter')}
   </p>

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { Fish, Map, Trophy, Waves, Wrench } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -189,9 +190,8 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('fishing.title')}</h2>
-    <div class="head-actions">
+  <PageHeader title={$t('fishing.title')} description={$t('fishing.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
@@ -210,9 +210,8 @@
           {$t('fishing.reload')}
         </button>
       {/if}
-    </div>
-  </div>
-  <p class="muted">{$t('fishing.description')}</p>
+    {/snippet}
+  </PageHeader>
 </section>
 
 {#if denied}

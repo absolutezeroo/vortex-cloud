@@ -9,6 +9,7 @@
   import { apiGet } from '../lib/api';
   import { formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import StatCard from '../components/StatCard.svelte';
   import LineChart from '../components/LineChart.svelte';
@@ -114,10 +115,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('performance.title')}</h2>
-    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
-  </div>
+  <PageHeader title={$t('performance.title')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('performance.accessDenied')} />

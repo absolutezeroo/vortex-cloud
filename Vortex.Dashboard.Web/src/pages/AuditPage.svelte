@@ -1,5 +1,6 @@
 <script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
+  import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api';
@@ -161,11 +162,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('audit.title')}</h2>
-    <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('audit.description')}</p>
+  <PageHeader title={$t('audit.title')} description={$t('audit.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel">

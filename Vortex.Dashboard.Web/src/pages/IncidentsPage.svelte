@@ -3,6 +3,7 @@
   import { apiGet } from '../lib/api';
   import { formatDate, formatNumber } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Activity, TriangleAlert } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
@@ -74,11 +75,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('incidents.title')}</h2>
-    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('incidents.description')}</p>
+  <PageHeader title={$t('incidents.title')} description={$t('incidents.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('incidents.accessDenied')} />

@@ -11,6 +11,7 @@
   import { identity } from '../lib/session';
   import { formatNumber, formatDate } from '../lib/format';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -191,11 +192,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('benchmark.title')}</h2>
+  <PageHeader title={$t('benchmark.title')} description={$t('benchmark.description')}>
+    {#snippet actions()}
       <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('benchmark.description')}</p>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('benchmark.accessDenied')} />
@@ -279,29 +280,6 @@
       {/if}
     {/if}
 
-    <div class="metric-grid">
-      <StatCard label={$t('benchmark.connected')} value={formatNumber(data.connectedClients)}>
-        {#snippet icon()}
-          <Users size={15} strokeWidth={2} aria-hidden="true" />
-        {/snippet}
-      </StatCard>
-      <StatCard label={$t('benchmark.furniturePlaced')} value={formatNumber(data.placedFurniture)}>
-        {#snippet icon()}
-          <Boxes size={15} strokeWidth={2} aria-hidden="true" />
-        {/snippet}
-      </StatCard>
-      <StatCard label={$t('benchmark.worstRtt')} value={`${peakRtt.toFixed(1)} ms`}>
-        {#snippet icon()}
-          <Gauge size={15} strokeWidth={2} aria-hidden="true" />
-        {/snippet}
-      </StatCard>
-      <StatCard label={$t('benchmark.failures')} value={formatNumber(data.summary?.failures ?? 0)}>
-        {#snippet icon()}
-          <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
-        {/snippet}
-      </StatCard>
-    </div>
-
     {#if data.reportPath}
       {@const reportPath = data.reportPath}
       <p class="report">
@@ -322,6 +300,31 @@
       </p>
     {/if}
   </section>
+
+  <!-- Outside the panel above, like every other page's tiles: a StatCard is already a card, and a
+       panel around a row of them is a box drawn around four boxes. -->
+  <div class="metric-grid" style="margin-top: 12px;">
+    <StatCard label={$t('benchmark.connected')} value={formatNumber(data.connectedClients)}>
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+    </StatCard>
+    <StatCard label={$t('benchmark.furniturePlaced')} value={formatNumber(data.placedFurniture)}>
+      {#snippet icon()}
+        <Boxes size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+    </StatCard>
+    <StatCard label={$t('benchmark.worstRtt')} value={`${peakRtt.toFixed(1)} ms`}>
+      {#snippet icon()}
+        <Gauge size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+    </StatCard>
+    <StatCard label={$t('benchmark.failures')} value={formatNumber(data.summary?.failures ?? 0)}>
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+    </StatCard>
+  </div>
 
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('benchmark.chartTitle')}</h2></div>

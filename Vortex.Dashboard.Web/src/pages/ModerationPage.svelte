@@ -1,5 +1,6 @@
 <script lang="ts">
   import { readNumberParam, writeParams } from '../lib/urlState';
+  import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
 
@@ -308,14 +309,12 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('moderation.title')}</h2>
-    <div class="head-actions">
+  <PageHeader title={$t('moderation.title')} description={$t('moderation.description')}>
+    {#snippet actions()}
       <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
       <button type="button" class="ghost-button" onclick={exportCsv}>{$t('moderation.exportCsv')}</button>
-    </div>
-  </div>
-  <p class="muted">{$t('moderation.description')}</p>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel">

@@ -6,6 +6,7 @@
   import { isPermissionDeniedError } from '../lib/permissions';
   import { openPlayer, openItem } from '../lib/session';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Pagination from '../components/Pagination.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -104,14 +105,13 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('chatlogs.title')}</h2>
+  <PageHeader title={$t('chatlogs.title')} description={$t('chatlogs.privacyNotice')}>
+    {#snippet actions()}
       <button type="button" onclick={refresh} disabled={loading || !hasFilter} class="warning">
-      {$t('common.refresh')}
-    </button>
-  </div>
-
-  <p class="muted">{$t('chatlogs.privacyNotice')}</p>
+        {$t('common.refresh')}
+      </button>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel">

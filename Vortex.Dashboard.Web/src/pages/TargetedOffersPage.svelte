@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
@@ -458,18 +459,21 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('targetedOffers.title')}</h2>
-    
-    <div class="head-actions">
-      <label class="active-toggle">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
-        {$t('targetedOffers.activeOnlyLabel')}
-      </label>
+  <PageHeader title={$t('targetedOffers.title')} description={$t('targetedOffers.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
-    </div>
-  </div>
-  <p class="muted">{$t('targetedOffers.description')}</p>
+    {/snippet}
+  </PageHeader>
+</section>
+
+<!-- See PollsPage: a toggle that narrows the list is a filter, and filters have their own row. -->
+<section class="panel">
+  <form class="toolbar-grid" onsubmit={(event) => event.preventDefault()}>
+    <label class="active-toggle">
+      <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
+      {$t('targetedOffers.activeOnlyLabel')}
+    </label>
+  </form>
 </section>
 
 {#if forbidden}

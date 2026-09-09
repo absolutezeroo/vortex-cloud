@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
@@ -771,13 +772,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('catalogAdmin.title')}</h2>
-    <button type="button" class="warning" onclick={refreshAll} disabled={pagesLoading}>{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">
-    {$t('catalogAdmin.description')}
-  </p>
+  <PageHeader title={$t('catalogAdmin.title')} description={$t('catalogAdmin.description')}>
+    {#snippet actions()}
+      <button type="button" class="warning" onclick={refreshAll} disabled={pagesLoading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel" style="margin-top: 12px;">

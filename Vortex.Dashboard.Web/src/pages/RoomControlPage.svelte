@@ -1,5 +1,6 @@
 <script lang="ts">
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import { onMount } from 'svelte';
   import { apiGet, describeApiError } from '../lib/api';
@@ -121,13 +122,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('roomControl.title')}</h2>
+  <PageHeader title={$t('roomControl.title')} description={$t('roomControl.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">
-    {$t('roomControl.description')}
-  </p>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('roomControl.accessDenied')} />

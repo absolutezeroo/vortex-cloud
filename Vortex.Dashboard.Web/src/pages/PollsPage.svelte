@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import { onMount } from 'svelte';
   import {
     CircleCheck,
@@ -487,20 +488,24 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('polls.title')}</h2>
-    
-    <div class="head-actions">
-      <label class="filter-field">
-        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
-        {$t('polls.enabledOnly')}
-      </label>
+  <PageHeader title={$t('polls.title')} description={$t('polls.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={loadPolls} disabled={loading}>
         {$t('common.refresh')}
       </button>
-    </div>
-  </div>
-  <p class="muted">{$t('polls.description')}</p>
+    {/snippet}
+  </PageHeader>
+</section>
+
+<!-- The "enabled only" toggle moved out of the header with the refresh button: it filters the list,
+     so it belongs to the filters and not to the page's actions. -->
+<section class="panel">
+  <form class="toolbar-grid" onsubmit={(event) => event.preventDefault()}>
+    <label class="filter-field">
+      <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
+      {$t('polls.enabledOnly')}
+    </label>
+  </form>
 </section>
 
 {#if forbidden}

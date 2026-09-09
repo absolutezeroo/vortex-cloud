@@ -8,6 +8,7 @@
     TriangleAlert,
   } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -338,10 +339,8 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('mysteryBox.title')}</h2>
-    
-    <div class="head-actions">
+  <PageHeader title={$t('mysteryBox.title')} description={$t('mysteryBox.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
@@ -350,9 +349,8 @@
           {$t('mysteryBox.reload')}
         </button>
       {/if}
-    </div>
-  </div>
-  <p class="muted">{$t('mysteryBox.description')}</p>
+    {/snippet}
+  </PageHeader>
   {#if $ops.errors.reload}<p class="empty-state danger" role="alert">{$ops.errors.reload}</p>{/if}
   {#if $ops.results.reload}<OpResult result={$ops.results.reload} />{/if}
 </section>
@@ -857,13 +855,6 @@
 <LoadingOverlay show={loading} />
 
 <style>
-  .head-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
   .ghost-button,
   .field-label {
     font-size: 0.85rem;

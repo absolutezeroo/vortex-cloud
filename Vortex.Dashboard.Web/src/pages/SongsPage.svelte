@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -156,9 +157,8 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('songs.title')}</h2>
-    <div class="head-actions">
+  <PageHeader title={$t('songs.title')} description={$t('songs.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
@@ -178,9 +178,8 @@
         </button>
         <button type="button" class="success" onclick={openCreate}>{$t('songs.newSong')}</button>
       {/if}
-    </div>
-  </div>
-  <p class="muted">{$t('songs.description')}</p>
+    {/snippet}
+  </PageHeader>
 </section>
 
 {#if denied}

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { Dices, Link2 } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -219,9 +220,8 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('prizePools.title')}</h2>
-    <div class="head-actions">
+  <PageHeader title={$t('prizePools.title')} description={$t('prizePools.description')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
@@ -240,9 +240,8 @@
           {$t('prizePools.reload')}
         </button>
       {/if}
-    </div>
-  </div>
-  <p class="muted">{$t('prizePools.description')}</p>
+    {/snippet}
+  </PageHeader>
 </section>
 
 {#if denied}
@@ -504,7 +503,13 @@
 
     {#if bindings.length === 0}
       <EmptyState message={$t('prizePools.noBindings')} />
-    {:else}
+    {/if}
+  </section>
+
+  <!-- The bindings filter gets its own row, like every other filter on the site: sharing a panel
+       with the table it narrows is what made it read as part of the table's header. -->
+  {#if bindings.length > 0}
+    <section class="panel" style="margin-top: 12px;">
       <div class="toolbar-grid">
         <label>
           {$t('prizePools.searchBindings')}
@@ -525,7 +530,9 @@
           </select>
         </label>
       </div>
+    </section>
 
+    <section class="panel" style="margin-top: 12px;">
       <div class="table-wrap">
         <table>
           <thead>
@@ -595,9 +602,11 @@
           onchange={(detail) => (bindingPage = detail)}
         />
       {/if}
-    {/if}
+    </section>
+  {/if}
 
-    {#if canManage}
+  {#if canManage}
+    <section class="panel" style="margin-top: 12px;">
       <div class="op-grid">
         <div class="op-field">
           <label for="binding-definition">{$t('prizePools.furnitureDefinitionId')}</label>
@@ -643,13 +652,11 @@
             )}
         >
           {$t('prizePools.newBinding')}
-        
-          {$t('prizePools.newBinding')}
         </button>
       </div>
-    {/if}
-  </section>
+    </section>
   {/if}
+{/if}
 {/if}
 
 {#if picking}

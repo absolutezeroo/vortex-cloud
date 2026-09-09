@@ -1,6 +1,7 @@
 <script lang="ts">
 
   import { onMount } from 'svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { apiGet } from '../lib/api';
   import { formatDate } from '../lib/format';
@@ -47,18 +48,14 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('economy.title')}</h2>
-      <div class="head-actions">
-        <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
-        <button type="button" class="ghost-button" onclick={() => (picking = 'player')}>
-          {playerName || (player ? `#${player}` : $t('economy.load'))}
-        </button>
-      </div>
-  </div>
-  <p class="muted">
-    {$t('economy.description')}
-  </p>
+  <PageHeader title={$t('economy.title')} description={$t('economy.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+      <button type="button" class="ghost-button" onclick={() => (picking = 'player')}>
+        {playerName || (player ? `#${player}` : $t('economy.load'))}
+      </button>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel">

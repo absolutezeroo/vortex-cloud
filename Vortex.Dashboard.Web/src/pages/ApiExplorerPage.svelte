@@ -4,6 +4,7 @@
   import { formatDate } from '../lib/format';
   import { X } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import { isPermissionDeniedError } from '../lib/permissions';
   import { t } from '../lib/i18n';
   import type { ApiRouteCatalog, ApiRouteDescriptor } from '../lib/apiTypes';
@@ -137,13 +138,16 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('apiExplorer.title')}</h2>
+  <PageHeader title={$t('apiExplorer.title')}>
+    {#snippet actions()}
       <button type="button" class="warning" onclick={refresh} disabled={loading}>
-      {loading ? $t('apiExplorer.refreshing') : $t('common.refresh')}
-    </button>
-  </div>
+        {loading ? $t('apiExplorer.refreshing') : $t('common.refresh')}
+      </button>
+    {/snippet}
+  </PageHeader>
 
+  <!-- Not the header's `description`: this one carries a route in <strong>, and the prop is a
+       string. -->
   <p class="muted">
     {$t('apiExplorer.descriptionBefore')} <strong>/api/v1/meta/endpoints</strong>, {$t('apiExplorer.descriptionAfter')}
   </p>

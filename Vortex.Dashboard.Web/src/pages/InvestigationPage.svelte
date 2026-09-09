@@ -4,6 +4,7 @@
   import { apiGet } from '../lib/api';
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format';
   import EntityLink from '../components/EntityLink.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { User } from '@lucide/svelte';
@@ -368,11 +369,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('investigation.title')}</h2>
-    <button type="button" onclick={search} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('investigation.description')}</p>
+  <PageHeader title={$t('investigation.title')} description={$t('investigation.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={search} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 </section>
 
 <section class="panel">

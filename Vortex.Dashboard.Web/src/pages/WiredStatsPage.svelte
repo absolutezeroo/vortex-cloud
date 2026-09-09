@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format';
   import { isPermissionDeniedError } from '../lib/permissions';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LoadingOverlay from '../components/LoadingOverlay.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -78,11 +79,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-      <h2>{$t('wiredStats.title')}</h2>
+  <PageHeader title={$t('wiredStats.title')} description={$t('wiredStats.description')}>
+    {#snippet actions()}
       <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
-  </div>
-  <p class="muted">{$t('wiredStats.description')}</p>
+    {/snippet}
+  </PageHeader>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('wiredStats.accessDenied')} />
