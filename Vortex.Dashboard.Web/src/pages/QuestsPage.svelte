@@ -331,16 +331,10 @@
 </script>
 
 <section class="panel">
-  <PageHeader title={$t('quests.title')} description={$t('quests.description')}>
-    {#snippet actions()}
-      <button type="button" class="warning" onclick={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
-      {#if canManage}
-        <button type="button" class="success" onclick={openCreateQuest}>
-          {$t('quests.newQuest')}
-        </button>
-      {/if}
-    {/snippet}
-  </PageHeader>
+  <!-- No actions in the header, deliberately: this page is three tabs over three different reads,
+       and `loadQuests` only reloads this one. A Refresh in the page header would claim to refresh
+       the page and reload a third of it. It lives on the panel it actually refreshes. -->
+  <PageHeader title={$t('quests.title')} description={$t('quests.description')} />
 </section>
 
 <Tabs
@@ -360,8 +354,7 @@
 {:else if forbidden}
   <AccessDeniedNotice message={$t('quests.accessDenied')} />
 {:else}
-  <!-- The campaign filter is a filter, so it gets the filter row; refresh and "new quest" moved up
-       to the page header where every page keeps them. -->
+  <!-- The campaign filter narrows this tab's list, so it gets a filter row of its own. -->
   <section class="panel">
     <form class="toolbar-grid" onsubmit={(event) => event.preventDefault()}>
       <label>
@@ -379,6 +372,16 @@
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head">
       <h2><Award size={17} strokeWidth={2} aria-hidden="true" /> {$t('quests.questsHeading')}</h2>
+      <div class="head-actions">
+        <button type="button" class="warning" onclick={loadQuests} disabled={loading}>
+          {$t('common.refresh')}
+        </button>
+        {#if canManage}
+          <button type="button" class="success" onclick={openCreateQuest}>
+            {$t('quests.newQuest')}
+          </button>
+        {/if}
+      </div>
     </div>
 
     {#if error}

@@ -37,7 +37,8 @@
     border-radius: 999px;
     background: var(--surface-raised);
     color: var(--ink);
-    padding: 3px 4px 3px 11px;
+    /* The right gutter used to hold the × plate; without it the chip evens out. */
+    padding: 3px 9px 3px 11px;
     font-size: 0.8rem;
     white-space: nowrap;
   }
@@ -52,21 +53,25 @@
   .chip.warning { border-color: var(--warning-border); }
   .chip.danger { border-color: var(--danger-border); }
 
+  /* A glyph, not a control in its own right. It had a round hover plate the size of a small button,
+     which drew a second object inside the chip -- and a chip is already the thing you click off. So
+     it keeps its own hit area and gains no surface of its own; brightening is the whole feedback. */
   button {
     display: grid;
     place-items: center;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     flex: 0 0 auto;
     border: 0;
-    border-radius: 999px;
     background: transparent;
     color: var(--muted);
     padding: 0;
+    opacity: 0.7;
   }
 
   button:hover {
-    background: var(--surface-hover);
+    background: transparent;
     color: var(--ink);
+    opacity: 1;
   }
 </style>
