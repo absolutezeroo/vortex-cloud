@@ -123,5 +123,17 @@ generated:
   - cf_376d0a77d9
   unknowns:
   - uk_91fc7e0d6b
-verified: {}
+verified:
+  configuring_wired_requires_room_rights:
+    confidence: assumed
+    claim: A wired save is refused unless the actor holds at least Rights in the room, and the refusal is silent — no packet is sent back.
+    reason: "The six wired saves (action, addon, condition, selector, trigger, variable) all funnel into RoomActionModule.ApplyWiredUpdateAsync, which checked only that the item exists and is a wired box: any visitor could rewrite the owner's configuration and was answered WiredSaveSuccess. Rights is the floor the place and move paths already apply, and Arcturus gates this same packet on hasRights || owner || staff (evidence, not authority). The refusal is silent because what the official server answers to a refused wired save is unknown (uk_91fc7e0d6b); returning false takes the same route as the six guards already on this path, so the handler withholds WiredSaveSuccess and sends nothing else."
+    evidence:
+    - kind: reference_handler
+      source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/wired/UpdateActionMessageEvent.java
+      symbol: UpdateActionMessageEvent
+  a_save_that_commits_is_reported_as_saved:
+    confidence: assumed
+    claim: Once the configuration is written, a failure in the room-side stack notification does not turn the result into a refusal.
+    reason: "ApplyWiredUpdateAsync writes _wiredData, marks it dirty and drops the cached snapshot before notifying the room. A notification that threw fell into the method's single catch and answered false, so the handler withheld WiredSaveSuccess for a save that had happened — the player was told it did not take and found on reopening that it had. What the official server reports in this case is unknown; reporting the commit is the only answer consistent with the state the client will read back."
 manual: {}

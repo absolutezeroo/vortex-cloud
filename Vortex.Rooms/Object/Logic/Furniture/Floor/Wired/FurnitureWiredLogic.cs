@@ -425,7 +425,24 @@ public abstract class FurnitureWiredLogic(
             // the box before the next pile resolution would see the pre-update values.
             _snapshot = null;
 
-            await OnWiredStackChangedAsync(ctx, [_ctx.GetTileIdx()], ct);
+            // Past the commit point. The configuration above is already written, marked dirty and
+            // will be persisted; the notification is a reaction to it, not part of it. Letting it
+            // fall into the catch below reported `false` -- which the handler reads as "refused" and
+            // answers by withholding WiredSaveSuccess -- for a save that had in fact happened. The
+            // player then reopened the box, saw their new configuration, and had been told it did
+            // not take.
+            try
+            {
+                await OnWiredStackChangedAsync(ctx, [_ctx.GetTileIdx()], ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Wired configuration for item {ItemId} was applied, but notifying the stack failed. The room's wired state is stale until the next pile resolution.",
+                    _ctx.ObjectId
+                );
+            }
 
             return true;
         }

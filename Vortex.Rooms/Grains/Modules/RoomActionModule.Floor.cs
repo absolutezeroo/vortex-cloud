@@ -237,6 +237,20 @@ public sealed partial class RoomActionModule
         CancellationToken ct
     )
     {
+        // Every wired save the client can send -- action, addon, condition, selector, trigger,
+        // variable -- lands here, and none of them checked anything but "the item exists and it is
+        // wired". Any visitor standing in a room could rewrite its owner's wired configuration.
+        //
+        // Rights is the same floor the place and move paths use, and the same one Arcturus applies
+        // to this packet (evidence, not authority). A refusal stays silent: what the official server
+        // answers to a refused wired save is recorded as unknown in the specs
+        // (docs/habbo-specs/unknowns/uk_91fc7e0d6b.yaml), so this returns false through the same
+        // path as the six guards already here rather than inventing a validation-error packet.
+        if (!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
+        {
+            return false;
+        }
+
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
             throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
