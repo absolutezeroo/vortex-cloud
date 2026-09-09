@@ -112,7 +112,12 @@ public class FurnitureVendingMachineLogic(
     {
         try
         {
-            await Task.Delay(AnimationMs, CancellationToken.None).ConfigureAwait(false);
+            // ConfigureAwait(true), and it is the whole reason this method is safe. The task is
+            // detached, so nothing awaits it back onto the room's turn; capturing the activation's
+            // scheduler here is what puts SetStateAsync back on it. With ConfigureAwait(false) the
+            // continuation resumed on the thread pool and wrote StuffData, ExtraData and the room's
+            // DirtyItemIds -- none of them concurrent collections -- alongside a live turn.
+            await Task.Delay(AnimationMs, CancellationToken.None).ConfigureAwait(true);
 
             if (GetState() == DispensingState)
             {
