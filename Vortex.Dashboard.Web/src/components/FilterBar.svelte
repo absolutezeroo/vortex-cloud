@@ -161,10 +161,10 @@
         {chipValue(field)}
       </Chip>
     {/each}
-    <!-- ghost-button, not `linklike`: that class only removes the key's shadow and leaves the rest
-         to the page's own scoped styles, which a shared component does not have. Unstyled, it came
-         out as a full blue key sitting next to the chips it is meant to be quieter than. -->
-    <button type="button" class="ghost-button" onclick={clearAll}>{$t('filters.clearAll')}</button>
+    <!-- Shaped like the chips it stands at the end of, not like a key. It is the same kind of thing
+         as they are -- one more thing in the row you press to take a filter off -- and drawn as a
+         key it was the loudest object in a row of quiet ones. -->
+    <button type="button" class="clear-filters" onclick={clearAll}>{$t('filters.clearAll')}</button>
   </div>
 {/if}
 
@@ -197,5 +197,31 @@
     text-transform: uppercase;
     font-size: 0.62rem;
     letter-spacing: 0.04em;
+  }
+
+  /* The theme paints every button inside a panel as a key unless its class is in the sheet's
+     exclusion list. Rather than add a ninth name to eight copies of that list, this wins on
+     specificity from here: a scoped `.clear-filters.svelte-xxx` is (0,2,0) against the sheet's
+     `:where(...) button:not(...)` at (0,1,1). Everything the key treatment adds is undone
+     explicitly, because that rule sets it all. */
+  .clear-filters {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted);
+    padding: 3px 12px;
+    min-height: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .clear-filters:hover:not(:disabled) {
+    background: var(--surface-raised);
+    color: var(--ink);
+    box-shadow: none;
+    transform: none;
   }
 </style>

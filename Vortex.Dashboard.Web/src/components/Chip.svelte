@@ -21,7 +21,10 @@
 <span class="chip" class:accent={tone === 'accent'} class:success={tone === 'success'} class:warning={tone === 'warning'} class:danger={tone === 'danger'}>
   {#if children}{@render children()}{:else}{label}{/if}
   {#if onremove}
-    <button type="button" onclick={onremove} aria-label={`${$t('common.remove')} ${label}`}>
+    <!-- `chip-x` is not decoration: the theme paints every classless button inside a panel as a key,
+         and that list of names is how a control opts out. Without it this one came back as a blue
+         key on hover, which is the "button inside a button" that was reported. -->
+    <button type="button" class="chip-x" onclick={onremove} aria-label={`${$t('common.remove')} ${label}`}>
       <X size={12} strokeWidth={2.6} aria-hidden="true" />
     </button>
   {/if}
@@ -56,7 +59,7 @@
   /* A glyph, not a control in its own right. It had a round hover plate the size of a small button,
      which drew a second object inside the chip -- and a chip is already the thing you click off. So
      it keeps its own hit area and gains no surface of its own; brightening is the whole feedback. */
-  button {
+  .chip-x {
     display: grid;
     place-items: center;
     width: 14px;
@@ -69,7 +72,7 @@
     opacity: 0.7;
   }
 
-  button:hover {
+  .chip-x:hover {
     background: transparent;
     color: var(--ink);
     opacity: 1;
