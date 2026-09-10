@@ -201,9 +201,12 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
 
                 RoomItemSnapshot snapshot = item.GetSnapshot();
 
+                // The last thing the item was: its final extra data, its rotation. Where it went is
+                // not this queue's business -- the pickup moved the row itself, before the client
+                // was told anything.
                 await _roomGrain
                     ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId)
-                    .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct, true);
+                    .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct);
                 break;
             }
             case IRoomAvatar avatar:

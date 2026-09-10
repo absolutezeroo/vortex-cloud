@@ -31,33 +31,25 @@ public sealed class RoomPersistenceGrain(
     private readonly Dictionary<long, RoomItemSnapshot> _dirtyItems = [];
     private readonly Dictionary<int, PetSnapshot> _dirtyPets = [];
     private readonly ILogger<IRoomPersistenceGrain> _logger = logger;
-    private readonly HashSet<RoomObjectId> _removedItemIds = [];
     private readonly RoomConfig _roomConfig = roomConfig.Value;
     private IDisposable? _timer;
 
+    /// <summary>
+    /// Queues where an item sits. Not who owns it, and not which room it is in.
+    /// </summary>
+    /// <remarks>
+    /// A pickup still comes through here, for the last thing the item was -- its final extra data,
+    /// its rotation. The move itself is not this queue's business: it happened when the player
+    /// picked the item up, as a conditional claim, and this snapshot arriving two seconds later
+    /// says nothing about where the item lives by then.
+    /// </remarks>
     public Task EnqueueDirtyItemAsync(
         RoomId roomId,
         RoomItemSnapshot snapshot,
-        CancellationToken ct,
-        bool remove = false
+        CancellationToken ct
     )
     {
         _dirtyItems[snapshot.ObjectId] = snapshot;
-
-        // The marker has to follow the newest snapshot, not accumulate beside it. The two live in
-        // separate collections and only the snapshot was being overwritten, so a pickup followed by
-        // a replacement in the same room inside one DirtyItemsTickMs left the removal marker
-        // standing over a snapshot that says the item is placed -- and the flush wrote
-        // RoomEntityId = null on furniture the player was looking at. It came back in the inventory
-        // on the next room load.
-        if (remove)
-        {
-            _removedItemIds.Add(snapshot.ObjectId);
-        }
-        else
-        {
-            _removedItemIds.Remove(snapshot.ObjectId);
-        }
 
         return Task.CompletedTask;
     }
@@ -71,11 +63,6 @@ public sealed class RoomPersistenceGrain(
         foreach (RoomItemSnapshot snapshot in snapshots)
         {
             _dirtyItems[snapshot.ObjectId] = snapshot;
-
-            // The room's own tick path, and the one that carries a replacement. Same rule as the
-            // single enqueue above: a snapshot of an item that is in the room clears any removal
-            // marker left over from the pickup that preceded it.
-            _removedItemIds.Remove(snapshot.ObjectId);
         }
 
         return Task.CompletedTask;
@@ -162,74 +149,21 @@ public sealed class RoomPersistenceGrain(
         {
             using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-            int roomId = (int)this.GetPrimaryKeyLong();
-
-            // A removal says "this item left room A", and it is written up to DirtyItemsTickMs after
-            // the item did. Pick a sofa up in A and drop it in B inside that window and B claims the
-            // row first, then A's flush arrives and writes RoomEntityId = null over it: the sofa
-            // vanishes from B and reappears in the inventory, with two grains writing one row and no
-            // order between them (ROOM-PER-005).
+            // Where the furniture sits, and nothing else. This used to mark player_id and room_id
+            // modified too, which made every position tick an assertion of ownership: a batch queued
+            // before an item left could put it back in this room, and back on its old owner, over a
+            // trade or a placement that had already taken it (ROOM-PER-005, ECON-ITM-004). Location
+            // moves at the moment it moves now, as a conditional claim -- see
+            // RoomFurnitureLocationStore -- so a snapshot arriving two seconds late has no opinion
+            // about where the item lives.
             //
-            // So the check and the write are one statement. Reading the row and writing it after
-            // left a window between the two -- far narrower than the tick, but the same bug: the
-            // other room can claim the row in between, and the save then puts RoomEntityId = null
-            // over the claim. A row that is no longer ours matches nothing and the count comes back
-            // zero, which is the shape the trade, the marketplace and the mint already use
-            // (ECON-ITM-004). This was the last furniture path still reading before it wrote.
-            //
-            // Run before the positional saves below and deliberately not in one transaction with
-            // them: a removal that lands while the save fails stays on the queue and replays as a
-            // no-op next flush, because RoomEntityId no longer matches this room. Converging costs
-            // one wasted statement; a transaction here would cost one on every tick.
-            HashSet<int> removing =
-            [
-                .. batch
-                    .Where(item => _removedItemIds.Contains(item.ObjectId))
-                    .Select(item => item.ObjectId.Value),
-            ];
-
+            // A stale position can still land on an item that has since moved rooms: the write is
+            // not conditional, because the values differ per row and one statement each would cost a
+            // hundred round trips a tick where a tracked batch costs one. Its new room overwrites it
+            // on the next tick, which is the difference between a position and an owner -- one
+            // heals itself and the other does not.
             foreach (RoomItemSnapshot item in batch)
             {
-                if (!removing.Contains(item.ObjectId.Value))
-                {
-                    continue;
-                }
-
-                int itemId = item.ObjectId.Value;
-                int ownerId = item.OwnerId.Value;
-
-                // Only a wall item carries one, and the claim must not flatten a floor item's
-                // column to zero on its way past: null here keeps whatever the row already holds.
-                int? wallOffset = item is RoomWallItemSnapshot leavingWallItem
-                    ? leavingWallItem.WallOffset
-                    : null;
-
-                await dbCtx
-                    .Furnitures.Where(f => f.Id == itemId && f.RoomEntityId == roomId)
-                    .ExecuteUpdateAsync(
-                        row =>
-                            row.SetProperty(f => f.PlayerEntityId, ownerId)
-                                .SetProperty(f => f.X, item.X)
-                                .SetProperty(f => f.Y, item.Y)
-                                // .Value, not the implicit conversion: inside an expression tree
-                                // the compiler reads a bare Altitude as the value-selector overload
-                                // rather than converting it.
-                                .SetProperty(f => f.Z, item.Z.Value)
-                                .SetProperty(f => f.Rotation, item.Rotation)
-                                .SetProperty(f => f.ExtraData, item.ExtraData)
-                                .SetProperty(f => f.WallOffset, f => wallOffset ?? f.WallOffset)
-                                .SetProperty(f => f.RoomEntityId, (int?)null),
-                        ct
-                    );
-            }
-
-            foreach (RoomItemSnapshot item in batch)
-            {
-                if (removing.Contains(item.ObjectId.Value))
-                {
-                    continue;
-                }
-
                 FurnitureEntity dbEntity = new()
                 {
                     Id = item.ObjectId.Value,
@@ -245,8 +179,6 @@ public sealed class RoomPersistenceGrain(
 
                 EntityEntry<FurnitureEntity> e = dbCtx.Entry(dbEntity);
 
-                e.Property(x => x.PlayerEntityId).IsModified = true;
-                e.Property(x => x.RoomEntityId).IsModified = true;
                 e.Property(x => x.X).IsModified = true;
                 e.Property(x => x.Y).IsModified = true;
                 e.Property(x => x.Z).IsModified = true;
@@ -259,8 +191,6 @@ public sealed class RoomPersistenceGrain(
 
                     e.Property(x => x.WallOffset).IsModified = true;
                 }
-
-                dbEntity.RoomEntityId = roomId;
             }
 
             await dbCtx.SaveChangesAsync(ct);
@@ -268,7 +198,6 @@ public sealed class RoomPersistenceGrain(
             foreach (RoomItemSnapshot item in batch)
             {
                 _dirtyItems.Remove(item.ObjectId);
-                _removedItemIds.Remove(item.ObjectId);
             }
         }
         catch (Exception ex)

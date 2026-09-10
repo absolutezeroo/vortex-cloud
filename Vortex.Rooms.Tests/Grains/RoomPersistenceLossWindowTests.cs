@@ -59,14 +59,14 @@ public sealed class RoomPersistenceLossWindowTests
         h.Fail = true;
         await h.DeactivateAsync();
 
-        h.RowsInRoom().Should().Be(0, "the save failed");
+        h.RowsWritten().Should().Be(0, "the save failed");
 
         // The regression: the batch used to be dropped from the queue before the try, so this second
         // attempt had nothing left to write and the move was gone for good.
         h.Fail = false;
         await h.DeactivateAsync();
 
-        h.RowsInRoom().Should().Be(1);
+        h.RowsWritten().Should().Be(1);
     }
 
     /// <summary>
@@ -79,10 +79,11 @@ public sealed class RoomPersistenceLossWindowTests
     {
         using Harness h = new(maxPerFlush: 2);
 
-        await h.EnqueueAsync(1, 2, 3, 4, 5);
+        // Through the room's own tick path, which is how a batch this size actually arrives.
+        await h.EnqueueBatchAsync(1, 2, 3, 4, 5);
         await h.DeactivateAsync();
 
-        h.RowsInRoom().Should().Be(5);
+        h.RowsWritten().Should().Be(5);
     }
 
     /// <summary>
@@ -99,99 +100,28 @@ public sealed class RoomPersistenceLossWindowTests
         Func<Task> deactivate = () => h.DeactivateAsync();
 
         await deactivate.Should().CompleteWithinAsync(TimeSpan.FromSeconds(5));
-        h.RowsInRoom().Should().Be(0);
+        h.RowsWritten().Should().Be(0);
     }
 
     /// <summary>
-    /// Two rooms, one row. Pick a sofa up in A and drop it in B inside <c>DirtyItemsTickMs</c>: B
-    /// claims the row at once, and A's flush was then writing <c>RoomEntityId = null</c> over the
-    /// claim, so the sofa vanished from B (ROOM-PER-005). A removal only applies while the row is
-    /// still this room's.
+    /// The tick writes where furniture sits and nothing else. It used to mark player_id and room_id
+    /// modified on every snapshot, which made a position flush an assertion of ownership — a batch
+    /// queued before an item left could put it back in this room and back on its old owner. Where an
+    /// item lives is claimed when it moves now; see <c>RoomFurnitureLocationStoreTests</c>.
     /// </summary>
     [Fact]
-    public async Task ARemovalDoesNotUnseatARoomThatAlreadyClaimedTheItem()
+    public async Task AFlush_DoesNotTouchOwnershipOrLocation()
     {
         using Harness h = new(maxPerFlush: 100);
 
-        await h.EnqueueRemovalAsync(1);
         h.ClaimByAnotherRoom(1, room: 99);
 
-        await h.DeactivateAsync();
-
-        h.RoomOf(1).Should().Be(99);
-    }
-
-    [Fact]
-    public async Task ARemovalOfAnItemStillInTheRoom_TakesItOut()
-    {
-        using Harness h = new(maxPerFlush: 100);
-
         await h.EnqueueAsync(1);
         await h.DeactivateAsync();
 
-        h.RoomOf(1).Should().Be((int)ROOM);
-
-        await h.EnqueueRemovalAsync(1);
-        await h.DeactivateAsync();
-
-        h.RoomOf(1).Should().BeNull();
-    }
-
-    /// <summary>
-    /// Pick a sofa up and put it straight back down, inside one <c>DirtyItemsTickMs</c>. The removal
-    /// marker and the snapshot live in two collections and only the snapshot was being overwritten,
-    /// so the flush read "removed" over a snapshot that says placed and wrote
-    /// <c>RoomEntityId = null</c> on furniture the player was standing next to. It came back in the
-    /// inventory on the next room load.
-    /// </summary>
-    [Fact]
-    public async Task APickupFollowedByAReplacement_LeavesTheItemInTheRoom()
-    {
-        using Harness h = new(maxPerFlush: 100);
-
-        await h.EnqueueRemovalAsync(1);
-        await h.EnqueueAsync(1);
-
-        await h.DeactivateAsync();
-
-        h.RoomOf(1).Should().Be((int)ROOM);
-    }
-
-    /// <summary>
-    /// And through the room's own tick, which is the path a replacement actually takes:
-    /// <c>MarkDirty</c> collects the item and <c>RoomGrain.FlushDirtyItemsAsync</c> hands the batch
-    /// over as a bulk enqueue — a different method, which had the same gap.
-    /// </summary>
-    [Fact]
-    public async Task ARoomTickAfterAPickup_ClearsTheRemovalToo()
-    {
-        using Harness h = new(maxPerFlush: 100);
-
-        await h.EnqueueRemovalAsync(1);
-        await h.EnqueueBatchAsync(1);
-
-        await h.DeactivateAsync();
-
-        h.RoomOf(1).Should().Be((int)ROOM);
-    }
-
-    /// <summary>
-    /// The other direction still works: a replacement followed by a pickup is a pickup. Only the
-    /// newest word about the item counts, whichever way round it came.
-    /// </summary>
-    [Fact]
-    public async Task AReplacementFollowedByAPickup_TakesTheItemOut()
-    {
-        using Harness h = new(maxPerFlush: 100);
-
-        await h.EnqueueAsync(1);
-        await h.DeactivateAsync();
-
-        await h.EnqueueBatchAsync(1);
-        await h.EnqueueRemovalAsync(1);
-        await h.DeactivateAsync();
-
-        h.RoomOf(1).Should().BeNull();
+        h.RowsWritten().Should().Be(1, "the position was still written");
+        h.RoomOf(1).Should().Be(99, "the room that holds the row keeps it");
+        h.OwnerOf(1).Should().Be(55, "and the owner it was traded to keeps it");
     }
 
     /// <summary>
@@ -359,21 +289,17 @@ public sealed class RoomPersistenceLossWindowTests
                 CancellationToken.None
             );
 
-        public Task EnqueueRemovalAsync(int objectId) =>
-            _grain.EnqueueDirtyItemAsync(
-                new RoomId((int)ROOM),
-                Snapshot(objectId),
-                CancellationToken.None,
-                remove: true
-            );
-
-        /// <summary>The other room getting there first, which is all "dropped in B" looks like from
-        /// here: one row, claimed.</summary>
-        public void ClaimByAnotherRoom(int objectId, int room)
+        /// <summary>Another room getting there first, and taking the owner with it — which is what a
+        /// trade or a placement elsewhere leaves behind while this room's tick is still queued.</summary>
+        public void ClaimByAnotherRoom(int objectId, int room, int owner = 55)
         {
             using VortexDbContext db = new(_options);
 
-            db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId = room;
+            FurnitureEntity row = db.Set<FurnitureEntity>().Single(f => f.Id == objectId);
+
+            row.RoomEntityId = room;
+            row.PlayerEntityId = owner;
+
             db.SaveChanges();
         }
 
@@ -384,11 +310,23 @@ public sealed class RoomPersistenceLossWindowTests
             return db.Set<FurnitureEntity>().Single(f => f.Id == objectId).RoomEntityId;
         }
 
-        public int RowsInRoom()
+        public int OwnerOf(int objectId)
         {
             using VortexDbContext db = new(_options);
 
-            return db.Set<FurnitureEntity>().Count(f => f.RoomEntityId == (int)ROOM);
+            return db.Set<FurnitureEntity>().Single(f => f.Id == objectId).PlayerEntityId;
+        }
+
+        /// <summary>
+        /// How many rows the tick actually wrote. The seeded rows all start at x = 0 and every
+        /// snapshot carries <c>X = objectId</c>, so a row whose x matches its id is one the flush
+        /// reached.
+        /// </summary>
+        public int RowsWritten()
+        {
+            using VortexDbContext db = new(_options);
+
+            return db.Set<FurnitureEntity>().Count(f => f.X == f.Id);
         }
 
         private static PetSnapshot PetSnapshotWith(int petId, int nutrition) =>

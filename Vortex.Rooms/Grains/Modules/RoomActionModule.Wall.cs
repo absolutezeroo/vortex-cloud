@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Database.Context;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
@@ -12,6 +13,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Wall;
+using Vortex.Rooms.Grains.Systems;
 
 namespace Vortex.Rooms.Grains.Modules;
 
@@ -55,6 +57,24 @@ public sealed partial class RoomActionModule
             throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
         }
 
+        // As on the floor: the row enters the room before the room does, so the item is never on a
+        // wall for everyone while the database still says it is in somebody's hand.
+        await using (VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct))
+        {
+            int claimed = await RoomFurnitureLocationStore.ClaimIntoRoomAsync(
+                db,
+                wallItem.ObjectId.Value,
+                item.OwnerId.Value,
+                _roomGrain.RoomId.Value,
+                ct
+            );
+
+            if (claimed == 0)
+            {
+                throw new VortexException(VortexErrorCodeEnum.NoPermissionToPlaceFurni);
+            }
+        }
+
         if (
             !await _roomGrain.FurniModule.PlaceWallItemAsync(
                 ctx,
@@ -68,6 +88,18 @@ public sealed partial class RoomActionModule
             )
         )
         {
+            await using VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(
+                ct
+            );
+
+            await RoomFurnitureLocationStore.ReleaseFromRoomAsync(
+                db,
+                wallItem.ObjectId.Value,
+                _roomGrain.RoomId.Value,
+                item.OwnerId.Value,
+                ct
+            );
+
             return false;
         }
 

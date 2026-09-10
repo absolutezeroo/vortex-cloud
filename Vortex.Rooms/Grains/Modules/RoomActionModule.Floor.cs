@@ -19,6 +19,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
+using Vortex.Rooms.Grains.Systems;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
 
 namespace Vortex.Rooms.Grains.Modules;
@@ -85,8 +86,42 @@ public sealed partial class RoomActionModule
             }
         }
 
+        // The row enters the room before the room does anything with it. The other order puts the
+        // item on the floor for everyone while the database still says it is in the hand, which is
+        // what a player would read as having been duplicated -- and the write-behind tick no longer
+        // corrects it, because a position flush has stopped asserting where an item lives.
+        await using (VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct))
+        {
+            int claimed = await RoomFurnitureLocationStore.ClaimIntoRoomAsync(
+                db,
+                floorItem.ObjectId.Value,
+                item.OwnerId.Value,
+                _roomGrain.RoomId.Value,
+                ct
+            );
+
+            if (claimed == 0)
+            {
+                throw new VortexException(VortexErrorCodeEnum.NoPermissionToPlaceFurni);
+            }
+        }
+
         if (!await _roomGrain.FurniModule.PlaceFloorItemAsync(ctx, floorItem, x, y, rot, ct))
         {
+            // The room refused it after the row was already ours. Hand it back rather than leaving
+            // a row that says a room holds furniture the room has never heard of.
+            await using VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(
+                ct
+            );
+
+            await RoomFurnitureLocationStore.ReleaseFromRoomAsync(
+                db,
+                floorItem.ObjectId.Value,
+                _roomGrain.RoomId.Value,
+                item.OwnerId.Value,
+                ct
+            );
+
             return false;
         }
 

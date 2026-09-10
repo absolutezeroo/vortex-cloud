@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Database.Context;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
@@ -11,6 +12,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Rooms.Grains.Systems;
 
 namespace Vortex.Rooms.Grains.Modules;
 
@@ -47,6 +49,31 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
         }
 
         item.SetOwnerId(pickerId);
+
+        // The row leaves the room here, not two seconds later on the write-behind tick. Six paths
+        // decide an item is free-standing by asking whether room_id is null -- a trade, a wired
+        // chest, a jukebox, a marketplace listing, a wired settlement -- and until the flush caught
+        // up they all refused an item the client had already put in the player's hand. Picking a
+        // sofa up and dragging it straight into a trade did nothing, for as long as
+        // DirtyItemsTickMs.
+        //
+        // Conditional on the row still being this room's, so a pickup racing another room's claim
+        // loses rather than overwriting it.
+        await using (VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct))
+        {
+            int released = await RoomFurnitureLocationStore.ReleaseFromRoomAsync(
+                db,
+                itemId.Value,
+                _roomGrain.RoomId.Value,
+                pickerId.Value,
+                ct
+            );
+
+            if (released == 0)
+            {
+                throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
+            }
+        }
 
         await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, item, ct, pickerId);
 
