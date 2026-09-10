@@ -1,6 +1,29 @@
 # syntax=docker/dockerfile:1
 
 # =================================================================================================
+# Dashboard front-end stage
+# =================================================================================================
+# Vortex.Dashboard.API embeds Vite's output from Assets\, and Assets\ is generated, not committed
+# (see the .csproj), so the build context never carries it. The SDK image has no Node, so the
+# .csproj's own front-end target died with "npm: not found" and took the publish with it. Built here
+# on an image that does have Node, then copied into the build stage.
+#
+# WORKDIR mirrors the repository layout on purpose: vite.config.js writes to the RELATIVE
+# ../Vortex.Dashboard.API/Assets, so the output only lands where the .csproj globs it if this
+# directory sits one level under /src like the real one does.
+FROM node:22-slim AS frontend
+WORKDIR /src/Vortex.Dashboard.Web
+
+# package-lock.json alone first: as long as the dependencies do not move, editing a .svelte file
+# reuses this layer instead of re-downloading the whole tree. `npm ci` rather than `npm install`
+# for the same reason the .csproj gives — the lockfile is committed and the build may not move it.
+COPY Vortex.Dashboard.Web/package.json Vortex.Dashboard.Web/package-lock.json ./
+RUN npm ci
+
+COPY Vortex.Dashboard.Web/ ./
+RUN npm run build
+
+# =================================================================================================
 # Build stage
 # =================================================================================================
 # global.json pins the SDK to "10.0" with rollForward "latestFeature", so the image must carry a
@@ -33,11 +56,20 @@ RUN dotnet restore Vortex.Main/Vortex.Main.csproj
 # --- source + publish ----------------------------------------------------------------------------
 COPY . .
 
+# After COPY . . so the sources cannot overwrite it — the context has no Assets\ of its own, but the
+# ordering should not be what makes that true.
+COPY --from=frontend /src/Vortex.Dashboard.API/Assets ./Vortex.Dashboard.API/Assets
+
 # --no-restore keeps the cached restore layer authoritative: without it the publish would hit the
 # network again and the layering above would buy nothing.
+#
+# SkipDashboardFrontendBuild is the .csproj's documented opt-out for exactly this: the front-end was
+# built in its own stage above, and MSBuild embeds what Assets\ already holds instead of reaching
+# for an npm this image does not have.
 RUN dotnet publish Vortex.Main/Vortex.Main.csproj \
         --configuration Release \
         --no-restore \
+        -p:SkipDashboardFrontendBuild=true \
         --output /app/publish
 
 # =================================================================================================

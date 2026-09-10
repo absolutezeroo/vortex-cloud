@@ -43,8 +43,10 @@ docker-compose.yml
 docker-compose.*.yml
 
 # --- front end -------------------------------------------------------------------------------------
-# The dashboard SPA is committed pre-built under Vortex.Dashboard.API/Assets and embedded as a
-# resource by the .NET build, so the Vite sources and node_modules are never needed to compile.
+# The Vite sources ARE needed: Vortex.Dashboard.API/Assets is generated and gitignored, so the
+# `frontend` stage in the Dockerfile builds the SPA from Vortex.Dashboard.Web before the .NET build
+# embeds it. Only the installed tree is excluded — `npm ci` reinstalls it in the image, and a
+# Windows-built node_modules is worse than useless in a Linux container.
 **/node_modules/
 Vortex.Dashboard.Web/dist/
 
