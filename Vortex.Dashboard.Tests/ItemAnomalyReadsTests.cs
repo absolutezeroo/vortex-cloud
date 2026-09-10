@@ -186,7 +186,13 @@ public sealed class ItemAnomalyReadsTests
     {
         await using VortexDbContext db = new(options);
 
+        // VSTHRD103: AddRangeAsync exists only so a value generator can reach the database while it
+        // assigns a key. EF's own guidance is to use the synchronous one everywhere else, and these
+        // rows carry their ids already -- nothing here blocks.
+#pragma warning disable VSTHRD103
         db.ItemEvents.AddRange(events);
+#pragma warning restore VSTHRD103
+
         await db.SaveChangesAsync();
     }
 

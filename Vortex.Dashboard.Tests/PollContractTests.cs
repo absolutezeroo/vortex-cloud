@@ -46,8 +46,9 @@ public sealed class PollContractTests
     [Fact]
     public async Task The_list_names_every_field_the_page_reads()
     {
-        JsonElement list = await Serialize(
-            Reads(await SeededAsync()).PollsAsync(new NameValueCollection(), CancellationToken.None)
+        JsonElement list = Serialize(
+            await Reads(await SeededAsync())
+                .PollsAsync(new NameValueCollection(), CancellationToken.None)
         );
 
         Names(list).Should().BeEquivalentTo(["count", "items"]);
@@ -83,8 +84,8 @@ public sealed class PollContractTests
     [Fact]
     public async Task The_detail_names_every_field_the_editor_reads()
     {
-        JsonElement detail = await Serialize(
-            Reads(await SeededAsync()).PollDetailAsync(1, CancellationToken.None)
+        JsonElement detail = Serialize(
+            await Reads(await SeededAsync()).PollDetailAsync(1, CancellationToken.None)
         );
 
         Names(detail)
@@ -135,8 +136,8 @@ public sealed class PollContractTests
     [Fact]
     public async Task The_results_name_every_field_the_report_reads()
     {
-        JsonElement results = await Serialize(
-            Reads(await SeededAsync()).PollResultsAsync(1, CancellationToken.None)
+        JsonElement results = Serialize(
+            await Reads(await SeededAsync()).PollResultsAsync(1, CancellationToken.None)
         );
 
         Names(results)
@@ -199,8 +200,13 @@ public sealed class PollContractTests
     private static IEnumerable<string> Names(JsonElement element) =>
         element.EnumerateObject().Select(property => property.Name);
 
-    private static async Task<JsonElement> Serialize<T>(Task<T> read) =>
-        JsonSerializer.SerializeToElement(await read, Wire);
+    /// <summary>
+    /// Takes the value, not the task that produces it. Awaiting a caller's task inside a helper is
+    /// what VSTHRD003 is about, and there was nothing to gain from it: the caller has to await the
+    /// read anyway, and the serialisation itself is synchronous.
+    /// </summary>
+    private static JsonElement Serialize<T>(T read) =>
+        JsonSerializer.SerializeToElement(read, Wire);
 
     /// <summary>
     /// One poll with a follow-up question, a choice question and a free-text question, which is the
@@ -221,6 +227,10 @@ public sealed class PollContractTests
                 Enabled = true,
             }
         );
+        // VSTHRD103: AddRangeAsync exists only so a value generator can reach the database while it
+        // assigns a key. EF's own guidance is to use the synchronous one everywhere else, and these
+        // rows carry their ids already -- nothing here blocks.
+#pragma warning disable VSTHRD103
         db.PollQuestions.AddRange(
             new PollQuestionEntity
             {
@@ -238,6 +248,8 @@ public sealed class PollContractTests
                 QuestionText = "Tell us more",
             }
         );
+#pragma warning restore VSTHRD103
+
         db.PollQuestionChoices.Add(
             new PollQuestionChoiceEntity
             {

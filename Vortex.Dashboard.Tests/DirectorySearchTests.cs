@@ -46,7 +46,7 @@ public sealed class DirectorySearchTests
     [Fact]
     public async Task An_unrecognised_term_says_so_rather_than_guessing()
     {
-        DirectorySearch result = await Search(NewOptions(), "not-an-id-or-a-correlation");
+        DirectorySearch result = await SearchAsync(NewOptions(), "not-an-id-or-a-correlation");
 
         result
             .Should()
@@ -61,7 +61,7 @@ public sealed class DirectorySearchTests
         // No record declares "kind" any more -- the serializer writes it from the attributes on
         // DirectorySearch. That is invisible to every other test here, and the investigation page
         // is a switch over exactly this string.
-        DirectorySearch result = await Search(NewOptions(), "not-an-id-or-a-correlation");
+        DirectorySearch result = await SearchAsync(NewOptions(), "not-an-id-or-a-correlation");
 
         string json = JsonSerializer.Serialize(
             result,
@@ -76,7 +76,7 @@ public sealed class DirectorySearchTests
     {
         // The one branch that is chosen by the SHAPE of the term rather than by what is in the
         // database, so it answers even when nothing correlates.
-        DirectorySearch result = await Search(NewOptions(), Guid.NewGuid().ToString("N"));
+        DirectorySearch result = await SearchAsync(NewOptions(), Guid.NewGuid().ToString("N"));
 
         result.Should().BeOfType<CorrelationSearch>();
     }
@@ -103,7 +103,7 @@ public sealed class DirectorySearchTests
             await db.SaveChangesAsync();
         }
 
-        DirectorySearch result = await Search(options, correlation);
+        DirectorySearch result = await SearchAsync(options, correlation);
 
         result
             .Should()
@@ -119,7 +119,7 @@ public sealed class DirectorySearchTests
     {
         // Deliberate: an id that matches no player still returns the id shape with a null profile,
         // because the same answer carries the item and room history for that id.
-        DirectorySearch result = await Search(NewOptions(), "4312");
+        DirectorySearch result = await SearchAsync(NewOptions(), "4312");
 
         result.Should().BeOfType<IdSearch>().Which.PlayerProfile.Should().BeNull();
     }
@@ -135,7 +135,7 @@ public sealed class DirectorySearchTests
             await db.SaveChangesAsync();
         }
 
-        DirectorySearch result = await Search(options, "4312");
+        DirectorySearch result = await SearchAsync(options, "4312");
 
         result.Should().BeOfType<IdSearch>().Which.PlayerProfile!.Name.Should().Be("Someone");
     }
@@ -205,7 +205,7 @@ public sealed class DirectorySearchTests
     /// gateway who is online. When this lived on a class with ten dependencies, six had to be null
     /// with a comment explaining that they took no part.
     /// </remarks>
-    private static Task<DirectorySearch> Search(
+    private static Task<DirectorySearch> SearchAsync(
         DbContextOptions<VortexDbContext> options,
         string term
     ) =>

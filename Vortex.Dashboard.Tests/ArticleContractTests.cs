@@ -40,8 +40,8 @@ public sealed class ArticleContractTests
     [Fact]
     public async Task The_list_names_every_field_the_page_reads()
     {
-        JsonElement list = await Serialize(
-            Reads(await SeededAsync())
+        JsonElement list = Serialize(
+            await Reads(await SeededAsync())
                 .ArticlesAsync(new NameValueCollection(), CancellationToken.None)
         );
 
@@ -66,8 +66,8 @@ public sealed class ArticleContractTests
     [Fact]
     public async Task The_detail_names_every_field_the_editor_reads()
     {
-        JsonElement detail = await Serialize(
-            Reads(await SeededAsync()).ArticleDetailAsync(1, CancellationToken.None)
+        JsonElement detail = Serialize(
+            await Reads(await SeededAsync()).ArticleDetailAsync(1, CancellationToken.None)
         );
 
         Names(detail)
@@ -91,8 +91,8 @@ public sealed class ArticleContractTests
     [Fact]
     public async Task The_form_metadata_names_every_field_the_form_reads()
     {
-        JsonElement meta = await Serialize(
-            Reads(await SeededAsync()).ArticleFormMetaAsync(CancellationToken.None)
+        JsonElement meta = Serialize(
+            await Reads(await SeededAsync()).ArticleFormMetaAsync(CancellationToken.None)
         );
 
         Names(meta)
@@ -155,8 +155,13 @@ public sealed class ArticleContractTests
     private static IEnumerable<string> Names(JsonElement element) =>
         element.EnumerateObject().Select(property => property.Name);
 
-    private static async Task<JsonElement> Serialize<T>(Task<T> read) =>
-        JsonSerializer.SerializeToElement(await read, Wire);
+    /// <summary>
+    /// Takes the value, not the task that produces it. Awaiting a caller's task inside a helper is
+    /// what VSTHRD003 is about, and there was nothing to gain from it: the caller has to await the
+    /// read anyway, and the serialisation itself is synchronous.
+    /// </summary>
+    private static JsonElement Serialize<T>(T read) =>
+        JsonSerializer.SerializeToElement(read, Wire);
 
     /// <summary>One article with one translation, one category and one language: enough to reach
     /// every branch of the three database reads.</summary>
