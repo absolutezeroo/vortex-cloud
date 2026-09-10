@@ -177,10 +177,27 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
 
                 await _roomGrain.SendComposerToRoomAsync(item.GetRemoveComposer(pickerId));
 
-                await item.Logic.OnDetachAsync(ct);
-                await item.Logic.OnPickupAsync(ctx, ct);
-
-                DetachItemFromLiveState(item);
+                // The hooks run between the footprint coming off the map and the identity going,
+                // and that gap is two awaits wide. They are behaviour code -- a wired box rewrites
+                // its ExtraData and tells the room its pile changed, a mystery box ends a session --
+                // so any of them can throw, and when one did the item was left off the map but still
+                // in ItemsById and still in the logic index. A game holding the index bucket kept
+                // acting on furniture that was no longer anywhere, and the tile it used to stand on
+                // had already forgotten it.
+                //
+                // Whatever the hooks do, the three representations end up agreeing. The exception
+                // still reaches the caller, which is what stops the pickup crediting an inventory
+                // for an item whose hooks did not finish -- and the row still says this room, so a
+                // reload brings it back rather than losing it.
+                try
+                {
+                    await item.Logic.OnDetachAsync(ct);
+                    await item.Logic.OnPickupAsync(ctx, ct);
+                }
+                finally
+                {
+                    DetachItemFromLiveState(item);
+                }
 
                 RoomItemSnapshot snapshot = item.GetSnapshot();
 

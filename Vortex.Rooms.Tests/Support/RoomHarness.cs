@@ -594,6 +594,14 @@ internal sealed class RoomHarness
                 );
             }
 
+            // The room's write-behind. Nothing here asserts on what was queued — the persistence
+            // grain has a suite of its own — but every detach hands it a snapshot on its way out,
+            // and a null grain there is an exception in the middle of one.
+            if (call.Method.GetGenericArguments()[0] == typeof(IRoomPersistenceGrain))
+            {
+                return FakeProxy.Create<IRoomPersistenceGrain>(_ => null);
+            }
+
             // Games read their live balance from the server config on every round start. An empty
             // batch snapshot (and the caller's own fallback for single reads) gives them the compiled
             // defaults, which is what a hotel with no admin overrides runs on anyway.
