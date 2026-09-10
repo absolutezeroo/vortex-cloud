@@ -170,13 +170,17 @@ public sealed class RoomPersistenceGrain(
             // vanishes from B and reappears in the inventory, with two grains writing one row and no
             // order between them (ROOM-PER-005).
             //
-            // So a removal is conditional on the row still being ours. Loading the candidates rather
-            // than attaching them blind is the condition: the rows another room has already taken do
-            // not come back, so nothing is written for them.
+            // So the check and the write are one statement. Reading the row and writing it after
+            // left a window between the two -- far narrower than the tick, but the same bug: the
+            // other room can claim the row in between, and the save then puts RoomEntityId = null
+            // over the claim. A row that is no longer ours matches nothing and the count comes back
+            // zero, which is the shape the trade, the marketplace and the mint already use
+            // (ECON-ITM-004). This was the last furniture path still reading before it wrote.
             //
-            // ponytail: read-then-write, not a conditional claim. It closes a two-second window down
-            // to one query, which is the whole of the reported bug; the last of it needs the
-            // per-item claim primitive (ECON-ITM-004).
+            // Run before the positional saves below and deliberately not in one transaction with
+            // them: a removal that lands while the save fails stays on the queue and replays as a
+            // no-op next flush, because RoomEntityId no longer matches this room. Converging costs
+            // one wasted statement; a transaction here would cost one on every tick.
             HashSet<int> removing =
             [
                 .. batch
@@ -184,37 +188,45 @@ public sealed class RoomPersistenceGrain(
                     .Select(item => item.ObjectId.Value),
             ];
 
-            Dictionary<int, FurnitureEntity> stillOurs =
-                removing.Count == 0
-                    ? []
-                    : await dbCtx
-                        .Furnitures.Where(f => removing.Contains(f.Id) && f.RoomEntityId == roomId)
-                        .ToDictionaryAsync(f => f.Id, ct);
+            foreach (RoomItemSnapshot item in batch)
+            {
+                if (!removing.Contains(item.ObjectId.Value))
+                {
+                    continue;
+                }
+
+                int itemId = item.ObjectId.Value;
+                int ownerId = item.OwnerId.Value;
+
+                // Only a wall item carries one, and the claim must not flatten a floor item's
+                // column to zero on its way past: null here keeps whatever the row already holds.
+                int? wallOffset = item is RoomWallItemSnapshot leavingWallItem
+                    ? leavingWallItem.WallOffset
+                    : null;
+
+                await dbCtx
+                    .Furnitures.Where(f => f.Id == itemId && f.RoomEntityId == roomId)
+                    .ExecuteUpdateAsync(
+                        row =>
+                            row.SetProperty(f => f.PlayerEntityId, ownerId)
+                                .SetProperty(f => f.X, item.X)
+                                .SetProperty(f => f.Y, item.Y)
+                                // .Value, not the implicit conversion: inside an expression tree
+                                // the compiler reads a bare Altitude as the value-selector overload
+                                // rather than converting it.
+                                .SetProperty(f => f.Z, item.Z.Value)
+                                .SetProperty(f => f.Rotation, item.Rotation)
+                                .SetProperty(f => f.ExtraData, item.ExtraData)
+                                .SetProperty(f => f.WallOffset, f => wallOffset ?? f.WallOffset)
+                                .SetProperty(f => f.RoomEntityId, (int?)null),
+                        ct
+                    );
+            }
 
             foreach (RoomItemSnapshot item in batch)
             {
                 if (removing.Contains(item.ObjectId.Value))
                 {
-                    // Gone from this room already, by another room's hand. Nothing to write, and the
-                    // queue drops it below like everything else in the batch.
-                    if (!stillOurs.TryGetValue(item.ObjectId.Value, out FurnitureEntity? leaving))
-                    {
-                        continue;
-                    }
-
-                    leaving.PlayerEntityId = item.OwnerId.Value;
-                    leaving.X = item.X;
-                    leaving.Y = item.Y;
-                    leaving.Z = item.Z;
-                    leaving.Rotation = item.Rotation;
-                    leaving.ExtraData = item.ExtraData;
-                    leaving.RoomEntityId = null;
-
-                    if (item is RoomWallItemSnapshot leavingWallItem)
-                    {
-                        leaving.WallOffset = leavingWallItem.WallOffset;
-                    }
-
                     continue;
                 }
 

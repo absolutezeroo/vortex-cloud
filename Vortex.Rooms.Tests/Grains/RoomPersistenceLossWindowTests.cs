@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -51,7 +52,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task AFailedFlushKeepsItsBatchForTheNextOne()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueAsync(1);
 
@@ -76,7 +77,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task DeactivationDrainsEveryPendingBatch()
     {
-        Harness h = new(maxPerFlush: 2);
+        using Harness h = new(maxPerFlush: 2);
 
         await h.EnqueueAsync(1, 2, 3, 4, 5);
         await h.DeactivateAsync();
@@ -91,7 +92,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task DeactivationAgainstADeadDatabaseStopsAfterOnePass()
     {
-        Harness h = new(maxPerFlush: 2) { Fail = true };
+        using Harness h = new(maxPerFlush: 2) { Fail = true };
 
         await h.EnqueueAsync(1, 2, 3, 4, 5);
 
@@ -110,7 +111,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task ARemovalDoesNotUnseatARoomThatAlreadyClaimedTheItem()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueRemovalAsync(1);
         h.ClaimByAnotherRoom(1, room: 99);
@@ -123,7 +124,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task ARemovalOfAnItemStillInTheRoom_TakesItOut()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueAsync(1);
         await h.DeactivateAsync();
@@ -146,7 +147,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task APickupFollowedByAReplacement_LeavesTheItemInTheRoom()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueRemovalAsync(1);
         await h.EnqueueAsync(1);
@@ -164,7 +165,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task ARoomTickAfterAPickup_ClearsTheRemovalToo()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueRemovalAsync(1);
         await h.EnqueueBatchAsync(1);
@@ -181,7 +182,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task AReplacementFollowedByAPickup_TakesTheItemOut()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueueAsync(1);
         await h.DeactivateAsync();
@@ -200,7 +201,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task EnqueuedPets_AreWrittenOnTheSameFlush()
     {
-        Harness h = new(maxPerFlush: 100);
+        using Harness h = new(maxPerFlush: 100);
 
         await h.EnqueuePetAsync(petId: 1, nutrition: 42);
         await h.DeactivateAsync();
@@ -211,7 +212,7 @@ public sealed class RoomPersistenceLossWindowTests
     [Fact]
     public async Task APetTheDatabaseRefused_IsKeptForTheNextFlush()
     {
-        Harness h = new(maxPerFlush: 100) { Fail = true };
+        using Harness h = new(maxPerFlush: 100) { Fail = true };
 
         await h.EnqueuePetAsync(petId: 1, nutrition: 42);
         await h.DeactivateAsync();
@@ -224,8 +225,16 @@ public sealed class RoomPersistenceLossWindowTests
         h.PetNutrition(1).Should().Be(42, "and the queue still had it");
     }
 
-    private sealed class Harness
+    /// <remarks>
+    /// SQLite rather than the InMemory provider, which every other grain suite here uses. The
+    /// removal is a conditional claim -- one UPDATE carrying its own guard -- and InMemory does not
+    /// implement <c>ExecuteUpdate</c>: it applied nothing and said nothing, so the two removal tests
+    /// went green against a flush that had written no rows at all. A suite about a race between two
+    /// writers needs a provider that can express the write.
+    /// </remarks>
+    private sealed class Harness : IDisposable
     {
+        private readonly SqliteConnection _conn;
         private readonly RoomPersistenceGrain _grain;
         private readonly DbContextOptions<VortexDbContext> _options;
 
@@ -234,28 +243,37 @@ public sealed class RoomPersistenceLossWindowTests
 
         public Harness(int maxPerFlush)
         {
-            _options = new DbContextOptionsBuilder<VortexDbContext>()
-                .UseInMemoryDatabase($"persistence-{Guid.NewGuid()}")
-                .Options;
+            _conn = new SqliteConnection("Filename=:memory:");
+            _conn.Open();
+
+            _options = new DbContextOptionsBuilder<VortexDbContext>().UseSqlite(_conn).Options;
 
             using (VortexDbContext seed = new(_options))
             {
+                seed.Database.EnsureCreated();
+
+                // Seeding a definition and a player would mean seeding most of the schema to test
+                // one UPDATE guard, and referential integrity is not what is under test.
+                seed.Database.ExecuteSqlRaw("PRAGMA foreign_keys = OFF");
+
+                // Raw SQL because created_at is DatabaseGenerated(Identity) and updated_at is
+                // Computed, so EF writes neither and EnsureCreated leaves both NOT NULL with no
+                // default. Updates are unaffected, which is all the flush does afterwards.
+                //
                 // The flush issues updates, so the rows have to exist. They start outside the room,
                 // which is what makes "was it written" answerable.
                 for (int id = 1; id <= 8; id++)
                 {
-                    seed.Add(
-                        new FurnitureEntity
-                        {
-                            Id = id,
-                            PlayerEntityId = 1,
-                            FurnitureDefinitionEntityId = 1,
-                            RoomEntityId = null,
-                        }
+                    seed.Database.ExecuteSqlRaw(
+                        """
+                        INSERT INTO furniture (id, player_id, definition_id, room_id, x, y, z,
+                                               direction, wall_offset, extra_data,
+                                               created_at, updated_at)
+                        VALUES ({0}, 1, 1, NULL, 0, 0, 0, 0, 0, '', datetime('now'), datetime('now'))
+                        """,
+                        id
                     );
                 }
-
-                seed.SaveChanges();
             }
 
             _grain = GrainActivationContext.CreateWithIntegerKey<RoomPersistenceGrain>(
@@ -296,30 +314,23 @@ public sealed class RoomPersistenceLossWindowTests
         {
             using (VortexDbContext db = new(_options))
             {
-                db.Pets.Add(
-                    new PetEntity
-                    {
-                        Id = petId,
-                        OwnerPlayerEntityId = 1,
-                        Name = "pet",
-                        Type = 0,
-                        Race = 0,
-                        Color = "ffffff",
-                        Gender = AvatarGenderType.Male,
-                        Level = 1,
-                        Experience = 0,
-                        Energy = 0,
-                        Nutrition = 0,
-                        Respect = 0,
-                        X = 0,
-                        Y = 0,
-                        Z = 0,
-                        Direction = 0,
-                        OwnerPlayerEntity = null!,
-                    }
+                // Raw SQL for the same reason the furniture rows are: EF writes neither timestamp
+                // and EnsureCreated leaves both NOT NULL without a default.
+                db.Database.ExecuteSqlRaw(
+                    """
+                    INSERT INTO pets (id, player_id, room_id, name, type, race, color, gender,
+                                      level, experience, energy, nutrition, thirst, respect,
+                                      happiness, respect_today_count, rarity_level, can_breed,
+                                      has_saddle, riding_permission, x, y, z, direction,
+                                      created_at, updated_at)
+                    VALUES ({0}, 1, NULL, 'pet', 0, 0, 'ffffff', 0,
+                            1, 0, 0, 0, 100, 0,
+                            100, 0, 1, 1,
+                            0, 0, 0, 0, 0, 0,
+                            datetime('now'), datetime('now'))
+                    """,
+                    petId
                 );
-
-                db.SaveChanges();
             }
 
             await _grain.EnqueueDirtyPetsAsync(
@@ -422,5 +433,8 @@ public sealed class RoomPersistenceLossWindowTests
                 ExtraData = "",
                 UsagePolicy = FurnitureUsageType.Nobody,
             };
+
+        /// <summary>An in-memory SQLite database lives exactly as long as its connection.</summary>
+        public void Dispose() => _conn.Dispose();
     }
 }
