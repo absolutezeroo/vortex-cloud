@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
@@ -10,6 +11,7 @@ using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Marketplace;
+using Vortex.Database.Tests.Support;
 using Vortex.Marketplace.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
@@ -27,52 +29,37 @@ namespace Vortex.Database.Tests.Commerce;
 /// Listing an item on the marketplace, and what is left behind when it does not go through.
 /// </summary>
 /// <remarks>
-/// The in-memory provider rather than SQLite, unlike the rest of the marketplace suites: listing
-/// inserts an offer row through EF, and SQLite refuses to insert any VortexEntity at all —
-/// created_at is identity-generated and updated_at computed, and EnsureCreated gives neither a
-/// default. Nothing here needs ExecuteUpdate, which is the reason the other suites are on SQLite.
+/// This suite used to be the one exception on the in-memory provider, because listing inserts an
+/// offer through EF and SQLite refuses to insert a VortexEntity at all — created_at is
+/// identity-generated, updated_at computed, and EnsureCreated gives neither a default. The note
+/// ended "nothing here needs ExecuteUpdate", and that is no longer true: the pivot claims the row
+/// rather than reading it and writing it after, so the provider has to be able to run the claim.
+/// <see cref="SqliteTestDb" /> supplies the two column defaults MySQL's migrations already carry.
 /// </remarks>
-public sealed class MarketplaceListingTests : IDisposable
+public sealed class MarketplaceListingTests : IAsyncLifetime
 {
     private const int SELLER = 4;
     private const int DEFINITION_ID = 42;
     private const int PRICE = 120;
     private const int ITEM_ID = 901;
 
-    private readonly DbContextOptions<VortexDbContext> _options =
-        new DbContextOptionsBuilder<VortexDbContext>()
-            .UseInMemoryDatabase($"marketplace-{Guid.NewGuid():N}")
-            .Options;
+    private SqliteConnection _conn = null!;
+    private DbContextOptions<VortexDbContext> _options = null!;
 
     private readonly List<int> _removed = [];
 
     private bool _removeReturnsFalse;
 
-    public void Dispose()
-    {
-        using VortexDbContext db = new(_options);
-        db.Database.EnsureDeleted();
-    }
+    public async Task InitializeAsync() => (_conn, _options) = await SqliteTestDb.OpenAsync();
+
+    public async Task DisposeAsync() => await _conn.DisposeAsync();
 
     /// <summary>
     /// The seller's actual row. Listing takes it for good now, so there has to be one to take —
     /// before, this suite listed an item that existed only as a fake grain's return value.
     /// </summary>
-    private async Task SeedTheSellersItemAsync()
-    {
-        await using VortexDbContext db = new(_options);
-
-        db.Furnitures.Add(
-            new FurnitureEntity
-            {
-                Id = ITEM_ID,
-                PlayerEntityId = SELLER,
-                FurnitureDefinitionEntityId = DEFINITION_ID,
-            }
-        );
-
-        await db.SaveChangesAsync();
-    }
+    private Task SeedTheSellersItemAsync() =>
+        SqliteTestDb.SeedFurnitureAsync(_options, ITEM_ID, SELLER, DEFINITION_ID);
 
     [Fact]
     public async Task ACompleteListing_TakesTheItemAndPublishesTheOffer()

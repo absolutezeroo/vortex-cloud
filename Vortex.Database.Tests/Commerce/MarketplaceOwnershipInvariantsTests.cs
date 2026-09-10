@@ -2,12 +2,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Database.Commerce;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Database.Tests.Support;
 using Vortex.Marketplace.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
@@ -38,23 +40,23 @@ namespace Vortex.Database.Tests.Commerce;
 /// every exit an offer has (sold, cancelled, expired) grants a fresh row through DeliverAsync, so
 /// the original is a second copy however the listing ends.
 /// </remarks>
-public sealed class MarketplaceOwnershipInvariantsTests : IDisposable
+public sealed class MarketplaceOwnershipInvariantsTests : IAsyncLifetime
 {
     private const int SELLER = 4;
     private const int DEFINITION_ID = 42;
     private const int PRICE = 120;
     private const int ITEM_ID = 901;
 
-    private readonly DbContextOptions<VortexDbContext> _options =
-        new DbContextOptionsBuilder<VortexDbContext>()
-            .UseInMemoryDatabase($"marketplace-ownership-{Guid.NewGuid():N}")
-            .Options;
+    private SqliteConnection _conn = null!;
+    private DbContextOptions<VortexDbContext> _options = null!;
 
-    public void Dispose()
-    {
-        using VortexDbContext db = new(_options);
-        db.Database.EnsureDeleted();
-    }
+    /// <summary>
+    /// SQLite, since the pivot this suite is about claims the row with an ExecuteUpdate and the
+    /// in-memory provider cannot run one. See <see cref="SqliteTestDb" />.
+    /// </summary>
+    public async Task InitializeAsync() => (_conn, _options) = await SqliteTestDb.OpenAsync();
+
+    public async Task DisposeAsync() => await _conn.DisposeAsync();
 
     /// <summary>How many rows the seller's next inventory load would return.</summary>
     private async Task<int> ItemsTheInventoryWouldLoadAsync()
@@ -69,21 +71,8 @@ public sealed class MarketplaceOwnershipInvariantsTests : IDisposable
         );
     }
 
-    private async Task SeedTheSellersItemAsync()
-    {
-        await using VortexDbContext db = new(_options);
-
-        db.Furnitures.Add(
-            new FurnitureEntity
-            {
-                Id = ITEM_ID,
-                PlayerEntityId = SELLER,
-                FurnitureDefinitionEntityId = DEFINITION_ID,
-            }
-        );
-
-        await db.SaveChangesAsync();
-    }
+    private Task SeedTheSellersItemAsync() =>
+        SqliteTestDb.SeedFurnitureAsync(_options, ITEM_ID, SELLER, DEFINITION_ID);
 
     [Fact]
     public async Task AListedItem_HasLeftTheSellersInventory()

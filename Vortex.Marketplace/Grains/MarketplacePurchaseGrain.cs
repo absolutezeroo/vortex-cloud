@@ -155,25 +155,26 @@ public sealed class MarketplacePurchaseGrain(
         // proceed. DeletedAt is absent from the test on purpose: the global soft-delete query filter
         // supplies it.
         //
-        // ponytail: a read-then-write, not a conditional claim. It closes the duplication, which is
-        // one row losing its home; it does not close two writers racing for the same row
-        // (ECON-ITM-004) -- that wants the shared ExecuteUpdate claim primitive the marketplace
-        // buy path already uses, applied to every ownership move at once rather than to this one.
+        // The check and the write are one statement. Reading the row and soft-deleting it after left
+        // a window between the two: two listings of the same chair could both read it as the
+        // seller's, both delete it, and both go Active -- and every exit an offer has hands out a
+        // *fresh* row through DeliverAsync, so two offers over one row is two chairs where there was
+        // one. Claimed, the second update matches nothing and its count comes back zero
+        // (ECON-ITM-004). This is the shape BuyOfferAsync and the mint already use.
         int sellerId = (int)this.GetPrimaryKeyLong();
 
-        FurnitureEntity? sellersRow = await dbCtx
-            .Furnitures.FirstOrDefaultAsync(
-                f =>
-                    f.Id == furnitureItemId
-                    && f.PlayerEntityId == sellerId
-                    && f.RoomEntityId == null
-                    && f.WiredChestEntityId == null
-                    && f.JukeboxEntityId == null,
-                ct
+        int claimed = await dbCtx
+            .Furnitures.Where(f =>
+                f.Id == furnitureItemId
+                && f.PlayerEntityId == sellerId
+                && f.RoomEntityId == null
+                && f.WiredChestEntityId == null
+                && f.JukeboxEntityId == null
             )
+            .ExecuteUpdateAsync(row => row.SetProperty(f => f.DeletedAt, DateTime.UtcNow), ct)
             .ConfigureAwait(true);
 
-        if (sellersRow is null)
+        if (claimed == 0)
         {
             await AbandonPendingOfferAsync(
                     offer.Id,
@@ -184,10 +185,6 @@ public sealed class MarketplacePurchaseGrain(
 
             return (1, 0);
         }
-
-        sellersRow.DeletedAt = DateTime.UtcNow;
-
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _journal
             .TransitionAsync(
