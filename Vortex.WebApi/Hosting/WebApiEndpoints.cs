@@ -1,12 +1,15 @@
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Observability;
 using Vortex.WebApi.Http;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
@@ -25,6 +28,7 @@ internal static class WebApiEndpoints
     public const string LoginRateLimitPolicy = "webapi-login";
     public const string RegistrationRateLimitPolicy = "webapi-registration";
     public const string SsoTokenRateLimitPolicy = "webapi-ssotoken";
+    public const string ReportRateLimitPolicy = "webapi-report";
 
     private const string TagPublic = "Public";
     private const string TagAuth = "Authentication";
@@ -477,6 +481,81 @@ internal static class WebApiEndpoints
             )
             .WithName("SelectAvatar")
             .WithSummary("Select the avatar used for the next SSO token.")
+            .WithTags(TagUser);
+
+        // What the player saw and the server did not. Every other observability surface here
+        // records something the hotel noticed itself: the error grouping needs an exception, the
+        // metrics need a counter, the audit trail needs an action somebody invoked. A room that
+        // renders blank throws nothing, increments nothing and invokes nothing — it is only a bug
+        // because a person says so, and this is the route that lets them.
+        //
+        // It writes an audit record rather than opening a table of its own. An audit event already
+        // is "who, where, under which correlation id, with what payload", the investigation UI
+        // already reads it, and a second store would be a second thing to back up, page and
+        // retain. The category is what keeps the reports findable — see AuditCategory.PlayerReport.
+        //
+        // Authenticated, deliberately. An anonymous report cannot be replied to, cannot be
+        // correlated with what that account was doing, and is a spam surface the rate limit alone
+        // would have to hold shut.
+        app.MapPost(
+                "/api/user/reports",
+                (
+                    HttpContext ctx,
+                    SubmitReportRequest body,
+                    WebApiSessionStore sessions,
+                    IAuditSink audit
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
+
+                    int? playerId = sessions.GetSelectedPlayer(ctx.SessionId());
+
+                    audit.Emit(
+                        new AuditEvent
+                        {
+                            Category = AuditCategory.PlayerReport,
+                            Action = "player.bug_report",
+                            Severity = AuditSeverity.Notice,
+                            Result = AuditResult.Success,
+                            ActorPlayerId = playerId,
+                            RoomId = body.RoomId,
+
+                            // Null for the same reason DashboardAuditEmitter leaves it null: the
+                            // IP hashing secret lives behind the authentication module, and a
+                            // second hashing scheme here would produce hashes that match nothing
+                            // in the rest of the trail.
+                            IpHash = null,
+                            Data = JsonSerializer.Serialize(
+                                new
+                                {
+                                    accountId = accountId.Value,
+                                    message = body.Message,
+                                    page = body.Page,
+                                    clientVersion = body.ClientVersion,
+                                    console = body.Console,
+                                }
+                            ),
+                        }
+                    );
+
+                    // 202, not 200: Emit is a non-blocking enqueue, so the row is not written yet
+                    // and claiming otherwise would be a lie the client could catch.
+                    return Results.Json(new { }, statusCode: StatusCodes.Status202Accepted);
+                }
+            )
+            .RequireRateLimiting(ReportRateLimitPolicy)
+            .WithName("SubmitReport")
+            .WithSummary("File a player bug report against the current session.")
             .WithTags(TagUser);
 
         app.MapGet(

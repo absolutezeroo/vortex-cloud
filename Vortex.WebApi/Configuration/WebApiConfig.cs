@@ -152,6 +152,23 @@ public sealed class WebApiConfig
             QueueLimit = 0,
         };
 
+    /// <summary>
+    /// Fixed-window rate limit applied to <c>POST /api/user/reports</c>.
+    ///
+    /// <para>
+    /// Looser than the credential routes on purpose: this one is not guarding a secret, and a
+    /// player hitting the ceiling mid-beta is a report that never arrives. It exists so a stuck
+    /// retry loop or a bored tester cannot fill the audit table, not to ration honest reports.
+    /// </para>
+    /// </summary>
+    public RateLimitOptions ReportRateLimit { get; set; } =
+        new RateLimitOptions
+        {
+            PermitLimit = 10,
+            WindowSeconds = 300,
+            QueueLimit = 0,
+        };
+
     public sealed class RateLimitOptions
     {
         public int PermitLimit { get; set; } = 5;

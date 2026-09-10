@@ -85,3 +85,37 @@ public sealed record SaveFigureRequest(string? FigureString, string? Gender, int
 {
     public bool IsValid => !string.IsNullOrWhiteSpace(FigureString) && PlayerId > 0;
 }
+
+/// <summary>
+/// A bug report written by a player. Everything but <see cref="Message" /> is context the client
+/// collects on its own, because a report that says only "it's broken" costs more to chase than it
+/// saves — and a player will not think to mention which room they were in.
+/// </summary>
+/// <remarks>
+/// The limits are deliberate and enforced here rather than trusted from the client. The audit
+/// payload is a JSON column and the reports arrive over an authenticated but public route, so an
+/// unbounded field is an unbounded row: <see cref="MAX_MESSAGE" /> is generous for a description
+/// and small enough that a thousand of them cost nothing, and <see cref="MAX_CONTEXT" /> caps each
+/// piece of collected context.
+/// </remarks>
+public sealed record SubmitReportRequest(
+    string? Message,
+    string? Page,
+    string? ClientVersion,
+    int? RoomId,
+    string? Console
+)
+{
+    public const int MAX_MESSAGE = 2000;
+    public const int MAX_CONTEXT = 500;
+
+    /// <summary>The tail of the browser console, when the client was able to capture one.</summary>
+    public const int MAX_CONSOLE = 4000;
+
+    public bool IsValid =>
+        !string.IsNullOrWhiteSpace(Message)
+        && Message.Length <= MAX_MESSAGE
+        && (Page is null || Page.Length <= MAX_CONTEXT)
+        && (ClientVersion is null || ClientVersion.Length <= MAX_CONTEXT)
+        && (Console is null || Console.Length <= MAX_CONSOLE);
+}

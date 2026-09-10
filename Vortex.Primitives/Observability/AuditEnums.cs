@@ -20,6 +20,18 @@ public enum AuditCategory
     /// Stored as a string, so appending here needs no migration.
     /// </summary>
     Progression,
+
+    /// <summary>
+    /// What a player told us, in their own words. Every other category records something the hotel
+    /// observed; this one records something only the player can see — a room that did not draw, a
+    /// window in the wrong place, an item that behaves oddly. None of it reaches the error
+    /// grouping, because nothing threw.
+    ///
+    /// Deliberately its own category rather than a <see cref="System" /> action: an investigation
+    /// filters by category first, and a bug report buried among scheduler events is a bug report
+    /// nobody reads. Stored as a string, so appending here needs no migration.
+    /// </summary>
+    PlayerReport,
 }
 
 /// <summary>Severity of an audit record, used for incident triage and retention policy.</summary>

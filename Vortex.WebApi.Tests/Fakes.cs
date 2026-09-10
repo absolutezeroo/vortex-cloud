@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Observability;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
 
@@ -167,4 +168,18 @@ internal sealed class FakePasswordService : IAccountPasswordService
         string newPassword,
         CancellationToken ct = default
     ) => Task.FromResult(PasswordChangeResult.Changed(SessionsRevoked));
+}
+
+/// <summary>
+/// Collects what the endpoints emit instead of persisting it. The real sink enqueues onto a
+/// channel drained by a background writer, so a test asserting against the database would be
+/// asserting against a race; what the endpoint is responsible for is the record it hands over.
+/// </summary>
+internal sealed class RecordingAuditSink : IAuditSink
+{
+    private readonly ConcurrentQueue<AuditEvent> _events = new();
+
+    public IReadOnlyCollection<AuditEvent> Events => _events.ToArray();
+
+    public void Emit(in AuditEvent auditEvent) => _events.Enqueue(auditEvent);
 }

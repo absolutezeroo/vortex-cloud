@@ -102,6 +102,11 @@ internal static class WebApiAppConfigurator
                 WebApiEndpoints.SsoTokenRateLimitPolicy,
                 config.SsoTokenRateLimit
             );
+            AddFixedWindowPolicy(
+                options,
+                WebApiEndpoints.ReportRateLimitPolicy,
+                config.ReportRateLimit
+            );
         });
     }
 

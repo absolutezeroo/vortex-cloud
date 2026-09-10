@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Observability;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
@@ -262,6 +263,12 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<IWebApiArticleService>());
         services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
         services.AddSingleton(rootServices.GetRequiredService<IAccountPasswordService>());
+
+        // POST /api/user/reports emits an audit record. A service missing from this list is not a
+        // resolution failure at call time — minimal APIs read an unregistered parameter as the
+        // request body, and an endpoint that already has one dies at startup and takes the whole
+        // web API with it.
+        services.AddSingleton(rootServices.GetRequiredService<IAuditSink>());
         services.AddSingleton(
             rootServices.GetRequiredService<IDbContextFactory<VortexDbContext>>()
         );

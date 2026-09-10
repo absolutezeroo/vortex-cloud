@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Observability;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Hosting;
 using Vortex.WebApi.Services;
@@ -71,6 +72,12 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IAccountPasswordService>(new FakePasswordService());
         builder.Services.AddSingleton<RequiredServiceGuard>();
 
+        // Mirrors WebApiWebHost.ForwardSingletons. Leaving a service out of that list is not a
+        // resolution error at call time — a minimal API reads an unregistered parameter as the
+        // request body — so this registration is also what keeps the two lists honest: drop it and
+        // the report endpoint fails to build here, where it is cheap to find out.
+        builder.Services.AddSingleton<IAuditSink>(Audit);
+
         DbContexts = new TestDbContextFactory(
             new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"webapi-health-{Guid.NewGuid():N}")
@@ -114,6 +121,9 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
     }
 
     public WebApiSessionStore Sessions { get; }
+
+    /// <summary>What the endpoints emitted, in order, so a test can assert on the record itself.</summary>
+    public RecordingAuditSink Audit { get; } = new();
 
     /// <summary>The in-memory database behind the app, so a test can seed the rows it is about.</summary>
     public IDbContextFactory<VortexDbContext> DbContexts { get; }
