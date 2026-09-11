@@ -93,7 +93,26 @@ COPY --from=build --chown=app:app /app/publish ./
 RUN mkdir -p /app/logs /app/plugins /app/assets \
     && chown -R app:app /app/logs /app/plugins /app/assets
 
+# curl, for one reason: a container healthcheck runs INSIDE the container, and this image ships no
+# HTTP client at all. An orchestrator that probes it gets `curl: not found`, reads that as the
+# application being unhealthy, and rolls the deployment back — while the host itself has started
+# perfectly and says so in its own log. That failure is indistinguishable from a crash unless you
+# read the healthcheck output, so the fix belongs here rather than in a runbook.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 USER app
+
+# `/health` on the WEB API port, not the game socket. 30001 speaks the Habbo WebSocket handshake and
+# answers an HTTP GET with nothing an orchestrator can read — probing it marks a healthy hotel as
+# broken. `--fail` makes curl exit non-zero on a 4xx/5xx instead of happily reporting an error page.
+#
+# start-period is generous on purpose: the host loads the whole catalogue before it listens —
+# 55 000 furniture definitions and 2 100 catalogue pages on the tree this was written against, which
+# took ~9 seconds. A short period fails the first probe and rolls back a deployment that was fine.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD curl --fail --silent --show-error http://localhost:8080/health || exit 1
 
 # Documentation only — publishing these is docker-compose.yml's job.
 #   30000 game TCP socket, 30001 game WebSocket socket, 8080 web API, 9000 operator dashboard.

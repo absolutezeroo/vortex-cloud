@@ -1,5 +1,22 @@
 #!/usr/bin/env sh
 set -eu
 
+# VortexCloudFastCheck reads C# and the build graph: csharpier over ~6 300 files, a full restore and
+# build, and seven test projects. Minutes, and worth every one of them on code.
+#
+# On a commit that touches none of that — a Dockerfile, a README, a workflow — it cannot fail, and
+# paying for it anyway is how a pre-commit hook teaches people to reach for --no-verify. That habit
+# is the real risk: a hook that is routinely bypassed protects nothing, and this repository has had
+# main go red twice from checks that were skipped rather than checks that were missing.
+#
+# So: skip only when nothing the check can read has changed. The list is deliberately generous —
+# when in doubt an extension belongs here, because a needless run costs minutes and a missed one
+# costs a red main.
+if ! git diff --cached --name-only --diff-filter=ACMR |
+    grep -qiE '\.(cs|csproj|props|targets|sln|json|svelte|ts|js|mjs|cjs)$'; then
+    echo "pre-commit: no C#, project or front-end file staged; fast checks skipped."
+    exit 0
+fi
+
 echo "Running fast local checks..."
 dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
