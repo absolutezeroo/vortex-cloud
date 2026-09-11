@@ -93,6 +93,15 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
             new WebApiArticleService(DbContexts, NullLogger<WebApiArticleService>.Instance)
         );
 
+        // Real for the same reason: a profile IS its four queries.
+        builder.Services.AddSingleton<IWebApiProfileService>(
+            new WebApiProfileService(DbContexts, NullLogger<WebApiProfileService>.Instance)
+        );
+
+        builder.Services.AddSingleton<IWebApiRoomService>(
+            new WebApiRoomService(DbContexts, NullLogger<WebApiRoomService>.Instance)
+        );
+
         WebApiAppConfigurator.ConfigureServices(builder.Services, config);
 
         _app = builder.Build();

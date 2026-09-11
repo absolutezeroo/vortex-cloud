@@ -137,6 +137,9 @@ internal sealed class FakePlayerService : IWebApiPlayerService
 
     public Task<AvatarInfo?> GetAvatarAsync(int playerId, CancellationToken ct) =>
         Task.FromResult<AvatarInfo?>(null);
+
+    public Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct) =>
+        Task.FromResult<PlayerPurse?>(new PlayerPurse(12480, 36, 2145, 27, 50));
 }
 
 /// <summary>

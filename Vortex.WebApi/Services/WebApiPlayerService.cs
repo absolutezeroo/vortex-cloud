@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums;
+using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Http;
@@ -210,6 +211,65 @@ public sealed class WebApiPlayerService(
             .ConfigureAwait(false);
 
         return player is null ? null : ToAvatarInfo(player);
+    }
+
+    public async Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct)
+    {
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        bool exists = await db
+            .Players.AsNoTracking()
+            .AnyAsync(p => p.Id == playerId && p.DeletedAt == null, ct)
+            .ConfigureAwait(false);
+
+        if (!exists)
+        {
+            return null;
+        }
+
+        // A currency row only exists once the player has held that currency, so the wallet is read
+        // as a dictionary and missing rows are zero rather than an absent counter.
+        Dictionary<CurrencyType, int> balances = await db
+            .PlayerCurrencies.AsNoTracking()
+            .Where(c => c.PlayerEntityId == playerId && c.CurrencyTypeEntity != null)
+            .ToDictionaryAsync(c => c.CurrencyTypeEntity!.CurrencyType, c => c.Amount, ct)
+            .ConfigureAwait(false);
+
+        DateTime now = DateTime.UtcNow;
+
+        List<PlayerSubscriptionEntity> subscriptions = await db
+            .PlayerSubscriptions.AsNoTracking()
+            .Where(s => s.PlayerEntityId == playerId && s.ExpiresAt > now)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        PlayerSubscriptionEntity? club = subscriptions.Find(s =>
+            s.SubscriptionType == SubscriptionType.HabboClub
+        );
+        PlayerSubscriptionEntity? builders = subscriptions.Find(s =>
+            s.SubscriptionType == SubscriptionType.BuildersClub
+        );
+
+        // Rounded UP: a subscription with eight hours left is a day left, not zero days, which is
+        // what the counter says everywhere else in the hotel.
+        int clubDays = club is null ? 0 : (int)Math.Ceiling((club.ExpiresAt - now).TotalDays);
+
+        int furniLimit = builders is null
+            ? 0
+            : await db
+                .BuildersClubTiers.AsNoTracking()
+                .Where(t => t.Level == builders.Level)
+                .Select(t => t.FurniLimit)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(false);
+
+        return new PlayerPurse(
+            balances.GetValueOrDefault(CurrencyType.Credits),
+            balances.GetValueOrDefault(CurrencyType.Emeralds),
+            balances.GetValueOrDefault(CurrencyType.Silver),
+            clubDays,
+            furniLimit
+        );
     }
 
     private static AvatarInfo ToAvatarInfo(PlayerEntity p) =>

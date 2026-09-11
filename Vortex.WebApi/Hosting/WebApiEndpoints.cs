@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,10 +40,93 @@ internal static class WebApiEndpoints
     public static void Map(WebApplication app)
     {
         MapPublic(app);
+        MapProfiles(app);
         MapAuthentication(app);
         MapUser(app);
         MapNewUser(app);
         MapContent(app);
+    }
+
+    /// <summary>
+    /// Public profiles, on habbo.com's own two routes: a name lookup that answers the header, and
+    /// the full read keyed by the id that lookup returns. Anonymous, because a profile is a page a
+    /// signed-out visitor opens — the site links to one from every friend head.
+    /// </summary>
+    private static void MapProfiles(WebApplication app)
+    {
+        app.MapGet(
+                "/api/public/users",
+                async (string? name, IWebApiProfileService profiles, CancellationToken ct) =>
+                {
+                    ProfileUser? user = await profiles
+                        .FindUserByNameAsync(name ?? string.Empty, ct)
+                        .ConfigureAwait(false);
+
+                    return user is null
+                        ? Error(StatusCodes.Status404NotFound, "user_not_found")
+                        : Results.Json(user);
+                }
+            )
+            .WithName("UserByName")
+            .WithSummary("Resolve a habbo name to its public profile header.")
+            .WithTags(TagPublic);
+
+        app.MapGet(
+                "/api/public/users/{uniqueId}/profile",
+                async (string uniqueId, IWebApiProfileService profiles, CancellationToken ct) =>
+                {
+                    // The id is a player id rendered as a string, which is what the lookup above
+                    // hands out. Parsing here rather than binding an int keeps a junk id a 404 — the
+                    // same answer as an id that does not exist — instead of a 400 that tells a
+                    // caller they at least guessed the shape right.
+                    if (!int.TryParse(uniqueId, out int playerId))
+                    {
+                        return Error(StatusCodes.Status404NotFound, "user_not_found");
+                    }
+
+                    PlayerProfile? profile = await profiles
+                        .GetProfileAsync(playerId, ct)
+                        .ConfigureAwait(false);
+
+                    return profile is null
+                        ? Error(StatusCodes.Status404NotFound, "user_not_found")
+                        : Results.Json(profile);
+                }
+            )
+            .WithName("UserProfile")
+            .WithSummary("A player's badges, friends, rooms and groups.")
+            .WithTags(TagPublic);
+
+        // habbo.com's own route for one appart ("/public/rooms/:id"). The gallery beside it is an
+        // ADDITION: habbo.com's is server-rendered and calls nothing, but this site is a SPA and
+        // needs a list from somewhere.
+        app.MapGet(
+                "/api/public/rooms",
+                async (int? page, int? pageSize, IWebApiRoomService rooms, CancellationToken ct) =>
+                    Results.Json(
+                        await rooms
+                            .GetRoomsAsync(page ?? 1, pageSize ?? 0, ct)
+                            .ConfigureAwait(false)
+                    )
+            )
+            .WithName("Rooms")
+            .WithSummary("The appart gallery: the busiest visible rooms first.")
+            .WithTags(TagPublic);
+
+        app.MapGet(
+                "/api/public/rooms/{id:int}",
+                async (int id, IWebApiRoomService rooms, CancellationToken ct) =>
+                {
+                    RoomSummary? room = await rooms.GetRoomAsync(id, ct).ConfigureAwait(false);
+
+                    return room is null
+                        ? Error(StatusCodes.Status404NotFound, "room_not_found")
+                        : Results.Json(room);
+                }
+            )
+            .WithName("Room")
+            .WithSummary("One appart.")
+            .WithTags(TagPublic);
     }
 
     /// <summary>
@@ -359,6 +443,54 @@ internal static class WebApiEndpoints
             .WithName("Register")
             .WithSummary("Create a new account and auto-start a web session.")
             .WithTags(TagAuth);
+
+        app.MapGet(
+                "/api/user/purse",
+                async (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    // The selected avatar when there is one, and otherwise the account's first —
+                    // the same fallback the SSO ticket route makes, because a session that has not
+                    // been through the avatar picker still has a wallet to show.
+                    int? playerId = sessions.GetSelectedPlayer(ctx.SessionId());
+
+                    if (playerId is null)
+                    {
+                        System.Collections.Generic.List<AvatarInfo> owned = await players
+                            .GetAvatarsForAccountAsync(accountId.Value, ct)
+                            .ConfigureAwait(false);
+
+                        if (owned.Count == 0)
+                        {
+                            return Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars");
+                        }
+
+                        playerId = int.Parse(owned[0].UniqueId, CultureInfo.InvariantCulture);
+                    }
+
+                    PlayerPurse? purse = await players
+                        .GetPurseAsync(playerId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return purse is null
+                        ? Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars")
+                        : Results.Json(purse);
+                }
+            )
+            .WithName("GetPurse")
+            .WithSummary("The selected avatar's credits, diamonds, duckets and subscriptions.")
+            .WithTags(TagUser);
 
         app.MapGet(
                 "/api/user/avatars",

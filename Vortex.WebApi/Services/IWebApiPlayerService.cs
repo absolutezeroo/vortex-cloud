@@ -12,9 +12,25 @@ public sealed record AvatarInfo(
     string Gender
 );
 
+/// <summary>
+/// The five counters the site's sidebar shows. <paramref name="HabboClubDays"/> is what is LEFT of
+/// the subscription, not how long it has run, and <paramref name="BuildersFurniLimit"/> is the tier's
+/// allowance rather than a balance — both are what the counters beside them read as.
+/// </summary>
+public sealed record PlayerPurse(
+    int Credits,
+    int Diamonds,
+    int Duckets,
+    int HabboClubDays,
+    int BuildersFurniLimit
+);
+
 public interface IWebApiPlayerService
 {
     Task<List<AvatarInfo>> GetAvatarsForAccountAsync(int accountId, CancellationToken ct);
+
+    /// <summary>The wallet of one avatar, or <c>null</c> when no such player exists.</summary>
+    Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct);
 
     Task<(bool Success, int PlayerId, string? Error)> CreateAvatarAsync(
         int accountId,
