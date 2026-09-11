@@ -63,6 +63,12 @@ internal sealed class BenchmarkProvisioner(
     /// </summary>
     private const int BenchBalance = 100_000_000;
 
+    /// <summary>
+    /// How much empty floor a run needs before it is worth starting. Below this the walk load is
+    /// a stream of refusals rather than movement, which the report cannot tell apart from walking.
+    /// </summary>
+    private const int MinWalkTargets = 8;
+
     public async Task<BenchmarkFixture> ProvisionAsync(
         int players,
         int furniture,
@@ -215,6 +221,24 @@ internal sealed class BenchmarkProvisioner(
 
         BuildFriendships(db, accounts);
 
+        // Rights on the run's own room, and never on a borrowed one. Only the owner may move
+        // furniture, so without this every drag by the other hundred and forty-nine players was
+        // refused — three and a half thousand times in one run, each one an ERR with a stack trace.
+        //
+        // Withheld for a borrowed room on purpose: that room is yours, and a bench account with
+        // rights on it could rearrange your furniture. The run then measures no moves there, which
+        // is the honest trade — a borrowed room is for measuring load, not for editing.
+        if (!borrowed)
+        {
+            db.RoomRights.AddRange(
+                accounts.Select(account => new RoomRightEntity
+                {
+                    RoomEntityId = roomId,
+                    PlayerEntityId = account.Id,
+                })
+            );
+        }
+
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
         // The room reads its item map when it activates and not again, so furniture written under a
@@ -236,6 +260,36 @@ internal sealed class BenchmarkProvisioner(
         ImmutableArray<(int PageId, int OfferId)> offers = await ResolveOffersAsync(db, ct)
             .ConfigureAwait(false);
 
+        // Tiles nothing is standing on. BuildFurniture fills openTiles from the front, one item per
+        // tile, so the free floor starts where it stopped — and a borrowed room's own items block
+        // tiles this run never chose, which is why they are subtracted too.
+        //
+        // Handing out occupied tiles as walk targets is what every run before this one did: the goal
+        // was unoccupiable, the room refused the move, and the pathfinder's refusal was counted as
+        // walking. Twenty thousand times in six minutes, in a report that said the run went fine.
+        HashSet<(int X, int Y)> taken = [.. openTiles.Take(Math.Min(furniture, openTiles.Count))];
+
+        if (borrowed)
+        {
+            List<(int X, int Y)> existing = await db
+                .Furnitures.AsNoTracking()
+                .Where(f => f.RoomEntityId == roomId)
+                .Select(f => new ValueTuple<int, int>(f.X, f.Y))
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            taken.UnionWith(existing);
+        }
+
+        List<(int X, int Y)> freeTiles = [.. openTiles.Where(tile => !taken.Contains(tile))];
+
+        if (freeTiles.Count < MinWalkTargets)
+        {
+            // Refused rather than measured. A room with no floor left cannot be walked in, and a run
+            // that reports a walk load it never applied is worse than one that will not start.
+            throw new InvalidOperationException("benchmark_room_too_full");
+        }
+
         return new BenchmarkFixture
         {
             RoomId = roomId,
@@ -245,9 +299,10 @@ internal sealed class BenchmarkProvisioner(
                 .. tickets.OrderBy(ticket => ticket.PlayerEntityId).Select(ticket => ticket.Ticket),
             ],
             PlacedFurniture = furniture,
-            // Real tiles, so a walk is a walk. Sending a synthetic player at a hole means the room
-            // refuses the move and the pathfinder -- the expensive half of the load -- never runs.
-            WalkTargets = [.. openTiles.Take(32)],
+            // Real tiles, empty ones, so a walk is a walk. Sending a synthetic player at a hole --
+            // or at a tile this run just filled with a sofa -- means the room refuses the move and
+            // the pathfinder, the expensive half of the load, never runs.
+            WalkTargets = [.. freeTiles.Take(32)],
             FurnitureIds = [.. placed.Select(item => item.Id)],
             // Ticket order, so index N of the plan is the player whose ticket is index N: the drive
             // loop picks a correspondent by index and must not be writing to a stranger.
@@ -418,6 +473,15 @@ internal sealed class BenchmarkProvisioner(
                 .ExecuteDeleteAsync(ct)
                 .ConfigureAwait(false);
 
+            // Both ends again: a right names a player and a room, and the run grants one per account
+            // on its own room. Matched on either side so a borrowed room cannot keep a bench grant.
+            await db
+                .RoomRights.Where(r =>
+                    playerIds.Contains(r.PlayerEntityId) || roomIds.Contains(r.RoomEntityId)
+                )
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
             await db
                 .SecurityTickets.Where(t => playerIds.Contains(t.PlayerEntityId))
                 .ExecuteDeleteAsync(ct)
@@ -466,9 +530,11 @@ internal sealed class BenchmarkProvisioner(
         CancellationToken ct
     )
     {
+        // Every type, not only the enabled ones. The filter was there out of tidiness and it cost a
+        // thousand failed debits: an offer may be priced in a currency the hotel does not currently
+        // advertise, and the wallet then finds no row to subtract from and throws.
         List<int> currencyTypeIds = await db
             .CurrencyTypes.AsNoTracking()
-            .Where(type => type.Enabled)
             .Select(type => type.Id)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -539,7 +605,16 @@ internal sealed class BenchmarkProvisioner(
     {
         var offers = await db
             .CatalogOffers.AsNoTracking()
-            .Where(offer => offer.Visible && offer.ClubLevel == 0 && offer.Products!.Count > 0)
+            .Where(offer =>
+                offer.Visible
+                && offer.ClubLevel == 0
+                && offer.Products!.Count > 0
+                // Priced in credits alone. Ordering by CostCredits without this picked offers whose
+                // real price was in activity points, and the wallet refused every one of them: the
+                // debit found no matching currency for the player and reported "changed 0".
+                && offer.CostCurrency == 0
+                && offer.CurrencyTypeId == null
+            )
             .OrderBy(offer => offer.CostCredits)
             .Select(offer => new { offer.CatalogPageEntityId, offer.Id })
             .Take(16)
