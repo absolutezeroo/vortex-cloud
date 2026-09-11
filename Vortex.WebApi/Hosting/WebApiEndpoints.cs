@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -56,15 +57,19 @@ internal static class WebApiEndpoints
     {
         app.MapGet(
                 "/api/public/users",
-                async (string? name, IWebApiProfileService profiles, CancellationToken ct) =>
+                async Task<Results<Ok<ProfileUser>, NotFound<ApiErrorResponse>>> (
+                    string? name,
+                    IWebApiProfileService profiles,
+                    CancellationToken ct
+                ) =>
                 {
                     ProfileUser? user = await profiles
                         .FindUserByNameAsync(name ?? string.Empty, ct)
                         .ConfigureAwait(false);
 
                     return user is null
-                        ? Error(StatusCodes.Status404NotFound, "user_not_found")
-                        : Results.Json(user);
+                        ? TypedResults.NotFound(new ApiErrorResponse("user_not_found"))
+                        : TypedResults.Ok(user);
                 }
             )
             .WithName("UserByName")
@@ -73,7 +78,11 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/public/users/{uniqueId}/profile",
-                async (string uniqueId, IWebApiProfileService profiles, CancellationToken ct) =>
+                async Task<Results<Ok<PlayerProfile>, NotFound<ApiErrorResponse>>> (
+                    string uniqueId,
+                    IWebApiProfileService profiles,
+                    CancellationToken ct
+                ) =>
                 {
                     // The id is a player id rendered as a string, which is what the lookup above
                     // hands out. Parsing here rather than binding an int keeps a junk id a 404 — the
@@ -81,7 +90,7 @@ internal static class WebApiEndpoints
                     // caller they at least guessed the shape right.
                     if (!int.TryParse(uniqueId, out int playerId))
                     {
-                        return Error(StatusCodes.Status404NotFound, "user_not_found");
+                        return TypedResults.NotFound(new ApiErrorResponse("user_not_found"));
                     }
 
                     PlayerProfile? profile = await profiles
@@ -89,8 +98,8 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     return profile is null
-                        ? Error(StatusCodes.Status404NotFound, "user_not_found")
-                        : Results.Json(profile);
+                        ? TypedResults.NotFound(new ApiErrorResponse("user_not_found"))
+                        : TypedResults.Ok(profile);
                 }
             )
             .WithName("UserProfile")
@@ -102,8 +111,13 @@ internal static class WebApiEndpoints
         // needs a list from somewhere.
         app.MapGet(
                 "/api/public/rooms",
-                async (int? page, int? pageSize, IWebApiRoomService rooms, CancellationToken ct) =>
-                    Results.Json(
+                async Task<Ok<RoomPage>> (
+                    int? page,
+                    int? pageSize,
+                    IWebApiRoomService rooms,
+                    CancellationToken ct
+                ) =>
+                    TypedResults.Ok(
                         await rooms
                             .GetRoomsAsync(page ?? 1, pageSize ?? 0, ct)
                             .ConfigureAwait(false)
@@ -115,13 +129,17 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/public/rooms/{id:int}",
-                async (int id, IWebApiRoomService rooms, CancellationToken ct) =>
+                async Task<Results<Ok<RoomSummary>, NotFound<ApiErrorResponse>>> (
+                    int id,
+                    IWebApiRoomService rooms,
+                    CancellationToken ct
+                ) =>
                 {
                     RoomSummary? room = await rooms.GetRoomAsync(id, ct).ConfigureAwait(false);
 
                     return room is null
-                        ? Error(StatusCodes.Status404NotFound, "room_not_found")
-                        : Results.Json(room);
+                        ? TypedResults.NotFound(new ApiErrorResponse("room_not_found"))
+                        : TypedResults.Ok(room);
                 }
             )
             .WithName("Room")
@@ -138,8 +156,10 @@ internal static class WebApiEndpoints
     {
         app.MapGet(
                 "/api/public/languages",
-                async (IWebApiArticleService articles, CancellationToken ct) =>
-                    Results.Json(await articles.GetLanguagesAsync(ct).ConfigureAwait(false))
+                async Task<Ok<SiteLanguages>> (
+                    IWebApiArticleService articles,
+                    CancellationToken ct
+                ) => TypedResults.Ok(await articles.GetLanguagesAsync(ct).ConfigureAwait(false))
             )
             .WithName("Languages")
             .WithSummary("The enabled site languages and which one is the fallback.")
@@ -147,7 +167,7 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/public/articles",
-                async (
+                async Task<Ok<ArticleFeed>> (
                     HttpContext ctx,
                     IWebApiArticleService articles,
                     CancellationToken ct,
@@ -156,7 +176,7 @@ internal static class WebApiEndpoints
                     int page = 1,
                     int pageSize = 0
                 ) =>
-                    Results.Json(
+                    TypedResults.Ok(
                         await articles
                             .GetFeedAsync(
                                 category,
@@ -174,7 +194,7 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/public/articles/{slug}",
-                async (
+                async Task<Results<Ok<ArticleDetail>, NotFound<ApiErrorResponse>>> (
                     HttpContext ctx,
                     string slug,
                     IWebApiArticleService articles,
@@ -187,8 +207,8 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     return article is null
-                        ? Error(StatusCodes.Status404NotFound, "article_not_found")
-                        : Results.Json(article);
+                        ? TypedResults.NotFound(new ApiErrorResponse("article_not_found"))
+                        : TypedResults.Ok(article);
                 }
             )
             .WithName("Article")
@@ -198,7 +218,10 @@ internal static class WebApiEndpoints
 
     private static void MapPublic(WebApplication app)
     {
-        app.MapGet("/api/public/info/hello", () => Results.Json(new { status = "ok" }))
+        app.MapGet(
+                "/api/public/info/hello",
+                Ok<HelloResponse> () => TypedResults.Ok(new HelloResponse("ok"))
+            )
             .WithName("Hello")
             .WithSummary("Server liveness probe used by the onboarding client.")
             .WithTags(TagPublic);
@@ -233,16 +256,22 @@ internal static class WebApiEndpoints
                         : guard.IsDegraded ? "Degraded"
                         : "Healthy";
 
+                    HealthResponse health = new(
+                        status,
+                        databaseUp ? "up" : "down",
+                        guard.DegradedServices
+                    );
+
+                    // The one endpoint left on Results.Json, and the one status that cannot be
+                    // typed: there is no `ServiceUnavailable<T>`, so 503-with-a-body has to be built
+                    // at runtime. Both answers are declared below instead — the probe is an
+                    // operations surface no generated client reads, so a declaration is the right
+                    // amount of truth for it.
                     return Results.Json(
-                        new
-                        {
-                            status,
-                            database = databaseUp ? "up" : "down",
-                            degradedServices = guard.DegradedServices,
-                        },
-                        statusCode: status == "Unhealthy"
-                            ? StatusCodes.Status503ServiceUnavailable
-                            : StatusCodes.Status200OK
+                        health,
+                        statusCode: databaseUp
+                            ? StatusCodes.Status200OK
+                            : StatusCodes.Status503ServiceUnavailable
                     );
                 }
             )
@@ -251,14 +280,18 @@ internal static class WebApiEndpoints
                 "Liveness/readiness probe: database connectivity and RequiredServiceGuard's "
                     + "degraded-service state (OPS-02)."
             )
-            .WithTags(TagPublic);
+            .WithTags(TagPublic)
+            .Produces<HealthResponse>()
+            .Produces<HealthResponse>(StatusCodes.Status503ServiceUnavailable);
     }
 
     private static void MapAuthentication(WebApplication app)
     {
         app.MapPost(
                 "/api/public/authentication/login",
-                async (
+                async Task<
+                    Results<Ok<LoginResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
                     HttpContext ctx,
                     LoginRequest body,
                     IWebApiAuthService auth,
@@ -268,9 +301,8 @@ internal static class WebApiEndpoints
                 {
                     if (body is null || !body.IsValid)
                     {
-                        return Error(
-                            StatusCodes.Status400BadRequest,
-                            "pocket.auth.missing_credentials"
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse("pocket.auth.missing_credentials")
                         );
                     }
 
@@ -282,11 +314,9 @@ internal static class WebApiEndpoints
                     {
                         // mfa_required is not a failure the visitor can do anything about except
                         // send a code, so it rides the same 401 as the rest: the client tells them
-                        // apart by the error string, and neither ever carries a session.
-                        return Results.Json(
-                            new { error },
-                            statusCode: StatusCodes.Status401Unauthorized
-                        );
+                        // apart by the error string, and neither ever carries a session. That string
+                        // is why the 401 needs a body at all — see UnauthorizedError.
+                        return new UnauthorizedError(error ?? "pocket.auth.invalid_login");
                     }
 
                     ctx.IssueSessionCookie(sessionId!);
@@ -295,7 +325,7 @@ internal static class WebApiEndpoints
                         .GetAvatarsForAccountAsync(accountId, ct)
                         .ConfigureAwait(false);
 
-                    return Results.Json(new { requiresOnboarding = avatars.Count == 0 });
+                    return TypedResults.Ok(new LoginResponse(avatars.Count == 0));
                 }
             )
             .RequireRateLimiting(LoginRateLimitPolicy)
@@ -305,7 +335,13 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/public/authentication/password",
-                async (
+                async Task<
+                    Results<
+                        Ok<PasswordChangeResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
                     HttpContext ctx,
                     ChangePasswordRequest body,
                     WebApiSessionStore sessions,
@@ -317,17 +353,13 @@ internal static class WebApiEndpoints
 
                     if (accountId is null)
                     {
-                        return Error(
-                            StatusCodes.Status401Unauthorized,
-                            "pocket.auth.not_authenticated"
-                        );
+                        return new UnauthorizedError("pocket.auth.not_authenticated");
                     }
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(
-                            StatusCodes.Status400BadRequest,
-                            "pocket.auth.missing_credentials"
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse("pocket.auth.missing_credentials")
                         );
                     }
 
@@ -343,15 +375,17 @@ internal static class WebApiEndpoints
 
                     if (!result.Succeeded)
                     {
-                        return Error(
-                            StatusCodes.Status400BadRequest,
-                            result.Outcome switch
-                            {
-                                PasswordChangeOutcome.MfaRequired => "pocket.auth.mfa_required",
-                                PasswordChangeOutcome.InvalidCode => "pocket.auth.invalid_code",
-                                PasswordChangeOutcome.TooShort => "pocket.auth.password_too_short",
-                                _ => "pocket.auth.wrong_password",
-                            }
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse(
+                                result.Outcome switch
+                                {
+                                    PasswordChangeOutcome.MfaRequired => "pocket.auth.mfa_required",
+                                    PasswordChangeOutcome.InvalidCode => "pocket.auth.invalid_code",
+                                    PasswordChangeOutcome.TooShort =>
+                                        "pocket.auth.password_too_short",
+                                    _ => "pocket.auth.wrong_password",
+                                }
+                            )
                         );
                     }
 
@@ -359,7 +393,7 @@ internal static class WebApiEndpoints
                     // is what stops the browser presenting a token that no longer resolves.
                     ctx.ClearSessionCookie();
 
-                    return Results.Json(new { sessionsRevoked = result.SessionsRevoked });
+                    return TypedResults.Ok(new PasswordChangeResponse(result.SessionsRevoked));
                 }
             )
             .WithName("ChangePassword")
@@ -368,7 +402,7 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/public/authentication/logout",
-                (HttpContext ctx, WebApiSessionStore sessions) =>
+                Ok<EmptyResponse> (HttpContext ctx, WebApiSessionStore sessions) =>
                 {
                     string? sessionId = ctx.SessionId();
 
@@ -379,7 +413,7 @@ internal static class WebApiEndpoints
 
                     ctx.ClearSessionCookie();
 
-                    return Results.Json(new { });
+                    return TypedResults.Ok(EmptyResponse.Instance);
                 }
             )
             .WithName("Logout")
@@ -391,7 +425,13 @@ internal static class WebApiEndpoints
     {
         app.MapPost(
                 "/api/public/registration/new",
-                async (
+                async Task<
+                    Results<
+                        Ok<RegistrationResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        Conflict<ApiErrorResponse>
+                    >
+                > (
                     HttpContext ctx,
                     RegisterRequest body,
                     IWebApiAuthService auth,
@@ -400,9 +440,8 @@ internal static class WebApiEndpoints
                 {
                     if (body is null || !body.IsValid)
                     {
-                        return Error(
-                            StatusCodes.Status400BadRequest,
-                            "pocket.auth.missing_credentials"
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse("pocket.auth.missing_credentials")
                         );
                     }
 
@@ -415,10 +454,7 @@ internal static class WebApiEndpoints
 
                     if (!success)
                     {
-                        return Results.Json(
-                            new { error },
-                            statusCode: StatusCodes.Status409Conflict
-                        );
+                        return TypedResults.Conflict(new ApiErrorResponse(error ?? "email_taken"));
                     }
 
                     // An account created a moment ago cannot have a second factor yet, so there is
@@ -436,7 +472,7 @@ internal static class WebApiEndpoints
                         ctx.IssueSessionCookie(sessionId);
                     }
 
-                    return Results.Json(new { id = accountId });
+                    return TypedResults.Ok(new RegistrationResponse(accountId));
                 }
             )
             .RequireRateLimiting(RegistrationRateLimitPolicy)
@@ -446,7 +482,9 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/user/purse",
-                async (
+                async Task<
+                    Results<Ok<PlayerPurse>, NotFound<ApiErrorResponse>, UnauthorizedError>
+                > (
                     HttpContext ctx,
                     WebApiSessionStore sessions,
                     IWebApiPlayerService players,
@@ -473,7 +511,9 @@ internal static class WebApiEndpoints
 
                         if (owned.Count == 0)
                         {
-                            return Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars");
+                            return TypedResults.NotFound(
+                                new ApiErrorResponse("pocket.auth.no_avatars")
+                            );
                         }
 
                         playerId = int.Parse(owned[0].UniqueId, CultureInfo.InvariantCulture);
@@ -484,8 +524,8 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     return purse is null
-                        ? Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars")
-                        : Results.Json(purse);
+                        ? TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"))
+                        : TypedResults.Ok(purse);
                 }
             )
             .WithName("GetPurse")
@@ -494,7 +534,11 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/user/avatars",
-                async (
+                // Also the identity probe: the 401 in this union is what the site reads as "signed
+                // out", which is why it has no dedicated route.
+                async Task<
+                    Results<Ok<System.Collections.Generic.List<AvatarInfo>>, UnauthorizedError>
+                > (
                     HttpContext ctx,
                     WebApiSessionStore sessions,
                     IWebApiPlayerService players,
@@ -508,7 +552,7 @@ internal static class WebApiEndpoints
                         return Unauthorized();
                     }
 
-                    return Results.Json(
+                    return TypedResults.Ok(
                         await players
                             .GetAvatarsForAccountAsync(accountId.Value, ct)
                             .ConfigureAwait(false)
@@ -521,7 +565,14 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/user/avatars",
-                async (
+                async Task<
+                    Results<
+                        Ok<System.Collections.Generic.List<AvatarInfo>>,
+                        BadRequest<ApiErrorResponse>,
+                        Conflict<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
                     HttpContext ctx,
                     CreateAvatarRequest body,
                     WebApiSessionStore sessions,
@@ -538,7 +589,7 @@ internal static class WebApiEndpoints
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     (bool success, int _, string? error) = await players
@@ -553,13 +604,12 @@ internal static class WebApiEndpoints
 
                     if (!success)
                     {
-                        return Results.Json(
-                            new { error },
-                            statusCode: StatusCodes.Status409Conflict
+                        return TypedResults.Conflict(
+                            new ApiErrorResponse(error ?? "invalid_request")
                         );
                     }
 
-                    return Results.Json(
+                    return TypedResults.Ok(
                         await players
                             .GetAvatarsForAccountAsync(accountId.Value, ct)
                             .ConfigureAwait(false)
@@ -572,7 +622,14 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/user/avatars/select",
-                async (
+                async Task<
+                    Results<
+                        Ok<EmptyResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        UnauthorizedError,
+                        ForbiddenError
+                    >
+                > (
                     HttpContext ctx,
                     SelectAvatarRequest body,
                     WebApiSessionStore sessions,
@@ -589,12 +646,12 @@ internal static class WebApiEndpoints
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     if (!int.TryParse(body.UniqueId, out int playerId))
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_unique_id");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_unique_id"));
                     }
 
                     System.Collections.Generic.List<AvatarInfo> owned = await players
@@ -603,12 +660,12 @@ internal static class WebApiEndpoints
 
                     if (!owned.Exists(a => a.UniqueId == body.UniqueId))
                     {
-                        return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                        return new ForbiddenError("avatar_not_owned");
                     }
 
                     sessions.SetSelectedPlayer(ctx.SessionId(), playerId);
 
-                    return Results.Json(new { });
+                    return TypedResults.Ok(EmptyResponse.Instance);
                 }
             )
             .WithName("SelectAvatar")
@@ -631,7 +688,7 @@ internal static class WebApiEndpoints
         // would have to hold shut.
         app.MapPost(
                 "/api/user/reports",
-                (
+                Results<Accepted<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError> (
                     HttpContext ctx,
                     SubmitReportRequest body,
                     WebApiSessionStore sessions,
@@ -647,7 +704,7 @@ internal static class WebApiEndpoints
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     int? playerId = sessions.GetSelectedPlayer(ctx.SessionId());
@@ -682,7 +739,7 @@ internal static class WebApiEndpoints
 
                     // 202, not 200: Emit is a non-blocking enqueue, so the row is not written yet
                     // and claiming otherwise would be a lie the client could catch.
-                    return Results.Json(new { }, statusCode: StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted((string?)null, EmptyResponse.Instance);
                 }
             )
             .RequireRateLimiting(ReportRateLimitPolicy)
@@ -692,7 +749,15 @@ internal static class WebApiEndpoints
 
         app.MapGet(
                 "/api/ssotoken",
-                async (
+                async Task<
+                    Results<
+                        Ok<SsoTicketResponse>,
+                        NotFound<ApiErrorResponse>,
+                        InternalServerError<ApiErrorResponse>,
+                        UnauthorizedError,
+                        ForbiddenError
+                    >
+                > (
                     HttpContext ctx,
                     string? uniqueId,
                     WebApiSessionStore sessions,
@@ -725,7 +790,7 @@ internal static class WebApiEndpoints
 
                         if (!ownedForSso.Exists(a => a.UniqueId == uniqueId))
                         {
-                            return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                            return new ForbiddenError("avatar_not_owned");
                         }
 
                         playerId = pid;
@@ -738,12 +803,16 @@ internal static class WebApiEndpoints
 
                         if (list.Count == 0)
                         {
-                            return Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars");
+                            return TypedResults.NotFound(
+                                new ApiErrorResponse("pocket.auth.no_avatars")
+                            );
                         }
 
                         if (!int.TryParse(list[0].UniqueId, out playerId))
                         {
-                            return Error(StatusCodes.Status500InternalServerError, "internal");
+                            return TypedResults.InternalServerError(
+                                new ApiErrorResponse("internal")
+                            );
                         }
                     }
 
@@ -756,13 +825,10 @@ internal static class WebApiEndpoints
 
                     if (!success)
                     {
-                        return Results.Json(
-                            new { error },
-                            statusCode: StatusCodes.Status403Forbidden
-                        );
+                        return new ForbiddenError(error ?? "avatar_not_owned");
                     }
 
-                    return Results.Json(new { ssoToken = ticket });
+                    return TypedResults.Ok(new SsoTicketResponse(ticket!));
                 }
             )
             .RequireRateLimiting(SsoTokenRateLimitPolicy)
@@ -772,7 +838,15 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/user/look/save",
-                async (
+                async Task<
+                    Results<
+                        Ok<EmptyResponse>,
+                        NotFound<ApiErrorResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        UnauthorizedError,
+                        ForbiddenError
+                    >
+                > (
                     HttpContext ctx,
                     SaveFigureRequest body,
                     WebApiSessionStore sessions,
@@ -789,7 +863,7 @@ internal static class WebApiEndpoints
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     System.Collections.Generic.List<AvatarInfo> ownedForFigure = await players
@@ -798,17 +872,18 @@ internal static class WebApiEndpoints
 
                     if (!ownedForFigure.Exists(a => a.UniqueId == body.PlayerId.ToString()))
                     {
-                        return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                        return new ForbiddenError("avatar_not_owned");
                     }
 
                     bool ok = await players
                         .SaveFigureAsync(body.PlayerId, body.FigureString!, body.Gender ?? "M", ct)
                         .ConfigureAwait(false);
 
-                    return Results.Json(
-                        new { },
-                        statusCode: ok ? StatusCodes.Status200OK : StatusCodes.Status404NotFound
-                    );
+                    // The 404 used to carry `{}` like the success did — the same empty body at two
+                    // statuses, which told a caller nothing. It says which avatar was not found now.
+                    return ok
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
                 }
             )
             .WithName("SaveFigure")
@@ -820,18 +895,22 @@ internal static class WebApiEndpoints
     {
         app.MapPost(
                 "/api/newuser/name/check",
-                async (NameRequest body, IWebApiPlayerService players, CancellationToken ct) =>
+                async Task<Results<Ok<NameCheckResponse>, BadRequest<ApiErrorResponse>>> (
+                    NameRequest body,
+                    IWebApiPlayerService players,
+                    CancellationToken ct
+                ) =>
                 {
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     bool available = await players
                         .NameAvailableAsync(body.Name!, ct)
                         .ConfigureAwait(false);
 
-                    return Results.Json(new { name = body.Name, valid = available });
+                    return TypedResults.Ok(new NameCheckResponse(body.Name!, available));
                 }
             )
             .WithName("NameCheck")
@@ -840,7 +919,15 @@ internal static class WebApiEndpoints
 
         app.MapPost(
                 "/api/newuser/name/select",
-                async (
+                async Task<
+                    Results<
+                        Ok<NameSelectResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        Conflict<ApiErrorResponse>,
+                        UnauthorizedError,
+                        ForbiddenError
+                    >
+                > (
                     HttpContext ctx,
                     NameSelectRequest body,
                     WebApiSessionStore sessions,
@@ -857,7 +944,7 @@ internal static class WebApiEndpoints
 
                     if (body is null || !body.IsValid)
                     {
-                        return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
                     }
 
                     System.Collections.Generic.List<AvatarInfo> ownedForName = await players
@@ -866,7 +953,7 @@ internal static class WebApiEndpoints
 
                     if (!ownedForName.Exists(a => a.UniqueId == body.PlayerId.ToString()))
                     {
-                        return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                        return new ForbiddenError("avatar_not_owned");
                     }
 
                     bool ok = await players
@@ -875,28 +962,26 @@ internal static class WebApiEndpoints
 
                     if (!ok)
                     {
-                        return Results.Json(
-                            new { error = "pocket.auth.name_taken" },
-                            statusCode: StatusCodes.Status409Conflict
+                        return TypedResults.Conflict(
+                            new ApiErrorResponse("pocket.auth.name_taken")
                         );
                     }
 
-                    return Results.Json(new { name = body.Name });
+                    return TypedResults.Ok(new NameSelectResponse(body.Name!));
                 }
             )
             .WithName("NameSelect")
             .WithSummary("Assign a name to an owned avatar.")
             .WithTags(TagNewUser);
 
-        app.MapPost("/api/newuser/room/select", () => Results.Json(new { }))
+        app.MapPost(
+                "/api/newuser/room/select",
+                Ok<EmptyResponse> () => TypedResults.Ok(EmptyResponse.Instance)
+            )
             .WithName("RoomSelect")
             .WithSummary("Onboarding room selection (currently a no-op).")
             .WithTags(TagNewUser);
     }
 
-    private static IResult Unauthorized() =>
-        Error(StatusCodes.Status401Unauthorized, "unauthorized");
-
-    private static IResult Error(int statusCode, string errorCode) =>
-        Results.Json(new { error = errorCode }, statusCode: statusCode);
+    private static UnauthorizedError Unauthorized() => new("unauthorized");
 }

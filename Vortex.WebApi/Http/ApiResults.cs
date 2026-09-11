@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
+
+namespace Vortex.WebApi.Http;
+
+/// <summary>
+/// A refusal that carries <see cref="ApiErrorResponse"/> at a status ASP.NET Core has no typed
+/// result for.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <c>TypedResults</c> covers 200/400/404 with a body — <c>Ok&lt;T&gt;</c>,
+/// <c>BadRequest&lt;T&gt;</c>, <c>NotFound&lt;T&gt;</c> — and each declares its own status and shape,
+/// so a handler returning one cannot disagree with the document. It has NO equivalent for 401 or 403
+/// WITH a body: <c>TypedResults.Unauthorized()</c> and <c>Forbid()</c> write no content.
+/// </para>
+/// <para>
+/// The body at 401 is load-bearing here: the second-factor prompt is a 401 carrying
+/// <c>pocket.auth.mfa_required</c>, and the site tells it apart from a wrong password by that string
+/// alone. <c>TypedResults.Json(…, statusCode: 401)</c> would compile, but
+/// <c>JsonHttpResult&lt;T&gt;</c> reports its status to the API explorer as 200 — the document would
+/// claim a 200 that never happens and omit the 401 that does.
+/// </para>
+/// </remarks>
+public abstract class ApiErrorResult : IResult, IStatusCodeHttpResult
+{
+    private readonly ApiErrorResponse _body;
+
+    private protected ApiErrorResult(string errorCode) => _body = new ApiErrorResponse(errorCode);
+
+    public abstract int StatusCode { get; }
+
+    int? IStatusCodeHttpResult.StatusCode => StatusCode;
+
+    public Task ExecuteAsync(HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        httpContext.Response.StatusCode = StatusCode;
+
+        return httpContext.Response.WriteAsJsonAsync(_body);
+    }
+
+    /// <summary>
+    /// Declares one status against <see cref="ApiErrorResponse"/>. Each subclass passes its own, so
+    /// a handler's declared union names exactly the statuses it can answer with — a single type
+    /// covering both 401 and 403 would document a 403 on every route that can only refuse with a
+    /// 401, which is the kind of near-miss the typed results were adopted to stop.
+    /// </summary>
+    private protected static void Declare(EndpointBuilder builder, int statusCode)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Metadata.Add(
+            new ProducesResponseTypeMetadata(
+                statusCode,
+                typeof(ApiErrorResponse),
+                new[] { "application/json" }
+            )
+        );
+    }
+}
+
+/// <summary>401 — no session, a bad password, or the second factor still owed.</summary>
+public sealed class UnauthorizedError(string errorCode)
+    : ApiErrorResult(errorCode),
+        IEndpointMetadataProvider
+{
+    public override int StatusCode => StatusCodes.Status401Unauthorized;
+
+    public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder) =>
+        Declare(builder, StatusCodes.Status401Unauthorized);
+}
+
+/// <summary>403 — a session that is real but is not allowed this.</summary>
+public sealed class ForbiddenError(string errorCode)
+    : ApiErrorResult(errorCode),
+        IEndpointMetadataProvider
+{
+    public override int StatusCode => StatusCodes.Status403Forbidden;
+
+    public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder) =>
+        Declare(builder, StatusCodes.Status403Forbidden);
+}
+
+/// <summary>
+/// The metadata shape the API explorer reads. Declared here because the framework's own
+/// implementation is internal.
+/// </summary>
+internal sealed class ProducesResponseTypeMetadata(
+    int statusCode,
+    Type type,
+    IEnumerable<string> contentTypes
+) : IProducesResponseTypeMetadata
+{
+    public int StatusCode { get; } = statusCode;
+
+    public Type? Type { get; } = type;
+
+    public IEnumerable<string> ContentTypes { get; } = contentTypes;
+}

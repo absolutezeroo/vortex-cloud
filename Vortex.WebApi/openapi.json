@@ -1,0 +1,1981 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Vortex Web API",
+    "description": "Client-facing onboarding API for the Vortex emulator: login, registration, avatar management and SSO ticket issuance. Sensitive endpoints are rate limited and the session is carried by the habbo-web-session cookie.",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/public/authentication/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Authenticate an account and start a web session.",
+        "operationId": "Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/authentication/password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Change the signed-in account\u0027s password and end every session it has.",
+        "operationId": "ChangePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordChangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/authentication/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "End the current web session.",
+        "operationId": "Logout",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/registration/new": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Create a new account and auto-start a web session.",
+        "operationId": "Register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/languages": {
+      "get": {
+        "tags": [
+          "Content"
+        ],
+        "summary": "The enabled site languages and which one is the fallback.",
+        "operationId": "Languages",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteLanguages"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/articles": {
+      "get": {
+        "tags": [
+          "Content"
+        ],
+        "summary": "A page of the news feed, newest first, pinned articles ahead of it.",
+        "operationId": "Articles",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleFeed"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/articles/{slug}": {
+      "get": {
+        "tags": [
+          "Content"
+        ],
+        "summary": "One article with its body blocks and its read-also list.",
+        "operationId": "Article",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/newuser/name/check": {
+      "post": {
+        "tags": [
+          "NewUser"
+        ],
+        "summary": "Check whether a player name is available.",
+        "operationId": "NameCheck",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/newuser/name/select": {
+      "post": {
+        "tags": [
+          "NewUser"
+        ],
+        "summary": "Assign a name to an owned avatar.",
+        "operationId": "NameSelect",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NameSelectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameSelectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/newuser/room/select": {
+      "post": {
+        "tags": [
+          "NewUser"
+        ],
+        "summary": "Onboarding room selection (currently a no-op).",
+        "operationId": "RoomSelect",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/info/hello": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Server liveness probe used by the onboarding client.",
+        "operationId": "Hello",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelloResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Liveness/readiness probe: database connectivity and RequiredServiceGuard\u0027s degraded-service state (OPS-02).",
+        "operationId": "Health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/users": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Resolve a habbo name to its public profile header.",
+        "operationId": "UserByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileUser"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/users/{uniqueId}/profile": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "A player\u0027s badges, friends, rooms and groups.",
+        "operationId": "UserProfile",
+        "parameters": [
+          {
+            "name": "uniqueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerProfile"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/rooms": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "The appart gallery: the busiest visible rooms first.",
+        "operationId": "Rooms",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/rooms/{id}": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "One appart.",
+        "operationId": "Room",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/purse": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "The selected avatar\u0027s credits, diamonds, duckets and subscriptions.",
+        "operationId": "GetPurse",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerPurse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/avatars": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "List the avatars owned by the authenticated account.",
+        "operationId": "GetAvatars",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvatarInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Create an avatar and return the refreshed avatar list.",
+        "operationId": "CreateAvatar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAvatarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvatarInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/avatars/select": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Select the avatar used for the next SSO token.",
+        "operationId": "SelectAvatar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectAvatarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/reports": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "File a player bug report against the current session.",
+        "operationId": "SubmitReport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ssotoken": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Issue a single-use SSO ticket for the selected avatar.",
+        "operationId": "SsoToken",
+        "parameters": [
+          {
+            "name": "uniqueId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SsoTicketResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/look/save": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Persist the figure string for an owned avatar.",
+        "operationId": "SaveFigure",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveFigureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiErrorResponse": {
+        "required": [
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleCategory": {
+        "required": [
+          "id",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleDetail": {
+        "required": [
+          "article",
+          "body",
+          "lang",
+          "related"
+        ],
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string"
+          },
+          "article": {
+            "$ref": "#/components/schemas/ArticleSummary"
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JsonNode"
+            }
+          },
+          "related": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleLink"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleFeed": {
+        "required": [
+          "categories",
+          "items",
+          "lang",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleCategory"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleSummary"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleLink": {
+        "required": [
+          "id",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArticleSummary": {
+        "required": [
+          "author",
+          "category",
+          "date",
+          "fallback",
+          "id",
+          "image",
+          "pinned",
+          "publishedAt",
+          "summary",
+          "thumbnail",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "fallback": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AvatarInfo": {
+        "required": [
+          "figureString",
+          "gender",
+          "motto",
+          "name",
+          "uniqueId"
+        ],
+        "type": "object",
+        "properties": {
+          "uniqueId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "motto": {
+            "type": "string"
+          },
+          "figureString": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangePasswordRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateAvatarRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "figure": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmptyResponse": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "HealthResponse": {
+        "required": [
+          "database",
+          "degradedServices",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "database": {
+            "type": "string"
+          },
+          "degradedServices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "HelloResponse": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JsonNode": {
+        "required": [
+          "root"
+        ],
+        "type": "object",
+        "properties": {
+          "options": {
+            "$ref": "#/components/schemas/JsonNodeOptions"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/JsonNode"
+          },
+          "root": {
+            "$ref": "#/components/schemas/JsonNode"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JsonNodeOptions": {
+        "required": [
+          "propertyNameCaseInsensitive"
+        ],
+        "type": "object",
+        "properties": {
+          "propertyNameCaseInsensitive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginResponse": {
+        "required": [
+          "requiresOnboarding"
+        ],
+        "type": "object",
+        "properties": {
+          "requiresOnboarding": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NameCheckResponse": {
+        "required": [
+          "name",
+          "valid"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NameRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NameSelectRequest": {
+        "required": [
+          "isValid",
+          "playerId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "playerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NameSelectResponse": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PasswordChangeResponse": {
+        "required": [
+          "sessionsRevoked"
+        ],
+        "type": "object",
+        "properties": {
+          "sessionsRevoked": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerProfile": {
+        "required": [
+          "badges",
+          "friends",
+          "groups",
+          "rooms",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/ProfileUser"
+          },
+          "badges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileBadge"
+            }
+          },
+          "friends": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileFriend"
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileRoom"
+            }
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileGroup"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerPurse": {
+        "required": [
+          "buildersFurniLimit",
+          "credits",
+          "diamonds",
+          "duckets",
+          "habboClubDays"
+        ],
+        "type": "object",
+        "properties": {
+          "credits": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "diamonds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "duckets": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "habboClubDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "buildersFurniLimit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileBadge": {
+        "required": [
+          "badgeIndex",
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "badgeIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileFriend": {
+        "required": [
+          "figureString",
+          "motto",
+          "name",
+          "online",
+          "uniqueId"
+        ],
+        "type": "object",
+        "properties": {
+          "uniqueId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "figureString": {
+            "type": "string"
+          },
+          "motto": {
+            "type": "string"
+          },
+          "online": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileGroup": {
+        "required": [
+          "badgeCode",
+          "description",
+          "id",
+          "isAdmin",
+          "name",
+          "primaryColour",
+          "roomId",
+          "secondaryColour"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "badgeCode": {
+            "type": "string"
+          },
+          "primaryColour": {
+            "type": "string"
+          },
+          "secondaryColour": {
+            "type": "string"
+          },
+          "isAdmin": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileRoom": {
+        "required": [
+          "description",
+          "id",
+          "maximumVisitors",
+          "name",
+          "usersNow"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "usersNow": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maximumVisitors": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileUser": {
+        "required": [
+          "achievementScore",
+          "figureString",
+          "memberSince",
+          "motto",
+          "name",
+          "online",
+          "profileVisible",
+          "respectReceived",
+          "selectedBadges",
+          "uniqueId"
+        ],
+        "type": "object",
+        "properties": {
+          "uniqueId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "figureString": {
+            "type": "string"
+          },
+          "motto": {
+            "type": "string"
+          },
+          "memberSince": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "profileVisible": {
+            "type": "boolean"
+          },
+          "online": {
+            "type": "boolean"
+          },
+          "achievementScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "respectReceived": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "selectedBadges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileBadge"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "passwordRepeated": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegistrationResponse": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomPage": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomSummary"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomSummary": {
+        "required": [
+          "description",
+          "id",
+          "maximumVisitors",
+          "name",
+          "ownerName",
+          "score",
+          "tags",
+          "usersNow"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          },
+          "usersNow": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maximumVisitors": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveFigureRequest": {
+        "required": [
+          "isValid",
+          "playerId"
+        ],
+        "type": "object",
+        "properties": {
+          "figureString": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "playerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectAvatarRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "uniqueId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SiteLanguage": {
+        "required": [
+          "code",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SiteLanguages": {
+        "required": [
+          "default",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "default": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteLanguage"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SsoTicketResponse": {
+        "required": [
+          "ssoToken"
+        ],
+        "type": "object",
+        "properties": {
+          "ssoToken": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmitReportRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "page": {
+            "type": "string",
+            "nullable": true
+          },
+          "clientVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "console": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Content"
+    },
+    {
+      "name": "NewUser"
+    },
+    {
+      "name": "Public"
+    },
+    {
+      "name": "User"
+    }
+  ]
+}

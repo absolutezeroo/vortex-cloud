@@ -64,7 +64,9 @@ public sealed class WebApiPlayerService(
         // is given a placeholder. Player.Name is uniquely indexed, so the placeholder embeds a GUID
         // rather than a counter: it cannot collide with another registration racing it, nor with a
         // name a player picks.
-        if (string.IsNullOrWhiteSpace(name))
+        bool named = !string.IsNullOrWhiteSpace(name);
+
+        if (!named)
         {
             name = $"New user {Guid.NewGuid():N}"[..24];
         }
@@ -114,6 +116,14 @@ public sealed class WebApiPlayerService(
             Gender = genderType,
             PlayerStatus = PlayerStatusType.Offline,
             PlayerPerks = PlayerPerkFlags.None,
+            // A caller who supplied a name has already been through the naming step — the site's
+            // "create an avatar" modal asks for one, checks it as you type, and posts it. Leaving
+            // NuxCompletedAt null meant AuthenticationOK asked for AVATAR_NAME_CHANGE anyway and the
+            // client opened the rename dialog over a player who had just chosen their name.
+            //
+            // The placeholder branch above is the opposite case and must stay null: a registration
+            // names its avatar in the client, which is the whole reason the placeholder exists.
+            NuxCompletedAt = named ? DateTime.UtcNow : null,
         };
 
         db.Players.Add(player);

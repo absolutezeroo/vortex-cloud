@@ -151,6 +151,7 @@ internal static class WebApiAppConfigurator
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(swagger =>
+        {
             swagger.SwaggerDoc(
                 "v1",
                 new OpenApiInfo
@@ -162,8 +163,22 @@ internal static class WebApiAppConfigurator
                         + "avatar management and SSO ticket issuance. Sensitive endpoints are rate "
                         + "limited and the session is carried by the habbo-web-session cookie.",
                 }
-            )
-        );
+            );
+
+            // Without this, Swashbuckle ignores C# nullability entirely: every property of every
+            // record comes out optional and nullable, and the website's generated types then say a
+            // player MIGHT not have a name. Every page would answer that with optional chaining and
+            // a fallback, which is the same untyped guessing the generation was meant to end.
+            // The projects are `<Nullable>enable</Nullable>`, so `string Name` is a promise the
+            // document can carry.
+            swagger.SupportNonNullableReferenceTypes();
+
+            // …and the other half of it. `SupportNonNullableReferenceTypes` only says a property is
+            // not nullable; it does not put it in `required`, and a generator reads a property that
+            // is not required as OPTIONAL. Without this the site's types say every field MIGHT be
+            // absent, which costs an `?.` and a fallback at every read of every page.
+            swagger.NonNullableReferenceTypesAsRequired();
+        });
     }
 
     private static void ApplySecurityHeaders(HttpResponse response)
