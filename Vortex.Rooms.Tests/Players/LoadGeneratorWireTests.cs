@@ -77,4 +77,81 @@ public sealed class LoadGeneratorWireTests
     {
         LoadGeneratorHost.IsAvailable.Should().BeTrue(LoadGeneratorHost.ExecutablePath);
     }
+
+    /// <summary>
+    /// The other direction of the same seam, and the more dangerous one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The plan goes emulator to generator, and every behaviour beyond walking and chatting is
+    /// carried in it: which items may be moved, who may be written to, what may be bought. A field
+    /// that fails to cross does not throw — it deserializes to zero or an empty array, and the drive
+    /// loop reads that as "this behaviour is switched off". The run then measures walking and
+    /// chatting at full speed and reports success, which is indistinguishable from a run that was
+    /// asked for exactly that.
+    /// </para>
+    /// <para>
+    /// So the assertion is field by field, on values that are all distinct: a plan where two fields
+    /// share a value would pass while they were swapped.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void APlanWrittenByTheEmulator_IsReadBackWholeByTheGenerator()
+    {
+        string json = JsonSerializer.Serialize(
+            new LoadGeneratorPlan
+            {
+                Host = "10.0.0.5",
+                Port = 30001,
+                RoomId = 31,
+                DurationSeconds = 300,
+                RampSeconds = 60,
+                WalkIntervalMs = 2000,
+                ChatIntervalMs = 8000,
+                Tickets = ["t1", "t2"],
+                WalkTargets =
+                [
+                    [3, 4],
+                ],
+                MoveIntervalMs = 5000,
+                UseIntervalMs = 6000,
+                BuyIntervalMs = 7000,
+                MessageIntervalMs = 9000,
+                CreateRoomIntervalMs = 30000,
+                FurnitureIds = [11, 12, 13],
+                PlayerIds = [21, 22],
+                CatalogOffers =
+                [
+                    [41, 42],
+                ],
+                RoomModelName = "model_x",
+            },
+            LoadGeneratorHost.Wire
+        );
+
+        LoadPlan? plan = JsonSerializer.Deserialize<LoadPlan>(json, Program.Wire);
+
+        plan.Should().NotBeNull();
+        plan!.Host.Should().Be("10.0.0.5");
+        plan.Port.Should().Be(30001);
+        plan.RoomId.Should().Be(31);
+        plan.DurationSeconds.Should().Be(300);
+        plan.RampSeconds.Should().Be(60);
+        plan.WalkIntervalMs.Should().Be(2000);
+        plan.ChatIntervalMs.Should().Be(8000);
+        plan.Tickets.Should().Equal("t1", "t2");
+        plan.WalkTargets.Should().HaveCount(1);
+        plan.WalkTargets[0].Should().Equal(3, 4);
+
+        plan.MoveIntervalMs.Should().Be(5000);
+        plan.UseIntervalMs.Should().Be(6000);
+        plan.BuyIntervalMs.Should().Be(7000);
+        plan.MessageIntervalMs.Should().Be(9000);
+        plan.CreateRoomIntervalMs.Should().Be(30000);
+        plan.FurnitureIds.Should().Equal(11, 12, 13);
+        plan.PlayerIds.Should().Equal(21, 22);
+        plan.CatalogOffers.Should().HaveCount(1);
+        plan.CatalogOffers[0].Should().Equal(41, 42);
+        plan.RoomModelName.Should().Be("model_x");
+    }
 }

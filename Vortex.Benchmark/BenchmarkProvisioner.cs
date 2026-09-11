@@ -10,9 +10,11 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
+using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
@@ -54,6 +56,13 @@ internal sealed class BenchmarkProvisioner(
 
     private const string BenchFigure = "hd-180-1.ch-210-66.lg-270-82.sh-290-91";
 
+    /// <summary>
+    /// What each bench account is given in every enabled currency. Large enough that a five-minute
+    /// run never runs dry — a bot that goes broke stops exercising the purchase path and starts
+    /// exercising the refusal path, at the same rate, with nothing in the report to say so.
+    /// </summary>
+    private const int BenchBalance = 100_000_000;
+
     public async Task<BenchmarkFixture> ProvisionAsync(
         int players,
         int furniture,
@@ -77,14 +86,20 @@ internal sealed class BenchmarkProvisioner(
         // arithmetic instead -- a square grid from the origin -- puts most of a large batch on void
         // tiles, where the room ignores it: the rows are written, the items never appear, and the
         // run measures a room it thinks is full and is not.
-        string modelData = borrowed
+        var borrowedModel = borrowed
             ? await db
                 .Rooms.AsNoTracking()
                 .Where(r => r.Id == targetRoomId)
-                .Select(r => r.RoomModelEntity!.Model)
+                .Select(r => new { r.RoomModelEntity!.Model, r.RoomModelEntity!.Name })
                 .FirstAsync(ct)
                 .ConfigureAwait(false)
-            : string.Empty;
+            : null;
+
+        string modelData = borrowedModel?.Model ?? string.Empty;
+
+        // Carried even for a borrowed room: a synthetic player creating a room of its own names a
+        // model, and the one this run is standing in is the one known to be loadable here.
+        string modelName = borrowedModel?.Name ?? string.Empty;
 
         int modelId = 0;
 
@@ -95,7 +110,12 @@ internal sealed class BenchmarkProvisioner(
             var model = await db
                 .RoomModels.AsNoTracking()
                 .Where(m => m.Enabled)
-                .Select(m => new { m.Id, m.Model })
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Model,
+                    m.Name,
+                })
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
@@ -104,6 +124,7 @@ internal sealed class BenchmarkProvisioner(
                 {
                     m.Id,
                     m.Model,
+                    m.Name,
                     Tiles = OpenTiles(m.Model).Count,
                 })
                 .OrderByDescending(m => m.Tiles)
@@ -116,6 +137,7 @@ internal sealed class BenchmarkProvisioner(
 
             modelId = roomiest.Id;
             modelData = roomiest.Model;
+            modelName = roomiest.Name;
         }
 
         List<(int X, int Y)> openTiles = OpenTiles(modelData);
@@ -177,12 +199,21 @@ internal sealed class BenchmarkProvisioner(
 
         db.SecurityTickets.AddRange(tickets);
 
-        if (furniture > 0)
+        // Held rather than streamed straight into AddRange: the run needs these rows' ids afterwards
+        // to tell a synthetic player which item to move, and an id only exists once EF has saved.
+        List<FurnitureEntity> placed =
+            furniture > 0
+                ? [.. BuildFurniture(roomId, owner.Id, definitions, furniture, openTiles)]
+                : [];
+
+        if (placed.Count > 0)
         {
-            db.Furnitures.AddRange(
-                BuildFurniture(roomId, owner.Id, definitions, furniture, openTiles)
-            );
+            db.Furnitures.AddRange(placed);
         }
+
+        await GrantCurrenciesAsync(db, accounts, ct).ConfigureAwait(false);
+
+        BuildFriendships(db, accounts);
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
@@ -202,6 +233,9 @@ internal sealed class BenchmarkProvisioner(
             furniture
         );
 
+        ImmutableArray<(int PageId, int OfferId)> offers = await ResolveOffersAsync(db, ct)
+            .ConfigureAwait(false);
+
         return new BenchmarkFixture
         {
             RoomId = roomId,
@@ -214,6 +248,12 @@ internal sealed class BenchmarkProvisioner(
             // Real tiles, so a walk is a walk. Sending a synthetic player at a hole means the room
             // refuses the move and the pathfinder -- the expensive half of the load -- never runs.
             WalkTargets = [.. openTiles.Take(32)],
+            FurnitureIds = [.. placed.Select(item => item.Id)],
+            // Ticket order, so index N of the plan is the player whose ticket is index N: the drive
+            // loop picks a correspondent by index and must not be writing to a stranger.
+            PlayerIds = [.. accounts.OrderBy(account => account.Id).Select(account => account.Id)],
+            CatalogOffers = offers,
+            RoomModelName = modelName,
         };
     }
 
@@ -362,6 +402,22 @@ internal sealed class BenchmarkProvisioner(
                 .ExecuteDeleteAsync(ct)
                 .ConfigureAwait(false);
 
+            // A friendship names a player at BOTH ends, so matching only the owning side leaves the
+            // mirror row behind — and the player delete below then fails on its foreign key, which
+            // is the one way this sweep turns a tidy run into rows nobody can remove by hand.
+            await db
+                .MessengerFriends.Where(f =>
+                    playerIds.Contains(f.PlayerEntityId)
+                    || playerIds.Contains(f.FriendPlayerEntityId)
+                )
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
+            await db
+                .PlayerCurrencies.Where(c => playerIds.Contains(c.PlayerEntityId))
+                .ExecuteDeleteAsync(ct)
+                .ConfigureAwait(false);
+
             await db
                 .SecurityTickets.Where(t => playerIds.Contains(t.PlayerEntityId))
                 .ExecuteDeleteAsync(ct)
@@ -393,6 +449,104 @@ internal sealed class BenchmarkProvisioner(
 
             return ex.Message;
         }
+    }
+
+    /// <summary>
+    /// Gives every bench account a large balance in every enabled currency.
+    /// </summary>
+    /// <remarks>
+    /// Every enabled type rather than "the credits one", because a wallet credit is a no-op without
+    /// a matching <c>currency_types</c> row: granting a currency the hotel does not define succeeds
+    /// silently and buys nothing. Iterating the rows that exist is what makes a purchase reach the
+    /// code this run means to measure, whatever an offer happens to be priced in.
+    /// </remarks>
+    private static async Task GrantCurrenciesAsync(
+        VortexDbContext db,
+        List<PlayerEntity> accounts,
+        CancellationToken ct
+    )
+    {
+        List<int> currencyTypeIds = await db
+            .CurrencyTypes.AsNoTracking()
+            .Where(type => type.Enabled)
+            .Select(type => type.Id)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        foreach (PlayerEntity account in accounts)
+        {
+            foreach (int currencyTypeId in currencyTypeIds)
+            {
+                db.PlayerCurrencies.Add(
+                    new PlayerCurrencyEntity
+                    {
+                        PlayerEntityId = account.Id,
+                        CurrencyTypeEntityId = currencyTypeId,
+                        Amount = BenchBalance,
+                    }
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Wires the accounts into a ring of friendships so every one of them has somebody to write to.
+    /// </summary>
+    /// <remarks>
+    /// Both directions of each pair, not one: the messenger checks the sender's own friend list
+    /// before it delivers, so a one-sided row would turn every message into a refusal — and the run
+    /// would measure the rejection path at full speed while the report said "messages sent".
+    /// </remarks>
+    private static void BuildFriendships(VortexDbContext db, List<PlayerEntity> accounts)
+    {
+        if (accounts.Count < 2)
+        {
+            return;
+        }
+
+        for (int index = 0; index < accounts.Count; index++)
+        {
+            PlayerEntity left = accounts[index];
+            PlayerEntity right = accounts[(index + 1) % accounts.Count];
+
+            db.MessengerFriends.Add(Friendship(left, right));
+            db.MessengerFriends.Add(Friendship(right, left));
+        }
+
+        static MessengerFriendEntity Friendship(PlayerEntity owner, PlayerEntity friend) =>
+            new()
+            {
+                PlayerEntityId = owner.Id,
+                PlayerEntity = owner,
+                FriendPlayerEntityId = friend.Id,
+                FriendPlayerEntity = friend,
+                RelationType = MessengerFriendRelationType.Zero,
+            };
+    }
+
+    /// <summary>
+    /// The page and offer pairs a bench account is allowed to buy and can afford.
+    /// </summary>
+    /// <remarks>
+    /// Visible, no club requirement, and carrying at least one product. Each of those is a refusal
+    /// the catalogue makes before reaching the wallet, and a run buying nothing but refusals looks
+    /// identical in the report to a run buying successfully — same packets, same rate, no error.
+    /// </remarks>
+    private static async Task<ImmutableArray<(int PageId, int OfferId)>> ResolveOffersAsync(
+        VortexDbContext db,
+        CancellationToken ct
+    )
+    {
+        var offers = await db
+            .CatalogOffers.AsNoTracking()
+            .Where(offer => offer.Visible && offer.ClubLevel == 0 && offer.Products!.Count > 0)
+            .OrderBy(offer => offer.CostCredits)
+            .Select(offer => new { offer.CatalogPageEntityId, offer.Id })
+            .Take(16)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return [.. offers.Select(offer => (offer.CatalogPageEntityId, offer.Id))];
     }
 
     private static RoomEntity BuildRoom(PlayerEntity owner, int modelId) =>
@@ -522,4 +676,34 @@ internal sealed record BenchmarkFixture
     public required bool Borrowed { get; init; }
 
     public required ImmutableArray<(int X, int Y)> WalkTargets { get; init; }
+
+    /// <summary>
+    /// The room object ids of the items this run placed, so a synthetic player can move and use
+    /// real furniture instead of only walking past it. Empty when the run asked for no furniture.
+    /// </summary>
+    /// <remarks>
+    /// Only what the run placed, never what a borrowed room already held: a bench player shoving a
+    /// real player's sofa across the floor would be a measurement that edits the hotel.
+    /// </remarks>
+    public required ImmutableArray<int> FurnitureIds { get; init; }
+
+    /// <summary>
+    /// The synthetic players' own ids, in ticket order. The messenger addresses a conversation by
+    /// the receiver's player id — see <c>SendMsgMessageHandler</c>, which parses <c>ChatId</c> as
+    /// one — so this is what lets bench players write to each other rather than into the void.
+    /// </summary>
+    public required ImmutableArray<int> PlayerIds { get; init; }
+
+    /// <summary>
+    /// Page and offer pairs the accounts can actually afford and are allowed to see: visible, no
+    /// club requirement, and carrying at least one product. A purchase of anything else is refused
+    /// before it reaches the code the run means to measure.
+    /// </summary>
+    public required ImmutableArray<(int PageId, int OfferId)> CatalogOffers { get; init; }
+
+    /// <summary>
+    /// The name of the room model the run chose, so a synthetic player can create a room of its own
+    /// with a model the hotel will accept.
+    /// </summary>
+    public required string RoomModelName { get; init; }
 }

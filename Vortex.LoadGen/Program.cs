@@ -152,9 +152,19 @@ internal static class Program
             await client.EnterRoomAsync(plan.RoomId, ct).ConfigureAwait(false);
             await Task.Delay(500, ct).ConfigureAwait(false);
 
-            long nextWalk = Environment.TickCount64;
-            long nextChat = nextWalk;
-            long nextPing = nextWalk;
+            long start = Environment.TickCount64;
+
+            // Every timer is offset by this client's index. Without it a hundred and fifty bots
+            // would buy on the same millisecond and then sit idle for eight seconds, and the report
+            // would show periodic stalls that the generator had manufactured itself.
+            long nextWalk = start + Stagger(seed, plan.WalkIntervalMs);
+            long nextChat = start + Stagger(seed, plan.ChatIntervalMs);
+            long nextMove = start + Stagger(seed, plan.MoveIntervalMs);
+            long nextUse = start + Stagger(seed, plan.UseIntervalMs);
+            long nextBuy = start + Stagger(seed, plan.BuyIntervalMs);
+            long nextMessage = start + Stagger(seed, plan.MessageIntervalMs);
+            long nextRoom = start + Stagger(seed, plan.CreateRoomIntervalMs);
+            long nextPing = start;
             int step = seed;
 
             while (!ct.IsCancellationRequested)
@@ -187,6 +197,79 @@ internal static class Program
                     nextChat = now + plan.ChatIntervalMs;
                 }
 
+                // Dragging an item: position validation, restacking and a broadcast to everyone in
+                // the room. Only ever an item this run placed — the fixture carries no other id.
+                if (
+                    plan.MoveIntervalMs > 0
+                    && now >= nextMove
+                    && plan.FurnitureIds.Length > 0
+                    && plan.WalkTargets.Length > 0
+                )
+                {
+                    int objectId = plan.FurnitureIds[Math.Abs(step) % plan.FurnitureIds.Length];
+                    int[] tile = plan.WalkTargets[Math.Abs(step + seed) % plan.WalkTargets.Length];
+
+                    await client
+                        .MoveFurnitureAsync(objectId, tile[0], tile[1], step % 8, ct)
+                        .ConfigureAwait(false);
+
+                    nextMove = now + plan.MoveIntervalMs;
+                }
+
+                if (plan.UseIntervalMs > 0 && now >= nextUse && plan.FurnitureIds.Length > 0)
+                {
+                    int objectId = plan.FurnitureIds[Math.Abs(step * 7) % plan.FurnitureIds.Length];
+
+                    await client.UseFurnitureAsync(objectId, 0, ct).ConfigureAwait(false);
+
+                    nextUse = now + plan.UseIntervalMs;
+                }
+
+                if (plan.BuyIntervalMs > 0 && now >= nextBuy && plan.CatalogOffers.Length > 0)
+                {
+                    int[] offer = plan.CatalogOffers[Math.Abs(step) % plan.CatalogOffers.Length];
+
+                    await client.BuyAsync(offer[0], offer[1], ct).ConfigureAwait(false);
+
+                    nextBuy = now + plan.BuyIntervalMs;
+                }
+
+                // The provisioner wires the accounts into a ring, so the player one index along is
+                // this one's friend. Writing to anyone else would measure the refusal path.
+                if (plan.MessageIntervalMs > 0 && now >= nextMessage && plan.PlayerIds.Length > 1)
+                {
+                    int friend = plan.PlayerIds[(seed + 1) % plan.PlayerIds.Length];
+
+                    await client
+                        .MessageAsync(
+                            friend,
+                            string.Create(CultureInfo.InvariantCulture, $"bench im {step}"),
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    nextMessage = now + plan.MessageIntervalMs;
+                }
+
+                // Named from the same marker the provisioner uses. Teardown finds these by owner
+                // rather than by name, so the prefix is for whoever reads the room list, not safety.
+                if (
+                    plan.CreateRoomIntervalMs > 0
+                    && now >= nextRoom
+                    && plan.RoomModelName.Length > 0
+                )
+                {
+                    await client
+                        .CreateRoomAsync(
+                            string.Create(CultureInfo.InvariantCulture, $"__bench__{seed}_{step}"),
+                            plan.RoomModelName,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    nextRoom = now + plan.CreateRoomIntervalMs;
+                }
+
                 await Task.Delay(100, ct).ConfigureAwait(false);
             }
         }
@@ -195,6 +278,15 @@ internal static class Program
             // The run ended.
         }
     }
+
+    /// <summary>
+    /// A stable per-client offset inside one interval, so the fleet spreads its attempts instead of
+    /// firing them together. A multiplicative hash rather than <c>seed % interval</c>: consecutive
+    /// indices must not land on consecutive milliseconds, or a ramp that connects them in order
+    /// simply re-synchronises what this is meant to scatter.
+    /// </summary>
+    private static long Stagger(int seed, int intervalMs) =>
+        intervalMs > 0 ? Math.Abs(seed * 2654435761L) % intervalMs : 0;
 
     private static async Task SampleAsync(List<SyntheticClient> clients, CancellationToken ct)
     {
@@ -266,6 +358,19 @@ internal sealed record LoadPlan
     public int ChatIntervalMs { get; init; } = 8000;
     public string[] Tickets { get; init; } = [];
     public int[][] WalkTargets { get; init; } = [];
+
+    // Everything below is the hotel-shaped half of the load. A zero interval leaves the behaviour
+    // out, and an empty array does the same: the drive loop checks both, so a plan from an older
+    // emulator still runs as a walk-and-chat plan rather than crashing on a missing field.
+    public int MoveIntervalMs { get; init; }
+    public int UseIntervalMs { get; init; }
+    public int BuyIntervalMs { get; init; }
+    public int MessageIntervalMs { get; init; }
+    public int CreateRoomIntervalMs { get; init; }
+    public int[] FurnitureIds { get; init; } = [];
+    public int[] PlayerIds { get; init; } = [];
+    public int[][] CatalogOffers { get; init; } = [];
+    public string RoomModelName { get; init; } = string.Empty;
 }
 
 public sealed record LoadSample

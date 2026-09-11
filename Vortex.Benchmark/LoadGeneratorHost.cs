@@ -30,7 +30,9 @@ namespace Vortex.Benchmark;
 /// </remarks>
 internal sealed class LoadGeneratorHost(ILogger<LoadGeneratorHost> logger)
 {
-    private static readonly JsonSerializerOptions Wire = new()
+    // Internal, like Parse below and for the same reason: both halves of a two-process contract
+    // need to meet in a test, because nothing else will notice when they stop agreeing.
+    internal static readonly JsonSerializerOptions Wire = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
@@ -190,6 +192,27 @@ internal sealed record LoadGeneratorPlan
     public required int ChatIntervalMs { get; init; }
     public required ImmutableArray<string> Tickets { get; init; }
     public required int[][] WalkTargets { get; init; }
+
+    // The hotel-shaped half of the load. Each interval is milliseconds between one player's own
+    // attempts, or zero to leave that behaviour out of the run entirely, so a plan can isolate one
+    // subsystem without a second build of anything.
+    public required int MoveIntervalMs { get; init; }
+    public required int UseIntervalMs { get; init; }
+    public required int BuyIntervalMs { get; init; }
+    public required int MessageIntervalMs { get; init; }
+    public required int CreateRoomIntervalMs { get; init; }
+
+    /// <summary>Room object ids this run placed, and the only ones a bot is allowed to touch.</summary>
+    public required int[] FurnitureIds { get; init; }
+
+    /// <summary>The bench players' own ids: who a bot can write to.</summary>
+    public required int[] PlayerIds { get; init; }
+
+    /// <summary>Buyable offers as <c>[pageId, offerId]</c> pairs.</summary>
+    public required int[][] CatalogOffers { get; init; }
+
+    /// <summary>A room model the hotel will accept, for bots that create rooms.</summary>
+    public required string RoomModelName { get; init; }
 }
 
 internal sealed record LoadGeneratorSample

@@ -41,6 +41,15 @@ public sealed class SyntheticClient(string host, int port) : IDisposable
     private const int LatencyPingRequestHeader = 544;
     private const int LatencyPingResponseHeader = 188;
 
+    // Read off this emulator's own parsers for Revision20260701, not off the official client: these
+    // frames are answered by Vortex, so Vortex's parser is the authority on what a body must hold.
+    // Headers.cs names each id; the layouts are the PopInt/PopString order in the matching parser.
+    private const int MoveObjectHeader = 1482;
+    private const int UseFurnitureHeader = 3353;
+    private const int PurchaseFromCatalogHeader = 1706;
+    private const int SendMessageHeader = 3357;
+    private const int CreateFlatHeader = 354;
+
     private readonly TcpClient _tcp = new();
     private readonly ConcurrentDictionary<int, long> _pending = new();
     private readonly SemaphoreSlim _writeLock = new(1, 1);
@@ -78,6 +87,49 @@ public sealed class SyntheticClient(string host, int port) : IDisposable
 
     public Task SayAsync(string text, CancellationToken ct) =>
         SendAsync(ChatHeader, w => w.String(text).Int(0).Int(-1), ct);
+
+    /// <summary>
+    /// Drags one of the room's items to a tile. The heaviest ordinary thing a player does: the room
+    /// revalidates the position, restacks whatever was there, and tells every occupant.
+    /// </summary>
+    public Task MoveFurnitureAsync(
+        int objectId,
+        int x,
+        int y,
+        int rotation,
+        CancellationToken ct
+    ) => SendAsync(MoveObjectHeader, w => w.Int(objectId).Int(x).Int(y).Int(rotation), ct);
+
+    /// <summary>Clicks an item — the furniture logic path, and a broadcast to the room.</summary>
+    public Task UseFurnitureAsync(int objectId, int param, CancellationToken ct) =>
+        SendAsync(UseFurnitureHeader, w => w.Int(objectId).Int(param), ct);
+
+    /// <summary>
+    /// Buys one offer. Reaches the wallet, the inventory and the database in one packet, which is
+    /// why it is the only behaviour here that writes rows outside the room.
+    /// </summary>
+    public Task BuyAsync(int pageId, int offerId, CancellationToken ct) =>
+        SendAsync(
+            PurchaseFromCatalogHeader,
+            w => w.Int(pageId).Int(offerId).String(string.Empty).Int(1),
+            ct
+        );
+
+    /// <summary>
+    /// Writes to another player. The conversation is addressed by the receiver's player id — the
+    /// handler parses <c>ChatId</c> as one — so this exercises cross-grain routing rather than the
+    /// room's own fan-out.
+    /// </summary>
+    public Task MessageAsync(int receiverPlayerId, string text, CancellationToken ct) =>
+        SendAsync(SendMessageHeader, w => w.Int(receiverPlayerId).String(text).Int(0), ct);
+
+    /// <summary>Creates a room owned by this player, named so teardown can find it.</summary>
+    public Task CreateRoomAsync(string name, string model, CancellationToken ct) =>
+        SendAsync(
+            CreateFlatHeader,
+            w => w.String(name).String(string.Empty).String(model).Int(0).Int(25).Int(0),
+            ct
+        );
 
     /// <summary>
     /// Sends the probe whose answer is timed. The id is what comes back, so a slow answer is still

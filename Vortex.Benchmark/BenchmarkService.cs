@@ -217,6 +217,20 @@ internal sealed class BenchmarkService(
                         [
                             .. fixture.WalkTargets.Select(tile => new[] { tile.X, tile.Y }),
                         ],
+                        MoveIntervalMs = plan.MoveIntervalMs,
+                        UseIntervalMs = plan.UseIntervalMs,
+                        BuyIntervalMs = plan.BuyIntervalMs,
+                        MessageIntervalMs = plan.MessageIntervalMs,
+                        CreateRoomIntervalMs = plan.CreateRoomIntervalMs,
+                        FurnitureIds = [.. fixture.FurnitureIds],
+                        PlayerIds = [.. fixture.PlayerIds],
+                        CatalogOffers =
+                        [
+                            .. fixture.CatalogOffers.Select(offer =>
+                                new[] { offer.PageId, offer.OfferId }
+                            ),
+                        ],
+                        RoomModelName = fixture.RoomModelName,
                     },
                     OnSample,
                     ct

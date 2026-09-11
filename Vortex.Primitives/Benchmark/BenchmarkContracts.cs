@@ -55,6 +55,42 @@ public sealed record BenchmarkPlan
 
     public int ChatIntervalMs { get; init; } = 8000;
 
+    /// <summary>
+    /// How often one player drags a piece of furniture across the floor, in milliseconds.
+    /// <para>
+    /// Walking and chatting measure a room that nobody changes. This is the first behaviour that
+    /// edits shared state: the room revalidates the tile, restacks the pile and tells every
+    /// occupant, so its cost grows with the population the way a real room's does.
+    /// </para>
+    /// </summary>
+    public int MoveIntervalMs { get; init; }
+
+    /// <summary>How often one player clicks a piece of furniture, in milliseconds.</summary>
+    public int UseIntervalMs { get; init; }
+
+    /// <summary>
+    /// How often one player buys from the catalogue, in milliseconds.
+    /// <para>
+    /// The only behaviour that writes rows outside the room: wallet, inventory and database in one
+    /// packet. The accounts are provisioned with a balance so the purchase reaches that code rather
+    /// than bouncing off an empty purse — a refusal costs almost nothing and would flatter the run.
+    /// </para>
+    /// </summary>
+    public int BuyIntervalMs { get; init; }
+
+    /// <summary>
+    /// How often one player sends a friend an instant message, in milliseconds.
+    /// <para>
+    /// This is the one that leaves the room entirely: the messenger routes between player grains,
+    /// which is a different path from the room's own fan-out and the one a hotel leans on hardest
+    /// when its population is spread across many rooms rather than gathered in one.
+    /// </para>
+    /// </summary>
+    public int MessageIntervalMs { get; init; }
+
+    /// <summary>How often one player creates a room of its own, in milliseconds.</summary>
+    public int CreateRoomIntervalMs { get; init; }
+
     /// <summary>Free text kept with the result, so a run can be told from the one before it.</summary>
     public string Label { get; init; } = string.Empty;
 }

@@ -115,5 +115,15 @@ internal static partial class DashboardEndpoints
         && (body.FurnitureIds?.Length ?? 0) <= 20
         && body.RampSeconds >= 0
         && body.WalkIntervalMs >= 0
-        && body.ChatIntervalMs >= 0;
+        && body.ChatIntervalMs >= 0
+        && body.MoveIntervalMs >= 0
+        && body.UseIntervalMs >= 0
+        && body.BuyIntervalMs >= 0
+        && body.MessageIntervalMs >= 0
+        // Room creation has a floor the others do not need, because every attempt leaves a row: a
+        // hundred and fifty bots making one room a second would add nine thousand rooms a minute,
+        // all of them real until teardown. Zero still means "not at all".
+        && (body.CreateRoomIntervalMs == 0 || body.CreateRoomIntervalMs >= MinCreateRoomIntervalMs);
+
+    private const int MinCreateRoomIntervalMs = 10_000;
 }
