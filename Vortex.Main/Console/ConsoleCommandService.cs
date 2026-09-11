@@ -56,6 +56,21 @@ public class ConsoleCommandService(IConsoleCommandDispatcher dispatcher)
         {
             string? input = await Task.Run(System.Console.ReadLine, ct).ConfigureAwait(false);
 
+            // `null` is end of stream, NOT an empty line, and the difference is the whole reason
+            // this branch exists. A container started without a TTY has stdin on /dev/null, so
+            // ReadLine returns null immediately and keeps doing so for the life of the process.
+            // Folding that into the IsNullOrWhiteSpace check below spins this loop as fast as the
+            // thread pool can schedule it: several hundred percent CPU, on an idle hotel, logging
+            // nothing at all. Measured at 225-370% across six .NET TP Workers on a 4-core VPS.
+            if (input is null)
+            {
+                System.Console.WriteLine(
+                    "Console input is closed; console commands are disabled for this process."
+                );
+
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(input))
             {
                 continue;
