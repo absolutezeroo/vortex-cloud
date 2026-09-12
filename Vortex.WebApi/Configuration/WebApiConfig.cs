@@ -59,6 +59,25 @@ public sealed class WebApiConfig
     public string MetricsPath { get; set; } = "/metrics";
 
     /// <summary>
+    /// Serves <c>/swagger</c> and its OpenAPI document on this listener. Off by default, where it
+    /// used to be unconditional.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The document is not a secret the way a password is — every route it names is one a browser
+    /// could reach anyway — but it is the entire attack surface written out for whoever finds the
+    /// port: every path, every parameter, every refusal code, in the form a scanner reads directly.
+    /// Publishing that is a choice a hotel should make, not inherit.
+    /// </para>
+    /// <para>
+    /// Switching it off costs nothing: the website's types are generated from
+    /// <c>Vortex.WebApi/openapi.json</c>, which a test writes out of the in-memory pipeline, so
+    /// nobody needs a running hotel — let alone a public one — to hold the contract.
+    /// </para>
+    /// </remarks>
+    public bool SwaggerEnabled { get; set; }
+
+    /// <summary>
     /// Bearer token a scrape must present. When empty the endpoint answers loopback callers only,
     /// which is the safe default for a scraper running on the same box; set a token to let a remote
     /// Prometheus in. This is the one place the metrics endpoint is stricter than <c>/health</c>,

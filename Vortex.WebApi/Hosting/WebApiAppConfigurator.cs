@@ -51,12 +51,18 @@ internal static class WebApiAppConfigurator
             app.UseHttpsRedirection();
         }
 
-        app.UseSwagger();
-        app.UseSwaggerUI(ui =>
+        // Opt-in — see WebApiConfig.SwaggerEnabled for why a deployed hotel should not hand its
+        // whole route surface to whoever finds the port. The generated document the website builds
+        // its types from does not come from here; a test writes it from this same pipeline offline.
+        if (config.SwaggerEnabled)
         {
-            ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Vortex Web API v1");
-            ui.DocumentTitle = "Vortex Web API";
-        });
+            app.UseSwagger();
+            app.UseSwaggerUI(ui =>
+            {
+                ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Vortex Web API v1");
+                ui.DocumentTitle = "Vortex Web API";
+            });
+        }
 
         app.UseCors(CorsPolicyName);
         app.UseRateLimiter();

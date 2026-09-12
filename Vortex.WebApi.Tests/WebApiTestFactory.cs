@@ -49,6 +49,12 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         {
             Enabled = true,
             AllowedOrigins = new[] { "https://client.test" },
+
+            // On here and off in a deployment, deliberately: OpenApiDocumentTests reads the document
+            // off this very pipeline to write openapi.json, which is how the website gets its types
+            // without a hotel running. A deployed listener has no such need — see
+            // WebApiConfig.SwaggerEnabled.
+            SwaggerEnabled = true,
         };
         config.LoginRateLimit = new WebApiConfig.RateLimitOptions
         {
