@@ -118,7 +118,12 @@ public sealed class LoadGeneratorWireTests
                 BuyIntervalMs = 7000,
                 MessageIntervalMs = 9000,
                 CreateRoomIntervalMs = 30000,
-                FurnitureIds = [11, 12, 13],
+                RoomSwitchIntervalMs = 45000,
+                Rooms =
+                [
+                    new LoadGeneratorRoom { RoomId = 31, FurnitureIds = [11, 12, 13] },
+                    new LoadGeneratorRoom { RoomId = 32, FurnitureIds = [14] },
+                ],
                 PlayerIds = [21, 22],
                 CatalogOffers =
                 [
@@ -148,7 +153,15 @@ public sealed class LoadGeneratorWireTests
         plan.BuyIntervalMs.Should().Be(7000);
         plan.MessageIntervalMs.Should().Be(9000);
         plan.CreateRoomIntervalMs.Should().Be(30000);
-        plan.FurnitureIds.Should().Equal(11, 12, 13);
+        plan.RoomSwitchIntervalMs.Should().Be(45000);
+
+        // Per room, and in order. A run that spread its players over fifteen rooms and sent them all
+        // to the first one would look identical in every number the report prints.
+        plan.Rooms.Should().HaveCount(2);
+        plan.Rooms[0].RoomId.Should().Be(31);
+        plan.Rooms[0].FurnitureIds.Should().Equal(11, 12, 13);
+        plan.Rooms[1].RoomId.Should().Be(32);
+        plan.Rooms[1].FurnitureIds.Should().Equal(14);
         plan.PlayerIds.Should().Equal(21, 22);
         plan.CatalogOffers.Should().HaveCount(1);
         plan.CatalogOffers[0].Should().Equal(41, 42);

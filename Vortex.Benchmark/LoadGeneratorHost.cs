@@ -202,8 +202,14 @@ internal sealed record LoadGeneratorPlan
     public required int MessageIntervalMs { get; init; }
     public required int CreateRoomIntervalMs { get; init; }
 
-    /// <summary>Room object ids this run placed, and the only ones a bot is allowed to touch.</summary>
-    public required int[] FurnitureIds { get; init; }
+    /// <summary>
+    /// The rooms the run will use. A bot picks one by its own index, so spreading the population
+    /// over many rooms is what lets more than one grain — and more than one core — do any work.
+    /// </summary>
+    public required LoadGeneratorRoom[] Rooms { get; init; }
+
+    /// <summary>How often a bot moves to another room, or zero to stay put for the whole run.</summary>
+    public required int RoomSwitchIntervalMs { get; init; }
 
     /// <summary>The bench players' own ids: who a bot can write to.</summary>
     public required int[] PlayerIds { get; init; }
@@ -223,4 +229,11 @@ internal sealed record LoadGeneratorSample
     public long Packets { get; init; }
     public long Bytes { get; init; }
     public long Failures { get; init; }
+}
+
+/// <summary>One room on the wire to the generator: which room, and what stands in it.</summary>
+internal sealed record LoadGeneratorRoom
+{
+    public required int RoomId { get; init; }
+    public required int[] FurnitureIds { get; init; }
 }

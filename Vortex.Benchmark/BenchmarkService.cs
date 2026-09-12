@@ -182,6 +182,7 @@ internal sealed class BenchmarkService(
                 .ProvisionAsync(
                     plan.Players,
                     plan.Furniture,
+                    plan.Rooms,
                     plan.RoomId,
                     plan.FurnitureDefinitionIds,
                     ct
@@ -222,7 +223,15 @@ internal sealed class BenchmarkService(
                         BuyIntervalMs = plan.BuyIntervalMs,
                         MessageIntervalMs = plan.MessageIntervalMs,
                         CreateRoomIntervalMs = plan.CreateRoomIntervalMs,
-                        FurnitureIds = [.. fixture.FurnitureIds],
+                        Rooms =
+                        [
+                            .. fixture.Rooms.Select(room => new LoadGeneratorRoom
+                            {
+                                RoomId = room.RoomId,
+                                FurnitureIds = [.. room.FurnitureIds],
+                            }),
+                        ],
+                        RoomSwitchIntervalMs = plan.RoomSwitchIntervalMs,
                         PlayerIds = [.. fixture.PlayerIds],
                         CatalogOffers =
                         [

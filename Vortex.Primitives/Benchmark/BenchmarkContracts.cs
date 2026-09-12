@@ -91,6 +91,30 @@ public sealed record BenchmarkPlan
     /// <summary>How often one player creates a room of its own, in milliseconds.</summary>
     public int CreateRoomIntervalMs { get; init; }
 
+    /// <summary>
+    /// How many rooms the run spreads its players over. One by default, which is the worst case.
+    /// <para>
+    /// This is the single biggest lever on what a run means. A room is one Orleans grain and a grain
+    /// answers one call at a time, so a hundred and fifty players in one room queue behind one
+    /// thread however many cores sit idle — that measures <em>a room's</em> ceiling. The same
+    /// players over fifteen rooms occupy fifteen grains, which is what a hotel actually looks like.
+    /// </para>
+    /// <para>
+    /// <see cref="Furniture"/> is the total across the run and is divided between them, so asking
+    /// for more rooms furnishes each one more thinly rather than multiplying the request.
+    /// </para>
+    /// </summary>
+    public int Rooms { get; init; } = 1;
+
+    /// <summary>
+    /// How often a player walks to another room, in milliseconds, or zero to stay put.
+    /// <para>
+    /// The only behaviour that exercises room activation and deactivation, which is where the
+    /// periodic stalls were suspected to live. A run where nobody ever leaves cannot see them.
+    /// </para>
+    /// </summary>
+    public int RoomSwitchIntervalMs { get; init; }
+
     /// <summary>Free text kept with the result, so a run can be told from the one before it.</summary>
     public string Label { get; init; } = string.Empty;
 }

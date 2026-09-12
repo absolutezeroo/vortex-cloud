@@ -123,7 +123,14 @@ internal static partial class DashboardEndpoints
         // Room creation has a floor the others do not need, because every attempt leaves a row: a
         // hundred and fifty bots making one room a second would add nine thousand rooms a minute,
         // all of them real until teardown. Zero still means "not at all".
-        && (body.CreateRoomIntervalMs == 0 || body.CreateRoomIntervalMs >= MinCreateRoomIntervalMs);
+        && (body.CreateRoomIntervalMs == 0 || body.CreateRoomIntervalMs >= MinCreateRoomIntervalMs)
+        && body.Rooms is > 0 and <= MaxRooms
+        // A switch every few hundred milliseconds would measure the room-entry path and nothing
+        // else — each move tears down one room's view of a player and builds another's.
+        && (body.RoomSwitchIntervalMs == 0 || body.RoomSwitchIntervalMs >= MinRoomSwitchIntervalMs);
+
+    private const int MaxRooms = 64;
+    private const int MinRoomSwitchIntervalMs = 5_000;
 
     private const int MinCreateRoomIntervalMs = 10_000;
 }

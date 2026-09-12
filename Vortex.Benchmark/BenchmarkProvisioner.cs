@@ -69,9 +69,16 @@ internal sealed class BenchmarkProvisioner(
     /// </summary>
     private const int MinWalkTargets = 8;
 
+    /// <summary>
+    /// The most rooms one run may create. Each is a real row and a real grain; the ceiling is here
+    /// so a slipped digit asks for fifty rooms rather than fifty thousand.
+    /// </summary>
+    private const int MaxRooms = 64;
+
     public async Task<BenchmarkFixture> ProvisionAsync(
         int players,
         int furniture,
+        int rooms,
         int targetRoomId,
         ImmutableArray<int> definitionIds,
         CancellationToken ct
@@ -179,17 +186,38 @@ internal sealed class BenchmarkProvisioner(
             accounts.FirstOrDefault()
             ?? throw new InvalidOperationException("benchmark_needs_one_player");
 
-        int roomId = targetRoomId;
+        // One room or many. A borrowed room is always alone: the run was pointed at that specific
+        // room, and creating siblings for it would measure something nobody asked about.
+        //
+        // Why several rooms matter at all: a room is one Orleans grain, and a grain takes its calls
+        // one at a time. Every player in one room therefore queues behind every other, and the load
+        // grows with the SQUARE of the population — the plan contract says so in as many words. A
+        // run that puts a hundred and fifty players in a single room measures the worst case a room
+        // can be put in, which is a fair question and NOT the question "what does my hotel hold".
+        // Spread over fifteen rooms the same players occupy fifteen grains, and the machine's other
+        // cores finally have something to do.
+        int roomCount = borrowed ? 1 : Math.Clamp(rooms, 1, MaxRooms);
 
-        if (!borrowed)
+        List<int> roomIds = [];
+
+        if (borrowed)
         {
-            RoomEntity room = BuildRoom(owner, modelId);
+            roomIds.Add(targetRoomId);
+        }
+        else
+        {
+            List<RoomEntity> created =
+            [
+                .. Enumerable.Range(0, roomCount).Select(index => BuildRoom(owner, modelId, index)),
+            ];
 
-            db.Rooms.Add(room);
+            db.Rooms.AddRange(created);
             await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
-            roomId = room.Id;
+            roomIds.AddRange(created.Select(room => room.Id));
         }
+
+        int roomId = roomIds[0];
 
         List<SecurityTicketEntity> tickets =
         [
@@ -205,16 +233,27 @@ internal sealed class BenchmarkProvisioner(
 
         db.SecurityTickets.AddRange(tickets);
 
-        // Held rather than streamed straight into AddRange: the run needs these rows' ids afterwards
-        // to tell a synthetic player which item to move, and an id only exists once EF has saved.
-        List<FurnitureEntity> placed =
-            furniture > 0
-                ? [.. BuildFurniture(roomId, owner.Id, definitions, furniture, openTiles)]
-                : [];
+        // `furniture` is the total across the run, not per room: asking for three hundred items and
+        // fifteen rooms furnishes each with twenty, rather than quietly multiplying the request by
+        // fifteen and filling every floor.
+        int perRoom = furniture / roomCount;
 
-        if (placed.Count > 0)
+        // Held per room rather than streamed into AddRange: the run needs these rows' ids afterwards
+        // to tell a synthetic player which item to move, and an id only exists once EF has saved.
+        // Kept per room because a player may only touch the furniture of the room it stands in.
+        Dictionary<int, List<FurnitureEntity>> placedByRoom = [];
+
+        foreach (int id in roomIds)
         {
-            db.Furnitures.AddRange(placed);
+            placedByRoom[id] =
+                perRoom > 0
+                    ? [.. BuildFurniture(id, owner.Id, definitions, perRoom, openTiles)]
+                    : [];
+
+            if (placedByRoom[id].Count > 0)
+            {
+                db.Furnitures.AddRange(placedByRoom[id]);
+            }
         }
 
         await GrantCurrenciesAsync(db, accounts, ct).ConfigureAwait(false);
@@ -228,14 +267,19 @@ internal sealed class BenchmarkProvisioner(
         // Withheld for a borrowed room on purpose: that room is yours, and a bench account with
         // rights on it could rearrange your furniture. The run then measures no moves there, which
         // is the honest trade — a borrowed room is for measuring load, not for editing.
+        // Every account on every room the run created: a player that wanders into room seven must be
+        // able to touch room seven's furniture, and which room a given bot lands in is an index, not
+        // a plan.
         if (!borrowed)
         {
             db.RoomRights.AddRange(
-                accounts.Select(account => new RoomRightEntity
-                {
-                    RoomEntityId = roomId,
-                    PlayerEntityId = account.Id,
-                })
+                roomIds.SelectMany(id =>
+                    accounts.Select(account => new RoomRightEntity
+                    {
+                        RoomEntityId = id,
+                        PlayerEntityId = account.Id,
+                    })
+                )
             );
         }
 
@@ -245,14 +289,17 @@ internal sealed class BenchmarkProvisioner(
         // room that is already awake stays invisible -- the rows exist, the room never sees them,
         // and the run measures an empty room it believes is full. Sending it to sleep here means the
         // synthetic players wake it up and it loads everything, theirs and ours.
-        await grainFactory
-            .GetRoomCore(new RoomId(roomId))
-            .DeactivateRoomAsync()
-            .ConfigureAwait(false);
+        foreach (int id in roomIds)
+        {
+            await grainFactory
+                .GetRoomCore(new RoomId(id))
+                .DeactivateRoomAsync()
+                .ConfigureAwait(false);
+        }
 
         logger.LogInformation(
-            "Benchmark provisioned room {RoomId} with {Players} accounts and {Furniture} items.",
-            roomId,
+            "Benchmark provisioned {Rooms} room(s) with {Players} accounts and {Furniture} items.",
+            roomIds.Count,
             accounts.Count,
             furniture
         );
@@ -303,7 +350,14 @@ internal sealed class BenchmarkProvisioner(
             // or at a tile this run just filled with a sofa -- means the room refuses the move and
             // the pathfinder, the expensive half of the load, never runs.
             WalkTargets = [.. freeTiles.Take(32)],
-            FurnitureIds = [.. placed.Select(item => item.Id)],
+            Rooms =
+            [
+                .. roomIds.Select(id => new BenchmarkRoom
+                {
+                    RoomId = id,
+                    FurnitureIds = [.. placedByRoom[id].Select(item => item.Id)],
+                }),
+            ],
             // Ticket order, so index N of the plan is the player whose ticket is index N: the drive
             // loop picks a correspondent by index and must not be writing to a stranger.
             PlayerIds = [.. accounts.OrderBy(account => account.Id).Select(account => account.Id)],
@@ -624,10 +678,12 @@ internal sealed class BenchmarkProvisioner(
         return [.. offers.Select(offer => (offer.CatalogPageEntityId, offer.Id))];
     }
 
-    private static RoomEntity BuildRoom(PlayerEntity owner, int modelId) =>
+    private static RoomEntity BuildRoom(PlayerEntity owner, int modelId, int index) =>
         new()
         {
-            Name = Marker + "room",
+            // Numbered, so a run with fifteen rooms is readable in the room list rather than
+            // fifteen identical lines. Teardown finds them by owner, never by name.
+            Name = string.Create(CultureInfo.InvariantCulture, $"{Marker}room{index:D2}"),
             PlayerEntityId = owner.Id,
             PlayerEntity = owner,
             RoomModelEntityId = modelId,
@@ -740,6 +796,14 @@ internal sealed class BenchmarkProvisioner(
     }
 }
 
+/// <summary>One room the run will use, and the furniture standing in it.</summary>
+internal sealed record BenchmarkRoom
+{
+    public required int RoomId { get; init; }
+
+    public required ImmutableArray<int> FurnitureIds { get; init; }
+}
+
 internal sealed record BenchmarkFixture
 {
     public required int RoomId { get; init; }
@@ -753,14 +817,21 @@ internal sealed record BenchmarkFixture
     public required ImmutableArray<(int X, int Y)> WalkTargets { get; init; }
 
     /// <summary>
-    /// The room object ids of the items this run placed, so a synthetic player can move and use
-    /// real furniture instead of only walking past it. Empty when the run asked for no furniture.
+    /// The rooms this run will use, each with the ids of the items it holds.
     /// </summary>
     /// <remarks>
-    /// Only what the run placed, never what a borrowed room already held: a bench player shoving a
-    /// real player's sofa across the floor would be a measurement that edits the hotel.
+    /// <para>
+    /// One entry for a single-room run, many for a spread one. A room is one Orleans grain and a
+    /// grain serialises its calls, so the number of rooms decides how much of the machine a run can
+    /// actually reach: everyone in one room queues behind one thread, however many cores are idle.
+    /// </para>
+    /// <para>
+    /// Furniture ids are per room and never shared. Only what the run placed, never what a borrowed
+    /// room already held: a bench player shoving a real player's sofa across the floor would be a
+    /// measurement that edits the hotel.
+    /// </para>
     /// </remarks>
-    public required ImmutableArray<int> FurnitureIds { get; init; }
+    public required ImmutableArray<BenchmarkRoom> Rooms { get; init; }
 
     /// <summary>
     /// The synthetic players' own ids, in ticket order. The messenger addresses a conversation by

@@ -41,4 +41,13 @@ public sealed record BenchmarkStartRequest(
 
     /// <summary>How often one synthetic player creates a room of its own.</summary>
     public int CreateRoomIntervalMs { get; init; }
+
+    /// <summary>
+    /// How many rooms to spread the players over. One — the default — is the worst case: everyone
+    /// queues behind a single Orleans grain. Several is what a hotel looks like.
+    /// </summary>
+    public int Rooms { get; init; } = 1;
+
+    /// <summary>How often a synthetic player walks to another room, in milliseconds.</summary>
+    public int RoomSwitchIntervalMs { get; init; }
 }

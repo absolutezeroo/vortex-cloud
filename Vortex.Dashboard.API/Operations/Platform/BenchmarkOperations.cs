@@ -59,6 +59,8 @@ internal sealed class BenchmarkOperations(OperationRunner runner, IBenchmarkServ
                             BuyIntervalMs = request.BuyIntervalMs,
                             MessageIntervalMs = request.MessageIntervalMs,
                             CreateRoomIntervalMs = request.CreateRoomIntervalMs,
+                            Rooms = request.Rooms,
+                            RoomSwitchIntervalMs = request.RoomSwitchIntervalMs,
                             Label = request.Label ?? string.Empty,
                         },
                         c

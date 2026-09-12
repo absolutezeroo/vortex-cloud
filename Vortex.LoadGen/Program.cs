@@ -148,8 +148,15 @@ internal static class Program
     {
         try
         {
+            // Spread by index, not at random: a deterministic layout means two runs of the same plan
+            // put the same crowd in the same places, which is what makes their numbers comparable.
+            RoomPlan[] rooms =
+                plan.Rooms.Length > 0 ? plan.Rooms : [new RoomPlan { RoomId = plan.RoomId }];
+
+            int roomIndex = seed % rooms.Length;
+
             await Task.Delay(500, ct).ConfigureAwait(false);
-            await client.EnterRoomAsync(plan.RoomId, ct).ConfigureAwait(false);
+            await client.EnterRoomAsync(rooms[roomIndex].RoomId, ct).ConfigureAwait(false);
             await Task.Delay(500, ct).ConfigureAwait(false);
 
             long start = Environment.TickCount64;
@@ -164,6 +171,7 @@ internal static class Program
             long nextBuy = start + Stagger(seed, plan.BuyIntervalMs);
             long nextMessage = start + Stagger(seed, plan.MessageIntervalMs);
             long nextRoom = start + Stagger(seed, plan.CreateRoomIntervalMs);
+            long nextSwitch = start + Stagger(seed, plan.RoomSwitchIntervalMs);
             long nextPing = start;
             int step = seed;
 
@@ -202,11 +210,12 @@ internal static class Program
                 if (
                     plan.MoveIntervalMs > 0
                     && now >= nextMove
-                    && plan.FurnitureIds.Length > 0
+                    && rooms[roomIndex].FurnitureIds.Length > 0
                     && plan.WalkTargets.Length > 0
                 )
                 {
-                    int objectId = plan.FurnitureIds[Math.Abs(step) % plan.FurnitureIds.Length];
+                    int[] here = rooms[roomIndex].FurnitureIds;
+                    int objectId = here[Math.Abs(step) % here.Length];
                     int[] tile = plan.WalkTargets[Math.Abs(step + seed) % plan.WalkTargets.Length];
 
                     await client
@@ -216,13 +225,32 @@ internal static class Program
                     nextMove = now + plan.MoveIntervalMs;
                 }
 
-                if (plan.UseIntervalMs > 0 && now >= nextUse && plan.FurnitureIds.Length > 0)
+                if (
+                    plan.UseIntervalMs > 0
+                    && now >= nextUse
+                    && rooms[roomIndex].FurnitureIds.Length > 0
+                )
                 {
-                    int objectId = plan.FurnitureIds[Math.Abs(step * 7) % plan.FurnitureIds.Length];
+                    int[] here = rooms[roomIndex].FurnitureIds;
 
-                    await client.UseFurnitureAsync(objectId, 0, ct).ConfigureAwait(false);
+                    await client
+                        .UseFurnitureAsync(here[Math.Abs(step * 7) % here.Length], 0, ct)
+                        .ConfigureAwait(false);
 
                     nextUse = now + plan.UseIntervalMs;
+                }
+
+                // Moving on. A real population does not stand still for five minutes, and the walk
+                // from room to room is what exercises grain activation and deactivation — the very
+                // path the periodic stalls were suspected to live on, and which a run where nobody
+                // ever leaves can never touch.
+                if (plan.RoomSwitchIntervalMs > 0 && now >= nextSwitch && rooms.Length > 1)
+                {
+                    roomIndex = (roomIndex + 1) % rooms.Length;
+
+                    await client.EnterRoomAsync(rooms[roomIndex].RoomId, ct).ConfigureAwait(false);
+
+                    nextSwitch = now + plan.RoomSwitchIntervalMs;
                 }
 
                 if (plan.BuyIntervalMs > 0 && now >= nextBuy && plan.CatalogOffers.Length > 0)
@@ -367,10 +395,25 @@ internal sealed record LoadPlan
     public int BuyIntervalMs { get; init; }
     public int MessageIntervalMs { get; init; }
     public int CreateRoomIntervalMs { get; init; }
-    public int[] FurnitureIds { get; init; } = [];
+    public RoomPlan[] Rooms { get; init; } = [];
+    public int RoomSwitchIntervalMs { get; init; }
     public int[] PlayerIds { get; init; } = [];
     public int[][] CatalogOffers { get; init; } = [];
     public string RoomModelName { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// One room a bot may stand in, and the furniture it may touch while it is there.
+/// </summary>
+/// <remarks>
+/// A room is one Orleans grain, and a grain answers one call at a time. Which room a bot picks is
+/// therefore the single biggest lever on what a run measures: all of them in one room measures that
+/// room's ceiling, spread over many measures the hotel.
+/// </remarks>
+internal sealed record RoomPlan
+{
+    public int RoomId { get; init; }
+    public int[] FurnitureIds { get; init; } = [];
 }
 
 public sealed record LoadSample
