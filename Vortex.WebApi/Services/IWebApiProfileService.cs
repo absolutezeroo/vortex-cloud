@@ -56,11 +56,10 @@ public sealed record ProfileGroup(
 /// The profile header: who this is, since when, and the badges they chose to wear.
 /// </summary>
 /// <remarks>
-/// <paramref name="ProfileVisible"/> is always <c>true</c> today. habbo.com defaults a profile to
-/// private and the site renders the checkbox for it on registration, but no column backs it here —
-/// <c>PlayerEntity</c> has no visibility flag, so nothing can be honoured yet. It is in the payload
-/// rather than left out so the site can already branch on it, and so adding the column later is a
-/// migration and a query, not a shape change.
+/// <paramref name="ProfileVisible"/> is <c>PlayerEntity.ProfileVisible</c>, false by default — the
+/// promise the registration form makes in habbo.com's own words. A profile that is not visible
+/// answers with this header and four empty lists; it is never a 404, because the player does exist
+/// and a 404 would turn this route into a way to test whether a name is taken.
 /// </remarks>
 public sealed record ProfileUser(
     string UniqueId,

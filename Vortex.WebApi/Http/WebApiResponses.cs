@@ -1,3 +1,21 @@
+// Where a DTO lives, because the API has forty of them across six files and the rule had never been
+// written down — which is how a file like this one becomes a drawer:
+//
+//   a shape a SERVICE returns          lives with its service interface
+//                                      (ProfileUser, RoomSummary, PlayerPurse, ArticleFeed …)
+//   a shape only the ENDPOINT builds   lives here
+//                                      (LoginResponse, SsoTicketResponse, HealthResponse …)
+//
+// The test is one question: could this record exist without an HTTP route? `PlayerProfile` is what
+// reading a profile means and would survive the website being deleted, so it belongs to the service.
+// `LoginResponse` is "did that POST leave you with an avatar to pick" — a fact about one endpoint's
+// answer, nothing else.
+//
+// One record bends it on purpose. `TwoFactorEnrolmentResponse` mirrors `MfaEnrolment`, which the
+// service already returns, rather than exposing it: that type is shared with the dashboard, and a
+// field the dashboard needs one day would otherwise land in the website's generated types by
+// accident. A copy of two strings is cheaper than that coupling.
+
 namespace Vortex.WebApi.Http;
 
 /// <summary>
@@ -59,6 +77,25 @@ public sealed record SsoTicketResponse(string SsoToken);
 
 /// <summary>Whether a name is free, echoing the name that was asked about.</summary>
 public sealed record NameCheckResponse(string Name, bool Valid);
+
+/// <summary>
+/// The preferences this hotel stores for the selected avatar. habbo.com's own privacy form carries
+/// six more — online status, follow, friend requests, the newsletter, the GDPR export — and every
+/// one of them would need a surface this emulator does not have: hiding an online status means
+/// hiding it on the game socket too, and a newsletter means an outbound mail path. One field is what
+/// can be honoured, so one field is what is offered.
+/// </summary>
+public sealed record PlayerPreferencesResponse(bool ProfileVisible);
+
+/// <summary>Whether the account has a confirmed second factor.</summary>
+public sealed record TwoFactorStatusResponse(bool Enabled);
+
+/// <summary>
+/// A secret and the <c>otpauth://</c> URI an authenticator reads, neither of them stored yet —
+/// enrolment is two steps precisely so that someone who walks away from the dialog has not locked
+/// themselves out of their own account.
+/// </summary>
+public sealed record TwoFactorEnrolmentResponse(string Secret, string Uri);
 
 /// <summary>
 /// The name the new-user step assigned. A name already taken is a 409 carrying

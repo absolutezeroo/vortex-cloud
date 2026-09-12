@@ -32,6 +32,14 @@ public interface IWebApiPlayerService
     /// <summary>The wallet of one avatar, or <c>null</c> when no such player exists.</summary>
     Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct);
 
+    /// <summary>
+    /// Whether this avatar's web profile is public, or <c>null</c> when no such player exists.
+    /// </summary>
+    Task<bool?> GetProfileVisibleAsync(int playerId, CancellationToken ct);
+
+    /// <summary>Publishes or hides one avatar's web profile. False when there is no such player.</summary>
+    Task<bool> SetProfileVisibleAsync(int playerId, bool visible, CancellationToken ct);
+
     Task<(bool Success, int PlayerId, string? Error)> CreateAvatarAsync(
         int accountId,
         string name,

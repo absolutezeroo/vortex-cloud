@@ -140,6 +140,69 @@ internal sealed class FakePlayerService : IWebApiPlayerService
 
     public Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct) =>
         Task.FromResult<PlayerPurse?>(new PlayerPurse(12480, 36, 2145, 27, 50));
+
+    // Private to start with, like the column's default, so a test that saves can tell it moved.
+    private readonly Dictionary<int, bool> _visible = [];
+
+    public Task<bool?> GetProfileVisibleAsync(int playerId, CancellationToken ct) =>
+        Task.FromResult<bool?>(_visible.GetValueOrDefault(playerId));
+
+    public Task<bool> SetProfileVisibleAsync(int playerId, bool visible, CancellationToken ct)
+    {
+        _visible[playerId] = visible;
+
+        return Task.FromResult(true);
+    }
+}
+
+/// <summary>
+/// In-memory second factor. It keeps the real service's two rules, which are the ones the endpoints
+/// lean on: enrolment does not store the secret until a code confirms it, and an account that
+/// already has a factor cannot be handed a new one without disabling the old.
+/// </summary>
+internal sealed class FakeMfaService : IAccountMfaService
+{
+    public const string ValidCode = "123456";
+
+    private readonly Dictionary<int, string> _secrets = [];
+
+    public Task<bool> IsEnabledAsync(int accountId, CancellationToken ct = default) =>
+        Task.FromResult(_secrets.ContainsKey(accountId));
+
+    public Task<MfaEnrolment> BeginEnrolmentAsync(int accountId, CancellationToken ct = default) =>
+        Task.FromResult(new MfaEnrolment("SECRET", "otpauth://totp/Vortex?secret=SECRET"));
+
+    public Task<bool> ConfirmEnrolmentAsync(
+        int accountId,
+        string secret,
+        string code,
+        CancellationToken ct = default
+    )
+    {
+        if (code != ValidCode || _secrets.ContainsKey(accountId))
+        {
+            return Task.FromResult(false);
+        }
+
+        _secrets[accountId] = secret;
+
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> VerifyAsync(int accountId, string? code, CancellationToken ct = default) =>
+        Task.FromResult(_secrets.ContainsKey(accountId) && code == ValidCode);
+
+    public Task<bool> DisableAsync(int accountId, string? code, CancellationToken ct = default)
+    {
+        if (code != ValidCode || !_secrets.ContainsKey(accountId))
+        {
+            return Task.FromResult(false);
+        }
+
+        _secrets.Remove(accountId);
+
+        return Task.FromResult(true);
+    }
 }
 
 /// <summary>

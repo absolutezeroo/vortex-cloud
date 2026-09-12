@@ -77,6 +77,18 @@ public sealed class WebApiProfileService(
 
         ProfileUser user = await BuildUserAsync(db, player, ct).ConfigureAwait(false);
 
+        // A private profile answers with its header and nothing else — the name, the look, the
+        // motto, and `profileVisible: false`. Not a 404: the player exists, and pretending otherwise
+        // would make this route a way to test whether a name is taken. habbo.com draws the same
+        // distinction, which is why the site has a screen for "this profile is private" rather than
+        // for "no such habbo".
+        if (!player.ProfileVisible)
+        {
+            _logger.LogDebug("Profile {PlayerId} is private; answering with the header", playerId);
+
+            return new PlayerProfile(user, [], [], [], []);
+        }
+
         List<ProfileBadge> badges = await db
             .PlayerBadges.AsNoTracking()
             .Where(b => b.PlayerEntityId == playerId)
@@ -163,8 +175,7 @@ public sealed class WebApiProfileService(
             player.Figure,
             player.Motto ?? string.Empty,
             player.CreatedAt,
-            // No column backs this yet — see IWebApiProfileService.ProfileUser.
-            ProfileVisible: true,
+            player.ProfileVisible,
             player.PlayerStatus == PlayerStatusType.Online,
             player.AchievementScore,
             player.RespectReceived,

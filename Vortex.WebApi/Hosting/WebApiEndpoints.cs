@@ -44,6 +44,8 @@ internal static class WebApiEndpoints
         MapProfiles(app);
         MapAuthentication(app);
         MapUser(app);
+        MapTwoFactor(app);
+        MapPreferences(app);
         MapNewUser(app);
         MapContent(app);
     }
@@ -888,6 +890,307 @@ internal static class WebApiEndpoints
             )
             .WithName("SaveFigure")
             .WithSummary("Persist the figure string for an owned avatar.")
+            .WithTags(TagUser);
+    }
+
+    /// <summary>
+    /// The selected avatar's preferences, on habbo.com's own two paths. One field today — see
+    /// <see cref="PlayerPreferencesResponse"/> for why the other six are not offered rather than
+    /// offered and dropped.
+    /// </summary>
+    private static void MapPreferences(WebApplication app)
+    {
+        app.MapGet(
+                "/api/user/preferences",
+                async Task<
+                    Results<
+                        Ok<PlayerPreferencesResponse>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                    }
+
+                    bool? visible = await players
+                        .GetProfileVisibleAsync(playerId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return visible is null
+                        ? TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"))
+                        : TypedResults.Ok(new PlayerPreferencesResponse(visible.Value));
+                }
+            )
+            .WithName("GetPreferences")
+            .WithSummary("The selected avatar's privacy preferences.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/preferences/save",
+                async Task<
+                    Results<
+                        Ok<PlayerPreferencesResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    SavePreferencesRequest body,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    bool saved = await players
+                        .SetProfileVisibleAsync(playerId.Value, body.ProfileVisible!.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return saved
+                        ? TypedResults.Ok(new PlayerPreferencesResponse(body.ProfileVisible!.Value))
+                        : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                }
+            )
+            .WithName("SavePreferences")
+            .WithSummary("Publish or hide the selected avatar's web profile.")
+            .WithTags(TagUser);
+    }
+
+    /// <summary>
+    /// The avatar a session's calls act on: the one it picked, or the account's first when it never
+    /// went through the picker. Three routes make the same choice — the SSO ticket, the purse and
+    /// the preferences — and it had been written out three times.
+    /// </summary>
+    /// <returns>
+    /// The player id, or null with the refusal to answer: a 401 when there is no session at all, and
+    /// otherwise null for "signed in, owns no avatar", which each caller words for itself.
+    /// </returns>
+    private static async Task<(int? PlayerId, IResult? Refusal)> SelectedPlayerAsync(
+        HttpContext ctx,
+        WebApiSessionStore sessions,
+        IWebApiPlayerService players,
+        CancellationToken ct
+    )
+    {
+        int? accountId = ctx.AccountId(sessions);
+
+        if (accountId is null)
+        {
+            return (null, Unauthorized());
+        }
+
+        int? selected = sessions.GetSelectedPlayer(ctx.SessionId());
+
+        if (selected is not null)
+        {
+            return (selected, null);
+        }
+
+        System.Collections.Generic.List<AvatarInfo> owned = await players
+            .GetAvatarsForAccountAsync(accountId.Value, ct)
+            .ConfigureAwait(false);
+
+        return owned.Count == 0
+            ? (null, null)
+            : (int.Parse(owned[0].UniqueId, CultureInfo.InvariantCulture), null);
+    }
+
+    /// <summary>
+    /// The second factor, on habbo.com's own paths. <c>IAccountMfaService</c> has had the whole
+    /// feature — begin, confirm, verify, disable — since the dashboard needed it, and sign-in has
+    /// always answered <c>pocket.auth.mfa_required</c> against it. Nothing had ever exposed the
+    /// enrolment half to the website, so the settings page could only show a grey button.
+    /// </summary>
+    private static void MapTwoFactor(WebApplication app)
+    {
+        app.MapGet(
+                "/api/user/twofactor",
+                async Task<Results<Ok<TwoFactorStatusResponse>, UnauthorizedError>> (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountMfaService mfa,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    return TypedResults.Ok(
+                        new TwoFactorStatusResponse(
+                            await mfa.IsEnabledAsync(accountId.Value, ct).ConfigureAwait(false)
+                        )
+                    );
+                }
+            )
+            .WithName("TwoFactorStatus")
+            .WithSummary("Whether the signed-in account has a second factor.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/twofactor/startregistration",
+                async Task<
+                    Results<
+                        Ok<TwoFactorEnrolmentResponse>,
+                        Conflict<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountMfaService mfa,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    // Refused rather than silently reissued: a second secret handed to a session
+                    // that already has a factor is how a stolen cookie would install its own.
+                    // Replacing means disabling first, which demands a code from the stored one.
+                    if (await mfa.IsEnabledAsync(accountId.Value, ct).ConfigureAwait(false))
+                    {
+                        return TypedResults.Conflict(
+                            new ApiErrorResponse("pocket.auth.mfa_already_enabled")
+                        );
+                    }
+
+                    MfaEnrolment enrolment = await mfa.BeginEnrolmentAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return TypedResults.Ok(
+                        new TwoFactorEnrolmentResponse(enrolment.Secret, enrolment.Uri)
+                    );
+                }
+            )
+            .WithName("TwoFactorStart")
+            .WithSummary("Begin enrolment: a secret and its otpauth URI, stored nowhere yet.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/twofactor/enable",
+                async Task<
+                    Results<Ok<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    TwoFactorEnableRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountMfaService mfa,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    bool confirmed = await mfa.ConfirmEnrolmentAsync(
+                            accountId.Value,
+                            body.Secret!,
+                            body.Code!,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    return confirmed
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.BadRequest(new ApiErrorResponse("pocket.auth.invalid_code"));
+                }
+            )
+            // Same policy as sign-in: both take a short secret and answer whether it was right, so
+            // both are guessable at the same rate if nothing holds the door.
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("TwoFactorEnable")
+            .WithSummary("Confirm enrolment with a code computed from the secret.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/twofactor/disable",
+                async Task<
+                    Results<Ok<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    TwoFactorDisableRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountMfaService mfa,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    bool removed = await mfa.DisableAsync(accountId.Value, body.Code, ct)
+                        .ConfigureAwait(false);
+
+                    return removed
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.BadRequest(new ApiErrorResponse("pocket.auth.invalid_code"));
+                }
+            )
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("TwoFactorDisable")
+            .WithSummary("Remove the second factor, against a code from the one stored.")
             .WithTags(TagUser);
     }
 

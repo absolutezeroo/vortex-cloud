@@ -223,6 +223,35 @@ public sealed class WebApiPlayerService(
         return player is null ? null : ToAvatarInfo(player);
     }
 
+    public async Task<bool?> GetProfileVisibleAsync(int playerId, CancellationToken ct)
+    {
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        return await db
+            .Players.AsNoTracking()
+            .Where(p => p.Id == playerId && p.DeletedAt == null)
+            .Select(p => (bool?)p.ProfileVisible)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<bool> SetProfileVisibleAsync(int playerId, bool visible, CancellationToken ct)
+    {
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        // Written straight to the column rather than through the player's grain, unlike the rename
+        // next to it: nothing in the game reads this — a room shows who is in it either way — so
+        // there is no live state to keep in step, and waking a grain to set a web preference would
+        // be load for nothing. The grain's own writes are targeted `ExecuteUpdate`s on the columns
+        // it owns, so neither side can overwrite the other.
+        int rows = await db
+            .Players.Where(p => p.Id == playerId && p.DeletedAt == null)
+            .ExecuteUpdateAsync(up => up.SetProperty(p => p.ProfileVisible, visible), ct)
+            .ConfigureAwait(false);
+
+        return rows > 0;
+    }
+
     public async Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct)
     {
         await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);

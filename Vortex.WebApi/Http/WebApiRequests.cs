@@ -8,6 +8,18 @@ namespace Vortex.WebApi.Http;
 /// <c>IsValid</c> predicate so the endpoint can reject malformed payloads with a clean 400 before
 /// any service work happens, replacing the hand-rolled null/whitespace checks of the old listener.
 /// </summary>
+/// <remarks>
+/// Every one of these belongs to exactly one route, which is what keeps the file a vocabulary rather
+/// than a drawer: a request body has no meaning away from the endpoint that reads it, so there is
+/// nowhere else for it to live. The question only bites on the ANSWERS — see the note at the top of
+/// <c>WebApiResponses.cs</c> for the rule that decides between here and a service interface.
+///
+/// <para>
+/// `IsValid` is shape, never policy. It asks whether the endpoint can proceed at all — a field
+/// present, a name that could be a habbo name — and never whether the caller is allowed: that answer
+/// needs the database and belongs to the service, which refuses again at the sink.
+/// </para>
+/// </remarks>
 public sealed record LoginRequest(string? Email, string? Password, string? Code = null)
 {
     public bool IsValid =>
@@ -55,6 +67,34 @@ public sealed record CreateAvatarRequest(string? Name, string? Figure, string? G
 public sealed record SelectAvatarRequest(string? UniqueId)
 {
     public bool IsValid => !string.IsNullOrWhiteSpace(UniqueId);
+}
+
+/// <summary>
+/// Saves the selected avatar's preferences. Absent means unchanged, which is what lets the site post
+/// the one field it can save out of a form habbo.com fills with seven.
+/// </summary>
+public sealed record SavePreferencesRequest(bool? ProfileVisible)
+{
+    public bool IsValid => ProfileVisible is not null;
+}
+
+/// <summary>
+/// Confirms a second factor. <see cref="Secret"/> is the one
+/// <c>/api/user/twofactor/startregistration</c> handed out and stored nowhere: the account gets it
+/// only if <see cref="Code"/> proves an authenticator already holds it.
+/// </summary>
+public sealed record TwoFactorEnableRequest(string? Secret, string? Code)
+{
+    public bool IsValid => !string.IsNullOrWhiteSpace(Secret) && !string.IsNullOrWhiteSpace(Code);
+}
+
+/// <summary>
+/// Removes a second factor. The code is required — the caller holds a session cookie, and a
+/// hijacked session must not be able to take the factor off.
+/// </summary>
+public sealed record TwoFactorDisableRequest(string? Code)
+{
+    public bool IsValid => !string.IsNullOrWhiteSpace(Code);
 }
 
 public sealed record NameRequest(string? Name)

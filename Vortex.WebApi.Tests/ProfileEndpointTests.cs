@@ -88,6 +88,27 @@ public sealed class ProfileEndpointTests
     }
 
     [Fact]
+    public async Task Profile_OfAPrivateAvatar_IsItsHeaderAndNothingElse()
+    {
+        // Not a 404: the player exists, and answering "no such habbo" would make this route a way to
+        // test whether a name is taken. The header is what habbo.com leaves visible too.
+        await using WebApiTestFactory factory = new();
+        await SeedPlayerAsync(factory, 1, "Admin", visible: false);
+        await SeedBadgeAsync(factory, 1, "ADM", slot: 1);
+        await SeedPlayerAsync(factory, 2, "Kaya");
+        await SeedFriendAsync(factory, 1, 2);
+
+        JsonElement profile = await GetJsonAsync(factory.Client, "/api/public/users/1/profile");
+
+        profile.GetProperty("user").GetProperty("name").GetString().Should().Be("Admin");
+        profile.GetProperty("user").GetProperty("profileVisible").GetBoolean().Should().BeFalse();
+        profile.GetProperty("badges").GetArrayLength().Should().Be(0);
+        profile.GetProperty("friends").GetArrayLength().Should().Be(0);
+        profile.GetProperty("rooms").GetArrayLength().Should().Be(0);
+        profile.GetProperty("groups").GetArrayLength().Should().Be(0);
+    }
+
+    [Fact]
     public async Task Profile_IsA404ForAnIdThatIsNotANumber()
     {
         await using WebApiTestFactory factory = new();
@@ -99,11 +120,17 @@ public sealed class ProfileEndpointTests
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    /// <summary>
+    /// Public unless a test says otherwise. The column's own default is the opposite — a profile is
+    /// private until its owner publishes it — so every test that reads a list has to opt in, and the
+    /// one that does not is <see cref="Profile_OfAPrivateAvatar_IsItsHeaderAndNothingElse"/>.
+    /// </summary>
     private static async Task SeedPlayerAsync(
         WebApiTestFactory factory,
         int id,
         string name,
-        bool deleted = false
+        bool deleted = false,
+        bool visible = true
     )
     {
         await using VortexDbContext db = await factory.DbContexts.CreateDbContextAsync();
@@ -118,6 +145,7 @@ public sealed class ProfileEndpointTests
                 Gender = AvatarGenderType.Male,
                 PlayerStatus = PlayerStatusType.Offline,
                 PlayerPerks = PlayerPerkFlags.None,
+                ProfileVisible = visible,
                 DeletedAt = deleted ? System.DateTime.UtcNow : null,
             }
         );

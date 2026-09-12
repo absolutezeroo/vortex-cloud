@@ -106,6 +106,27 @@ public class PlayerEntity : VortexEntity
     [Column("nux_completed_at")]
     public DateTime? NuxCompletedAt { get; set; }
 
+    /// <summary>
+    /// Whether this avatar's web profile — its badges, friends, apparts and groups — is readable by
+    /// anyone, or only by its owner.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// False by default, because that is what the website already promises in habbo.com's own words
+    /// on the registration form: "Ton profil est privé par défaut. Il faut cocher la case pour le
+    /// rendre public." The column arrived after those words did, so every profile was public while
+    /// the page said otherwise.
+    /// </para>
+    /// <para>
+    /// It governs the WEB profile only. Nothing on the game socket reads it: a room still shows who
+    /// is in it, and the friend list still shows a friend. Hiding a player from the client is a
+    /// different feature with a different surface, and calling this one "private" for that too would
+    /// be the same promise broken a second time.
+    /// </para>
+    /// </remarks>
+    [Column("profile_visible")]
+    public bool ProfileVisible { get; set; }
+
     [InverseProperty("PlayerEntity")]
     public List<PlayerBadgeEntity>? PlayerBadges { get; set; }
 
