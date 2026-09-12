@@ -1150,6 +1150,54 @@ internal static class WebApiEndpoints
             .WithSummary("The selected avatar's privacy preferences.")
             .WithTags(TagUser);
 
+        // habbo.com's own `/api/user/profile`, and the reason it exists rather than the page reusing
+        // the public read: `ProfileController` picks between the two on
+        // `Session.hasSession() && profile.uniqueId === user.uniqueId`. Hiding a profile hides it
+        // from VISITORS. A player looking at their own must still see it, and the public route — which
+        // correctly answers four empty lists for a hidden profile — cannot tell them apart.
+        app.MapGet(
+                "/api/user/profile",
+                async Task<
+                    Results<Ok<PlayerProfile>, NotFound<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    IWebApiProfileService profiles,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                    }
+
+                    // No id on the route, deliberately. An id would make this "read anyone's profile
+                    // ignoring their privacy setting" and the only thing standing between that and a
+                    // scraper would be a check somebody could forget to write.
+                    PlayerProfile? profile = await profiles
+                        .GetOwnProfileAsync(playerId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return profile is null
+                        ? TypedResults.NotFound(new ApiErrorResponse("user_not_found"))
+                        : TypedResults.Ok(profile);
+                }
+            )
+            .WithName("OwnProfile")
+            .WithSummary("The signed-in avatar's own profile, private or not.")
+            .WithTags(TagUser);
+
         app.MapPost(
                 "/api/user/preferences/save",
                 async Task<

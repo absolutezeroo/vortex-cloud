@@ -87,8 +87,9 @@ public sealed record PlayerProfile(
 );
 
 /// <summary>
-/// The public profile reads. Anonymous by design: a profile is a page a visitor can open, and the
-/// site links to one from every friend head and every article author.
+/// The profile reads. The two public ones are anonymous by design — a profile is a page a visitor
+/// can open, and the site links to one from every friend head and every article author — and the
+/// third belongs to whoever is signed in.
 /// </summary>
 public interface IWebApiProfileService
 {
@@ -98,6 +99,19 @@ public interface IWebApiProfileService
     /// </summary>
     Task<ProfileUser?> FindUserByNameAsync(string name, CancellationToken ct);
 
-    /// <summary>The full profile payload, or <c>null</c> when no such player exists.</summary>
+    /// <summary>
+    /// The full profile payload as a VISITOR sees it, or <c>null</c> when no such player exists. A
+    /// player who has hidden their profile answers with the header and four empty lists.
+    /// </summary>
     Task<PlayerProfile?> GetProfileAsync(int playerId, CancellationToken ct);
+
+    /// <summary>The same payload as its OWNER sees it: the visibility flag is not applied.</summary>
+    /// <remarks>
+    /// habbo.com resolves its own profile page through <c>/api/user/profile</c> rather than the
+    /// public route, and this is why — a player who hides their profile still has one, and telling
+    /// them "this profile is private" about themselves is the shape of bug that makes a setting look
+    /// like a malfunction. Establishing WHOSE profile it is belongs to the caller: the endpoint
+    /// answers the session's selected avatar and takes no id.
+    /// </remarks>
+    Task<PlayerProfile?> GetOwnProfileAsync(int playerId, CancellationToken ct);
 }

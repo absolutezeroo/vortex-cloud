@@ -59,7 +59,22 @@ public sealed class WebApiProfileService(
         return await BuildUserAsync(db, player, ct).ConfigureAwait(false);
     }
 
-    public async Task<PlayerProfile?> GetProfileAsync(int playerId, CancellationToken ct)
+    public Task<PlayerProfile?> GetProfileAsync(int playerId, CancellationToken ct) =>
+        ReadProfileAsync(playerId, honourVisibility: true, ct);
+
+    public Task<PlayerProfile?> GetOwnProfileAsync(int playerId, CancellationToken ct) =>
+        ReadProfileAsync(playerId, honourVisibility: false, ct);
+
+    /// <param name="honourVisibility">
+    /// False for the owner's own read, and only there. Hiding a profile hides it from VISITORS; it
+    /// was never meant to hide it from the player who set it, which is why habbo.com resolves its
+    /// own profile page through a different route.
+    /// </param>
+    private async Task<PlayerProfile?> ReadProfileAsync(
+        int playerId,
+        bool honourVisibility,
+        CancellationToken ct
+    )
     {
         await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
@@ -82,7 +97,7 @@ public sealed class WebApiProfileService(
         // would make this route a way to test whether a name is taken. habbo.com draws the same
         // distinction, which is why the site has a screen for "this profile is private" rather than
         // for "no such habbo".
-        if (!player.ProfileVisible)
+        if (honourVisibility && !player.ProfileVisible)
         {
             _logger.LogDebug("Profile {PlayerId} is private; answering with the header", playerId);
 

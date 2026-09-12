@@ -27,6 +27,55 @@ namespace Vortex.WebApi.Tests;
 /// </remarks>
 public sealed class ProfileEndpointTests
 {
+    /// <summary>
+    /// The avatar an authenticated test client acts as — <c>FakePlayerService</c>'s only one, which
+    /// is what <c>SelectedPlayerAsync</c> falls back to when the session never went through the
+    /// picker.
+    /// </summary>
+    private const int SelectedPlayerId = 100;
+
+    [Fact]
+    public async Task OwnProfile_IsServedEvenWhenItIsPrivate()
+    {
+        // The whole point of the route. Hiding a profile hides it from VISITORS; a player looking at
+        // their own must still see it, and the public read — which correctly answers four empty
+        // lists — cannot tell the two callers apart.
+        await using WebApiTestFactory factory = new();
+        await SeedPlayerAsync(factory, SelectedPlayerId, "Admin", visible: false);
+        await SeedBadgeAsync(factory, SelectedPlayerId, "ADM", slot: 1);
+        await SeedPlayerAsync(factory, 2, "Kaya");
+        await SeedFriendAsync(factory, SelectedPlayerId, 2);
+
+        JsonElement own = await GetJsonAsync(
+            factory.CreateAuthenticatedClient(),
+            "/api/user/profile"
+        );
+
+        own.GetProperty("user").GetProperty("profileVisible").GetBoolean().Should().BeFalse();
+        Codes(own.GetProperty("badges")).Should().Equal("ADM");
+        own.GetProperty("friends").GetArrayLength().Should().Be(1);
+
+        // And read publicly the same player is still hidden, which is what makes the setting mean
+        // anything at all.
+        JsonElement seen = await GetJsonAsync(
+            factory.Client,
+            $"/api/public/users/{SelectedPlayerId}/profile"
+        );
+
+        seen.GetProperty("badges").GetArrayLength().Should().Be(0);
+        seen.GetProperty("friends").GetArrayLength().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task OwnProfile_NeedsASession()
+    {
+        await using WebApiTestFactory factory = new();
+
+        HttpResponseMessage response = await factory.Client.GetAsync("/api/user/profile");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
     [Fact]
     public async Task Lookup_AnswersTheHeaderAndOnlyTheWornBadges()
     {
