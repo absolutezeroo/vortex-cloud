@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -152,6 +153,58 @@ internal sealed class FakePlayerService : IWebApiPlayerService
         _visible[playerId] = visible;
 
         return Task.FromResult(true);
+    }
+}
+
+/// <summary>
+/// In-memory sign-in address. Keeps the three refusals the endpoint branches on — a wrong password,
+/// a second factor still owed, an address someone else holds — because those are what its status
+/// codes are made of.
+/// </summary>
+internal sealed class FakeEmailService : IAccountEmailService
+{
+    public const string StartingEmail = "tester@vortex.test";
+    public const string TakenEmail = "taken@vortex.test";
+
+    private string _email = StartingEmail;
+
+    /// <summary>Set by a test that wants the account to owe a code.</summary>
+    public bool MfaEnrolled { get; set; }
+
+    public Task<string?> GetAsync(int accountId, CancellationToken ct = default) =>
+        Task.FromResult<string?>(_email);
+
+    public Task<EmailChangeResult> ChangeAsync(
+        int accountId,
+        string currentPassword,
+        string newEmail,
+        string? code,
+        CancellationToken ct = default
+    )
+    {
+        if (currentPassword != FakeAuthService.ValidPassword)
+        {
+            return Task.FromResult(EmailChangeResult.Failed(EmailChangeOutcome.WrongPassword));
+        }
+
+        if (MfaEnrolled && string.IsNullOrWhiteSpace(code))
+        {
+            return Task.FromResult(EmailChangeResult.Failed(EmailChangeOutcome.MfaRequired));
+        }
+
+        if (!newEmail.Contains('@', StringComparison.Ordinal))
+        {
+            return Task.FromResult(EmailChangeResult.Failed(EmailChangeOutcome.Invalid));
+        }
+
+        if (newEmail == TakenEmail)
+        {
+            return Task.FromResult(EmailChangeResult.Failed(EmailChangeOutcome.Taken));
+        }
+
+        _email = newEmail;
+
+        return Task.FromResult(EmailChangeResult.Success());
     }
 }
 

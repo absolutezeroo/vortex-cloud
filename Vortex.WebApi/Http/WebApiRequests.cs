@@ -70,6 +70,17 @@ public sealed record SelectAvatarRequest(string? UniqueId)
 }
 
 /// <summary>
+/// Changes the address the account signs in with. The current password is required even though the
+/// caller holds a session cookie — moving the address is how an account is taken for good — and the
+/// code comes along when the account has a second factor.
+/// </summary>
+public sealed record ChangeEmailRequest(string? CurrentPassword, string? Email, string? Code)
+{
+    public bool IsValid =>
+        !string.IsNullOrWhiteSpace(CurrentPassword) && !string.IsNullOrWhiteSpace(Email);
+}
+
+/// <summary>
 /// Saves the selected avatar's preferences. Absent means unchanged, which is what lets the site post
 /// the one field it can save out of a form habbo.com fills with seven.
 /// </summary>

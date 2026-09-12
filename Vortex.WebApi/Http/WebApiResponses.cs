@@ -87,6 +87,14 @@ public sealed record NameCheckResponse(string Name, bool Valid);
 /// </summary>
 public sealed record PlayerPreferencesResponse(bool ProfileVisible);
 
+/// <summary>
+/// The address the account signs in with. <paramref name="Verified"/> is always false and says so
+/// rather than being left out: this hotel has no way to send to an address, so none has ever been
+/// confirmed, and the website shows that state instead of a "resend verification" button that would
+/// do nothing.
+/// </summary>
+public sealed record AccountEmailResponse(string Email, bool Verified);
+
 /// <summary>Whether the account has a confirmed second factor.</summary>
 public sealed record TwoFactorStatusResponse(bool Enabled);
 

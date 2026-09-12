@@ -266,6 +266,7 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
         services.AddSingleton(rootServices.GetRequiredService<IAccountPasswordService>());
         services.AddSingleton(rootServices.GetRequiredService<IAccountMfaService>());
+        services.AddSingleton(rootServices.GetRequiredService<IAccountEmailService>());
 
         // POST /api/user/reports emits an audit record. A service missing from this list is not a
         // resolution failure at call time — minimal APIs read an unregistered parameter as the

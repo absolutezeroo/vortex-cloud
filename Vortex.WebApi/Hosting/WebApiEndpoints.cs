@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ internal static class WebApiEndpoints
         MapAuthentication(app);
         MapUser(app);
         MapTwoFactor(app);
+        MapEmail(app);
         MapPreferences(app);
         MapNewUser(app);
         MapContent(app);
@@ -890,6 +892,114 @@ internal static class WebApiEndpoints
             )
             .WithName("SaveFigure")
             .WithSummary("Persist the figure string for an owned avatar.")
+            .WithTags(TagUser);
+    }
+
+    /// <summary>
+    /// The sign-in address: what it is, and changing it. habbo.com's own paths
+    /// (<c>/settings/email</c>, <c>/settings/email/change</c>) have a third for resending a
+    /// verification, which is not here because nothing in this server can send one.
+    /// </summary>
+    private static void MapEmail(WebApplication app)
+    {
+        app.MapGet(
+                "/api/user/email",
+                async Task<Results<Ok<AccountEmailResponse>, UnauthorizedError>> (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountEmailService emails,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    string? email = await emails
+                        .GetAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    // Verified is always false — see AccountEmailResponse.
+                    return TypedResults.Ok(
+                        new AccountEmailResponse(email ?? string.Empty, Verified: false)
+                    );
+                }
+            )
+            .WithName("GetEmail")
+            .WithSummary("The address the signed-in account uses.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/email/change",
+                async Task<
+                    Results<
+                        Ok<AccountEmailResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        Conflict<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    ChangeEmailRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountEmailService emails,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse("pocket.auth.missing_credentials")
+                        );
+                    }
+
+                    EmailChangeResult result = await emails
+                        .ChangeAsync(
+                            accountId.Value,
+                            body.CurrentPassword!,
+                            body.Email!,
+                            body.Code,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (result.Succeeded)
+                    {
+                        return TypedResults.Ok(
+                            new AccountEmailResponse(body.Email!.Trim(), Verified: false)
+                        );
+                    }
+
+                    // An address someone else holds is the one refusal that is not the caller's
+                    // mistake to correct by typing more carefully, so it keeps its own status.
+                    return result.Outcome == EmailChangeOutcome.Taken
+                        ? TypedResults.Conflict(new ApiErrorResponse("email_taken"))
+                        : TypedResults.BadRequest(
+                            new ApiErrorResponse(
+                                result.Outcome switch
+                                {
+                                    EmailChangeOutcome.MfaRequired => "pocket.auth.mfa_required",
+                                    EmailChangeOutcome.InvalidCode => "pocket.auth.invalid_code",
+                                    EmailChangeOutcome.Invalid => "invalid_request",
+                                    _ => "pocket.auth.wrong_password",
+                                }
+                            )
+                        );
+                }
+            )
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("ChangeEmail")
+            .WithSummary("Change the sign-in address, against the current password.")
             .WithTags(TagUser);
     }
 

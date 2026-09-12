@@ -71,6 +71,7 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IOptions<WebApiConfig>>(Options.Create(config));
         builder.Services.AddSingleton<IAccountPasswordService>(new FakePasswordService());
         builder.Services.AddSingleton<IAccountMfaService>(Mfa);
+        builder.Services.AddSingleton<IAccountEmailService>(Emails);
         builder.Services.AddSingleton<RequiredServiceGuard>();
 
         // Mirrors WebApiWebHost.ForwardSingletons. Leaving a service out of that list is not a
@@ -134,6 +135,9 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
 
     /// <summary>The second factor, shared with the endpoints so a test can enrol and then check.</summary>
     public FakeMfaService Mfa { get; } = new();
+
+    /// <summary>The sign-in address, shared so a test can change it and read it back.</summary>
+    public FakeEmailService Emails { get; } = new();
 
     /// <summary>What the endpoints emitted, in order, so a test can assert on the record itself.</summary>
     public RecordingAuditSink Audit { get; } = new();
