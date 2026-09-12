@@ -293,6 +293,14 @@ public sealed class WebApiPlayerService(
         // what the counter says everywhere else in the hotel.
         int clubDays = club is null ? 0 : (int)Math.Ceiling((club.ExpiresAt - now).TotalDays);
 
+        // The same count for the other membership. habbo.com's purse prints BOTH in days
+        // (`SHOP_PURSE_HC_DAYS` / `SHOP_PURSE_BC_DAYS`); the furni limit is a different fact
+        // altogether, and the website had been showing it under the days' label — which reads as a
+        // wrong number rather than as another one.
+        int buildersDays = builders is null
+            ? 0
+            : (int)Math.Ceiling((builders.ExpiresAt - now).TotalDays);
+
         int furniLimit = builders is null
             ? 0
             : await db
@@ -307,6 +315,7 @@ public sealed class WebApiPlayerService(
             balances.GetValueOrDefault(CurrencyType.Emeralds),
             balances.GetValueOrDefault(CurrencyType.Silver),
             clubDays,
+            buildersDays,
             furniLimit
         );
     }

@@ -2349,6 +2349,7 @@
       },
       "PlayerPurse": {
         "required": [
+          "buildersClubDays",
           "buildersFurniLimit",
           "credits",
           "diamonds",
@@ -2370,6 +2371,10 @@
             "format": "int32"
           },
           "habboClubDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "buildersClubDays": {
             "type": "integer",
             "format": "int32"
           },
@@ -2640,6 +2645,7 @@
       "RoomSummary": {
         "required": [
           "description",
+          "doorOpen",
           "id",
           "maximumVisitors",
           "name",
@@ -2680,6 +2686,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "doorOpen": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

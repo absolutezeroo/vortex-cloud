@@ -67,6 +67,26 @@ public sealed class RoomEndpointTests
     }
 
     [Fact]
+    public async Task Room_SaysWhetherItsDoorIsOpen_AndNothingMoreAboutIt()
+    {
+        // What habbo.com's `room.html` branches on: a room behind a doorbell or a password gets the
+        // restricted screen instead of the full page with an enter button. It is a BOOLEAN, and
+        // deliberately — which KIND of door it is would tell a stranger how to prepare for it.
+        await using WebApiTestFactory factory = new();
+        await SeedRoomAsync(factory, 1, "Le grand café", RoomDoorModeType.Open, usersNow: 3);
+        await SeedRoomAsync(factory, 2, "Le club privé", RoomDoorModeType.Password, usersNow: 5);
+
+        JsonElement open = await GetJsonAsync(factory.Client, "/api/public/rooms/1");
+        JsonElement shut = await GetJsonAsync(factory.Client, "/api/public/rooms/2");
+
+        open.GetProperty("doorOpen").GetBoolean().Should().BeTrue();
+        shut.GetProperty("doorOpen").GetBoolean().Should().BeFalse();
+
+        // And nothing in the payload says "password" rather than "doorbell".
+        shut.ToString().Should().NotContainEquivalentOf("password");
+    }
+
+    [Fact]
     public async Task Room_IsA404WhenItsDoorIsInvisible()
     {
         await using WebApiTestFactory factory = new();

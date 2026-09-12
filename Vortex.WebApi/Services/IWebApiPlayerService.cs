@@ -13,15 +13,22 @@ public sealed record AvatarInfo(
 );
 
 /// <summary>
-/// The five counters the site's sidebar shows. <paramref name="HabboClubDays"/> is what is LEFT of
-/// the subscription, not how long it has run, and <paramref name="BuildersFurniLimit"/> is the tier's
-/// allowance rather than a balance — both are what the counters beside them read as.
+/// What the site's purse shows. The two day counts are what is LEFT of each subscription, not how
+/// long it has run, and <paramref name="BuildersFurniLimit"/> is the tier's allowance rather than a
+/// balance — each is what the counter beside it reads as.
 /// </summary>
+/// <remarks>
+/// <paramref name="BuildersClubDays"/> is here because habbo.com's `purse.html` prints BOTH
+/// memberships in days (`SHOP_PURSE_HC_DAYS` / `SHOP_PURSE_BC_DAYS`), and without it the website had
+/// nothing to put in that row but the furni limit — a different fact under the days' label, which
+/// reads as a wrong number rather than as another one.
+/// </remarks>
 public sealed record PlayerPurse(
     int Credits,
     int Diamonds,
     int Duckets,
     int HabboClubDays,
+    int BuildersClubDays,
     int BuildersFurniLimit
 );
 

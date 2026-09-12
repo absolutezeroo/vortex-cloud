@@ -9,8 +9,18 @@ namespace Vortex.WebApi.Services;
 /// because habbo.com's two screens show the same fields with different emphasis.
 /// </summary>
 /// <remarks>
+/// <para>
 /// <paramref name="Tags"/> is the room's two tag columns with the empty ones dropped: the client
 /// writes exactly two, and a list is what both pages render.
+/// </para>
+/// <para>
+/// <paramref name="DoorOpen"/> is what habbo.com's `room.html` branches on
+/// (<c>room.doorMode != 'open'</c>): a room behind a doorbell or a password gets a different screen
+/// — "L'accès à l'appart est restreint." — rather than the full page with an enter button. It is a
+/// BOOLEAN and not the door mode itself on purpose: whether the door wants a password or a doorbell
+/// is the client's business, and telling a web page which one would be telling a stranger how to
+/// prepare for it.
+/// </para>
 /// </remarks>
 public sealed record RoomSummary(
     int Id,
@@ -20,7 +30,8 @@ public sealed record RoomSummary(
     int UsersNow,
     int MaximumVisitors,
     int Score,
-    IReadOnlyList<string> Tags
+    IReadOnlyList<string> Tags,
+    bool DoorOpen
 );
 
 /// <summary>One page of the appart gallery.</summary>

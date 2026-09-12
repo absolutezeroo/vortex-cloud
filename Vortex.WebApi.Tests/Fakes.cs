@@ -141,7 +141,7 @@ internal sealed class FakePlayerService : IWebApiPlayerService
         Task.FromResult<AvatarInfo?>(null);
 
     public Task<PlayerPurse?> GetPurseAsync(int playerId, CancellationToken ct) =>
-        Task.FromResult<PlayerPurse?>(new PlayerPurse(12480, 36, 2145, 27, 50));
+        Task.FromResult<PlayerPurse?>(new PlayerPurse(12480, 36, 2145, 27, 14, 50));
 
     // Private to start with, like the column's default, so a test that saves can tell it moved.
     private readonly Dictionary<int, bool> _visible = [];

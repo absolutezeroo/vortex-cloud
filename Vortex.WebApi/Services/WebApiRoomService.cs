@@ -110,7 +110,8 @@ public sealed class WebApiRoomService(
         int MaximumVisitors,
         int Score,
         string? Tag1,
-        string? Tag2
+        string? Tag2,
+        bool DoorOpen
     );
 
     private static IQueryable<RoomRow> Project(IQueryable<RoomEntity> rooms) =>
@@ -123,7 +124,11 @@ public sealed class WebApiRoomService(
             r.PlayersMax,
             r.Score,
             r.Tag1,
-            r.Tag2
+            r.Tag2,
+            // Collapsed to a boolean in the QUERY, so which kind of door it is never leaves the
+            // database. Invisible is already excluded everywhere above, so what reaches here is Open
+            // against Locked-or-Password.
+            r.DoorMode == RoomDoorModeType.Open
         ));
 
     private static RoomSummary ToSummary(RoomRow row)
@@ -148,7 +153,8 @@ public sealed class WebApiRoomService(
             row.UsersNow,
             row.MaximumVisitors,
             row.Score,
-            tags
+            tags,
+            row.DoorOpen
         );
     }
 }
