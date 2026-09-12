@@ -45,6 +45,7 @@
     <ProjectReference Include="..\Vortex.Fishing\Vortex.Fishing.csproj" />
     <ProjectReference Include="..\Vortex.Habbicons\Vortex.Habbicons.csproj" />
     <ProjectReference Include="..\Vortex.RewardTracks\Vortex.RewardTracks.csproj" />
+    <ProjectReference Include="..\Vortex.Shop\Vortex.Shop.csproj" />
     <!--
       Referenced for one reason: the assembly scan only sees assemblies the host has loaded, and a
       Vortex.Signals that nobody references is a progression layer that never registers a single

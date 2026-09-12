@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Observability;
+using Vortex.Primitives.Shop;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
 
@@ -331,4 +332,99 @@ internal sealed class RecordingAuditSink : IAuditSink
     public IReadOnlyCollection<AuditEvent> Events => _events.ToArray();
 
     public void Emit(in AuditEvent auditEvent) => _events.Enqueue(auditEvent);
+}
+
+/// <summary>
+/// The shop, faked. What the real one does — the signature, the price snapshot, the replay guard —
+/// has its own tests in <c>Vortex.Shop.Tests</c> against the real service; what is left for the
+/// endpoints is plumbing, so this answers the shapes and records what it was handed.
+/// </summary>
+internal sealed class FakeShopService : IShopService
+{
+    public const string ProductCode = "c-100";
+
+    public const int PriceMinor = 450;
+
+    /// <summary>Every product code an order was opened for, so a test can assert what the route sent.</summary>
+    public List<string> Started { get; } = [];
+
+    /// <summary>What the next webhook call answers.</summary>
+    public ShopWebhookOutcome WebhookOutcome { get; set; } = ShopWebhookOutcome.Accepted;
+
+    /// <summary>The body the last webhook call was given, verbatim.</summary>
+    public string? LastWebhookBody { get; private set; }
+
+    public List<ShopOrder> Orders { get; } = [];
+
+    public Task<ShopCatalog> GetCatalogAsync(CancellationToken ct) =>
+        Task.FromResult(
+            new ShopCatalog([
+                new ShopSection(
+                    "credits",
+                    [
+                        new ShopProduct(
+                            ProductCode,
+                            ShopProductKind.Credits,
+                            100,
+                            PriceMinor,
+                            "EUR",
+                            "credits",
+                            3,
+                            true
+                        ),
+                    ]
+                ),
+            ])
+        );
+
+    public Task<ShopOrderResult> StartOrderAsync(
+        int playerId,
+        string productCode,
+        CancellationToken ct
+    )
+    {
+        Started.Add(productCode);
+
+        if (productCode != ProductCode)
+        {
+            return Task.FromResult(ShopOrderResult.Refused(ShopOrderRefusal.UnknownProduct));
+        }
+
+        ShopOrder order = new(
+            Guid.NewGuid().ToString(),
+            productCode,
+            ShopProductKind.Credits,
+            100,
+            PriceMinor,
+            "EUR",
+            ShopOrderState.Pending,
+            "manual",
+            DateTime.UtcNow
+        );
+
+        Orders.Add(order);
+
+        return Task.FromResult(
+            ShopOrderResult.Opened(new ShopOrderStart(order, "https://pay.test/1"))
+        );
+    }
+
+    public Task<ShopOrder?> GetOrderAsync(int playerId, string orderId, CancellationToken ct) =>
+        Task.FromResult(Orders.Find(o => o.Id == orderId));
+
+    public Task<IReadOnlyList<ShopOrder>> GetOrdersAsync(int playerId, CancellationToken ct) =>
+        Task.FromResult<IReadOnlyList<ShopOrder>>(Orders);
+
+    public Task<ShopWebhookOutcome> HandleWebhookAsync(
+        ShopWebhookRequest request,
+        CancellationToken ct
+    )
+    {
+        LastWebhookBody = request.Body;
+
+        return Task.FromResult(WebhookOutcome);
+    }
+
+    public Task<string?> RedeemVoucherAsync(int playerId, string code, CancellationToken ct) =>
+        Task.FromResult(code == "GOOD-CODE" ? null : "not_found");
 }

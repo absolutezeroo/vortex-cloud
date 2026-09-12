@@ -179,3 +179,29 @@ public sealed record SubmitReportRequest(
         && (ClientVersion is null || ClientVersion.Length <= MAX_CONTEXT)
         && (Console is null || Console.Length <= MAX_CONSOLE);
 }
+
+/// <summary>
+/// Buying one thing from the shop. A product code, and deliberately nothing else.
+/// </summary>
+/// <remarks>
+/// There is no amount field and no price field, and that absence is the point: the server reads both
+/// off the product row and snapshots them onto the order. A request body that could carry a price is
+/// a request body somebody will eventually edit, and no amount of server-side checking makes a field
+/// that should not exist safe.
+/// </remarks>
+public sealed record StartOrderRequest(string? ProductCode)
+{
+    /// <summary>Generous for a content id, and short enough that the lookup is never the attack.</summary>
+    public const int MAX_CODE = 64;
+
+    public bool IsValid =>
+        !string.IsNullOrWhiteSpace(ProductCode) && ProductCode.Length <= MAX_CODE;
+}
+
+/// <summary>A prepaid code, off the shop's second tab.</summary>
+public sealed record RedeemVoucherRequest(string? Code)
+{
+    public const int MAX_CODE = 64;
+
+    public bool IsValid => !string.IsNullOrWhiteSpace(Code) && Code.Length <= MAX_CODE;
+}

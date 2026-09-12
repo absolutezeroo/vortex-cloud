@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
@@ -13,6 +14,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Observability;
+using Vortex.Primitives.Shop;
 using Vortex.WebApi.Http;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
@@ -32,12 +34,14 @@ internal static class WebApiEndpoints
     public const string RegistrationRateLimitPolicy = "webapi-registration";
     public const string SsoTokenRateLimitPolicy = "webapi-ssotoken";
     public const string ReportRateLimitPolicy = "webapi-report";
+    public const string ShopOrderRateLimitPolicy = "webapi-shop-order";
 
     private const string TagPublic = "Public";
     private const string TagAuth = "Authentication";
     private const string TagUser = "User";
     private const string TagNewUser = "NewUser";
     private const string TagContent = "Content";
+    private const string TagShop = "Shop";
 
     public static void Map(WebApplication app)
     {
@@ -51,6 +55,7 @@ internal static class WebApiEndpoints
         MapPreferences(app);
         MapNewUser(app);
         MapContent(app);
+        MapShop(app);
     }
 
     /// <summary>
@@ -1195,6 +1200,297 @@ internal static class WebApiEndpoints
             .WithSummary("Publish or hide the selected avatar's web profile.")
             .WithTags(TagUser);
     }
+
+    /// <summary>
+    /// The paid shop. Five routes, and the division between them is the whole security model: the
+    /// catalogue and the webhook are anonymous, the orders belong to a session, and only the webhook
+    /// can make an order paid.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// There is deliberately no route that confirms a payment from the browser. habbo.com sends the
+    /// visitor back from the provider to a page, and a page is something anybody can open: the return
+    /// URL here lands on <c>GET …/orders/{id}</c>, which REPORTS the state and cannot change it.
+    /// </para>
+    /// <para>
+    /// The webhook is anonymous because the provider has no session, and it is safe because it is
+    /// signed — see <c>WebhookSignature</c>. It answers 404 for an unknown or unconfigured provider,
+    /// 401 for a signature that does not verify, and 204 for everything it accepted, including a
+    /// notification it had already seen. A provider retries on anything that is not a 2xx, so saying
+    /// "already done" any other way would cause a retry storm over work that is finished.
+    /// </para>
+    /// </remarks>
+    private static void MapShop(WebApplication app)
+    {
+        app.MapGet(
+                "/api/public/shop/products",
+                async Task<Ok<ShopCatalog>> (IShopService shop, CancellationToken ct) =>
+                    TypedResults.Ok(await shop.GetCatalogAsync(ct).ConfigureAwait(false))
+            )
+            .WithName("ShopProducts")
+            .WithSummary("What the hotel sells, grouped into the store page's sections.")
+            .WithTags(TagShop);
+
+        app.MapPost(
+                "/api/user/shop/orders",
+                async Task<
+                    Results<
+                        Ok<ShopOrderStart>,
+                        BadRequest<ApiErrorResponse>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    StartOrderRequest body,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    IShopService shop,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    ShopOrderResult result = await shop.StartOrderAsync(
+                            playerId.Value,
+                            body.ProductCode!,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    return result.Start is not null
+                        ? TypedResults.Ok(result.Start)
+                        : TypedResults.BadRequest(new ApiErrorResponse(Describe(result.Refusal)));
+                }
+            )
+            .RequireRateLimiting(ShopOrderRateLimitPolicy)
+            .WithName("StartShopOrder")
+            .WithSummary("Open an order for one product and start its payment.")
+            .WithTags(TagShop);
+
+        app.MapGet(
+                "/api/user/shop/orders",
+                async Task<
+                    Results<
+                        Ok<IReadOnlyList<ShopOrder>>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    IShopService shop,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    return playerId is null
+                        ? refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"))
+                        : TypedResults.Ok(
+                            await shop.GetOrdersAsync(playerId.Value, ct).ConfigureAwait(false)
+                        );
+                }
+            )
+            .WithName("ShopOrders")
+            .WithSummary("This avatar's orders, newest first.")
+            .WithTags(TagShop);
+
+        app.MapGet(
+                "/api/user/shop/orders/{orderId}",
+                async Task<Results<Ok<ShopOrder>, NotFound<ApiErrorResponse>, UnauthorizedError>> (
+                    string orderId,
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    IShopService shop,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("order_not_found"));
+                    }
+
+                    // The page the provider sends the browser back to polls this. It reads state; it
+                    // does not set it. Someone else's order is a 404, never a 403: an order id is an
+                    // identifier, not a permission.
+                    ShopOrder? order = await shop.GetOrderAsync(playerId.Value, orderId, ct)
+                        .ConfigureAwait(false);
+
+                    return order is null
+                        ? TypedResults.NotFound(new ApiErrorResponse("order_not_found"))
+                        : TypedResults.Ok(order);
+                }
+            )
+            .WithName("ShopOrder")
+            .WithSummary("One order's state. What the return-from-payment page reads.")
+            .WithTags(TagShop);
+
+        app.MapPost(
+                "/api/user/shop/voucher",
+                async Task<
+                    Results<
+                        Ok<EmptyResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    RedeemVoucherRequest body,
+                    WebApiSessionStore sessions,
+                    IWebApiPlayerService players,
+                    IShopService shop,
+                    CancellationToken ct
+                ) =>
+                {
+                    (int? playerId, IResult? refusal) = await SelectedPlayerAsync(
+                            ctx,
+                            sessions,
+                            players,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        return refusal is UnauthorizedError unauthorized
+                            ? unauthorized
+                            : TypedResults.NotFound(new ApiErrorResponse("pocket.auth.no_avatars"));
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    string? error = await shop.RedeemVoucherAsync(playerId.Value, body.Code!, ct)
+                        .ConfigureAwait(false);
+
+                    return error is null
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.BadRequest(new ApiErrorResponse(error));
+                }
+            )
+            // Same limiter as opening an order: a prepaid code is guessable in a way a product code
+            // is not, and an unthrottled redeem route is a code-guessing oracle.
+            .RequireRateLimiting(ShopOrderRateLimitPolicy)
+            .WithName("RedeemVoucher")
+            .WithSummary("Redeem a prepaid code.")
+            .WithTags(TagShop);
+
+        app.MapPost(
+                "/api/public/shop/webhook/{provider}",
+                async Task<
+                    Results<
+                        NoContent,
+                        BadRequest<ApiErrorResponse>,
+                        NotFound<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (string provider, HttpContext ctx, IShopService shop, CancellationToken ct) =>
+                {
+                    string body = await ReadBodyAsync(ctx.Request, ct).ConfigureAwait(false);
+
+                    ShopWebhookRequest request = new(
+                        provider,
+                        body,
+                        ctx.Request.Headers.ToDictionary(
+                            header => header.Key,
+                            header => header.Value.ToString(),
+                            System.StringComparer.OrdinalIgnoreCase
+                        )
+                    );
+
+                    ShopWebhookOutcome outcome = await shop.HandleWebhookAsync(request, ct)
+                        .ConfigureAwait(false);
+
+                    return outcome switch
+                    {
+                        ShopWebhookOutcome.Accepted => TypedResults.NoContent(),
+                        ShopWebhookOutcome.BadSignature => new UnauthorizedError("bad_signature"),
+                        ShopWebhookOutcome.UnknownProvider => TypedResults.NotFound(
+                            new ApiErrorResponse("unknown_provider")
+                        ),
+                        ShopWebhookOutcome.UnknownOrder => TypedResults.NotFound(
+                            new ApiErrorResponse("order_not_found")
+                        ),
+                        _ => TypedResults.BadRequest(new ApiErrorResponse("amount_mismatch")),
+                    };
+                }
+            )
+            .WithName("ShopWebhook")
+            .WithSummary("A payment provider's signed notification. The only thing that grants.")
+            .WithTags(TagShop);
+    }
+
+    /// <summary>
+    /// The raw request body, capped. Read as TEXT and handed on unparsed, because the signature is
+    /// over the bytes the provider sent: a JSON round trip changes whitespace and key order, and a
+    /// signature that then fails looks exactly like an attack.
+    /// </summary>
+    private static async Task<string> ReadBodyAsync(HttpRequest request, CancellationToken ct)
+    {
+        // An unbounded read on an anonymous route is a way to spend the hotel's memory for the price
+        // of a POST. No provider's notification is anywhere near this large.
+        const int MaximumBodyBytes = 64 * 1024;
+
+        request.EnableBuffering();
+
+        byte[] buffer = new byte[MaximumBodyBytes];
+        int read = await request
+            .Body.ReadAtLeastAsync(buffer, MaximumBodyBytes, throwOnEndOfStream: false, ct)
+            .ConfigureAwait(false);
+
+        return System.Text.Encoding.UTF8.GetString(buffer, 0, read);
+    }
+
+    /// <summary>The refusal code the site turns into French.</summary>
+    private static string Describe(ShopOrderRefusal refusal) =>
+        refusal switch
+        {
+            ShopOrderRefusal.UnknownProduct => "unknown_product",
+            ShopOrderRefusal.TooManyOpen => "too_many_open_orders",
+            _ => "shop_unavailable",
+        };
 
     /// <summary>
     /// The avatar a session's calls act on: the one it picked, or the account's first when it never

@@ -15,6 +15,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Observability;
+using Vortex.Primitives.Shop;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Hosting;
 using Vortex.WebApi.Services;
@@ -79,6 +80,7 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IAccountMfaService>(Mfa);
         builder.Services.AddSingleton<IAccountEmailService>(Emails);
         builder.Services.AddSingleton<IAccountSafetyLockService>(SafetyLock);
+        builder.Services.AddSingleton<IShopService>(Shop);
         builder.Services.AddSingleton<RequiredServiceGuard>();
 
         // Mirrors WebApiWebHost.ForwardSingletons. Leaving a service out of that list is not a
@@ -148,6 +150,9 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
 
     /// <summary>The account safety lock, shared so a test can throw it and read it back.</summary>
     public FakeSafetyLockService SafetyLock { get; } = new();
+
+    /// <summary>The shop, shared so a test can read what the routes handed it.</summary>
+    public FakeShopService Shop { get; } = new();
 
     /// <summary>What the endpoints emitted, in order, so a test can assert on the record itself.</summary>
     public RecordingAuditSink Audit { get; } = new();

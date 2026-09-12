@@ -188,6 +188,25 @@ public sealed class WebApiConfig
             QueueLimit = 0,
         };
 
+    /// <summary>
+    /// Fixed-window rate limit applied to <c>POST /api/user/shop/orders</c> and
+    /// <c>POST /api/user/shop/voucher</c>.
+    ///
+    /// <para>
+    /// Opening an order costs a row and charges nobody anything, so this is not the defence that
+    /// matters there. It is the defence that matters on the voucher route, which takes a code and
+    /// says whether it was real — an unthrottled version of that is a code-guessing oracle, and the
+    /// two routes share a limiter so there is one number to get right.
+    /// </para>
+    /// </summary>
+    public RateLimitOptions ShopOrderRateLimit { get; set; } =
+        new RateLimitOptions
+        {
+            PermitLimit = 10,
+            WindowSeconds = 60,
+            QueueLimit = 0,
+        };
+
     public sealed class RateLimitOptions
     {
         public int PermitLimit { get; set; } = 5;

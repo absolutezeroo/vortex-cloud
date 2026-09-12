@@ -41,6 +41,7 @@ using Vortex.Revisions.Extensions;
 using Vortex.RewardTracks;
 using Vortex.Rooms;
 using Vortex.Runtime.AssemblyProcessing;
+using Vortex.Shop;
 using Vortex.Signals;
 using Vortex.Social;
 using Vortex.WebApi;
@@ -143,6 +144,8 @@ internal class Program
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
         builder.Services.AddHostPlugin<FishingModule>(builder);
+        // Before the web API: the site's shop routes resolve IShopService out of the root provider.
+        builder.Services.AddHostPlugin<ShopModule>(builder);
         builder.Services.AddHostPlugin<DashboardApiModule>(builder);
         builder.Services.AddHostPlugin<BenchmarkModule>(builder);
         builder.Services.AddHostPlugin<NavigatorModule>(builder);

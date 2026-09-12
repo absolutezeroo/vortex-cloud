@@ -132,6 +132,14 @@ public enum CommerceOperationKind
     /// is owed from before any of it is granted.
     /// </summary>
     RewardTrackPrize = 19,
+
+    /// <summary>
+    /// What a paid shop order hands over: credits, duckets, diamonds or club months, bought with
+    /// real money. The only kind here whose pivot happens OUTSIDE the hotel — the payment provider
+    /// captured the money before it sent the webhook — so these operations are opened already past
+    /// it. Nothing refunds one: a grant that fails is owed, and the card was charged either way.
+    /// </summary>
+    ShopPurchase = 20,
 }
 
 /// <summary>
@@ -213,6 +221,13 @@ public static class CommerceStepKeys
     /// an operator can see exactly which one.
     /// </summary>
     public const string REWARD_TRACK_GRANT = "reward-track-grant";
+
+    /// <summary>
+    /// What a paid shop order hands over. Strictly after the pivot — the money was captured by the
+    /// payment provider before the hotel heard about it — so this step is retried until it lands or
+    /// an operator is called, and is never rolled back.
+    /// </summary>
+    public const string SHOP_GRANT = "shop-grant";
 
     /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
     public const string RELAY = "relay";
