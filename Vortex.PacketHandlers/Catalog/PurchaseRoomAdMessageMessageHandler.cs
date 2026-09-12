@@ -35,6 +35,11 @@ public class PurchaseRoomAdMessageMessageHandler(
             return;
         }
 
+        if (await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false))
+        {
+            return;
+        }
+
         if (!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId))
         {
             await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)

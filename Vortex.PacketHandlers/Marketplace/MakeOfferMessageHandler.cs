@@ -23,6 +23,23 @@ public class MakeOfferMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
+        // Listing is spending too — it costs the commission — and the client hides the whole
+        // marketplace while the lock is on. AS3 5 is this message's own "error".
+        if (
+            await Catalog
+                .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            await ctx.SendComposerAsync(
+                    new MarketplaceMakeOfferResultMessageComposer { Result = 5 },
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            return;
+        }
+
         (int result, _) = await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)
             .MakeOfferAsync(message.FurnitureItemId, message.Price, ct)

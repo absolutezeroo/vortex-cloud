@@ -35,6 +35,11 @@ public class PurchaseBasicMembershipExtensionMessageHandler(
             return;
         }
 
+        if (await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false))
+        {
+            return;
+        }
+
         ClubOffer? offer = _clubOfferProvider.FindById(message.OfferId);
         if (offer is null || offer.IsVip)
         {

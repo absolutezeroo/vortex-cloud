@@ -81,6 +81,15 @@ public sealed record ChangeEmailRequest(string? CurrentPassword, string? Email, 
 }
 
 /// <summary>
+/// Throws or lifts the account's safety lock. The password is required in BOTH directions: a thief
+/// who could lock the account without it would have a way to grief its owner.
+/// </summary>
+public sealed record SafetyLockRequest(bool? Locked, string? CurrentPassword, string? Code)
+{
+    public bool IsValid => Locked is not null && !string.IsNullOrWhiteSpace(CurrentPassword);
+}
+
+/// <summary>
 /// Saves the selected avatar's preferences. Absent means unchanged, which is what lets the site post
 /// the one field it can save out of a form habbo.com fills with seven.
 /// </summary>

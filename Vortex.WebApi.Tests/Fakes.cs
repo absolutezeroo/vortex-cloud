@@ -209,6 +209,36 @@ internal sealed class FakeEmailService : IAccountEmailService
 }
 
 /// <summary>
+/// In-memory safety lock. Keeps the rule that makes the feature a protection rather than a
+/// preference: the password is demanded in BOTH directions.
+/// </summary>
+internal sealed class FakeSafetyLockService : IAccountSafetyLockService
+{
+    private bool _locked;
+
+    public Task<bool?> IsLockedAsync(int accountId, CancellationToken ct = default) =>
+        Task.FromResult<bool?>(_locked);
+
+    public Task<SafetyLockResult> SetAsync(
+        int accountId,
+        bool locked,
+        string currentPassword,
+        string? code,
+        CancellationToken ct = default
+    )
+    {
+        if (currentPassword != FakeAuthService.ValidPassword)
+        {
+            return Task.FromResult(SafetyLockResult.Failed(SafetyLockOutcome.WrongPassword));
+        }
+
+        _locked = locked;
+
+        return Task.FromResult(SafetyLockResult.Success());
+    }
+}
+
+/// <summary>
 /// In-memory second factor. It keeps the real service's two rules, which are the ones the endpoints
 /// lean on: enrolment does not store the secret until a code confirms it, and an account that
 /// already has a factor cannot be handed a new one without disabling the old.

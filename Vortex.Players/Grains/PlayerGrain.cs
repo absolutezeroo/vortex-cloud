@@ -26,6 +26,7 @@ using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
 namespace Vortex.Players.Grains;
 
@@ -267,8 +268,29 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 MutedUntilUtc = _state.MutedUntil,
                 FavouriteGroupId = _state.FavouriteGroupId,
                 FavouriteGroupName = _state.FavouriteGroupName,
+                SafetyLocked = _state.SafetyLocked,
             }
         );
+    }
+
+    public Task<bool> IsSafetyLockedAsync(CancellationToken ct) =>
+        Task.FromResult(_state.SafetyLocked);
+
+    public async Task OnAccountSafetyLockChangedAsync(bool locked, CancellationToken ct)
+    {
+        if (_state.SafetyLocked == locked)
+        {
+            return;
+        }
+
+        _state.SafetyLocked = locked;
+
+        // 0 is LOCKED on this wire — see the composer, where the constant lives so nobody has to
+        // remember it.
+        await _grainFactory
+            .GetPlayerPresenceGrain((long)_state.PlayerId)
+            .SendComposerAsync(AccountSafetyLockStatusChangeMessageComposer.For(locked))
+            .ConfigureAwait(true);
     }
 
     public async Task SetFavouriteGroupAsync(int groupId, CancellationToken ct)
@@ -1077,6 +1099,20 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.MutedUntil = entity.MutedUntil;
         _state.NuxCompletedAt = entity.NuxCompletedAt;
         _state.LastUpdated = entity.UpdatedAt;
+
+        // The safety lock lives on the ACCOUNT — every avatar it owns spends the same purse — so it
+        // is read across the key rather than off the player row. Held in state because the spending
+        // handlers ask for it on every purchase, and a database round trip per click, to answer a
+        // flag that changes once in an account's life, is not a trade worth making. The website
+        // keeps it in step through OnAccountSafetyLockChangedAsync.
+        _state.SafetyLocked =
+            entity.PlayerAccountEntityId is int accountId
+            && await dbCtx
+                .PlayerAccounts.AsNoTracking()
+                .Where(a => a.Id == accountId)
+                .Select(a => a.SafetyLocked)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(true);
 
         _state.FavouriteGroupId = entity.FavouriteGroupId ?? 0;
         _state.FavouriteGroupName =

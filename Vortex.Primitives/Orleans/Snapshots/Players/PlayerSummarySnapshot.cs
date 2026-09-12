@@ -42,4 +42,12 @@ public sealed record PlayerSummarySnapshot
     /// </summary>
     [Id(9)]
     public DateTime? MutedUntilUtc { get; init; }
+
+    /// <summary>
+    /// The owning account's safety lock. It rides the summary because the user object is built from
+    /// it: the client is told at login, and again by its own message when the lock moves
+    /// mid-session.
+    /// </summary>
+    [Id(10)]
+    public bool SafetyLocked { get; init; }
 }

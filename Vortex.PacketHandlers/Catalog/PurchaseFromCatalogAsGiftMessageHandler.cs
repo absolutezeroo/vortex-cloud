@@ -28,6 +28,11 @@ public class PurchaseFromCatalogAsGiftMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
+        if (await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false))
+        {
+            return;
+        }
+
         PlayerId? receiverId = await _grainFactory
             .GetPlayerDirectoryGrain()
             .GetPlayerIdAsync(message.RecieverName, ct)

@@ -41,6 +41,12 @@ public sealed class PlayerLiveState
     /// <summary>Null until the new-user flow has been completed; see PlayerEntity.NuxCompletedAt.</summary>
     public DateTime? NuxCompletedAt { get; set; } = null;
 
+    /// <summary>
+    /// The owning ACCOUNT's safety lock; see PlayerAccountEntity.SafetyLocked. While it is set the
+    /// player cannot spend, and every spending handler asks this rather than the database.
+    /// </summary>
+    public bool SafetyLocked { get; set; }
+
     public int ClubLevel { get; set; } = 0;
     public DateTime ClubExpiresAt { get; set; } = DateTime.MinValue;
     public int ClubTotalMonths { get; set; } = 0;

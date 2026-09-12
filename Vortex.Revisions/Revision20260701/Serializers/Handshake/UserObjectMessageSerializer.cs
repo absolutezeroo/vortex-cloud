@@ -23,6 +23,6 @@ internal class UserObjectMessageSerializer(int header)
         packet.WriteBoolean(false); // stream publishing enabled
         packet.WriteString(message.Player.CreatedAt.ToString(CultureInfo.CurrentCulture)); // last online
         packet.WriteBoolean(false); // can name change
-        packet.WriteBoolean(false); // account safety locked
+        packet.WriteBoolean(message.Player.SafetyLocked); // account safety locked
     }
 }

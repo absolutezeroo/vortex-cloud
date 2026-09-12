@@ -21,6 +21,11 @@ public class PurchaseTargetedOfferMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
+        if (await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false))
+        {
+            return;
+        }
+
         // The client updates the offer view locally on purchase and expects no offer echo (re-sending
         // it would re-maximise the offer the client just minimised); the granted furniture's own
         // inventory composers are the purchase feedback.

@@ -47,6 +47,7 @@ internal static class WebApiEndpoints
         MapUser(app);
         MapTwoFactor(app);
         MapEmail(app);
+        MapSafetyLock(app);
         MapPreferences(app);
         MapNewUser(app);
         MapContent(app);
@@ -892,6 +893,97 @@ internal static class WebApiEndpoints
             )
             .WithName("SaveFigure")
             .WithSummary("Persist the figure string for an owned avatar.")
+            .WithTags(TagUser);
+    }
+
+    /// <summary>
+    /// The account safety lock — the settings page habbo.com fills with security questions. Those
+    /// are not reproduced: a question is a second secret to store, weaker than a password and
+    /// typically guessable by whoever knew the player well enough to be in their account. The
+    /// password, and the second factor when there is one, gate it instead.
+    /// </summary>
+    private static void MapSafetyLock(WebApplication app)
+    {
+        app.MapGet(
+                "/api/user/safetylock",
+                async Task<Results<Ok<SafetyLockResponse>, UnauthorizedError>> (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyLockService locks,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    bool? locked = await locks
+                        .IsLockedAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return TypedResults.Ok(new SafetyLockResponse(locked ?? false));
+                }
+            )
+            .WithName("GetSafetyLock")
+            .WithSummary("Whether the account's safety lock is on.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/safetylock",
+                async Task<
+                    Results<Ok<SafetyLockResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    SafetyLockRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyLockService locks,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(
+                            new ApiErrorResponse("pocket.auth.missing_credentials")
+                        );
+                    }
+
+                    SafetyLockResult result = await locks
+                        .SetAsync(
+                            accountId.Value,
+                            body.Locked!.Value,
+                            body.CurrentPassword!,
+                            body.Code,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    return result.Succeeded
+                        ? TypedResults.Ok(new SafetyLockResponse(body.Locked!.Value))
+                        : TypedResults.BadRequest(
+                            new ApiErrorResponse(
+                                result.Outcome switch
+                                {
+                                    SafetyLockOutcome.MfaRequired => "pocket.auth.mfa_required",
+                                    SafetyLockOutcome.InvalidCode => "pocket.auth.invalid_code",
+                                    _ => "pocket.auth.wrong_password",
+                                }
+                            )
+                        );
+                }
+            )
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("SetSafetyLock")
+            .WithSummary("Throw or lift the account's safety lock, against the current password.")
             .WithTags(TagUser);
     }
 

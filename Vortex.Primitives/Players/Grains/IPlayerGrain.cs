@@ -25,6 +25,23 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     public Task MarkNuxCompletedAsync(CancellationToken ct);
     public Task SetMottoAsync(string text, CancellationToken ct);
 
+    /// <summary>
+    /// Whether the owning account's safety lock is on. Answered from grain state, because every
+    /// spending handler asks it on every purchase.
+    /// </summary>
+    public Task<bool> IsSafetyLockedAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Tells a live player that the account's lock moved, after the website has written it.
+    /// </summary>
+    /// <remarks>
+    /// Writes nothing: the account row has one owner, <c>IAccountSafetyLockService</c>, and this
+    /// only refreshes the copy in state and tells the connected client. It is the half that matters
+    /// most — a lock that waited for the next login would leave the thief connected and spending in
+    /// the meantime.
+    /// </remarks>
+    public Task OnAccountSafetyLockChangedAsync(bool locked, CancellationToken ct);
+
     /// <summary>Persists the player's preferred chat-bubble style (SetChatStylePreference, header
     /// 2634). No-op when the style is unchanged so a repeated toggle doesn't touch the database.</summary>
     public Task SetChatStylePreferenceAsync(int chatStyle, CancellationToken ct);

@@ -35,6 +35,7 @@ public sealed class AuthenticationModule : IHostPluginModule
         services.AddSingleton<IAccountMfaService, AccountMfaService>();
         services.AddSingleton<IAccountPasswordService, AccountPasswordService>();
         services.AddSingleton<IAccountEmailService, AccountEmailService>();
+        services.AddSingleton<IAccountSafetyLockService, AccountSafetyLockService>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<ISanctionPresetService, SanctionPresetService>();
         services.AddHostedService<PermissionSeederService>();

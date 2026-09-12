@@ -95,6 +95,12 @@ public sealed record PlayerPreferencesResponse(bool ProfileVisible);
 /// </summary>
 public sealed record AccountEmailResponse(string Email, bool Verified);
 
+/// <summary>
+/// Whether the account's safety lock is on. While it is, the account cannot spend — no catalog
+/// purchase, no marketplace — and the server enforces that, not only the client.
+/// </summary>
+public sealed record SafetyLockResponse(bool Locked);
+
 /// <summary>Whether the account has a confirmed second factor.</summary>
 public sealed record TwoFactorStatusResponse(bool Enabled);
 

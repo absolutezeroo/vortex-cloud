@@ -44,6 +44,11 @@ public class PurchaseFromCatalogMessageHandler(
             return;
         }
 
+        if (await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false))
+        {
+            return;
+        }
+
         CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
 
         if (

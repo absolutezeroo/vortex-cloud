@@ -432,6 +432,16 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<bool> IsSafetyLockedAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task OnAccountSafetyLockChangedAsync(bool locked, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task SetMottoAsync(string text, CancellationToken ct)
         {
             throw new NotSupportedException();
