@@ -6,6 +6,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -249,6 +250,9 @@ public sealed partial class RoomGrain
 
         return found;
     }
+
+    void IRoomFurniAccess.WriteWiredRoomLog(WiredLogLevel level, string message) =>
+        WiredSystem.WriteWiredRoomLog(level, WiredLogSource.Action, message);
 
     Task<bool> IRoomFurniAccess.RemoveFurniFromWiredAsync(
         RoomObjectId itemId,

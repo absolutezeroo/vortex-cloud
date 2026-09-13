@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 
@@ -44,6 +45,16 @@ public interface IRoomFurniAccess
     /// <summary>Kicks a player on a wired action's behalf. Distinct from ordinary moderation: there
     /// is no actor to authorize, the room's own wiring is doing it.</summary>
     Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct);
+
+    /// <summary>
+    /// Writes one line into the room's wired log, on behalf of the box whose whole purpose is that.
+    /// </summary>
+    /// <remarks>
+    /// Always recorded as coming from an action, because the only box that reaches this is one. The
+    /// engine writes its own lines about triggers, conditions and refusals without going through
+    /// here.
+    /// </remarks>
+    void WriteWiredRoomLog(WiredLogLevel level, string message);
 
     /// <summary>
     /// Picks a furni up on a wired action's behalf, sending it to its own owner's inventory.

@@ -291,6 +291,7 @@ export const LOGIC_GROUPS = [
       { value: 'wf_act_mute_triggerer', label: 'wf_act_mute_triggerer' },
       { value: 'wf_act_neg_call_stacks', label: 'wf_act_neg_call_stacks' },
       { value: 'wf_act_neg_send_signal', label: 'wf_act_neg_send_signal' },
+      { value: 'wf_act_neg_write_to_logs', label: 'wf_act_neg_write_to_logs' },
       { value: 'wf_act_raise_furni', label: 'wf_act_raise_furni' },
       { value: 'wf_act_rel_mov', label: 'wf_act_rel_mov' },
       { value: 'wf_act_remove_furni_inventory', label: 'wf_act_remove_furni_inventory' },
@@ -305,6 +306,7 @@ export const LOGIC_GROUPS = [
       { value: 'wf_act_toggle_to_rnd', label: 'wf_act_toggle_to_rnd' },
       { value: 'wf_act_tp_furni_to_habbo', label: 'wf_act_tp_furni_to_habbo' },
       { value: 'wf_act_unfreeze_habbo', label: 'wf_act_unfreeze_habbo' },
+      { value: 'wf_act_write_to_logs', label: 'wf_act_write_to_logs' },
     ],
   },
   {

@@ -69,6 +69,12 @@ public enum WiredActionType
     CANCEL_TRANSACTION = 48,
     GIVE_EFFECT = 52,
 
+    /// <summary>Writes a line of the builder's own text into the room's wired log.</summary>
+    WRITE_TO_LOG = 49,
+
+    /// <summary>The same line, on the branch where the conditions did not hold.</summary>
+    NEG_WRITE_TO_LOG = 50,
+
     /// <summary>Takes the selected furni out of the room, into their owner's inventory.</summary>
     REMOVE_FURNI = 56,
 

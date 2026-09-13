@@ -728,7 +728,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
     private void RecordWiredErrorLog(Exception ex, IWiredAction action, long now) =>
         Diagnostics.RecordError(ex.GetType().Name, action.GetType().Name, now);
 
-    private void WriteWiredRoomLog(WiredLogLevel level, WiredLogSource source, string message)
+    internal void WriteWiredRoomLog(WiredLogLevel level, WiredLogSource source, string message)
     {
         Diagnostics.WriteRoomLog(
             new RoomWiredLogEntry

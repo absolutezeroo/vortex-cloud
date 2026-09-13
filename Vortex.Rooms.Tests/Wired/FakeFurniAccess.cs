@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
@@ -99,6 +100,12 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
 
         return false;
     }
+
+    /// <summary>Lines a wired box wrote into the room log.</summary>
+    public List<(WiredLogLevel Level, string Message)> RoomLog { get; } = [];
+
+    public void WriteWiredRoomLog(WiredLogLevel level, string message) =>
+        RoomLog.Add((level, message));
 
     /// <summary>Furni the room was asked to pick up on a wired box's behalf.</summary>
     public List<int> RemovedFromWired { get; } = [];
