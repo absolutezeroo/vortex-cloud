@@ -101,6 +101,35 @@ public sealed record AccountEmailResponse(string Email, bool Verified);
 /// </summary>
 public sealed record SafetyLockResponse(bool Locked);
 
+/// <summary>
+/// The account's protection, as both the settings page and the challenge dialog need it.
+/// </summary>
+/// <param name="Configured">Whether the account has security questions at all.</param>
+/// <param name="Question1">
+/// The first question's NUMBER, 1 to 9, or 0 when there are none. Only the number travels: the
+/// wording is <c>IDENTITY_SAFETYQUESTION_&lt;n&gt;</c> in whichever language the reader is using, so
+/// freezing a sentence here would pin the account to one language.
+/// </param>
+/// <param name="Question2">The second question's number, or 0.</param>
+/// <param name="Trusted">
+/// Whether THIS session has cleared the challenge. Always true when there are no questions. The
+/// site reads it to know a risky action will be refused before it tries.
+/// </param>
+/// <param name="Locked">
+/// Whether the safety lock is on — the same flag <c>/api/user/safetylock</c> reports, repeated here
+/// so the page can say in one call what answering would lift.
+/// </param>
+public sealed record SafetyQuestionsResponse(
+    bool Configured,
+    int Question1,
+    int Question2,
+    bool Trusted,
+    bool Locked
+);
+
+/// <summary>How many trusted locations were forgotten.</summary>
+public sealed record TrustedLocationsResetResponse(int Forgotten);
+
 /// <summary>Whether the account has a confirmed second factor.</summary>
 public sealed record TwoFactorStatusResponse(bool Enabled);
 

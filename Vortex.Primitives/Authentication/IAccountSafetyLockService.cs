@@ -40,10 +40,13 @@ public readonly record struct SafetyLockResult(SafetyLockOutcome Outcome)
 /// unlock: a thief who could lock the account would be a way to grief its owner.
 /// </para>
 /// <para>
-/// habbo.com puts security questions on this instead. They are not reproduced: a question is a
-/// second secret to store, weaker than a password and typically guessable by whoever knew the player
-/// well enough to be in their account — and this hotel already has a stronger one in the second
-/// factor.
+/// It is ALSO what habbo.com's security questions arm and lift: "Si nous détectons que ton compte
+/// est en danger, ton compte sera verrouillé. Toute fonctionnalité à risque telle que le troc sera
+/// désactivée jusqu'à ce que tu déverrouilles le compte où te connectes depuis un lieu de connexion
+/// autorisé." So the halves meet here — <see cref="IAccountSafetyQuestionsService" /> owns the
+/// questions, <see cref="IAccountTrustedLocationService" /> owns the places, and this class stays
+/// the single owner of the column. Those two reach it through <see cref="ArmAsync" /> and
+/// <see cref="ReleaseAsync" />.
 /// </para>
 /// <para>
 /// Setting it takes effect at once on any connected avatar of the account, which is the case that
@@ -53,6 +56,20 @@ public readonly record struct SafetyLockResult(SafetyLockOutcome Outcome)
 public interface IAccountSafetyLockService
 {
     Task<bool?> IsLockedAsync(int accountId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Throws the lock with no credentials, because the SERVER is throwing it — a sign-in from a
+    /// place the account has never answered from. Never reachable from a request: a caller who
+    /// could lock any account at will would have a way to grief every player on the hotel.
+    /// </summary>
+    Task ArmAsync(int accountId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lifts it with no credentials, for the two callers that have already proved the right to:
+    /// a challenge answered correctly, and the questions being removed by someone who gave the
+    /// password.
+    /// </summary>
+    Task ReleaseAsync(int accountId, CancellationToken ct = default);
 
     Task<SafetyLockResult> SetAsync(
         int accountId,

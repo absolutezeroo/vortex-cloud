@@ -30,10 +30,17 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
     public const string MfaEmail = "mfa@example.com";
     public const string MfaCode = "424242";
 
+    /// <summary>
+    /// Every session this fake mints is trusted. Whether a real one is depends on the account's
+    /// security questions, which this fake does not model — the tests that care about the challenge
+    /// mint their own through <see cref="WebApiSessionStore.CreateSession" />.
+    /// </summary>
     public Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
         string? code,
+        string? address,
+        string? userAgent,
         CancellationToken ct
     )
     {
@@ -219,6 +226,24 @@ internal sealed class FakeSafetyLockService : IAccountSafetyLockService
 
     public Task<bool?> IsLockedAsync(int accountId, CancellationToken ct = default) =>
         Task.FromResult<bool?>(_locked);
+
+    /// <summary>
+    /// No password, because neither caller has one to give: the server arms the lock on a sign-in
+    /// from an unrecognised place, and releases it when the challenge has already been answered.
+    /// </summary>
+    public Task ArmAsync(int accountId, CancellationToken ct = default)
+    {
+        _locked = true;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ReleaseAsync(int accountId, CancellationToken ct = default)
+    {
+        _locked = false;
+
+        return Task.CompletedTask;
+    }
 
     public Task<SafetyLockResult> SetAsync(
         int accountId,
@@ -427,4 +452,126 @@ internal sealed class FakeShopService : IShopService
 
     public Task<string?> RedeemVoucherAsync(int playerId, string code, CancellationToken ct) =>
         Task.FromResult(code == "GOOD-CODE" ? null : "not_found");
+}
+
+/// <summary>
+/// In-memory security questions. It keeps the two rules the endpoints lean on: the password is
+/// demanded before the questions can be set or removed, and a challenge is answered with the
+/// answers and nothing else.
+/// </summary>
+internal sealed class FakeSafetyQuestionsService : IAccountSafetyQuestionsService
+{
+    public const string Answer1 = "whiskers";
+    public const string Answer2 = "paris";
+
+    private SafetyQuestionsStatus _status = SafetyQuestionsStatus.None;
+
+    /// <summary>Seeds an account that already has questions, without going through the password.</summary>
+    public void Configure(int question1 = 1, int question2 = 4) =>
+        _status = new SafetyQuestionsStatus(true, question1, question2);
+
+    public Task<SafetyQuestionsStatus> GetStatusAsync(
+        int accountId,
+        CancellationToken ct = default
+    ) => Task.FromResult(_status);
+
+    public Task<SafetyQuestionsOutcome> SaveAsync(
+        int accountId,
+        int question1,
+        string answer1,
+        int question2,
+        string answer2,
+        string currentPassword,
+        string? code,
+        CancellationToken ct = default
+    )
+    {
+        if (currentPassword != FakeAuthService.ValidPassword)
+        {
+            return Task.FromResult(SafetyQuestionsOutcome.WrongPassword);
+        }
+
+        if (!SafetyQuestions.IsValidPair(question1, question2))
+        {
+            return Task.FromResult(SafetyQuestionsOutcome.InvalidQuestions);
+        }
+
+        _status = new SafetyQuestionsStatus(true, question1, question2);
+
+        return Task.FromResult(SafetyQuestionsOutcome.Succeeded);
+    }
+
+    public Task<SafetyQuestionsOutcome> ClearAsync(
+        int accountId,
+        string currentPassword,
+        string? code,
+        CancellationToken ct = default
+    )
+    {
+        if (currentPassword != FakeAuthService.ValidPassword)
+        {
+            return Task.FromResult(SafetyQuestionsOutcome.WrongPassword);
+        }
+
+        if (!_status.Configured)
+        {
+            return Task.FromResult(SafetyQuestionsOutcome.NotConfigured);
+        }
+
+        _status = SafetyQuestionsStatus.None;
+
+        return Task.FromResult(SafetyQuestionsOutcome.Succeeded);
+    }
+
+    public Task<SafetyQuestionsOutcome> VerifyAsync(
+        int accountId,
+        string answer1,
+        string answer2,
+        CancellationToken ct = default
+    )
+    {
+        if (!_status.Configured)
+        {
+            return Task.FromResult(SafetyQuestionsOutcome.NotConfigured);
+        }
+
+        return Task.FromResult(
+            answer1 == Answer1 && answer2 == Answer2
+                ? SafetyQuestionsOutcome.Succeeded
+                : SafetyQuestionsOutcome.WrongAnswers
+        );
+    }
+}
+
+/// <summary>In-memory trusted locations, so a test can see what the unlock route remembered.</summary>
+internal sealed class FakeTrustedLocationService : IAccountTrustedLocationService
+{
+    public List<string> Trusted { get; } = [];
+
+    public string Fingerprint(string? address, string? userAgent) => $"{address}|{userAgent}";
+
+    public Task<bool> IsTrustedAsync(
+        int accountId,
+        string fingerprint,
+        CancellationToken ct = default
+    ) => Task.FromResult(Trusted.Contains(fingerprint));
+
+    public Task TrustAsync(int accountId, string fingerprint, CancellationToken ct = default)
+    {
+        if (!Trusted.Contains(fingerprint))
+        {
+            Trusted.Add(fingerprint);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<int> ResetAsync(int accountId, CancellationToken ct = default)
+    {
+        int forgotten = Trusted.Count;
+
+        Trusted.Clear();
+
+        return Task.FromResult(forgotten);
+    }
 }

@@ -80,6 +80,8 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IAccountMfaService>(Mfa);
         builder.Services.AddSingleton<IAccountEmailService>(Emails);
         builder.Services.AddSingleton<IAccountSafetyLockService>(SafetyLock);
+        builder.Services.AddSingleton<IAccountSafetyQuestionsService>(SafetyQuestions);
+        builder.Services.AddSingleton<IAccountTrustedLocationService>(TrustedLocations);
         builder.Services.AddSingleton<IShopService>(Shop);
         builder.Services.AddSingleton<RequiredServiceGuard>();
 
@@ -151,6 +153,12 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
     /// <summary>The account safety lock, shared so a test can throw it and read it back.</summary>
     public FakeSafetyLockService SafetyLock { get; } = new();
 
+    /// <summary>The security questions, shared so a test can arm an account before challenging it.</summary>
+    public FakeSafetyQuestionsService SafetyQuestions { get; } = new();
+
+    /// <summary>The trusted places, shared so a test can see what the unlock route remembered.</summary>
+    public FakeTrustedLocationService TrustedLocations { get; } = new();
+
     /// <summary>The shop, shared so a test can read what the routes handed it.</summary>
     public FakeShopService Shop { get; } = new();
 
@@ -163,10 +171,14 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
     public HttpClient Client { get; }
 
     /// <summary>A client carrying a valid session cookie for an authenticated account.</summary>
-    public HttpClient CreateAuthenticatedClient()
+    /// <param name="trusted">
+    /// Whether the session has cleared the account's security questions. True is what a sign-in
+    /// gives an account that has none, which is every test that does not say otherwise.
+    /// </param>
+    public HttpClient CreateAuthenticatedClient(bool trusted = true)
     {
         HttpClient client = _app.GetTestClient();
-        string sessionId = Sessions.CreateSession(FakeAuthService.AccountId);
+        string sessionId = Sessions.CreateSession(FakeAuthService.AccountId, trusted);
         client.DefaultRequestHeaders.Add(
             "Cookie",
             $"{WebApiHttpContextExtensions.SessionCookieName}={sessionId}"

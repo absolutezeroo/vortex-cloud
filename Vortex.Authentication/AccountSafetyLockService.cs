@@ -48,6 +48,18 @@ public sealed class AccountSafetyLockService(
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// The server throwing the lock itself, on a sign-in from a place the account has never
+    /// answered from. No credentials, because there are none to give: nobody has proved anything
+    /// yet, which is precisely why the lock is going on.
+    /// </summary>
+    public Task ArmAsync(int accountId, CancellationToken ct = default) =>
+        MoveAsync(accountId, true, ct);
+
+    /// <summary>The challenge was answered, or the questions were removed with the password.</summary>
+    public Task ReleaseAsync(int accountId, CancellationToken ct = default) =>
+        MoveAsync(accountId, false, ct);
+
     public async Task<SafetyLockResult> SetAsync(
         int accountId,
         bool locked,
@@ -85,9 +97,29 @@ public sealed class AccountSafetyLockService(
                 return SafetyLockResult.Failed(SafetyLockOutcome.WrongPassword);
         }
 
-        if (account.SafetyLocked == locked)
+        await MoveAsync(accountId, locked, ct).ConfigureAwait(false);
+
+        return SafetyLockResult.Success();
+    }
+
+    /// <summary>
+    /// The write itself, with no gate of its own. Every public entry point above decides for itself
+    /// what has to be proved before reaching this, which is why it is private: the credential check
+    /// and the write must not be separable by a future caller.
+    /// </summary>
+    private async Task MoveAsync(int accountId, bool locked, CancellationToken ct)
+    {
+        await using VortexDbContext db = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        PlayerAccountEntity? account = await db
+            .PlayerAccounts.FirstOrDefaultAsync(a => a.Id == accountId, ct)
+            .ConfigureAwait(false);
+
+        if (account is null || account.SafetyLocked == locked)
         {
-            return SafetyLockResult.Success();
+            return;
         }
 
         account.SafetyLocked = locked;
@@ -116,7 +148,5 @@ public sealed class AccountSafetyLockService(
                 .OnAccountSafetyLockChangedAsync(locked, ct)
                 .ConfigureAwait(false);
         }
-
-        return SafetyLockResult.Success();
     }
 }

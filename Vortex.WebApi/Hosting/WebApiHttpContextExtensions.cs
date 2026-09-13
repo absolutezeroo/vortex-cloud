@@ -44,6 +44,14 @@ internal static class WebApiHttpContextExtensions
         ctx.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
 
     /// <summary>
+    /// The raw <c>User-Agent</c>, which joins the address to identify a trusted location. Raw and
+    /// unparsed on purpose: it is hashed and never read back, and normalising it here would only
+    /// make two visits from the same browser stop matching after a version bump.
+    /// </summary>
+    public static string UserAgent(this HttpContext ctx) =>
+        ctx.Request.Headers.UserAgent.ToString();
+
+    /// <summary>
     /// Issues the session cookie (HttpOnly, Lax, Secure).
     ///
     /// <para>

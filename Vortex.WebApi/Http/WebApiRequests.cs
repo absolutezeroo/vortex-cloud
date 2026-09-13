@@ -90,6 +90,50 @@ public sealed record SafetyLockRequest(bool? Locked, string? CurrentPassword, st
 }
 
 /// <summary>
+/// Sets, or replaces, the account's two security questions. The password is required because these
+/// are a way INTO the account: a thief holding a session who could quietly install questions of
+/// their own would own the recovery path as well as the session.
+/// </summary>
+public sealed record SafetyQuestionsSaveRequest(
+    int? Question1,
+    string? Answer1,
+    int? Question2,
+    string? Answer2,
+    string? CurrentPassword,
+    string? Code
+)
+{
+    public bool IsValid =>
+        Question1 is not null
+        && Question2 is not null
+        && !string.IsNullOrWhiteSpace(Answer1)
+        && !string.IsNullOrWhiteSpace(Answer2)
+        && !string.IsNullOrWhiteSpace(CurrentPassword);
+}
+
+/// <summary>Removes the account's security questions, against the current password.</summary>
+public sealed record SafetyQuestionsDisableRequest(string? CurrentPassword, string? Code)
+{
+    public bool IsValid => !string.IsNullOrWhiteSpace(CurrentPassword);
+}
+
+/// <summary>
+/// Answers the challenge. No password, and that is the point: the visitor is proving they own a
+/// session the server is not sure about, and is asked for the one secret someone holding the
+/// password alone would not have.
+/// </summary>
+/// <param name="Trust">
+/// habbo.com's own radio pair — "débloquer juste pour cette fois" against "enregistrer cette
+/// connexion comme étant de confiance". False trusts this SESSION only; true also remembers the
+/// place, so the next sign-in from it is not challenged.
+/// </param>
+public sealed record SafetyQuestionsUnlockRequest(string? Answer1, string? Answer2, bool? Trust)
+{
+    public bool IsValid =>
+        !string.IsNullOrWhiteSpace(Answer1) && !string.IsNullOrWhiteSpace(Answer2);
+}
+
+/// <summary>
 /// Saves the selected avatar's preferences. Absent means unchanged, which is what lets the site post
 /// the one field it can save out of a form habbo.com fills with seven.
 /// </summary>

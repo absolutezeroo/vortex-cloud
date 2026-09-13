@@ -1677,6 +1677,229 @@
         }
       }
     },
+    "/api/user/safetyquestions": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "The account\u0027s security questions, and whether this session has answered.",
+        "operationId": "GetSafetyQuestions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyQuestionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Set the account\u0027s two security questions, against the current password.",
+        "operationId": "SaveSafetyQuestions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyQuestionsSaveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/safetyquestions/disable": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Remove the account\u0027s security questions, against the current password.",
+        "operationId": "DisableSafetyQuestions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyQuestionsDisableRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/safetyquestions/unlock": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Answer the security questions, lifting the lock for this session.",
+        "operationId": "UnlockSafetyQuestions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyQuestionsUnlockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/trustedlocations/reset": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Forget every place this account has answered its questions from.",
+        "operationId": "ResetTrustedLocations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedLocationsResetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/user/preferences": {
       "get": {
         "tags": [
@@ -2730,6 +2953,121 @@
         },
         "additionalProperties": false
       },
+      "SafetyQuestionsDisableRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SafetyQuestionsResponse": {
+        "required": [
+          "configured",
+          "locked",
+          "question1",
+          "question2",
+          "trusted"
+        ],
+        "type": "object",
+        "properties": {
+          "configured": {
+            "type": "boolean"
+          },
+          "question1": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "question2": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "trusted": {
+            "type": "boolean"
+          },
+          "locked": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SafetyQuestionsSaveRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "question1": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "answer1": {
+            "type": "string",
+            "nullable": true
+          },
+          "question2": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "answer2": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SafetyQuestionsUnlockRequest": {
+        "required": [
+          "isValid"
+        ],
+        "type": "object",
+        "properties": {
+          "answer1": {
+            "type": "string",
+            "nullable": true
+          },
+          "answer2": {
+            "type": "string",
+            "nullable": true
+          },
+          "trust": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SaveFigureRequest": {
         "required": [
           "isValid",
@@ -3046,6 +3384,19 @@
           "isValid": {
             "type": "boolean",
             "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrustedLocationsResetResponse": {
+        "required": [
+          "forgotten"
+        ],
+        "type": "object",
+        "properties": {
+          "forgotten": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

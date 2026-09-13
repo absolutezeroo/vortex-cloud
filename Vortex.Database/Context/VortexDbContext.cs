@@ -309,6 +309,12 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerAccountPreferencesEntity> PlayerAccountPreferences { get; init; } = null!;
 
+    public DbSet<PlayerAccountSafetyQuestionsEntity> PlayerAccountSafetyQuestions { get; init; } =
+        null!;
+
+    public DbSet<PlayerAccountTrustedLocationEntity> PlayerAccountTrustedLocations { get; init; } =
+        null!;
+
     public DbSet<PlayerModToolPreferencesEntity> PlayerModToolPreferences { get; init; } = null!;
 
     public DbSet<PlayerWordFilterEntity> PlayerWordFilters { get; init; } = null!;

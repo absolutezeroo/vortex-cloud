@@ -47,6 +47,86 @@ public sealed class WebApiCredentialHardeningTests
             throw new InvalidOperationException("the request should have been refused before this");
     }
 
+    /// <summary>
+    /// Also never consulted. These three only run once a sign-in has succeeded, and no case in this
+    /// file gets that far — so they throw rather than answer, which is what makes a future case that
+    /// DOES reach them fail loudly instead of quietly taking a default.
+    /// </summary>
+    private sealed class UnusedSafetyQuestions : IAccountSafetyQuestionsService
+    {
+        private static InvalidOperationException Unreachable() => new("no case here signs in");
+
+        public Task<SafetyQuestionsStatus> GetStatusAsync(
+            int accountId,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+
+        public Task<SafetyQuestionsOutcome> SaveAsync(
+            int accountId,
+            int question1,
+            string answer1,
+            int question2,
+            string answer2,
+            string currentPassword,
+            string? code,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+
+        public Task<SafetyQuestionsOutcome> ClearAsync(
+            int accountId,
+            string currentPassword,
+            string? code,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+
+        public Task<SafetyQuestionsOutcome> VerifyAsync(
+            int accountId,
+            string answer1,
+            string answer2,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+    }
+
+    private sealed class UnusedTrustedLocations : IAccountTrustedLocationService
+    {
+        private static InvalidOperationException Unreachable() => new("no case here signs in");
+
+        public string Fingerprint(string? address, string? userAgent) => throw Unreachable();
+
+        public Task<bool> IsTrustedAsync(
+            int accountId,
+            string fingerprint,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+
+        public Task TrustAsync(int accountId, string fingerprint, CancellationToken ct = default) =>
+            throw Unreachable();
+
+        public Task<int> ResetAsync(int accountId, CancellationToken ct = default) =>
+            throw Unreachable();
+    }
+
+    private sealed class UnusedSafetyLock : IAccountSafetyLockService
+    {
+        private static InvalidOperationException Unreachable() => new("no case here signs in");
+
+        public Task<bool?> IsLockedAsync(int accountId, CancellationToken ct = default) =>
+            throw Unreachable();
+
+        public Task ArmAsync(int accountId, CancellationToken ct = default) => throw Unreachable();
+
+        public Task ReleaseAsync(int accountId, CancellationToken ct = default) =>
+            throw Unreachable();
+
+        public Task<SafetyLockResult> SetAsync(
+            int accountId,
+            bool locked,
+            string currentPassword,
+            string? code,
+            CancellationToken ct = default
+        ) => throw Unreachable();
+    }
+
     private static (WebApiAuthService Service, TestDbContextFactory Factory) BuildAuth()
     {
         DbContextOptions<VortexDbContext> options = new DbContextOptionsBuilder<VortexDbContext>()
@@ -60,6 +140,9 @@ public sealed class WebApiCredentialHardeningTests
             new WebApiAuthService(
                 factory,
                 new UnusedAuthenticator(),
+                new UnusedSafetyQuestions(),
+                new UnusedTrustedLocations(),
+                new UnusedSafetyLock(),
                 new WebApiSessionStore(config),
                 config,
                 NullLogger<WebApiAuthService>.Instance

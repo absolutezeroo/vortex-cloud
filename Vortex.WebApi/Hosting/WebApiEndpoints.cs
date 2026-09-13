@@ -317,7 +317,14 @@ internal static class WebApiEndpoints
                     }
 
                     (bool success, string? sessionId, int accountId, string? error) =
-                        await auth.LoginAsync(body.Email!, body.Password!, body.Code, ct)
+                        await auth.LoginAsync(
+                                body.Email!,
+                                body.Password!,
+                                body.Code,
+                                ctx.RemoteIp(),
+                                ctx.UserAgent(),
+                                ct
+                            )
                             .ConfigureAwait(false);
 
                     if (!success)
@@ -467,12 +474,16 @@ internal static class WebApiEndpoints
                         return TypedResults.Conflict(new ApiErrorResponse(error ?? "email_taken"));
                     }
 
-                    // An account created a moment ago cannot have a second factor yet, so there is
-                    // no code to pass on.
+                    // An account created a moment ago cannot have a second factor yet, nor security
+                    // questions, so there is no code to pass on and the place cannot be anything but
+                    // trusted. Both are passed anyway rather than defaulted: the day registration
+                    // grows a step that could change either, this call has already been told.
                     (bool loginOk, string? sessionId, _, _) = await auth.LoginAsync(
                             body.Email!,
                             body.Password!,
                             code: null,
+                            ctx.RemoteIp(),
+                            ctx.UserAgent(),
                             ct
                         )
                         .ConfigureAwait(false);
@@ -595,6 +606,16 @@ internal static class WebApiEndpoints
                     if (accountId is null)
                     {
                         return Unauthorized();
+                    }
+
+                    // habbo.com's own gate, and the only place it puts one:
+                    //   avatar-create.html's open() is
+                    //   `Session.isTrusted() ? create() : safetyLockModal.open().then(create)`
+                    // A new avatar is the risky action a thief would reach for first — it is a new
+                    // identity on the hotel, wearing the owner's account.
+                    if (!sessions.IsTrusted(ctx.SessionId()))
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("safetylock.required"));
                     }
 
                     if (body is null || !body.IsValid)
@@ -902,10 +923,15 @@ internal static class WebApiEndpoints
     }
 
     /// <summary>
-    /// The account safety lock — the settings page habbo.com fills with security questions. Those
-    /// are not reproduced: a question is a second secret to store, weaker than a password and
-    /// typically guessable by whoever knew the player well enough to be in their account. The
-    /// password, and the second factor when there is one, gate it instead.
+    /// The account safety lock, and the security questions that arm and lift it.
+    ///
+    /// <para>
+    /// The lock is the older of the two and keeps its own routes: the owner can throw it by hand
+    /// with their password, which habbo.com has no button for and which is the right thing to reach
+    /// for the moment you believe someone else is in your account. The questions below are
+    /// habbo.com's mechanism on top — a sign-in from a place the account has never answered from
+    /// arms the same lock, and answering lifts it.
+    /// </para>
     /// </summary>
     private static void MapSafetyLock(WebApplication app)
     {
@@ -990,7 +1016,266 @@ internal static class WebApiEndpoints
             .WithName("SetSafetyLock")
             .WithSummary("Throw or lift the account's safety lock, against the current password.")
             .WithTags(TagUser);
+
+        MapSafetyQuestions(app);
     }
+
+    /// <summary>
+    /// habbo.com's "Protection du compte": the two security questions that arm the safety lock, the
+    /// challenge that lifts it, and the trusted locations that stop it being put again.
+    /// </summary>
+    /// <remarks>
+    /// The four routes split along exactly one line — what they demand before they will act. Save
+    /// and disable are changes to the recovery path and demand the PASSWORD; unlock is the challenge
+    /// itself and demands the ANSWERS, because a visitor who could produce the password would not be
+    /// standing in front of it. Reset demands a session that has already cleared the challenge,
+    /// which is the same thing one step removed.
+    /// </remarks>
+    private static void MapSafetyQuestions(WebApplication app)
+    {
+        app.MapGet(
+                "/api/user/safetyquestions",
+                async Task<Results<Ok<SafetyQuestionsResponse>, UnauthorizedError>> (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyQuestionsService questions,
+                    IAccountSafetyLockService locks,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    SafetyQuestionsStatus status = await questions
+                        .GetStatusAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    bool? locked = await locks
+                        .IsLockedAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return TypedResults.Ok(
+                        new SafetyQuestionsResponse(
+                            status.Configured,
+                            status.Question1,
+                            status.Question2,
+                            sessions.IsTrusted(ctx.SessionId()),
+                            locked ?? false
+                        )
+                    );
+                }
+            )
+            .WithName("GetSafetyQuestions")
+            .WithSummary("The account's security questions, and whether this session has answered.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/safetyquestions",
+                async Task<
+                    Results<Ok<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    SafetyQuestionsSaveRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyQuestionsService questions,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    SafetyQuestionsOutcome outcome = await questions
+                        .SaveAsync(
+                            accountId.Value,
+                            body.Question1!.Value,
+                            body.Answer1!,
+                            body.Question2!.Value,
+                            body.Answer2!,
+                            body.CurrentPassword!,
+                            body.Code,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    return outcome == SafetyQuestionsOutcome.Succeeded
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.BadRequest(new ApiErrorResponse(Describe(outcome)));
+                }
+            )
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("SaveSafetyQuestions")
+            .WithSummary("Set the account's two security questions, against the current password.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/safetyquestions/disable",
+                async Task<
+                    Results<Ok<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    SafetyQuestionsDisableRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyQuestionsService questions,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    SafetyQuestionsOutcome outcome = await questions
+                        .ClearAsync(accountId.Value, body.CurrentPassword!, body.Code, ct)
+                        .ConfigureAwait(false);
+
+                    return outcome == SafetyQuestionsOutcome.Succeeded
+                        ? TypedResults.Ok(EmptyResponse.Instance)
+                        : TypedResults.BadRequest(new ApiErrorResponse(Describe(outcome)));
+                }
+            )
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("DisableSafetyQuestions")
+            .WithSummary("Remove the account's security questions, against the current password.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/safetyquestions/unlock",
+                async Task<
+                    Results<Ok<EmptyResponse>, BadRequest<ApiErrorResponse>, UnauthorizedError>
+                > (
+                    HttpContext ctx,
+                    SafetyQuestionsUnlockRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountSafetyQuestionsService questions,
+                    IAccountTrustedLocationService locations,
+                    IAccountSafetyLockService locks,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("invalid_request"));
+                    }
+
+                    SafetyQuestionsOutcome outcome = await questions
+                        .VerifyAsync(accountId.Value, body.Answer1!, body.Answer2!, ct)
+                        .ConfigureAwait(false);
+
+                    if (outcome != SafetyQuestionsOutcome.Succeeded)
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse(Describe(outcome)));
+                    }
+
+                    // The session first: it is what every later request is judged on, and it is the
+                    // one the visitor is waiting for. Trusting the PLACE is the extra they opted
+                    // into with habbo.com's second radio.
+                    sessions.MarkTrusted(ctx.SessionId());
+
+                    if (body.Trust == true)
+                    {
+                        await locations
+                            .TrustAsync(
+                                accountId.Value,
+                                locations.Fingerprint(ctx.RemoteIp(), ctx.UserAgent()),
+                                ct
+                            )
+                            .ConfigureAwait(false);
+                    }
+
+                    await locks.ReleaseAsync(accountId.Value, ct).ConfigureAwait(false);
+
+                    return TypedResults.Ok(EmptyResponse.Instance);
+                }
+            )
+            // The same policy as sign-in, and for the same reason: two short answers are guessable
+            // at the same rate as a password if nothing holds the door.
+            .RequireRateLimiting(LoginRateLimitPolicy)
+            .WithName("UnlockSafetyQuestions")
+            .WithSummary("Answer the security questions, lifting the lock for this session.")
+            .WithTags(TagUser);
+
+        app.MapPost(
+                "/api/user/trustedlocations/reset",
+                async Task<
+                    Results<
+                        Ok<TrustedLocationsResetResponse>,
+                        BadRequest<ApiErrorResponse>,
+                        UnauthorizedError
+                    >
+                > (
+                    HttpContext ctx,
+                    WebApiSessionStore sessions,
+                    IAccountTrustedLocationService locations,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Unauthorized();
+                    }
+
+                    // An untrusted session must not be able to clear the list: forgetting every
+                    // place is how a thief would make sure the owner is challenged on their next
+                    // sign-in, from their own home.
+                    if (!sessions.IsTrusted(ctx.SessionId()))
+                    {
+                        return TypedResults.BadRequest(new ApiErrorResponse("safetylock.required"));
+                    }
+
+                    int forgotten = await locations
+                        .ResetAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    return TypedResults.Ok(new TrustedLocationsResetResponse(forgotten));
+                }
+            )
+            .WithName("ResetTrustedLocations")
+            .WithSummary("Forget every place this account has answered its questions from.")
+            .WithTags(TagUser);
+    }
+
+    /// <summary>The wire code for a refusal. One place, so the four routes cannot word it three ways.</summary>
+    private static string Describe(SafetyQuestionsOutcome outcome) =>
+        outcome switch
+        {
+            SafetyQuestionsOutcome.MfaRequired => "pocket.auth.mfa_required",
+            SafetyQuestionsOutcome.InvalidCode => "pocket.auth.invalid_code",
+            SafetyQuestionsOutcome.WrongPassword => "pocket.auth.wrong_password",
+            SafetyQuestionsOutcome.InvalidQuestions => "invalid_request",
+            SafetyQuestionsOutcome.EmptyAnswer => "invalid_request",
+            SafetyQuestionsOutcome.NotConfigured => "safetylock.not_configured",
+            SafetyQuestionsOutcome.WrongAnswers => "safetylock.invalid_answer",
+            _ => "invalid_request",
+        };
 
     /// <summary>
     /// The sign-in address: what it is, and changing it. habbo.com's own paths

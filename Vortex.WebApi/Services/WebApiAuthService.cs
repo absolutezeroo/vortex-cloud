@@ -18,6 +18,9 @@ namespace Vortex.WebApi.Services;
 public sealed class WebApiAuthService(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IAccountAuthenticator authenticator,
+    IAccountSafetyQuestionsService questions,
+    IAccountTrustedLocationService locations,
+    IAccountSafetyLockService locks,
     WebApiSessionStore sessions,
     IOptions<WebApiConfig> options,
     ILogger<WebApiAuthService> logger
@@ -28,6 +31,9 @@ public sealed class WebApiAuthService(
 
     private readonly IDbContextFactory<VortexDbContext> _db = dbCtxFactory;
     private readonly IAccountAuthenticator _authenticator = authenticator;
+    private readonly IAccountSafetyQuestionsService _questions = questions;
+    private readonly IAccountTrustedLocationService _locations = locations;
+    private readonly IAccountSafetyLockService _locks = locks;
     private readonly WebApiSessionStore _sessions = sessions;
     private readonly WebApiConfig _config = options.Value;
     private readonly ILogger<WebApiAuthService> _logger = logger;
@@ -36,6 +42,8 @@ public sealed class WebApiAuthService(
         string email,
         string password,
         string? code,
+        string? address,
+        string? userAgent,
         CancellationToken ct
     )
     {
@@ -61,7 +69,10 @@ public sealed class WebApiAuthService(
                 return (false, null, 0, "pocket.auth.login_failed");
         }
 
-        string sessionId = _sessions.CreateSession(verification.AccountId);
+        bool trusted = await IsTrustedPlaceAsync(verification.AccountId, address, userAgent, ct)
+            .ConfigureAwait(false);
+
+        string sessionId = _sessions.CreateSession(verification.AccountId, trusted);
         _logger.LogInformation(
             "Account {AccountId} authenticated ({Email})",
             verification.AccountId,
@@ -69,6 +80,55 @@ public sealed class WebApiAuthService(
         );
 
         return (true, sessionId, verification.AccountId, null);
+    }
+
+    /// <summary>
+    /// Whether this sign-in gets a trusted session, and — when it does not — throws the safety lock
+    /// on the way past.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// An account with no security questions is always trusted: there is nothing to challenge with,
+    /// and pretending otherwise would lock every account on the hotel out of its own settings.
+    /// </para>
+    /// <para>
+    /// An account that HAS them and is signing in from a place it has never answered from is what
+    /// habbo.com describes as "si nous détectons que ton compte est en danger": the session cannot
+    /// do anything risky until the questions are answered, and the lock goes on so the thief cannot
+    /// spend from inside the GAME either — the web session is not where the credits are.
+    /// </para>
+    /// </remarks>
+    private async Task<bool> IsTrustedPlaceAsync(
+        int accountId,
+        string? address,
+        string? userAgent,
+        CancellationToken ct
+    )
+    {
+        SafetyQuestionsStatus status = await _questions
+            .GetStatusAsync(accountId, ct)
+            .ConfigureAwait(false);
+
+        if (!status.Configured)
+        {
+            return true;
+        }
+
+        string fingerprint = _locations.Fingerprint(address, userAgent);
+
+        if (await _locations.IsTrustedAsync(accountId, fingerprint, ct).ConfigureAwait(false))
+        {
+            return true;
+        }
+
+        await _locks.ArmAsync(accountId, ct).ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Account {AccountId} signed in from an unrecognised place: safety lock armed",
+            accountId
+        );
+
+        return false;
     }
 
     public async Task<(bool Success, int AccountId, string? Error)> RegisterAsync(
