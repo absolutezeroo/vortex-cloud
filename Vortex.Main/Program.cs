@@ -17,6 +17,7 @@ using Vortex.Catalog;
 using Vortex.Crypto.Extensions;
 using Vortex.Dashboard.API;
 using Vortex.Database.Extensions;
+using Vortex.Database.Migrations;
 using Vortex.Events.Extensions;
 using Vortex.Fishing;
 using Vortex.Furniture;
@@ -189,6 +190,14 @@ internal class Program
 
         try
         {
+            // Before StartAsync, so the schema is settled before a listener accepts anyone. Opt-in
+            // via Vortex:Database:MigrateOnStartup; a failure here lands in the catch below and
+            // exits non-zero, which is the right answer -- a host running against a schema its code
+            // does not match answers 500 to every login instead.
+            await MigrationHelper
+                .ApplyStartupMigrationsAsync(host.Services, ct)
+                .ConfigureAwait(false);
+
             await host.StartAsync(ct).ConfigureAwait(false);
 
             bootstrapLogger.LogInformation(

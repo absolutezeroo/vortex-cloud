@@ -137,6 +137,32 @@ these two — it guards the HTTP surfaces only.
 Migrations are **not** applied automatically when the host starts; when to migrate is an operations
 decision. Apply them explicitly against the running `mysql` service.
 
+A single-node deployment can hand that decision to the host instead:
+
+```
+Vortex:Database:MigrateOnStartup = true      # VORTEX__Vortex__Database__MigrateOnStartup
+```
+
+Pending migrations are then applied **before any listener opens**, and a failure stops the boot with
+a non-zero exit code rather than letting the host serve a schema its code does not match. Leave it
+off for anything running more than one host: two of them racing the same migration is a real hazard.
+It logs the pending ids before applying them, because a migration that fails halfway leaves the
+history table showing only what committed.
+
+On a development machine, `scripts/ef.ps1` forwards to `dotnet ef` with the working directory,
+the *unprefixed* connection-string variable and the pinned server version already set — the three
+things the design-time factory needs and that fail quietly when they are wrong:
+
+```powershell
+scripts/ef.ps1 migrations add AddThing
+scripts/ef.ps1 database update
+scripts/ef.ps1 migrations script --idempotent --output artifacts/migrations.sql
+```
+
+`dotnet-ef` is in `.config/dotnet-tools.json`, so the wrapper's `dotnet tool restore` installs it on
+first use. It also warns when a migration file name and its `[Migration]` id disagree, which is
+invisible until EF applies a migration under an id the history table does not expect.
+
 The runtime image is intentionally SDK-free, so run the EF tooling from a throwaway SDK container
 joined to the compose network, with the repository mounted:
 

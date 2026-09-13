@@ -18,12 +18,22 @@ and one each of `Widen`, `Split`, `Rename`, `Remove`, `Refactor`, `Rebuild`, `Pe
 The snapshot is current: the newest migration adds `furniture_definitions.vending_ids varchar(512)`,
 and `VortexDbContextModelSnapshot.cs` contains `.HasColumnName("vending_ids")`.
 
-## Migrations are not applied at startup
-
-No `Database.Migrate*` call exists outside `MigrationHelper` (which is plugin-only).
+## Migrations are not applied at startup — unless asked
 
 > `README.md`: *"Migrations are **not** applied automatically when the host starts; when to migrate is
 > an operations decision."*
+
+That is still the default. `MigrationHelper.ApplyStartupMigrationsAsync` makes it opt-in for a
+single node: `Program.cs` calls it **before `host.StartAsync`**, and it returns immediately unless
+`Vortex:Database:MigrateOnStartup` is true. When it is, it logs the pending ids, applies them, and
+lets a failure propagate into the host's `catch` — which exits non-zero, so the supervisor restarts
+or alerts instead of serving a schema the code does not match.
+
+It resolves `IDbContextFactory<VortexDbContext>`, not `VortexDbContext`: the context is registered
+through `AddPooledDbContextFactory`, so `GetRequiredService<VortexDbContext>()` throws — which is
+why `MigrateAsync<TContext>` below cannot be reused for it.
+
+`MigrationHelper.MigrateAsync<TContext>` / `UninstallAsync<TContext>` remain plugin-only.
 
 History table is the EF default `__EFMigrationsHistory`; plugins get
 `__EFMigrationsHistory_<prefix>`.
