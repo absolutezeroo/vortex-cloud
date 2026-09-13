@@ -5,11 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Rooms.Grains.Storage;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
 using Vortex.Rooms.Wired;
@@ -36,6 +39,22 @@ public sealed partial class RoomWiredSystem
     /// the room tracks and what a pickup takes away.
     /// </remarks>
     private readonly Dictionary<int, List<WiredVariableId>> _variableIdBoxId = [];
+
+    /// <summary>
+    /// The Variable FX displays the room has declared, by the variable each one draws.
+    /// </summary>
+    /// <remarks>
+    /// Kept beside the variable registry rather than in it: a health bar is not readable as a
+    /// variable and has no business being resolvable as one. Keyed by variable because that is the
+    /// question asked on every value change, which is the hot path — the box that declared it is
+    /// only ever asked about when the room is rebuilding the set.
+    /// </remarks>
+    private readonly Dictionary<
+        WiredVariableId,
+        List<WiredVariableFxConfigSnapshot>
+    > _fxByVariable = [];
+
+    private readonly Dictionary<int, List<WiredVariableId>> _fxVariablesByBox = [];
 
     private WiredVariablesSnapshot? _variablesSnapshot;
 
@@ -158,6 +177,8 @@ public sealed partial class RoomWiredSystem
         }
 
         _variablesSnapshot = null;
+
+        await PublishFxConfigsAsync();
     }
 
     private async Task ProcessVariableBoxAsync(int boxId, CancellationToken ct)
@@ -222,7 +243,7 @@ public sealed partial class RoomWiredSystem
 
         foreach (IWiredAddon addon in stack.Addons)
         {
-            if (addon is not IWiredSubVariableSource source)
+            if (addon is not IWiredSubVariableSource and not IWiredVariableFxSource)
             {
                 continue;
             }
@@ -231,20 +252,136 @@ public sealed partial class RoomWiredSystem
             {
                 await addon.LoadWiredAsync(ct);
 
-                derived.AddRange(source.CreateSubVariables(parent));
+                if (addon is IWiredSubVariableSource source)
+                {
+                    derived.AddRange(source.CreateSubVariables(parent));
+                }
+
+                if (
+                    addon is IWiredVariableFxSource fx
+                    && fx.CreateFxConfig(parent) is WiredVariableFxConfigSnapshot config
+                )
+                {
+                    AddFxConfig(box.ObjectId.Value, parent.GetVarSnapshot().VariableId, config);
+                }
             }
             catch (Exception ex)
             {
                 Diagnostics.Logger.LogWarning(
                     ex,
-                    "Wired add-on {AddonType} failed to derive sub-variables in room {RoomId}.",
+                    "Wired add-on {AddonType} failed to describe variable {BoxId} in room {RoomId}.",
                     addon.GetType().Name,
+                    box.ObjectId.Value,
                     Room.RoomId
                 );
             }
         }
 
         return derived;
+    }
+
+    private void AddFxConfig(
+        int boxId,
+        WiredVariableId variableId,
+        WiredVariableFxConfigSnapshot config
+    )
+    {
+        if (
+            !_fxByVariable.TryGetValue(variableId, out List<WiredVariableFxConfigSnapshot>? configs)
+        )
+        {
+            configs = [];
+            _fxByVariable[variableId] = configs;
+        }
+
+        configs.Add(config);
+
+        if (!_fxVariablesByBox.TryGetValue(boxId, out List<WiredVariableId>? variables))
+        {
+            variables = [];
+            _fxVariablesByBox[boxId] = variables;
+        }
+
+        variables.Add(variableId);
+    }
+
+    /// <summary>Drops the displays a box declared, for the same reason its variables go: the add-on
+    /// that described them is on the box's tile and leaves with it.</summary>
+    private void RemoveFxConfigs(int boxId)
+    {
+        if (!_fxVariablesByBox.TryGetValue(boxId, out List<WiredVariableId>? variables))
+        {
+            return;
+        }
+
+        _fxVariablesByBox.Remove(boxId);
+
+        foreach (WiredVariableId variableId in variables)
+        {
+            _fxByVariable.Remove(variableId);
+        }
+    }
+
+    /// <summary>
+    /// Tells the room which displays exist, as one set.
+    /// </summary>
+    /// <remarks>
+    /// The client replaces its config table from what this carries, so a config left out is a config
+    /// the room no longer has — which is exactly what should happen when a box is picked up. Sending
+    /// nothing when there are none is therefore not a waste: it is how the last display is removed.
+    /// </remarks>
+    private Task PublishFxConfigsAsync() =>
+        _host.Actions.SendComposerToRoomAsync(
+            new VariableFxConfigUpdateMessageComposer
+            {
+                Configs = [.. _fxByVariable.Values.SelectMany(configs => configs)],
+            }
+        );
+
+    /// <summary>
+    /// Pushes what the displays bound to this variable now read, for the one entity that changed.
+    /// </summary>
+    /// <remarks>
+    /// Driven off the same event the "variable changed" trigger listens for, so a value that moves
+    /// without passing through there would not update a bar either — one path, not two that can
+    /// disagree.
+    /// </remarks>
+    private Task PublishFxStatusAsync(WiredVariableChangedEvent evt)
+    {
+        if (
+            !_fxByVariable.TryGetValue(
+                evt.Key.VariableId,
+                out List<WiredVariableFxConfigSnapshot>? configs
+            )
+        )
+        {
+            return Task.CompletedTask;
+        }
+
+        bool isUserEntity = evt.Key.TargetType == WiredVariableTargetType.User;
+        string variableId = evt.Key.VariableId.ToString();
+
+        return _host.Actions.SendComposerToRoomAsync(
+            new VariableFxStatusUpdateMessageComposer
+            {
+                Statuses =
+                [
+                    .. configs.Select(config => new WiredVariableFxStatusSnapshot
+                    {
+                        StatusKey = WiredVariableFxKey.Build(
+                            config.ConfigId,
+                            variableId,
+                            isUserEntity,
+                            evt.Key.TargetId
+                        ),
+                        IsInitialize = evt.Kind == WiredVariableChangeKind.Created,
+                        IsUserEntity = isUserEntity,
+                        EntityId = evt.Key.TargetId,
+                        Value = evt.Current,
+                    }),
+                ],
+            }
+        );
     }
 
     private bool ProcessVariable(IWiredVariable variable)
@@ -267,6 +404,8 @@ public sealed partial class RoomWiredSystem
         {
             return;
         }
+
+        RemoveFxConfigs(boxId);
 
         _variableIdBoxId.Remove(boxId);
 

@@ -122,6 +122,19 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                     }
                 }
                 break;
+            case WiredVariableChangedEvent variableEvt:
+                // The Variable FX displays bound to this variable, and then on to the trigger that
+                // was always listening for it. Both, not one or the other: a bar that updated
+                // instead of firing the trigger would be a silent behaviour change for every room
+                // that already uses one.
+                PublishFxStatusAsync(variableEvt)
+                    .LogAndForget(
+                        Diagnostics.Logger,
+                        "Failed to publish a Variable FX status update."
+                    );
+
+                EnqueueRoomEvent(evt);
+                break;
             case PlayerLeftEvent playerLeftEvt:
                 _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);
                 EnqueueRoomEvent(evt);
