@@ -201,6 +201,8 @@ export const LOGIC_GROUPS = [
       { value: 'wf_cnd_actor_dir', label: 'wf_cnd_actor_dir' },
       { value: 'wf_cnd_actor_in_group', label: 'wf_cnd_actor_in_group' },
       { value: 'wf_cnd_actor_in_team', label: 'wf_cnd_actor_in_team' },
+      { value: 'wf_cnd_chest_has_item_type', label: 'wf_cnd_chest_has_item_type' },
+      { value: 'wf_cnd_chest_has_items', label: 'wf_cnd_chest_has_items' },
       { value: 'wf_cnd_counter_time_matches', label: 'wf_cnd_counter_time_matches' },
       { value: 'wf_cnd_date_rng_active', label: 'wf_cnd_date_rng_active' },
       { value: 'wf_cnd_furnis_hv_avtrs', label: 'wf_cnd_furnis_hv_avtrs' },
@@ -353,6 +355,7 @@ export const LOGIC_GROUPS = [
     label: 'Wired: Variables',
     options: [
       { value: 'wf_var_context', label: 'wf_var_context' },
+      { value: 'wf_var_echo', label: 'wf_var_echo' },
       { value: 'wf_var_furni', label: 'wf_var_furni' },
       { value: 'wf_var_quest', label: 'wf_var_quest' },
       { value: 'wf_var_quest_chain', label: 'wf_var_quest_chain' },

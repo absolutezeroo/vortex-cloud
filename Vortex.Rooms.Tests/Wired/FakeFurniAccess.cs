@@ -73,7 +73,13 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
         Rotation rot
     ) => Task.FromResult(true);
 
-    public IWiredVariable? GetVariableById(WiredVariableId id) => null;
+    /// <summary>Variable boxes the test put in the room, keyed by id. Empty unless a test fills it —
+    /// a box that resolves a configured variable id prunes it against this, so an id nothing answers
+    /// for is dropped exactly as it would be in a live room.</summary>
+    public Dictionary<WiredVariableId, IWiredVariable> Variables { get; } = [];
+
+    public IWiredVariable? GetVariableById(WiredVariableId id) =>
+        Variables.TryGetValue(id, out IWiredVariable? variable) ? variable : null;
 
     public void ScheduleFlashRevert(RoomObjectId objectId) { }
 

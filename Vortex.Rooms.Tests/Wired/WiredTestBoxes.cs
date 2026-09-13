@@ -49,12 +49,15 @@ internal static class WiredTestBoxes
     /// <param name="chests">The chests the box may count, for the two conditions that ask.</param>
     /// <param name="lookup">The room the box prunes its configured stuff ids against. The default
     /// finds nothing, which is right for every box that reads no furni.</param>
+    /// <param name="furniAccess">The room the box resolves configured variable ids against. The
+    /// default answers nothing, which is right for every box that reads no variable.</param>
     public static IRoomFloorItemContext Context(
         int objectId = 0,
         int tileIdx = 0,
         ExtraData? extraData = null,
         IRoomChestAccess? chests = null,
-        IRoomLookup? lookup = null
+        IRoomLookup? lookup = null,
+        IRoomFurniAccess? furniAccess = null
     )
     {
         // RoomObject is typed as the floor item itself on a floor context, not as the plain
@@ -68,7 +71,7 @@ internal static class WiredTestBoxes
         // Nothing under test calls into these, but a wired box lights itself up when it fires -
         // ScheduleFlashRevert then a stuff-data write - so the context has to answer for that much
         // or every firing test dies in the flash instead of in what it is about.
-        IRoomFurniAccess furni = FakeProxy.Create<IRoomFurniAccess>(_ => null);
+        IRoomFurniAccess furni = furniAccess ?? FakeProxy.Create<IRoomFurniAccess>(_ => null);
 
         return FakeProxy.Create<IRoomFloorItemContext>(call =>
             call.Method.Name switch
