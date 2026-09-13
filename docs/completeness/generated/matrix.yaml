@@ -5,12 +5,12 @@ version: 1
 target_revision: WIN63-202607011411-782849652
 target_origin: "as3:WIN63-202607011411-782849652"
 obligation_count: 578
-mapped: 523
+mapped: 536
 unresolved_surface_count: 2
 counts:
-  missing: 39
-  partial: 110
-  implemented: 413
+  missing: 26
+  partial: 114
+  implemented: 422
   complete: 0
   unknown: 0
   not_applicable: 16
@@ -277,8 +277,6 @@ obligations:
   vortex_handler: GetGiftWrappingConfigurationMessageHandler
   feature: catalog.get_gift_wrapping_configuration
   reason: catalog.get_gift_wrapping_configuration reaches a domain operation from GetGiftWrappingConfigurationMessageHandler
-  conflicts:
-  - cf_2d3ff8a8ab
 - id: incoming/GetHabboClubExtendOffer
   name: GetHabboClubExtendOffer
   domain: catalog
@@ -329,8 +327,6 @@ obligations:
   vortex_handler: GetProductOfferMessageHandler
   feature: catalog.get_catalog_snapshot
   reason: catalog.get_catalog_snapshot reaches a domain operation from GetProductOfferMessageHandler
-  conflicts:
-  - cf_34095bd33f
 - id: incoming/GetRecyclerStatus
   name: GetRecyclerStatus
   domain: catalog
@@ -349,8 +345,6 @@ obligations:
   vortex_handler: GetRoomAdPurchaseInfoMessageHandler
   feature: catalog.has_active_advertisement
   reason: catalog.has_active_advertisement reaches a domain operation from GetRoomAdPurchaseInfoMessageHandler
-  conflicts:
-  - cf_3a6dd74546
 - id: incoming/GetSeasonalCalendarDaily
   name: GetSeasonalCalendarDaily
   domain: catalog
@@ -403,6 +397,8 @@ obligations:
   vortex_handler: PurchaseFromCatalogMessageHandler
   feature: catalog.get_catalog_snapshot
   reason: catalog.get_catalog_snapshot reaches a domain operation from PurchaseFromCatalogMessageHandler
+  conflicts:
+  - cf_056a8494a2
 - id: incoming/PurchaseFromCatalogAsGift
   name: PurchaseFromCatalogAsGift
   domain: catalog
@@ -1294,6 +1290,96 @@ obligations:
   reason: groups.update_thread reaches a domain operation from UpdateThreadMessageHandler
   conflicts:
   - cf_d984df8f58
+- id: incoming/BuyHabbicon
+  name: BuyHabbicon
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_3471
+  header_id: 3980
+  mapped_in_vortex: true
+  vortex_handler: BuyHabbiconMessageHandler
+  feature: habbicons.buy_habbicon
+  reason: habbicons.buy_habbicon exists but the handler reaches no domain operation
+- id: incoming/BuyHabbiconCollection
+  name: BuyHabbiconCollection
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_2394
+  header_id: 3036
+  mapped_in_vortex: true
+  vortex_handler: BuyHabbiconCollectionMessageHandler
+  feature: habbicons.buy_habbicon_collection
+  reason: habbicons.buy_habbicon_collection exists but the handler reaches no domain operation
+- id: incoming/ClaimHabbicon
+  name: ClaimHabbicon
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_2848
+  header_id: 662
+  mapped_in_vortex: true
+  vortex_handler: ClaimHabbiconMessageHandler
+  feature: habbicons.claim_habbicon
+  reason: habbicons.claim_habbicon exists but the handler reaches no domain operation
+- id: incoming/FavouriteHabbicon
+  name: FavouriteHabbicon
+  domain: habbicons
+  status: implemented
+  client_class: _SafeCls_3482
+  header_id: 1808
+  mapped_in_vortex: true
+  vortex_handler: FavouriteHabbiconMessageHandler
+  feature: habbicons.favourite_habbicon
+  reason: habbicons.favourite_habbicon reaches a domain operation from FavouriteHabbiconMessageHandler
+- id: incoming/GetHabbiconInfo
+  name: GetHabbiconInfo
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_3805
+  header_id: 1494
+  mapped_in_vortex: true
+  vortex_handler: GetHabbiconInfoMessageHandler
+  feature: habbicons.get_habbicon_info
+  reason: habbicons.get_habbicon_info exists but the handler reaches no domain operation
+- id: incoming/GetHabbiconShopData
+  name: GetHabbiconShopData
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_2718
+  header_id: 272
+  mapped_in_vortex: true
+  vortex_handler: GetHabbiconShopDataMessageHandler
+  feature: habbicons.get_habbicon_shop_data
+  reason: habbicons.get_habbicon_shop_data exists but the handler reaches no domain operation
+- id: incoming/SendHabbicon
+  name: SendHabbicon
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_2591
+  header_id: 1163
+  mapped_in_vortex: true
+  vortex_handler: SendHabbiconMessageHandler
+  feature: habbicons.send_habbicon
+  reason: habbicons.send_habbicon exists but the handler reaches no domain operation
+- id: incoming/TriggerHabbicon
+  name: TriggerHabbicon
+  domain: habbicons
+  status: partial
+  client_class: _SafeCls_3701
+  header_id: 1176
+  mapped_in_vortex: true
+  vortex_handler: TriggerHabbiconMessageHandler
+  feature: habbicons.trigger_habbicon
+  reason: habbicons.trigger_habbicon exists but the handler reaches no domain operation
+- id: incoming/UnfavouriteHabbicon
+  name: UnfavouriteHabbicon
+  domain: habbicons
+  status: implemented
+  client_class: _SafeCls_3712
+  header_id: 75
+  mapped_in_vortex: true
+  vortex_handler: UnfavouriteHabbiconMessageHandler
+  feature: habbicons.unfavourite_habbicon
+  reason: habbicons.unfavourite_habbicon reaches a domain operation from UnfavouriteHabbiconMessageHandler
 - id: incoming/ClientHello
   name: ClientHello
   domain: handshake
@@ -1517,8 +1603,6 @@ obligations:
   vortex_handler: GetAchievementsMessageHandler
   feature: inventory.get_achievements
   reason: inventory.get_achievements reaches a domain operation from GetAchievementsMessageHandler
-  conflicts:
-  - cf_6c8f3c965e
 - id: incoming/GetBadgePointLimits
   name: GetBadgePointLimits
   domain: inventory
@@ -1529,8 +1613,6 @@ obligations:
   vortex_handler: GetBadgePointLimitsMessageHandler
   feature: inventory.get_badge_point_limits
   reason: inventory.get_badge_point_limits reaches a domain operation from GetBadgePointLimitsMessageHandler
-  conflicts:
-  - cf_65450db9df
 - id: incoming/GetBadges
   name: GetBadges
   domain: inventory
@@ -1553,8 +1635,6 @@ obligations:
   vortex_handler: GetBotInventoryMessageHandler
   feature: inventory.get_bot_inventory
   reason: inventory.get_bot_inventory reaches a domain operation from GetBotInventoryMessageHandler
-  conflicts:
-  - cf_06ef24c5fa
 - id: incoming/GetCreditsInfo
   name: GetCreditsInfo
   domain: inventory
@@ -1565,8 +1645,6 @@ obligations:
   vortex_handler: GetCreditsInfoMessageHandler
   feature: inventory.get_credits_info
   reason: inventory.get_credits_info reaches a domain operation from GetCreditsInfoMessageHandler
-  conflicts:
-  - cf_a1aed94e79
 - id: incoming/GetIsBadgeRequestFulfilled
   name: GetIsBadgeRequestFulfilled
   domain: inventory
@@ -1587,8 +1665,6 @@ obligations:
   vortex_handler: GetPetInventoryMessageHandler
   feature: inventory.get_pet_inventory
   reason: inventory.get_pet_inventory reaches a domain operation from GetPetInventoryMessageHandler
-  conflicts:
-  - cf_101d5cd1f2
 - id: incoming/OpenTrading
   name: OpenTrading
   domain: inventory
@@ -1783,8 +1859,6 @@ obligations:
   vortex_handler: GetMarketplaceItemStatsMessageHandler
   feature: marketplace.get_marketplace_item_stats
   reason: marketplace.get_marketplace_item_stats reaches a domain operation from GetMarketplaceItemStatsMessageHandler
-  conflicts:
-  - cf_f817541c1e
 - id: incoming/GetMarketplaceOffers
   name: GetMarketplaceOffers
   domain: marketplace
@@ -1805,8 +1879,6 @@ obligations:
   vortex_handler: GetMarketplaceOwnOffersMessageHandler
   feature: marketplace.get_marketplace_own_offers
   reason: marketplace.get_marketplace_own_offers reaches a domain operation from GetMarketplaceOwnOffersMessageHandler
-  conflicts:
-  - cf_9664991fa8
 - id: incoming/MakeOffer
   name: MakeOffer
   domain: marketplace
@@ -2191,8 +2263,6 @@ obligations:
   vortex_handler: GetCfhChatlogMessageHandler
   feature: moderation.get_ticket_evidence
   reason: moderation.get_ticket_evidence reaches a domain operation from GetCfhChatlogMessageHandler
-  conflicts:
-  - cf_e9b0229d84
 - id: incoming/GetCfhStatus
   name: GetCfhStatus
   domain: moderation
@@ -2203,8 +2273,6 @@ obligations:
   vortex_handler: GetCfhStatusMessageHandler
   feature: moderation.get_sanction_history
   reason: moderation.get_sanction_history reaches a domain operation from GetCfhStatusMessageHandler
-  conflicts:
-  - cf_d516648802
 - id: incoming/GetGuideReportingStatus
   name: GetGuideReportingStatus
   domain: moderation
@@ -2227,8 +2295,6 @@ obligations:
   vortex_handler: GetModeratorRoomInfoMessageHandler
   feature: moderation.resolve_for_player
   reason: moderation.resolve_for_player reaches a domain operation from GetModeratorRoomInfoMessageHandler
-  conflicts:
-  - cf_f4d6f2dabe
 - id: incoming/GetModeratorUserInfo
   name: GetModeratorUserInfo
   domain: moderation
@@ -2279,8 +2345,6 @@ obligations:
   vortex_handler: GetRoomChatlogMessageHandler
   feature: moderation.get_room_chatlog
   reason: moderation.get_room_chatlog reaches a domain operation from GetRoomChatlogMessageHandler
-  conflicts:
-  - cf_8f2e06fb3d
 - id: incoming/GetRoomVisits
   name: GetRoomVisits
   domain: moderation
@@ -2303,8 +2367,6 @@ obligations:
   vortex_handler: GetUserChatlogMessageHandler
   feature: moderation.get_user_chatlog
   reason: moderation.get_user_chatlog reaches a domain operation from GetUserChatlogMessageHandler
-  conflicts:
-  - cf_d6ee3d8ca6
 - id: incoming/GuideSessionCreate
   name: GuideSessionCreate
   domain: moderation
@@ -2598,6 +2660,7 @@ obligations:
   reason: navigator.get_room_count_by_owner reaches a domain operation from CanCreateRoomMessageHandler
   conflicts:
   - cf_ae0db1dbfb
+  - cf_5ab0704ec3
 - id: incoming/CancelEvent
   name: CancelEvent
   domain: navigator
@@ -3176,6 +3239,16 @@ obligations:
   vortex_handler: GetCustomFilterMessageHandler
   feature: preferences.get_custom_filter
   reason: preferences.get_custom_filter reaches a domain operation from GetCustomFilterMessageHandler
+- id: incoming/GetDiscordPreferences
+  name: GetDiscordPreferences
+  domain: preferences
+  status: implemented
+  client_class: _SafeCls_2988
+  header_id: 2883
+  mapped_in_vortex: true
+  vortex_handler: GetDiscordPreferencesMessageHandler
+  feature: preferences.get_discord_preferences
+  reason: preferences.get_discord_preferences reaches a domain operation from GetDiscordPreferencesMessageHandler
 - id: incoming/RemoveFromCustomFilter
   name: RemoveFromCustomFilter
   domain: preferences
@@ -3196,6 +3269,8 @@ obligations:
   vortex_handler: SetChatPreferencesMessageHandler
   feature: preferences.set_chat_preferences
   reason: preferences.set_chat_preferences reaches a domain operation from SetChatPreferencesMessageHandler
+  conflicts:
+  - cf_8c78a08422
 - id: incoming/SetChatStylePreference
   name: SetChatStylePreference
   domain: preferences
@@ -3208,6 +3283,16 @@ obligations:
   reason: preferences.set_chat_style_preference reaches a domain operation from SetChatStylePreferenceMessageHandler
   conflicts:
   - cf_2832d43293
+- id: incoming/SetDiscordPreferences
+  name: SetDiscordPreferences
+  domain: preferences
+  status: implemented
+  client_class: _SafeCls_3638
+  header_id: 2304
+  mapped_in_vortex: true
+  vortex_handler: SetDiscordPreferencesMessageHandler
+  feature: preferences.set_discord_preferences
+  reason: preferences.set_discord_preferences reaches a domain operation from SetDiscordPreferencesMessageHandler
 - id: incoming/SetIgnoreRoomInvites
   name: SetIgnoreRoomInvites
   domain: preferences
@@ -3448,8 +3533,26 @@ obligations:
   vortex_handler: UpdateFigureDataMessageHandler
   feature: register.update_figure_data
   reason: register.update_figure_data reaches a domain operation from UpdateFigureDataMessageHandler
-  conflicts:
-  - cf_819510832d
+- id: incoming/ClaimRewardTrackPrize
+  name: ClaimRewardTrackPrize
+  domain: reward_tracks
+  status: partial
+  client_class: _SafeCls_2794
+  header_id: 1376
+  mapped_in_vortex: true
+  vortex_handler: ClaimRewardTrackPrizeMessageHandler
+  feature: reward_tracks.claim_reward_track_prize
+  reason: reward_tracks.claim_reward_track_prize exists but the handler reaches no domain operation
+- id: incoming/PurchaseRewardTrackPremium
+  name: PurchaseRewardTrackPremium
+  domain: reward_tracks
+  status: partial
+  client_class: _SafeCls_3341
+  header_id: 1789
+  mapped_in_vortex: true
+  vortex_handler: PurchaseRewardTrackPremiumMessageHandler
+  feature: reward_tracks.purchase_reward_track_premium
+  reason: reward_tracks.purchase_reward_track_premium exists but the handler reaches no domain operation
 - id: incoming/AddSpamWallPostIt
   name: AddSpamWallPostIt
   domain: room
@@ -3748,8 +3851,6 @@ obligations:
   vortex_handler: GetFlatControllersMessageHandler
   feature: room.get_flat_controllers
   reason: room.get_flat_controllers reaches a domain operation from GetFlatControllersMessageHandler
-  conflicts:
-  - cf_36135d6ab7
 - id: incoming/GetFurnitureAliases
   name: GetFurnitureAliases
   domain: room
@@ -3773,13 +3874,13 @@ obligations:
 - id: incoming/GetItemData
   name: GetItemData
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_2834
   header_id: 350
   mapped_in_vortex: true
   vortex_handler: GetItemDataMessageHandler
   feature: room.get_item_data
-  reason: room.get_item_data exists but the handler reaches no domain operation
+  reason: room.get_item_data reaches a domain operation from GetItemDataMessageHandler
 - id: incoming/GetOccupiedTiles
   name: GetOccupiedTiles
   domain: room
@@ -3844,8 +3945,6 @@ obligations:
   vortex_handler: GetRoomSettingsMessageHandler
   feature: room.get_room_settings
   reason: room.get_room_settings reaches a domain operation from GetRoomSettingsMessageHandler
-  conflicts:
-  - cf_a53bc597e6
 - id: incoming/GetYoutubeDisplayStatus
   name: GetYoutubeDisplayStatus
   domain: room
@@ -3955,15 +4054,13 @@ obligations:
 - id: incoming/MuteAllInRoom
   name: MuteAllInRoom
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_3502
   header_id: 32
   mapped_in_vortex: true
   vortex_handler: MuteAllInRoomMessageHandler
   feature: room.mute_all_in_room
-  reason: room.mute_all_in_room exists but the handler reaches no domain operation
-  unknowns:
-  - uk_f272bc163d
+  reason: room.mute_all_in_room reaches a domain operation from MuteAllInRoomMessageHandler
 - id: incoming/MuteUser
   name: MuteUser
   domain: room
@@ -4297,13 +4394,13 @@ obligations:
 - id: incoming/SetClothingChangeData
   name: SetClothingChangeData
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_3556
   header_id: 1220
   mapped_in_vortex: true
   vortex_handler: SetClothingChangeDataMessageHandler
   feature: room.set_clothing_change_data
-  reason: room.set_clothing_change_data exists but the handler reaches no domain operation
+  reason: room.set_clothing_change_data reaches a domain operation from SetClothingChangeDataMessageHandler
 - id: incoming/SetCustomStackingHeight
   name: SetCustomStackingHeight
   domain: room
@@ -4319,13 +4416,13 @@ obligations:
 - id: incoming/SetItemData
   name: SetItemData
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_2735
   header_id: 3498
   mapped_in_vortex: true
   vortex_handler: SetItemDataMessageHandler
   feature: room.set_item_data
-  reason: room.set_item_data exists but the handler reaches no domain operation
+  reason: room.set_item_data reaches a domain operation from SetItemDataMessageHandler
 - id: incoming/SetMannequinFigure
   name: SetMannequinFigure
   domain: room
@@ -4349,13 +4446,15 @@ obligations:
 - id: incoming/SetObjectData
   name: SetObjectData
   domain: room
-  status: partial
+  status: implemented
   client_class: _SafeCls_3000
   header_id: 246
   mapped_in_vortex: true
   vortex_handler: SetObjectDataMessageHandler
   feature: room.set_object_data
-  reason: room.set_object_data exists but the handler reaches no domain operation
+  reason: room.set_object_data reaches a domain operation from SetObjectDataMessageHandler
+  conflicts:
+  - cf_85d2777b5c
 - id: incoming/SetRandomState
   name: SetRandomState
   domain: room
@@ -4794,22 +4893,6 @@ obligations:
   header_id: 1119
   mapped_in_vortex: false
   reason: the client sends header 1119 and nothing in this repository is bound to it
-- id: "incoming/header:1163"
-  name: "header:1163"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2591
-  header_id: 1163
-  mapped_in_vortex: false
-  reason: the client sends header 1163 and nothing in this repository is bound to it
-- id: "incoming/header:1176"
-  name: "header:1176"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3701
-  header_id: 1176
-  mapped_in_vortex: false
-  reason: the client sends header 1176 and nothing in this repository is bound to it
 - id: "incoming/header:1225"
   name: "header:1225"
   domain: unsorted
@@ -4861,14 +4944,6 @@ obligations:
   mapped_in_vortex: false
   reason: "_SafeCls_3427 is registered at 1339 and referenced nowhere in the client but the registry: no call site constructs it"
   decision: ADR-FC-002
-- id: "incoming/header:1376"
-  name: "header:1376"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2794
-  header_id: 1376
-  mapped_in_vortex: false
-  reason: the client sends header 1376 and nothing in this repository is bound to it
 - id: "incoming/header:145"
   name: "header:145"
   domain: unsorted
@@ -4877,14 +4952,6 @@ obligations:
   header_id: 145
   mapped_in_vortex: false
   reason: the client sends header 145 and nothing in this repository is bound to it
-- id: "incoming/header:1494"
-  name: "header:1494"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3805
-  header_id: 1494
-  mapped_in_vortex: false
-  reason: the client sends header 1494 and nothing in this repository is bound to it
 - id: "incoming/header:1762"
   name: "header:1762"
   domain: unsorted
@@ -4903,22 +4970,6 @@ obligations:
   mapped_in_vortex: false
   reason: "_SafeCls_2807 is registered at 1768 and referenced nowhere in the client but the registry: no call site constructs it"
   decision: ADR-FC-002
-- id: "incoming/header:1789"
-  name: "header:1789"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3341
-  header_id: 1789
-  mapped_in_vortex: false
-  reason: the client sends header 1789 and nothing in this repository is bound to it
-- id: "incoming/header:1808"
-  name: "header:1808"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3482
-  header_id: 1808
-  mapped_in_vortex: false
-  reason: the client sends header 1808 and nothing in this repository is bound to it
 - id: "incoming/header:2020"
   name: "header:2020"
   domain: unsorted
@@ -4928,14 +4979,6 @@ obligations:
   mapped_in_vortex: false
   reason: "_SafeCls_3655 is registered at 2020 and referenced nowhere in the client but the registry: no call site constructs it"
   decision: ADR-FC-002
-- id: "incoming/header:2304"
-  name: "header:2304"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3638
-  header_id: 2304
-  mapped_in_vortex: false
-  reason: the client sends header 2304 and nothing in this repository is bound to it
 - id: "incoming/header:2397"
   name: "header:2397"
   domain: unsorted
@@ -4971,22 +5014,6 @@ obligations:
   mapped_in_vortex: false
   reason: "_SafeCls_3532 is registered at 2708 and referenced nowhere in the client but the registry: no call site constructs it"
   decision: ADR-FC-002
-- id: "incoming/header:272"
-  name: "header:272"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2718
-  header_id: 272
-  mapped_in_vortex: false
-  reason: the client sends header 272 and nothing in this repository is bound to it
-- id: "incoming/header:2883"
-  name: "header:2883"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2988
-  header_id: 2883
-  mapped_in_vortex: false
-  reason: the client sends header 2883 and nothing in this repository is bound to it
 - id: "incoming/header:293"
   name: "header:293"
   domain: unsorted
@@ -4995,14 +5022,6 @@ obligations:
   header_id: 293
   mapped_in_vortex: false
   reason: the client sends header 293 and nothing in this repository is bound to it
-- id: "incoming/header:3036"
-  name: "header:3036"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2394
-  header_id: 3036
-  mapped_in_vortex: false
-  reason: the client sends header 3036 and nothing in this repository is bound to it
 - id: "incoming/header:3159"
   name: "header:3159"
   domain: unsorted
@@ -5062,30 +5081,6 @@ obligations:
   header_id: 3608
   mapped_in_vortex: false
   reason: the client sends header 3608 and nothing in this repository is bound to it
-- id: "incoming/header:3980"
-  name: "header:3980"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3471
-  header_id: 3980
-  mapped_in_vortex: false
-  reason: the client sends header 3980 and nothing in this repository is bound to it
-- id: "incoming/header:662"
-  name: "header:662"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_2848
-  header_id: 662
-  mapped_in_vortex: false
-  reason: the client sends header 662 and nothing in this repository is bound to it
-- id: "incoming/header:75"
-  name: "header:75"
-  domain: unsorted
-  status: missing
-  client_class: _SafeCls_3712
-  header_id: 75
-  mapped_in_vortex: false
-  reason: the client sends header 75 and nothing in this repository is bound to it
 - id: "incoming/header:831"
   name: "header:831"
   domain: unsorted

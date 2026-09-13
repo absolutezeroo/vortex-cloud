@@ -9,8 +9,8 @@ Target client: `WIN63-202607011411-782849652`
 |---|---|
 | obligations | 102 |
 | missing | 0 |
-| partial | 18 |
-| implemented | 84 |
+| partial | 13 |
+| implemented | 89 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -23,16 +23,11 @@ Target client: `WIN63-202607011411-782849652`
 - `ExtendRentOrBuyoutFurni` (1427) — room.extend_rent_or_buyout_furni exists but the handler reaches no domain operation
 - `ExtendRentOrBuyoutStripItem` (1029) — room.extend_rent_or_buyout_strip_item exists but the handler reaches no domain operation
 - `GetCustomRoomFilter` (790) — room.get_custom_room_filter exists but the handler reaches no domain operation
-- `GetItemData` (350) — room.get_item_data exists but the handler reaches no domain operation
 - `GetRentOrBuyoutOffer` (1583) — room.get_rent_or_buyout_offer exists but the handler reaches no domain operation
 - `GetYoutubeDisplayStatus` (273) — room.get_youtube_display_status exists but the handler reaches no domain operation
-- `MuteAllInRoom` (32) — room.mute_all_in_room exists but the handler reaches no domain operation
 - `OpenPetPackage` (1884) — room.open_pet_package exists but the handler reaches no domain operation
 - `RoomNetworkOpenConnection` (2045) — room.room_network_open_connection exists but the handler reaches no domain operation
 - `SetAreaHideData` (1954) — room.set_area_hide_data exists but the handler reaches no domain operation
-- `SetClothingChangeData` (1220) — room.set_clothing_change_data exists but the handler reaches no domain operation
-- `SetItemData` (3498) — room.set_item_data exists but the handler reaches no domain operation
-- `SetObjectData` (246) — room.set_object_data exists but the handler reaches no domain operation
 - `SetYoutubeDisplayPlaylist` (1672) — room.set_youtube_display_playlist exists but the handler reaches no domain operation
 - `UpdateRoomFilter` (1622) — room.update_room_filter exists but the handler reaches no domain operation
 
@@ -62,6 +57,7 @@ Target client: `WIN63-202607011411-782849652`
 - `GetFlatControllers` (342) — room.get_flat_controllers reaches a domain operation from GetFlatControllersMessageHandler
 - `GetFurnitureAliases` (1901) — room.get_furniture_aliases reaches a domain operation from GetFurnitureAliasesMessageHandler
 - `GetGuildFurniContextMenuInfo` (826) — room.get_guild_furni_context_menu_info reaches a domain operation from GetGuildFurniContextMenuInfoMessageHandler
+- `GetItemData` (350) — room.get_item_data reaches a domain operation from GetItemDataMessageHandler
 - `GetOccupiedTiles` (3426) — room.get_occupied_tiles reaches a domain operation from GetOccupiedTilesMessageHandler
 - `GetPetCommands` (2425) — room.get_enabled_command_ids reaches a domain operation from GetPetCommandsMessageHandler
 - `GetPetInfo` (3899) — room.get_pet_info reaches a domain operation from GetPetInfoMessageHandler
@@ -76,6 +72,7 @@ Target client: `WIN63-202607011411-782849652`
 - `MoveObject` (1482) — room.move_floor_item_in_room reaches a domain operation from MoveObjectMessageHandler
 - `MovePet` (432) — room.move_pet_in_room reaches a domain operation from MovePetMessageHandler
 - `MoveWallItem` (2999) — room.move_wall_item_in_room reaches a domain operation from MoveWallItemMessageHandler
+- `MuteAllInRoom` (32) — room.mute_all_in_room reaches a domain operation from MuteAllInRoomMessageHandler
 - `MuteUser` (2339) — room.mute_user reaches a domain operation from MuteUserMessageHandler
 - `OpenFlatConnection` (3234) — room.open_room_for_player_id reaches a domain operation from OpenFlatConnectionMessageHandler
 - `OpenMysteryTrophy` (2242) — room.open_mystery_trophy reaches a domain operation from OpenMysteryTrophyMessageHandler
@@ -103,9 +100,12 @@ Target client: `WIN63-202607011411-782849652`
 - `RoomDimmerGetPresets` (3145) — room.room_dimmer_get_presets reaches a domain operation from RoomDimmerGetPresetsMessageHandler
 - `RoomDimmerSavePreset` (130) — room.room_dimmer_save_preset reaches a domain operation from RoomDimmerSavePresetMessageHandler
 - `SaveRoomSettings` (725) — room.save_room_settings reaches a domain operation from SaveRoomSettingsMessageHandler
+- `SetClothingChangeData` (1220) — room.set_clothing_change_data reaches a domain operation from SetClothingChangeDataMessageHandler
 - `SetCustomStackingHeight` (3045) — room.set_custom_stacking_height reaches a domain operation from SetCustomStackingHeightMessageHandler
+- `SetItemData` (3498) — room.set_item_data reaches a domain operation from SetItemDataMessageHandler
 - `SetMannequinFigure` (2301) — room.set_mannequin_figure reaches a domain operation from SetMannequinFigureMessageHandler
 - `SetMannequinName` (606) — room.set_mannequin_name reaches a domain operation from SetMannequinNameMessageHandler
+- `SetObjectData` (246) — room.set_object_data reaches a domain operation from SetObjectDataMessageHandler
 - `SetRandomState` (1942) — room.use_item_in_room reaches a domain operation from SetRandomStateMessageHandler
 - `SetRoomBackgroundColorData` (1647) — room.set_room_background_color_data reaches a domain operation from SetRoomBackgroundColorDataMessageHandler
 - `Shout` (1763) — room.shout reaches a domain operation from ShoutMessageHandler

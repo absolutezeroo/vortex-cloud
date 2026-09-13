@@ -131,6 +131,15 @@ reproduced from the target client and the current code on the next run.
 | implemented | groups | UpdateForumReadMarker | 429 | UpdateForumReadMarkerMessageHandler | groups.update_forum_read_marker | groups.update_forum_read_marker reaches a domain operation from UpdateForumReadMarkerMessageHandler |
 | implemented | groups | UpdateForumSettings | 2793 | UpdateForumSettingsMessageHandler | groups.update_forum_settings | groups.update_forum_settings reaches a domain operation from UpdateForumSettingsMessageHandler |
 | implemented | groups | UpdateThread | 3206 | UpdateThreadMessageHandler | groups.update_thread | groups.update_thread reaches a domain operation from UpdateThreadMessageHandler |
+| partial | habbicons | BuyHabbicon | 3980 | BuyHabbiconMessageHandler | habbicons.buy_habbicon | habbicons.buy_habbicon exists but the handler reaches no domain operation |
+| partial | habbicons | BuyHabbiconCollection | 3036 | BuyHabbiconCollectionMessageHandler | habbicons.buy_habbicon_collection | habbicons.buy_habbicon_collection exists but the handler reaches no domain operation |
+| partial | habbicons | ClaimHabbicon | 662 | ClaimHabbiconMessageHandler | habbicons.claim_habbicon | habbicons.claim_habbicon exists but the handler reaches no domain operation |
+| implemented | habbicons | FavouriteHabbicon | 1808 | FavouriteHabbiconMessageHandler | habbicons.favourite_habbicon | habbicons.favourite_habbicon reaches a domain operation from FavouriteHabbiconMessageHandler |
+| partial | habbicons | GetHabbiconInfo | 1494 | GetHabbiconInfoMessageHandler | habbicons.get_habbicon_info | habbicons.get_habbicon_info exists but the handler reaches no domain operation |
+| partial | habbicons | GetHabbiconShopData | 272 | GetHabbiconShopDataMessageHandler | habbicons.get_habbicon_shop_data | habbicons.get_habbicon_shop_data exists but the handler reaches no domain operation |
+| partial | habbicons | SendHabbicon | 1163 | SendHabbiconMessageHandler | habbicons.send_habbicon | habbicons.send_habbicon exists but the handler reaches no domain operation |
+| partial | habbicons | TriggerHabbicon | 1176 | TriggerHabbiconMessageHandler | habbicons.trigger_habbicon | habbicons.trigger_habbicon exists but the handler reaches no domain operation |
+| implemented | habbicons | UnfavouriteHabbicon | 75 | UnfavouriteHabbiconMessageHandler | habbicons.unfavourite_habbicon | habbicons.unfavourite_habbicon reaches a domain operation from UnfavouriteHabbiconMessageHandler |
 | implemented | handshake | ClientHello | 4000 | ClientHelloMessageHandler | handshake.client_hello | handshake.client_hello reaches a domain operation from ClientHelloMessageHandler |
 | implemented | handshake | CompleteDiffieHandshake | 2526 | CompleteDiffieHandshakeMessageHandler | handshake.complete_diffie_handshake | handshake.complete_diffie_handshake reaches a domain operation from CompleteDiffieHandshakeMessageHandler |
 | partial | handshake | Disconnect | 2864 | DisconnectMessageHandler | handshake.disconnect | handshake.disconnect exists but the handler reaches no domain operation |
@@ -303,9 +312,11 @@ reproduced from the target client and the current code on the next run.
 | partial | poll | PollStart | 743 | PollStartMessageHandler | poll.poll_start | poll.poll_start exists but the handler reaches no domain operation |
 | implemented | preferences | AddToCustomFilter | 2656 | AddToCustomFilterMessageHandler | preferences.add_to_custom_filter | preferences.add_to_custom_filter reaches a domain operation from AddToCustomFilterMessageHandler |
 | implemented | preferences | GetCustomFilter | 801 | GetCustomFilterMessageHandler | preferences.get_custom_filter | preferences.get_custom_filter reaches a domain operation from GetCustomFilterMessageHandler |
+| implemented | preferences | GetDiscordPreferences | 2883 | GetDiscordPreferencesMessageHandler | preferences.get_discord_preferences | preferences.get_discord_preferences reaches a domain operation from GetDiscordPreferencesMessageHandler |
 | implemented | preferences | RemoveFromCustomFilter | 2209 | RemoveFromCustomFilterMessageHandler | preferences.remove_from_custom_filter | preferences.remove_from_custom_filter reaches a domain operation from RemoveFromCustomFilterMessageHandler |
 | implemented | preferences | SetChatPreferences | 1149 | SetChatPreferencesMessageHandler | preferences.set_chat_preferences | preferences.set_chat_preferences reaches a domain operation from SetChatPreferencesMessageHandler |
 | implemented | preferences | SetChatStylePreference | 2634 | SetChatStylePreferenceMessageHandler | preferences.set_chat_style_preference | preferences.set_chat_style_preference reaches a domain operation from SetChatStylePreferenceMessageHandler |
+| implemented | preferences | SetDiscordPreferences | 2304 | SetDiscordPreferencesMessageHandler | preferences.set_discord_preferences | preferences.set_discord_preferences reaches a domain operation from SetDiscordPreferencesMessageHandler |
 | implemented | preferences | SetIgnoreRoomInvites | 1332 | SetIgnoreRoomInvitesMessageHandler | preferences.set_ignore_room_invites | preferences.set_ignore_room_invites reaches a domain operation from SetIgnoreRoomInvitesMessageHandler |
 | implemented | preferences | SetNewNavigatorWindowPreferences | 1276 | SetNewNavigatorWindowPreferencesMessageHandler | preferences.set_new_navigator_window_preferences | preferences.set_new_navigator_window_preferences reaches a domain operation from SetNewNavigatorWindowPreferencesMessageHandler |
 | implemented | preferences | SetRoomCameraPreferences | 3917 | SetRoomCameraPreferencesMessageHandler | preferences.set_room_camera_preferences | preferences.set_room_camera_preferences reaches a domain operation from SetRoomCameraPreferencesMessageHandler |
@@ -330,6 +341,8 @@ reproduced from the target client and the current code on the next run.
 | not_applicable | quest | header:1576 | 1576 | - | - | _SafeCls_2766 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature |
 | not_applicable | quest | header:1810 | 1810 | - | - | _SafeCls_3014 sits in the client's quest package but is referenced nowhere but the registry: a dead class, not a missing quest feature |
 | implemented | register | UpdateFigureData | 3339 | UpdateFigureDataMessageHandler | register.update_figure_data | register.update_figure_data reaches a domain operation from UpdateFigureDataMessageHandler |
+| partial | reward_tracks | ClaimRewardTrackPrize | 1376 | ClaimRewardTrackPrizeMessageHandler | reward_tracks.claim_reward_track_prize | reward_tracks.claim_reward_track_prize exists but the handler reaches no domain operation |
+| partial | reward_tracks | PurchaseRewardTrackPremium | 1789 | PurchaseRewardTrackPremiumMessageHandler | reward_tracks.purchase_reward_track_premium | reward_tracks.purchase_reward_track_premium exists but the handler reaches no domain operation |
 | implemented | room | AddSpamWallPostIt | 2684 | AddSpamWallPostItMessageHandler | room.add_spam_wall_post_it | room.add_spam_wall_post_it reaches a domain operation from AddSpamWallPostItMessageHandler |
 | partial | room | AmbassadorAlert | 3361 | AmbassadorAlertMessageHandler | room.ambassador_alert | room.ambassador_alert exists but the handler reaches no domain operation |
 | implemented | room | AssignRights | 373 | AssignRightsMessageHandler | room.assign_rights | room.assign_rights reaches a domain operation from AssignRightsMessageHandler |
@@ -360,7 +373,7 @@ reproduced from the target client and the current code on the next run.
 | implemented | room | GetFlatControllers | 342 | GetFlatControllersMessageHandler | room.get_flat_controllers | room.get_flat_controllers reaches a domain operation from GetFlatControllersMessageHandler |
 | implemented | room | GetFurnitureAliases | 1901 | GetFurnitureAliasesMessageHandler | room.get_furniture_aliases | room.get_furniture_aliases reaches a domain operation from GetFurnitureAliasesMessageHandler |
 | implemented | room | GetGuildFurniContextMenuInfo | 826 | GetGuildFurniContextMenuInfoMessageHandler | room.get_guild_furni_context_menu_info | room.get_guild_furni_context_menu_info reaches a domain operation from GetGuildFurniContextMenuInfoMessageHandler |
-| partial | room | GetItemData | 350 | GetItemDataMessageHandler | room.get_item_data | room.get_item_data exists but the handler reaches no domain operation |
+| implemented | room | GetItemData | 350 | GetItemDataMessageHandler | room.get_item_data | room.get_item_data reaches a domain operation from GetItemDataMessageHandler |
 | implemented | room | GetOccupiedTiles | 3426 | GetOccupiedTilesMessageHandler | room.get_occupied_tiles | room.get_occupied_tiles reaches a domain operation from GetOccupiedTilesMessageHandler |
 | implemented | room | GetPetCommands | 2425 | GetPetCommandsMessageHandler | room.get_enabled_command_ids | room.get_enabled_command_ids reaches a domain operation from GetPetCommandsMessageHandler |
 | implemented | room | GetPetInfo | 3899 | GetPetInfoMessageHandler | room.get_pet_info | room.get_pet_info reaches a domain operation from GetPetInfoMessageHandler |
@@ -377,7 +390,7 @@ reproduced from the target client and the current code on the next run.
 | implemented | room | MoveObject | 1482 | MoveObjectMessageHandler | room.move_floor_item_in_room | room.move_floor_item_in_room reaches a domain operation from MoveObjectMessageHandler |
 | implemented | room | MovePet | 432 | MovePetMessageHandler | room.move_pet_in_room | room.move_pet_in_room reaches a domain operation from MovePetMessageHandler |
 | implemented | room | MoveWallItem | 2999 | MoveWallItemMessageHandler | room.move_wall_item_in_room | room.move_wall_item_in_room reaches a domain operation from MoveWallItemMessageHandler |
-| partial | room | MuteAllInRoom | 32 | MuteAllInRoomMessageHandler | room.mute_all_in_room | room.mute_all_in_room exists but the handler reaches no domain operation |
+| implemented | room | MuteAllInRoom | 32 | MuteAllInRoomMessageHandler | room.mute_all_in_room | room.mute_all_in_room reaches a domain operation from MuteAllInRoomMessageHandler |
 | implemented | room | MuteUser | 2339 | MuteUserMessageHandler | room.mute_user | room.mute_user reaches a domain operation from MuteUserMessageHandler |
 | implemented | room | OpenFlatConnection | 3234 | OpenFlatConnectionMessageHandler | room.open_room_for_player_id | room.open_room_for_player_id reaches a domain operation from OpenFlatConnectionMessageHandler |
 | implemented | room | OpenMysteryTrophy | 2242 | OpenMysteryTrophyMessageHandler | room.open_mystery_trophy | room.open_mystery_trophy reaches a domain operation from OpenMysteryTrophyMessageHandler |
@@ -408,12 +421,12 @@ reproduced from the target client and the current code on the next run.
 | partial | room | RoomNetworkOpenConnection | 2045 | RoomNetworkOpenConnectionMessageHandler | room.room_network_open_connection | room.room_network_open_connection exists but the handler reaches no domain operation |
 | implemented | room | SaveRoomSettings | 725 | SaveRoomSettingsMessageHandler | room.save_room_settings | room.save_room_settings reaches a domain operation from SaveRoomSettingsMessageHandler |
 | partial | room | SetAreaHideData | 1954 | SetAreaHideDataMessageHandler | room.set_area_hide_data | room.set_area_hide_data exists but the handler reaches no domain operation |
-| partial | room | SetClothingChangeData | 1220 | SetClothingChangeDataMessageHandler | room.set_clothing_change_data | room.set_clothing_change_data exists but the handler reaches no domain operation |
+| implemented | room | SetClothingChangeData | 1220 | SetClothingChangeDataMessageHandler | room.set_clothing_change_data | room.set_clothing_change_data reaches a domain operation from SetClothingChangeDataMessageHandler |
 | implemented | room | SetCustomStackingHeight | 3045 | SetCustomStackingHeightMessageHandler | room.set_custom_stacking_height | room.set_custom_stacking_height reaches a domain operation from SetCustomStackingHeightMessageHandler |
-| partial | room | SetItemData | 3498 | SetItemDataMessageHandler | room.set_item_data | room.set_item_data exists but the handler reaches no domain operation |
+| implemented | room | SetItemData | 3498 | SetItemDataMessageHandler | room.set_item_data | room.set_item_data reaches a domain operation from SetItemDataMessageHandler |
 | implemented | room | SetMannequinFigure | 2301 | SetMannequinFigureMessageHandler | room.set_mannequin_figure | room.set_mannequin_figure reaches a domain operation from SetMannequinFigureMessageHandler |
 | implemented | room | SetMannequinName | 606 | SetMannequinNameMessageHandler | room.set_mannequin_name | room.set_mannequin_name reaches a domain operation from SetMannequinNameMessageHandler |
-| partial | room | SetObjectData | 246 | SetObjectDataMessageHandler | room.set_object_data | room.set_object_data exists but the handler reaches no domain operation |
+| implemented | room | SetObjectData | 246 | SetObjectDataMessageHandler | room.set_object_data | room.set_object_data reaches a domain operation from SetObjectDataMessageHandler |
 | implemented | room | SetRandomState | 1942 | SetRandomStateMessageHandler | room.use_item_in_room | room.use_item_in_room reaches a domain operation from SetRandomStateMessageHandler |
 | implemented | room | SetRoomBackgroundColorData | 1647 | SetRoomBackgroundColorDataMessageHandler | room.set_room_background_color_data | room.set_room_background_color_data reaches a domain operation from SetRoomBackgroundColorDataMessageHandler |
 | partial | room | SetYoutubeDisplayPlaylist | 1672 | SetYoutubeDisplayPlaylistMessageHandler | room.set_youtube_display_playlist | room.set_youtube_display_playlist exists but the handler reaches no domain operation |
@@ -456,31 +469,21 @@ reproduced from the target client and the current code on the next run.
 | missing | unsorted | ReplenishRespect | 426 | - | - | the packet is described but no revision map binds it, so it cannot arrive |
 | not_applicable | unsorted | header:1016 | 1016 | - | - | _SafeCls_2544 is registered at 1016 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1119 | 1119 | - | - | the client sends header 1119 and nothing in this repository is bound to it |
-| missing | unsorted | header:1163 | 1163 | - | - | the client sends header 1163 and nothing in this repository is bound to it |
-| missing | unsorted | header:1176 | 1176 | - | - | the client sends header 1176 and nothing in this repository is bound to it |
 | missing | unsorted | header:1225 | 1225 | - | - | the client sends header 1225 and nothing in this repository is bound to it |
 | missing | unsorted | header:1242 | 1242 | - | - | the client sends header 1242 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:1277 | 1277 | - | - | _SafeCls_2673 is registered at 1277 and referenced nowhere in the client but the registry: no call site constructs it |
 | not_applicable | unsorted | header:129 | 129 | - | - | _SafeCls_2570 is registered at 129 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:1295 | 1295 | - | - | the client sends header 1295 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:1339 | 1339 | - | - | _SafeCls_3427 is registered at 1339 and referenced nowhere in the client but the registry: no call site constructs it |
-| missing | unsorted | header:1376 | 1376 | - | - | the client sends header 1376 and nothing in this repository is bound to it |
 | missing | unsorted | header:145 | 145 | - | - | the client sends header 145 and nothing in this repository is bound to it |
-| missing | unsorted | header:1494 | 1494 | - | - | the client sends header 1494 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:1762 | 1762 | - | - | _SafeCls_3214 is registered at 1762 and referenced nowhere in the client but the registry: no call site constructs it |
 | not_applicable | unsorted | header:1768 | 1768 | - | - | _SafeCls_2807 is registered at 1768 and referenced nowhere in the client but the registry: no call site constructs it |
-| missing | unsorted | header:1789 | 1789 | - | - | the client sends header 1789 and nothing in this repository is bound to it |
-| missing | unsorted | header:1808 | 1808 | - | - | the client sends header 1808 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:2020 | 2020 | - | - | _SafeCls_3655 is registered at 2020 and referenced nowhere in the client but the registry: no call site constructs it |
-| missing | unsorted | header:2304 | 2304 | - | - | the client sends header 2304 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:2397 | 2397 | - | - | _SafeCls_3153 is registered at 2397 and referenced nowhere in the client but the registry: no call site constructs it |
 | not_applicable | unsorted | header:245 | 245 | - | - | _SafeCls_2716 is registered at 245 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:2668 | 2668 | - | - | the client sends header 2668 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:2708 | 2708 | - | - | _SafeCls_3532 is registered at 2708 and referenced nowhere in the client but the registry: no call site constructs it |
-| missing | unsorted | header:272 | 272 | - | - | the client sends header 272 and nothing in this repository is bound to it |
-| missing | unsorted | header:2883 | 2883 | - | - | the client sends header 2883 and nothing in this repository is bound to it |
 | missing | unsorted | header:293 | 293 | - | - | the client sends header 293 and nothing in this repository is bound to it |
-| missing | unsorted | header:3036 | 3036 | - | - | the client sends header 3036 and nothing in this repository is bound to it |
 | missing | unsorted | header:3159 | 3159 | - | - | the client sends header 3159 and nothing in this repository is bound to it |
 | missing | unsorted | header:3315 | 3315 | - | - | the client sends header 3315 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:3349 | 3349 | - | - | _SafeCls_3900 is registered at 3349 and referenced nowhere in the client but the registry: no call site constructs it |
@@ -488,9 +491,6 @@ reproduced from the target client and the current code on the next run.
 | not_applicable | unsorted | header:3517 | 3517 | - | - | _SafeCls_2558 is registered at 3517 and referenced nowhere in the client but the registry: no call site constructs it |
 | not_applicable | unsorted | header:3569 | 3569 | - | - | _SafeCls_3458 is registered at 3569 and referenced nowhere in the client but the registry: no call site constructs it |
 | missing | unsorted | header:3608 | 3608 | - | - | the client sends header 3608 and nothing in this repository is bound to it |
-| missing | unsorted | header:3980 | 3980 | - | - | the client sends header 3980 and nothing in this repository is bound to it |
-| missing | unsorted | header:662 | 662 | - | - | the client sends header 662 and nothing in this repository is bound to it |
-| missing | unsorted | header:75 | 75 | - | - | the client sends header 75 and nothing in this repository is bound to it |
 | missing | unsorted | header:831 | 831 | - | - | the client sends header 831 and nothing in this repository is bound to it |
 | not_applicable | unsorted | header:983 | 983 | - | - | _SafeCls_3221 is registered at 983 and referenced nowhere in the client but the registry: no call site constructs it |
 | implemented | user_classification | PeerUsersClassification | 628 | PeerUsersClassificationMessageHandler | user_classification.peer_users_classification | user_classification.peer_users_classification reaches a domain operation from PeerUsersClassificationMessageHandler |

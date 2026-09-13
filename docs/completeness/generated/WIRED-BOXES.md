@@ -13,34 +13,29 @@ save it, get a success reply — and it never fires.
 |---|---|
 | target client | WIN63-202607011411-782849652 |
 | configurable boxes | 184 |
-| bound to a logic | 154 / 184 (83.7%) |
-| bound here, absent from the client | 0 |
+| bound to a logic | 162 / 184 (88.0%) |
+| bound here, absent from the client | 6 |
 
 ## Families
 
 | family | boxes | implemented | missing |
 |---|---|---|---|
 | trigger | 26 | 26 | 0 |
-| action | 58 | 44 | 14 |
-| condition | 45 | 41 | 4 |
+| action | 58 | 49 | 9 |
+| condition | 45 | 43 | 2 |
 | selector | 20 | 20 | 0 |
 | addon | 26 | 16 | 10 |
-| variable | 9 | 7 | 2 |
+| variable | 9 | 8 | 1 |
 
 ## action — missing
 
-- `3` *(the client's constant name did not survive obfuscation)*
 - `8` *(the client's constant name did not survive obfuscation)*
 - `17` GIVE_REWARD
 - `44` TELEPORT_TO_ROOM
-- `49` *(the client's constant name did not survive obfuscation)*
-- `50` *(the client's constant name did not survive obfuscation)*
 - `51` PROGRESS_ACHIEVEMENT
 - `53` OVERRIDE_HEIGHT
 - `54` *(the client's constant name did not survive obfuscation)*
 - `55` PLACE_FURNI
-- `56` REMOVE_FURNI
-- `57` MOVE_AS_GROUP
 - `58` PROGRESS_REWARD_TRACK
 - `59` RESET_REWARD_TRACK
 
@@ -48,8 +43,6 @@ save it, get a success reply — and it never fires.
 
 - `39` CAN_PERFORM_MOVE
 - `44` USER_LEVEL
-- `45` CHEST_HAS_ITEMS
-- `46` CHEST_HAS_ITEM_TYPES
 
 ## addon — missing
 
@@ -66,8 +59,19 @@ save it, get a success reply — and it never fires.
 
 ## variable — missing
 
-- `7` ECHO_VARIABLE
 - `8` *(the client's constant name did not survive obfuscation)*
+
+## Bound here, absent from the client
+
+Not a gap — the opposite. A logic on a code the client has no form for is code
+nobody can configure and therefore nobody can reach.
+
+- addon `1200` — WiredAddonVariableFxHealthPoints
+- addon `1201` — WiredAddonVariableFxProgressBar
+- addon `1202` — WiredAddonVariableFxLevellingProgress
+- addon `1203` — WiredAddonVariableFxStatusBar
+- addon `1204` — WiredAddonVariableFxBossBar
+- addon `1205` — WiredAddonVariableFxNumberDisplay
 
 ## Problems
 

@@ -16,8 +16,8 @@ design — those were never at risk.
 |---|---|
 | logic names in the pass | 73 |
 | definitions covered | 42059 |
-| answered by a logic | 40974 / 42059 (97.4%) |
-| stranded on an unregistered name | 1085 |
+| answered by a logic | 40976 / 42059 (97.4%) |
+| stranded on an unregistered name | 1083 |
 
 ## Unregistered, worst first
 
@@ -60,7 +60,6 @@ intentional fallback from an accident.
 | 2 | furniture_V_aianas |
 | 2 | furniture_bg |
 | 2 | furniture_builder_placeholder_test |
-| 2 | furniture_clothing_change |
 | 2 | furniture_craftable |
 | 2 | furniture_cuckoo_clock |
 | 2 | furniture_gift |
@@ -103,6 +102,7 @@ intentional fallback from an accident.
 | 3 | furniture_ecotron_box | FurnitureRewardBoxLogic |
 | 3 | furniture_furnichest | FurnitureWiredChestLogic |
 | 3 | furniture_habbowheel | FurnitureWheelOfFortuneLogic |
+| 2 | furniture_clothing_change | FurnitureClothingChangeLogic |
 | 2 | furniture_coinschest | FurnitureWiredChestLogic |
 
 > Name-level, not family-level. The provider keys a logic by name **and** family, so a

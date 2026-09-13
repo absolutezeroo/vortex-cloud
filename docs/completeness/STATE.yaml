@@ -4,7 +4,7 @@ status: started
 
 repository:
   name: absolutezeroo/vortex-cloud
-  observed_head: 1fdfbb82e7a6c03f9d6557ad6483897ef87ab707
+  observed_head: 06ed6352d9f19acac509ed6e731dabbb3908208c
 
 codebase_documentation:
   state_file: docs/codebase/.documentation-state.json
@@ -27,14 +27,14 @@ active_slice: null
 coverage:
   denominator: 578
   unresolved_surface: 2
-  protocol_mapping: 523
-  implementation: 404
+  protocol_mapping: 536
+  implementation: 422
   verified_complete: 0
-  missing: 39
-  partial: 119
+  missing: 26
+  partial: 114
   unknown: 0
   not_applicable: 16
-  measured_at_commit: 1fdfbb82e7a6c03f9d6557ad6483897ef87ab707
+  measured_at_commit: 06ed6352d9f19acac509ed6e731dabbb3908208c
   note: "implementation means Vortex has a meaningful path, never that Habbo behaviour was verified"
 
 # A SECOND surface, and not comparable with the packet one. The packet matrix scores the wired
@@ -42,10 +42,17 @@ coverage:
 # configure. Reproduce with the same command; written to generated/WIRED-BOXES.md.
 wired_box_surface:
   denominator: 184
-  implemented: 154
-  missing: 30
-  by_family: "trigger 26/26, action 44/58, condition 41/45, selector 20/20, addon 16/26, variable 7/9"
-  note: "an enum member is not a box: WiredActionType declares 47, only 44 have a logic"
+  implemented: 162
+  missing: 22
+  by_family: "trigger 26/26, action 49/58, condition 43/45, selector 20/20, addon 16/26, variable 8/9"
+  bound_here_absent_from_client: 6
+  note: "an enum member is not a box: a code with no logic behind it is still missing"
+  newer_client_note: |
+    The denominator is WIN63-202607011411's 184 boxes. The AIR 1.0.31 client sitting beside this
+    repository has 191 -- the six Variable FX add-ons (1200-1205) and a variables web API (2002),
+    none of which exist in WIN63 at all. The six FX boxes are implemented here, which is what
+    bound_here_absent_from_client counts: they are ahead of the target, not stray. Moving the
+    program's target client is a decision of its own and has not been taken.
 
 # A THIRD surface. Widest blast radius per gap: one unbound name strands every definition carrying
 # it, silently. Denominator = Vortex.Database/Seeds/furni_logic_bindings.sql, the committed

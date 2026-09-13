@@ -7,8 +7,8 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 44 |
-| missing | 30 |
+| obligations | 31 |
+| missing | 17 |
 | partial | 0 |
 | implemented | 0 |
 | complete | 0 |
@@ -23,29 +23,16 @@ Target client: `WIN63-202607011411-782849652`
 - `PurchaseSnowWarGameTokensOffer` (3243) — the packet is described but no revision map binds it, so it cannot arrive
 - `ReplenishRespect` (426) — the packet is described but no revision map binds it, so it cannot arrive
 - `header:1119` (1119) — the client sends header 1119 and nothing in this repository is bound to it
-- `header:1163` (1163) — the client sends header 1163 and nothing in this repository is bound to it
-- `header:1176` (1176) — the client sends header 1176 and nothing in this repository is bound to it
 - `header:1225` (1225) — the client sends header 1225 and nothing in this repository is bound to it
 - `header:1242` (1242) — the client sends header 1242 and nothing in this repository is bound to it
 - `header:1295` (1295) — the client sends header 1295 and nothing in this repository is bound to it
-- `header:1376` (1376) — the client sends header 1376 and nothing in this repository is bound to it
 - `header:145` (145) — the client sends header 145 and nothing in this repository is bound to it
-- `header:1494` (1494) — the client sends header 1494 and nothing in this repository is bound to it
-- `header:1789` (1789) — the client sends header 1789 and nothing in this repository is bound to it
-- `header:1808` (1808) — the client sends header 1808 and nothing in this repository is bound to it
-- `header:2304` (2304) — the client sends header 2304 and nothing in this repository is bound to it
 - `header:2668` (2668) — the client sends header 2668 and nothing in this repository is bound to it
-- `header:272` (272) — the client sends header 272 and nothing in this repository is bound to it
-- `header:2883` (2883) — the client sends header 2883 and nothing in this repository is bound to it
 - `header:293` (293) — the client sends header 293 and nothing in this repository is bound to it
-- `header:3036` (3036) — the client sends header 3036 and nothing in this repository is bound to it
 - `header:3159` (3159) — the client sends header 3159 and nothing in this repository is bound to it
 - `header:3315` (3315) — the client sends header 3315 and nothing in this repository is bound to it
 - `header:3422` (3422) — the client sends header 3422 and nothing in this repository is bound to it
 - `header:3608` (3608) — the client sends header 3608 and nothing in this repository is bound to it
-- `header:3980` (3980) — the client sends header 3980 and nothing in this repository is bound to it
-- `header:662` (662) — the client sends header 662 and nothing in this repository is bound to it
-- `header:75` (75) — the client sends header 75 and nothing in this repository is bound to it
 - `header:831` (831) — the client sends header 831 and nothing in this repository is bound to it
 
 ## not_applicable

@@ -7,10 +7,10 @@ Target client: `WIN63-202607011411-782849652`
 
 | status | count |
 |---|---|
-| obligations | 10 |
+| obligations | 12 |
 | missing | 0 |
 | partial | 0 |
-| implemented | 10 |
+| implemented | 12 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 0 |
@@ -19,9 +19,11 @@ Target client: `WIN63-202607011411-782849652`
 
 - `AddToCustomFilter` (2656) — preferences.add_to_custom_filter reaches a domain operation from AddToCustomFilterMessageHandler
 - `GetCustomFilter` (801) — preferences.get_custom_filter reaches a domain operation from GetCustomFilterMessageHandler
+- `GetDiscordPreferences` (2883) — preferences.get_discord_preferences reaches a domain operation from GetDiscordPreferencesMessageHandler
 - `RemoveFromCustomFilter` (2209) — preferences.remove_from_custom_filter reaches a domain operation from RemoveFromCustomFilterMessageHandler
 - `SetChatPreferences` (1149) — preferences.set_chat_preferences reaches a domain operation from SetChatPreferencesMessageHandler
 - `SetChatStylePreference` (2634) — preferences.set_chat_style_preference reaches a domain operation from SetChatStylePreferenceMessageHandler
+- `SetDiscordPreferences` (2304) — preferences.set_discord_preferences reaches a domain operation from SetDiscordPreferencesMessageHandler
 - `SetIgnoreRoomInvites` (1332) — preferences.set_ignore_room_invites reaches a domain operation from SetIgnoreRoomInvitesMessageHandler
 - `SetNewNavigatorWindowPreferences` (1276) — preferences.set_new_navigator_window_preferences reaches a domain operation from SetNewNavigatorWindowPreferencesMessageHandler
 - `SetRoomCameraPreferences` (3917) — preferences.set_room_camera_preferences reaches a domain operation from SetRoomCameraPreferencesMessageHandler

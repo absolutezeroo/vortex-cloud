@@ -16,8 +16,8 @@ reproduced from the target client and the current code on the next run.
 
 | axis | value |
 |---|---|
-| protocol mapping | 523 / 578 (90.5%) |
-| implementation | 413 / 578 (71.5%) |
+| protocol mapping | 536 / 578 (92.7%) |
+| implementation | 422 / 578 (73.0%) |
 | verified complete | 0 / 578 (0.0%) |
 
 `protocol mapping` counts obligations Vortex can receive at all. `implementation`
@@ -38,9 +38,9 @@ checked against the protocol and wrote the evidence down.
 
 | status | count |
 |---|---|
-| missing | 39 |
-| partial | 110 |
-| implemented | 413 |
+| missing | 26 |
+| partial | 114 |
+| implemented | 422 |
 | complete | 0 |
 | unknown | 0 |
 | not_applicable | 16 |
@@ -60,6 +60,7 @@ checked against the protocol and wrote the evidence down.
 | game | 27 | 5 | 20 | 2 | 0 | 0 | 0 |
 | gifts | 4 | 0 | 4 | 0 | 0 | 0 | 0 |
 | groups | 12 | 0 | 0 | 12 | 0 | 0 | 0 |
+| habbicons | 9 | 0 | 7 | 2 | 0 | 0 | 0 |
 | handshake | 9 | 0 | 4 | 5 | 0 | 0 | 0 |
 | hotlooks | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
 | inventory | 27 | 0 | 1 | 26 | 0 | 0 | 0 |
@@ -73,14 +74,15 @@ checked against the protocol and wrote the evidence down.
 | notifications | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
 | nux | 3 | 0 | 2 | 1 | 0 | 0 | 0 |
 | poll | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
-| preferences | 10 | 0 | 0 | 10 | 0 | 0 | 0 |
+| preferences | 12 | 0 | 0 | 12 | 0 | 0 | 0 |
 | quest | 18 | 0 | 4 | 12 | 0 | 0 | 2 |
 | register | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| room | 102 | 0 | 18 | 84 | 0 | 0 | 0 |
+| reward_tracks | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
+| room | 102 | 0 | 13 | 89 | 0 | 0 | 0 |
 | sound | 9 | 0 | 0 | 9 | 0 | 0 | 0 |
 | talent | 3 | 0 | 3 | 0 | 0 | 0 | 0 |
 | tracking | 5 | 0 | 5 | 0 | 0 | 0 | 0 |
-| unsorted | 44 | 30 | 0 | 0 | 0 | 0 | 14 |
+| unsorted | 31 | 17 | 0 | 0 | 0 | 0 | 14 |
 | user_classification | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
 | userdefinedroomevents | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | users | 42 | 0 | 3 | 39 | 0 | 0 | 0 |
