@@ -268,10 +268,33 @@ public sealed class WebApiPlayerService(
 
         // A currency row only exists once the player has held that currency, so the wallet is read
         // as a dictionary and missing rows are zero rather than an absent counter.
+        //
+        // Only the THREE this purse shows, and that narrowing IS the fix for a 500 this route
+        // answered on any hotel carrying more than one activity-point currency. A wallet is keyed
+        // by <see cref="CurrencyKind" />, the PAIR (CurrencyType, ActivityPointType) — so
+        // <c>CurrencyType.ActivityPoints</c> is a FAMILY and not a currency: duckets, diamonds and
+        // every seasonal currency each get their own <c>currency_types</c> row under it. This read
+        // keyed on <c>CurrencyType</c> alone, collapsed the whole family onto one key, and
+        // <c>ToDictionaryAsync</c> threw "An item with the same key has already been added" — while
+        // building an entry for a value the purse does not display.
+        //
+        // `Max` and not `Sum` for the three that remain: the wallet grain spends from ONE row per
+        // kind (<c>PlayerWalletGrain.ResolveCurrencyRowAsync</c> resolves a single id), so adding
+        // two rows together would print a balance the game will not let the player spend.
         Dictionary<CurrencyType, int> balances = await db
             .PlayerCurrencies.AsNoTracking()
-            .Where(c => c.PlayerEntityId == playerId && c.CurrencyTypeEntity != null)
-            .ToDictionaryAsync(c => c.CurrencyTypeEntity!.CurrencyType, c => c.Amount, ct)
+            .Where(c =>
+                c.PlayerEntityId == playerId
+                && c.CurrencyTypeEntity != null
+                && (
+                    c.CurrencyTypeEntity.CurrencyType == CurrencyType.Credits
+                    || c.CurrencyTypeEntity.CurrencyType == CurrencyType.Silver
+                    || c.CurrencyTypeEntity.CurrencyType == CurrencyType.Emeralds
+                )
+            )
+            .GroupBy(c => c.CurrencyTypeEntity!.CurrencyType)
+            .Select(group => new { Kind = group.Key, Amount = group.Max(c => c.Amount) })
+            .ToDictionaryAsync(row => row.Kind, row => row.Amount, ct)
             .ConfigureAwait(false);
 
         DateTime now = DateTime.UtcNow;
