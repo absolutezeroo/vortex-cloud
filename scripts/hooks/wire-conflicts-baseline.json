@@ -54,6 +54,7 @@
     "outgoing/UserChange",
     "outgoing/UserHabbicons",
     "outgoing/UserObject",
+    "outgoing/VariableFxConfigUpdate",
     "outgoing/WiredEnvironment",
     "outgoing/WiredMovements",
     "outgoing/WiredTradeItemsUpdate",

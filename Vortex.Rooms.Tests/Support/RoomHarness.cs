@@ -137,7 +137,14 @@ internal sealed class RoomHarness
             }),
             BuildPermissionService(capabilities),
             FakeProxy.Create<IVortexMetrics>(_ => null),
-            FakeProxy.Create<IRoomModerationStore>(_ => null),
+            // The real store, on the same in-memory database as everything else here. It was a
+            // no-op proxy, which meant a ban could be "applied" in a test and land nowhere — and
+            // raid protection bans without a human actor, so that was the only thing left to assert.
+            // Plain EF, nothing this provider cannot run.
+            new RoomModerationStore(
+                new SingleOptionsFactory(options),
+                NullLogger<RoomModerationStore>.Instance
+            ),
             BuildPetLevelProvider(),
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),

@@ -31,6 +31,9 @@ public class RoomDirectoryGrain(
     private readonly Dictionary<RoomId, HashSet<PlayerId>> _roomPlayers = [];
     private readonly Dictionary<RoomId, int> _roomPopulations = [];
 
+    /// <summary>Rooms handling a raid right now. Only the ones that are — an empty set is the norm.</summary>
+    private readonly HashSet<RoomId> _raidIncidents = [];
+
     public override Task OnActivateAsync(CancellationToken ct)
     {
         this.RegisterGrainTimer<object?>(
@@ -70,6 +73,21 @@ public class RoomDirectoryGrain(
         _activeRooms.Remove(roomId);
         _roomPlayers.Remove(roomId);
         _roomPopulations.Remove(roomId);
+        _raidIncidents.Remove(roomId);
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetRaidIncidentAsync(RoomId roomId, bool active)
+    {
+        if (active)
+        {
+            _raidIncidents.Add(roomId);
+        }
+        else
+        {
+            _raidIncidents.Remove(roomId);
+        }
 
         return Task.CompletedTask;
     }
@@ -122,6 +140,7 @@ public class RoomDirectoryGrain(
                         OwnerName = x.OwnerName,
                         Population = population,
                         LastUpdatedUtc = x.LastUpdatedUtc,
+                        RaidIncidentActive = _raidIncidents.Contains(x.RoomId),
                     };
                 })
                 .ToImmutableArray()

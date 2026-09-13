@@ -71,6 +71,13 @@ public sealed class RoomLiveState
     /// </summary>
     public bool AllInRoomMuted { get; internal set; }
 
+    /// <summary>
+    /// Raid protection: the owner's settings, the sliding window of arrivals, and whether an
+    /// incident or a guard period is running. Loaded lazily on the first arrival of this activation
+    /// — most rooms never configure it and should not pay a query for it.
+    /// </summary>
+    internal RoomRaidProtectionState RaidProtection { get; } = new();
+
     /// <summary>Players currently waiting on a doorbell ring for a locked door, keyed by the tick
     /// timestamp (ms) the ring started — swept for timeout by <c>RoomGrain.Doorbell.cs</c>.</summary>
     public Dictionary<PlayerId, long> PendingDoorbellRingersMs { get; } = [];

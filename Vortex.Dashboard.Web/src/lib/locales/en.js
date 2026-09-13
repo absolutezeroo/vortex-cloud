@@ -1031,6 +1031,8 @@ export default {
     filterOwner: 'Owner',
     filterMinPopulation: 'At least N players',
     filterActivity: 'Active within',
+    filterRaid: 'Under attack',
+    raidActive: 'Raid',
     activity5: 'The last 5 minutes',
     activity30: 'The last 30 minutes',
     activity120: 'The last 2 hours',

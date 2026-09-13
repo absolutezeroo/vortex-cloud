@@ -27,6 +27,7 @@ public interface IRoomGrain
         IRoomSecurity,
         IRoomSettings,
         IRoomModeration,
+        IRoomRaidProtection,
         IRoomTrading,
         IRoomMysteryBox,
         IRoomDoorbell,

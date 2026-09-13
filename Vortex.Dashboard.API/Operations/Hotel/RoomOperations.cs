@@ -56,7 +56,8 @@ internal sealed class RoomOperations(
                 r.OwnerId.Value,
                 r.OwnerName,
                 r.Population,
-                r.LastUpdatedUtc
+                r.LastUpdatedUtc,
+                r.RaidIncidentActive
             )),
         ];
     }
@@ -194,5 +195,7 @@ public sealed record RoomSummaryDto(
     int OwnerId,
     string OwnerName,
     int Population,
-    DateTime LastUpdatedUtc
+    DateTime LastUpdatedUtc,
+    /// <summary>The room is handling a raid at this moment — live state, gone when it passes.</summary>
+    bool RaidIncidentActive
 );

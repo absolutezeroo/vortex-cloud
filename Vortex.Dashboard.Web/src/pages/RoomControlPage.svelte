@@ -12,6 +12,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EntityLink from '../components/EntityLink.svelte';
+  import Chip from '../components/Chip.svelte';
   import { identity, openPlayer, openItem } from '../lib/session';
   import FilterBar from '../components/FilterBar.svelte';
   import { readFilterValues } from '../lib/filters';
@@ -35,6 +36,9 @@
     { id: 'q', label: translate('roomControl.filterName'), kind: 'text' },
     { id: 'owner', label: translate('roomControl.filterOwner'), kind: 'entity', picker: 'user' },
     { id: 'minPop', label: translate('roomControl.filterMinPopulation'), kind: 'number' },
+    // Not a nice-to-have next to the others: during a raid this is the only filter that matters,
+    // and without it finding the room under attack means reading a list that is moving.
+    { id: 'raid', label: translate('roomControl.filterRaid'), kind: 'bool' },
     {
       id: 'activity',
       label: translate('roomControl.filterActivity'),
@@ -56,6 +60,10 @@
       }
 
       if (filters.minPop && room.population < Number(filters.minPop)) {
+        return false;
+      }
+
+      if (filters.raid && !room.raidIncidentActive) {
         return false;
       }
 
@@ -222,6 +230,12 @@
               {/if}
               {room.name} <small>#{room.roomId}</small>
             </button>
+            <!-- The one thing an operator scanning this list needs to spot without clicking: the
+                 room is being raided right now. Live state — it disappears on its own once the
+                 arrivals stop, so an empty column is the normal hotel. -->
+            {#if room.raidIncidentActive}
+              <Chip label={$t('roomControl.raidActive')} tone="danger" />
+            {/if}
           </td>
           <td><EntityLink id={room.ownerId} label={room.ownerName} {openPlayer} {openItem} /></td>
           <td>{room.population}</td>

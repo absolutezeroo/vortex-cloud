@@ -713,6 +713,19 @@ internal static class MessageEvent
 
     // The player's whole Hook Havoc attempt, replayed server-side against the seed it was given.
     public const int VortexHookHavocInputMessageEvent = 8109;
+
+    // Raid protection. These two ARE the AIR 1.0.31 ids -- _composers[206] and _composers[2687] --
+    // and they are safe to take because neither appears in the WIN63-202607011411 `_composers`
+    // table: this revision's target client sends nothing on either. (206 is live in WIN63 in the
+    // OTHER direction, as UserTypingMessageComposer below; the two tables are independent.)
+    //
+    // The three composers could not follow suit: AIR binds them at 734 and 3620, which WIN63
+    // already spends on ChatReviewSessionOfferedToGuide and SecondsUntil, and 3553. Taking those
+    // would have silenced two working messages, so the outgoing half sits in the Vortex band at
+    // 8202-8206. When this revision moves to an AIR-era client, those three constants change and
+    // nothing else does.
+    public const int GetRaidProtectionSettingsMessageEvent = 206;
+    public const int SaveRaidProtectionSettingsMessageEvent = 2687;
     #endregion
 }
 
@@ -1419,5 +1432,14 @@ internal static class MessageComposer
     public const int VortexFishingRecordsMessageComposer = 8116;
     public const int VortexHookHavocStartedMessageComposer = 8118;
     public const int VortexHookHavocResultMessageComposer = 8120;
+
+    // Raid protection takes 8200-8299. These three are the only part of the feature NOT on its
+    // official id: AIR 1.0.31 binds them at 734, 3553 and 3620, and two of those are spent in this
+    // revision on messages the target client really reads (ChatReviewSessionOfferedToGuide,
+    // SecondsUntil). The bodies are the client's own, field for field -- only the numbers moved.
+    // See the matching note beside GetRaidProtectionSettingsMessageEvent.
+    public const int RaidProtectionCapabilityMessageComposer = 8202; // AIR 1.0.31: 734
+    public const int RaidProtectionSettingsMessageComposer = 8204; // AIR 1.0.31: 3553
+    public const int RaidProtectionSettingsResultMessageComposer = 8206; // AIR 1.0.31: 3620
     #endregion
 }

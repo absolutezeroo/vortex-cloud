@@ -62,6 +62,11 @@ public static class GrainFactoryExtensions
     public static IRoomModeration GetRoomModeration(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomModeration>((long)roomId.Value);
 
+    public static IRoomRaidProtection GetRoomRaidProtection(
+        this IGrainFactory factory,
+        RoomId roomId
+    ) => factory.GetGrain<IRoomRaidProtection>((long)roomId.Value);
+
     public static IRoomTrading GetRoomTrading(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomTrading>((long)roomId.Value);
 

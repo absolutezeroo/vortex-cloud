@@ -3078,6 +3078,7 @@ export interface RoomSummaryDto {
   ownerName: string;
   population: number;
   lastUpdatedUtc: string;
+  raidIncidentActive: boolean;
 }
 
 export interface RoomTimeline {

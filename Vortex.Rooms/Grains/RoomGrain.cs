@@ -116,6 +116,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomSecurityModule SecurityModule;
     public readonly RoomWiredSystem WiredSystem;
     public readonly RoomModerationSystem ModerationSystem;
+    public readonly RoomRaidProtectionSystem RaidProtectionSystem;
     public readonly RoomMysteryBoxSystem MysteryBoxSystem;
     public readonly RoomCrackableSystem CrackableSystem;
     public readonly RoomTradingSystem TradingSystem;
@@ -199,6 +200,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         GameTimers = new GameTimerSystem(this);
         ScoreboardPresenter = new GameScoreboardPresenter(this);
         ModerationSystem = new RoomModerationSystem(this);
+        RaidProtectionSystem = new RoomRaidProtectionSystem(this);
         MysteryBoxSystem = new RoomMysteryBoxSystem(this);
         CrackableSystem = new RoomCrackableSystem(this);
         TradingSystem = new RoomTradingSystem(this);
@@ -384,6 +386,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         await RunTickStepAsync("games", () => GameRuntime.TickAsync(now, ct));
 
         await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
+        await RunTickStepAsync(
+            "raid-protection",
+            () => RaidProtectionSystem.TickAsync(DateTime.UtcNow, ct)
+        );
         await RunTickStepAsync("mystery-box", () => ProcessMysteryBoxTimeoutsAsync(now, ct));
         await RunTickStepAsync("flush-tiles", () => FlushDirtyTilesAsync(ct));
         await RunTickStepAsync("flush-items", () => FlushDirtyItemsAsync(ct));
