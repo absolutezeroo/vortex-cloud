@@ -131,6 +131,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Shop", "Vortex.Shop\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Shop.Tests", "Vortex.Shop.Tests\Vortex.Shop.Tests.csproj", "{2A5B1C64-06D8-4998-876D-88959DD32969}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.PacketHandlers.Tests", "Vortex.PacketHandlers.Tests\Vortex.PacketHandlers.Tests.csproj", "{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -825,6 +827,18 @@ Global
 		{2A5B1C64-06D8-4998-876D-88959DD32969}.Release|x64.Build.0 = Release|Any CPU
 		{2A5B1C64-06D8-4998-876D-88959DD32969}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A5B1C64-06D8-4998-876D-88959DD32969}.Release|x86.Build.0 = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|x64.Build.0 = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Debug|x86.Build.0 = Debug|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|x64.ActiveCfg = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|x64.Build.0 = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|x86.ActiveCfg = Release|Any CPU
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -885,5 +899,6 @@ Global
 		{7C3E4B21-9A5D-4F08-BE12-5D6A9C4E1F30} = {A1000000-0000-4000-8000-000000000003}
 		{31AC1D76-755B-43F2-8FCC-FB83E136A88B} = {A1000000-0000-4000-8000-000000000007}
 		{3D8F1A64-2B57-4C90-A1E3-8F42B6D07C15} = {A1000000-0000-4000-8000-000000000007}
+		{9C5B46E1-5AB4-49D3-931D-29EF76FA8806} = {A1000000-0000-4000-8000-000000000007}
 	EndGlobalSection
 EndGlobal
