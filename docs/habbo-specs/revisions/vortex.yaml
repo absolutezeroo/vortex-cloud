@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:e19b7e3417fe373be29d000b0443277a874a3ad73cfacd5ce01efadc3aedc47a"
+generated_digest: "sha256:dbe4538c233854992069883b9435da480591d0b601354912d2ac79809bb4bfc0"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -957,9 +957,9 @@ generated:
     Quests: 3398
     QuizData: 3999
     QuizResults: 548
-    RaidProtectionCapability: 8202
-    RaidProtectionSettings: 8204
-    RaidProtectionSettingsResult: 8206
+    RaidProtectionCapability: 3554
+    RaidProtectionSettings: 3553
+    RaidProtectionSettingsResult: 3555
     RecyclerFinished: 3617
     RecyclerPrizes: 3367
     RecyclerStatus: 2166
