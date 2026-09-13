@@ -4,7 +4,18 @@ public enum WiredActionType
 {
     TOGGLE_FURNI_STATE = 0,
     RESET = 1,
-    SET_FURNI_STATE = 3,
+
+    /// <summary>
+    /// Restores the furni to the position, state, direction and altitude they had when the box was
+    /// saved.
+    /// </summary>
+    /// <remarks>
+    /// Named SET_FURNI_STATE here until 2026-09-13, which was a guess at an obfuscated constant and
+    /// the wrong one. The client's class for code 3 declares <c>hasStateSnapshot</c> and four
+    /// checkboxes — state, direction, position, altitude — and Habbo's own documentation calls it
+    /// "match furni to position and state": it restores four aspects, it does not set one.
+    /// </remarks>
+    MATCH_TO_SNAPSHOT = 3,
     MOVE_AND_ROTATE_FURNI = 4,
     GIVE_SCORE = 6,
     CHAT = 7,

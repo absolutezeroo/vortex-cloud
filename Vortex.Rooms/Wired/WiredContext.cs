@@ -101,6 +101,12 @@ internal abstract class WiredContext(IWiredRoomHost host) : IWiredContext
                             }
                         }
                         break;
+                    case WiredFurniSourceType.SnapshotItems:
+                        // The furni this box recorded when it was last saved. Declared in the enum
+                        // since the wired engine was written and resolved by nothing until now, so a
+                        // player choosing it got an empty selection and no reason why.
+                        set.SelectedFurniIds.UnionWith(wired.GetSnapshotFurniIds());
+                        break;
                     case WiredFurniSourceType.SignalItems:
                         set.SelectedFurniIds.UnionWith(Signal.SelectedFurniIds);
                         break;

@@ -118,6 +118,16 @@ public abstract class FurnitureWiredLogic(
         return stuffIds ?? [];
     }
 
+    /// <summary>The furni recorded at the last save, pruned to the ones still in the room — a
+    /// snapshot outlives the furni it describes, and selecting an id nothing answers for would put a
+    /// ghost in every set built from it.</summary>
+    public virtual List<int> GetSnapshotFurniIds() =>
+        [
+            .. _wiredData
+                .Snapshots.Select(snapshot => snapshot.FurniId)
+                .Where(id => _ctx.Lookup.TryFindItem(id, out _)),
+        ];
+
     public virtual List<IWiredParamRule> GetIntParamRules()
     {
         return [];
@@ -131,6 +141,50 @@ public abstract class FurnitureWiredLogic(
     public virtual List<WiredFurniSourceType[]> GetAllowedFurniSources()
     {
         return [];
+    }
+
+    /// <summary>
+    /// Whether saving this box records where its furni stood and how they looked.
+    /// </summary>
+    /// <remarks>
+    /// Mirrors the client's own <c>hasStateSnapshot</c>, which is a property of the box type and not
+    /// of its configuration. The capture happens at save time on purpose: the interaction is
+    /// "arrange the room, then save the box", and a snapshot taken when the box fires would only
+    /// ever record the arrangement it is about to overwrite.
+    /// </remarks>
+    public virtual bool HasStateSnapshot => false;
+
+    /// <summary>Where each of these furni stands right now, for the boxes that restore it later.
+    /// A furni that is not a floor item is skipped: nothing else has a position to return to.
+    /// </summary>
+    protected List<WiredFurniStateSnapshot> CaptureSnapshots(List<int> furniIds)
+    {
+        List<WiredFurniStateSnapshot> snapshots = [];
+
+        foreach (int furniId in furniIds)
+        {
+            if (
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
+                || item is not IRoomFloorItem floorItem
+            )
+            {
+                continue;
+            }
+
+            snapshots.Add(
+                new WiredFurniStateSnapshot
+                {
+                    FurniId = furniId,
+                    X = floorItem.X,
+                    Y = floorItem.Y,
+                    Z = floorItem.Z.ToInt(),
+                    Rotation = (int)floorItem.Rotation,
+                    State = item.Logic.GetState(),
+                }
+            );
+        }
+
+        return snapshots;
     }
 
     public virtual List<WiredPlayerSourceType[]> GetAllowedPlayerSources()
@@ -413,6 +467,7 @@ public abstract class FurnitureWiredLogic(
             _wiredData.StringParam = stringParam;
             _wiredData.StuffIds = stuffIds;
             _wiredData.StuffIds2 = stuffIds2;
+            _wiredData.Snapshots = HasStateSnapshot ? CaptureSnapshots(stuffIds) : [];
             _wiredData.VariableIds = variableIds;
             _wiredData.FurniSources = furniSources;
             _wiredData.PlayerSources = playerSources;

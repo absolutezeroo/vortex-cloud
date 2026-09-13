@@ -18,6 +18,11 @@ public interface IWiredBox
     public Task FlashActivationStateAsync(CancellationToken ct);
     public List<int> GetStuffIds();
     public List<int> GetStuffIds2();
+
+    /// <summary>The furni this box recorded the last time it was saved, for the boxes the client
+    /// marks <c>hasStateSnapshot</c>. Empty for every other box, which is what makes
+    /// <see cref="WiredFurniSourceType.SnapshotItems"/> select nothing on one.</summary>
+    public List<int> GetSnapshotFurniIds();
     public List<IWiredParamRule> GetIntParamRules();
     public IWiredParamRule? GetIntParamTailRule();
     public List<WiredFurniSourceType[]> GetAllowedFurniSources();

@@ -28,6 +28,10 @@ public class WiredData : IWiredData
     public List<int> StuffIds2 { get; set; } = [];
     public List<string> VariableIds { get; set; } = [];
 
+    /// <summary>What the configured furni looked like when this box was last saved, for the boxes
+    /// the client marks <c>hasStateSnapshot</c>. Empty for every other box.</summary>
+    public List<WiredFurniStateSnapshot> Snapshots { get; set; } = [];
+
     public List<WiredFurniSourceType[]> FurniSources { get; set; } = [];
     public List<WiredPlayerSourceType[]> PlayerSources { get; set; } = [];
 

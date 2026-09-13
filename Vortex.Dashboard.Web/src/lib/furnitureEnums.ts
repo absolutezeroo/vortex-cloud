@@ -283,6 +283,7 @@ export const LOGIC_GROUPS = [
       { value: 'wf_act_kick_user', label: 'wf_act_kick_user' },
       { value: 'wf_act_leave_team', label: 'wf_act_leave_team' },
       { value: 'wf_act_lower_furni', label: 'wf_act_lower_furni' },
+      { value: 'wf_act_match_to_sshot', label: 'wf_act_match_to_sshot' },
       { value: 'wf_act_move_as_group', label: 'wf_act_move_as_group' },
       { value: 'wf_act_move_furni_to', label: 'wf_act_move_furni_to' },
       { value: 'wf_act_move_rotate', label: 'wf_act_move_rotate' },
