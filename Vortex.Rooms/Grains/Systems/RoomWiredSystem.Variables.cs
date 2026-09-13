@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
+using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Grains.Storage;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
+using Vortex.Rooms.Wired;
 using Vortex.Rooms.Wired.Variables;
 
 namespace Vortex.Rooms.Grains.Systems;
@@ -21,7 +25,17 @@ public sealed partial class RoomWiredSystem
     private readonly PlayerActiveStore _playerActiveStore = new();
     private readonly RoomActiveStore _roomActiveStore = new();
     private readonly Dictionary<WiredVariableId, IWiredVariable> _variableById = [];
-    private readonly Dictionary<int, WiredVariableId> _variableIdBoxId = [];
+
+    /// <summary>
+    /// Every variable a box put in the room, so removing the box removes all of them.
+    /// </summary>
+    /// <remarks>
+    /// A list rather than one id: an add-on stacked with a variable box adds variables derived from
+    /// it — level and progress from an experience value, year and hour from a timestamp, a Variable
+    /// FX display from anything. They belong to the box, not to the add-on, because the box is what
+    /// the room tracks and what a pickup takes away.
+    /// </remarks>
+    private readonly Dictionary<int, List<WiredVariableId>> _variableIdBoxId = [];
 
     private WiredVariablesSnapshot? _variablesSnapshot;
 
@@ -165,9 +179,72 @@ public sealed partial class RoomWiredSystem
             return;
         }
 
-        WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
+        List<WiredVariableId> registered = [variable.GetVarSnapshot().VariableId];
 
-        _variableIdBoxId[boxId] = snapshot.VariableId;
+        foreach (IWiredVariable derived in await BuildSubVariablesAsync(item, variable, ct))
+        {
+            if (ProcessVariable(derived))
+            {
+                registered.Add(derived.GetVarSnapshot().VariableId);
+            }
+        }
+
+        _variableIdBoxId[boxId] = registered;
+    }
+
+    /// <summary>
+    /// The variables the add-ons stacked with this box derive from it.
+    /// </summary>
+    /// <remarks>
+    /// The pile is resolved from the box's own tile, which is also how a firing stack finds its
+    /// add-ons — the resolver leaves variable boxes out of a pile deliberately, but the add-ons
+    /// standing with them are exactly what this needs.
+    /// <para>
+    /// Each contributing add-on is hydrated first. An add-on the room has not loaded yet answers
+    /// from a blank configuration, which produces a set of sub-variables named after nothing, and
+    /// they would sit in the registry until the next time the box happened to go dirty.
+    /// </para>
+    /// </remarks>
+    private async Task<List<IWiredVariable>> BuildSubVariablesAsync(
+        IRoomItem box,
+        FurnitureWiredVariableLogic parent,
+        CancellationToken ct
+    )
+    {
+        List<IWiredVariable> derived = [];
+
+        if (box is not IRoomFloorItem floor)
+        {
+            return derived;
+        }
+
+        WiredStack stack = await _stacks.BuildFromTileAsync(Room.ToIdx(floor.X, floor.Y), ct);
+
+        foreach (IWiredAddon addon in stack.Addons)
+        {
+            if (addon is not IWiredSubVariableSource source)
+            {
+                continue;
+            }
+
+            try
+            {
+                await addon.LoadWiredAsync(ct);
+
+                derived.AddRange(source.CreateSubVariables(parent));
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Logger.LogWarning(
+                    ex,
+                    "Wired add-on {AddonType} failed to derive sub-variables in room {RoomId}.",
+                    addon.GetType().Name,
+                    Room.RoomId
+                );
+            }
+        }
+
+        return derived;
     }
 
     private bool ProcessVariable(IWiredVariable variable)
@@ -186,13 +263,20 @@ public sealed partial class RoomWiredSystem
 
     private void RemoveVariableBox(int boxId)
     {
-        if (!_variableIdBoxId.TryGetValue(boxId, out WiredVariableId variableId))
+        if (!_variableIdBoxId.TryGetValue(boxId, out List<WiredVariableId>? variableIds))
         {
             return;
         }
 
         _variableIdBoxId.Remove(boxId);
-        _variableById.Remove(variableId);
+
+        // Every id the box registered, not just its own: a box whose add-on derived four
+        // sub-variables would otherwise leave four entries pointing at a logic the room has
+        // dropped, and the next reader of the variable list would resolve them.
+        foreach (WiredVariableId variableId in variableIds)
+        {
+            _variableById.Remove(variableId);
+        }
     }
 
     private WiredVariablesSnapshot BuildVariablesSnapshot()
