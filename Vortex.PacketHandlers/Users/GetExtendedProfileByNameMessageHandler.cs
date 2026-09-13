@@ -78,14 +78,15 @@ public class GetExtendedProfileByNameMessageHandler
                     StarGemCount = snapshot.StarGemCount,
                     BooleanField26 = snapshot.BooleanField26,
                     BooleanField27 = snapshot.BooleanField27,
-                    // The two counts are real. The rarity breakdown and the rank are still zero:
-                    // `player_badges` stores neither a rarity tier nor an owner count, so there is
-                    // nothing to compute them from. They stay on the wire because the client reads
-                    // all four unconditionally - omitting them truncates the packet.
+                    // The two counts are real. The rarity breakdown has nothing to compute it from:
+                    // `player_badges` stores neither a rarity tier nor an owner count. The rank is
+                    // -1, the client's own "unranked" value — it hides the row below zero and would
+                    // otherwise print "(#0)" on every profile (groups/ExtendedProfileWindowCtrl.as:318).
+                    // All four stay on the wire because the client reads them unconditionally.
                     TotalBadges = snapshot.TotalBadges,
                     AchievementLevel = snapshot.AchievementLevel,
                     BadgeRarityCounts = [],
-                    TotalBadgesRank = 0,
+                    TotalBadgesRank = -1,
                 },
                 ct
             )

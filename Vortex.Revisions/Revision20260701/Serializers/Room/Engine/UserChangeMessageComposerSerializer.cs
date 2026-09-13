@@ -32,11 +32,12 @@ internal class UserChangeMessageComposerSerializer(int header)
     private const int TripletCount = 0;
 
     /// <summary>
-    ///     Badge rank. Nothing in the server populates a rank for a player yet — the field exists on
-    ///     <c>RoomPlayerAvatarSnapshot</c> and is never assigned — so zero is the truthful value, not
-    ///     a placeholder.
+    ///     Badge rank. Nothing in the server computes one yet, and the client's "nobody ranked me"
+    ///     value is -1, not 0: it draws the rank row for anything <c>>= 0</c>
+    ///     (infostand/InfoStandUserView.as:638-646), so zero put a "#0" and a leaderboard link on
+    ///     every avatar in the hotel.
     /// </summary>
-    private const int BadgesRank = 0;
+    private const int BadgesRank = -1;
 
     protected override void Serialize(IServerPacket packet, UserChangeMessageComposer message)
     {

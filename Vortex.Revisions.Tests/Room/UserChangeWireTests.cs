@@ -64,7 +64,13 @@ public sealed class UserChangeWireTests
         body.PopInt()
             .Should()
             .Be(0, "the triplet list is empty, so the client's loop runs zero times");
-        body.PopInt().Should().Be(0, "no player has a badge rank yet");
+        body.PopInt()
+            .Should()
+            .Be(
+                -1,
+                "no player has a badge rank yet, and -1 is how the client is told so — it draws the "
+                    + "rank row for anything >= 0 (infostand/InfoStandUserView.as:638-646)"
+            );
     }
 
     /// <summary>

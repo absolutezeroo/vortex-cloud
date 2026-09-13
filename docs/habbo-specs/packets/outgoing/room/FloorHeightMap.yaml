@@ -148,5 +148,19 @@ generated:
   - cf_754dd81433
   unknowns:
   - uk_6d741cc349
-verified: {}
-manual: {}
+verified:
+  fields:
+  - name: camera_init_x
+    type: int32
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411/unknowns/_SafePkg_2184/_SafeCls_3962.as:157 — read after the area-hide list, exposed as cameraInitX"
+  - name: camera_init_y
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_3962.as:158 — cameraInitY"
+  - name: camera_init_z
+    type: float32
+    confidence: client_confirmed
+    evidence: "_SafeCls_3962.as:159 — readFloat, four bytes, not an int; the three become the Vector3d passed to initializeRoom (room/_SafeCls_1984.as:640)"
+manual:
+  behaviour: "confidence: assumed - what Sulake puts in the camera-init vector is unknown; there is no capture and no reference emulator writes this packet's tail. Vortex sends the room's door tile (x, y, 0f) because it is always walkable and always where the player is about to appear, which beats the (0,0) corner the field defaulted to. Revisit with a capture."

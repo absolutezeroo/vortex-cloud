@@ -223,6 +223,13 @@ internal sealed partial class RoomService(
                     FixedWallsHeight = _roomConfig.DefaultWallHeight,
                     ModelData = mapSnapshot.ModelData,
                     AreaHideData = [],
+                    // Where the client parks the camera before the first avatar exists
+                    // (room/_SafeCls_1984.as:640). Sulake's own value is unknown; the door tile is
+                    // the one place in the model that is always walkable and always where the
+                    // player is about to appear, and it beats the (0,0) corner we used to send.
+                    CameraInitX = mapSnapshot.DoorX,
+                    CameraInitY = mapSnapshot.DoorY,
+                    CameraInitZ = 0f,
                 },
                 new RoomVisualizationSettingsMessageComposer
                 {
