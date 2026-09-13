@@ -209,6 +209,118 @@ public sealed partial class RoomWiredTradingSystem
         }
     }
 
+    /// <summary>
+    /// Counts what the chests hold, for the two wired conditions that ask before a payout runs.
+    /// </summary>
+    /// <remarks>
+    /// One query for every chest the box points at, not one per chest: a stack fires on a trigger
+    /// and the condition is on the hot path of it.
+    /// <para>
+    /// A kind is the sprite plus floor-or-wall, which is how the chest screen itself groups items.
+    /// It deliberately stops short of the poster number that
+    /// <see cref="WiredChestStore.IsSameKind"/> also compares: the example here is a furni placed in
+    /// the room, and a box configured with one poster would otherwise be blind to every other poster
+    /// of the same sprite sitting in the chest. Counting them together is the reading a builder
+    /// expects from "this item type"; the narrower one is available from the chest screen.
+    /// </para>
+    /// </remarks>
+    public async Task<int> CountChestItemsAsync(
+        IReadOnlyList<int> chestIds,
+        IReadOnlyList<int> kindExampleItemIds,
+        CancellationToken ct
+    )
+    {
+        List<int> chests =
+        [
+            .. chestIds
+                .Distinct()
+                .Where(id =>
+                    _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                    && WiredChestStore.IsChestLogic(item.Definition.LogicName)
+                ),
+        ];
+
+        if (chests.Count == 0)
+        {
+            return 0;
+        }
+
+        HashSet<(int SpriteId, bool IsWall)> kinds =
+        [
+            .. kindExampleItemIds
+                .Distinct()
+                .Where(id => _roomGrain._state.ItemsById.ContainsKey(id))
+                .Select(id => _roomGrain._state.ItemsById[id].Definition)
+                .Select(definition =>
+                    (definition.SpriteId, definition.ProductType == ProductType.Wall)
+                ),
+        ];
+
+        // The box names item types but none of them resolved: the furni were picked up after it was
+        // saved. Counting everything instead would answer a question nobody asked.
+        if (kindExampleItemIds.Count > 0 && kinds.Count == 0)
+        {
+            return 0;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            List<int> chestRowIds = await dbCtx
+                .WiredChests.AsNoTracking()
+                .Where(c => chests.Contains(c.FurnitureEntityId) && c.DeletedAt == null)
+                .Select(c => c.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            // A chest nobody has opened has no row, which is an empty chest and not a failure.
+            if (chestRowIds.Count == 0)
+            {
+                return 0;
+            }
+
+            IQueryable<FurnitureEntity> held = dbCtx
+                .Furnitures.AsNoTracking()
+                .Where(f =>
+                    f.WiredChestEntityId != null
+                    && chestRowIds.Contains(f.WiredChestEntityId.Value)
+                    && f.DeletedAt == null
+                );
+
+            if (kinds.Count == 0)
+            {
+                return await held.CountAsync(ct).ConfigureAwait(true);
+            }
+
+            // Definition ids, not whole rows: the kind lives in the definition and the provider
+            // already holds every one of them in memory.
+            List<int> heldDefinitionIds = await held.Select(f => f.FurnitureDefinitionEntityId)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            return heldDefinitionIds.Count(id =>
+                _roomGrain._definitionProvider.TryGetDefinition(id)
+                    is FurnitureDefinitionSnapshot definition
+                && kinds.Contains((definition.SpriteId, definition.ProductType == ProductType.Wall))
+            );
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to count the wired chest contents in room {RoomId}.",
+                _roomGrain.RoomId
+            );
+
+            // Unknown, and a condition cannot say so. Zero is the answer that keeps a payout from
+            // running on a count nobody established.
+            return 0;
+        }
+    }
+
     /// <summary>Who currently has each chest open on screen.</summary>
     /// <remarks>
     /// Two things read it, and both need the viewers rather than a flag: the lid stays open until

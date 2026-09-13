@@ -16,9 +16,14 @@ internal sealed class FakeRoomLookup(params IRoomPlayer[] players) : IRoomLookup
 {
     private readonly IRoomPlayer[] _players = players;
 
+    /// <summary>Furni the test put in the room, keyed by object id. Empty unless a test fills it —
+    /// a box that reads its configured stuff ids prunes them against this, so an id the room does
+    /// not know is dropped exactly as it would be in a live one.</summary>
+    public Dictionary<RoomObjectId, IRoomItem> ItemsById { get; } = [];
+
     public IReadOnlyCollection<IRoomAvatar> Avatars => _players;
 
-    public IReadOnlyCollection<IRoomItem> Items => [];
+    public IReadOnlyCollection<IRoomItem> Items => ItemsById.Values;
 
     public int AvatarCount => _players.Length;
 
@@ -35,15 +40,16 @@ internal sealed class FakeRoomLookup(params IRoomPlayer[] players) : IRoomLookup
         return avatar is not null;
     }
 
-    public IRoomItem? FindItem(RoomObjectId objectId) => null;
+    public IRoomItem? FindItem(RoomObjectId objectId) =>
+        ItemsById.TryGetValue(objectId, out IRoomItem? item) ? item : null;
 
     public IRoomAvatar? FindAvatar(RoomObjectId objectId) => null;
 
     public bool TryFindItem(RoomObjectId objectId, [NotNullWhen(true)] out IRoomItem? item)
     {
-        item = null;
+        item = FindItem(objectId);
 
-        return false;
+        return item is not null;
     }
 
     public bool TryFindAvatar(RoomObjectId objectId, [NotNullWhen(true)] out IRoomAvatar? avatar)

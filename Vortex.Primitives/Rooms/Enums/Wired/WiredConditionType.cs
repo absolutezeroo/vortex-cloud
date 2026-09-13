@@ -47,4 +47,10 @@ public enum WiredConditionType
     VARIABLE_VALUE = 42,
     VARIABLE_AGE = 43,
     USER_LEVEL = 44,
+
+    /// <summary>Compares how many items a wired chest holds against a number.</summary>
+    CHEST_HAS_ITEMS = 45,
+
+    /// <summary>The same comparison, narrowed to the item types the box was shown.</summary>
+    CHEST_HAS_ITEM_TYPES = 46,
 }

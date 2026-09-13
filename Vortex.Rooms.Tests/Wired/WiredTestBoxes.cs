@@ -46,10 +46,15 @@ internal static class WiredTestBoxes
     /// <paramref name="objectId"/>. A logic reads its own id and tile from its context rather than
     /// from the item that carries it, so the two have to agree here the same way they do in a room.
     /// </summary>
+    /// <param name="chests">The chests the box may count, for the two conditions that ask.</param>
+    /// <param name="lookup">The room the box prunes its configured stuff ids against. The default
+    /// finds nothing, which is right for every box that reads no furni.</param>
     public static IRoomFloorItemContext Context(
         int objectId = 0,
         int tileIdx = 0,
-        ExtraData? extraData = null
+        ExtraData? extraData = null,
+        IRoomChestAccess? chests = null,
+        IRoomLookup? lookup = null
     )
     {
         // RoomObject is typed as the floor item itself on a floor context, not as the plain
@@ -73,6 +78,8 @@ internal static class WiredTestBoxes
                 "get_Definition" => Definition,
                 "get_RoomObject" => roomObject,
                 "get_Furni" => furni,
+                "get_Chests" => chests,
+                "get_Lookup" => lookup,
                 "get_WiredLimits" => Limits,
                 _ => call.Method.ReturnType == typeof(Task) ? Task.CompletedTask : null,
             }

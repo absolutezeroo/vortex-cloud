@@ -218,6 +218,12 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => PayOutWiredChestItemsAsync(chestId, playerId, count, ct);
 
+    Task<int> IRoomChestAccess.CountChestItemsAsync(
+        IReadOnlyList<int> chestIds,
+        IReadOnlyList<int> kindExampleItemIds,
+        CancellationToken ct
+    ) => WiredTradingSystem.CountChestItemsAsync(chestIds, kindExampleItemIds, ct);
+
     Task<bool> IRoomFurniAccess.ValidateFloorItemPlacementAsync(
         ActionContext ctx,
         RoomObjectId itemId,
