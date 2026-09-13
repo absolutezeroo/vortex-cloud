@@ -236,9 +236,13 @@ public sealed class RaidProtectionTests
     }
 
     [Fact]
-    public async Task AVisitorCannotConfigureSomebodyElsesRoom()
+    public async Task AVisitorWithNoRightsCannotConfigureSomebodyElsesRoom()
     {
-        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        // canManipulate:false — otherwise the harness hands Stranger rights, and rights are exactly
+        // what this feature grants access on.
+        RoomHarness harness = await RoomHarness
+            .CreateAsync(canManipulate: false)
+            .ConfigureAwait(true);
 
         RaidProtectionSaveOutcome outcome = await harness
             .Grain.SaveRaidProtectionAsync(
@@ -255,12 +259,49 @@ public sealed class RaidProtectionTests
         outcome.Result.Should().Be(RaidProtectionSaveResult.NotAllowed);
         harness.Grain._state.RaidProtection.Enabled.Should().BeFalse();
 
-        // Rights-holders are not owners here, and the panel is not offered to them either.
         RoomRaidProtectionSnapshot? seen = await harness
             .Grain.GetRaidProtectionAsync(RoomHarness.Stranger)
             .ConfigureAwait(true);
 
         seen.Should().BeNull();
+    }
+
+    /// <summary>
+    /// Sulake's rule, not an inference: the announcement says the menu is reachable by the owner
+    /// "and Habbos with rights to the room". This started out owner-only and was wrong.
+    /// </summary>
+    [Fact]
+    public async Task ARightsHolderGetsThePanelToo()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+
+        RaidProtectionSaveOutcome outcome = await harness
+            .Grain.SaveRaidProtectionAsync(
+                harness.ContextFor(RoomHarness.Stranger),
+                Draft() with
+                {
+                    Enabled = true,
+                },
+                confirmed: false,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        outcome.Result.Should().Be(RaidProtectionSaveResult.Ok);
+
+        RoomRaidProtectionSnapshot? seen = await harness
+            .Grain.GetRaidProtectionAsync(RoomHarness.Stranger)
+            .ConfigureAwait(true);
+
+        seen.Should().NotBeNull();
+        seen!.Enabled.Should().BeTrue();
+
+        // And the capability that unlocks it client-side says so on their way in.
+        RaidEntryDecision entry = await harness
+            .Grain.EvaluateEntryAsync(RoomHarness.Stranger, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        entry.CanManage.Should().BeTrue();
     }
 
     [Fact]

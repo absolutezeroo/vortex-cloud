@@ -1433,13 +1433,19 @@ internal static class MessageComposer
     public const int VortexHookHavocStartedMessageComposer = 8118;
     public const int VortexHookHavocResultMessageComposer = 8120;
 
-    // Raid protection takes 8200-8299. These three are the only part of the feature NOT on its
-    // official id: AIR 1.0.31 binds them at 734, 3553 and 3620, and two of those are spent in this
-    // revision on messages the target client really reads (ChatReviewSessionOfferedToGuide,
-    // SecondsUntil). The bodies are the client's own, field for field -- only the numbers moved.
-    // See the matching note beside GetRaidProtectionSettingsMessageEvent.
-    public const int RaidProtectionCapabilityMessageComposer = 8202; // AIR 1.0.31: 734
-    public const int RaidProtectionSettingsMessageComposer = 8204; // AIR 1.0.31: 3553
-    public const int RaidProtectionSettingsResultMessageComposer = 8206; // AIR 1.0.31: 3620
+    // Raid protection. The only part of the feature NOT on its official id: AIR 1.0.31 binds these
+    // three at 734, 3553 and 3620, and two of those are spent in this revision on messages the
+    // target client really reads (ChatReviewSessionOfferedToGuide, SecondsUntil). The bodies are
+    // the client's own, field for field -- only two of the numbers moved.
+    //
+    // These are NOT free choices: vortex-modern-client already ported the feature and assigned
+    // them, and its HabboMessages.ts says so out loud ("must be assigned identically in the
+    // emulator's Headers.cs"). 3553 is kept because it is free on both sides; 3554 and 3555 are the
+    // first ids after it that are unused as an event AND as a composer in the WIN63 registry, in
+    // that file, and here. Changing one side alone silently unplugs the panel.
+    // See packages/vortex-engine/src/habbo/communication/HabboMessages.ts, "=== RAID PROTECTION ===".
+    public const int RaidProtectionCapabilityMessageComposer = 3554; // AIR 1.0.31: 734
+    public const int RaidProtectionSettingsMessageComposer = 3553; // AIR 1.0.31: 3553, kept
+    public const int RaidProtectionSettingsResultMessageComposer = 3555; // AIR 1.0.31: 3620
     #endregion
 }

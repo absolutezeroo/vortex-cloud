@@ -59,6 +59,15 @@ const EXTENSIONS = new Set([
   'RentableSpaceGetConfigMessageEvent',
   'RentableSpaceConfigMessageComposer',
   'RentableSpaceConfigureMessageEvent',
+  // Raid protection's two reassigned composers. The feature is real and AIR-1.0.31 binds it, but at
+  // 734 and 3620 -- both already spent in this revision on messages WIN63 really reads. So the
+  // numbers were reassigned, in agreement with vortex-modern-client, which had to solve the same
+  // collision and whose HabboMessages.ts carries the same pair. They sit inside the official range
+  // rather than the 8000-8999 band because they were picked to be free in BOTH registries and in
+  // that file, which is what makes the two sides line up; being absent from a Habbo registry is
+  // therefore the expected state, not a dead mapping.
+  'RaidProtectionCapabilityMessageComposer',
+  'RaidProtectionSettingsResultMessageComposer',
 ]);
 // 8000-8999 is the Vortex-specific band (Headers.cs, "Vortex-specific (no AS3 backing)"), reserved
 // because it is empty in both registries. Naming each id here as well would mean editing this file

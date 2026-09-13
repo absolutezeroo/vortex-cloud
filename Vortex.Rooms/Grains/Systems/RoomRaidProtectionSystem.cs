@@ -56,13 +56,27 @@ public sealed class RoomRaidProtectionSystem(RoomGrain roomGrain)
     /// Whether this player may see and change the room's protection.
     /// </summary>
     /// <remarks>
-    /// The owner, and only the owner. Rights-holders are deliberately out: a raid usually arrives
-    /// with rights handed out to the wrong person, and the switch that stops it is the one thing
-    /// that must not be reachable that way. Staff work the room tool and the dashboard instead —
-    /// which also keeps this synchronous, and it is answered on every room entry.
+    /// <para>
+    /// The owner and the room's rights-holders, which is Sulake's own rule — the announcement is
+    /// explicit that the menu "can be accessed by the room owner and Habbos with rights to the
+    /// room". It was owner-only here first, on the reasoning that a raid often arrives with rights
+    /// already in the wrong hands; the official behaviour outranks that, and a room whose rights
+    /// are compromised has worse problems than this switch.
+    /// </para>
+    /// <para>
+    /// The announcement also gives Ambassadors access in official rooms. Not implemented: this
+    /// server has no ambassador role (<c>IsAmbassador</c> is hardcoded false everywhere) and no
+    /// official-room flag, so there is nothing to resolve it against yet. Staff reach the settings
+    /// through the dashboard instead.
+    /// </para>
+    /// <para>
+    /// <see cref="RoomSecurityModule.HasExplicitRights" /> is the same synchronous test the entry
+    /// path uses to decide who is exempt from the detector, and deliberately so: whoever can turn
+    /// the protection off is exactly whoever it must never lock out.
+    /// </para>
     /// </remarks>
     public bool CanManage(PlayerId playerId) =>
-        playerId > 0 && _roomGrain._state.RoomSnapshot.OwnerId == playerId;
+        playerId > 0 && _roomGrain.SecurityModule.HasExplicitRights(playerId);
 
     public async Task<RoomRaidProtectionSnapshot?> GetSettingsAsync(PlayerId viewerId)
     {
