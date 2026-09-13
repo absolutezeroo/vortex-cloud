@@ -8,9 +8,11 @@ using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -66,6 +68,60 @@ public sealed class RoomModerationSystem(RoomGrain roomGrain)
     /// Whether <paramref name="actorCtx"/> may perform a moderation action gated by
     /// <paramref name="setting"/> in this room. System/wired origins resolve to moderator and pass.
     /// </summary>
+    /// <summary>
+    /// Flips the room-info panel's "mute all" switch and tells the room where it landed. Gated by
+    /// the room's own who-can-mute setting: the switch silences everyone at once, so it is the same
+    /// authority as muting one person, not a separate one.
+    /// </summary>
+    /// <returns>False when the actor was not allowed to touch it, in which case nothing changed.</returns>
+    public Task<bool> ToggleAllInRoomMuteAsync(ActionContext actorCtx)
+    {
+        if (actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._state.RoomId)
+        {
+            return Task.FromResult(false);
+        }
+
+        return ToggleAllInRoomMuteGuardedAsync(actorCtx);
+    }
+
+    public RoomMuteStateSnapshot GetMuteState(PlayerId viewerId) =>
+        new()
+        {
+            AllInRoomMuted = _roomGrain._state.AllInRoomMuted,
+            // Rights, not the full controller level: this is drawn on a room card the navigator
+            // asks for constantly, and it is the same test the reference emulator ships.
+            CanMute = _roomGrain.SecurityModule.HasExplicitRights(viewerId),
+        };
+
+    private async Task<bool> ToggleAllInRoomMuteGuardedAsync(ActionContext actorCtx)
+    {
+        if (
+            !await CanModerateAsync(
+                actorCtx,
+                _roomGrain._state.RoomSnapshot.ModSettings.WhoCanMute,
+                ModerationAction.Mute
+            )
+        )
+        {
+            return false;
+        }
+
+        _roomGrain._state.AllInRoomMuted = !_roomGrain._state.AllInRoomMuted;
+
+        // To the whole room, not just whoever pressed it: the flag is what redraws the button, and
+        // every rights-holder standing here has the same button.
+        await _roomGrain
+            .SendComposerToRoomAsync(
+                new MuteAllInRoomEventMessageComposer
+                {
+                    AllMuted = _roomGrain._state.AllInRoomMuted,
+                }
+            )
+            .ConfigureAwait(true);
+
+        return true;
+    }
+
     private async Task<bool> CanModerateAsync(
         ActionContext actorCtx,
         ModSettingType setting,

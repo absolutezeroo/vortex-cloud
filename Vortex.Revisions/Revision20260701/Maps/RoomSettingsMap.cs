@@ -75,5 +75,9 @@ internal sealed class RoomSettingsMap : IRevisionMap
                 MessageComposer.BannedUsersFromRoomComposer
             )
         );
+        builder.MapSerializer(
+            typeof(MuteAllInRoomEventMessageComposer),
+            new MuteAllInRoomEventMessageComposerSerializer(MessageComposer.MuteAllInRoomComposer)
+        );
     }
 }

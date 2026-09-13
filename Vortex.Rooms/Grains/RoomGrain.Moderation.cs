@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 
@@ -49,6 +50,12 @@ public sealed partial class RoomGrain
         int durationSeconds,
         CancellationToken ct
     ) => ModerationSystem.BanUserAsync(actorCtx, targetPlayerId, durationSeconds, ct);
+
+    public Task<bool> ToggleAllInRoomMuteAsync(ActionContext actorCtx) =>
+        ModerationSystem.ToggleAllInRoomMuteAsync(actorCtx);
+
+    public Task<RoomMuteStateSnapshot> GetMuteStateAsync(PlayerId viewerId) =>
+        Task.FromResult(ModerationSystem.GetMuteState(viewerId));
 
     public Task SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc) =>
         ModerationSystem.SetHotelMuteAsync(targetPlayerId, expiresUtc);

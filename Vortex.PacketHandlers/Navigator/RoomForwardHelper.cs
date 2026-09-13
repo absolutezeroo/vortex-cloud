@@ -31,6 +31,14 @@ internal static class RoomForwardHelper
         IRoomCore roomGrain = grainFactory.GetRoomCore(roomId);
         RoomSnapshot snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
 
+        // Live, not persisted: whether the room is silenced right now and whether this player gets
+        // the switch. Same activation as the snapshot call above, so it costs one more message to a
+        // grain that is already awake.
+        RoomMuteStateSnapshot muteState = await grainFactory
+            .GetRoomModeration(roomId)
+            .GetMuteStateAsync(ctx.PlayerId)
+            .ConfigureAwait(false);
+
         // Drives the "you are a member" affordances on the room card; only worth a grain call when
         // the room actually belongs to a guild.
         bool isGroupMember =
@@ -50,8 +58,8 @@ internal static class RoomForwardHelper
                     RoomForward = roomForward,
                     StaffPick = snapshot.StaffPick,
                     IsGroupMember = isGroupMember,
-                    AllInRoomMuted = false,
-                    CanMute = false,
+                    AllInRoomMuted = muteState.AllInRoomMuted,
+                    CanMute = muteState.CanMute,
                     OpeningConnection = false,
                 },
                 ct

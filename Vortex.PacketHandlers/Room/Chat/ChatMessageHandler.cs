@@ -4,6 +4,7 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Protocol.Messages.Incoming.Room.Chat;
 
@@ -30,7 +31,7 @@ public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Ch
             .SendChatFromPlayerAsync(
                 ctx.PlayerId,
                 message.Text,
-                0,
+                AvatarGestureType.None,
                 message.StyleId,
                 [],
                 message.TrackingId

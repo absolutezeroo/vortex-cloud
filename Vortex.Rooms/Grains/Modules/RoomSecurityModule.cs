@@ -191,6 +191,15 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         return RoomSecurityPolicy.IsRoomOwner(permissions, isExplicitOwner);
     }
 
+    /// <summary>
+    /// Owner-or-rights, answered from live state alone: no permission resolution and no grain call.
+    /// For the paths that run on every single chat line, where
+    /// <see cref="GetControllerLevelAsync"/>'s permission lookup would be paid per message.
+    /// </summary>
+    public bool HasExplicitRights(PlayerId playerId) =>
+        _roomGrain._state.RoomSnapshot.OwnerId == playerId
+        || _roomGrain._state.PlayerIdsWithRights.Contains(playerId);
+
     public async Task<RoomControllerType> GetControllerLevelAsync(ActionContext ctx)
     {
         if (ctx.Origin == ActionOrigin.System)

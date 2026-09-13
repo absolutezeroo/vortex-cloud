@@ -450,7 +450,8 @@ public sealed partial class RoomGrain
         int styleId,
         List<(string, string, bool)> links,
         int trackingId,
-        PlayerId? targetPlayerId = null
+        PlayerId? targetPlayerId = null,
+        RoomChatType chatType = RoomChatType.Chat
     ) =>
         ChatSystem.SendChatFromPlayerAsync(
             playerId,
@@ -459,7 +460,8 @@ public sealed partial class RoomGrain
             styleId,
             links,
             trackingId,
-            targetPlayerId
+            targetPlayerId,
+            chatType
         );
 
     public async Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(

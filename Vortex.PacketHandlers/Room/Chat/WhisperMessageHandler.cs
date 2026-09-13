@@ -49,11 +49,12 @@ public class WhisperMessageHandler : IMessageHandler<WhisperMessage>
             .SendChatFromPlayerAsync(
                 ctx.PlayerId,
                 message.Text,
-                (AvatarGestureType)0,
+                AvatarGestureType.None,
                 message.StyleId,
                 [],
                 0,
-                targetPlayerId
+                targetPlayerId,
+                RoomChatType.Whisper
             )
             .ConfigureAwait(false);
     }

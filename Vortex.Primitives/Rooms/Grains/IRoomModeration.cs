@@ -2,7 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Orleans.Concurrency;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Grains;
@@ -38,6 +40,20 @@ public interface IRoomModeration : IGrainWithIntegerKey
         PlayerId targetPlayerId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Flips the room's "mute all" switch, after which only rights-holders can speak here. Room
+    /// scoped and not persisted: it lasts while the room stays loaded, and the room's own
+    /// who-can-mute setting decides who may press it. False means the actor was refused.
+    /// </summary>
+    public Task<bool> ToggleAllInRoomMuteAsync(ActionContext actorCtx);
+
+    /// <summary>
+    /// The mute half of the room card for one viewer — whether the room is silenced, and whether
+    /// that viewer gets the button. Read-only and answered from live state.
+    /// </summary>
+    [ReadOnly]
+    public Task<RoomMuteStateSnapshot> GetMuteStateAsync(PlayerId viewerId);
 
     /// <summary>
     /// Pushes a hotel-wide staff mute onto a player who is in this room right now, so it takes hold

@@ -162,5 +162,11 @@ generated:
     line: 6
   conflicts:
   - cf_3cd42900cc
-verified: {}
-manual: {}
+verified:
+  fields:
+  - name: gesture
+    type: int32
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411 avatar/enum/_SafeCls_2652.as:100 — the value indexes the gesture table ['','sml','agr','srp','sad','joy','crz','tng','eyb','mis','puz']; room/_SafeCls_1984.as:1502 plays exactly what the packet carried and derives nothing from the text"
+manual:
+  behaviour: "confidence: assumed - which smileys map to which gesture is a server decision the client cannot tell us. Vortex uses the reference emulator's table (HABBO-ARCTURUS-DAYBREAK RoomChatMessage.checkEmotion): smile for ':)' ':-)' ':]', angry for ':@' '>:(', surprised for ':o' ':0' 'o.O', sad for ':(' ':-(' ':[', nothing otherwise. Angry is tested before sad because '>:(' contains ':('. The six further gestures the client can play (joy, crz, tng, eyb, mis, puz) have no known trigger."

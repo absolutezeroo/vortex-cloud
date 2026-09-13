@@ -39,7 +39,8 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         int styleId,
         List<(string, string, bool)> links,
         int trackingId,
-        PlayerId? targetPlayerId = null
+        PlayerId? targetPlayerId = null,
+        RoomChatType chatType = RoomChatType.Chat
     )
     {
         if (
@@ -53,6 +54,17 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         if (
             !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
             || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+        )
+        {
+            return;
+        }
+
+        // The room's own silence switch. Nothing is sent back: the client has already drawn the
+        // line locally and there is no "the room is muted" packet, exactly as the reference
+        // emulator drops it (RoomChatManager:295). Rights-holders keep talking.
+        if (
+            _roomGrain._state.AllInRoomMuted
+            && !_roomGrain.SecurityModule.HasExplicitRights(playerId)
         )
         {
             return;
@@ -110,7 +122,8 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             styleId,
             links,
             trackingId,
-            targetPlayerId
+            targetPlayerId,
+            chatType
         );
 
         // Said, and seen. PlayerChattingEvent above is a *pre* event a handler can cancel, so it
@@ -264,7 +277,8 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         int styleId,
         List<(string, string, bool)> links,
         int trackingId,
-        PlayerId? targetPlayerId
+        PlayerId? targetPlayerId,
+        RoomChatType chatType
     )
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -272,18 +286,38 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             return;
         }
 
+        // Every chat line comes through here — players, bots and pets alike — so this is the one
+        // place the smiley-to-expression rule has to live. A caller that already knows the gesture
+        // it wants (a wired action, the word quiz) keeps it.
+        if (gesture is AvatarGestureType.None)
+        {
+            gesture = ChatGestures.FromText(text);
+        }
+
         if (targetPlayerId is null)
         {
+            // A shout is the same payload on a different header; the client draws it in the loud
+            // bubble and reads it at any distance, which is the whole point of shouting.
             await _roomGrain.SendComposerToRoomAsync(
-                new ChatMessageComposer
-                {
-                    ObjectId = objectId,
-                    Text = text,
-                    Gesture = gesture,
-                    StyleId = styleId,
-                    Links = links,
-                    TrackingId = trackingId,
-                }
+                chatType is RoomChatType.Shout
+                    ? new ShoutMessageComposer
+                    {
+                        ObjectId = objectId,
+                        Text = text,
+                        Gesture = gesture,
+                        StyleId = styleId,
+                        Links = links,
+                        TrackingId = trackingId,
+                    }
+                    : new ChatMessageComposer
+                    {
+                        ObjectId = objectId,
+                        Text = text,
+                        Gesture = gesture,
+                        StyleId = styleId,
+                        Links = links,
+                        TrackingId = trackingId,
+                    }
             );
         }
         else

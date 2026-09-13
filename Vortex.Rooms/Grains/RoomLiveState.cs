@@ -63,6 +63,14 @@ public sealed class RoomLiveState
     /// </summary>
     public Dictionary<PlayerId, DateTime> HotelMuteExpiresUtc { get; } = [];
 
+    /// <summary>
+    /// The room-info panel's "mute all" switch: while it is on, only the room's rights-holders can
+    /// speak. Deliberately not persisted — like the reference emulator's, it is a live switch that
+    /// lasts as long as the room stays loaded, so a room can never be left silent forever by
+    /// somebody who forgot to turn it off.
+    /// </summary>
+    public bool AllInRoomMuted { get; internal set; }
+
     /// <summary>Players currently waiting on a doorbell ring for a locked door, keyed by the tick
     /// timestamp (ms) the ring started — swept for timeout by <c>RoomGrain.Doorbell.cs</c>.</summary>
     public Dictionary<PlayerId, long> PendingDoorbellRingersMs { get; } = [];

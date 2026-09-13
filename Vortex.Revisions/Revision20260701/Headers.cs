@@ -1067,6 +1067,11 @@ internal static class MessageComposer
     public const int FlatControllerAddedComposer = 1359;
     public const int FlatControllerRemovedComposer = 3335;
     public const int FlatControllersComposer = 726;
+
+    // AS3-verified: the client's registry binds 1172 to _SafeCls_3486 (_SafeCls_2046.as:1202),
+    // whose parser _SafeCls_2723 reads a single boolean and exposes it as `allMuted`; the navigator
+    // stores it on the room data as `allInRoomMuted` (navigator/_SafeCls_1951.as:178).
+    public const int MuteAllInRoomComposer = 1172;
     public const int NoSuchFlatComposer = 1122; // AS3-verified (ghost fix): onNoSuchFlat
     public const int RoomSettingsDataComposer = 791;
     public const int RoomSettingsErrorComposer = 3715; // AS3-verified (ghost fix): onRoomSettingsError

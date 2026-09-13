@@ -36,10 +36,11 @@ public class ShoutMessageHandler : IMessageHandler<ShoutMessage>
             .SendChatFromPlayerAsync(
                 ctx.PlayerId,
                 message.Text,
-                (AvatarGestureType)0,
+                AvatarGestureType.None,
                 message.StyleId,
                 [],
-                0
+                0,
+                chatType: RoomChatType.Shout
             )
             .ConfigureAwait(false);
     }

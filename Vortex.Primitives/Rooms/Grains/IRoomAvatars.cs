@@ -92,7 +92,8 @@ public interface IRoomAvatars : IGrainWithIntegerKey
         int styleId,
         List<(string, string, bool)> links,
         int trackingId,
-        PlayerId? targetPlayerId = null
+        PlayerId? targetPlayerId = null,
+        RoomChatType chatType = RoomChatType.Chat
     );
 
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
