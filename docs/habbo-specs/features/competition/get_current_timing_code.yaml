@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9123377091402f2c4b8fbdbf9231aab3f3505e5b879852d68f77010e89b11bc1"
+generated_digest: "sha256:46330ea7bf02e81360872eb13093d8cceb710b9c2909fff7df38dcc8fd2c3831"
 generated:
   id: competition.get_current_timing_code
   domain: competition
@@ -45,14 +45,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Competition/GetCurrentTimingCodeMessageHandler.cs
     symbol: GetCurrentTimingCodeMessageHandler
-    line: 18
+    line: 35
   - id: ev_987fdac04d12
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Competition/GetCurrentTimingCodeMessageHandler.cs
     symbol: GetCurrentTimingCodeMessageHandler
-    line: 9
+    line: 26
   scenarios:
   - competition.get_current_timing_code.success
   conflicts:

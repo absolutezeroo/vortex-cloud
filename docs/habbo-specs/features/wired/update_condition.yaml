@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:181462d0a39dc63c2f13addd291cfbc87bca30e5d6529b92f9765637a7d5e034"
+generated_digest: "sha256:18db8b8894670811b6561f3ba1f22be55f6c3ae2599c0a3533b62a36ff720f6f"
 generated:
   id: wired.update_condition
   domain: wired
@@ -97,7 +97,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 90
+    line: 95
   - id: ev_1838f0f52718
     kind: emulator_handler
     authority: vortex_emulator

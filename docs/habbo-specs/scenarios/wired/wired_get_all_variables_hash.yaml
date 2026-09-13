@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0f4c85f62c3148c3e9c5100551f41d14bc3a3abe0f29ac81f61192db432150e8"
+generated_digest: "sha256:b289ab265deff27b7bd72e01c8eaa34e91906e460f3c99c6bb26a600b9dca0da"
 generated:
   feature: wired.wired_get_all_variables_hash
   scenarios:
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 155
+    line: 190
   - id: ev_83ae1359db36
     kind: emulator_flow
     authority: vortex_emulator

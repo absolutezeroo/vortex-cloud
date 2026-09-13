@@ -186,6 +186,17 @@ internal class WiredDataSerializer
                 WiredVariableSerializer.Serialize(packet, infoAndValue.Variable);
                 packet.WriteInteger(infoAndValue.Value);
                 break;
+            case WiredVariableSharedListSnapshot shared:
+                packet.WriteInteger(shared.Elements.Count);
+
+                foreach (WiredVariableSharedSnapshot element in shared.Elements)
+                {
+                    packet.WriteInteger(element.RoomId).WriteString(element.RoomName);
+
+                    WiredVariableSerializer.Serialize(packet, element.Variable);
+                }
+
+                break;
         }
     }
 }

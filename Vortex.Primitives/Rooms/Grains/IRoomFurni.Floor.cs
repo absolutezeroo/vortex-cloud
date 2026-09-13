@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
@@ -44,8 +45,12 @@ public partial interface IRoomFurni
     public Task<ImmutableArray<RoomFloorItemSnapshot>> GetAllFloorItemSnapshotsAsync(
         CancellationToken ct
     );
+
+    /// <param name="playerId">Who asked. A reference-variable box is answered with the variables
+    /// that player's own rooms share, so the snapshot depends on the reader, not only on the box.</param>
     public Task<WiredDataSnapshot?> GetWiredDataSnapshotByFloorItemIdAsync(
         RoomObjectId itemId,
+        PlayerId playerId,
         CancellationToken ct
     );
     public Task<WiredVariablesSnapshot> GetWiredVariablesSnapshotAsync(CancellationToken ct);

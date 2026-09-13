@@ -4,9 +4,12 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Vortex.Database.Context;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -16,6 +19,8 @@ using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
+using Vortex.Rooms.Wired.Variables;
 
 namespace Vortex.Rooms.Grains;
 
@@ -133,6 +138,7 @@ public sealed partial class RoomGrain
 
     public async Task<WiredDataSnapshot?> GetWiredDataSnapshotByFloorItemIdAsync(
         RoomObjectId itemId,
+        PlayerId playerId,
         CancellationToken ct
     )
     {
@@ -149,7 +155,36 @@ public sealed partial class RoomGrain
         // BuildSnapshot dereferences the (otherwise null) wired data.
         await wiredLogic.LoadWiredAsync(ct);
 
-        return wiredLogic.GetSnapshot();
+        WiredDataSnapshot snapshot = wiredLogic.GetSnapshot();
+
+        if (wiredLogic is not WiredVariableReference)
+        {
+            return snapshot;
+        }
+
+        // The one context a box cannot assemble on its own: it names variables in rooms this grain
+        // is not, so it is attached here rather than in GetWiredContextSnapshots(), which is
+        // synchronous and has no database. Attached unconditionally, empty list included — the
+        // client reads a missing section as "reference variables are unavailable" and greys the
+        // whole dialog out, which is what every one of these boxes did until now.
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        return snapshot with
+        {
+            ContextSnapshots =
+            [
+                .. snapshot.ContextSnapshots,
+                new WiredVariableSharedListSnapshot
+                {
+                    ContextType = WiredContextType.SharedVariables,
+                    Elements = await WiredSharedVariableIndex.LoadForOwnerAsync(
+                        dbCtx,
+                        playerId.Value,
+                        ct
+                    ),
+                },
+            ],
+        };
     }
 
     public Task<WiredVariablesSnapshot> GetWiredVariablesSnapshotAsync(CancellationToken ct) =>

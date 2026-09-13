@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:05312a8bfdd4254cb6c1b5f527199cf68eaf8f0581a257ea5ee302ff3e249522"
+generated_digest: "sha256:990c81286d8163ea0d3a961cfaefa2eb12b514e45e8c8b14c59c947dd4291b06"
 generated:
   id: uk_01e54a2ba6
   subject: "wired.update_addon: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 90
+    line: 95
   - id: ev_09e09418207e
     kind: emulator_handler
     authority: vortex_emulator

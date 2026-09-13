@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5d2a6ddb14650a3325cda8689ca2feed6edec20e3ba02905329327e80f4137f4"
+generated_digest: "sha256:2251b06ea4101dd8f95ff2b398c860536e503edb0a7f606a0e8b56771ccdba70"
 generated:
   id: catalog.builders_club_place_room_item
   domain: catalog
@@ -445,7 +445,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 24
+    line: 29
   - id: ev_214dd6defa9c
     kind: emulator_handler
     authority: vortex_emulator

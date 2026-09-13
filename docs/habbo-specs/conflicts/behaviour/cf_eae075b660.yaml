@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:395223d757dc79f77e9eac199b13ed632c84d7a57cfe5868d56b8486e93e500a"
+generated_digest: "sha256:9a5d96f10b1ae4ae297a871c3ebff8ccb18a2afe75568a94adc41128f0988bc3"
 generated:
   id: cf_eae075b660
   kind: behaviour
@@ -40,7 +40,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Competition/GetCurrentTimingCodeMessageHandler.cs
     symbol: GetCurrentTimingCodeMessageHandler
-    line: 9
+    line: 26
   official:
     status: unknown
 verified: {}

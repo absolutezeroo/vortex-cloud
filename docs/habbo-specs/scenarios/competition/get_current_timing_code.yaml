@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b53c64e953113b82cb63fbf2cb0dedc03e06629679753c9df9b31d6e885a232f"
+generated_digest: "sha256:64fb02f5172ae1d191b995fe4997d5e64a6d32b8d60bfce4aa46320ac1a81c51"
 generated:
   feature: competition.get_current_timing_code
   scenarios:
@@ -55,6 +55,6 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Competition/GetCurrentTimingCodeMessageHandler.cs
     symbol: GetCurrentTimingCodeMessageHandler
-    line: 18
+    line: 35
 verified: {}
 manual: {}

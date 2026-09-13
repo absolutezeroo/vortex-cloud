@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:a77abac053b361486095981cbb7ce8bff070aaeb495766d9b4c2f6ee70233239"
+generated_digest: "sha256:2034dc24ba0e5c39e2092affb2114e81ed23e53e7625af9eeb6bbb7d35b68c89"
 generated:
   name: WiredFurniAddon
   direction: outgoing
@@ -761,6 +761,166 @@ generated:
           type_confidence: implementation_observed
           evidence:
           - ev_32feea7555a9
+        - index: 8
+          name: count
+          type: int32
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          evidence:
+          - ev_32feea7555a9
+        - index: 9
+          name: elements
+          type: array
+          name_confidence: implementation_observed
+          type_confidence: implementation_observed
+          note: "source comment: repeated block; the element count is the int written immediately before it"
+          evidence:
+          - ev_32feea7555a9
+          fields:
+          - index: 0
+            name: room_id
+            type: int32
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_32feea7555a9
+          - index: 1
+            name: room_name
+            type: string
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_32feea7555a9
+          - index: 2
+            name: wired_variable
+            type: block
+            name_confidence: implementation_observed
+            type_confidence: implementation_observed
+            evidence:
+            - ev_32feea7555a9
+            fields:
+            - index: 0
+              name: variable_id
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 1
+              name: variable_type
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 2
+              name: variable_name
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 3
+              name: availability_type
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 4
+              name: target_type
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 5
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 6
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 7
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 8
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 9
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 10
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 11
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 12
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 13
+              name: flags
+              type: boolean
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              evidence:
+              - ev_32feea7555a9
+            - index: 14
+              name: count
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: only when snapshot.Flags.Has(WiredVariableFlags.HasTextConnector)
+              evidence:
+              - ev_32feea7555a9
+            - index: 15
+              name: key
+              type: int32
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: only when snapshot.Flags.Has(WiredVariableFlags.HasTextConnector)
+              evidence:
+              - ev_32feea7555a9
+            - index: 16
+              name: value
+              type: string
+              name_confidence: implementation_observed
+              type_confidence: implementation_observed
+              note: only when snapshot.Flags.Has(WiredVariableFlags.HasTextConnector)
+              evidence:
+              - ev_32feea7555a9
     - index: 24
       name: count
       type: int32

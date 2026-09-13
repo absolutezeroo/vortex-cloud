@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3cfa3740b43f766def02d0979b261295c457868342b38eaf5b3095fc584479a8"
+generated_digest: "sha256:7170709f7e7092d8b810015fdf5638a42f11f1ed558018b38a87c73daebbd74f"
 generated:
   id: uk_ca32519122
   subject: "catalog.builders_club_place_room_item: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 24
+    line: 29
   - id: ev_214dd6defa9c
     kind: emulator_handler
     authority: vortex_emulator

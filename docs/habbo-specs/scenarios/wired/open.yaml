@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ae0d9f6d7d7892b2213edeee6b1a1f1abec01aadfdead052e2fc84c41673349a"
+generated_digest: "sha256:248efcb49a4809fd45d44f274082174e001c278656dd267399d3e8d74b974b08"
 generated:
   feature: wired.open
   scenarios:
@@ -86,6 +86,78 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_0080929ab318
+  - scenario: wired.open.guard_4
+    title: "open: the guard 'wiredLogic is not WiredVariableReference' holds"
+    given:
+      guard: wiredLogic is not WiredVariableReference
+      guard_holds: "true"
+    when:
+      packet: Open
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Open sent while 'wiredLogic is not WiredVariableReference' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0080929ab318
+  - scenario: wired.open.guard_5
+    title: "open: the guard '_root.ValueKind != JsonValueKind.Object' holds"
+    given:
+      guard: _root.ValueKind != JsonValueKind.Object
+      guard_holds: "true"
+    when:
+      packet: Open
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Open sent while '_root.ValueKind != JsonValueKind.Object' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0f9ffda870b1
+  - scenario: wired.open.guard_6
+    title: "open: the guard '!_root.TryGetProperty(name, out element)' holds"
+    given:
+      guard: "!_root.TryGetProperty(name, out element)"
+      guard_holds: "true"
+    when:
+      packet: Open
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Open sent while '!_root.TryGetProperty(name, out element)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0f9ffda870b1
+  - scenario: wired.open.guard_7
+    title: "open: the guard 'element.ValueKind == JsonValueKind.Null' holds"
+    given:
+      guard: element.ValueKind == JsonValueKind.Null
+      guard_holds: "true"
+    when:
+      packet: Open
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Open sent while 'element.ValueKind == JsonValueKind.Null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_0f9ffda870b1
   - scenario: wired.open.success
     title: "open: the request is accepted"
     given:
@@ -117,7 +189,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
-    line: 139
+    line: 145
+  - id: ev_0f9ffda870b1
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Furniture/ExtraDataReader.cs
+    symbol: ExtraDataReader
+    line: 35
   - id: ev_b1a051803832
     kind: emulator_flow
     authority: vortex_emulator
