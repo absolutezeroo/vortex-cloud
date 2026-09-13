@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3400bd1df55d52c99153a516dd9fc187b4fd33d4346eb2947c7a16110b697053"
+generated_digest: "sha256:58e6851a237b2eb86f885e86d831736aa79e3aa55ac5685e4f694ff228f00b01"
 generated:
   feature: room.place_wall_item_in_room
   scenarios:
@@ -79,21 +79,21 @@ generated:
       - FurniListRemove
       evidence: ev_637e62301919
   - scenario: room.place_wall_item_in_room.guard_10
-    title: "place wall item in room: the guard '!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wa...' holds"
+    title: "place wall item in room: the guard 'claimed == 0' holds"
     given:
-      guard: "!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wallItem, x, y, z, wallOffset, rot, ct )"
+      guard: claimed == 0
       guard_holds: "true"
     when:
       packet: PlaceObject
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PlaceObject sent while '!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wallItem, x, y, z, wallOffset, rot, ct )' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PlaceObject sent while 'claimed == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
+      outcome: rejected
       emits: []
       evidence: ev_969dc34ed932
     - origin: habbo-arcturus-daybreak
@@ -111,23 +111,23 @@ generated:
       - FurniListRemove
       evidence: ev_637e62301919
   - scenario: room.place_wall_item_in_room.guard_11
-    title: "place wall item in room: the guard 'item is null' holds"
+    title: "place wall item in room: the guard '!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wa...' holds"
     given:
-      guard: item is null
+      guard: "!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wallItem, x, y, z, wallOffset, rot, ct )"
       guard_holds: "true"
     when:
       packet: PlaceObject
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PlaceObject sent while 'item is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PlaceObject sent while '!await _roomGrain.FurniModule.PlaceWallItemAsync( ctx, wallItem, x, y, z, wallOffset, rot, ct )' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
+      outcome: ignored
       emits: []
-      evidence: ev_50c83ecf3d31
+      evidence: ev_969dc34ed932
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -470,19 +470,12 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/PlaceObjectMessageHandler.cs
     symbol: PlaceObjectMessageHandler
     line: 22
-  - id: ev_50c83ecf3d31
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Providers/RoomItemsProvider.cs
-    symbol: RoomItemsProvider
-    line: 170
   - id: ev_969dc34ed932
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Wall.cs
     symbol: RoomActionModule
-    line: 58
+    line: 72
 verified: {}
 manual: {}

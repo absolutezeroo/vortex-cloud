@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6b98ba6d254e7ccf97153ca5d6cd3e4185f772224a2b1f9df6908d3f7ee17f5a"
+generated_digest: "sha256:2bcb37900c4a39971d21c7c26e84b2250086f82626c61f40ef6e77aede11b9cc"
 generated:
   feature: handshake.get_subscription
   scenarios:
@@ -349,7 +349,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 906
+    line: 928
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

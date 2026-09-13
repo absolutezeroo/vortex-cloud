@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:aae7977ba3410e1ef0a7841c7b499c26ee1ffaf7782634d7f653b0df166220f6"
+generated_digest: "sha256:b16f2905d08f2e7b1821c85100043bb92ef949fd3bd39cf3fe319f775eb154a5"
 generated:
   id: uk_5a6f22e2e6
   subject: "room.enter_one_way_door: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 352
+    line: 324
   - id: ev_6307e5751d5d
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:82f5e6bf99c9d09d960b80b6e3e4ecd318f5b3e1ee4dfe952e2cf44f688d97c8"
+generated_digest: "sha256:a480e0e90d9dd8d7f40ee9db6a9457bb7b46464aec62d8d79c56923ac48a7ae6"
 generated:
   id: room.open_mystery_trophy
   domain: room
@@ -76,50 +76,46 @@ generated:
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
   - order: 13
-    layer: domain
-    symbol: RoomItemIndex.OnItemDetached
-    evidence: ev_4c36667ce9b9
-  - order: 14
     layer: persistence
     symbol: RoomPersistenceGrain.EnqueueDirtyItemAsync
     evidence: ev_e439cab6b248
-  - order: 15
+  - order: 14
     layer: module
     symbol: RoomAvatarModule.StopWalkingAsync
     evidence: ev_e6fef545a42a
-  - order: 16
+  - order: 15
     layer: domain
     symbol: RoomAvatar.SetGoalTileId
     evidence: ev_9f45a8c43da8
-  - order: 17
+  - order: 16
     layer: domain
     symbol: RoomAvatar.RemoveStatus
     evidence: ev_9f45a8c43da8
-  - order: 18
+  - order: 17
     layer: module
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
-  - order: 19
+  - order: 18
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 20
+  - order: 19
     layer: grain
     symbol: RoomGrain.GrantConsumedPrizeAsync
     evidence: ev_5e51a330c801
-  - order: 21
+  - order: 20
     layer: grain
     symbol: InventoryGrain.GrantFurnitureWithLegacyStuffDataAsync
     evidence: ev_c6396662000a
-  - order: 22
+  - order: 21
     layer: domain
     symbol: ExtraData.UpdateSection
     evidence: ev_7bc4f7ccb5ef
-  - order: 23
+  - order: 22
     layer: domain
     symbol: ExtraDataWriter.UpdateSection
     evidence: ev_b533730b6457
-  - order: 24
+  - order: 23
     layer: domain
     symbol: ExtraData.GetJsonString
     evidence: ev_7bc4f7ccb5ef
@@ -160,10 +156,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_761b76967e2f
-  - expression: item.Logic is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_4c36667ce9b9
   - expression: "!avatar.IsWalking"
     on_fail: return
     observed_in: vortex
@@ -178,7 +170,7 @@ generated:
     observed_in: vortex
     evidence: ev_5e51a330c801
   - target: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId)
-    value: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId) .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct, true)
+    value: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId) .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct)
     observed_in: vortex
     evidence: ev_761b76967e2f
   - target: _roomGrain.MapModule
@@ -229,10 +221,6 @@ generated:
     value: DateTime.UtcNow
     observed_in: vortex
     evidence: ev_5e51a330c801
-  - target: item
-    value: item.SetAction(null)
-    observed_in: vortex
-    evidence: ev_761b76967e2f
   outgoing:
     ordering: unknown
     packets:
@@ -266,27 +254,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 63
   - id: ev_5e51a330c801
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 190
+    line: 184
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 86
+    line: 158
   - id: ev_7bc4f7ccb5ef
     kind: emulator_flow
     authority: vortex_emulator
@@ -342,7 +323,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_b533730b6457
     kind: emulator_flow
     authority: vortex_emulator
@@ -377,7 +358,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 38
+    line: 46
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
@@ -396,7 +377,6 @@ generated:
   - room.open_mystery_trophy.guard_0
   - room.open_mystery_trophy.guard_1
   - room.open_mystery_trophy.guard_10
-  - room.open_mystery_trophy.guard_11
   - room.open_mystery_trophy.guard_2
   - room.open_mystery_trophy.guard_3
   - room.open_mystery_trophy.guard_4

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:34cb611e3cd904f1f22d60eddca62eb2fade64f9075a4b56cbec3699a2e1b7ba"
+generated_digest: "sha256:a36a623516f820c74952d76ad786dcc9e59ccea6f6337ba708f99a2c955a139b"
 generated:
   id: uk_a9f91ec12d
   subject: "room.remove_rights: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 273
+    line: 282
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,13 +61,6 @@ generated:
     source: Vortex.PacketHandlers/Room/Action/RemoveRightsMessageHandler.cs
     symbol: RemoveRightsMessageHandler
     line: 25
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

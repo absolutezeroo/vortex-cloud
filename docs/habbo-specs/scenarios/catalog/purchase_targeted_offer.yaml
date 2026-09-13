@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:48108d0ca7373ea96d3a6a2d336227ec0344e0c53b1dd81d3992021851aa1c4c"
+generated_digest: "sha256:aadf2812d3e466a16b7ed9b0bc28174113786733168289edee94430e5fb195de"
 generated:
   feature: catalog.purchase_targeted_offer
   scenarios:
@@ -38,6 +38,52 @@ generated:
       emits: []
       evidence: ev_cea6063f9719
   - scenario: catalog.purchase_targeted_offer.guard_1
+    title: "purchase targeted offer: the guard 'await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct)...' holds"
+    given:
+      guard: await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false)
+      guard_holds: "true"
+    when:
+      packet: PurchaseTargetedOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseTargetedOffer sent while 'await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_4595f06449c6
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_cea6063f9719
+  - scenario: catalog.purchase_targeted_offer.guard_2
+    title: "purchase targeted offer: the guard '!locked' holds"
+    given:
+      guard: "!locked"
+      guard_holds: "true"
+    when:
+      packet: PurchaseTargetedOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseTargetedOffer sent while '!locked' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_80836b9b056b
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_cea6063f9719
+  - scenario: catalog.purchase_targeted_offer.guard_3
     title: "purchase targeted offer: the guard 'definition is null' holds"
     given:
       guard: definition is null
@@ -60,7 +106,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cea6063f9719
-  - scenario: catalog.purchase_targeted_offer.guard_2
+  - scenario: catalog.purchase_targeted_offer.guard_4
     title: "purchase targeted offer: the guard '!TargetedOfferMapper.CanPurchase(definition, purchaseCoun...' holds"
     given:
       guard: "!TargetedOfferMapper.CanPurchase(definition, purchaseCount, now)"
@@ -83,7 +129,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cea6063f9719
-  - scenario: catalog.purchase_targeted_offer.guard_3
+  - scenario: catalog.purchase_targeted_offer.guard_5
     title: "purchase targeted offer: the guard '!result.Succeeded' holds"
     given:
       guard: "!result.Succeeded"
@@ -106,7 +152,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cea6063f9719
-  - scenario: catalog.purchase_targeted_offer.guard_4
+  - scenario: catalog.purchase_targeted_offer.guard_6
     title: "purchase targeted offer: the guard 'definition.ExpiresAt is DateTime expiresAt && expiresAt <...' holds"
     given:
       guard: definition.ExpiresAt is DateTime expiresAt && expiresAt <= now
@@ -129,7 +175,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_cea6063f9719
-  - scenario: catalog.purchase_targeted_offer.guard_5
+  - scenario: catalog.purchase_targeted_offer.guard_7
     title: "purchase targeted offer: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -166,8 +212,10 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
+      outcome: success
+      emits:
+      - PurchaseNotAllowed
+      - unresolved
       evidence: ev_0f24ea6318f8
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -211,5 +259,12 @@ generated:
     source: Vortex.Catalog/TargetedOffers/TargetedOfferMapper.cs
     symbol: TargetedOfferMapper
     line: 73
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 48
 verified: {}
 manual: {}

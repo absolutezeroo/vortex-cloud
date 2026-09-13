@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a1cc4a387c4bdd8080335dd01ab72c3ed3ec7152a701f9d98b7b7873f55b45b9"
+generated_digest: "sha256:1342511acd97fc65ab61c59dfebc9cd910a5ae50a02d794a788b4c0d9550f484"
 generated:
   feature: navigator.get_search_blocks
   scenarios:
@@ -83,7 +83,7 @@ generated:
       outcome: success
       emits:
       - NavigatorSearchResultBlocks
-      evidence: ev_a054a6edc4c3
+      evidence: ev_b253bcf1dfeb
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -101,13 +101,13 @@ generated:
     symbol: NewNavigatorSearchEvent
     line: 20
     note: third-party server implementation; evidence, not authority
-  - id: ev_a054a6edc4c3
+  - id: ev_b253bcf1dfeb
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Primitives/Navigator/NavigatorSearchFilter.cs
-    symbol: NavigatorSearchFilter
-    line: 35
+    source: Vortex.PacketHandlers/NewNavigator/NewNavigatorSearchMessageHandler.cs
+    symbol: NewNavigatorSearchMessageHandler
+    line: 39
   - id: ev_ca6db2d966f5
     kind: emulator_flow
     authority: vortex_emulator

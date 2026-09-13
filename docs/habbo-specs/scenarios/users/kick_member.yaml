@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:15daf12e253923b6cbd4661912ec89954b49628e0b2016d92587448c30d6a769"
+generated_digest: "sha256:68c24d534fbdf6548ed40d6305236909da294cca986267cac50f6372d4eae62a"
 generated:
   feature: users.kick_member
   scenarios:
@@ -32,78 +32,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1b6983ac9d0d
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembershipRejected
-      evidence: ev_5a67319ee97f
-  - scenario: users.kick_member.guard_1
-    title: "kick member: the guard 'group is null || group.OwnerPlayerEntityId == targetPlayerId' holds"
-    given:
-      guard: group is null || group.OwnerPlayerEntityId == targetPlayerId
-      guard_holds: "true"
-    when:
-      packet: KickMember
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of KickMember sent while 'group is null || group.OwnerPlayerEntityId == targetPlayerId' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembershipRejected
-      evidence: ev_5a67319ee97f
-  - scenario: users.kick_member.guard_2
-    title: "kick member: the guard 'removed == 0' holds"
-    given:
-      guard: removed == 0
-      guard_holds: "true"
-    when:
-      packet: KickMember
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of KickMember sent while 'removed == 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembershipRejected
-      evidence: ev_5a67319ee97f
-  - scenario: users.kick_member.guard_3
-    title: "kick member: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: KickMember
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of KickMember sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -150,19 +78,5 @@ generated:
     source: Vortex.PacketHandlers/Users/KickMemberMessageHandler.cs
     symbol: KickMemberMessageHandler
     line: 22
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
-  - id: ev_b1c46fe16e7f
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Social/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 285
 verified: {}
 manual: {}

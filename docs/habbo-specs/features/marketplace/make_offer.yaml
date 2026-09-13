@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:747543a6487fa6b216bf043d1e695c77660023af32f1ec8e7d8f09ea40ddb6e6"
+generated_digest: "sha256:de0af7608f49cc9aeffeef03c4ec646089ecc9d0b71d6482416ba6f921dc8690"
 generated:
   id: marketplace.make_offer
   domain: marketplace
@@ -77,6 +77,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_0d41314ab8c9
+  - expression: await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct) .ConfigureAwait(false)
+    on_fail: send_and_return
+    observed_in: vortex
+    evidence: ev_0d41314ab8c9
   - expression: price <= 0
     on_fail: return
     observed_in: vortex
@@ -97,7 +101,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_db53958cdf3b
-  - expression: sellersRow is null
+  - expression: claimed == 0
     on_fail: return
     observed_in: vortex
     evidence: ev_db53958cdf3b
@@ -126,8 +130,8 @@ generated:
     value: inventoryGrain .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
     observed_in: vortex
     evidence: ev_db53958cdf3b
-  - target: sellersRow.DeletedAt
-    value: DateTime.UtcNow
+  - target: row
+    value: row.SetProperty(f => f.DeletedAt, DateTime.UtcNow)
     observed_in: vortex
     evidence: ev_db53958cdf3b
   outgoing:
@@ -223,6 +227,7 @@ generated:
   scenarios:
   - marketplace.make_offer.guard_0
   - marketplace.make_offer.guard_1
+  - marketplace.make_offer.guard_10
   - marketplace.make_offer.guard_2
   - marketplace.make_offer.guard_3
   - marketplace.make_offer.guard_4

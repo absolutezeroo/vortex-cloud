@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8d64f64f0848e3bd54eda6e1c5db1d34ba78b9e902b4a20869b15ffc9fb1371b"
+generated_digest: "sha256:595dd9a8f7b6861f31c466d85064af7184c542c76e5c3988706a94a219c6e894"
 generated:
   feature: wired.update_addon
   scenarios:
@@ -69,6 +69,24 @@ generated:
       emits: []
       evidence: ev_0080929ab318
   - scenario: wired.update_addon.guard_3
+    title: "update addon: the guard '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(...' holds"
+    given:
+      guard: "!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)"
+      guard_holds: "true"
+    when:
+      packet: UpdateAddon
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateAddon sent while '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_e1599f76ae95
+  - scenario: wired.update_addon.guard_4
     title: "update addon: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
     given:
       guard: "!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)"
@@ -86,7 +104,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-  - scenario: wired.update_addon.guard_4
+  - scenario: wired.update_addon.guard_5
     title: "update addon: the guard 'item.Logic is not FurnitureWiredLogic wiredLogic' holds"
     given:
       guard: item.Logic is not FurnitureWiredLogic wiredLogic
@@ -104,7 +122,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-  - scenario: wired.update_addon.guard_5
+  - scenario: wired.update_addon.guard_6
     title: "update addon: the guard '!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)' holds"
     given:
       guard: "!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)"
@@ -161,6 +179,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 240
+    line: 284
 verified: {}
 manual: {}

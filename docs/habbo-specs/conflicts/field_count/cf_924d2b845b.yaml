@@ -44,7 +44,7 @@ generated:
   official:
     status: unknown
 verified:
-  resolution: "Counting artifact, not drift. The client reads nestId, two pet blocks, a rarity-category count with its loop, then a result type; we write exactly that, with the rarity count at zero because nothing here computes breeding odds. The two pet blocks and the loop are delegated on our side, so the flat counts cannot line up. The empty odds chart is a feature gap, not a wire bug."
+  resolution: Counting artifact, not drift. The client reads nestId, two pet blocks, a rarity-category count with its loop, then a result type; we write exactly that, with the rarity count at zero because nothing here computes breeding odds. The two pet blocks and the loop are delegated on our side, so the flat counts cannot line up. The empty odds chart is a feature gap, not a wire bug.
   confidence: client_confirmed
-  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3500.as — int, pet, pet, count+loop, int"
+  evidence: WIN63-202607011411-782849652/src/unknowns/_SafePkg_2554/_SafeCls_3500.as — int, pet, pet, count+loop, int
 manual: {}

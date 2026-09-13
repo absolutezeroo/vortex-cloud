@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:09c4d7ce98da4cd98070368343c71167bc321e955f9e63e61b5d501df0a449c2"
+generated_digest: "sha256:61d8f2c641a6213814817a6e2ccf67e03a9a2fe881046661c226ade0fb6413f1"
 generated:
   id: users.unblock_group_member
   domain: users
@@ -52,14 +52,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_8f3f853ef9a9
-  - expression: await LoadIfAdminAsync(dbCtx, actor, ct) is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: removed == 0
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
   - expression: group is null
     on_fail: return
     observed_in: vortex
@@ -72,7 +64,7 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_8f3f853ef9a9
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_25e7df53e794
     kind: emulator_flow
@@ -101,7 +93,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 350
+    line: 388
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator
@@ -114,10 +106,6 @@ generated:
   - users.unblock_group_member.guard_1
   - users.unblock_group_member.guard_2
   - users.unblock_group_member.guard_3
-  - users.unblock_group_member.guard_4
-  - users.unblock_group_member.guard_5
   - users.unblock_group_member.success
-  unknowns:
-  - uk_fedeb1e47e
 verified: {}
 manual: {}

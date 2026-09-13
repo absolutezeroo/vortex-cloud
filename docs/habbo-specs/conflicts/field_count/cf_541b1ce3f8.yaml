@@ -56,7 +56,7 @@ generated:
   official:
     status: unknown
 verified:
-  resolution: "We agree with the client we target. WIN63 reads 2 fields and so do we; the disagreement is between the 2016 build (14) and WIN63 (2), which is a client-vs-client change, not our drift."
+  resolution: We agree with the client we target. WIN63 reads 2 fields and so do we; the disagreement is between the 2016 build (14) and WIN63 (2), which is a client-vs-client change, not our drift.
   confidence: client_confirmed
   evidence: "as3:WIN63-202607011411-782849652 field_count 2 == vortex field_count 2"
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dacb84cecd57eaa85b83fa75b4f37a8afaccea90574da73ece04588656d6086f"
+generated_digest: "sha256:156152c9eeb50aeb9f64e067b9ca4f0609fcd4e5f0422996fcf91ce8da1893ef"
 generated:
   id: moderation.post_quiz_answers
   domain: moderation
@@ -37,9 +37,21 @@ generated:
     evidence: ev_df06c80c3a14
   - order: 3
     layer: grain
+    symbol: InventoryGrain.GrantBadgeAsync
+    evidence: ev_c6396662000a
+  - order: 4
+    layer: grain
+    symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
+    evidence: ev_3a5a694b9376
+  - order: 5
+    layer: module
+    symbol: PlayerInventoryModule.OnBadgeGrantedAsync
+    evidence: ev_d720d639bd09
+  - order: 6
+    layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 4
+  - order: 7
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -56,6 +68,14 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_fd80c081bc3a
+  - expression: string.IsNullOrWhiteSpace(badgeCode)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - expression: alreadyOwned
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -64,11 +84,15 @@ generated:
   outgoing:
     ordering: unknown
     packets:
+    - packet: BadgeReceived
+      recipient: unknown
+      recipient_confidence: unknown
+      evidence: ev_d720d639bd09
     - packet: QuizResults
       recipient: target_user
       recipient_confidence: inferred
       evidence: ev_fd80c081bc3a
-  reaches_persistence: false
+  reaches_persistence: true
   evidence:
   - id: ev_14db4ca86628
     kind: emulator_flow
@@ -91,6 +115,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 123
+  - id: ev_3a5a694b9376
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerPresenceGrain.Inventory.cs
+    symbol: PlayerPresenceGrain
+    line: 23
   - id: ev_893ed17e74f3
     kind: emulator_handler
     authority: vortex_emulator
@@ -98,6 +129,20 @@ generated:
     source: Vortex.PacketHandlers/Help/PostQuizAnswersMessageHandler.cs
     symbol: PostQuizAnswersMessageHandler
     line: 10
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 457
+  - id: ev_d720d639bd09
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
+    symbol: PlayerInventoryModule
+    line: 84
   - id: ev_df06c80c3a14
     kind: emulator_flow
     authority: vortex_emulator
@@ -117,6 +162,11 @@ generated:
   - moderation.post_quiz_answers.guard_1
   - moderation.post_quiz_answers.guard_2
   - moderation.post_quiz_answers.guard_3
+  - moderation.post_quiz_answers.guard_4
+  - moderation.post_quiz_answers.guard_5
   - moderation.post_quiz_answers.success
+  unknowns:
+  - uk_403404d8e8
+  - uk_4d5dcd52a1
 verified: {}
 manual: {}

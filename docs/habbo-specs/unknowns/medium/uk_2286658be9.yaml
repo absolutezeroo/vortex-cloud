@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0d24df27cf9ae8a729ed4778ec74dca3ea778285902b372b65b7483d392077a7"
+generated_digest: "sha256:49987efe752553bdf7899e0041894f0c528c898cdecbe3f5bd558a7fc600067a"
 generated:
   id: uk_2286658be9
   subject: "room.shout: what the server sends when it refuses"
   severity: medium
-  question: room.shout changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.shout changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.shout
   known_evidence:
@@ -47,6 +47,13 @@ generated:
     source: Vortex.PacketHandlers/Room/Chat/ShoutMessageHandler.cs
     symbol: ShoutMessageHandler
     line: 12
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 199
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator

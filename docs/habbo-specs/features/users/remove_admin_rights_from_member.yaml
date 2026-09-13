@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:14e2f4e41b752ea2eb1eb6723e0eba0d4cc728e0ae3bbd0ecf586347cc775b2e"
+generated_digest: "sha256:6c61513310a6924f655f1bec86fae69c359d2f81d7778bfd9c76da952211d614"
 generated:
   id: users.remove_admin_rights_from_member
   domain: users
@@ -99,7 +99,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 387
+    line: 486
   - id: ev_c7a116d6502e
     kind: emulator_handler
     authority: vortex_emulator

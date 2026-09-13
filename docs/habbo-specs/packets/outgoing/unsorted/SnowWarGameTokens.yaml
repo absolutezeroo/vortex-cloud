@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:646cb102a98cfc4f5448543e4b5b879caaa39688097248674540e46a8ff48ad2"
+generated_digest: "sha256:5546d8920355c25ba18ffbc5298bee370205be36850f6d8c5ec2411956b4c2be"
 generated:
   name: SnowWarGameTokens
   direction: outgoing
   domain: unsorted
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -25,7 +25,7 @@ generated:
     name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   - index: 1
     name: unknown_1
     type: int32
@@ -34,7 +34,7 @@ generated:
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   - index: 2
     name: unknown_2
     type: string
@@ -43,7 +43,7 @@ generated:
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   - index: 3
     name: unknown_3
     type: int32
@@ -52,7 +52,7 @@ generated:
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   - index: 4
     name: unknown_4
     type: int32
@@ -61,7 +61,7 @@ generated:
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   - index: 5
     name: unknown_5
     type: int32
@@ -70,8 +70,20 @@ generated:
     type_confidence: client_confirmed
     note: inside a repeated block
     evidence:
-    - ev_8ad4d3021a21
+    - ev_107c6b5b5ee0
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 6
+    partial: false
+    types:
+    - int32
+    - int32
+    - string
+    - int32
+    - int32
+    - int32
+    evidence: ev_107c6b5b5ee0
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 6
@@ -85,6 +97,14 @@ generated:
     - int32
     evidence: ev_8ad4d3021a21
   evidence:
+  - id: ev_107c6b5b5ee0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1790/SnowWarGameTokensMessageParser.as
+    symbol: SnowWarGameTokensMessageParser
+    line: 27
+    note: official client build AIR-1.0.31
   - id: ev_8ad4d3021a21
     kind: client_parser
     authority: client_code

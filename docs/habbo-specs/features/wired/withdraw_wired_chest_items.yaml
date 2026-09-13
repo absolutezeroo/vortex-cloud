@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d7734657c18152f70c4fde81b69f34a68c5ccc0e6a8f5892ab7bea5c39f8d90e"
+generated_digest: "sha256:45822609ad9a75aaa13eb8433c4942a0f6eecdfa21622ea1c42f3cbfacb16820"
 generated:
   id: wired.withdraw_wired_chest_items
   domain: wired
@@ -327,14 +327,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 298
+    line: 410
   - id: ev_98ec231f8eca
     kind: emulator_flow
     authority: vortex_emulator

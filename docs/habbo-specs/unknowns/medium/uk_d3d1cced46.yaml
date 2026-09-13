@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:61d51ce2609591cf0fc07b8fd219ca00d5937cb21abd4d283824ea3428c1def4"
+generated_digest: "sha256:7e50e5d2dbb86b43377d8924c95d1f37a1169fa7ceefeb5d408e7b0c9b9fb634"
 generated:
   id: uk_d3d1cced46
   subject: "wired.update_selector: what the server sends when it refuses"
   severity: medium
-  question: wired.update_selector changes state and has 7 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: wired.update_selector changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: wired.update_selector
   known_evidence:
@@ -26,6 +26,13 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Floor.cs
     symbol: RoomGrain
     line: 90
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 26
   - id: ev_bedb47356c8d
     kind: emulator_handler
     authority: vortex_emulator
@@ -39,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 233
+    line: 268
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator

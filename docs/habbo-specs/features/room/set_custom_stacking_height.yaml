@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c9ce1c995ddbcec0d705290005f053cf6d9ec6b8085b88742c180f2111ddc5d5"
+generated_digest: "sha256:43c0cc16a1e12d10d38d59a7404dfb1ac45fd50f156269f6597310595ab423db"
 generated:
   id: room.set_custom_stacking_height
   domain: room
@@ -81,10 +81,6 @@ generated:
     on_fail: throw
     observed_in: vortex
     evidence: ev_407ccfd7d8f8
-  - expression: "!InBounds(nTileIdx)"
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_407ccfd7d8f8
   state_changes:
   - target: MapModule
     value: MapModule.RemoveFloorItem(floor)
@@ -104,14 +100,6 @@ generated:
     evidence: ev_2bcdafed0fef
   - target: item
     value: item.SetPosition(targetX, targetY)
-    observed_in: vortex
-    evidence: ev_407ccfd7d8f8
-  - target: item
-    value: item.SetPositionZ(_roomGrain._state.TileHeights[nTileIdx])
-    observed_in: vortex
-    evidence: ev_407ccfd7d8f8
-  - target: item
-    value: item.SetRotation(rot)
     observed_in: vortex
     evidence: ev_407ccfd7d8f8
   - target: item
@@ -144,7 +132,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Floor.cs
     symbol: RoomMapModule
-    line: 121
+    line: 181
   - id: ev_5e51a330c801
     kind: emulator_flow
     authority: vortex_emulator
@@ -186,7 +174,6 @@ generated:
   - room.set_custom_stacking_height.guard_2
   - room.set_custom_stacking_height.guard_3
   - room.set_custom_stacking_height.guard_4
-  - room.set_custom_stacking_height.guard_5
   - room.set_custom_stacking_height.success
   conflicts:
   - cf_0b8ebec014

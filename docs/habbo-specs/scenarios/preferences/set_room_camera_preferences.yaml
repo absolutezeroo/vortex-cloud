@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f4a132d649572df377d6cea71980a652169b15b643f3b017d00442b78f60c916"
+generated_digest: "sha256:74bb697d1a1b93f8631500339f66ccc11ae3608d6769f8423f707d5bcaf0352e"
 generated:
   feature: preferences.set_room_camera_preferences
   scenarios:
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 76
+    line: 115
   - id: ev_c555ffa7a2c5
     kind: emulator_flow
     authority: vortex_emulator

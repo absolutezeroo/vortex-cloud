@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:62df38a0cd8726357029038bbe4eeae0667f2390a910df2db3b2b22b909a8a54"
+generated_digest: "sha256:0ac91acbc3f1ec890ce677bf1a575a9e420e0b07a76b538df942da703942a274"
 generated:
   name: SetChatPreferences
   direction: incoming
@@ -48,10 +48,13 @@ generated:
     evidence: ev_bb907ba5ed44
   - origin: vortex
     authority: vortex_emulator
-    field_count: 1
+    field_count: 4
     partial: false
     types:
     - boolean
+    - int32
+    - int32
+    - int32
     evidence: ev_0b5d1932531f
   evidence:
   - id: ev_897342e82a67
@@ -85,6 +88,8 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Preferences/SetChatPreferencesMessageParser.cs
     symbol: SetChatPreferencesMessageParser
     line: 7
+  conflicts:
+  - cf_8c78a08422
 verified:
   fields:
   - index: 0

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f681d54929aeb97bc5c9da5e78c161a88f208a57f6a92f8e267a5cf033d96234"
+generated_digest: "sha256:f24b00cf5c833258ee2c3716d237697eeaa796cf153734430b0f99cb37d266d1"
 generated:
   name: UserGameAchievements
   direction: outgoing
@@ -24,9 +24,15 @@ generated:
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_f7268c07b6cc
-    - ev_d91b835bef86
+    - ev_23f906aff6d3
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_23f906aff6d3
   - origin: "as3:PRODUCTION-201601012205-226667486"
     authority: client_code
     field_count: 1
@@ -42,6 +48,14 @@ generated:
     - int32
     evidence: ev_d91b835bef86
   evidence:
+  - id: ev_23f906aff6d3
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_3150/UserGameAchievementsMessageParser.as
+    symbol: UserGameAchievementsMessageParser
+    line: 24
+    note: official client build AIR-1.0.31
   - id: ev_d91b835bef86
     kind: client_parser
     authority: client_code

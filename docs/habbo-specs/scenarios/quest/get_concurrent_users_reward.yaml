@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8ca6a7b2682321bd2ad34757261ed21234abc7c94c032081a2d161eba373506f"
+generated_digest: "sha256:2ab2c97e8d0e1c0ce2c89f165b5dcf4a5c0adbb8405aed77fad0e6bcf2636e95"
 generated:
   feature: quest.get_concurrent_users_reward
   scenarios:
@@ -32,6 +32,60 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1156f62d5639
+  - scenario: quest.get_concurrent_users_reward.guard_1
+    title: "get concurrent users reward: the guard 'string.IsNullOrWhiteSpace(badgeCode)' holds"
+    given:
+      guard: string.IsNullOrWhiteSpace(badgeCode)
+      guard_holds: "true"
+    when:
+      packet: GetConcurrentUsersReward
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetConcurrentUsersReward sent while 'string.IsNullOrWhiteSpace(badgeCode)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c6396662000a
+  - scenario: quest.get_concurrent_users_reward.guard_2
+    title: "get concurrent users reward: the guard 'alreadyOwned' holds"
+    given:
+      guard: alreadyOwned
+      guard_holds: "true"
+    when:
+      packet: GetConcurrentUsersReward
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetConcurrentUsersReward sent while 'alreadyOwned' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c6396662000a
+  - scenario: quest.get_concurrent_users_reward.guard_3
+    title: "get concurrent users reward: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: GetConcurrentUsersReward
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of GetConcurrentUsersReward sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
   - scenario: quest.get_concurrent_users_reward.success
     title: "get concurrent users reward: the request is accepted"
     given:
@@ -46,8 +100,9 @@ generated:
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: ignored
-      emits: []
+      outcome: success
+      emits:
+      - BadgeReceived
       evidence: ev_1156f62d5639
   evidence:
   - id: ev_1156f62d5639
@@ -57,5 +112,19 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetConcurrentUsersRewardMessageHandler.cs
     symbol: GetConcurrentUsersRewardMessageHandler
     line: 27
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 459
 verified: {}
 manual: {}

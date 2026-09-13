@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b8217c574f6d1be340d2516b5fcd00c931393240f639ee9a9b3857badc033643"
+generated_digest: "sha256:c471d68789ee3b7a16408e331ad2151d9e76c036ffe785555a9e9a04b7159888"
 generated:
   id: messenger.follow_friend
   domain: messenger
@@ -104,70 +104,58 @@ generated:
     symbol: RoomObjectModule.AttatchObjectAsync
     evidence: ev_761b76967e2f
   - order: 20
-    layer: grain
-    symbol: PlayerDirectoryGrain.GetPlayerNameAsync
-    evidence: ev_7f41f2bdde62
-  - order: 21
-    layer: domain
-    symbol: WiredActionBranch.Select
-    evidence: ev_f13d6bcce744
-  - order: 22
-    layer: domain
-    symbol: RoomItem.SetOwnerName
-    evidence: ev_b4a557a65d81
-  - order: 23
-    layer: module
-    symbol: RoomMapModule.AddItem
-    evidence: ev_c26714967e6b
-  - order: 24
     layer: module
     symbol: RoomAvatarModule.ProcessNextAvatarStepAsync
     evidence: ev_e6fef545a42a
-  - order: 25
+  - order: 21
     layer: module
     symbol: RoomMapModule.GetTileXY
     evidence: ev_c26714967e6b
-  - order: 26
+  - order: 22
     layer: module
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
-  - order: 27
+  - order: 23
     layer: module
     symbol: RoomMapModule.AddAvatar
     evidence: ev_db615f36b20b
-  - order: 28
+  - order: 24
     layer: module
     symbol: RoomMapModule.UpdateHeightForAvatar
     evidence: ev_db615f36b20b
-  - order: 29
+  - order: 25
     layer: domain
     symbol: FurnitureFloorLogic.GetPostureOffset
     evidence: ev_a2be027c2714
-  - order: 30
+  - order: 26
     layer: domain
     symbol: RoomAvatar.SetHeight
     evidence: ev_9f45a8c43da8
-  - order: 31
+  - order: 27
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
-  - order: 32
+  - order: 28
     layer: domain
     symbol: RoomGameRuntime.OnPlayerEnteredAsync
     evidence: ev_8f4d446a6466
-  - order: 33
+  - order: 29
     layer: module
     symbol: RoomGameModule.OnParticipantEnteredAsync
     evidence: ev_e6fe6eb77f7d
-  - order: 34
+  - order: 30
     layer: grain
     symbol: PlayerEffectGrain.GetSelectedEffectAsync
     evidence: ev_7ef4c91324dc
-  - order: 35
+  - order: 31
+    layer: domain
+    symbol: WiredActionBranch.Select
+    evidence: ev_f13d6bcce744
+  - order: 32
     layer: domain
     symbol: RoomAvatar.SetEffect
     evidence: ev_9f45a8c43da8
-  - order: 36
+  - order: 33
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -236,26 +224,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7aa1dee31dfd
-  - expression: "!_roomGrain._state.ItemsById.TryAdd(item.ObjectId, item)"
-    on_fail: throw
-    observed_in: vortex
-    evidence: ev_761b76967e2f
-  - expression: "!await AttatchLogicAsync(roomObject, ct) || !_roomGrain.MapModule.AddItem(item)"
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_761b76967e2f
   - expression: "!_roomGrain._state.AvatarsByObjectId.TryAdd(avatar.ObjectId, avatar)"
     on_fail: throw
     observed_in: vortex
     evidence: ev_761b76967e2f
-  - expression: _idToName.TryGetValue(playerId, out string? x)
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_7f41f2bdde62
-  - expression: string.IsNullOrWhiteSpace(dbName)
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_7f41f2bdde62
   - expression: nextTileId < 0
     on_fail: return
     observed_in: vortex
@@ -281,10 +253,6 @@ generated:
     value: _grainFactory .GetRoomDirectoryGrain() .AddPlayerToRoomAsync((int)this.GetPrimaryKeyLong(), next, ct)
     observed_in: vortex
     evidence: ev_b44ef304d36a
-  - target: _roomGrain.MapModule
-    value: _roomGrain.MapModule.AddItem(item)
-    observed_in: vortex
-    evidence: ev_761b76967e2f
   - target: _roomGrain.MapModule
     value: _roomGrain.MapModule.RemoveAvatar(avatar, false)
     observed_in: vortex
@@ -349,14 +317,6 @@ generated:
     value: postureOffset
     observed_in: vortex
     evidence: ev_db615f36b20b
-  - target: item
-    value: item.SetOwnerName(value ?? string.Empty)
-    observed_in: vortex
-    evidence: ev_761b76967e2f
-  - target: item
-    value: item.SetAction(objectId => _roomGrain._state.DirtyItemIds.Add(objectId))
-    observed_in: vortex
-    evidence: ev_761b76967e2f
   - target: selfPresence
     value: selfPresence.SetActiveRoomAsync(activeRoom.RoomId, ct)
     observed_in: vortex
@@ -384,7 +344,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -426,7 +386,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 77
+    line: 95
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -462,13 +422,6 @@ generated:
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
     line: 299
-  - id: ev_7f41f2bdde62
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
-    symbol: PlayerDirectoryGrain
-    line: 29
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -482,7 +435,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_8e58361a3afa
     kind: emulator_flow
     authority: vortex_emulator
@@ -496,7 +449,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 926
+    line: 910
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -531,14 +484,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
-  - id: ev_b4a557a65d81
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Object/Furniture/RoomItem.cs
-    symbol: RoomItem
-    line: 58
+    line: 280
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator

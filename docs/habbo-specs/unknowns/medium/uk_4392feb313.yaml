@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a39186e42cf577a34602cc437754f537d86001220735330414ba416ca5cf2639"
+generated_digest: "sha256:7771c7e756656d399563b766bb39b9fbf00e71f07612cf5cb44875f4f876ad01"
 generated:
   id: uk_4392feb313
   subject: "room.pass_carry_item: what the server sends when it refuses"
@@ -60,6 +60,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 662
+    line: 668
 verified: {}
 manual: {}

@@ -6,6 +6,7 @@ actually produced against the trees listed under Sources.
 ## Sources scanned
 
 - vortex (emulator)
+- as3:AIR-1.0.31 (official_client)
 - habbo-arcturus-daybreak (reference_emulator)
 - nitro (community_client)
 - as3:PRODUCTION-201601012205-226667486 (official_client)
@@ -15,15 +16,15 @@ actually produced against the trees listed under Sources.
 
 | Direction | Count |
 |---|---:|
-| Incoming (client to server) | 624 |
-| Outgoing (server to client) | 860 |
+| Incoming (client to server) | 626 |
+| Outgoing (server to client) | 868 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
-| Features | 517 |
-| Scenarios | 1987 |
+| Features | 519 |
+| Scenarios | 1989 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -31,21 +32,21 @@ actually produced against the trees listed under Sources.
 
 | Level | Packets | Share |
 |---|---:|---:|
-| confirmed | 51 | 3.4% |
-| client_confirmed | 624 | 42% |
+| confirmed | 64 | 4.3% |
+| client_confirmed | 617 | 41.3% |
 | multi_reference_confirmed | 88 | 5.9% |
-| reference_observed | 239 | 16.1% |
-| implementation_observed | 268 | 18.1% |
-| unknown | 214 | 14.4% |
+| reference_observed | 238 | 15.9% |
+| implementation_observed | 275 | 18.4% |
+| unknown | 212 | 14.2% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
-| Conflicts | 364 |
+| Conflicts | 367 |
 | Critical unknowns | 130 |
-| Unknowns in total | 686 |
-| Fields with no attested name | 1591 of 5612 |
+| Unknowns in total | 689 |
+| Fields with no attested name | 1604 of 5690 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,33 +55,33 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 2
-- unchanged: 3575
+- written: 3
+- unchanged: 3596
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
+- as3:AIR-1.0.31: 1134 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 95 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- catalog.get_flat_categories: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- inventory.redeem_purchasable_clothing: 24 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- messenger.follow_friend: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- messenger.open_room_for_player_id: 42 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- as3:WIN63-202607011411-782849652: 93 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- catalog.builders_club_place_room_item: 33 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- catalog.builders_club_place_wall_item: 23 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- catalog.get_flat_categories: 20 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- catalog.purchase_from_catalog_as_gift: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- messenger.follow_friend: 22 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- messenger.open_room_for_player_id: 39 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - moderation.publish: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - moderation.resolve_for_player: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.answer_doorbell: 21 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.ban_user_with_duration: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.get_room_entry_data: 23 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.ban_user_with_duration: 17 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.get_room_entry_data: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.look_to: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.move_floor_item_in_room: 24 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.move_wall_item_in_room: 17 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.open_room_for_player_id: 35 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.pickup_item_in_room: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.place_wall_item_in_room: 45 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.open_room_for_player_id: 32 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.place_wall_item_in_room: 42 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.present_open: 15 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
-- room.try_get_definition: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- room.try_get_definition: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.deposit_to_wired_chest: 17 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.get_wired_chest_transactions: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - wired.get_wired_room_transactions: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks

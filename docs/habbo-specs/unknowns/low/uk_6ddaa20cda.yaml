@@ -10,23 +10,23 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:02e8f79871033a99e2dccf2b376c702eb2e98bce50e8d44d774d5dc69e8284a2"
+generated_digest: "sha256:ebbeb01a9f16f218621106c99d41c1396f16c5ec52423f36775f0afbff2b4279"
 generated:
   id: uk_6ddaa20cda
   subject: "outgoing/Game2GroupLeaderboard: unnamed fields"
   severity: low
-  question: Fields 0 carry no name from any source. What are they?
+  question: Fields 0, 1, 2, 3, 4, 5, 6 carry no name from any source. What are they?
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Game2GroupLeaderboard
   known_evidence:
-  - id: ev_29ef493cd336
+  - id: ev_135f78a6f267
     kind: client_parser
     authority: client_code
-    origin: "as3:WIN63-202607011411-782849652"
-    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_4040/Game2GroupLeaderboardParser.as
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4151/Game2GroupLeaderboardParser.as
     symbol: Game2GroupLeaderboardParser
     line: 31
-    note: official client build WIN63-202607011411-782849652
+    note: official client build AIR-1.0.31
   - id: ev_422d8747abcc
     kind: client_parser
     authority: multi_implementation

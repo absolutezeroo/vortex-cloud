@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7e2abbdbb5e6f63401a83f11faaed8000717dbd53ee55327c1e2afd65f38c457"
+generated_digest: "sha256:624fd8494f6bc9074e739c390e890f15f97caf14783c1fb5ede5ffca3a948abd"
 generated:
   feature: room.set_custom_stacking_height
   scenarios:
@@ -129,29 +129,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1aef48f5f62d
-  - scenario: room.set_custom_stacking_height.guard_5
-    title: "set custom stacking height: the guard '!InBounds(nTileIdx)' holds"
-    given:
-      guard: "!InBounds(nTileIdx)"
-      guard_holds: "true"
-    when:
-      packet: SetCustomStackingHeight
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of SetCustomStackingHeight sent while '!InBounds(nTileIdx)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_407ccfd7d8f8
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_1aef48f5f62d
   - scenario: room.set_custom_stacking_height.success
     title: "set custom stacking height: the request is accepted"
     given:
@@ -196,7 +173,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Floor.cs
     symbol: RoomMapModule
-    line: 125
+    line: 185
   - id: ev_5e51a330c801
     kind: emulator_flow
     authority: vortex_emulator

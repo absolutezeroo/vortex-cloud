@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:73fd8fd1bdd848d3c6ed134f1f9e38fc07b2532772e27cea7036a5af6256ae05"
+generated_digest: "sha256:1baf6b2eb71056927eeed653b86d347fee615caea54126e27ae44170be6011fc"
 generated:
   id: uk_cab1e4c8ef
   subject: "moderation.resolve_for_player: what the server sends when it refuses"
@@ -95,7 +95,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 259
+    line: 268
   - id: ev_85ba71af2c41
     kind: emulator_flow
     authority: vortex_emulator
@@ -130,7 +130,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 449
+    line: 505
   - id: ev_a04d85ec1088
     kind: emulator_handler
     authority: vortex_emulator
@@ -144,21 +144,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 465
+    line: 467
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 252
+    line: 254
   - id: ev_bb859d4f21b2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 68
+    line: 75
   - id: ev_bbe082cf14ca
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:02395e11ea61aa05c2db414fc61a4c32aafc055c802bf32aaf277ff7e10f64c8"
+generated_digest: "sha256:b73549dad3eeef551c66513bfc9a01652b2dbcdfe6c72f20efb56f2243974be0"
 generated:
   id: uk_d9b91aa902
   subject: "room.whisper: who receives FloodControl, RemainingMutePeriod"
@@ -25,13 +25,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 77
+    line: 89
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 66
+    line: 78
 verified: {}
 manual: {}

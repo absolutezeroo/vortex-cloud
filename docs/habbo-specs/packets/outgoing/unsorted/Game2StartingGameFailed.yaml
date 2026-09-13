@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:9e4270816188dcab1962ca4101c9629bdfe14a32873d1555b475db8778893e70"
+generated_digest: "sha256:5052d7c42b180fa3a273dd66b44153d9249c200368e26a5338623289b30d4431"
 generated:
   name: Game2StartingGameFailed
   direction: outgoing
   domain: unsorted
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -24,8 +24,15 @@ generated:
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_feefe18b4498
+    - ev_64548cd263b9
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_64548cd263b9
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 1
@@ -34,6 +41,14 @@ generated:
     - int32
     evidence: ev_feefe18b4498
   evidence:
+  - id: ev_64548cd263b9
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4279/Game2StartingGameFailedMessageParser.as
+    symbol: Game2StartingGameFailedMessageParser
+    line: 30
+    note: official client build AIR-1.0.31
   - id: ev_feefe18b4498
     kind: client_parser
     authority: client_code

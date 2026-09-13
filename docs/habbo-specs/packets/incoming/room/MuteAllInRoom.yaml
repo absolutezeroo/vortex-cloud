@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:77471aeee8eb84a5e6a1323b97c0cb85928fe25aa2b9ee24c66e740bc0f708e2"
+generated_digest: "sha256:4513c7a76b6c9c24bd8924962a3ee1add39b9b60cdeb6d30b0cb92d285cbc206"
 generated:
   name: MuteAllInRoom
   direction: incoming
@@ -76,7 +76,5 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Room/Action/MuteAllInRoomMessageParser.cs
     symbol: MuteAllInRoomMessageParser
     line: 7
-  unknowns:
-  - uk_f272bc163d
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:903a26d4c15e520052216ad3c22587f163e710e9c35b591b166cf7463e5ca1ff"
+generated_digest: "sha256:2c0f7927bd7494f6bc05f3bf5987e6fb0d71c37fa59c4d82fe43ba7e641e7449"
 generated:
   feature: room.remove_rights
   scenarios:
@@ -215,7 +215,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 288
+    line: 297
   - id: ev_b0c6819b754b
     kind: emulator_flow
     authority: vortex_emulator

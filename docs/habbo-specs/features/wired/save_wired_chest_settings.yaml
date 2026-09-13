@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:59c33780616b2a8bcdf1e535f3b33b85641b1246366976a62bac56331897e686"
+generated_digest: "sha256:00dd42f5d944494c1806ef86587a101a843016df6165c6253c52cc1c2be7ae05"
 generated:
   id: wired.save_wired_chest_settings
   domain: wired
@@ -115,7 +115,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 326
+    line: 438
   - id: ev_c6552b9a3adb
     kind: emulator_flow
     authority: vortex_emulator

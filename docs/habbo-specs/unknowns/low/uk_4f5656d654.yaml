@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3234decf615847c685b66bfd90b6cd7527b4f426a22e26d854cd1ee81c974e97"
+generated_digest: "sha256:fc32a2de15dc667526a212c0b9a1ca066e8797aded99dcbc8534210ada914654"
 generated:
   id: uk_4f5656d654
   subject: "incoming/Game2GetAccountGameStatus: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Game2GetAccountGameStatus
   known_evidence:
+  - id: ev_67e543702c03
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2175/Game2GetAccountGameStatusMessageComposer.as
+    symbol: Game2GetAccountGameStatusMessageComposer
+    line: 16
+    note: "the client constructs this composer at 3 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/game/snowwar/SnowWarEngine.as:1078 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_d922800829f9
     kind: client_call_site
     authority: client_mandated
@@ -35,13 +43,5 @@ generated:
     symbol: Game2GetAccountGameStatusComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_a38a27cdd49b
-    kind: reference_handler
-    authority: reference_emulator
-    origin: habbo-arcturus-daybreak
-    source: ../vortex-modern-client/sources/HABBO-ARCTURUS-DAYBREAK/src/main/java/com/eu/habbo/messages/incoming/gamecenter/Game2GetAccountGameStatusMessageEvent.java
-    symbol: Game2GetAccountGameStatusMessageEvent
-    line: 8
-    note: third-party server implementation; evidence, not authority
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ebb41d81ee5da1cdd29c929b30f0d0003906d91ce9e26141ec3bddb902ba4775"
+generated_digest: "sha256:423d4398953a87fbeaa379483c481e02ece464f8f381d2962c997b6305807f02"
 generated:
   name: GetWeeklyGameReward
   direction: incoming
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_74d01166aa4e
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -38,6 +44,14 @@ generated:
     types: []
     evidence: ev_c1e9a4e7297f
   evidence:
+  - id: ev_74d01166aa4e
+    kind: client_composer
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2487/GetWeeklyGameRewardComposer.as
+    symbol: GetWeeklyGameRewardComposer
+    line: 16
+    note: official client build AIR-1.0.31
   - id: ev_c58819c88161
     kind: client_composer
     authority: client_code

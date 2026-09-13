@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4d5e351de38fa0f30b73d49d8250f119eefd8e95f0cab0d80742a446a3a55713"
+generated_digest: "sha256:cafdf11815b41d55e24adbb2117cc3d8d1d35cde571ebeabbc01352c21250196"
 generated:
   id: uk_1ab6f5431c
   subject: "wired.save_wired_chest_notification_settings: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 354
+    line: 466
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

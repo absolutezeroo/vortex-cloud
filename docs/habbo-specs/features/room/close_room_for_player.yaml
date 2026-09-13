@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1447e7bd27b5c25a82caf1a2a84a5c2a6436f4c586dcefbc764703f6c191111a"
+generated_digest: "sha256:bfef1382208ad6de3a1b8e0adb77a2f929ecbd9f573ede5428326b1f57b327ba"
 generated:
   id: room.close_room_for_player
   domain: room
@@ -77,46 +77,42 @@ generated:
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
   - order: 13
-    layer: domain
-    symbol: RoomItemIndex.OnItemDetached
-    evidence: ev_4c36667ce9b9
-  - order: 14
     layer: persistence
     symbol: RoomPersistenceGrain.EnqueueDirtyItemAsync
     evidence: ev_e439cab6b248
-  - order: 15
+  - order: 14
     layer: module
     symbol: RoomAvatarModule.StopWalkingAsync
     evidence: ev_e6fef545a42a
-  - order: 16
+  - order: 15
     layer: domain
     symbol: RoomAvatar.SetGoalTileId
     evidence: ev_9f45a8c43da8
-  - order: 17
+  - order: 16
     layer: domain
     symbol: RoomAvatar.RemoveStatus
     evidence: ev_9f45a8c43da8
-  - order: 18
+  - order: 17
     layer: module
     symbol: RoomMapModule.RemoveAvatar
     evidence: ev_db615f36b20b
-  - order: 19
+  - order: 18
     layer: domain
     symbol: RoomGameRuntime.OnPlayerLeftAsync
     evidence: ev_8f4d446a6466
-  - order: 20
+  - order: 19
     layer: domain
     symbol: TeamBook.OnPlayerLeft
     evidence: ev_556d41376c6f
-  - order: 21
+  - order: 20
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 22
+  - order: 21
     layer: grain
     symbol: RoomDirectoryGrain.RemovePlayerFromRoomAsync
     evidence: ev_74aa24a9a756
-  - order: 23
+  - order: 22
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
@@ -137,10 +133,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_761b76967e2f
-  - expression: item.Logic is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_4c36667ce9b9
   - expression: "!avatar.IsWalking"
     on_fail: return
     observed_in: vortex
@@ -167,7 +159,7 @@ generated:
     observed_in: vortex
     evidence: ev_b44ef304d36a
   - target: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId)
-    value: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId) .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct, true)
+    value: _roomGrain ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId) .EnqueueDirtyItemAsync(_roomGrain.RoomId, snapshot, ct)
     observed_in: vortex
     evidence: ev_761b76967e2f
   - target: _roomGrain.MapModule
@@ -230,10 +222,6 @@ generated:
     value: "0"
     observed_in: vortex
     evidence: ev_e6fef545a42a
-  - target: item
-    value: item.SetAction(null)
-    observed_in: vortex
-    evidence: ev_761b76967e2f
   - target: playerPresence
     value: playerPresence.SetPendingRoomAsync(RoomId.Invalid, false)
     observed_in: vortex
@@ -290,13 +278,6 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Doorbell.cs
     symbol: RoomGrain
     line: 84
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 63
   - id: ev_556d41376c6f
     kind: emulator_flow
     authority: vortex_emulator
@@ -310,21 +291,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 90
+    line: 108
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 86
+    line: 158
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 308
+    line: 363
   - id: ev_82aaf63b45c1
     kind: emulator_flow
     authority: vortex_emulator
@@ -338,7 +319,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 906
+    line: 890
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -380,7 +361,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -401,7 +382,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 38
+    line: 46
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator
@@ -418,7 +399,6 @@ generated:
   - room.close_room_for_player.guard_5
   - room.close_room_for_player.guard_6
   - room.close_room_for_player.guard_7
-  - room.close_room_for_player.guard_8
   - room.close_room_for_player.success
   conflicts:
   - cf_1cd41cbf9b

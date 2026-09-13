@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:0b7fb8293c6ac2708779195752ffa9e49b6f4ea083cb1508a39c99bb35be5ffc"
+generated_digest: "sha256:e19b7e3417fe373be29d000b0443277a874a3ad73cfacd5ce01efadc3aedc47a"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -256,6 +256,7 @@ generated:
     GetPromoArticles: 3152
     GetQuests: 2895
     GetQuizQuestions: 1982
+    GetRaidProtectionSettings: 206
     GetRecyclerPrizes: 3669
     GetRecyclerStatus: 1730
     GetRelationshipStatusInfo: 3219
@@ -463,6 +464,7 @@ generated:
     RoomsWhereMyFriendsAreSearch: 2517
     RoomsWithHighestScoreSearch: 2135
     SSOTicket: 882
+    SaveRaidProtectionSettings: 2687
     SaveRoomSettings: 725
     SaveUserNftWardrobe: 3428
     SaveWardrobeOutfit: 116
@@ -863,6 +865,7 @@ generated:
     ModeratorToolPreferences: 1898
     ModeratorUserInfo: 2589
     ModifyCustomFilterResult: 3622
+    MuteAllInRoom: 1172
     MyCfhReportStatus: 3809
     MysteryBoxKeys: 1389
     NavigatorCollapsedCategories: 1754
@@ -954,6 +957,9 @@ generated:
     Quests: 3398
     QuizData: 3999
     QuizResults: 548
+    RaidProtectionCapability: 8202
+    RaidProtectionSettings: 8204
+    RaidProtectionSettingsResult: 8206
     RecyclerFinished: 3617
     RecyclerPrizes: 3367
     RecyclerStatus: 2166
@@ -1071,6 +1077,9 @@ generated:
     UserUnbannedFromRoom: 2089
     UserUpdate: 2613
     Users: 996
+    VariableFxConfigUpdate: 267
+    VariableFxStatusRemove: 3388
+    VariableFxStatusUpdate: 3889
     VortexFishSighted: 8106
     VortexFishingCatchResult: 8108
     VortexFishingDefinitions: 8102

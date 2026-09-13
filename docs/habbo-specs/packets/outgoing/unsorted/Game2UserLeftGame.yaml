@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ce193159f1f68afc96c29a92bbceed1859db8f0d2d72d9b4238a9ed7b9adfb3f"
+generated_digest: "sha256:d05df858b4a96c49cbd6170634efac09001137ac26b73dcf6ceeb3d209e7bf9a"
 generated:
   name: Game2UserLeftGame
   direction: outgoing
   domain: unsorted
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -24,8 +24,15 @@ generated:
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_0f4ecf2240c8
+    - ev_c6db6d39695b
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_c6db6d39695b
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 1
@@ -42,5 +49,13 @@ generated:
     symbol: Game2UserLeftGameMessageParser
     line: 21
     note: official client build WIN63-202607011411-782849652
+  - id: ev_c6db6d39695b
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4279/Game2UserLeftGameMessageParser.as
+    symbol: Game2UserLeftGameMessageParser
+    line: 21
+    note: official client build AIR-1.0.31
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e9d94a39c800699dbdf85e99430213a5c897e8562e35699acdcbb1f649fd8471"
+generated_digest: "sha256:796f740c901fa7f3839b56cc932cab845194387b1304e0a380719fa3f6a9158e"
 generated:
   id: uk_35bc99353f
   subject: "messenger.follow_friend: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 77
+    line: 95
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -103,13 +103,6 @@ generated:
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
     line: 299
-  - id: ev_7f41f2bdde62
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
-    symbol: PlayerDirectoryGrain
-    line: 29
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -123,7 +116,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_8e58361a3afa
     kind: emulator_flow
     authority: vortex_emulator
@@ -137,7 +130,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 926
+    line: 910
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -172,14 +165,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
-  - id: ev_b4a557a65d81
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Object/Furniture/RoomItem.cs
-    symbol: RoomItem
-    line: 58
+    line: 280
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator

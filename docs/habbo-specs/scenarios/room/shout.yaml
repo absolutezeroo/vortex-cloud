@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0a51888f97f95e11df7101e98f34a183cd5b71154fab4798e66920ce31cadb30"
+generated_digest: "sha256:38429cfd5568758648296f740b160ebd13be7238a421afb82b12259c02a49b44"
 generated:
   feature: room.shout
   scenarios:
@@ -84,6 +84,29 @@ generated:
       emits: []
       evidence: ev_a5b9d9854295
   - scenario: room.shout.guard_3
+    title: "shout: the guard '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityM...' holds"
+    given:
+      guard: _roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)
+      guard_holds: "true"
+    when:
+      packet: Shout
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Shout sent while '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_a5b9d9854295
+  - scenario: room.shout.guard_4
     title: "shout: the guard 'IsUserMuted(playerId, out int secondsRemaining)' holds"
     given:
       guard: IsUserMuted(playerId, out int secondsRemaining)
@@ -108,7 +131,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a5b9d9854295
-  - scenario: room.shout.guard_4
+  - scenario: room.shout.guard_5
     title: "shout: the guard 'IsFloodGated(playerId, avatar, out int floodSecondsRemain...' holds"
     given:
       guard: IsFloodGated(playerId, avatar, out int floodSecondsRemaining)
@@ -133,7 +156,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a5b9d9854295
-  - scenario: room.shout.guard_5
+  - scenario: room.shout.guard_6
     title: "shout: the guard 'chatting.Cancel' holds"
     given:
       guard: chatting.Cancel
@@ -156,7 +179,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_a5b9d9854295
-  - scenario: room.shout.guard_6
+  - scenario: room.shout.guard_7
     title: "shout: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -232,6 +255,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 45
+    line: 46
 verified: {}
 manual: {}

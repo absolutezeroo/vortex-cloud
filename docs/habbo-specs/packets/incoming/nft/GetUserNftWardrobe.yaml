@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4ab667fbc4d319820793b798f8f7eeeff0cba07e473fc5e6806aaad8540f1217"
+generated_digest: "sha256:f5b115e523ebc0862b4a84f24c76377b9d251b12c705608aaa311193ce444ae7"
 generated:
   name: GetUserNftWardrobe
   direction: incoming
@@ -20,6 +20,12 @@ generated:
   vortex_handler: GetUserNftWardrobeMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_28bed05e3677
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_c4a2f7aca164
   evidence:
+  - id: ev_28bed05e3677
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1935/GetUserNftWardrobeMessageComposer.as
+    symbol: GetUserNftWardrobeMessageComposer
+    line: 15
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/avatar/nft/NftAvatarsModel.as:36 with 0 argument(s)"
   - id: ev_e38afb3382e6
     kind: client_call_site
     authority: client_mandated

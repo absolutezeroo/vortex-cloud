@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5b7d6319358fa6686d3c567a75d9a0d1bbc3c21a07a0aa9510c8fa583528888f"
+generated_digest: "sha256:89e91ad4add762ca0869fdaa90ce45f0671c5607a7ecb39dc44c94fa81b57a7d"
 generated:
   feature: room.unban_user_from_room
   scenarios:
@@ -286,7 +286,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 404
+    line: 460
   - id: ev_ede1461ee378
     kind: emulator_flow
     authority: vortex_emulator

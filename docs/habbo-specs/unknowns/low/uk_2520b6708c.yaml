@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:48232ebff27caed30c135031888235a425f0b5483a96eac8c24dc186f540c1fe"
+generated_digest: "sha256:2ffd4d25634eca7d15dd0be8c0955485ca5e0ea99016d9767eea89f7a13c9c35"
 generated:
   id: uk_2520b6708c
   subject: "incoming/GetUserGameAchievements: unnamed fields"
@@ -27,6 +27,14 @@ generated:
     symbol: GetUserGameAchievementsMessageComposer
     line: 16
     note: official client build WIN63-202607011411-782849652
+  - id: ev_640251c3c731
+    kind: client_composer
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2647/GetUserGameAchievementsMessageComposer.as
+    symbol: GetUserGameAchievementsMessageComposer
+    line: 16
+    note: official client build AIR-1.0.31
   - id: ev_53848ec21c51
     kind: client_composer
     authority: multi_implementation

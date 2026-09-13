@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5c658d1a0147ba343b57028fd6769c8f8bffefd45ceb5357d8c7d32ce7733dab"
+generated_digest: "sha256:d5e693a62871425c042ac41ae56dd2d455206649c76c618e2ed1ef342a3a56ec"
 generated:
   id: navigator.resolve_for_player
   domain: navigator
@@ -128,7 +128,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 259
+    line: 268
   scenarios:
   - navigator.resolve_for_player.guard_0
   - navigator.resolve_for_player.guard_1

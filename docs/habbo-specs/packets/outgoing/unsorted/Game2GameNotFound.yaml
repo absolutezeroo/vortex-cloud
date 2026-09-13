@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:40166f99d01b5778754fedfebaf2d71d59aa068fdd27f560c170d23006511091"
+generated_digest: "sha256:a6762f0e5ea5d3016dbaa82760ef98ae709a6fa297efac70e4f2efacb7c7091d"
 generated:
   name: Game2GameNotFound
   direction: outgoing
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_b3943bba6000
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -34,5 +40,13 @@ generated:
     symbol: Game2GameNotFoundMessageParser
     line: 19
     note: official client build WIN63-202607011411-782849652
+  - id: ev_b3943bba6000
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4279/Game2GameNotFoundMessageParser.as
+    symbol: Game2GameNotFoundMessageParser
+    line: 19
+    note: official client build AIR-1.0.31
 verified: {}
 manual: {}

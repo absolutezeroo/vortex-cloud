@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f90b7abd880250fc26bd48a9652e474423da6dc95e988849480078d297e0724e"
+generated_digest: "sha256:9121d9a865ef75f6cdeed32a71aec3cebcd1ee651cfdbdc8ad1f5c040f555822"
 generated:
   id: uk_9629b9da77
   subject: "room.get_room_entry_data: what the server sends when it refuses"
@@ -46,14 +46,14 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.cs
     symbol: RoomGrain
-    line: 129
+    line: 113
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -116,7 +116,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 77
+    line: 95
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
@@ -145,13 +145,6 @@ generated:
     source: Vortex.Players/Grains/PlayerEffectGrain.cs
     symbol: PlayerEffectGrain
     line: 299
-  - id: ev_7f41f2bdde62
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
-    symbol: PlayerDirectoryGrain
-    line: 29
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator
@@ -165,7 +158,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_873d3938edba
     kind: emulator_flow
     authority: vortex_emulator
@@ -186,7 +179,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 926
+    line: 910
   - id: ev_9d8421b6228f
     kind: emulator_flow
     authority: vortex_emulator
@@ -214,7 +207,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 465
+    line: 467
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator
@@ -228,14 +221,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
-  - id: ev_b4a557a65d81
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Object/Furniture/RoomItem.cs
-    symbol: RoomItem
-    line: 58
+    line: 280
   - id: ev_c0eb47470642
     kind: emulator_flow
     authority: vortex_emulator
@@ -277,7 +263,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomFurniModule.Floor.cs
     symbol: RoomFurniModule
-    line: 251
+    line: 257
   - id: ev_e4165c982e0e
     kind: emulator_flow
     authority: vortex_emulator

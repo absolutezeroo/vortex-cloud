@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:abcfbe76695cdd1428c0ae2b872d959571cded58517a271c5e608844238ed91c"
+generated_digest: "sha256:a6d2d29b9174f5bb56d9deacbed854bc62844e5cef0abd40b503be1851d4af1f"
 generated:
   feature: inventory.redeem_purchasable_clothing
   scenarios:
@@ -33,203 +33,131 @@ generated:
       emits: []
       evidence: ev_acbb2191dd7f
   - scenario: inventory.redeem_purchasable_clothing.guard_1
-    title: "redeem purchasable clothing: the guard '!await ActionModule.RemoveItemByIdAsync(ctx, itemId, ct)' holds"
+    title: "redeem purchasable clothing: the guard 'item is null' holds"
     given:
-      guard: "!await ActionModule.RemoveItemByIdAsync(ctx, itemId, ct)"
+      guard: item is null
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!await ActionModule.RemoveItemByIdAsync(ctx, itemId, ct)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'item is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2298dc2dabc2
-  - scenario: inventory.redeem_purchasable_clothing.guard_10
-    title: "redeem purchasable clothing: the guard '!avatar.IsWalking' holds"
-    given:
-      guard: "!avatar.IsWalking"
-      guard_holds: "true"
-    when:
-      packet: RedeemPurchasableClothing
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!avatar.IsWalking' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_e6fef545a42a
-  - scenario: inventory.redeem_purchasable_clothing.guard_11
-    title: "redeem purchasable clothing: the guard 'tileId == -1' holds"
-    given:
-      guard: tileId == -1
-      guard_holds: "true"
-    when:
-      packet: RedeemPurchasableClothing
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'tileId == -1' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_9f45a8c43da8
+      evidence: ev_436a48c84f84
   - scenario: inventory.redeem_purchasable_clothing.guard_2
-    title: "redeem purchasable clothing: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
+    title: "redeem purchasable clothing: the guard 'granted.Length == 0' holds"
     given:
-      guard: "!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)"
+      guard: granted.Length == 0
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'granted.Length == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
+      outcome: ignored
       emits: []
-      evidence: ev_8a097ef973ee
+      evidence: ev_436a48c84f84
   - scenario: inventory.redeem_purchasable_clothing.guard_3
-    title: "redeem purchasable clothing: the guard 'pickupType == FurniturePickupType.None' holds"
+    title: "redeem purchasable clothing: the guard 'missing.Length == 0' holds"
     given:
-      guard: pickupType == FurniturePickupType.None
+      guard: missing.Length == 0
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'pickupType == FurniturePickupType.None' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'missing.Length == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
+      outcome: ignored
       emits: []
-      evidence: ev_8a097ef973ee
+      evidence: ev_436a48c84f84
   - scenario: inventory.redeem_purchasable_clothing.guard_4
-    title: "redeem purchasable clothing: the guard 'ctx.Origin == ActionOrigin.System' holds"
+    title: "redeem purchasable clothing: the guard 'deleted == 0' holds"
     given:
-      guard: ctx.Origin == ActionOrigin.System
+      guard: deleted == 0
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'ctx.Origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'deleted == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_82c2d2746361
+      evidence: ev_436a48c84f84
   - scenario: inventory.redeem_purchasable_clothing.guard_5
-    title: "redeem purchasable clothing: the guard 'await GetControllerLevelAsync(ctx) >= RoomControllerType....' holds"
+    title: "redeem purchasable clothing: the guard '!await _furniModule.RemoveFurnitureAsync(itemId, ct)' holds"
     given:
-      guard: await GetControllerLevelAsync(ctx) >= RoomControllerType.GroupAdmin
+      guard: "!await _furniModule.RemoveFurnitureAsync(itemId, ct)"
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'await GetControllerLevelAsync(ctx) >= RoomControllerType.GroupAdmin' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!await _furniModule.RemoveFurnitureAsync(itemId, ct)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_82c2d2746361
+      evidence: ev_c6396662000a
   - scenario: inventory.redeem_purchasable_clothing.guard_6
-    title: "redeem purchasable clothing: the guard 'ownerId == PlayerId.Invalid' holds"
+    title: "redeem purchasable clothing: the guard '!_state.FurnitureById.Remove(itemId, out IFurnitureItem? ...' holds"
     given:
-      guard: ownerId == PlayerId.Invalid
+      guard: "!_state.FurnitureById.Remove(itemId, out IFurnitureItem? item)"
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'ownerId == PlayerId.Invalid' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!_state.FurnitureById.Remove(itemId, out IFurnitureItem? item)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_b4a557a65d81
+      evidence: ev_48fa24e8d4a2
   - scenario: inventory.redeem_purchasable_clothing.guard_7
-    title: "redeem purchasable clothing: the guard '!_roomGrain.MapModule.RemoveItem(item)' holds"
+    title: "redeem purchasable clothing: the guard '_registry is null' holds"
     given:
-      guard: "!_roomGrain.MapModule.RemoveItem(item)"
+      guard: _registry is null
       guard_holds: "true"
     when:
       packet: RedeemPurchasableClothing
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '!_roomGrain.MapModule.RemoveItem(item)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of RedeemPurchasableClothing sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_761b76967e2f
-  - scenario: inventory.redeem_purchasable_clothing.guard_8
-    title: "redeem purchasable clothing: the guard 'attached is null' holds"
-    given:
-      guard: attached is null
-      guard_holds: "true"
-    when:
-      packet: RedeemPurchasableClothing
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'attached is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b2d21836a70a
-  - scenario: inventory.redeem_purchasable_clothing.guard_9
-    title: "redeem purchasable clothing: the guard 'item.Logic is null' holds"
-    given:
-      guard: item.Logic is null
-      guard_holds: "true"
-    when:
-      packet: RedeemPurchasableClothing
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RedeemPurchasableClothing sent while 'item.Logic is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4c36667ce9b9
+      evidence: ev_34bf3ac088e2
   - scenario: inventory.redeem_purchasable_clothing.success
     title: "redeem purchasable clothing: the request is accepted"
     given:
@@ -247,62 +175,37 @@ generated:
       outcome: success
       emits:
       - FigureSetIds
-      - FurniListAddOrUpdate
       - FurniListRemove
-      - ItemRemove
-      - ObjectRemove
-      - UserRemove
-      evidence: ev_039485376f4a
+      evidence: ev_2298dc2dabc2
   evidence:
-  - id: ev_039485376f4a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
-    symbol: InventoryFurnitureLoader
-    line: 126
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.cs
     symbol: RoomGrain
-    line: 51
-  - id: ev_4c36667ce9b9
+    line: 19
+  - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 65
-  - id: ev_761b76967e2f
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 16
+  - id: ev_436a48c84f84
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
-    symbol: RoomObjectModule
-    line: 97
-  - id: ev_82c2d2746361
+    source: Vortex.Players/Grains/PlayerClothingGrain.cs
+    symbol: PlayerClothingGrain
+    line: 74
+  - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
-    symbol: RoomSecurityModule
-    line: 144
-  - id: ev_8a097ef973ee
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomActionModule.cs
-    symbol: RoomActionModule
-    line: 30
-  - id: ev_9f45a8c43da8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Object/Avatars/RoomAvatar.cs
-    symbol: RoomAvatar
-    line: 64
+    source: Vortex.Inventory/Grains/Modules/InventoryFurniModule.cs
+    symbol: InventoryFurniModule
+    line: 61
   - id: ev_acbb2191dd7f
     kind: emulator_flow
     authority: vortex_emulator
@@ -310,26 +213,12 @@ generated:
     source: Vortex.PacketHandlers/Inventory/Clothing/RedeemPurchasableClothingMessageHandler.cs
     symbol: RedeemPurchasableClothingMessageHandler
     line: 46
-  - id: ev_b2d21836a70a
+  - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/Systems/RoomMysteryBoxSystem.cs
-    symbol: RoomMysteryBoxSystem
-    line: 374
-  - id: ev_b4a557a65d81
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Object/Furniture/RoomItem.cs
-    symbol: RoomItem
-    line: 48
-  - id: ev_e6fef545a42a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs
-    symbol: RoomAvatarModule
-    line: 439
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 117
 verified: {}
 manual: {}

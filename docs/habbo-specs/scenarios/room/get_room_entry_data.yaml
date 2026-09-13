@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:247fdd8acec3939a3e2241045efef925ab5950eb5dab4fa6059b894888a5706b"
+generated_digest: "sha256:c6ca182cc6658a7c08f09cd798dbb005e89d1cb485a6ec8b624dbd83d7452f4c"
 generated:
   feature: room.get_room_entry_data
   scenarios:
@@ -379,7 +379,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 196
+    line: 205
   - id: ev_873d3938edba
     kind: emulator_flow
     authority: vortex_emulator

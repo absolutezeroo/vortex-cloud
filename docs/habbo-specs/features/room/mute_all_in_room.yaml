@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0583c1e4ba5d7f429620ac05dc2b2933fe49fc305b695f20794fc567c035b8db"
+generated_digest: "sha256:85265c39d3405131fcc5049b01da437ecf66248a56021300ed7f1eba8f3de0fb"
 generated:
   id: room.mute_all_in_room
   domain: room
@@ -18,7 +18,7 @@ generated:
   trigger_packets:
   - MuteAllInRoom
   observed_in:
-    vortex: false
+    vortex: true
     references:
     - habbo-arcturus-daybreak
   official_behavior:
@@ -28,23 +28,70 @@ generated:
     layer: handler
     symbol: MuteAllInRoomMessageHandler.HandleAsync
     evidence: ev_8f6837f2e638
-  checks: []
-  state_changes: []
+  - order: 1
+    layer: grain
+    symbol: RoomGrain.ToggleAllInRoomMuteAsync
+    evidence: ev_bb859d4f21b2
+  - order: 2
+    layer: module
+    symbol: RoomModerationSystem.ToggleAllInRoomMuteAsync
+    evidence: ev_9eb84a2a2088
+  checks:
+  - expression: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_69ee4350e8d0
+  - expression: actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._state.RoomId
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_9eb84a2a2088
+  state_changes:
+  - target: ModerationSystem
+    value: ModerationSystem.ToggleAllInRoomMuteAsync(actorCtx)
+    observed_in: vortex
+    evidence: ev_bb859d4f21b2
+  - target: roomGrain
+    value: roomGrain.ToggleAllInRoomMuteAsync(ctx.AsActionContext())
+    observed_in: vortex
+    evidence: ev_69ee4350e8d0
   outgoing:
     ordering: unknown
     packets: []
   reaches_persistence: false
   evidence:
+  - id: ev_69ee4350e8d0
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Room/Action/MuteAllInRoomMessageHandler.cs
+    symbol: MuteAllInRoomMessageHandler
+    line: 26
   - id: ev_8f6837f2e638
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Action/MuteAllInRoomMessageHandler.cs
     symbol: MuteAllInRoomMessageHandler
-    line: 8
+    line: 15
+  - id: ev_9eb84a2a2088
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
+    symbol: RoomModerationSystem
+    line: 77
+  - id: ev_bb859d4f21b2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
+    symbol: RoomGrain
+    line: 54
   scenarios:
+  - room.mute_all_in_room.guard_0
+  - room.mute_all_in_room.guard_1
   - room.mute_all_in_room.success
   unknowns:
-  - uk_856bf15162
+  - uk_7ab355edf7
 verified: {}
 manual: {}

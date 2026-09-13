@@ -10,10 +10,58 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2e10f1759597dc9bd210a61c8a51fb43bc6b60cab9f2492f6a8bbbce9102a881"
+generated_digest: "sha256:d4e0b087f6687b0ae38ef8fe5e3899c26079b298b3f9d2c277a44044ee2bf60d"
 generated:
   feature: room.mute_all_in_room
   scenarios:
+  - scenario: room.mute_all_in_room.guard_0
+    title: "mute all in room: the guard 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds"
+    given:
+      guard: ctx.PlayerId <= 0 || ctx.RoomId <= 0
+      guard_holds: "true"
+    when:
+      packet: MuteAllInRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MuteAllInRoom sent while 'ctx.PlayerId <= 0 || ctx.RoomId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_69ee4350e8d0
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MuteAllInRoom
+      evidence: ev_f6e47e0b32cd
+  - scenario: room.mute_all_in_room.guard_1
+    title: "mute all in room: the guard 'actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._...' holds"
+    given:
+      guard: actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._state.RoomId
+      guard_holds: "true"
+    when:
+      packet: MuteAllInRoom
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MuteAllInRoom sent while 'actorCtx.PlayerId <= 0 || actorCtx.RoomId != _roomGrain._state.RoomId' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_9eb84a2a2088
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MuteAllInRoom
+      evidence: ev_f6e47e0b32cd
   - scenario: room.mute_all_in_room.success
     title: "mute all in room: the request is accepted"
     given:
@@ -30,7 +78,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8f6837f2e638
+      evidence: ev_69ee4350e8d0
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -46,12 +94,19 @@ generated:
     symbol: MuteAllInRoomEvent
     line: 9
     note: third-party server implementation; evidence, not authority
-  - id: ev_8f6837f2e638
-    kind: emulator_handler
+  - id: ev_69ee4350e8d0
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Action/MuteAllInRoomMessageHandler.cs
     symbol: MuteAllInRoomMessageHandler
-    line: 8
+    line: 26
+  - id: ev_9eb84a2a2088
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
+    symbol: RoomModerationSystem
+    line: 79
 verified: {}
 manual: {}

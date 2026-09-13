@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1202a522ce52ed321c3d52143f12b9289690ea0f666c795d3ac3ff8492027428"
+generated_digest: "sha256:a9d231b5b75ec6e824bc01da915cdd5f19c549ea2d81683ac73f920294d0a32a"
 generated:
   id: uk_febd371c80
   subject: "users.approve_all_membership_requests: what the server sends when it refuses"
@@ -53,6 +53,6 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 215
+    line: 235
 verified: {}
 manual: {}

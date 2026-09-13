@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:bfb8ef7ca338b68ff8e74324c1abacac64b1e3e543a03dd4ea3f74619778488a"
+generated_digest: "sha256:797f9de48ed190d2cfa9cead6a11ad32b6ab43375488adb51b9ee70d0a4f6923"
 generated:
   id: uk_5b02085171
   subject: "users.create_guild: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 754
+    line: 776
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator

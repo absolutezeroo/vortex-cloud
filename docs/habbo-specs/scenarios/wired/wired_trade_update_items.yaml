@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7a48db44da3740572093c20b9226c609e41b3008a593c2f25776699f94949e43"
+generated_digest: "sha256:fb0a898b72499a8a11b3d5eee00c8490ae8fe9fd4ab1a49f3811d892cffeba94"
 generated:
   feature: wired.wired_trade_update_items
   scenarios:
@@ -192,6 +192,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
+      - AccountSafetyLockStatusChange
       - WiredTradeItemsUpdate
       evidence: ev_2ec03446aa2a
   evidence:

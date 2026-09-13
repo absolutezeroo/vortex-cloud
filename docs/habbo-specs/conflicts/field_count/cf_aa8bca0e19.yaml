@@ -56,7 +56,7 @@ generated:
   official:
     status: unknown
 verified:
-  resolution: "Counting artifact, not drift. The client is counted as [string, int, block] and we as [string, int, string, string] — the same bytes, because our two strings are the body of the parameter loop the block stands for."
+  resolution: Counting artifact, not drift. The client is counted as [string, int, block] and we as [string, int, string, string] — the same bytes, because our two strings are the body of the parameter loop the block stands for.
   confidence: client_confirmed
-  evidence: "localisation key, parameter count, then a (key, value) pair per parameter on both sides"
+  evidence: localisation key, parameter count, then a (key, value) pair per parameter on both sides
 manual: {}

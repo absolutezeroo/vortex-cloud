@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cadf8ecec9f0f14e4da053365f54d826c2d682da641ea8553bc810f9803529cb"
+generated_digest: "sha256:feeca14ce1db91532ba214247a662a3931a52c2a84145387a046ff9b6fa1e759"
 generated:
   feature: room.mute_user
   scenarios:
@@ -221,7 +221,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 162
+    line: 218
   - id: ev_ede1461ee378
     kind: emulator_flow
     authority: vortex_emulator

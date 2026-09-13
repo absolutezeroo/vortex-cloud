@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:6c1622c9815dd0f7b7addef90807ce394be7c793d88d076d0dc2cff07c419376"
+generated_digest: "sha256:ed0c6b59edb70f11ce7ac54aaf49df9dfd57fd7f95de7903f6d4dc162ec3eea0"
 generated:
   name: MarketplaceItemStats
   direction: outgoing
@@ -125,11 +125,9 @@ generated:
     evidence: ev_656c8761695c
   - origin: vortex
     authority: vortex_emulator
-    field_count: 8
+    field_count: 6
     partial: false
     types:
-    - int32
-    - int32
     - int32
     - int32
     - int32

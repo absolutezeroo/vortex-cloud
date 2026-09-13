@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:778b3301318cb9a7466afd41aa061784c75ae66677fa826291034b8cada2f413"
+generated_digest: "sha256:0367310c8392e0e025779131f5009d276927a4b3aa9edc57e1876e0ab45e1b80"
 generated:
   name: Game2GameDirectoryStatus
   direction: outgoing
   domain: unsorted
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -24,29 +24,39 @@ generated:
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_f2458ce5d8a3
+    - ev_44fa5303d16a
   - index: 1
     name: block_length
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_f2458ce5d8a3
+    - ev_44fa5303d16a
   - index: 2
     name: games_played
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_f2458ce5d8a3
+    - ev_44fa5303d16a
   - index: 3
     name: free_games_left
     type: int32
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_f2458ce5d8a3
+    - ev_44fa5303d16a
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 4
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    evidence: ev_44fa5303d16a
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 4
@@ -58,6 +68,14 @@ generated:
     - int32
     evidence: ev_f2458ce5d8a3
   evidence:
+  - id: ev_44fa5303d16a
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4279/Game2GameDirectoryStatusMessageParser.as
+    symbol: Game2GameDirectoryStatusMessageParser
+    line: 60
+    note: official client build AIR-1.0.31
   - id: ev_f2458ce5d8a3
     kind: client_parser
     authority: client_code

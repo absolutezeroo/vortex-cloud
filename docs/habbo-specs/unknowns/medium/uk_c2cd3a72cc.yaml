@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1c9b2fd1a397a16bbce3026ab2ae304e601c76828012527c4a314b8468d45602"
+generated_digest: "sha256:80025ed6f687d74ba4a72c898ae2b7d265dbc68ed2ac1e50a08775f39ad0ecfe"
 generated:
   id: uk_c2cd3a72cc
   subject: "preferences.set_ignore_room_invites: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 73
+    line: 112
   - id: ev_beb9139d59bf
     kind: emulator_handler
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:34d0f21da9e7f72415c678f392679c01615a0b531f5a6fc15c78541e9ef4e072"
+generated_digest: "sha256:05f6498e0aadcc2a3a61255b9e477a0bfaec7627c88e604aacd72e95cfcc5a63"
 generated:
   id: cf_f117ba9bad
   kind: behaviour
@@ -23,7 +23,7 @@ generated:
     evidence: ev_b7b37eb21cd8
   - origin: vortex
     authority: vortex_emulator
-    claim: PurchaseError then ScrSendUserInfo
+    claim: PurchaseError then ScrSendUserInfo then PurchaseNotAllowed then unresolved
     evidence: ev_589bc379b9e6
   evidence:
   - id: ev_b7b37eb21cd8

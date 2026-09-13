@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ced2318e901c8487c0e91159e78b7b7a4970c1561a3daa6cc7c06910bb1f5bff"
+generated_digest: "sha256:053469267f72f4bcbd471683592d7838aae7acb501722f5111f5d0b5bd801fbc"
 generated:
   name: PurchaseSnowWarGameTokensOffer
   direction: incoming
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_495d0a12ed23
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -34,5 +40,13 @@ generated:
     symbol: PurchaseSnowWarGameTokensOfferComposer
     line: 17
     note: "the client constructs this composer at 3 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/catalog/HabboCatalog.as:970 with 1 argument(s); the class writes 0 value(s) to the wire"
+  - id: ev_495d0a12ed23
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1826/PurchaseSnowWarGameTokensOfferComposer.as
+    symbol: PurchaseSnowWarGameTokensOfferComposer
+    line: 17
+    note: "the client constructs this composer at 3 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/catalog/HabboCatalog.as:970 with 1 argument(s); the class writes 0 value(s) to the wire"
 verified: {}
 manual: {}

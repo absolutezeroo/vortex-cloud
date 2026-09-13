@@ -70,5 +70,5 @@ generated:
 verified:
   resolution: "Counting artifact, not drift. Both sides delegate the whole body to a data class the extractor cannot see through: the client's parse is a single `new _SafeCls_3764(param1)` and ours hands off to the AchievementData writer, which is why we are counted as 1 field against the client's flattened 14."
   confidence: client_confirmed
-  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_3023.as — parse body is one constructor call"
+  evidence: WIN63-202607011411-782849652/src/unknowns/_SafePkg_2638/_SafeCls_3023.as — parse body is one constructor call
 manual: {}

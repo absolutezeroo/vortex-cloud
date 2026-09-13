@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4e1821e5e023c2471284b9d9f257cb46dee21c8106757972cca835c5309efd95"
+generated_digest: "sha256:6ff5bad550a3266af9868bf4d086f5b2da7de06e16d4485f9a25a1e2f81ecde8"
 generated:
   id: room.whisper
   domain: room
@@ -46,21 +46,25 @@ generated:
     evidence: ev_f0fbc7d68cc3
   - order: 5
     layer: module
+    symbol: RoomSecurityModule.HasExplicitRights
+    evidence: ev_82c2d2746361
+  - order: 6
+    layer: module
     symbol: EventSystem.PublishCancellableAsync
     evidence: ev_34bf3ac088e2
-  - order: 6
+  - order: 7
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 7
+  - order: 8
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 8
+  - order: 9
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
-  - order: 9
+  - order: 10
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -90,6 +94,10 @@ generated:
     observed_in: vortex
     evidence: ev_f0fbc7d68cc3
   - expression: "!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId) || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_f0fbc7d68cc3
+  - expression: _roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)
     on_fail: return
     observed_in: vortex
     evidence: ev_f0fbc7d68cc3
@@ -155,6 +163,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 142
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 199
   - id: ev_8916c8b3a33e
     kind: emulator_flow
     authority: vortex_emulator
@@ -175,7 +190,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator
@@ -201,6 +216,7 @@ generated:
   - room.whisper.guard_0
   - room.whisper.guard_1
   - room.whisper.guard_10
+  - room.whisper.guard_11
   - room.whisper.guard_2
   - room.whisper.guard_3
   - room.whisper.guard_4

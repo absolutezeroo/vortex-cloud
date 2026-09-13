@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:44afcfc2b5dc0f2cc9bba47c5b651383fcb5d84d1e974a416670788dd045748d"
+generated_digest: "sha256:c4b19e6f6fb041424250c781173c907d09e40e1bf8429c1b6740fe65e4052902"
 generated:
   id: wired.wired_get_variables_for_object
   domain: wired
@@ -70,7 +70,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomWiredSystem.Variables.cs
     symbol: RoomWiredSystem
-    line: 57
+    line: 90
   - id: ev_d486a7dc5a76
     kind: emulator_handler
     authority: vortex_emulator

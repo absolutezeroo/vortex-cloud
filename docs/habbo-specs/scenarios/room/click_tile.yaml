@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:562cb6b6ecc4ab922b0aa459d5333a22ad331fcb33d0245e653c537ba16b23ed"
+generated_digest: "sha256:ef614f210b64f5e7a2414990c10620494bae8f309f868b6f6b446efe668cec84"
 generated:
   feature: room.click_tile
   scenarios:
@@ -150,7 +150,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 346
+    line: 401
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:285f133422c9722d9c1388935c733aa9b2fbdd2a714c2cb3706394be9e72c8dd"
+generated_digest: "sha256:f5f2a6313e8c28b3a7a17a4316d473ca25525d86aa064f8b57d23ecaeeed845e"
 generated:
   id: uk_f8cd214d39
   subject: "room.open_mystery_trophy: what the server sends when it refuses"
   severity: medium
-  question: room.open_mystery_trophy changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.open_mystery_trophy changes state and has 12 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.open_mystery_trophy
   known_evidence:
@@ -33,27 +33,20 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 63
   - id: ev_5e51a330c801
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 190
+    line: 184
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 86
+    line: 158
   - id: ev_7bc4f7ccb5ef
     kind: emulator_flow
     authority: vortex_emulator
@@ -109,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_b533730b6457
     kind: emulator_flow
     authority: vortex_emulator
@@ -144,7 +137,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 38
+    line: 46
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

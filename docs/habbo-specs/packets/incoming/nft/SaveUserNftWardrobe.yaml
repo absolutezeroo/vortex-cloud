@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:f584445f8273cb3450d063fb01b2eb8539eb5ad12e0a171d5e50c80ac476d3c9"
+generated_digest: "sha256:7d7b2ce0fade3c72638a2f6fe60ff9b126f39a5118c288fef4c193ccc5892b4a"
 generated:
   name: SaveUserNftWardrobe
   direction: incoming
@@ -27,6 +27,12 @@ generated:
     evidence:
     - ev_43503f8a49b6
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_6a1e33fb2079
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -47,6 +53,14 @@ generated:
     - string
     evidence: ev_43503f8a49b6
   evidence:
+  - id: ev_6a1e33fb2079
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1935/SaveUserNftWardrobeMessageComposer.as
+    symbol: SaveUserNftWardrobeMessageComposer
+    line: 16
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/avatar/HabboAvatarEditor.as:376 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_ffc8b504cc7f
     kind: client_call_site
     authority: client_mandated

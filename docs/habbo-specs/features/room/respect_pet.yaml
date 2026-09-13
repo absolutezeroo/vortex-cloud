@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0792dba3cca1a91f3b392a294d26cc9fa61901ab0a4b1fafe1bb12937b3bff0b"
+generated_digest: "sha256:6edf4e0b8dada4994d89afbe0077f2e1ffb9373def07b70620a85694bd4fa354"
 generated:
   id: room.respect_pet
   domain: room
@@ -92,7 +92,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_27dc49cff260
     kind: emulator_handler
     authority: vortex_emulator

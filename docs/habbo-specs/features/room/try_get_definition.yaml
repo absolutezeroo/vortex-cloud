@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:feda247fac1f9259dcfa11792397b6569345de277dcfa1458b02e13307b91650"
+generated_digest: "sha256:433eb4c932c4c940df133b8ec3527dd907f306c3e95b57ef1b3825c849948088"
 generated:
   id: room.try_get_definition
   domain: room
@@ -50,34 +50,30 @@ generated:
     symbol: PlayerDirectoryGrain.GetPlayerIdAsync
     evidence: ev_7f41f2bdde62
   - order: 6
-    layer: service
-    symbol: FurnitureAdminService.UpdateAsync
-    evidence: ev_268932f3993d
-  - order: 7
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 8
+  - order: 7
     layer: domain
     symbol: FurnitureDefinitionProvider.TryGetDefinition
     evidence: ev_2ec03446aa2a
-  - order: 9
+  - order: 8
     layer: grain
     symbol: RoomGrain.ApplyFurniEditAsync
     evidence: ev_1b4c602bc4f6
-  - order: 10
+  - order: 9
     layer: domain
     symbol: RoomItem.SetOwnerId
     evidence: ev_b4a557a65d81
-  - order: 11
+  - order: 10
     layer: domain
     symbol: RoomItem.SetOwnerName
     evidence: ev_b4a557a65d81
-  - order: 12
+  - order: 11
     layer: domain
     symbol: RoomItem.SetExtraData
     evidence: ev_b4a557a65d81
-  - order: 13
+  - order: 12
     layer: domain
     symbol: ExtraData.SetAction
     evidence: ev_7bc4f7ccb5ef
@@ -146,14 +142,6 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_d0d32519d32e
-  - expression: entity is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - expression: duplicate
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_268932f3993d
   state_changes:
   - target: _extraData
     value: _extraData.SetAction(() => { MarkDirty(); return Task.CompletedTask; })
@@ -163,90 +151,6 @@ generated:
     value: adminService .UpdateAsync(message.DefinitionId, spec, ct)
     observed_in: vortex
     evidence: ev_21f73204d27c
-  - target: entity.CanGroup
-    value: spec.CanGroup
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanLay
-    value: spec.CanLay
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanRecycle
-    value: spec.CanRecycle
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanSell
-    value: spec.CanSell
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanSit
-    value: spec.CanSit
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanStack
-    value: spec.CanStack
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanTrade
-    value: spec.CanTrade
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.CanWalk
-    value: spec.CanWalk
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.ExtraData
-    value: spec.ExtraData
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.FurniCategory
-    value: spec.FurniCategory
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.Length
-    value: spec.Length
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.Logic
-    value: spec.Logic
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.Name
-    value: spec.Name
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.ProductType
-    value: spec.ProductType
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.SpriteId
-    value: spec.SpriteId
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.StackHeight
-    value: spec.StackHeight
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.StuffDataType
-    value: spec.StuffDataType
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.TotalStates
-    value: spec.TotalStates
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.UsagePolicy
-    value: spec.UsagePolicy
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.VendingIds
-    value: spec.VendingIds
-    observed_in: vortex
-    evidence: ev_268932f3993d
-  - target: entity.Width
-    value: spec.Width
-    observed_in: vortex
-    evidence: ev_268932f3993d
   - target: item
     value: item.SetOwnerId(newOwnerId.Value)
     observed_in: vortex
@@ -276,7 +180,7 @@ generated:
       recipient_confidence: inferred
       note: one of several composers the call can return, depending on the item type
       evidence: ev_d0d32519d32e
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_0b98da256559
     kind: emulator_handler
@@ -299,13 +203,6 @@ generated:
     source: Vortex.PacketHandlers/Room/Engine/VortexFurniDefinitionMessageHandlers.cs
     symbol: VortexApplyFurniDefinitionMessageHandler
     line: 122
-  - id: ev_268932f3993d
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Furniture/FurnitureAdminService.cs
-    symbol: FurnitureAdminService
-    line: 85
   - id: ev_2abf117cdb1a
     kind: emulator_handler
     authority: vortex_emulator

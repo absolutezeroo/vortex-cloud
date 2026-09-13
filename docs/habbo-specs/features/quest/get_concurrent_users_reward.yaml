@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e98aa66a9a87d321b3d1bcf4be5fe3e14859fd255e58a35c6440d2fd093e0cfe"
+generated_digest: "sha256:633fa76e42e12150be51f7af550838e9769518ba0c7b80854283e6095803f1de"
 generated:
   id: quest.get_concurrent_users_reward
   domain: quest
@@ -35,16 +35,52 @@ generated:
     layer: domain
     symbol: ConcurrentUsersGoalRule.CanClaim
     evidence: ev_e46df41dce67
+  - order: 3
+    layer: grain
+    symbol: InventoryGrain.GrantBadgeAsync
+    evidence: ev_c6396662000a
+  - order: 4
+    layer: grain
+    symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
+    evidence: ev_3a5a694b9376
+  - order: 5
+    layer: module
+    symbol: PlayerInventoryModule.OnBadgeGrantedAsync
+    evidence: ev_d720d639bd09
+  - order: 6
+    layer: grain
+    symbol: PlayerPresenceGrain.SendComposerAsync
+    evidence: ev_373e76aa8a80
+  - order: 7
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_1156f62d5639
+  - expression: string.IsNullOrWhiteSpace(badgeCode)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - expression: alreadyOwned
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
-    packets: []
-  reaches_persistence: false
+    packets:
+    - packet: BadgeReceived
+      recipient: unknown
+      recipient_confidence: unknown
+      evidence: ev_d720d639bd09
+  reaches_persistence: true
   evidence:
   - id: ev_1156f62d5639
     kind: emulator_flow
@@ -53,6 +89,27 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetConcurrentUsersRewardMessageHandler.cs
     symbol: GetConcurrentUsersRewardMessageHandler
     line: 27
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
+  - id: ev_373e76aa8a80
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
+    symbol: PlayerPresenceGrain
+    line: 123
+  - id: ev_3a5a694b9376
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerPresenceGrain.Inventory.cs
+    symbol: PlayerPresenceGrain
+    line: 23
   - id: ev_3e19f38401db
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,6 +124,20 @@ generated:
     source: Vortex.PacketHandlers/Quest/GetConcurrentUsersRewardMessageHandler.cs
     symbol: GetConcurrentUsersRewardMessageHandler
     line: 16
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 457
+  - id: ev_d720d639bd09
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
+    symbol: PlayerInventoryModule
+    line: 84
   - id: ev_e46df41dce67
     kind: emulator_flow
     authority: vortex_emulator
@@ -76,6 +147,12 @@ generated:
     line: 44
   scenarios:
   - quest.get_concurrent_users_reward.guard_0
+  - quest.get_concurrent_users_reward.guard_1
+  - quest.get_concurrent_users_reward.guard_2
+  - quest.get_concurrent_users_reward.guard_3
   - quest.get_concurrent_users_reward.success
+  unknowns:
+  - uk_6d068fa586
+  - uk_d4c05037e8
 verified: {}
 manual: {}

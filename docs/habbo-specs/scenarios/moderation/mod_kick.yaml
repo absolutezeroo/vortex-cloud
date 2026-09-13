@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a8c1cf9d12c29281cbd83d7b5a0ecfafde7e2f36d2990ae0028399594a867407"
+generated_digest: "sha256:1c5e30ca57aa4b86bdb55bc723fac84737a48ca6e28766879b5dda482d1c6b1c"
 generated:
   feature: moderation.mod_kick
   scenarios:
@@ -212,7 +212,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 33
+    line: 35
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

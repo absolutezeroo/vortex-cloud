@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:8674594cf9837ba0846f59d386aa9f19b4fa3bbcb79e6246a3a21650e03c8fec"
+generated_digest: "sha256:18449ff360dd3334a071c10c4414501f99886de35e1a273d03e69b83e181035f"
 generated:
   feature: moderation.post_quiz_answers
   scenarios:
@@ -69,6 +69,42 @@ generated:
       emits: []
       evidence: ev_fd80c081bc3a
   - scenario: moderation.post_quiz_answers.guard_3
+    title: "post quiz answers: the guard 'string.IsNullOrWhiteSpace(badgeCode)' holds"
+    given:
+      guard: string.IsNullOrWhiteSpace(badgeCode)
+      guard_holds: "true"
+    when:
+      packet: PostQuizAnswers
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PostQuizAnswers sent while 'string.IsNullOrWhiteSpace(badgeCode)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c6396662000a
+  - scenario: moderation.post_quiz_answers.guard_4
+    title: "post quiz answers: the guard 'alreadyOwned' holds"
+    given:
+      guard: alreadyOwned
+      guard_holds: "true"
+    when:
+      packet: PostQuizAnswers
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PostQuizAnswers sent while 'alreadyOwned' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_c6396662000a
+  - scenario: moderation.post_quiz_answers.guard_5
     title: "post quiz answers: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -102,6 +138,7 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
+      - BadgeReceived
       - QuizResults
       evidence: ev_14db4ca86628
   evidence:
@@ -119,6 +156,13 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 459
   - id: ev_fd80c081bc3a
     kind: emulator_flow
     authority: vortex_emulator

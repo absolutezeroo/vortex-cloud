@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:67a195566d78c6f32a62779dd6380fd552fa6673f48c170e966e0aaeafcd31b8"
+generated_digest: "sha256:aa3f9c378be45a6ac73be29aad8c3315991a1ae037e84471f70cd3cc5a850dcf"
 generated:
   id: catalog.purchase_from_catalog_as_gift
   domain: catalog
@@ -29,26 +29,38 @@ generated:
     symbol: PurchaseFromCatalogAsGiftMessageHandler.HandleAsync
     evidence: ev_75da769fdeac
   - order: 1
+    layer: domain
+    symbol: SafetyLockGuard.RefusedAsync
+    evidence: ev_80836b9b056b
+  - order: 2
+    layer: grain
+    symbol: PlayerGrain.IsSafetyLockedAsync
+    evidence: ev_1f83e61934ca
+  - order: 3
+    layer: domain
+    symbol: MessageContext.SendComposerAsync
+    evidence: ev_f4c4c4ae6ace
+  - order: 4
     layer: grain
     symbol: PlayerDirectoryGrain.GetPlayerIdAsync
     evidence: ev_7f41f2bdde62
-  - order: 2
+  - order: 5
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 3
+  - order: 6
     layer: grain
     symbol: CatalogPurchaseGrain.PurchaseOfferAsGiftAsync
     evidence: ev_b43e4f79cdaa
-  - order: 4
+  - order: 7
     layer: service
     symbol: CatalogService.GetCatalogSnapshot
     evidence: ev_680c36e87014
-  - order: 5
+  - order: 8
     layer: grain
     symbol: PlayerGrain.TrackCreditSpendAsync
     evidence: ev_1f83e61934ca
-  - order: 6
+  - order: 9
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -57,10 +69,18 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_3fee5aa08d6a
+  - expression: await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_3fee5aa08d6a
   - expression: receiverId is null
     on_fail: send_and_return
     observed_in: vortex
     evidence: ev_3fee5aa08d6a
+  - expression: "!locked"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_80836b9b056b
   - expression: string.IsNullOrWhiteSpace(name)
     on_fail: return
     observed_in: vortex
@@ -113,10 +133,19 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_3fee5aa08d6a
+    - packet: PurchaseNotAllowed
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_80836b9b056b
     - packet: PurchaseOK
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_3fee5aa08d6a
+    - packet: unresolved
+      recipient: actor
+      recipient_confidence: implementation_observed
+      note: the payload comes back from composer, which this walk could not resolve to one packet
+      evidence: ev_f4c4c4ae6ace
   reaches_persistence: false
   evidence:
   - id: ev_1f83e61934ca
@@ -125,7 +154,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 754
+    line: 276
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -161,6 +190,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 142
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 37
   - id: ev_b43e4f79cdaa
     kind: emulator_flow
     authority: vortex_emulator
@@ -175,10 +211,18 @@ generated:
     source: Vortex.Rooms/Wired/WiredActionBranch.cs
     symbol: WiredActionBranch
     line: 23
+  - id: ev_f4c4c4ae6ace
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Messages/Registry/MessageContext.cs
+    symbol: MessageContext
+    line: 33
   scenarios:
   - catalog.purchase_from_catalog_as_gift.guard_0
   - catalog.purchase_from_catalog_as_gift.guard_1
   - catalog.purchase_from_catalog_as_gift.guard_10
+  - catalog.purchase_from_catalog_as_gift.guard_11
   - catalog.purchase_from_catalog_as_gift.guard_2
   - catalog.purchase_from_catalog_as_gift.guard_3
   - catalog.purchase_from_catalog_as_gift.guard_4

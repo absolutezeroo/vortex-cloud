@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1bf64888b258924be4a5ec1950327f413a53f1f65875d9f2f7164b2fb9337d13"
+generated_digest: "sha256:7d490310908c0a58a05ef35e0d6443c89504c0e0a6624b8bff335bd7f083345e"
 generated:
   feature: users.approve_all_membership_requests
   scenarios:
@@ -125,6 +125,6 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 223
+    line: 243
 verified: {}
 manual: {}

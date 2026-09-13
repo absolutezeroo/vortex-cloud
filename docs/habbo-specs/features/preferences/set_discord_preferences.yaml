@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:83c8447f26fb8f0f2f4c3bf567e1f1969eaff6a85fbfbdd354396f6f4de045bb"
+generated_digest: "sha256:40d2cd7f81209eac63b6fe541bd710f72a79a74e20706b7cf989f777354cb11a"
 generated:
   id: preferences.set_discord_preferences
   domain: preferences
@@ -83,7 +83,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 82
+    line: 121
   - id: ev_dc5e70e97795
     kind: emulator_flow
     authority: vortex_emulator

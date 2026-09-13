@@ -58,5 +58,5 @@ generated:
 verified:
   resolution: "Counting artifact, not drift. The client reads petId, petName, newLevel and then `new _SafeCls_3943(param1)` for the pet figure; we write the same three and hand off to PetFigureDataSerializer. The delegated figure block is one field on our side and flattened on the client's."
   confidence: client_confirmed
-  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3586.as — int, string, int, constructor call"
+  evidence: WIN63-202607011411-782849652/src/unknowns/_SafePkg_1810/_SafeCls_3586.as — int, string, int, constructor call
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9fa957b1dd7014a91d235e0fc53de0a7378320bbd449ab3c4236663b58d54ca7"
+generated_digest: "sha256:1f904bf8e9eb5fcac6929f2e4c0b161b9943b9b5bb690eba609a28d8ca4da749"
 generated:
   id: wired.wired_trade_update_items
   domain: wired
@@ -53,17 +53,13 @@ generated:
     evidence: ev_9924df9c15a9
   - order: 7
     layer: domain
-    symbol: TeamSet.Contains
-    evidence: ev_b261d7a833b8
-  - order: 8
-    layer: domain
     symbol: WiredContractSettlement.MatchStake
     evidence: ev_f7dd5a8d0419
-  - order: 9
+  - order: 8
     layer: domain
     symbol: WiredContractSettlement.TryReserveReward
     evidence: ev_f7dd5a8d0419
-  - order: 10
+  - order: 9
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -116,9 +112,15 @@ generated:
   outgoing:
     ordering: unknown
     packets:
+    - packet: AccountSafetyLockStatusChange
+      recipient: actor
+      recipient_confidence: inferred
+      note: one of several composers the call can return, depending on the item type
+      evidence: ev_3819e935e77f
     - packet: WiredTradeItemsUpdate
       recipient: actor
-      recipient_confidence: implementation_observed
+      recipient_confidence: inferred
+      note: one of several composers the call can return, depending on the item type
       evidence: ev_3819e935e77f
   reaches_persistence: false
   evidence:
@@ -150,13 +152,6 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
     line: 488
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

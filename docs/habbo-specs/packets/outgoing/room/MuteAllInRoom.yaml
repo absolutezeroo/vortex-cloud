@@ -10,23 +10,29 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:d7e904ee758f1b1cefdb5ec7142788970d2fb76572f4824ef784b5538b0d3774"
+generated_digest: "sha256:e96026a3a04f71572483c05371426b1880ba4bd5c7f5dcc159b3ddab96ca2e44"
 generated:
   name: MuteAllInRoom
   direction: outgoing
   domain: room
-  structure_confidence: reference_observed
-  mapped_in_vortex: false
+  structure_confidence: client_confirmed
+  mapped_in_vortex: true
   fields:
   - index: 0
-    name: unknown_0
+    name: all_muted
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
-    type_confidence: reference_observed
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
     evidence:
-    - ev_968da34851f5
+    - ev_48022f2ced8e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_48022f2ced8e
   - origin: habbo-arcturus-daybreak
     authority: reference_emulator
     field_count: 1
@@ -34,7 +40,22 @@ generated:
     types:
     - boolean
     evidence: ev_968da34851f5
+  - origin: vortex
+    authority: vortex_emulator
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_cb8ca8d8fe04
   evidence:
+  - id: ev_48022f2ced8e
+    kind: client_parser
+    authority: client_code
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2452/_SafeCls_2723.as
+    symbol: _SafeCls_2723
+    line: 17
+    note: official client build WIN63-202607011411-782849652
   - id: ev_968da34851f5
     kind: reference_composer
     authority: reference_emulator
@@ -43,7 +64,12 @@ generated:
     symbol: MuteAllInRoomMessageComposer
     line: 16
     note: third-party server implementation; evidence, not authority
-  unknowns:
-  - uk_f272bc163d
+  - id: ev_cb8ca8d8fe04
+    kind: emulator_serializer
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Revisions/Revision20260701/Serializers/RoomSettings/MuteAllInRoomEventMessageComposerSerializer.cs
+    symbol: MuteAllInRoomEventMessageComposerSerializer
+    line: 6
 verified: {}
 manual: {}

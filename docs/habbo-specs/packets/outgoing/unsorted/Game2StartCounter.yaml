@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:4ba8177710f3cb2db707c919a7f7f67fdba065ff9ccc5b1153b94b48ded69cd6"
+generated_digest: "sha256:021e75805c25e5b54010a662e39c6e0517de97f33421fe8997f73a01c65915bd"
 generated:
   name: Game2StartCounter
   direction: outgoing
   domain: unsorted
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -24,8 +24,15 @@ generated:
     name_confidence: client_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_0832335c9a76
+    - ev_25e7e85f1a18
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_25e7e85f1a18
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 1
@@ -42,5 +49,13 @@ generated:
     symbol: Game2StartCounterMessageParser
     line: 21
     note: official client build WIN63-202607011411-782849652
+  - id: ev_25e7e85f1a18
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4279/Game2StartCounterMessageParser.as
+    symbol: Game2StartCounterMessageParser
+    line: 21
+    note: official client build AIR-1.0.31
 verified: {}
 manual: {}

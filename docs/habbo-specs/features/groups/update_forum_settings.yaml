@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:99d09b2e32570a76a684cc5455d25fb3df9b04f993e671b8ff5fe402c33e0c38"
+generated_digest: "sha256:9af70c52dd1feebf09375614db92daf752262f6421617da42c54c7c7ae4dff4d"
 generated:
   id: groups.update_forum_settings
   domain: groups
@@ -111,7 +111,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
-    line: 566
+    line: 682
   - id: ev_e8a93c22d13b
     kind: emulator_handler
     authority: vortex_emulator

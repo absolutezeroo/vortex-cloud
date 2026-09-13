@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7314301ede358d9181ce3ddd5f7dfcaae1631aed600308538eb93b98bc1dea8d"
+generated_digest: "sha256:8fec155c82d2b538bd7fe8f5a1990cd161c9126f4a7cce217aed6ec4dc60ceb9"
 generated:
   feature: users.deactivate_guild
   scenarios:
@@ -62,30 +62,6 @@ generated:
       emits:
       - GetGuestRoomResult
       evidence: ev_54f7add20a7a
-  - scenario: users.deactivate_guild.guard_2
-    title: "deactivate guild: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: DeactivateGuild
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of DeactivateGuild sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GetGuestRoomResult
-      evidence: ev_54f7add20a7a
   - scenario: users.deactivate_guild.success
     title: "deactivate guild: the request is accepted"
     given:
@@ -103,7 +79,7 @@ generated:
       outcome: success
       emits:
       - HabboGroupDeactivated
-      evidence: ev_34bf3ac088e2
+      evidence: ev_59a6057911bc
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -119,13 +95,6 @@ generated:
     symbol: DeactivateGuildMessageEvent
     line: 17
     note: third-party server implementation; evidence, not authority
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
   - id: ev_59a6057911bc
     kind: emulator_flow
     authority: vortex_emulator

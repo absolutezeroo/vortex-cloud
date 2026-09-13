@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:87d98abf22cc27cb3104d5234dcf9f41fe461654f627a588cafa8122d6b42626"
+generated_digest: "sha256:aa369cd495de8a0f59f97b7fd928cd26a7a66d6ed7f5463b2daec0fac41ec0fc"
 generated:
   name: Game2ThrowSnowballAtPosition
   direction: incoming
@@ -20,6 +20,12 @@ generated:
   vortex_handler: Game2ThrowSnowballAtPositionMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_3e7bebf50f97
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_9d7448ea6b2c
   evidence:
+  - id: ev_3e7bebf50f97
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2469/Game2ThrowSnowballAtPositionMessageComposer.as
+    symbol: Game2ThrowSnowballAtPositionMessageComposer
+    line: 20
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/game/snowwar/SnowWarEngine.as:742 with 5 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_edc141dffde2
     kind: client_call_site
     authority: client_mandated

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3c092f186e53c592e74fef401a107a0c61aff2b314fc4039fa3f55d2477aa4f5"
+generated_digest: "sha256:95d334f590eef3ea2d08e5e92f403d4988225eedb3f81483752fc3df84f15e45"
 generated:
   id: catalog.get_flat_categories
   domain: catalog
@@ -30,46 +30,82 @@ generated:
     evidence: ev_33988652c18d
   - order: 1
     layer: domain
+    symbol: SafetyLockGuard.RefusedAsync
+    evidence: ev_80836b9b056b
+  - order: 2
+    layer: grain
+    symbol: PlayerGrain.IsSafetyLockedAsync
+    evidence: ev_1f83e61934ca
+  - order: 3
+    layer: domain
+    symbol: MessageContext.SendComposerAsync
+    evidence: ev_f4c4c4ae6ace
+  - order: 4
+    layer: domain
     symbol: NavigatorProvider.GetFlatCategories
     evidence: ev_bca43a79b6c9
-  - order: 2
+  - order: 5
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
-  - order: 3
+  - order: 6
     layer: grain
     symbol: RoomGrain.GetControllerLevelAsync
     evidence: ev_ec0b4c2b0a97
-  - order: 4
+  - order: 7
     layer: module
     symbol: RoomSecurityModule.GetControllerLevelAsync
     evidence: ev_82c2d2746361
-  - order: 5
+  - order: 8
     layer: domain
     symbol: RoomSecurityPolicy.ResolveControllerLevel
     evidence: ev_7aa1dee31dfd
-  - order: 6
+  - order: 9
     layer: domain
     symbol: PermissionSet.Has
     evidence: ev_3fdb23ee39cd
-  - order: 7
+  - order: 10
     layer: grain
     symbol: CatalogPurchaseGrain.PurchaseRoomAdAsync
     evidence: ev_09b06dd2911b
-  - order: 8
+  - order: 11
     layer: service
     symbol: CatalogService.GetCatalogSnapshot
     evidence: ev_680c36e87014
-  - order: 9
+  - order: 12
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 10
+  - order: 13
     layer: service
     symbol: RoomAdvertisementService.CreateAsync
     evidence: ev_89f5ad7deadb
+  - order: 14
+    layer: grain
+    symbol: InventoryGrain.GrantBadgeAsync
+    evidence: ev_c6396662000a
+  - order: 15
+    layer: grain
+    symbol: PlayerPresenceGrain.OnBadgeGrantedAsync
+    evidence: ev_3a5a694b9376
+  - order: 16
+    layer: module
+    symbol: PlayerInventoryModule.OnBadgeGrantedAsync
+    evidence: ev_d720d639bd09
+  - order: 17
+    layer: grain
+    symbol: PlayerPresenceGrain.SendComposerAsync
+    evidence: ev_373e76aa8a80
+  - order: 18
+    layer: module
+    symbol: EventSystem.PublishAsync
+    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.FlatId <= 0 || string.IsNullOrEmpty(message.Name)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_234fbe9c2c98
+  - expression: await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false)
     on_fail: return
     observed_in: vortex
     evidence: ev_234fbe9c2c98
@@ -85,6 +121,10 @@ generated:
     on_fail: send_and_return
     observed_in: vortex
     evidence: ev_234fbe9c2c98
+  - expression: "!locked"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_80836b9b056b
   - expression: ctx.Origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -129,6 +169,18 @@ generated:
     on_fail: throw
     observed_in: vortex
     evidence: ev_09b06dd2911b
+  - expression: string.IsNullOrWhiteSpace(badgeCode)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - expression: alreadyOwned
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_c6396662000a
+  - expression: _registry is null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_34bf3ac088e2
   state_changes:
   - target: DateTime.UtcNow
     value: DateTime.UtcNow.AddDays(durationDays)
@@ -137,6 +189,10 @@ generated:
   outgoing:
     ordering: unknown
     packets:
+    - packet: BadgeReceived
+      recipient: unknown
+      recipient_confidence: unknown
+      evidence: ev_d720d639bd09
     - packet: NotEnoughBalance
       recipient: actor
       recipient_confidence: implementation_observed
@@ -145,10 +201,19 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_234fbe9c2c98
+    - packet: PurchaseNotAllowed
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_80836b9b056b
     - packet: PurchaseOK
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_234fbe9c2c98
+    - packet: unresolved
+      recipient: actor
+      recipient_confidence: implementation_observed
+      note: the payload comes back from composer, which this walk could not resolve to one packet
+      evidence: ev_f4c4c4ae6ace
   reaches_persistence: true
   evidence:
   - id: ev_09b06dd2911b
@@ -158,6 +223,13 @@ generated:
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.RoomAd.cs
     symbol: CatalogPurchaseGrain
     line: 21
+  - id: ev_1f83e61934ca
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerGrain.cs
+    symbol: PlayerGrain
+    line: 276
   - id: ev_234fbe9c2c98
     kind: emulator_flow
     authority: vortex_emulator
@@ -172,6 +244,27 @@ generated:
     source: Vortex.PacketHandlers/Catalog/PurchaseRoomAdMessageMessageHandler.cs
     symbol: PurchaseRoomAdMessageMessageHandler
     line: 19
+  - id: ev_34bf3ac088e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Events/EventSystem.cs
+    symbol: EventSystem
+    line: 14
+  - id: ev_373e76aa8a80
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerPresenceGrain.cs
+    symbol: PlayerPresenceGrain
+    line: 123
+  - id: ev_3a5a694b9376
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerPresenceGrain.Inventory.cs
+    symbol: PlayerPresenceGrain
+    line: 23
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -193,13 +286,20 @@ generated:
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
     line: 17
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 37
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_89f5ad7deadb
     kind: emulator_flow
     authority: vortex_emulator
@@ -214,6 +314,20 @@ generated:
     source: Vortex.Navigator/NavigatorProvider.cs
     symbol: NavigatorProvider
     line: 83
+  - id: ev_c6396662000a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
+    symbol: InventoryGrain
+    line: 457
+  - id: ev_d720d639bd09
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
+    symbol: PlayerInventoryModule
+    line: 84
   - id: ev_ec0b4c2b0a97
     kind: emulator_flow
     authority: vortex_emulator
@@ -228,6 +342,13 @@ generated:
     source: Vortex.Rooms/Wired/WiredActionBranch.cs
     symbol: WiredActionBranch
     line: 23
+  - id: ev_f4c4c4ae6ace
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Messages/Registry/MessageContext.cs
+    symbol: MessageContext
+    line: 33
   - id: ev_f5b4cba2f556
     kind: emulator_flow
     authority: vortex_emulator
@@ -250,6 +371,7 @@ generated:
   - catalog.get_flat_categories.guard_9
   - catalog.get_flat_categories.success
   unknowns:
+  - uk_0150348491
   - uk_328a216877
 verified: {}
 manual: {}

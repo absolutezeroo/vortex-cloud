@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:62fe5641e5c0fade9586f2cda5b1a0ef3a1dc02a5c1e555c6a855547c8e441a4"
+generated_digest: "sha256:883f8c4504f0869af3c9eac9b7931b8c409f6f05267418b006223ce43438e250"
 generated:
   id: catalog.use_item_in_room
   domain: catalog
@@ -60,18 +60,14 @@ generated:
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
   - order: 9
-    layer: domain
-    symbol: TeamSet.Contains
-    evidence: ev_b261d7a833b8
-  - order: 10
     layer: module
     symbol: RoomFurniModule.UseItemByIdAsync
     evidence: ev_e4165c982e0e
-  - order: 11
+  - order: 10
     layer: grain
     symbol: RoomGrain.PublishRoomEventAsync
     evidence: ev_b46938ec853d
-  - order: 12
+  - order: 11
     layer: module
     symbol: RoomEventModule.PublishAsync
     evidence: ev_3dfe9ba800df
@@ -128,7 +124,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.cs
     symbol: RoomGrain
-    line: 71
+    line: 55
   - id: ev_360d781cf809
     kind: emulator_handler
     authority: vortex_emulator
@@ -149,7 +145,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 378
+    line: 433
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
@@ -163,21 +159,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.cs
     symbol: RoomActionModule
-    line: 77
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
+    line: 113
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -191,7 +180,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomFurniModule.Floor.cs
     symbol: RoomFurniModule
-    line: 261
+    line: 267
   - id: ev_e4165c982e0e
     kind: emulator_flow
     authority: vortex_emulator

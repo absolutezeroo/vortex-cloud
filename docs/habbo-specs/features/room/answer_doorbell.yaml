@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0772baf4545a0722ae5b275c09026189a81ff6df6303ebe24a79966e30b54700"
+generated_digest: "sha256:8de5f1a0399223af031bc6dd984e4e2f13824d282ce9082f225b5bca08443450"
 generated:
   id: room.answer_doorbell
   domain: room
@@ -256,7 +256,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_93b2d0946619
     kind: emulator_flow
     authority: vortex_emulator

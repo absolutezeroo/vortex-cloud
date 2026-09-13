@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:35e100e8982665a98bae87bd15e30c54325351914b62d80e4a1a48b4838d7bf0"
+generated_digest: "sha256:7b5f93a0fbba6a25d58c3397c7c6819c15e3d14ee4daf797a265901ed08780c9"
 generated:
   feature: catalog.purchase_from_catalog_as_gift
   scenarios:
@@ -66,24 +66,22 @@ generated:
       - PurchaseError
       evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_1
-    title: "purchase from catalog as gift: the guard 'receiverId is null' holds"
+    title: "purchase from catalog as gift: the guard 'await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct...' holds"
     given:
-      guard: receiverId is null
+      guard: await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)
       guard_holds: "true"
     when:
       packet: PurchaseFromCatalogAsGift
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'receiverId is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
-      emits:
-      - GiftReceiverNotFound
-      - PurchaseOK
+      outcome: ignored
+      emits: []
       evidence: ev_3fee5aa08d6a
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -119,363 +117,6 @@ generated:
       - PurchaseError
       evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.guard_10
-    title: "purchase from catalog as gift: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_2
-    title: "purchase from catalog as gift: the guard 'string.IsNullOrWhiteSpace(name)' holds"
-    given:
-      guard: string.IsNullOrWhiteSpace(name)
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'string.IsNullOrWhiteSpace(name)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7f41f2bdde62
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_3
-    title: "purchase from catalog as gift: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
-    given:
-      guard: _nameToId.TryGetValue(name, out PlayerId playerId)
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '_nameToId.TryGetValue(name, out PlayerId playerId)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7f41f2bdde62
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_4
-    title: "purchase from catalog as gift: the guard 'foundId is null' holds"
-    given:
-      guard: foundId is null
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'foundId is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7f41f2bdde62
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_5
-    title: "purchase from catalog as gift: the guard 'receiverId.Value <= 0' holds"
-    given:
-      guard: receiverId.Value <= 0
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'receiverId.Value <= 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_b43e4f79cdaa
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_6
-    title: "purchase from catalog as gift: the guard '!snapshot.OffersById.TryGetValue(offerId, out CatalogOffe...' holds"
-    given:
-      guard: "!snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer)"
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '!snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer)' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_b43e4f79cdaa
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_7
-    title: "purchase from catalog as gift: the guard '!offer.CanGift' holds"
-    given:
-      guard: "!offer.CanGift"
-      guard_holds: "true"
-    when:
-      packet: PurchaseFromCatalogAsGift
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '!offer.CanGift' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits: []
-      evidence: ev_b43e4f79cdaa
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - HotelWillCloseInMinutes
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - GiftReceiverNotFound
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseError
-      - PurchaseNotAllowed
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseNotAllowed
-      - LimitedEditionSoldOut
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - PurchaseError
-      - HabboBroadcast
-      - PurchaseError
-      - PurchaseOK
-      - PurchaseError
-      - PurchaseError
-      evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_8
     title: "purchase from catalog as gift: the guard '!result.Succeeded' holds"
     given:
       guard: "!result.Succeeded"
@@ -526,7 +167,7 @@ generated:
       - PurchaseError
       - PurchaseError
       evidence: ev_24d5bc76ecea
-  - scenario: catalog.purchase_from_catalog_as_gift.guard_9
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_11
     title: "purchase from catalog as gift: the guard 'credits <= 0 || _state.ClubLevel == 0' holds"
     given:
       guard: credits <= 0 || _state.ClubLevel == 0
@@ -577,6 +218,418 @@ generated:
       - PurchaseError
       - PurchaseError
       evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_2
+    title: "purchase from catalog as gift: the guard 'receiverId is null' holds"
+    given:
+      guard: receiverId is null
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'receiverId is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - GiftReceiverNotFound
+      - PurchaseNotAllowed
+      - PurchaseOK
+      - unresolved
+      evidence: ev_3fee5aa08d6a
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_3
+    title: "purchase from catalog as gift: the guard '!locked' holds"
+    given:
+      guard: "!locked"
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '!locked' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_80836b9b056b
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_4
+    title: "purchase from catalog as gift: the guard 'string.IsNullOrWhiteSpace(name)' holds"
+    given:
+      guard: string.IsNullOrWhiteSpace(name)
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'string.IsNullOrWhiteSpace(name)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7f41f2bdde62
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_5
+    title: "purchase from catalog as gift: the guard '_nameToId.TryGetValue(name, out PlayerId playerId)' holds"
+    given:
+      guard: _nameToId.TryGetValue(name, out PlayerId playerId)
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '_nameToId.TryGetValue(name, out PlayerId playerId)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7f41f2bdde62
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_6
+    title: "purchase from catalog as gift: the guard 'foundId is null' holds"
+    given:
+      guard: foundId is null
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'foundId is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7f41f2bdde62
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_7
+    title: "purchase from catalog as gift: the guard 'receiverId.Value <= 0' holds"
+    given:
+      guard: receiverId.Value <= 0
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while 'receiverId.Value <= 0' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits: []
+      evidence: ev_b43e4f79cdaa
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_8
+    title: "purchase from catalog as gift: the guard '!snapshot.OffersById.TryGetValue(offerId, out CatalogOffe...' holds"
+    given:
+      guard: "!snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer)"
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '!snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits: []
+      evidence: ev_b43e4f79cdaa
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
+  - scenario: catalog.purchase_from_catalog_as_gift.guard_9
+    title: "purchase from catalog as gift: the guard '!offer.CanGift' holds"
+    given:
+      guard: "!offer.CanGift"
+      guard_holds: "true"
+    when:
+      packet: PurchaseFromCatalogAsGift
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseFromCatalogAsGift sent while '!offer.CanGift' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits: []
+      evidence: ev_b43e4f79cdaa
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - HotelWillCloseInMinutes
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - GiftReceiverNotFound
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseNotAllowed
+      - LimitedEditionSoldOut
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - PurchaseError
+      - HabboBroadcast
+      - PurchaseError
+      - PurchaseOK
+      - PurchaseError
+      - PurchaseError
+      evidence: ev_24d5bc76ecea
   - scenario: catalog.purchase_from_catalog_as_gift.success
     title: "purchase from catalog as gift: the request is accepted"
     given:
@@ -594,7 +647,9 @@ generated:
       outcome: success
       emits:
       - GiftReceiverNotFound
+      - PurchaseNotAllowed
       - PurchaseOK
+      - unresolved
       evidence: ev_1f83e61934ca
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -644,14 +699,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 756
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
+    line: 778
   - id: ev_3fee5aa08d6a
     kind: emulator_flow
     authority: vortex_emulator
@@ -666,12 +714,19 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 146
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 48
   - id: ev_b43e4f79cdaa
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Catalog/Grains/CatalogPurchaseGrain.Gift.cs
     symbol: CatalogPurchaseGrain
-    line: 36
+    line: 139
 verified: {}
 manual: {}

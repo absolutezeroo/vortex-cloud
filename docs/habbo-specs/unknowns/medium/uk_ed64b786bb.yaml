@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:efe70809b47e5fc7c562ac5fddc866ccf9d6e6135ee799926416904d7b60e1f1"
+generated_digest: "sha256:f5cbc09cdbbce5ea9031b54c3ae095ed7bf356e514f25feb0539a19fc19a21a8"
 generated:
   id: uk_ed64b786bb
   subject: "wired.withdraw_all_from_wired_chest: what the server sends when it refuses"
@@ -88,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator

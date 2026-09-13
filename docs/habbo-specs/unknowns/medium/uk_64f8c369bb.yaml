@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:87c83ed5cb95b78bfbf380c1a7a298e95f15c3bda009ec4dd6d6b7b54f5e5136"
+generated_digest: "sha256:c21470393c92348dfed168bcfc292a711b213b8b674a8e53b1e3e9aa92551e6a"
 generated:
   id: uk_64f8c369bb
   subject: "wired.withdraw_wired_chest_items: what the server sends when it refuses"
@@ -95,14 +95,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 298
+    line: 410
   - id: ev_98ec231f8eca
     kind: emulator_flow
     authority: vortex_emulator

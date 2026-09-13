@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a5116a6302384e3ca13a6f740586023990276b26077d437286a74251a330e3cf"
+generated_digest: "sha256:94ddeec1f3b3d4d47aca20ce202a9da18a11e64ecf0b57d2a0998a0320a4a777"
 generated:
   id: room.mute_user
   domain: room
@@ -125,7 +125,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 155
+    line: 211
   - id: ev_b49f0c892407
     kind: emulator_handler
     authority: vortex_emulator
@@ -139,7 +139,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
     symbol: RoomGrain
-    line: 39
+    line: 40
   - id: ev_c6ca9325686a
     kind: emulator_flow
     authority: vortex_emulator

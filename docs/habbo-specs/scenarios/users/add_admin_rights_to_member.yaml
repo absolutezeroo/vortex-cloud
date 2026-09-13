@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:986603d10e97cc38f3f4acd86f0817fb1f07de593011612d4e5ed89164fe0423"
+generated_digest: "sha256:7212e14078ce5979143168e33a880555b71f416491cb08cf76adbf4debcf6dbf"
 generated:
   feature: users.add_admin_rights_to_member
   scenarios:
@@ -157,7 +157,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 401
+    line: 500
   - id: ev_f96a6171650d
     kind: emulator_flow
     authority: vortex_emulator

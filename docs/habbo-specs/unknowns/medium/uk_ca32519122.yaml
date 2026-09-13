@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:00f207e07da349a02ca515f59625924cc2386950a63658a2929fc3e08b7455d9"
+generated_digest: "sha256:3cfa3740b43f766def02d0979b261295c457868342b38eaf5b3095fc584479a8"
 generated:
   id: uk_ca32519122
   subject: "catalog.builders_club_place_room_item: what the server sends when it refuses"
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Floor.cs
     symbol: RoomMapModule
-    line: 43
+    line: 56
   - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
@@ -117,13 +117,6 @@ generated:
     source: Vortex.Inventory/Furniture/FurnitureItem.cs
     symbol: FurnitureItem
     line: 22
-  - id: ev_7f41f2bdde62
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
-    symbol: PlayerDirectoryGrain
-    line: 29
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
@@ -158,7 +151,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -173,6 +166,13 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.cs
     symbol: RoomMapModule
     line: 228
+  - id: ev_c50eef4f80cc
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomFurnitureLocationStore.cs
+    symbol: RoomFurnitureLocationStore
+    line: 37
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
@@ -200,14 +200,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomFurniModule.Floor.cs
     symbol: RoomFurniModule
-    line: 182
+    line: 188
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 28
+    line: 29
   - id: ev_e3750914a5a1
     kind: emulator_flow
     authority: vortex_emulator

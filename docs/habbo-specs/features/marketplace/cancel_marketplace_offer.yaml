@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bd0694d2fa1a8b3bac0dfecb3f304c9c9454c2140bf55a8a60d454dd532e8195"
+generated_digest: "sha256:f9416dfcda2f678c7c42c7e7c3f95f159831a0458e0e459d439de0df6f81afef"
 generated:
   id: marketplace.cancel_marketplace_offer
   domain: marketplace
@@ -94,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 224
+    line: 221
   scenarios:
   - marketplace.cancel_marketplace_offer.guard_0
   - marketplace.cancel_marketplace_offer.guard_1

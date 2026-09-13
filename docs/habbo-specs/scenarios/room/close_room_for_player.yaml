@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f52f6f900087c426c26ebfc4a808e373d2f709f8f931836e24f2e68b3c10b67a"
+generated_digest: "sha256:18f8ece230c67dd442677f47d3d27cc5adc40131a0d3f690b452a094a2792cd5"
 generated:
   feature: room.close_room_for_player
   scenarios:
@@ -111,30 +111,6 @@ generated:
       - CloseConnection
       evidence: ev_b3ef77c49ed9
   - scenario: room.close_room_for_player.guard_4
-    title: "close room for player: the guard 'item.Logic is null' holds"
-    given:
-      guard: item.Logic is null
-      guard_holds: "true"
-    when:
-      packet: Quit
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of Quit sent while 'item.Logic is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4c36667ce9b9
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - CloseConnection
-      evidence: ev_b3ef77c49ed9
-  - scenario: room.close_room_for_player.guard_5
     title: "close room for player: the guard '!avatar.IsWalking' holds"
     given:
       guard: "!avatar.IsWalking"
@@ -158,7 +134,7 @@ generated:
       emits:
       - CloseConnection
       evidence: ev_b3ef77c49ed9
-  - scenario: room.close_room_for_player.guard_6
+  - scenario: room.close_room_for_player.guard_5
     title: "close room for player: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -182,7 +158,7 @@ generated:
       emits:
       - CloseConnection
       evidence: ev_b3ef77c49ed9
-  - scenario: room.close_room_for_player.guard_7
+  - scenario: room.close_room_for_player.guard_6
     title: "close room for player: the guard '!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? ...' holds"
     given:
       guard: "!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? players)"
@@ -206,7 +182,7 @@ generated:
       emits:
       - CloseConnection
       evidence: ev_b3ef77c49ed9
-  - scenario: room.close_room_for_player.guard_8
+  - scenario: room.close_room_for_player.guard_7
     title: "close room for player: the guard '!players.Remove(playerId)' holds"
     given:
       guard: "!players.Remove(playerId)"
@@ -273,34 +249,27 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 65
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 96
+    line: 114
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 97
+    line: 169
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 310
+    line: 365
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

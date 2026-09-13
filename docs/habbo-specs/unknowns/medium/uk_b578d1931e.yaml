@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8e059a315da5a872c7a323cbd0a6685ee0f6fe0ced83bdfab4c1626c8f9546b3"
+generated_digest: "sha256:f50a988edf09115e21f87fc489bc576ac1ff0f91e0027c4ade6584fb28ac28e8"
 generated:
   id: uk_b578d1931e
   subject: "room.answer_doorbell: what the server sends when it refuses"
@@ -67,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_93b2d0946619
     kind: emulator_flow
     authority: vortex_emulator

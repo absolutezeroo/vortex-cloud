@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4a05c14c547ce7e11d5fdd33ff0f7fad98662573e4f9c00d9857318401b60282"
+generated_digest: "sha256:1552750c80dd7fcb0e096f0a75023692717138ddf168cc4b5bafa524356c03bf"
 generated:
   feature: room.answer_doorbell
   scenarios:
@@ -354,7 +354,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 196
+    line: 205
   - id: ev_93b2d0946619
     kind: emulator_flow
     authority: vortex_emulator

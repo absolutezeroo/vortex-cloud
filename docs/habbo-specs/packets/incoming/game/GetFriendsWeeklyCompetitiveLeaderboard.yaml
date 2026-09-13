@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:ec93cc75a599bcb4e4f77e5eaef6cd9057e289dc192c3fa2771b526a43015c81"
+generated_digest: "sha256:8a4e1ccc8c3f845ae7740c480ee55de6d60022843a308264362d32bfc929d687"
 generated:
   name: GetFriendsWeeklyCompetitiveLeaderboard
   direction: incoming
@@ -19,6 +19,12 @@ generated:
   mapped_in_vortex: false
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_c9c8fb3bb169
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -40,6 +46,14 @@ generated:
     symbol: GetFriendsWeeklyCompetitiveLeaderboardComposer
     line: 17
     note: official client build WIN63-202607011411-782849652
+  - id: ev_c9c8fb3bb169
+    kind: client_composer
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2487/GetFriendsWeeklyCompetitiveLeaderboardComposer.as
+    symbol: GetFriendsWeeklyCompetitiveLeaderboardComposer
+    line: 17
+    note: official client build AIR-1.0.31
   - id: ev_b1f1a9cf384a
     kind: client_composer
     authority: multi_implementation

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6daf50e3502c0f8fe43c2cf8e20961b796494b9738b3e8328fd6fa9a4f70a63a"
+generated_digest: "sha256:9f81a52dd0dd93b19d0d1ea0415abf988ab495a13ad122b05177cbb743ad59fe"
 generated:
   feature: room.click_item_in_room
   scenarios:
@@ -92,14 +92,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.cs
     symbol: RoomGrain
-    line: 109
+    line: 93
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 402
+    line: 457
   - id: ev_e4165c982e0e
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1e5f87a5c7222410e4b083e388e104f3b1b088dd4e70bbdfc961b907f03d2e08"
+generated_digest: "sha256:70163513af3c81211bec17ddbbb465bfef8281448ecaa68292dcc895b0fc5329"
 generated:
   id: navigator.get_search_blocks
   domain: navigator
@@ -32,10 +32,6 @@ generated:
     layer: service
     symbol: NavigatorService.GetSearchBlocksAsync
     evidence: ev_ca6db2d966f5
-  - order: 2
-    layer: domain
-    symbol: NavigatorSearchFilter.Format
-    evidence: ev_a054a6edc4c3
   checks:
   - expression: searchCode == NavigatorSearchCodes.Categories
     on_fail: return
@@ -55,13 +51,6 @@ generated:
       evidence: ev_b253bcf1dfeb
   reaches_persistence: false
   evidence:
-  - id: ev_a054a6edc4c3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Primitives/Navigator/NavigatorSearchFilter.cs
-    symbol: NavigatorSearchFilter
-    line: 35
   - id: ev_b253bcf1dfeb
     kind: emulator_flow
     authority: vortex_emulator

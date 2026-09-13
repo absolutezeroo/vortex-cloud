@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:88e7aff95855f16fb9a521f03bfe293748ace6e5b1a468feaded052111b28e75"
+generated_digest: "sha256:4efb5a34802073220778ff0bae6b3e016d1155720fd5f386d07a08eddd1a26bb"
 generated:
   id: uk_200450bf44
   subject: "groups.update_forum_settings: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
-    line: 566
+    line: 682
   - id: ev_e8a93c22d13b
     kind: emulator_handler
     authority: vortex_emulator

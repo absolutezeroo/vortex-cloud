@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5a4c1352b20896e2c0d0f34be57cd5f543e1e60dcf6176a8af9bd32fc22d6122"
+generated_digest: "sha256:07d250bba21fba2ed66cdf348dfb75b31b16c6984da22e4a21cb1f66391c2fe9"
 generated:
   id: preferences.set_chat_preferences
   domain: preferences
@@ -32,20 +32,40 @@ generated:
     layer: grain
     symbol: PlayerGrain.SetFreeFlowChatDisabledAsync
     evidence: ev_630a59578b9c
+  - order: 2
+    layer: grain
+    symbol: PlayerGrain.SetChatDisplayPreferencesAsync
+    evidence: ev_630a59578b9c
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_44570889b75c
   state_changes:
-  - target: _grainFactory .GetPlayerGrain(ctx.PlayerId)
-    value: _grainFactory .GetPlayerGrain(ctx.PlayerId) .SetFreeFlowChatDisabledAsync(message.FreeFlowChatDisabled, ct)
+  - target: e.ChatBubbleWidth
+    value: "bubbleWidth is >= 0 and <= 2 ? (ChatBubbleWidthType)bubbleWidth : ChatBubbleWidthType.Normal"
     observed_in: vortex
-    evidence: ev_44570889b75c
+    evidence: ev_630a59578b9c
+  - target: e.ChatMode
+    value: "chatMode is 0 or 1 ? (ChatModeType)chatMode : ChatModeType.FreeFlow"
+    observed_in: vortex
+    evidence: ev_630a59578b9c
+  - target: e.ChatScrollSpeed
+    value: "scrollSpeed is >= 0 and <= 2 ? (ChatScrollSpeedType)scrollSpeed : ChatScrollSpeedType.Normal"
+    observed_in: vortex
+    evidence: ev_630a59578b9c
   - target: e.FreeFlowChatDisabled
     value: disabled
     observed_in: vortex
     evidence: ev_630a59578b9c
+  - target: player
+    value: player .SetFreeFlowChatDisabledAsync(message.FreeFlowChatDisabled, ct)
+    observed_in: vortex
+    evidence: ev_44570889b75c
+  - target: player
+    value: player .SetChatDisplayPreferencesAsync( message.ChatMode, message.ChatBubbleWidth, message.ChatScrollSpeed, ct )
+    observed_in: vortex
+    evidence: ev_44570889b75c
   outgoing:
     ordering: unknown
     packets: []
@@ -64,7 +84,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 70
+    line: 75
   - id: ev_f66e1f1e3612
     kind: emulator_handler
     authority: vortex_emulator
@@ -75,6 +95,8 @@ generated:
   scenarios:
   - preferences.set_chat_preferences.guard_0
   - preferences.set_chat_preferences.success
+  conflicts:
+  - cf_8c78a08422
   unknowns:
   - uk_c6151572b9
 verified: {}

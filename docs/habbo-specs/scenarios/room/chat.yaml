@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:76d5dbb099c3b051f7a10d0afa1aa8ee0f4fd0380ee0339365e6d64834cdabd2"
+generated_digest: "sha256:e285cf3154e9cafe27dd1df4c4e94e4f1bb8991e29ee4827886ab214766ff454"
 generated:
   feature: room.chat
   scenarios:
@@ -84,6 +84,29 @@ generated:
       emits: []
       evidence: ev_87cfcd3253bb
   - scenario: room.chat.guard_3
+    title: "chat: the guard '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityM...' holds"
+    given:
+      guard: _roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)
+      guard_holds: "true"
+    when:
+      packet: Chat
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Chat sent while '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_87cfcd3253bb
+  - scenario: room.chat.guard_4
     title: "chat: the guard 'IsUserMuted(playerId, out int secondsRemaining)' holds"
     given:
       guard: IsUserMuted(playerId, out int secondsRemaining)
@@ -108,7 +131,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_87cfcd3253bb
-  - scenario: room.chat.guard_4
+  - scenario: room.chat.guard_5
     title: "chat: the guard 'IsFloodGated(playerId, avatar, out int floodSecondsRemain...' holds"
     given:
       guard: IsFloodGated(playerId, avatar, out int floodSecondsRemaining)
@@ -133,7 +156,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_87cfcd3253bb
-  - scenario: room.chat.guard_5
+  - scenario: room.chat.guard_6
     title: "chat: the guard 'chatting.Cancel' holds"
     given:
       guard: chatting.Cancel
@@ -156,7 +179,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_87cfcd3253bb
-  - scenario: room.chat.guard_6
+  - scenario: room.chat.guard_7
     title: "chat: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -225,13 +248,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs
     symbol: ChatMessageHandler
-    line: 22
+    line: 23
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 45
+    line: 46
 verified: {}
 manual: {}

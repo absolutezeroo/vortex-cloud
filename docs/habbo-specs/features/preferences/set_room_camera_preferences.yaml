@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f1680fe6450b79f058ea166ff2b855892e870dba7f62b881e9c8e00e8a058f88"
+generated_digest: "sha256:71efdcf260b1332b0beea592a3e25ba55d1d7df7024278dae944d155f47a1517"
 generated:
   id: preferences.set_room_camera_preferences
   domain: preferences
@@ -57,7 +57,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 76
+    line: 115
   - id: ev_9d0c4278e411
     kind: emulator_handler
     authority: vortex_emulator

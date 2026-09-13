@@ -47,4 +47,4 @@ verified:
     evidence: "WIN63-202607011411/unknowns/_SafePkg_2452/_SafeCls_2723.as:18 — parse() reads one boolean and exposes it as allMuted; navigator/_SafeCls_1951.as:178 stores it on the room data as allInRoomMuted"
 manual:
   behaviour: "A toggle, not a sanction: the incoming MuteAllInRoom carries no field and the room answers with where the switch landed. While it is on, only the room's rights-holders can speak; everyone else's line is dropped with no reply, as in the reference emulator (HABBO-ARCTURUS-DAYBREAK RoomChatManager:295). Vortex keeps the switch in live room state and does not persist it, so a room cannot be left silent by someone who forgot to turn it off."
-  recipients: "Vortex sends the event to the whole room rather than to the presser alone (Arcturus sends it to the presser only); the flag redraws a button, and every rights-holder present has that button."
+  recipients: Vortex sends the event to the whole room rather than to the presser alone (Arcturus sends it to the presser only); the flag redraws a button, and every rights-holder present has that button.

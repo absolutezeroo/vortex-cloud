@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:24d6d8bde419193c5499a6c48a99ee3a363e63a3046bb4e32142598e9e8a9070"
+generated_digest: "sha256:70218410aa0dffcd416a10030bdb340d69af7e07430c2240cbe60109c5e03211"
 generated:
   name: GetNftCredits
   direction: incoming
@@ -20,6 +20,12 @@ generated:
   vortex_handler: GetNftCreditsMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_04061e51e918
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_c3f4baa1dcb5
   evidence:
+  - id: ev_04061e51e918
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1935/GetNftCreditsMessageComposer.as
+    symbol: GetNftCreditsMessageComposer
+    line: 15
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/inventory/HabboInventory.as:204 with 0 argument(s)"
   - id: ev_5a27bf71a810
     kind: client_call_site
     authority: client_mandated

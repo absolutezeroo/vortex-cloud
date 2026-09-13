@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:393b0de1bf7246ec3896c1fa117673a7eee0ccf40b8a70fbb1ba4892621693e0"
+generated_digest: "sha256:539ade7fb9b315472a0d945ab6ce85bc68e42a0225dddfec6e082bc14ad7cc06"
 generated:
   id: uk_455811187b
   subject: "room.open_room_for_player_id: what the server sends when it refuses"
@@ -68,13 +68,6 @@ generated:
     source: Vortex.Rooms/Grains/Systems/RoomPetSystem.cs
     symbol: RoomPetSystem
     line: 88
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 63
   - id: ev_50c83ecf3d31
     kind: emulator_flow
     authority: vortex_emulator
@@ -102,14 +95,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 90
+    line: 108
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 86
+    line: 158
   - id: ev_7aa1dee31dfd
     kind: emulator_flow
     authority: vortex_emulator
@@ -130,7 +123,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 58
+    line: 60
   - id: ev_7f41f2bdde62
     kind: emulator_flow
     authority: vortex_emulator
@@ -151,14 +144,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_8f4d446a6466
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 906
+    line: 890
   - id: ev_9d8421b6228f
     kind: emulator_flow
     authority: vortex_emulator
@@ -207,7 +200,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -249,7 +242,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 38
+    line: 46
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

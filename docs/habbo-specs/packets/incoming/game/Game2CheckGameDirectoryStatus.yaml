@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:3133dcf76fbbe037e5df0e54a5056883887e766e43fdb048561e451fca6eaa1b"
+generated_digest: "sha256:496b84ae7c1be33c08fbd07a7a4812871048c325d2ee251191765b649aae8a35"
 generated:
   name: Game2CheckGameDirectoryStatus
   direction: incoming
@@ -20,6 +20,12 @@ generated:
   vortex_handler: Game2CheckGameDirectoryStatusMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_a1fcd9f42653
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_de6b57851fa3
   evidence:
+  - id: ev_a1fcd9f42653
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2175/Game2CheckGameDirectoryStatusMessageComposer.as
+    symbol: Game2CheckGameDirectoryStatusMessageComposer
+    line: 15
+    note: "the client constructs this composer at 2 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/game/HabboGameManager.as:329 with 0 argument(s)"
   - id: ev_c627a6751da9
     kind: client_call_site
     authority: client_mandated

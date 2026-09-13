@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4d39e14c53d3062b15a5686eb4c347e1993c054cbf29e003f98bc168bb70e95f"
+generated_digest: "sha256:0f96a831a184f7eccd13d16e464b02c463aa531a31ca9eed7849f72873e5c77e"
 generated:
   id: uk_fb9a0f28c7
   subject: "room.chat: what the server sends when it refuses"
   severity: medium
-  question: room.chat changes state and has 8 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.chat changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.chat
   known_evidence:
@@ -39,14 +39,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs
     symbol: ChatMessageHandler
-    line: 22
+    line: 23
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 199
   - id: ev_98080acbf729
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs
     symbol: ChatMessageHandler
-    line: 12
+    line: 13
   - id: ev_ac641f7283b9
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,7 +67,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator

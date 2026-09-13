@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1c75c7d1d57ceba5597ce36a623ac4cc3de2a602cb218cc349e00044b40540e8"
+generated_digest: "sha256:325413ba6e9e8f43450d6b126baae73af60bbc06bca12a0869cc501cb2adad6d"
 generated:
   id: uk_2503cb4bc4
   subject: "room.look_to: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_c70390fca34b
     kind: emulator_flow
     authority: vortex_emulator

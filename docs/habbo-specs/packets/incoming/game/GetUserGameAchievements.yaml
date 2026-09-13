@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:293bd4a90208cc7402d079a27214a0b92f46752e59e3a17300dae3445664230a"
+generated_digest: "sha256:d0f76a700fb002c862f5997cabdbefe8eefa8fa979a54e15404478ef3f32d6a8"
 generated:
   name: GetUserGameAchievements
   direction: incoming
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: false
   fields:
   - index: 0
@@ -25,8 +25,15 @@ generated:
     name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
-    - ev_3f4f083b6513
+    - ev_640251c3c731
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - int32
+    evidence: ev_640251c3c731
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 1
@@ -49,6 +56,14 @@ generated:
     symbol: GetUserGameAchievementsMessageComposer
     line: 16
     note: official client build WIN63-202607011411-782849652
+  - id: ev_640251c3c731
+    kind: client_composer
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2647/GetUserGameAchievementsMessageComposer.as
+    symbol: GetUserGameAchievementsMessageComposer
+    line: 16
+    note: official client build AIR-1.0.31
   - id: ev_53848ec21c51
     kind: client_composer
     authority: multi_implementation

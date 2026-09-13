@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:e0587437ef4220c242a7a5cdf8f644e8211944b0cb0420c26a44b007fefa8ab8"
+generated_digest: "sha256:897edaed03a9a89b570b8447b07588e2cf2db220f405bbc02799e226653f7e0e"
 generated:
   name: GetSilver
   direction: incoming
@@ -20,6 +20,12 @@ generated:
   vortex_handler: GetSilverMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_dce54ae21a1c
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_e76d6c602b05
   evidence:
+  - id: ev_dce54ae21a1c
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1935/GetSilverMessageComposer.as
+    symbol: GetSilverMessageComposer
+    line: 15
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/inventory/HabboInventory.as:205 with 0 argument(s)"
   - id: ev_eb985a8134b5
     kind: client_call_site
     authority: client_mandated

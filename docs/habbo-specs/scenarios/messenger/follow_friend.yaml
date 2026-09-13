@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:871b65cffd918e197e6a7ebc722c02f4fe8b2c589789a432dd97c06a39ff8a52"
+generated_digest: "sha256:2d8d7f7891970c45376693ccf61ff65e37ab15e3ba2d0f4a5b4078baf92b33fb"
 generated:
   feature: messenger.follow_friend
   scenarios:
@@ -266,7 +266,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_40b1e9d27438
     kind: emulator_flow
     authority: vortex_emulator
@@ -287,7 +287,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 196
+    line: 205
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

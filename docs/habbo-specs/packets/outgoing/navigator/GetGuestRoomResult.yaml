@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:326f2d983e684ddb9b00aa5512bc030a4e8c764a922068a48e7274ba93b0838b"
+generated_digest: "sha256:ec1b888f7a2bd7e14d42d23ba146ab48fb31ccc838c33c057c7d695cbf5bf607"
 generated:
   name: GetGuestRoomResult
   direction: outgoing
@@ -373,7 +373,7 @@ generated:
     - boolean
     - block
     - boolean
-    - block
+    - int32
     - boolean
     evidence: ev_bc61b46f1cc6
   evidence:

@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:1eb4a0b9c3668e93f14e0f075de3960a16209d721b200e61b3fffa7bf7799d7f"
+generated_digest: "sha256:3081ca89892895eb8bb9c402902e2a1e0ca0e0cc51c86028d31d75f10f000c51"
 generated:
   name: ClickFurni
   direction: incoming
   domain: room
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   vortex_handler: ClickFurniMessageHandler
   fields:
@@ -25,7 +25,7 @@ generated:
     name_confidence: multi_reference_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_d8a264123ff3
+    - ev_73b30602a8f6
     - ev_dc582440a20a
   - index: 1
     name: param
@@ -33,9 +33,17 @@ generated:
     name_confidence: multi_reference_confirmed
     type_confidence: client_confirmed
     evidence:
-    - ev_d8a264123ff3
+    - ev_73b30602a8f6
     - ev_dc582440a20a
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 2
+    partial: false
+    types:
+    - int32
+    - int32
+    evidence: ev_73b30602a8f6
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 2
@@ -61,6 +69,14 @@ generated:
     - int32
     evidence: ev_08c4de075dce
   evidence:
+  - id: ev_73b30602a8f6
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2218/ClickFurniMessageComposer.as
+    symbol: ClickFurniMessageComposer
+    line: 23
+    note: "the client constructs this composer at 2 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/room/_SafeCls_1898.as:592 with 1 argument(s); the class writes 2 value(s) to the wire"
   - id: ev_d8a264123ff3
     kind: client_call_site
     authority: client_mandated

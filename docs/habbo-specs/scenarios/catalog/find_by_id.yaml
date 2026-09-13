@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:eb93015f0a78212b7ca7a169308780d968f59aaa20290bc3dbd2a6a3d949ec75"
+generated_digest: "sha256:037f5491e6052098002ba11c5fb8ee1bb097faa2f4de0c170a2fd077499ee341"
 generated:
   feature: catalog.find_by_id
   scenarios:
@@ -33,6 +33,24 @@ generated:
       emits: []
       evidence: ev_73539f066ff0
   - scenario: catalog.find_by_id.guard_1
+    title: "find by id: the guard 'await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct...' holds"
+    given:
+      guard: await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)
+      guard_holds: "true"
+    when:
+      packet: PurchaseBasicMembershipExtension
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while 'await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_73539f066ff0
+  - scenario: catalog.find_by_id.guard_2
     title: "find by id: the guard 'offer is null || offer.IsVip' holds"
     given:
       guard: offer is null || offer.IsVip
@@ -50,7 +68,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_73539f066ff0
-  - scenario: catalog.find_by_id.guard_2
+  - scenario: catalog.find_by_id.guard_3
     title: "find by id: the guard 'result != ClubPurchaseResult.Success' holds"
     given:
       guard: result != ClubPurchaseResult.Success
@@ -68,9 +86,29 @@ generated:
       outcome: rejected
       emits:
       - PurchaseError
+      - PurchaseNotAllowed
       - ScrSendUserInfo
+      - unresolved
       evidence: ev_73539f066ff0
-  - scenario: catalog.find_by_id.guard_3
+  - scenario: catalog.find_by_id.guard_4
+    title: "find by id: the guard '!locked' holds"
+    given:
+      guard: "!locked"
+      guard_holds: "true"
+    when:
+      packet: PurchaseBasicMembershipExtension
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseBasicMembershipExtension sent while '!locked' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_80836b9b056b
+  - scenario: catalog.find_by_id.guard_5
     title: "find by id: the guard 'offer.OfferId == offerId' holds"
     given:
       guard: offer.OfferId == offerId
@@ -88,7 +126,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_4e6c8266ce94
-  - scenario: catalog.find_by_id.guard_4
+  - scenario: catalog.find_by_id.guard_6
     title: "find by id: the guard 'months <= 0' holds"
     given:
       guard: months <= 0
@@ -106,7 +144,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-  - scenario: catalog.find_by_id.guard_5
+  - scenario: catalog.find_by_id.guard_7
     title: "find by id: the guard '!result.Succeeded' holds"
     given:
       guard: "!result.Succeeded"
@@ -124,7 +162,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1f83e61934ca
-  - scenario: catalog.find_by_id.guard_6
+  - scenario: catalog.find_by_id.guard_8
     title: "find by id: the guard 'offer is null || !offer.IsVip' holds"
     given:
       guard: offer is null || !offer.IsVip
@@ -159,7 +197,9 @@ generated:
       outcome: success
       emits:
       - PurchaseError
+      - PurchaseNotAllowed
       - ScrSendUserInfo
+      - unresolved
       evidence: ev_1f83e61934ca
   evidence:
   - id: ev_1f83e61934ca
@@ -168,7 +208,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 476
+    line: 498
   - id: ev_4e6c8266ce94
     kind: emulator_flow
     authority: vortex_emulator
@@ -189,6 +229,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/Catalog/PurchaseVipMembershipExtensionMessageHandler.cs
     symbol: PurchaseVipMembershipExtensionMessageHandler
-    line: 39
+    line: 44
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 48
 verified: {}
 manual: {}

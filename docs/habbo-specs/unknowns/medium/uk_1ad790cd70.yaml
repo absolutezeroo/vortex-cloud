@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4a80a8875d8228f523a16ee554159b3617cd910b6eb201769649093cd6c79dc1"
+generated_digest: "sha256:72bf041e6f83317b8e35acd39f063d474c71d14f74f4c14e2512016393b54983"
 generated:
   id: uk_1ad790cd70
   subject: "room.assign_rights: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 273
+    line: 282
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator

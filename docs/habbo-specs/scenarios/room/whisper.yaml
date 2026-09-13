@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:035b63477f3f8bde31bc563ed416ab359fef40a6029b45ca25b57df67252100b"
+generated_digest: "sha256:068bb3d6e51f40c30b1d71c408f797ff519a701682bd7303f5bb6cdec6f70a30"
 generated:
   feature: room.whisper
   scenarios:
@@ -61,6 +61,29 @@ generated:
       emits: []
       evidence: ev_1d49dc969016
   - scenario: room.whisper.guard_10
+    title: "whisper: the guard 'chatting.Cancel' holds"
+    given:
+      guard: chatting.Cancel
+      guard_holds: "true"
+    when:
+      packet: Whisper
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Whisper sent while 'chatting.Cancel' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_1d49dc969016
+  - scenario: room.whisper.guard_11
     title: "whisper: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -199,6 +222,29 @@ generated:
       emits: []
       evidence: ev_1d49dc969016
   - scenario: room.whisper.guard_7
+    title: "whisper: the guard '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityM...' holds"
+    given:
+      guard: _roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)
+      guard_holds: "true"
+    when:
+      packet: Whisper
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of Whisper sent while '_roomGrain._state.AllInRoomMuted && !_roomGrain.SecurityModule.HasExplicitRights(playerId)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0fbc7d68cc3
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_1d49dc969016
+  - scenario: room.whisper.guard_8
     title: "whisper: the guard 'IsUserMuted(playerId, out int secondsRemaining)' holds"
     given:
       guard: IsUserMuted(playerId, out int secondsRemaining)
@@ -223,7 +269,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_1d49dc969016
-  - scenario: room.whisper.guard_8
+  - scenario: room.whisper.guard_9
     title: "whisper: the guard 'IsFloodGated(playerId, avatar, out int floodSecondsRemain...' holds"
     given:
       guard: IsFloodGated(playerId, avatar, out int floodSecondsRemaining)
@@ -242,29 +288,6 @@ generated:
       emits:
       - FloodControl
       - RemainingMutePeriod
-      evidence: ev_f0fbc7d68cc3
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_1d49dc969016
-  - scenario: room.whisper.guard_9
-    title: "whisper: the guard 'chatting.Cancel' holds"
-    given:
-      guard: chatting.Cancel
-      guard_holds: "true"
-    when:
-      packet: Whisper
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of Whisper sent while 'chatting.Cancel' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
       evidence: ev_f0fbc7d68cc3
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -338,6 +361,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
     symbol: RoomChatSystem
-    line: 45
+    line: 103
 verified: {}
 manual: {}

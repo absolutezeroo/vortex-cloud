@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2b06ef74043da9d3728dffb35388334f57a8ab84bb255a3cbea1c173591255b9"
+generated_digest: "sha256:78b70219b58e218c297b06c0803103003030789b7ca55523b95a7ac7e2389f1d"
 generated:
   feature: room.add_spam_wall_post_it
   scenarios:
@@ -104,6 +104,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 705
+    line: 677
 verified: {}
 manual: {}

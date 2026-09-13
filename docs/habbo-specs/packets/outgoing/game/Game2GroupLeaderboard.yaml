@@ -10,15 +10,114 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:da996c772c0f1db93227f1556aff41b63e8ab9a6fccc25ecb524d5c62bf77627"
+generated_digest: "sha256:8a24918325e87c695151c3109c3d28a5717c78b224ee1a57270913606c16fe13"
 generated:
   name: Game2GroupLeaderboard
   direction: outgoing
   domain: game
-  structure_confidence: unknown
+  structure_confidence: client_confirmed
   mapped_in_vortex: false
-  fields: []
+  fields:
+  - index: 0
+    name: unknown_0
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    evidence:
+    - ev_135f78a6f267
+  - index: 1
+    name: unknown_1
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 2
+    name: unknown_2
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 3
+    name: unknown_3
+    type: int32
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 4
+    name: unknown_4
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 5
+    name: unknown_5
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 6
+    name: unknown_6
+    type: string
+    name_is_placeholder: true
+    name_confidence: unknown
+    type_confidence: client_confirmed
+    note: inside a repeated block
+    evidence:
+    - ev_135f78a6f267
+  - index: 7
+    name: total_list_size
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_135f78a6f267
+  - index: 8
+    name: game_type_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_135f78a6f267
+  - index: 9
+    name: favourite_group_id
+    type: int32
+    name_confidence: client_confirmed
+    type_confidence: client_confirmed
+    evidence:
+    - ev_135f78a6f267
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 10
+    partial: false
+    types:
+    - int32
+    - int32
+    - int32
+    - int32
+    - string
+    - string
+    - string
+    - int32
+    - int32
+    - int32
+    evidence: ev_135f78a6f267
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -26,6 +125,14 @@ generated:
     types: []
     evidence: ev_422d8747abcc
   evidence:
+  - id: ev_135f78a6f267
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_4151/Game2GroupLeaderboardParser.as
+    symbol: Game2GroupLeaderboardParser
+    line: 31
+    note: official client build AIR-1.0.31
   - id: ev_422d8747abcc
     kind: client_parser
     authority: multi_implementation
@@ -34,5 +141,7 @@ generated:
     symbol: Game2GroupLeaderboardMessage
     line: 10
     note: community client reimplementation; corroborating, never authoritative
+  unknowns:
+  - uk_6ddaa20cda
 verified: {}
 manual: {}

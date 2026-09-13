@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:16aa8329b58613db5fa417e9e6a49eb2106e6d72a317278be9faa86864f973ed"
+generated_digest: "sha256:682ad5111591b2b3a67a608f560a9cef6aa9e103e2698df6ca3bfad7f7d6cf8e"
 generated:
   id: uk_91f9ccac09
   subject: "marketplace.buy_marketplace_offer: what the server sends when it refuses"
   severity: medium
-  question: marketplace.buy_marketplace_offer changes state and has 5 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: marketplace.buy_marketplace_offer changes state and has 6 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: marketplace.buy_marketplace_offer
   known_evidence:
@@ -53,6 +53,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 305
+    line: 302
 verified: {}
 manual: {}

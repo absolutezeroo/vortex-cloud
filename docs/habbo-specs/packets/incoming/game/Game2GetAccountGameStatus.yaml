@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:c91a1c72fc0d27e4ebb11915187fa115ad62897291674a5946af4573dca90bcc"
+generated_digest: "sha256:4324f7ff2f09c62f1ed1fd967644320aec28c446c52e806faf75fab2c2842c40"
 generated:
   name: Game2GetAccountGameStatus
   direction: incoming
@@ -28,6 +28,12 @@ generated:
     evidence:
     - ev_a38a27cdd49b
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_67e543702c03
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 0
@@ -54,6 +60,14 @@ generated:
     types: []
     evidence: ev_e63d26764f67
   evidence:
+  - id: ev_67e543702c03
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_2175/Game2GetAccountGameStatusMessageComposer.as
+    symbol: Game2GetAccountGameStatusMessageComposer
+    line: 16
+    note: "the client constructs this composer at 3 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/game/snowwar/SnowWarEngine.as:1078 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_d922800829f9
     kind: client_call_site
     authority: client_mandated

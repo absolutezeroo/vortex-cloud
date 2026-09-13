@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:67b4cfde2fecad38bc2abff296abe2b6c110fb6ce75187639835c3798f385197"
+generated_digest: "sha256:20d35ac83a9cbcffebb20cea3bab4e79bc50f76b787c9428dbc8cb184ede2ee2"
 generated:
   feature: room.remove_item
   scenarios:
@@ -124,7 +124,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 329
+    line: 301
   - id: ev_a311be697b0f
     kind: emulator_flow
     authority: vortex_emulator

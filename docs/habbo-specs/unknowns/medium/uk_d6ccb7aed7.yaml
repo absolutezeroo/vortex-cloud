@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a0617d25f87a4f558d58c298e1bff7e94920f42080b26f4cf546d4a7688f14de"
+generated_digest: "sha256:ac12ed71307338826799afe5c8886287b6c9bc1e4758bfd0c392bc903b3c4563"
 generated:
   id: uk_d6ccb7aed7
   subject: "room.close_room_for_player: what the server sends when it refuses"
   severity: medium
-  question: room.close_room_for_player changes state and has 10 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.close_room_for_player changes state and has 9 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.close_room_for_player
   known_evidence:
@@ -40,13 +40,6 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Doorbell.cs
     symbol: RoomGrain
     line: 84
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 63
   - id: ev_556d41376c6f
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,21 +53,21 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 90
+    line: 108
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 86
+    line: 158
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 308
+    line: 363
   - id: ev_82aaf63b45c1
     kind: emulator_flow
     authority: vortex_emulator
@@ -88,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Games/Runtime/RoomGameRuntime.cs
     symbol: RoomGameRuntime
-    line: 906
+    line: 890
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -130,7 +123,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator
@@ -151,7 +144,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomPersistenceGrain.cs
     symbol: RoomPersistenceGrain
-    line: 38
+    line: 46
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

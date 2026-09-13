@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:747e218c0a19c07849b1835f36dcca79360a8b20957188ebf7afb622942b1357"
+generated_digest: "sha256:ffec4deea50f3ee04806e277ecccfbb0faab51d4e159b7fb668fee45e3989b45"
 generated:
   feature: wired.update_trigger
   scenarios:
@@ -101,6 +101,34 @@ generated:
       - WiredValidationError
       evidence: ev_d521e68ab4b1
   - scenario: wired.update_trigger.guard_3
+    title: "update trigger: the guard '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(...' holds"
+    given:
+      guard: "!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)"
+      guard_holds: "true"
+    when:
+      packet: UpdateTrigger
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateTrigger sent while '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_e1599f76ae95
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - WiredSaved
+      - WiredValidationError
+      - WiredSaved
+      - WiredValidationError
+      - WiredValidationError
+      evidence: ev_d521e68ab4b1
+  - scenario: wired.update_trigger.guard_4
     title: "update trigger: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
     given:
       guard: "!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)"
@@ -128,7 +156,7 @@ generated:
       - WiredValidationError
       - WiredValidationError
       evidence: ev_d521e68ab4b1
-  - scenario: wired.update_trigger.guard_4
+  - scenario: wired.update_trigger.guard_5
     title: "update trigger: the guard 'item.Logic is not FurnitureWiredLogic wiredLogic' holds"
     given:
       guard: item.Logic is not FurnitureWiredLogic wiredLogic
@@ -156,7 +184,7 @@ generated:
       - WiredValidationError
       - WiredValidationError
       evidence: ev_d521e68ab4b1
-  - scenario: wired.update_trigger.guard_5
+  - scenario: wired.update_trigger.guard_6
     title: "update trigger: the guard '!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)' holds"
     given:
       guard: "!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)"
@@ -242,6 +270,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 240
+    line: 284
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:89ad90e4a1a4ebd34dc9b4426b9ce3d68620d684af145c4eb29ab7fae5a34f8e"
+generated_digest: "sha256:07c307cc6729ef26528d615c694a4d93cca301ff5dc00f55f5601b9985d482db"
 generated:
   id: uk_35b7d4dcbd
   subject: "users.remove_admin_rights_from_member: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 387
+    line: 486
   - id: ev_c7a116d6502e
     kind: emulator_handler
     authority: vortex_emulator

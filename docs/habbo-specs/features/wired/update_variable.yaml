@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:4a1cee8689f1605606c99a701f4fe149a0fdac86837fb967d315d4f39f06c2a8"
+generated_digest: "sha256:fe3a1c6016e7dad324fd8c5877e0e8a9069ed4c24b04937838e87c67348ffb6d"
 generated:
   id: wired.update_variable
   domain: wired
@@ -35,6 +35,10 @@ generated:
     layer: module
     symbol: RoomActionModule.ApplyWiredUpdateAsync
     evidence: ev_e1599f76ae95
+  - order: 3
+    layer: module
+    symbol: RoomSecurityModule.CanManipulateFurniAsync
+    evidence: ev_82c2d2746361
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Id <= 0
     on_fail: return
@@ -48,6 +52,10 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_0080929ab318
+  - expression: "!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_e1599f76ae95
   - expression: "!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)"
     on_fail: throw
     observed_in: vortex
@@ -96,13 +104,20 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateVariableMessageHandler.cs
     symbol: UpdateVariableMessageHandler
     line: 12
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 26
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 233
+    line: 268
   - id: ev_e87b09ae933e
     kind: emulator_flow
     authority: vortex_emulator
@@ -117,6 +132,7 @@ generated:
   - wired.update_variable.guard_3
   - wired.update_variable.guard_4
   - wired.update_variable.guard_5
+  - wired.update_variable.guard_6
   - wired.update_variable.success
   unknowns:
   - uk_0a578eaee5

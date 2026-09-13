@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:55dbdee3dc457d096ec9d99db20ec314ee1ae807e667c3b5cbee276c7eb25614"
+generated_digest: "sha256:e17370f7c3d95c9cc09bf1054e40d3f4aeb2c4e70f050f57c67031b1f76bfd97"
 generated:
   id: uk_b7b2ec8c1f
   subject: "wired.withdraw_wired_chest_credits: what the server sends when it refuses"
@@ -88,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 194
+    line: 203
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator

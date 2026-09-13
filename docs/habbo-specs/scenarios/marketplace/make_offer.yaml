@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ee9731dc5bfcd500e40a6a824737bdddb3246bae42c6ef3b52d5f8c79079c522"
+generated_digest: "sha256:a9fab4352a4d505aa5b23c0f3714b7380fe50593d9b29588886baca21ca3c081"
 generated:
   feature: marketplace.make_offer
   scenarios:
@@ -43,6 +43,64 @@ generated:
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
   - scenario: marketplace.make_offer.guard_1
+    title: "make offer: the guard 'await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactor...' holds"
+    given:
+      guard: await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct) .ConfigureAwait(false)
+      guard_holds: "true"
+    when:
+      packet: MakeOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MakeOffer sent while 'await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - FurniListRemove
+      - MarketplaceMakeOfferResult
+      evidence: ev_0d41314ab8c9
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MarketplaceMakeOfferResult
+      - PurchaseError
+      - PurchaseError
+      - MarketplaceMakeOfferResult
+      - MarketplaceMakeOfferResult
+      evidence: ev_1ad66ef63462
+  - scenario: marketplace.make_offer.guard_10
+    title: "make offer: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: MakeOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of MakeOffer sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - MarketplaceMakeOfferResult
+      - PurchaseError
+      - PurchaseError
+      - MarketplaceMakeOfferResult
+      - MarketplaceMakeOfferResult
+      evidence: ev_1ad66ef63462
+  - scenario: marketplace.make_offer.guard_2
     title: "make offer: the guard 'price <= 0' holds"
     given:
       guard: price <= 0
@@ -70,7 +128,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_2
+  - scenario: marketplace.make_offer.guard_3
     title: "make offer: the guard 'snapshot is null' holds"
     given:
       guard: snapshot is null
@@ -98,7 +156,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_3
+  - scenario: marketplace.make_offer.guard_4
     title: "make offer: the guard 'snapshot.RoomId.Value > 0' holds"
     given:
       guard: snapshot.RoomId.Value > 0
@@ -126,7 +184,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_4
+  - scenario: marketplace.make_offer.guard_5
     title: "make offer: the guard '!snapshot.Definition.CanSell' holds"
     given:
       guard: "!snapshot.Definition.CanSell"
@@ -154,7 +212,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_5
+  - scenario: marketplace.make_offer.guard_6
     title: "make offer: the guard '!removed' holds"
     given:
       guard: "!removed"
@@ -182,17 +240,17 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_6
-    title: "make offer: the guard 'sellersRow is null' holds"
+  - scenario: marketplace.make_offer.guard_7
+    title: "make offer: the guard 'claimed == 0' holds"
     given:
-      guard: sellersRow is null
+      guard: claimed == 0
       guard_holds: "true"
     when:
       packet: MakeOffer
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of MakeOffer sent while 'sellersRow is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of MakeOffer sent while 'claimed == 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -210,7 +268,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_7
+  - scenario: marketplace.make_offer.guard_8
     title: "make offer: the guard '!await _furniModule.RemoveFurnitureAsync(itemId, ct)' holds"
     given:
       guard: "!await _furniModule.RemoveFurnitureAsync(itemId, ct)"
@@ -238,7 +296,7 @@ generated:
       - MarketplaceMakeOfferResult
       - MarketplaceMakeOfferResult
       evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_8
+  - scenario: marketplace.make_offer.guard_9
     title: "make offer: the guard '!_state.FurnitureById.Remove(itemId, out IFurnitureItem? ...' holds"
     given:
       guard: "!_state.FurnitureById.Remove(itemId, out IFurnitureItem? item)"
@@ -256,34 +314,6 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_48fa24e8d4a2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - MarketplaceMakeOfferResult
-      - PurchaseError
-      - PurchaseError
-      - MarketplaceMakeOfferResult
-      - MarketplaceMakeOfferResult
-      evidence: ev_1ad66ef63462
-  - scenario: marketplace.make_offer.guard_9
-    title: "make offer: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: MakeOffer
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of MakeOffer sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success

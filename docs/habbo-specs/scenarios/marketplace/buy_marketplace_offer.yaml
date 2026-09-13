@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5cb914e4024911a7953e6fbff0b65fde0be735521b51cae07931f5d10cb14c46"
+generated_digest: "sha256:a71a40921299095a4ebe230cac982a8f4fc72612486e1befb8cfc9c81ce3293b"
 generated:
   feature: marketplace.buy_marketplace_offer
   scenarios:
@@ -38,6 +38,30 @@ generated:
       emits: []
       evidence: ev_f0c1fa94e7f5
   - scenario: marketplace.buy_marketplace_offer.guard_1
+    title: "buy marketplace offer: the guard 'await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactor...' holds"
+    given:
+      guard: await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct) .ConfigureAwait(false)
+      guard_holds: "true"
+    when:
+      packet: BuyMarketplaceOffer
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of BuyMarketplaceOffer sent while 'await Catalog .SafetyLockGuard.IsLockedAsync(_grainFactory, ctx, ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - MarketplaceBuyOfferResult
+      evidence: ev_2826b3f58134
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_f0c1fa94e7f5
+  - scenario: marketplace.buy_marketplace_offer.guard_2
     title: "buy marketplace offer: the guard 'offer is null' holds"
     given:
       guard: offer is null
@@ -60,7 +84,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f0c1fa94e7f5
-  - scenario: marketplace.buy_marketplace_offer.guard_2
+  - scenario: marketplace.buy_marketplace_offer.guard_3
     title: "buy marketplace offer: the guard 'claimed == 0' holds"
     given:
       guard: claimed == 0
@@ -83,7 +107,7 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_f0c1fa94e7f5
-  - scenario: marketplace.buy_marketplace_offer.guard_3
+  - scenario: marketplace.buy_marketplace_offer.guard_4
     title: "buy marketplace offer: the guard '_registry is null' holds"
     given:
       guard: _registry is null
@@ -158,6 +182,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 320
+    line: 317
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:2c8158137f53709039be38c24688a983d35e8b02a4cfc1bdf109f221f7150238"
+generated_digest: "sha256:4e83c3c87a0e0fdafafcd921189e808baaeb4481305bd211636df80fb46b0ce6"
 generated:
   feature: room.unmute_user
   scenarios:
@@ -221,7 +221,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 356
+    line: 412
   - id: ev_c66fa500332c
     kind: emulator_flow
     authority: vortex_emulator

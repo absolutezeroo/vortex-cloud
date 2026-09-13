@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:f94fb4098297dae9a2f0587632433cbc15ca50940fac22cdf60063a1d6782f41"
+generated_digest: "sha256:0ba85e6da21caf5c3e67c46c4e7e427340a7f76ca31669c1387abe33b3ee4e08"
 generated:
   feature: wired.update_selector
   scenarios:
@@ -69,6 +69,24 @@ generated:
       emits: []
       evidence: ev_0080929ab318
   - scenario: wired.update_selector.guard_3
+    title: "update selector: the guard '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(...' holds"
+    given:
+      guard: "!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)"
+      guard_holds: "true"
+    when:
+      packet: UpdateSelector
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of UpdateSelector sent while '!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_e1599f76ae95
+  - scenario: wired.update_selector.guard_4
     title: "update selector: the guard '!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoo...' holds"
     given:
       guard: "!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)"
@@ -86,7 +104,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-  - scenario: wired.update_selector.guard_4
+  - scenario: wired.update_selector.guard_5
     title: "update selector: the guard 'item.Logic is not FurnitureWiredLogic wiredLogic' holds"
     given:
       guard: item.Logic is not FurnitureWiredLogic wiredLogic
@@ -104,7 +122,7 @@ generated:
       outcome: rejected
       emits: []
       evidence: ev_e1599f76ae95
-  - scenario: wired.update_selector.guard_5
+  - scenario: wired.update_selector.guard_6
     title: "update selector: the guard '!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)' holds"
     given:
       guard: "!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct)"
@@ -154,7 +172,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 240
+    line: 284
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator

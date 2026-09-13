@@ -58,5 +58,5 @@ generated:
 verified:
   resolution: "Counting artifact, not drift. The client reads `new _SafeCls_3143(param1)` then one boolean; we call BotSerialization.WriteBot then write one boolean. Same shape — the extractor counts the delegated bot block as a single field on our side and flattens it on the client's."
   confidence: client_confirmed
-  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_3095/_SafeCls_3675.as — constructor call plus readBoolean"
+  evidence: WIN63-202607011411-782849652/src/unknowns/_SafePkg_3095/_SafeCls_3675.as — constructor call plus readBoolean
 manual: {}

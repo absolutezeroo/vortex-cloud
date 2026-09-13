@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:fcc14a7ee6b91e66ce808196fc3da1d6af143de504ee3dddb0dabeba37a4ba8d"
+generated_digest: "sha256:4cced1babbf0956159734a2bcc4b0ca79c69ef97b84d61941e67352e0e02464f"
 generated:
   id: room.change_posture
   domain: room
@@ -98,7 +98,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

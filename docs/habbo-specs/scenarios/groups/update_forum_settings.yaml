@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:52c8be6d0f3acd5a00f0c994a112743633c7d82777aeace1a08d7ae3f2c053c5"
+generated_digest: "sha256:e3da8ebf93b0666c47e19a8d4f9990d0ed0e736fb02f52f9ad73e6f89760d10a"
 generated:
   feature: groups.update_forum_settings
   scenarios:
@@ -205,6 +205,6 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupForumGrain.cs
     symbol: GroupForumGrain
-    line: 580
+    line: 696
 verified: {}
 manual: {}

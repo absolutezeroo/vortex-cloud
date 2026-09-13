@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c45e2addfc002d55025446d072f61994f6f9e8e95462bb2354f46c6fef28c501"
+generated_digest: "sha256:28182c9c6594fa10aebef3499701fd4d6341a7e8f30d4c5dac01fecf3343c1e9"
 generated:
   id: uk_48d1626f4e
   subject: "wired.wired_trade_accept: what the server sends when it refuses"
@@ -81,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 298
+    line: 410
   - id: ev_98ec231f8eca
     kind: emulator_flow
     authority: vortex_emulator
@@ -103,20 +103,13 @@ generated:
     source: Vortex.Rooms/Object/Furniture/RoomItemContext.cs
     symbol: RoomItemContext
     line: 37
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a1548c199ed0c4a618f902af005b30308e85a61901ff4291e9aa984f9d93afe0"
+generated_digest: "sha256:539fc7e37abce569b6f028875e43270352e739db994903e719f6c5900e5a7c1a"
 generated:
   id: users.reject_membership_request
   domain: users
@@ -32,27 +32,11 @@ generated:
     layer: grain
     symbol: GroupGrain.RejectMembershipAsync
     evidence: ev_b1c46fe16e7f
-  - order: 2
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_9471d6183101
-  - expression: await LoadIfAdminAsync(dbCtx, actor, ct) is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: deleted == 0
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -65,15 +49,8 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_9471d6183101
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 14
   - id: ev_9471d6183101
     kind: emulator_flow
     authority: vortex_emulator
@@ -87,7 +64,7 @@ generated:
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 178
+    line: 194
   - id: ev_e5502868685f
     kind: emulator_handler
     authority: vortex_emulator
@@ -97,13 +74,8 @@ generated:
     line: 11
   scenarios:
   - users.reject_membership_request.guard_0
-  - users.reject_membership_request.guard_1
-  - users.reject_membership_request.guard_2
-  - users.reject_membership_request.guard_3
   - users.reject_membership_request.success
   conflicts:
   - cf_b771a0a231
-  unknowns:
-  - uk_0e945d0054
 verified: {}
 manual: {}

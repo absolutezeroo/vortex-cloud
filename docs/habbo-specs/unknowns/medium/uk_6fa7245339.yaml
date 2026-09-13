@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:04cb1b770938b10ad3f686617224004a3812ba529918f9adae11661236d17c25"
+generated_digest: "sha256:9837e2ac77aff6e8eae724f028cbe839a6467e1f2f3b0312035edc6cf1b4d1f0"
 generated:
   id: uk_6fa7245339
   subject: "room.set_mannequin_figure: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 255
+    line: 256
   - id: ev_22031426365a
     kind: emulator_handler
     authority: vortex_emulator

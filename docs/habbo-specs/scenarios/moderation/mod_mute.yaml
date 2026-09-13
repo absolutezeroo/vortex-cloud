@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:7c964e9cea04ba1c5bac1dacc246855d897217292cf744f117209a65bac3ca5d"
+generated_digest: "sha256:54f50e3dd3f05cba9de78aa87116c9ffba29722c75d7e26215584c72f580b14a"
 generated:
   feature: moderation.mod_mute
   scenarios:
@@ -222,7 +222,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 877
+    line: 899
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -250,7 +250,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
     symbol: RoomModerationSystem
-    line: 331
+    line: 387
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

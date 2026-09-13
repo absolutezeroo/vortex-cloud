@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8cb485a835a6af28fa2d55864be28c24fa6f5d38c26a1b44ab1564be6cc14fb4"
+generated_digest: "sha256:9179191ae89badc090fbe0d466d6e1a3a9ccf1bea69102498ce4bcb5643e8ea1"
 generated:
   id: users.approve_membership_request
   domain: users
@@ -32,31 +32,11 @@ generated:
     layer: grain
     symbol: GroupGrain.ApproveMembershipAsync
     evidence: ev_b1c46fe16e7f
-  - order: 2
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
-  - order: 3
-    layer: domain
-    symbol: GroupMemberMapper.NewMember
-    evidence: ev_40034f33a6de
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_98c0c69e5c73
-  - expression: group is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: request is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -69,22 +49,8 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_98c0c69e5c73
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 14
-  - id: ev_40034f33a6de
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Social/Groups/GroupMemberMapper.cs
-    symbol: GroupMemberMapper
-    line: 51
   - id: ev_98c0c69e5c73
     kind: emulator_flow
     authority: vortex_emulator
@@ -108,13 +74,8 @@ generated:
     line: 12
   scenarios:
   - users.approve_membership_request.guard_0
-  - users.approve_membership_request.guard_1
-  - users.approve_membership_request.guard_2
-  - users.approve_membership_request.guard_3
   - users.approve_membership_request.success
   conflicts:
   - cf_676b07a797
-  unknowns:
-  - uk_1041dc26cd
 verified: {}
 manual: {}

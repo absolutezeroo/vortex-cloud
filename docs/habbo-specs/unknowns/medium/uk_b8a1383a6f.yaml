@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:018f89ea8d320dd8f341c26981cfd5af6e4a149f4f90652bddbc3baca9e756b5"
+generated_digest: "sha256:54b3a0550be148058500d4786023607674720cbd1fbe0fe06763277e9138ee46"
 generated:
   id: uk_b8a1383a6f
   subject: "wired.wired_trade_update_items: what the server sends when it refuses"
@@ -47,13 +47,6 @@ generated:
     source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.cs
     symbol: WiredTradeSettlement
     line: 488
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

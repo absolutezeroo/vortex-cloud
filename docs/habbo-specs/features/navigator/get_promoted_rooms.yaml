@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ec5c75d9c21dc1ffa58719ca36000c0b190f2efe4160e83f27d561576c312aac"
+generated_digest: "sha256:64b310d7d281e35ffb787a3d4847ec82c1d2098ea78fde8c25ea78cc66e8baa9"
 generated:
   id: navigator.get_promoted_rooms
   domain: navigator
@@ -45,9 +45,21 @@ generated:
     evidence: ev_b46938ec853d
   - order: 5
     layer: grain
+    symbol: RoomGrain.GetMuteStateAsync
+    evidence: ev_bb859d4f21b2
+  - order: 6
+    layer: module
+    symbol: RoomModerationSystem.GetMuteState
+    evidence: ev_9eb84a2a2088
+  - order: 7
+    layer: module
+    symbol: RoomSecurityModule.HasExplicitRights
+    evidence: ev_82c2d2746361
+  - order: 8
+    layer: grain
     symbol: GroupGrain.GetMemberRankAsync
     evidence: ev_25e7df53e794
-  - order: 6
+  - order: 9
     layer: domain
     symbol: MessageContext.SendComposerAsync
     evidence: ev_f4c4c4ae6ace
@@ -89,13 +101,34 @@ generated:
     source: Vortex.PacketHandlers/Navigator/ForwardToARandomPromotedRoomMessageHandler.cs
     symbol: ForwardToARandomPromotedRoomMessageHandler
     line: 25
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 199
+  - id: ev_9eb84a2a2088
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/RoomModerationSystem.cs
+    symbol: RoomModerationSystem
+    line: 87
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 247
+    line: 249
+  - id: ev_bb859d4f21b2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.Moderation.cs
+    symbol: RoomGrain
+    line: 57
   - id: ev_bca43a79b6c9
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:06ab2b72a4755f2b92f258b26ee3cc2f0674659f9168847c24b22be4423f2255"
+generated_digest: "sha256:cb6513ea12192e573c30b8b6d13d947e772ec5fd85e4f6218f2e6d3301d4cdb4"
 generated:
   id: uk_613df422b3
   subject: "room.present_open: what the server sends when it refuses"
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 496
+    line: 468
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator

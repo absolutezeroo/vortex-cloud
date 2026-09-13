@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:eceb40509aad5bbf1967e72a8d79a4dbb1d48b96f2d0cb1f2316ad26ec158134"
+generated_digest: "sha256:327582a1e056d339a7bbc6d362773ef25f4dddb2ba204c4826dd839ad2860f5a"
 generated:
   id: room.remove_rights
   domain: room
@@ -33,22 +33,18 @@ generated:
     symbol: RoomGrain.RemoveRightsAsync
     evidence: ev_329537530b13
   - order: 2
-    layer: domain
-    symbol: TeamSet.Contains
-    evidence: ev_b261d7a833b8
-  - order: 3
     layer: module
     symbol: RoomSecurityModule.RefreshControllerLevelForPlayerAsync
     evidence: ev_82c2d2746361
-  - order: 4
+  - order: 3
     layer: grain
     symbol: PlayerPresenceGrain.OnControllerLevelUpdatedAsync
     evidence: ev_b44ef304d36a
-  - order: 5
+  - order: 4
     layer: domain
     symbol: RoomAvatar.AddStatus
     evidence: ev_9f45a8c43da8
-  - order: 6
+  - order: 5
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -138,7 +134,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 273
+    line: 282
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator
@@ -153,13 +149,6 @@ generated:
     source: Vortex.PacketHandlers/Room/Action/RemoveRightsMessageHandler.cs
     symbol: RemoveRightsMessageHandler
     line: 25
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

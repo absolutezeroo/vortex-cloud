@@ -70,5 +70,5 @@ generated:
 verified:
   resolution: "Counting artifact, not drift. The client reads pollType, pollId, questionId, duration and then builds the question dictionary (id, number, type, content, plus an optional selection block with its own loop); we write the same four and hand the question off to PollQuestionWriter. The delegated question body is one field on our side and flattened on the client's."
   confidence: client_confirmed
-  evidence: "WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3271.as — string, int, int, int, then the question dictionary"
+  evidence: WIN63-202607011411-782849652/src/unknowns/_SafePkg_2704/_SafeCls_3271.as — string, int, int, int, then the question dictionary
 manual: {}

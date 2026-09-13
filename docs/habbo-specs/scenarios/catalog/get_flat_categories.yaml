@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:eecc3ad92949c43315d855c468dc4df20b5f7b1109c60d946224203ca61f0e5b"
+generated_digest: "sha256:1c4e821f47f71002d10db1cc8719e72b6fd9d8dc03de4bb796ce4903c9541380"
 generated:
   feature: catalog.get_flat_categories
   scenarios:
@@ -41,25 +41,22 @@ generated:
       - PurchaseError
       evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_1
-    title: "get flat categories: the guard '!navigatorProvider.GetFlatCategories().Any(c => c.Id == m...' holds"
+    title: "get flat categories: the guard 'await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct)...' holds"
     given:
-      guard: "!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId)"
+      guard: await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false)
       guard_holds: "true"
     when:
       packet: PurchaseRoomAd
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while '!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'await SafetyLockGuard.RefusedAsync(grainFactory, ctx, ct).ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
-      outcome: rejected
-      emits:
-      - NotEnoughBalance
-      - PurchaseError
-      - PurchaseOK
+      outcome: ignored
+      emits: []
       evidence: ev_234fbe9c2c98
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -70,220 +67,6 @@ generated:
       - PurchaseError
       evidence: ev_938626d61bc2
   - scenario: catalog.get_flat_categories.guard_10
-    title: "get flat categories: the guard 'group.IsAdmin' holds"
-    given:
-      guard: group.IsAdmin
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_11
-    title: "get flat categories: the guard 'group.IsMember && group.MembersCanDecorate' holds"
-    given:
-      guard: group.IsMember && group.MembersCanDecorate
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'group.IsMember && group.MembersCanDecorate' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_2
-    title: "get flat categories: the guard 'controllerLevel < RoomControllerType.Rights' holds"
-    given:
-      guard: controllerLevel < RoomControllerType.Rights
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'controllerLevel < RoomControllerType.Rights' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits:
-      - NotEnoughBalance
-      - PurchaseError
-      - PurchaseOK
-      evidence: ev_234fbe9c2c98
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_3
-    title: "get flat categories: the guard 'ex.BalanceFailure is not null' holds"
-    given:
-      guard: ex.BalanceFailure is not null
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'ex.BalanceFailure is not null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: rejected
-      emits:
-      - NotEnoughBalance
-      - PurchaseError
-      - PurchaseOK
-      evidence: ev_234fbe9c2c98
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_4
-    title: "get flat categories: the guard 'ctx.Origin == ActionOrigin.System' holds"
-    given:
-      guard: ctx.Origin == ActionOrigin.System
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'ctx.Origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_82c2d2746361
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_5
-    title: "get flat categories: the guard 'origin == ActionOrigin.None' holds"
-    given:
-      guard: origin == ActionOrigin.None
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_6
-    title: "get flat categories: the guard 'origin == ActionOrigin.System' holds"
-    given:
-      guard: origin == ActionOrigin.System
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_7
-    title: "get flat categories: the guard 'isExplicitOwner' holds"
-    given:
-      guard: isExplicitOwner
-      guard_holds: "true"
-    when:
-      packet: PurchaseRoomAd
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of PurchaseRoomAd sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_7aa1dee31dfd
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - PurchaseOK
-      - RoomPromotion
-      - PurchaseError
-      evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_8
     title: "get flat categories: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
       guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
@@ -309,7 +92,7 @@ generated:
       - RoomPromotion
       - PurchaseError
       evidence: ev_938626d61bc2
-  - scenario: catalog.get_flat_categories.guard_9
+  - scenario: catalog.get_flat_categories.guard_11
     title: "get flat categories: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
     given:
       guard: permissions.Has(Capabilities.Room.BuildAny)
@@ -320,6 +103,232 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of PurchaseRoomAd sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_2
+    title: "get flat categories: the guard '!navigatorProvider.GetFlatCategories().Any(c => c.Id == m...' holds"
+    given:
+      guard: "!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId)"
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while '!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - BadgeReceived
+      - NotEnoughBalance
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseOK
+      - unresolved
+      evidence: ev_234fbe9c2c98
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_3
+    title: "get flat categories: the guard 'controllerLevel < RoomControllerType.Rights' holds"
+    given:
+      guard: controllerLevel < RoomControllerType.Rights
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'controllerLevel < RoomControllerType.Rights' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - BadgeReceived
+      - NotEnoughBalance
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseOK
+      - unresolved
+      evidence: ev_234fbe9c2c98
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_4
+    title: "get flat categories: the guard 'ex.BalanceFailure is not null' holds"
+    given:
+      guard: ex.BalanceFailure is not null
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'ex.BalanceFailure is not null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: rejected
+      emits:
+      - BadgeReceived
+      - NotEnoughBalance
+      - PurchaseError
+      - PurchaseNotAllowed
+      - PurchaseOK
+      - unresolved
+      evidence: ev_234fbe9c2c98
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_5
+    title: "get flat categories: the guard '!locked' holds"
+    given:
+      guard: "!locked"
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while '!locked' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_80836b9b056b
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_6
+    title: "get flat categories: the guard 'ctx.Origin == ActionOrigin.System' holds"
+    given:
+      guard: ctx.Origin == ActionOrigin.System
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'ctx.Origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_82c2d2746361
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_7
+    title: "get flat categories: the guard 'origin == ActionOrigin.None' holds"
+    given:
+      guard: origin == ActionOrigin.None
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'origin == ActionOrigin.None' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_8
+    title: "get flat categories: the guard 'origin == ActionOrigin.System' holds"
+    given:
+      guard: origin == ActionOrigin.System
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: success
+      emits:
+      - PurchaseOK
+      - RoomPromotion
+      - PurchaseError
+      evidence: ev_938626d61bc2
+  - scenario: catalog.get_flat_categories.guard_9
+    title: "get flat categories: the guard 'isExplicitOwner' holds"
+    given:
+      guard: isExplicitOwner
+      guard_holds: "true"
+    when:
+      packet: PurchaseRoomAd
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of PurchaseRoomAd sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -351,9 +360,12 @@ generated:
       authority: vortex_emulator
       outcome: success
       emits:
+      - BadgeReceived
       - NotEnoughBalance
       - PurchaseError
+      - PurchaseNotAllowed
       - PurchaseOK
+      - unresolved
       evidence: ev_09b06dd2911b
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
@@ -392,13 +404,20 @@ generated:
     origin: vortex
     source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
     symbol: RoomSecurityPolicy
-    line: 58
+    line: 45
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 48
   - id: ev_82c2d2746361
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 196
+    line: 205
 verified: {}
 manual: {}

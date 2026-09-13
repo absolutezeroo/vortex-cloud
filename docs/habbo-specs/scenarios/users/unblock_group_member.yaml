@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:626633110a369720a8e884cdb4b2bf7859e455b436c8ea9f528d86d1af9de827"
+generated_digest: "sha256:22b1184f2b8fb71fa02bdd2719afa9606f5818afda1da6fe8b01a40862cf91a4"
 generated:
   feature: users.unblock_group_member
   scenarios:
@@ -69,42 +69,6 @@ generated:
       emits: []
       evidence: ev_8f3f853ef9a9
   - scenario: users.unblock_group_member.guard_3
-    title: "unblock group member: the guard 'await LoadIfAdminAsync(dbCtx, actor, ct) is null' holds"
-    given:
-      guard: await LoadIfAdminAsync(dbCtx, actor, ct) is null
-      guard_holds: "true"
-    when:
-      packet: UnblockGroupMember
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of UnblockGroupMember sent while 'await LoadIfAdminAsync(dbCtx, actor, ct) is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-  - scenario: users.unblock_group_member.guard_4
-    title: "unblock group member: the guard 'removed == 0' holds"
-    given:
-      guard: removed == 0
-      guard_holds: "true"
-    when:
-      packet: UnblockGroupMember
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of UnblockGroupMember sent while 'removed == 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-  - scenario: users.unblock_group_member.guard_5
     title: "unblock group member: the guard 'group is null' holds"
     given:
       guard: group is null
@@ -155,12 +119,5 @@ generated:
     source: Vortex.PacketHandlers/Users/UnblockGroupMemberMessageHandler.cs
     symbol: UnblockGroupMemberMessageHandler
     line: 28
-  - id: ev_b1c46fe16e7f
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Social/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 358
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:3309ba4e38c68bc17ea1821cd1a5be71835b5221e971a5f013504db8ac8aaf17"
+generated_digest: "sha256:978f7a678f0fe1441bd94d8b479200c8089868074a9cd999711e4db2db1b6ce7"
 generated:
   id: users.deactivate_guild
   domain: users
@@ -32,10 +32,6 @@ generated:
     layer: grain
     symbol: GroupGrain.DeactivateAsync
     evidence: ev_861d7eb0e4b2
-  - order: 2
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
@@ -45,27 +41,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_861d7eb0e4b2
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
-  state_changes:
-  - target: group.DeletedAt
-    value: now
-    observed_in: vortex
-    evidence: ev_861d7eb0e4b2
-  - target: up
-    value: up.SetProperty(r => r.GroupEntityId, (int?)null)
-    observed_in: vortex
-    evidence: ev_861d7eb0e4b2
-  - target: up
-    value: up.SetProperty(m => m.DeletedAt, now)
-    observed_in: vortex
-    evidence: ev_861d7eb0e4b2
-  - target: up
-    value: up.SetProperty(r => r.DeletedAt, now)
-    observed_in: vortex
-    evidence: ev_861d7eb0e4b2
+  state_changes: []
   outgoing:
     ordering: unknown
     packets:
@@ -73,15 +49,8 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_59a6057911bc
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 14
   - id: ev_59a6057911bc
     kind: emulator_flow
     authority: vortex_emulator
@@ -106,11 +75,8 @@ generated:
   scenarios:
   - users.deactivate_guild.guard_0
   - users.deactivate_guild.guard_1
-  - users.deactivate_guild.guard_2
   - users.deactivate_guild.success
   conflicts:
   - cf_3212887d8d
-  unknowns:
-  - uk_d31009cb0a
 verified: {}
 manual: {}

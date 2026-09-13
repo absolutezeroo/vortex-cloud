@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:188939732f0b3e17206274c4f215d43907c21bdce784b6f69ac8a7e938e25e66"
+generated_digest: "sha256:a9d04f58ae022ec6185930153ac18d033fa46555eed86e2b66fe5dbc88c79196"
 generated:
   name: AccountPreferences
   direction: outgoing
@@ -40,13 +40,13 @@ generated:
     evidence:
     - ev_10a92303241b
   - index: 3
-    name: unknown_3
+    name: free_flow_chat_disabled
     type: boolean
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_10a92303241b
+    - ev_240ba694019e
   - index: 4
     name: room_invites_ignored
     type: boolean
@@ -97,13 +97,13 @@ generated:
     evidence:
     - ev_10a92303241b
   - index: 11
-    name: unknown_11
+    name: variable_syntax_mode
     type: int32
-    name_is_placeholder: true
-    name_confidence: unknown
+    name_confidence: implementation_observed
     type_confidence: client_confirmed
     evidence:
     - ev_10a92303241b
+    - ev_240ba694019e
   - index: 12
     name: wired_whisper_disabled
     type: boolean
@@ -201,7 +201,7 @@ generated:
     evidence: ev_4794dbe4ed0d
   - origin: vortex
     authority: vortex_emulator
-    field_count: 15
+    field_count: 19
     partial: false
     types:
     - int32
@@ -219,6 +219,10 @@ generated:
     - boolean
     - boolean
     - string
+    - int32
+    - int32
+    - int32
+    - int32
     evidence: ev_240ba694019e
   evidence:
   - id: ev_10a92303241b
@@ -246,7 +250,5 @@ generated:
     line: 6
   conflicts:
   - cf_96bdada2c4
-  unknowns:
-  - uk_437dfc0d74
 verified: {}
 manual: {}

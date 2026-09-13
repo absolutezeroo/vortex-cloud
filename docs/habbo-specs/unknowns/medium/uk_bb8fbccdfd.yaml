@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:604b00f7ce23355226abae3ffa8a761c905123449eb29adaf18b3ed0a5832332"
+generated_digest: "sha256:b143184cf5ef7239616915e35691c82017f8f5b63611ef3f282724fd80c380c3"
 generated:
   id: uk_bb8fbccdfd
   subject: "wired.wired_trade_accept: who receives WiredChestItemsUpdate, unresolved"
@@ -32,6 +32,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 319
+    line: 431
 verified: {}
 manual: {}

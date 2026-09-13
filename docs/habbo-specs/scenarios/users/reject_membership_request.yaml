@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:972b203225b622c3aba14a39e6e5112f311b3a1193822f9e1c9a5298ada9bd3a"
+generated_digest: "sha256:9594e4a954c7816c492ae601bc0efcb514315b6fdd61a0df44c3e2aacff866f6"
 generated:
   feature: users.reject_membership_request
   scenarios:
@@ -39,81 +39,6 @@ generated:
       - GuildMembers
       - GuildMembershipRejected
       evidence: ev_937fb99e78db
-  - scenario: users.reject_membership_request.guard_1
-    title: "reject membership request: the guard 'await LoadIfAdminAsync(dbCtx, actor, ct) is null' holds"
-    given:
-      guard: await LoadIfAdminAsync(dbCtx, actor, ct) is null
-      guard_holds: "true"
-    when:
-      packet: RejectMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RejectMembershipRequest sent while 'await LoadIfAdminAsync(dbCtx, actor, ct) is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembers
-      - GuildMembershipRejected
-      evidence: ev_937fb99e78db
-  - scenario: users.reject_membership_request.guard_2
-    title: "reject membership request: the guard 'deleted == 0' holds"
-    given:
-      guard: deleted == 0
-      guard_holds: "true"
-    when:
-      packet: RejectMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RejectMembershipRequest sent while 'deleted == 0' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembers
-      - GuildMembershipRejected
-      evidence: ev_937fb99e78db
-  - scenario: users.reject_membership_request.guard_3
-    title: "reject membership request: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: RejectMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of RejectMembershipRequest sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMembers
-      - GuildMembershipRejected
-      evidence: ev_937fb99e78db
   - scenario: users.reject_membership_request.success
     title: "reject membership request: the request is accepted"
     given:
@@ -132,7 +57,7 @@ generated:
       emits:
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
-      evidence: ev_34bf3ac088e2
+      evidence: ev_9471d6183101
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -149,13 +74,6 @@ generated:
     symbol: RejectMembershipRequestMessageEvent
     line: 18
     note: third-party server implementation; evidence, not authority
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
   - id: ev_9471d6183101
     kind: emulator_flow
     authority: vortex_emulator
@@ -163,12 +81,5 @@ generated:
     source: Vortex.PacketHandlers/Users/RejectMembershipRequestMessageHandler.cs
     symbol: RejectMembershipRequestMessageHandler
     line: 22
-  - id: ev_b1c46fe16e7f
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Social/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 186
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:76261c4691ccbc25780c29882e9eebabe754e4b30a60b4ef79155a930c5a5b00"
+generated_digest: "sha256:f6585fd9da870f1b89d4b44c5069c381882707a77bfbd3e181fe550b5ae5cbac"
 generated:
   feature: wired.set_all_wired_chest_locks
   scenarios:
@@ -275,13 +275,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 196
+    line: 205
   - id: ev_84ee82d9d8e2
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 413
+    line: 525
 verified: {}
 manual: {}

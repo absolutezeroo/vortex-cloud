@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3ee9b3dfd5221a3f17730b145751b70a4f4670881c30e3849a2b7b56815bf714"
+generated_digest: "sha256:e05bab538e9f1f9656b82053c1a5211a4f05088fb6953fab67ed81fc7a0e1ee4"
 generated:
   id: uk_863ca96f10
   subject: "wired.set_wired_chest_lock: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
     symbol: RoomWiredTradingSystem
-    line: 389
+    line: 501
   - id: ev_d3a71568179c
     kind: emulator_flow
     authority: vortex_emulator

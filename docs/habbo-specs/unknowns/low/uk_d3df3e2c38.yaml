@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:309461decfb688c437ec4e736c7432da7d7433784fbfceefab9f7d9e0613e4e8"
+generated_digest: "sha256:6c0f6f62c5a0a78af3713d732cad0957807e07335de16ab68f39d77b20fd1d3e"
 generated:
   id: uk_d3df3e2c38
   subject: "incoming/Game2GameChat: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: Game2GameChat
   known_evidence:
+  - id: ev_013f79e6d53b
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_3254/Game2GameChatMessageComposer.as
+    symbol: Game2GameChatMessageComposer
+    line: 16
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/session/RoomSession.as:302 with 1 argument(s)"
   - id: ev_c4a63eda84a5
     kind: client_call_site
     authority: client_mandated
@@ -35,12 +43,5 @@ generated:
     symbol: Game2GameChatComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_6559618504a3
-    kind: emulator_parser
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Parsers/Game/Arena/Game2GameChatMessageParser.cs
-    symbol: Game2GameChatMessageParser
-    line: 7
 verified: {}
 manual: {}

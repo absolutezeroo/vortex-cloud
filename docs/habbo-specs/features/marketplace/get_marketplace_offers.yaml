@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1351beed795cb509fa15b01051bc2bfa94c4282381bca68e7008ea4f34d15719"
+generated_digest: "sha256:991786029c77a55fce6b1db580bdc140b2b502423c6a9219222cfc602fc439a6"
 generated:
   id: marketplace.get_marketplace_offers
   domain: marketplace
@@ -33,10 +33,6 @@ generated:
     symbol: MarketplaceSearchGrain.GetOffersAsync
     evidence: ev_f33bb5b555e7
   - order: 2
-    layer: domain
-    symbol: TeamSet.Contains
-    evidence: ev_b261d7a833b8
-  - order: 3
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
@@ -69,13 +65,6 @@ generated:
     source: Vortex.PacketHandlers/Marketplace/GetMarketplaceOffersMessageHandler.cs
     symbol: GetMarketplaceOffersMessageHandler
     line: 24
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

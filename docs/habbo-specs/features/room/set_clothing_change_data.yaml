@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b5cbc40a617afd912bd49550cff59db8f84663f9171967bd250722f9c10e4a65"
+generated_digest: "sha256:4ca1c2e16645ec21c7ba1fcf3faf74a1064c3e71be30dfd835088a5ca2aeb53d"
 generated:
   id: room.set_clothing_change_data
   domain: room
@@ -79,7 +79,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
     symbol: RoomGrain
-    line: 643
+    line: 615
   - id: ev_a42d2d83d3e7
     kind: emulator_handler
     authority: vortex_emulator

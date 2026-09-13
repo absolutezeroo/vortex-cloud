@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:53889cf5c9bb38a16d57ac2728c34320c58556fddb5e57dd3f774c59524c86d3"
+generated_digest: "sha256:ab9e9608850a3cbd758e4c1660e2bcbe8f66ada0f13ae53f6eefe102609a3349"
 generated:
   feature: catalog.builders_club_place_wall_item
   scenarios:
@@ -403,7 +403,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Wall.cs
     symbol: RoomActionModule
-    line: 38
+    line: 40
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator

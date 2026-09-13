@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2c3ab0c4f25a4600e573c4e50c9631756f0d07aaaaa14c439b97bbb71ab6d7ea"
+generated_digest: "sha256:74458b0b5b123746906b116200c77ee8a20202f8ed495009c9a7634ea710a891"
 generated:
   id: users.kick_member
   domain: users
@@ -32,27 +32,11 @@ generated:
     layer: grain
     symbol: GroupGrain.KickMemberAsync
     evidence: ev_b1c46fe16e7f
-  - order: 2
-    layer: module
-    symbol: EventSystem.PublishAsync
-    evidence: ev_34bf3ac088e2
   checks:
   - expression: ctx.PlayerId <= 0 || message.GroupId <= 0
     on_fail: return
     observed_in: vortex
     evidence: ev_1b6983ac9d0d
-  - expression: group is null || group.OwnerPlayerEntityId == targetPlayerId
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: removed == 0
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_b1c46fe16e7f
-  - expression: _registry is null
-    on_fail: return
-    observed_in: vortex
-    evidence: ev_34bf3ac088e2
   state_changes: []
   outgoing:
     ordering: unknown
@@ -61,7 +45,7 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_1b6983ac9d0d
-  reaches_persistence: true
+  reaches_persistence: false
   evidence:
   - id: ev_1b6983ac9d0d
     kind: emulator_flow
@@ -70,20 +54,13 @@ generated:
     source: Vortex.PacketHandlers/Users/KickMemberMessageHandler.cs
     symbol: KickMemberMessageHandler
     line: 22
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 14
   - id: ev_b1c46fe16e7f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Social/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
-    line: 274
+    line: 294
   - id: ev_d90cdf1638a0
     kind: emulator_handler
     authority: vortex_emulator
@@ -93,14 +70,9 @@ generated:
     line: 11
   scenarios:
   - users.kick_member.guard_0
-  - users.kick_member.guard_1
-  - users.kick_member.guard_2
-  - users.kick_member.guard_3
   - users.kick_member.success
   conflicts:
   - cf_543b744c3e
   - cf_c130c82819
-  unknowns:
-  - uk_bbbd57b133
 verified: {}
 manual: {}

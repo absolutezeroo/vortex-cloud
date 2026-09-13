@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:811785af099e8c9a560cf2a8d8e4f2a6d4d8dd333c89a349855fb64f44f540d1"
+generated_digest: "sha256:c8a36f5e7093e58e792fac4d60f5ec632adc55c6fe6ad2dcbe4df9b30dc5dd1a"
 generated:
   id: uk_b2cdd30201
   subject: "outgoing/SnowWarGameTokens: unnamed fields"
@@ -19,6 +19,14 @@ generated:
   resolved_by: a client getter or call site that names the value, or a decoded capture showing what it contains
   packet: SnowWarGameTokens
   known_evidence:
+  - id: ev_107c6b5b5ee0
+    kind: client_parser
+    authority: client_code
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_1790/SnowWarGameTokensMessageParser.as
+    symbol: SnowWarGameTokensMessageParser
+    line: 27
+    note: official client build AIR-1.0.31
   - id: ev_8ad4d3021a21
     kind: client_parser
     authority: client_code

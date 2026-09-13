@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:3074b490d1363c9f97db7a5091c086fe25770ff01905cd1c8858371f11eb02cd"
+generated_digest: "sha256:ff86dab88c4301869715131680bcb3c4d44948fadaf06874edb121695bb7d571"
 generated:
   feature: users.approve_membership_request
   scenarios:
@@ -40,84 +40,6 @@ generated:
       - GuildMemberMgmtFailed
       - GuildMembershipRejected
       evidence: ev_4140aaf1b434
-  - scenario: users.approve_membership_request.guard_1
-    title: "approve membership request: the guard 'group is null' holds"
-    given:
-      guard: group is null
-      guard_holds: "true"
-    when:
-      packet: ApproveMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ApproveMembershipRequest sent while 'group is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMemberMgmtFailed
-      - GuildMemberMgmtFailed
-      - GuildMembershipRejected
-      evidence: ev_4140aaf1b434
-  - scenario: users.approve_membership_request.guard_2
-    title: "approve membership request: the guard 'request is null' holds"
-    given:
-      guard: request is null
-      guard_holds: "true"
-    when:
-      packet: ApproveMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ApproveMembershipRequest sent while 'request is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_b1c46fe16e7f
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMemberMgmtFailed
-      - GuildMemberMgmtFailed
-      - GuildMembershipRejected
-      evidence: ev_4140aaf1b434
-  - scenario: users.approve_membership_request.guard_3
-    title: "approve membership request: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: ApproveMembershipRequest
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of ApproveMembershipRequest sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: success
-      emits:
-      - GuildMemberMgmtFailed
-      - GuildMemberMgmtFailed
-      - GuildMembershipRejected
-      evidence: ev_4140aaf1b434
   - scenario: users.approve_membership_request.success
     title: "approve membership request: the request is accepted"
     given:
@@ -136,7 +58,7 @@ generated:
       emits:
       - GuildMemberMgmtFailed
       - GuildMembershipUpdated
-      evidence: ev_34bf3ac088e2
+      evidence: ev_98c0c69e5c73
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: success
@@ -154,13 +76,6 @@ generated:
     symbol: ApproveMembershipRequestMessageEvent
     line: 23
     note: third-party server implementation; evidence, not authority
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
   - id: ev_98c0c69e5c73
     kind: emulator_flow
     authority: vortex_emulator
@@ -168,12 +83,5 @@ generated:
     source: Vortex.PacketHandlers/Users/ApproveMembershipRequestMessageHandler.cs
     symbol: ApproveMembershipRequestMessageHandler
     line: 23
-  - id: ev_b1c46fe16e7f
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Social/Grains/GroupGrain.Membership.cs
-    symbol: GroupGrain
-    line: 134
 verified: {}
 manual: {}

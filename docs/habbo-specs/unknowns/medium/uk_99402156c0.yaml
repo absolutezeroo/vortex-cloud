@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:35ab9511645e6410fcbe1ac93646a920a6be7e160cd84b533e8f3780b0e291f3"
+generated_digest: "sha256:1327c853d5933d5ef46175ee2bda126f0d8ac36d00790212c5e5f22d307ce1c0"
 generated:
   id: uk_99402156c0
   subject: "preferences.set_chat_style_preference: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 231
+    line: 232
   - id: ev_43fea8875098
     kind: emulator_flow
     authority: vortex_emulator
@@ -33,6 +33,20 @@ generated:
     source: Vortex.PacketHandlers/Preferences/SetChatStylePreferenceMessageHandler.cs
     symbol: SetChatStylePreferenceMessageHandler
     line: 22
+  - id: ev_630a59578b9c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
+    symbol: PlayerGrain
+    line: 105
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_c91a3cd2bd1d
     kind: emulator_handler
     authority: vortex_emulator

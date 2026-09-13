@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dacbe27c2f399d45262300df9c603a2b8f867a005a05d70d9b02d39e8d77be1a"
+generated_digest: "sha256:ebc956df3441bcc1e3c7cdd110fec9cbe7e48eba7167b11e56feea3b869f5068"
 generated:
   id: catalog.find_by_id
   domain: catalog
@@ -35,18 +35,34 @@ generated:
     evidence: ev_589bc379b9e6
   - order: 2
     layer: domain
+    symbol: SafetyLockGuard.RefusedAsync
+    evidence: ev_80836b9b056b
+  - order: 3
+    layer: grain
+    symbol: PlayerGrain.IsSafetyLockedAsync
+    evidence: ev_1f83e61934ca
+  - order: 4
+    layer: domain
+    symbol: MessageContext.SendComposerAsync
+    evidence: ev_f4c4c4ae6ace
+  - order: 5
+    layer: domain
     symbol: CatalogClubOfferProvider.FindById
     evidence: ev_4e6c8266ce94
-  - order: 3
+  - order: 6
     layer: grain
     symbol: PlayerGrain.PurchaseClubAsync
     evidence: ev_1f83e61934ca
-  - order: 4
+  - order: 7
     layer: grain
     symbol: PlayerGrain.GetClubSubscriptionAsync
     evidence: ev_1f83e61934ca
   checks:
   - expression: ctx.PlayerId <= 0
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_73539f066ff0
+  - expression: await SafetyLockGuard.RefusedAsync(_grainFactory, ctx, ct).ConfigureAwait(false)
     on_fail: return
     observed_in: vortex
     evidence: ev_73539f066ff0
@@ -58,6 +74,10 @@ generated:
     on_fail: send_and_return
     observed_in: vortex
     evidence: ev_73539f066ff0
+  - expression: "!locked"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_80836b9b056b
   - expression: offer.OfferId == offerId
     on_fail: return
     observed_in: vortex
@@ -82,10 +102,19 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_73539f066ff0
+    - packet: PurchaseNotAllowed
+      recipient: actor
+      recipient_confidence: implementation_observed
+      evidence: ev_80836b9b056b
     - packet: ScrSendUserInfo
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_73539f066ff0
+    - packet: unresolved
+      recipient: actor
+      recipient_confidence: implementation_observed
+      note: the payload comes back from composer, which this walk could not resolve to one packet
+      evidence: ev_f4c4c4ae6ace
   reaches_persistence: false
   evidence:
   - id: ev_1f83e61934ca
@@ -94,7 +123,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 469
+    line: 276
   - id: ev_26b8e7ba2af5
     kind: emulator_handler
     authority: vortex_emulator
@@ -130,6 +159,20 @@ generated:
     source: Vortex.PacketHandlers/Catalog/PurchaseVipMembershipExtensionMessageHandler.cs
     symbol: PurchaseVipMembershipExtensionMessageHandler
     line: 33
+  - id: ev_80836b9b056b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Catalog/SafetyLockGuard.cs
+    symbol: SafetyLockGuard
+    line: 37
+  - id: ev_f4c4c4ae6ace
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Messages/Registry/MessageContext.cs
+    symbol: MessageContext
+    line: 33
   scenarios:
   - catalog.find_by_id.guard_0
   - catalog.find_by_id.guard_1
@@ -138,6 +181,8 @@ generated:
   - catalog.find_by_id.guard_4
   - catalog.find_by_id.guard_5
   - catalog.find_by_id.guard_6
+  - catalog.find_by_id.guard_7
+  - catalog.find_by_id.guard_8
   - catalog.find_by_id.success
   conflicts:
   - cf_f117ba9bad

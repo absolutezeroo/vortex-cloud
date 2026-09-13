@@ -68,7 +68,7 @@ generated:
   official:
     status: unknown
 verified:
-  resolution: "We agree with the client we target. WIN63 reads 11 fields and so do we; the disagreement is between the 2016 build (8) and WIN63 (11), and Arcturus still implements the old 8. Client-vs-client, not our drift."
+  resolution: We agree with the client we target. WIN63 reads 11 fields and so do we; the disagreement is between the 2016 build (8) and WIN63 (11), and Arcturus still implements the old 8. Client-vs-client, not our drift.
   confidence: client_confirmed
   evidence: "as3:WIN63-202607011411-782849652 field_count 11 == vortex field_count 11"
 manual: {}

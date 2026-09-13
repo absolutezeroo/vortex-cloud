@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9c6144f0ef5b8f02bddde9277f62e75af577d58c9e7776807b8c13377647ea7a"
+generated_digest: "sha256:6b45fec3885b7d556a964332a3554787595bfb59330f8cc57049a3f11234563f"
 generated:
   id: uk_1310dc5b11
   subject: "marketplace.redeem_marketplace_offer_credits: what the server sends when it refuses"
@@ -53,6 +53,6 @@ generated:
     origin: vortex
     source: Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs
     symbol: MarketplacePurchaseGrain
-    line: 499
+    line: 496
 verified: {}
 manual: {}

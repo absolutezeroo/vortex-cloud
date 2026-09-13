@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:842d470577316b6416eae514ae289031319b23fcba1b6ed3e5abc26b0deb8a22"
+generated_digest: "sha256:74637fb1de3364b3dce2fe40efbbf28e5c42b7b566f00c3c0e662568623f2f21"
 generated:
   id: preferences.set_chat_style_preference
   domain: preferences
@@ -32,6 +32,14 @@ generated:
     layer: grain
     symbol: PlayerGrain.SetChatStylePreferenceAsync
     evidence: ev_1f83e61934ca
+  - order: 2
+    layer: grain
+    symbol: PlayerGrain.SetChatSizePreferenceAsync
+    evidence: ev_630a59578b9c
+  - order: 3
+    layer: domain
+    symbol: WiredVariableArithmetic.Clamp
+    evidence: ev_c70390fca34b
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -42,14 +50,22 @@ generated:
     observed_in: vortex
     evidence: ev_1f83e61934ca
   state_changes:
-  - target: _grainFactory .GetPlayerGrain(ctx.PlayerId)
-    value: _grainFactory .GetPlayerGrain(ctx.PlayerId) .SetChatStylePreferenceAsync(message.ChatStyle, ct)
-    observed_in: vortex
-    evidence: ev_43fea8875098
   - target: _state.RoomChatStyleId
     value: chatStyle
     observed_in: vortex
     evidence: ev_1f83e61934ca
+  - target: e.ChatSizePreference
+    value: Math.Clamp(sizePreference, 0, 4)
+    observed_in: vortex
+    evidence: ev_630a59578b9c
+  - target: player
+    value: player.SetChatStylePreferenceAsync(message.ChatStyle, ct)
+    observed_in: vortex
+    evidence: ev_43fea8875098
+  - target: player
+    value: player.SetChatSizePreferenceAsync(message.FontSizeMode, ct)
+    observed_in: vortex
+    evidence: ev_43fea8875098
   - target: up
     value: up.SetProperty(p => p.RoomChatStyleId, chatStyle)
     observed_in: vortex
@@ -65,7 +81,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.cs
     symbol: PlayerGrain
-    line: 231
+    line: 232
   - id: ev_43fea8875098
     kind: emulator_flow
     authority: vortex_emulator
@@ -73,6 +89,20 @@ generated:
     source: Vortex.PacketHandlers/Preferences/SetChatStylePreferenceMessageHandler.cs
     symbol: SetChatStylePreferenceMessageHandler
     line: 22
+  - id: ev_630a59578b9c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
+    symbol: PlayerGrain
+    line: 105
+  - id: ev_c70390fca34b
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Wired/WiredVariableArithmetic.cs
+    symbol: WiredVariableArithmetic
+    line: 165
   - id: ev_c91a3cd2bd1d
     kind: emulator_handler
     authority: vortex_emulator

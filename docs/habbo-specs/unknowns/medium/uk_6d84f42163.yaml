@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f4c3a94ac0830898eb65d3fc8c9631fa3eb7bdcf7fab8662e6a470e10fd0c96c"
+generated_digest: "sha256:ef422f58b66d15726f0bd12b248552c282e9fb6e3f200318bf3650a5bc4b02b0"
 generated:
   id: uk_6d84f42163
   subject: "room.whisper: what the server sends when it refuses"
   severity: medium
-  question: room.whisper changes state and has 12 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: room.whisper changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: room.whisper
   known_evidence:
@@ -47,6 +47,13 @@ generated:
     source: Vortex.Players/Grains/PlayerDirectoryGrain.cs
     symbol: PlayerDirectoryGrain
     line: 142
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 199
   - id: ev_8916c8b3a33e
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 273
+    line: 275
   - id: ev_f0fbc7d68cc3
     kind: emulator_flow
     authority: vortex_emulator

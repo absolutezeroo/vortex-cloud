@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a697b75cdfa8805af7562b24421ce4363e2dda047753cbd0bcb2f8417a25d2d6"
+generated_digest: "sha256:39a28b5e5edf140e914db2b13582b07059c274679eba3e48393f042f94ff960e"
 generated:
   id: room.move_floor_item_in_room
   domain: room
@@ -65,34 +65,30 @@ generated:
     symbol: RoomMapModule.ToIdx
     evidence: ev_c26714967e6b
   - order: 10
-    layer: domain
-    symbol: TeamSet.Contains
-    evidence: ev_b261d7a833b8
-  - order: 11
     layer: module
     symbol: RoomFurniModule.ValidateFloorItemMoveInRentedSpaceAsync
     evidence: ev_e1105bc46abc
-  - order: 12
+  - order: 11
     layer: module
     symbol: RoomFurniModule.MoveFloorItemByIdAsync
     evidence: ev_e1105bc46abc
-  - order: 13
+  - order: 12
     layer: module
     symbol: RoomMapModule.MoveFloorItem
     evidence: ev_407ccfd7d8f8
-  - order: 14
+  - order: 13
     layer: grain
     symbol: RoomGrain.SendComposerToRoomAsync
     evidence: ev_b46938ec853d
-  - order: 15
+  - order: 14
     layer: grain
     symbol: RoomGrain.PublishDetached
     evidence: ev_b46938ec853d
-  - order: 16
+  - order: 15
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 17
+  - order: 16
     layer: grain
     symbol: RoomGrain.GetFloorItemSnapshotByIdAsync
     evidence: ev_0080929ab318
@@ -245,7 +241,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomMapModule.Floor.cs
     symbol: RoomMapModule
-    line: 59
+    line: 85
   - id: ev_62ff7bfca586
     kind: emulator_handler
     authority: vortex_emulator
@@ -260,20 +256,13 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
     line: 26
-  - id: ev_b261d7a833b8
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Games/Teams/TeamSet.cs
-    symbol: TeamSet
-    line: 92
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 278
+    line: 280
   - id: ev_b5421f4e64cb
     kind: emulator_flow
     authority: vortex_emulator
@@ -294,14 +283,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomFurniModule.Floor.cs
     symbol: RoomFurniModule
-    line: 86
+    line: 92
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 148
+    line: 183
   scenarios:
   - room.move_floor_item_in_room.guard_0
   - room.move_floor_item_in_room.guard_1

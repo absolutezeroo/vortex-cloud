@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:165cc3c7df39e17ca3dd449220f1369731750fed23eac975dd054b6941b2aa9a"
+generated_digest: "sha256:8a44f3e7804134534d3224962439b94779a8b059a4112cb5911e10a8f8de637e"
 generated:
   id: uk_437a94eabe
   subject: "preferences.set_discord_preferences: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerGrain.AccountPreferences.cs
     symbol: PlayerGrain
-    line: 82
+    line: 121
   - id: ev_dc5e70e97795
     kind: emulator_flow
     authority: vortex_emulator

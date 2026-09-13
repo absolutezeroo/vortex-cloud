@@ -10,12 +10,12 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:142f1bb25a2a040ad30745b33c3d99dcf87685ea69130b31a8e2ecd05dc760a9"
+generated_digest: "sha256:cd16a761c1d89ca6b55d8fb80360c9bb5b1662fa1df8c2a861999669ac3dc054"
 generated:
   name: Game2ExitGame
   direction: incoming
   domain: game
-  structure_confidence: client_confirmed
+  structure_confidence: confirmed
   mapped_in_vortex: true
   vortex_handler: Game2ExitGameMessageHandler
   fields:
@@ -26,8 +26,15 @@ generated:
     name_confidence: unknown
     type_confidence: client_confirmed
     evidence:
-    - ev_fb95c68caeb2
+    - ev_786aa2ddd6af
   layouts_by_source:
+  - origin: "as3:AIR-1.0.31"
+    authority: client_code
+    field_count: 1
+    partial: false
+    types:
+    - boolean
+    evidence: ev_786aa2ddd6af
   - origin: "as3:WIN63-202607011411-782849652"
     authority: client_code
     field_count: 1
@@ -48,6 +55,14 @@ generated:
     types: []
     evidence: ev_7fd0730e72c0
   evidence:
+  - id: ev_786aa2ddd6af
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:AIR-1.0.31"
+    source: ../vortex-modern-client/sources/AIR-1.0.31/src/_SafePkg_3254/Game2ExitGameMessageComposer.as
+    symbol: Game2ExitGameMessageComposer
+    line: 16
+    note: "the client constructs this composer at 4 call site(s), first at ../vortex-modern-client/sources/AIR-1.0.31/src/com/sulake/habbo/game/snowwar/ui/GameEndingViewController.as:261 with 0 argument(s); the class writes 1 value(s) to the wire"
   - id: ev_fb95c68caeb2
     kind: client_call_site
     authority: client_mandated

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:abe6f95a63ee8bf37c3703af4513dacdedad12f801c1699391b6f9e002ad0a3a"
+generated_digest: "sha256:03a982e7c3871ad609d0a45e3b86d0dd0823e33dcd575250aea799ce20520b05"
 generated:
   feature: room.open_room_for_player_id
   scenarios:
@@ -68,29 +68,6 @@ generated:
       emits: []
       evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_10
-    title: "open room for player id: the guard '_registry is null' holds"
-    given:
-      guard: _registry is null
-      guard_holds: "true"
-    when:
-      packet: OpenFlatConnection
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of OpenFlatConnection sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_34bf3ac088e2
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_ef83570fa232
-  - scenario: room.open_room_for_player_id.guard_11
     title: "open room for player id: the guard '!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? ...' holds"
     given:
       guard: "!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? players)"
@@ -101,6 +78,29 @@ generated:
       status: unknown
       confidence: unknown
     needs_evidence: "an official capture of OpenFlatConnection sent while '!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? players)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_74aa24a9a756
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ef83570fa232
+  - scenario: room.open_room_for_player_id.guard_11
+    title: "open room for player id: the guard '!players.Remove(playerId)' holds"
+    given:
+      guard: "!players.Remove(playerId)"
+      guard_holds: "true"
+    when:
+      packet: OpenFlatConnection
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenFlatConnection sent while '!players.Remove(playerId)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -259,29 +259,6 @@ generated:
       emits: []
       evidence: ev_ef83570fa232
   - scenario: room.open_room_for_player_id.guard_8
-    title: "open room for player id: the guard 'item.Logic is null' holds"
-    given:
-      guard: item.Logic is null
-      guard_holds: "true"
-    when:
-      packet: OpenFlatConnection
-    expected:
-      status: unknown
-      confidence: unknown
-    needs_evidence: "an official capture of OpenFlatConnection sent while 'item.Logic is null' holds: does the server reply, stay silent, or disconnect?"
-    executable: false
-    claims:
-    - origin: vortex
-      authority: vortex_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_4c36667ce9b9
-    - origin: habbo-arcturus-daybreak
-      authority: reference_emulator
-      outcome: ignored
-      emits: []
-      evidence: ev_ef83570fa232
-  - scenario: room.open_room_for_player_id.guard_9
     title: "open room for player id: the guard '!avatar.IsWalking' holds"
     given:
       guard: "!avatar.IsWalking"
@@ -299,6 +276,29 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_e6fef545a42a
+    - origin: habbo-arcturus-daybreak
+      authority: reference_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_ef83570fa232
+  - scenario: room.open_room_for_player_id.guard_9
+    title: "open room for player id: the guard '_registry is null' holds"
+    given:
+      guard: _registry is null
+      guard_holds: "true"
+    when:
+      packet: OpenFlatConnection
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of OpenFlatConnection sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_34bf3ac088e2
     - origin: habbo-arcturus-daybreak
       authority: reference_emulator
       outcome: ignored
@@ -363,34 +363,27 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_4c36667ce9b9
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomItemIndex.cs
-    symbol: RoomItemIndex
-    line: 65
   - id: ev_74aa24a9a756
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomDirectoryGrain.cs
     symbol: RoomDirectoryGrain
-    line: 96
+    line: 114
   - id: ev_761b76967e2f
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomObjectModule.cs
     symbol: RoomObjectModule
-    line: 97
+    line: 169
   - id: ev_7c6cea3bc17b
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/RoomService.cs
     symbol: RoomService
-    line: 71
+    line: 73
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator

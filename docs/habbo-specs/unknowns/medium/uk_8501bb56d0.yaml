@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:321973c8e8f62ee3c8facbd870ade86efe9e2f2b441d1a4731f60c0e461242fb"
+generated_digest: "sha256:fc3c340a9018d551320227ab8332d6f4973ba55e98e5d80ec9fa6b296e36eb6f"
 generated:
   id: uk_8501bb56d0
   subject: "navigator.remove_own_room_rights_room: what the server sends when it refuses"
@@ -46,7 +46,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 273
+    line: 282
   - id: ev_9f45a8c43da8
     kind: emulator_flow
     authority: vortex_emulator

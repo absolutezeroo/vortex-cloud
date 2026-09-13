@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:740d9363c17e71f0d430cbbd4e838b35327ff57c803a7100df00557c2a9ededa"
+generated_digest: "sha256:7d38d48cfb0662610418c4694a0bcb19bd04a415aeb78d9e37237c11c35b9325"
 generated:
   id: uk_4a7473a1ea
   subject: "navigator.resolve_for_player: what the server sends when it refuses"
@@ -60,6 +60,6 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
-    line: 259
+    line: 268
 verified: {}
 manual: {}
