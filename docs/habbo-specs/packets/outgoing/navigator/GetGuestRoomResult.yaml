@@ -410,5 +410,15 @@ generated:
     line: 7
   conflicts:
   - cf_691c47ecb5
-verified: {}
-manual: {}
+verified:
+  fields:
+  - name: chat_flood_sensitivity
+    type: int32
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411/unknowns/_SafePkg_2064/_SafeCls_2063.as:50 — after canMute the client reads ONE integer, fromFloodSensitivity(readInteger()), not the five chat ints older revisions carried"
+  - name: opening_connection
+    type: boolean
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411/unknowns/_SafePkg_2064/_SafeCls_2063.as:51 — the last field, exposed as openingConnection"
+manual:
+  note: "Chat mode, bubble width and scroll speed left this packet in this revision: they are per-account settings now and travel on AccountPreferencesEvent, which the client reads into HabboFreeFlowChat (freeflowchat/HabboFreeFlowChat.as:316-323). The room contributes only its flood sensitivity. Vortex wrote all five here until 2026-09-13, which pushed openingConnection four ints out of place - see GetGuestRoomResultTailWireTests."
