@@ -293,6 +293,7 @@ export const LOGIC_GROUPS = [
       { value: 'wf_act_neg_send_signal', label: 'wf_act_neg_send_signal' },
       { value: 'wf_act_raise_furni', label: 'wf_act_raise_furni' },
       { value: 'wf_act_rel_mov', label: 'wf_act_rel_mov' },
+      { value: 'wf_act_remove_furni_inventory', label: 'wf_act_remove_furni_inventory' },
       { value: 'wf_act_remove_var', label: 'wf_act_remove_var' },
       { value: 'wf_act_reset_timers', label: 'wf_act_reset_timers' },
       { value: 'wf_act_send_signal', label: 'wf_act_send_signal' },

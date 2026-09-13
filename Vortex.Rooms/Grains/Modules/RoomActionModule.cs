@@ -20,10 +20,22 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
 
+    /// <param name="fromWired">
+    /// True when the room's own wiring is doing this rather than a player.
+    /// </param>
+    /// <remarks>
+    /// <paramref name="fromWired"/> skips the pickup-rights check and always sends the furni to its
+    /// own owner, for the same reason <c>KickUserFromWiredAsync</c> and <c>MuteUserFromWiredAsync</c>
+    /// exist: there is no actor to authorize. The authorization happened when the box was
+    /// configured — saving a wired box goes through <c>CanManipulateFurniAsync</c> — and there is no
+    /// <c>ctx.PlayerId</c> at firing time to send anything to, so "send to whoever picked it up" has
+    /// no meaning here and would quietly resolve to player 0.
+    /// </remarks>
     public async Task<bool> RemoveItemByIdAsync(
         ActionContext ctx,
         RoomObjectId itemId,
-        CancellationToken ct
+        CancellationToken ct,
+        bool fromWired = false
     )
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
@@ -31,9 +43,9 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
             throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
-        FurniturePickupType pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(
-            ctx
-        );
+        FurniturePickupType pickupType = fromWired
+            ? FurniturePickupType.SendToOwner
+            : await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(ctx);
 
         if (pickupType == FurniturePickupType.None)
         {

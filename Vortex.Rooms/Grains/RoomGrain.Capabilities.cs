@@ -250,6 +250,11 @@ public sealed partial class RoomGrain
         return found;
     }
 
+    Task<bool> IRoomFurniAccess.RemoveFurniFromWiredAsync(
+        RoomObjectId itemId,
+        CancellationToken ct
+    ) => RemoveItemByIdAsync(ActionContext.Wired, itemId, ct, fromWired: true);
+
     Task<bool> IRoomFurniAccess.KickUserFromWiredAsync(
         PlayerId targetPlayerId,
         CancellationToken ct

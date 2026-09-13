@@ -45,6 +45,17 @@ public interface IRoomFurniAccess
     /// is no actor to authorize, the room's own wiring is doing it.</summary>
     Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct);
 
+    /// <summary>
+    /// Picks a furni up on a wired action's behalf, sending it to its own owner's inventory.
+    /// </summary>
+    /// <remarks>
+    /// Same shape as <see cref="KickUserFromWiredAsync"/>: no actor to authorize, because the
+    /// authorization happened when somebody with the rights saved the box. The furni goes to whoever
+    /// owns it and never to the player who set the trigger off — a wired box is not a way to pick up
+    /// other people's furniture.
+    /// </remarks>
+    Task<bool> RemoveFurniFromWiredAsync(RoomObjectId itemId, CancellationToken ct);
+
     /// <summary>Mutes a player on a wired action's behalf, for the same reason
     /// <see cref="KickUserFromWiredAsync"/> exists: there is no actor to authorize.</summary>
     Task<bool> MuteUserFromWiredAsync(

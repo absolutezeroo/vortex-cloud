@@ -100,6 +100,16 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
         return false;
     }
 
+    /// <summary>Furni the room was asked to pick up on a wired box's behalf.</summary>
+    public List<int> RemovedFromWired { get; } = [];
+
+    public Task<bool> RemoveFurniFromWiredAsync(RoomObjectId itemId, CancellationToken ct)
+    {
+        RemovedFromWired.Add(itemId.Value);
+
+        return Task.FromResult(true);
+    }
+
     public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
         Task.FromResult(false);
 

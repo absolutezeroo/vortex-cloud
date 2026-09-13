@@ -69,6 +69,9 @@ public enum WiredActionType
     CANCEL_TRANSACTION = 48,
     GIVE_EFFECT = 52,
 
+    /// <summary>Takes the selected furni out of the room, into their owner's inventory.</summary>
+    REMOVE_FURNI = 56,
+
     /// <summary>Moves several furni at once, keeping the arrangement between them.</summary>
     MOVE_AS_GROUP = 57,
 }
