@@ -133,5 +133,23 @@ generated:
     symbol: AccountPreferencesEventMessage
     line: 22
     note: community client reimplementation; corroborating, never authoritative
-verified: {}
-manual: {}
+verified:
+  fields:
+  - name: chat_size_preference
+    type: int32
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411/unknowns/_SafePkg_1927/_SafeCls_1926.as:179-186 — optional read guarded by bytesAvailable, default 0"
+  - name: chat_mode
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_1926.as:187-194 — optional, default 0; sanitised to 0|1 by HabboFreeFlowChat.sanitizeChatMode"
+  - name: chat_bubble_width
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_1926.as:195-201 — optional, default 1; sanitised to 0..2"
+  - name: chat_scroll_speed
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_1926.as:202-210 — optional, default 1; sanitised to 0..2"
+manual:
+  note: "Nineteen fields, the last six optional (the client guards each with bytesAvailable > 0 and falls back to its own default). Optional is not ignorable: HabboFreeFlowChat.onAccountPreferences reads the last four back into the chat dialog, so a server that stops early truncates nothing but silently resets the player's chat settings on every login. The client writes them on SetChatPreferences (mode, width, speed) and SetChatStylePreference (font size)."

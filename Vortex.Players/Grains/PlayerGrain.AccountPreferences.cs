@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 
 namespace Vortex.Players.Grains;
@@ -42,6 +43,10 @@ internal sealed partial class PlayerGrain
             RoomInvitesIgnored = entity?.RoomInvitesIgnored ?? false,
             RoomCameraFollowDisabled = entity?.RoomCameraFollowDisabled ?? false,
             UiFlags = entity?.UiFlags ?? DefaultUiFlags,
+            ChatSizePreference = entity?.ChatSizePreference ?? 0,
+            ChatMode = entity?.ChatMode ?? ChatModeType.FreeFlow,
+            ChatBubbleWidth = entity?.ChatBubbleWidth ?? ChatBubbleWidthType.Normal,
+            ChatScrollSpeed = entity?.ChatScrollSpeed ?? ChatScrollSpeedType.Normal,
             DiscordSettingsVersion = entity?.DiscordSettingsVersion ?? DefaultDiscordVersion,
             DiscordShowHabbo = entity?.DiscordShowHabbo ?? true,
             DiscordShareActivity = entity?.DiscordShareActivity ?? true,
@@ -69,6 +74,40 @@ internal sealed partial class PlayerGrain
 
     public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct) =>
         UpdateAccountPreferencesAsync("chat", e => e.FreeFlowChatDisabled = disabled, ct);
+
+    /// <summary>
+    /// The three settings of the client's chat dialog, which travel together on one message. Values
+    /// outside the client's own ranges fall back to its own defaults rather than being stored: the
+    /// packet is three bare ints, and the client re-reads whatever we echo.
+    /// </summary>
+    public Task SetChatDisplayPreferencesAsync(
+        int chatMode,
+        int bubbleWidth,
+        int scrollSpeed,
+        CancellationToken ct
+    ) =>
+        UpdateAccountPreferencesAsync(
+            "chat_display",
+            e =>
+            {
+                e.ChatMode = chatMode is 0 or 1 ? (ChatModeType)chatMode : ChatModeType.FreeFlow;
+                e.ChatBubbleWidth = bubbleWidth is >= 0 and <= 2
+                    ? (ChatBubbleWidthType)bubbleWidth
+                    : ChatBubbleWidthType.Normal;
+                e.ChatScrollSpeed = scrollSpeed is >= 0 and <= 2
+                    ? (ChatScrollSpeedType)scrollSpeed
+                    : ChatScrollSpeedType.Normal;
+            },
+            ct
+        );
+
+    /// <summary>Chat font size step. The client clamps to 0-4 on read; we store the same range.</summary>
+    public Task SetChatSizePreferenceAsync(int sizePreference, CancellationToken ct) =>
+        UpdateAccountPreferencesAsync(
+            "chat_size",
+            e => e.ChatSizePreference = Math.Clamp(sizePreference, 0, 4),
+            ct
+        );
 
     public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct) =>
         UpdateAccountPreferencesAsync("room_invites", e => e.RoomInvitesIgnored = ignored, ct);
@@ -132,6 +171,10 @@ internal sealed partial class PlayerGrain
                 RoomInvitesIgnored = false,
                 RoomCameraFollowDisabled = false,
                 UiFlags = DefaultUiFlags,
+                ChatSizePreference = 0,
+                ChatMode = ChatModeType.FreeFlow,
+                ChatBubbleWidth = ChatBubbleWidthType.Normal,
+                ChatScrollSpeed = ChatScrollSpeedType.Normal,
                 DiscordSettingsVersion = DefaultDiscordVersion,
                 DiscordShowHabbo = true,
                 DiscordShareActivity = true,

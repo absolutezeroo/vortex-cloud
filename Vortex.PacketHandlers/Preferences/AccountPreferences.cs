@@ -52,6 +52,10 @@ internal static class AccountPreferences
             WiredWhisperDisabled = wiredPrefs.WiredWhisperDisabled,
             ShowAllNotifications = wiredPrefs.ShowAllNotifications,
             UiStyle = wiredPrefs.UiStyle,
+            ChatSizePreference = accountPrefs.ChatSizePreference,
+            ChatMode = accountPrefs.ChatMode,
+            ChatBubbleWidth = accountPrefs.ChatBubbleWidth,
+            ChatScrollSpeed = accountPrefs.ChatScrollSpeed,
         };
     }
 }

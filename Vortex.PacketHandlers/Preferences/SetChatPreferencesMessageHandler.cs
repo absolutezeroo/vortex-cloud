@@ -24,9 +24,19 @@ public class SetChatPreferencesMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        await _grainFactory
-            .GetPlayerGrain(ctx.PlayerId)
+        IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+
+        await player
             .SetFreeFlowChatDisabledAsync(message.FreeFlowChatDisabled, ct)
+            .ConfigureAwait(false);
+
+        await player
+            .SetChatDisplayPreferencesAsync(
+                message.ChatMode,
+                message.ChatBubbleWidth,
+                message.ChatScrollSpeed,
+                ct
+            )
             .ConfigureAwait(false);
     }
 }

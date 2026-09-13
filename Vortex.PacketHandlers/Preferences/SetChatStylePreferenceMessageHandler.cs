@@ -24,12 +24,13 @@ public class SetChatStylePreferenceMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        // Orchestration-only: the grain owns the persistence (and no-ops when unchanged). FontSizeMode
-        // is a client-side render preference with no server-side storage, so it is intentionally not
-        // persisted here.
-        await _grainFactory
-            .GetPlayerGrain(ctx.PlayerId)
-            .SetChatStylePreferenceAsync(message.ChatStyle, ct)
-            .ConfigureAwait(false);
+        // Orchestration-only: the grain owns the persistence (and no-ops when unchanged). Both
+        // halves are persisted — the client reads the font size back off the account-preferences
+        // packet (HabboFreeFlowChat::onAccountPreferences), so one we do not store is one the
+        // player re-picks after every login.
+        IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+
+        await player.SetChatStylePreferenceAsync(message.ChatStyle, ct).ConfigureAwait(false);
+        await player.SetChatSizePreferenceAsync(message.FontSizeMode, ct).ConfigureAwait(false);
     }
 }

@@ -192,6 +192,18 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// <summary>Persists whether free-flow (bubble) chat is disabled (SetChatPreferences, header 1149).</summary>
     public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct);
 
+    /// <summary>Persists the chat dialog's three display settings, which ride the same message as
+    /// the free-flow flag (SetChatPreferences, header 1149).</summary>
+    public Task SetChatDisplayPreferencesAsync(
+        int chatMode,
+        int bubbleWidth,
+        int scrollSpeed,
+        CancellationToken ct
+    );
+
+    /// <summary>Persists the chat font size step (SetChatStylePreference, header 2634).</summary>
+    public Task SetChatSizePreferenceAsync(int sizePreference, CancellationToken ct);
+
     /// <summary>The player's personal chat word filter, in insertion order (GetCustomFilter, header 801).</summary>
     public Task<ImmutableArray<string>> GetWordFilterAsync(CancellationToken ct);
 

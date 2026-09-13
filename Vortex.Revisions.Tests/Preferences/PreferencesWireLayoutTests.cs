@@ -1,8 +1,10 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Primitives.Players.Enums;
 using Vortex.Protocol.Messages.Incoming.Preferences;
 using Vortex.Protocol.Messages.Outgoing.Preferences;
 using Vortex.Revisions.Configuration;
@@ -69,11 +71,20 @@ public sealed class PreferencesWireLayoutTests
     }
 
     [Fact]
-    public void SetChatPreferencesParser_ReadsFreeFlowDisabledBool()
+    public void SetChatPreferencesParser_ReadsTheFlagAndTheThreeChatDialogSettings()
     {
+        // Four fields, not one: the client's composer (_SafePkg_2091/_SafeCls_2255.as:14-19) pushes
+        // the free-flow flag and then chat mode, bubble width and scroll speed. We read the flag
+        // alone until 2026-09-13, so everything the chat dialog set was parsed as nothing.
         ClientPacket packet = BuildClientPacket(
             SetChatPreferencesEvent,
-            sp => sp.WriteBoolean(true)
+            sp =>
+            {
+                sp.WriteBoolean(true);
+                sp.WriteInteger(1); // chat mode
+                sp.WriteInteger(2); // bubble width
+                sp.WriteInteger(0); // scroll speed
+            }
         );
 
         SetChatPreferencesMessage message = Revision
@@ -84,6 +95,9 @@ public sealed class PreferencesWireLayoutTests
             .Subject;
 
         message.FreeFlowChatDisabled.Should().BeTrue();
+        message.ChatMode.Should().Be(1);
+        message.ChatBubbleWidth.Should().Be(2);
+        message.ChatScrollSpeed.Should().Be(0);
     }
 
     [Fact]
@@ -209,6 +223,71 @@ public sealed class PreferencesWireLayoutTests
         body.PopBoolean().Should().BeFalse();
         body.PopBoolean().Should().BeTrue();
         body.PopBoolean().Should().BeFalse();
+        body.End.Should().BeTrue("the layout must consume the whole packet");
+    }
+
+    /// <summary>
+    /// The whole account-preferences packet, in the order the client reads it
+    /// (unknowns/_SafePkg_1927/_SafeCls_1926.as:152-210). Its last four fields are the chat
+    /// dialog's own settings; the client guards them with <c>bytesAvailable</c> and falls back to
+    /// its defaults, so leaving them off — as this server did — looked harmless and quietly reset
+    /// the player's chat settings on every login.
+    /// </summary>
+    [Fact]
+    public void AccountPreferencesSerializer_EndsWithTheFourChatDialogSettings()
+    {
+        AccountPreferencesEventMessageComposer composer = new()
+        {
+            UIVolume = 90,
+            FurniVolume = 80,
+            TraxVolume = 70,
+            FreeFlowChatDisabled = true,
+            RoomInvitesIgnored = false,
+            RoomCameraFollowDisabled = true,
+            UIFlags = UIFlags.FriendBarExpanded,
+            PreferedChatStyle = 4,
+            WiredMenuButton = true,
+            WiredInspectButton = false,
+            PlayTestMode = true,
+            VariableSyntaxMode = 1,
+            WiredWhisperDisabled = true,
+            ShowAllNotifications = false,
+            UiStyle = "habbo",
+            ChatSizePreference = 3,
+            ChatMode = ChatModeType.Old,
+            ChatBubbleWidth = ChatBubbleWidthType.Thin,
+            ChatScrollSpeed = ChatScrollSpeedType.Fast,
+        };
+
+        byte[] bytes = Revision
+            .Serializers[typeof(AccountPreferencesEventMessageComposer)]
+            .Serialize(composer)
+            .ToArray();
+
+        byte[] payload = new byte[bytes.Length - 6];
+        Array.Copy(bytes, 6, payload, 0, payload.Length);
+        ClientPacket body = new(0, payload);
+
+        body.PopInt().Should().Be(90);
+        body.PopInt().Should().Be(80);
+        body.PopInt().Should().Be(70);
+        body.PopBoolean().Should().BeTrue();
+        body.PopBoolean().Should().BeFalse();
+        body.PopBoolean().Should().BeTrue();
+        body.PopInt().Should().Be((int)UIFlags.FriendBarExpanded);
+        body.PopInt().Should().Be(4);
+        body.PopBoolean().Should().BeTrue();
+        body.PopBoolean().Should().BeFalse();
+        body.PopBoolean().Should().BeTrue();
+        body.PopInt().Should().Be(1);
+        body.PopBoolean().Should().BeTrue();
+        body.PopBoolean().Should().BeFalse();
+        body.PopString().Should().Be("habbo");
+
+        body.PopInt().Should().Be(3);
+        body.PopInt().Should().Be((int)ChatModeType.Old);
+        body.PopInt().Should().Be((int)ChatBubbleWidthType.Thin);
+        body.PopInt().Should().Be((int)ChatScrollSpeedType.Fast);
         body.End.Should().BeTrue("the layout must consume the whole packet");
     }
 }

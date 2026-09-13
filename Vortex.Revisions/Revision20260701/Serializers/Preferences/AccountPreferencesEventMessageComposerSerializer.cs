@@ -26,6 +26,10 @@ internal class AccountPreferencesEventMessageComposerSerializer(int header)
             .WriteInteger(message.VariableSyntaxMode)
             .WriteBoolean(message.WiredWhisperDisabled)
             .WriteBoolean(message.ShowAllNotifications)
-            .WriteString(message.UiStyle);
+            .WriteString(message.UiStyle)
+            .WriteInteger(message.ChatSizePreference)
+            .WriteInteger((int)message.ChatMode)
+            .WriteInteger((int)message.ChatBubbleWidth)
+            .WriteInteger((int)message.ChatScrollSpeed);
     }
 }

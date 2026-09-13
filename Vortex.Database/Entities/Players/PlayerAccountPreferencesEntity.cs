@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Vortex.Primitives.Navigator.Enums;
 
 namespace Vortex.Database.Entities.Players;
 
@@ -48,6 +49,27 @@ public class PlayerAccountPreferencesEntity : VortexEntity
     [Column("ui_flags")]
     [DefaultValue(3)]
     public required int UiFlags { get; set; }
+
+    // The chat settings the client's own dialog writes and expects back in the account-preferences
+    // packet — they are per account, not per room, since this revision (the room contributes only
+    // its flood sensitivity). The defaults are the client's own for an absent field
+    // (unknowns/_SafePkg_1927/_SafeCls_1926.as:179-210): font size 0, free-flow mode, normal
+    // bubble, normal scroll speed.
+    [Column("chat_size_preference")]
+    [DefaultValue(0)]
+    public required int ChatSizePreference { get; set; }
+
+    [Column("chat_mode")]
+    [DefaultValue(ChatModeType.FreeFlow)]
+    public required ChatModeType ChatMode { get; set; }
+
+    [Column("chat_bubble_width")]
+    [DefaultValue(ChatBubbleWidthType.Normal)]
+    public required ChatBubbleWidthType ChatBubbleWidth { get; set; }
+
+    [Column("chat_scroll_speed")]
+    [DefaultValue(ChatScrollSpeedType.Normal)]
+    public required ChatScrollSpeedType ChatScrollSpeed { get; set; }
 
     // Discord Rich Presence: the four toggles of the client's own settings dialog, plus the version
     // of the consent dialog the player answered. Version 0 means "never answered" and is what makes

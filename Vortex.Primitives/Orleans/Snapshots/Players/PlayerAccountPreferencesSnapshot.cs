@@ -1,4 +1,5 @@
 using Orleans;
+using Vortex.Primitives.Navigator.Enums;
 
 namespace Vortex.Primitives.Orleans.Snapshots.Players;
 
@@ -30,6 +31,23 @@ public sealed record PlayerAccountPreferencesSnapshot
 
     [Id(6)]
     public required int UiFlags { get; init; }
+
+    /// <summary>Chat font size step, 0-4. The client clamps it to that range and scales the bubble
+    /// text by it; it arrives on the chat-style message, next to the bubble style.</summary>
+    [Id(12)]
+    public required int ChatSizePreference { get; init; }
+
+    /// <summary>The player's own chat settings, which used to be the room's. Sent back on the
+    /// account-preferences packet: a setting the server never echoes is a setting that resets on
+    /// every login.</summary>
+    [Id(13)]
+    public required ChatModeType ChatMode { get; init; }
+
+    [Id(14)]
+    public required ChatBubbleWidthType ChatBubbleWidth { get; init; }
+
+    [Id(15)]
+    public required ChatScrollSpeedType ChatScrollSpeed { get; init; }
 
     /// <summary>Version of the Discord consent dialog the player answered; 0 = never answered, which
     /// is what makes the client show its opt-in popup.</summary>

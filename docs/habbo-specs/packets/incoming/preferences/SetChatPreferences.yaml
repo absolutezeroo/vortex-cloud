@@ -85,5 +85,27 @@ generated:
     source: Vortex.Revisions/Revision20260701/Parsers/Preferences/SetChatPreferencesMessageParser.cs
     symbol: SetChatPreferencesMessageParser
     line: 7
-verified: {}
-manual: {}
+verified:
+  fields:
+  - index: 0
+    name: free_flow_chat_disabled
+    type: boolean
+    confidence: client_confirmed
+    evidence: "WIN63-202607011411/unknowns/_SafePkg_2091/_SafeCls_2255.as:15 — the composer pushes false, then the three ints below"
+  - index: 1
+    name: chat_mode
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_2255.as:16, built by HabboFreeFlowChat.sendChatPreferences(_chatMode, _chatBubbleWidth, _chatScrollSpeed)"
+  - index: 2
+    name: chat_bubble_width
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_2255.as:17"
+  - index: 3
+    name: chat_scroll_speed
+    type: int32
+    confidence: client_confirmed
+    evidence: "_SafeCls_2255.as:18"
+manual:
+  note: "Four fields, not one. Vortex read the leading boolean alone until 2026-09-13, so every change made in the client's chat dialog was parsed as nothing and lost. The three ints are echoed back on AccountPreferencesEvent."

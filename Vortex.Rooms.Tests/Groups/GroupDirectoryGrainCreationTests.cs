@@ -592,6 +592,21 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task SetChatDisplayPreferencesAsync(
+            int chatMode,
+            int bubbleWidth,
+            int scrollSpeed,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetChatSizePreferenceAsync(int sizePreference, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct)
         {
             throw new NotSupportedException();

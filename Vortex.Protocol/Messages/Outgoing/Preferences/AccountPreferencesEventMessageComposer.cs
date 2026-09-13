@@ -1,4 +1,5 @@
 using Orleans;
+using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Enums;
 
@@ -51,4 +52,19 @@ public sealed record AccountPreferencesEventMessageComposer : IComposer
 
     [Id(14)]
     public required string UiStyle { get; init; }
+
+    // The client's four trailing optional reads (_SafePkg_1927/_SafeCls_1926.as:179-210). It guards
+    // each with `bytesAvailable > 0` and falls back to its own defaults, which is why they were
+    // survivable to omit — and why omitting them meant the chat dialog forgot itself every login.
+    [Id(15)]
+    public required int ChatSizePreference { get; init; }
+
+    [Id(16)]
+    public required ChatModeType ChatMode { get; init; }
+
+    [Id(17)]
+    public required ChatBubbleWidthType ChatBubbleWidth { get; init; }
+
+    [Id(18)]
+    public required ChatScrollSpeedType ChatScrollSpeed { get; init; }
 }
