@@ -27,11 +27,13 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
 /// or from a box that only knows names.
 /// </para>
 /// <para>
-/// <b>Read-only, deliberately.</b> A variable's flags come from the server, so no client class can
-/// say whether Habbo lets an echo be written through to its source. The read side is established by
-/// the form; the write side is not, and a write that landed in the wrong store would be invisible
-/// until someone's counter was wrong. The flags this box publishes are the source's own read flags
-/// and nothing else, so the wired menu offers exactly the operations that are known to work.
+/// <b>A pass-through, not a copy.</b> Reads, writes, timestamps and text connectors all go to the
+/// mirrored variable; the box stores nothing of its own. That is the documented purpose — the
+/// variable add-ons used to stack only on user-created variables, and the echo is what lets them
+/// stack on an internal, smart or sub-variable, "so that all variables can benefit from variable
+/// add-ons", with the original editable through the give/remove/modify effects when it supports
+/// modification at all. It therefore publishes the source's flags unmasked: a box that read
+/// correctly and swallowed writes would be the same bug as no box at all, one dialog further in.
 /// </para>
 /// </remarks>
 [RoomObjectLogic("wf_var_echo")]
@@ -41,14 +43,11 @@ public class WiredVariableEcho(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredVariableLogic(grainFactory, stuffDataFactory, ctx)
 {
-    /// <summary>What an echo may pass on from the variable it mirrors: everything about reading it,
-    /// and nothing about changing it.</summary>
-    private const WiredVariableFlags ReadFlags =
-        WiredVariableFlags.HasValue
-        | WiredVariableFlags.AlwaysAvailable
-        | WiredVariableFlags.CanReadCreationTime
-        | WiredVariableFlags.CanReadLastUpdateTime
-        | WiredVariableFlags.HasTextConnector;
+    /// <summary>What an echo offers when it mirrors nothing: a value slot and nothing else, so an
+    /// unconfigured box neither disappears from the menu nor advertises an operation it cannot
+    /// perform.</summary>
+    private const WiredVariableFlags UnresolvedFlags =
+        WiredVariableFlags.HasValue | WiredVariableFlags.AlwaysAvailable;
 
     /// <summary>Guards an echo chain that loops back on itself. Two boxes pointing at each other is
     /// a configuration a player can build by hand, and the resolution below would otherwise follow
@@ -64,8 +63,18 @@ public class WiredVariableEcho(
 
     protected override WiredAvailabilityType AvailabilityType => WiredAvailabilityType.Reference;
 
+    /// <summary>
+    /// The mirrored variable's own flags, write flags included.
+    /// </summary>
+    /// <remarks>
+    /// The point of the box is that the add-ons which only ever stacked on user-created variables
+    /// can now stack on an internal or smart one, and that includes changing it: "if the original
+    /// internal variable supports modification, it can be edited through the give, remove and modify
+    /// variable effects". Masking the write flags off would publish a box that reads correctly and
+    /// silently swallows every write aimed at it.
+    /// </remarks>
     protected override WiredVariableFlags Flags =>
-        FromSource(source => source.GetVarSnapshot().Flags & ReadFlags, ReadFlags);
+        FromSource(source => source.GetVarSnapshot().Flags, UnresolvedFlags);
 
     public override bool TryGetValue(in WiredVariableKey key, out WiredVariableValue value)
     {
@@ -80,10 +89,7 @@ public class WiredVariableEcho(
         {
             // Same target, different name: an echo of a user variable is still read against the
             // user the stack resolved, not against the box.
-            return source!.TryGetValue(
-                new WiredVariableKey(sourceId, key.TargetType, key.TargetId),
-                out value
-            );
+            return source!.TryGetValue(Rebind(key, sourceId), out value);
         }
         finally
         {
@@ -108,7 +114,7 @@ public class WiredVariableEcho(
         try
         {
             return source!.TryGetTimestamps(
-                new WiredVariableKey(sourceId, key.TargetType, key.TargetId),
+                Rebind(key, sourceId),
                 out createdAtMs,
                 out updatedAtMs
             );
@@ -122,22 +128,81 @@ public class WiredVariableEcho(
     public override Dictionary<WiredVariableValue, string> GetTextConnectors() =>
         FromSource(source => source.GetVarSnapshot().TextConnectors, []);
 
-    /// <inheritdoc cref="WiredVariableEcho"/>
-    public override Task<bool> GiveValueAsync(
+    /// <summary>
+    /// Writes reach the mirrored variable, which is where the value actually lives.
+    /// </summary>
+    /// <remarks>
+    /// Nothing is stored on the echo itself. Whether the write is allowed at all is the source's
+    /// answer to give — its own <c>CanCreateAndDelete</c> check refuses a variable that may not be
+    /// created, and the change event it publishes is the one a "variable changed" trigger is already
+    /// listening for. An echo that kept its own copy would let the two drift, and the whole point of
+    /// the box is that there is one value under two names.
+    /// </remarks>
+    public override async Task<bool> GiveValueAsync(
         WiredVariableKey key,
         WiredVariableValue value,
         bool replace = false
-    ) => Task.FromResult(false);
+    )
+    {
+        if (!CanBind(key) || !TryEnter(out IWiredVariable? source, out WiredVariableId sourceId))
+        {
+            return false;
+        }
 
-    /// <inheritdoc cref="WiredVariableEcho"/>
-    public override Task<bool> SetValueAsync(
+        try
+        {
+            return await source!.GiveValueAsync(Rebind(key, sourceId), value, replace);
+        }
+        finally
+        {
+            _resolving = false;
+        }
+    }
+
+    /// <inheritdoc cref="GiveValueAsync"/>
+    public override async Task<bool> SetValueAsync(
         IWiredExecutionContext ctx,
         WiredVariableKey key,
         WiredVariableValue value
-    ) => Task.FromResult(false);
+    )
+    {
+        if (!CanBind(key) || !TryEnter(out IWiredVariable? source, out WiredVariableId sourceId))
+        {
+            return false;
+        }
 
-    /// <inheritdoc cref="WiredVariableEcho"/>
-    public override bool RemoveValue(WiredVariableKey key) => false;
+        try
+        {
+            return await source!.SetValueAsync(ctx, Rebind(key, sourceId), value);
+        }
+        finally
+        {
+            _resolving = false;
+        }
+    }
+
+    /// <inheritdoc cref="GiveValueAsync"/>
+    public override bool RemoveValue(WiredVariableKey key)
+    {
+        if (!CanBind(key) || !TryEnter(out IWiredVariable? source, out WiredVariableId sourceId))
+        {
+            return false;
+        }
+
+        try
+        {
+            return source!.RemoveValue(Rebind(key, sourceId));
+        }
+        finally
+        {
+            _resolving = false;
+        }
+    }
+
+    /// <summary>The same target under the mirrored variable's name: an echo of a user variable is
+    /// still read and written against the user the stack resolved, not against the box.</summary>
+    private static WiredVariableKey Rebind(in WiredVariableKey key, WiredVariableId sourceId) =>
+        new(sourceId, key.TargetType, key.TargetId);
 
     /// <summary>
     /// Asks the mirrored variable something, holding the recursion guard for as long as the answer

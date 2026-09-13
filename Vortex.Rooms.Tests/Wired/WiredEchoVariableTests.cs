@@ -29,6 +29,12 @@ public sealed class WiredEchoVariableTests
 
     private const int OtherEchoBox = 41;
 
+    /// <summary>The mirrored variable's id: the echo's picker holds this, and every write the echo
+    /// forwards has to arrive under it.</summary>
+    private static readonly WiredVariableId SourceId = WiredVariableIdBuilder.CreateFromBoxId(
+        OtherEchoBox
+    );
+
     [Fact]
     public void ItRoutesOnTheClientsOwnCode()
     {
@@ -74,8 +80,11 @@ public sealed class WiredEchoVariableTests
     }
 
     [Fact]
-    public void ItPublishesTheSourcesReadFlagsAndNoneOfItsWriteFlags()
+    public void ItPublishesTheSourcesFlagsUnmasked()
     {
+        // The write flags matter as much as the read ones: the box exists so the variable add-ons
+        // can stack on a variable that is not user-created, and that includes editing it through the
+        // give/remove/modify effects when the original supports modification.
         FakeWiredVariable source = new(WiredVariableTargetType.User)
         {
             Flags =
@@ -87,30 +96,41 @@ public sealed class WiredEchoVariableTests
 
         Build(out TestEcho echo, out _, source);
 
+        echo.GetVarSnapshot().Flags.Should().Be(source.Flags);
+    }
+
+    [Fact]
+    public void MirroringNothing_ItOffersAValueSlotAndNoOperations()
+    {
+        Build(out TestEcho echo, out _, source: null);
+
         WiredVariableFlags flags = echo.GetVarSnapshot().Flags;
 
-        flags.Has(WiredVariableFlags.HasValue).Should().BeTrue();
-        flags.Has(WiredVariableFlags.CanReadLastUpdateTime).Should().BeTrue();
-
-        // The write side is not established by any client class, so the box does not offer it.
         flags.Has(WiredVariableFlags.CanWriteValue).Should().BeFalse();
         flags.Has(WiredVariableFlags.CanCreateAndDelete).Should().BeFalse();
     }
 
     [Fact]
-    public async Task ItRefusesEveryWrite_AndDoesNotTouchTheSource()
+    public async Task ItsWritesReachTheSource_UnderTheSourcesName()
     {
         FakeWiredVariable source = new(WiredVariableTargetType.User) { Value = 42 };
         Build(out TestEcho echo, out _, source);
 
         WiredVariableKey key = KeyFor(echo, WiredVariableTargetType.User, 7);
 
-        (await echo.GiveValueAsync(key, new WiredVariableValue(1))).Should().BeFalse();
-        (await echo.SetValueAsync(null!, key, new WiredVariableValue(1))).Should().BeFalse();
-        echo.RemoveValue(key).Should().BeFalse();
+        (await echo.GiveValueAsync(key, new WiredVariableValue(1))).Should().BeTrue();
+        (await echo.SetValueAsync(null!, key, new WiredVariableValue(2))).Should().BeTrue();
+        echo.RemoveValue(key).Should().BeTrue();
 
-        source.Value.Should().Be(42);
-        source.Written.Should().BeFalse();
+        // Rebound onto the mirrored variable, same target: nothing is stored on the echo, so a write
+        // that kept the echo's own id would land in a slot no other box can read.
+        source
+            .Written.Should()
+            .Equal(
+                (SourceId, WiredVariableTargetType.User, 7),
+                (SourceId, WiredVariableTargetType.User, 7),
+                (SourceId, WiredVariableTargetType.User, 7)
+            );
     }
 
     [Fact]
@@ -148,16 +168,14 @@ public sealed class WiredEchoVariableTests
     {
         furni = new FakeFurniAccess();
 
-        WiredVariableId sourceId = WiredVariableIdBuilder.CreateFromBoxId(OtherEchoBox);
-
         if (source is not null)
         {
-            furni.Variables[sourceId] = source;
+            furni.Variables[SourceId] = source;
         }
 
         echo = new TestEcho(
             WiredTestBoxes.Context(objectId: EchoBox, furniAccess: furni),
-            source is null ? new WiredData() : Picking(sourceId)
+            source is null ? new WiredData() : Picking(SourceId)
         );
     }
 
@@ -181,7 +199,12 @@ public sealed class WiredEchoVariableTests
     {
         public int Value { get; set; }
 
-        public bool Written { get; private set; }
+        /// <summary>Every write the echo forwarded, as the key it arrived under.</summary>
+        public List<(
+            WiredVariableId Id,
+            WiredVariableTargetType TargetType,
+            int TargetId
+        )> Written { get; } = [];
 
         public WiredVariableFlags Flags { get; init; } =
             WiredVariableFlags.HasValue | WiredVariableFlags.AlwaysAvailable;
@@ -193,7 +216,7 @@ public sealed class WiredEchoVariableTests
         public WiredVariableSnapshot GetVarSnapshot() =>
             new()
             {
-                VariableId = WiredVariableIdBuilder.CreateFromBoxId(OtherEchoBox),
+                VariableId = SourceId,
                 VariableName = "source",
                 VariableType = WiredVariableType.Created,
                 VariableHash = default,
@@ -217,7 +240,7 @@ public sealed class WiredEchoVariableTests
             bool replace = false
         )
         {
-            Written = true;
+            Written.Add((key.VariableId, key.TargetType, key.TargetId));
 
             return Task.FromResult(true);
         }
@@ -228,14 +251,14 @@ public sealed class WiredEchoVariableTests
             WiredVariableValue value
         )
         {
-            Written = true;
+            Written.Add((key.VariableId, key.TargetType, key.TargetId));
 
             return Task.FromResult(true);
         }
 
         public bool RemoveValue(WiredVariableKey key)
         {
-            Written = true;
+            Written.Add((key.VariableId, key.TargetType, key.TargetId));
 
             return true;
         }
