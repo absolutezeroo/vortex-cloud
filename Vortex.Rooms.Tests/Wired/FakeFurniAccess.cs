@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,13 +66,18 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
         return Task.FromResult(targetFurniIds.Count);
     }
 
+    /// <summary>Which destinations the room accepts. Everything, unless a test narrows it — a box
+    /// that moves furni has to be exercised against a refusal as well as against a clear floor.
+    /// </summary>
+    public Func<int, int, bool> PlacementAllowed { get; set; } = (_, _) => true;
+
     public Task<bool> ValidateFloorItemPlacementAsync(
         ActionContext ctx,
         RoomObjectId itemId,
         int x,
         int y,
         Rotation rot
-    ) => Task.FromResult(true);
+    ) => Task.FromResult(PlacementAllowed(x, y));
 
     /// <summary>Variable boxes the test put in the room, keyed by id. Empty unless a test fills it —
     /// a box that resolves a configured variable id prunes it against this, so an id nothing answers

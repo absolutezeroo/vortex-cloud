@@ -27,8 +27,15 @@ internal sealed class FakeRoomLookup(params IRoomPlayer[] players) : IRoomLookup
 
     public int AvatarCount => _players.Length;
 
+    /// <summary>Avatars a test placed on the floor by player id, for the boxes that need a position
+    /// rather than a player. Consulted before the constructor's list, which carries players a test
+    /// only needs to identify.</summary>
+    public Dictionary<PlayerId, IRoomAvatar> AvatarsByPlayer { get; } = [];
+
     public IRoomAvatar? FindAvatarByPlayer(PlayerId playerId) =>
-        _players.FirstOrDefault(p => p.PlayerId == playerId);
+        AvatarsByPlayer.TryGetValue(playerId, out IRoomAvatar? placed)
+            ? placed
+            : _players.FirstOrDefault(p => p.PlayerId == playerId);
 
     public bool TryFindAvatarByPlayer(
         PlayerId playerId,

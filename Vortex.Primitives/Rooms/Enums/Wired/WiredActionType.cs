@@ -57,4 +57,7 @@ public enum WiredActionType
     /// <summary>Calls off a contract that is waiting on someone.</summary>
     CANCEL_TRANSACTION = 48,
     GIVE_EFFECT = 52,
+
+    /// <summary>Moves several furni at once, keeping the arrangement between them.</summary>
+    MOVE_AS_GROUP = 57,
 }

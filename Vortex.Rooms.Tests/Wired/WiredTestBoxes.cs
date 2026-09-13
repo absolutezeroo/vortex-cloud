@@ -57,7 +57,8 @@ internal static class WiredTestBoxes
         ExtraData? extraData = null,
         IRoomChestAccess? chests = null,
         IRoomLookup? lookup = null,
-        IRoomFurniAccess? furniAccess = null
+        IRoomFurniAccess? furniAccess = null,
+        IRoomMapAccess? map = null
     )
     {
         // RoomObject is typed as the floor item itself on a floor context, not as the plain
@@ -83,6 +84,7 @@ internal static class WiredTestBoxes
                 "get_Furni" => furni,
                 "get_Chests" => chests,
                 "get_Lookup" => lookup,
+                "get_Map" => map,
                 "get_WiredLimits" => Limits,
                 _ => call.Method.ReturnType == typeof(Task) ? Task.CompletedTask : null,
             }
