@@ -719,6 +719,15 @@ internal static class MessageEvent
 internal static class MessageComposer
 {
     // NEW since last revision
+
+    // Variable FX. Read straight from the AIR 1.0.31 client's own registry (_SafeCls_2127:
+    // _SafeStr_4678[267] = the config update, [3889] = the status update, [3388] = the status
+    // remove). WIN63-202607011411 carries none of the three -- the feature is newer than it -- so
+    // these are the one place in this file whose authority is a later build than the revision's own
+    // target. All three ids are unused in both tables here, so nothing collides.
+    public const int VariableFxConfigUpdateMessageComposer = 267;
+    public const int VariableFxStatusUpdateMessageComposer = 3889;
+    public const int VariableFxStatusRemoveMessageComposer = 3388;
     public const int IncomeRewardNotificationMessageComposer = 1914;
     public const int GetCustomFilterResultMessageComposer = 2231; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[2231] = _SafeCls_3579; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int ModifyCustomFilterResultMessageComposer = 3622; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[3622] = _SafeCls_3793; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it

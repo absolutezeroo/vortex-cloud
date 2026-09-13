@@ -138,24 +138,45 @@ const stamp = /(\d{6})/.exec(revision)?.[1] ?? '';
 const trees = findClientTrees().sort(
   (a, b) => Number(b.build.includes(stamp)) - Number(a.build.includes(stamp))
 );
-let known = null;
-
-if (trees.length > 0) {
-  const src = trees[0].src;
+// One tree's registry, resolved into the two directions, or null when it cannot be read with
+// confidence.
+function readKnown(src) {
   const entries = readRegistry(src);
-  if (entries.length > 0) {
-    const classFiles = indexClasses(src);
-    const found = { MessageEvent: new Set(), MessageComposer: new Set() };
-    let directions = 0;
-    for (const table of new Set(entries.map((e) => e.table))) {
-      const direction = directionOf(table, entries, classFiles);
-      if (!direction) continue;
-      directions++;
-      for (const entry of entries.filter((e) => e.table === table)) found[direction].add(entry.id);
-    }
-    // Both directions or nothing: a half-read registry would report every composer as unreachable.
-    if (directions >= 2 && found.MessageEvent.size > 0 && found.MessageComposer.size > 0) known = found;
+  if (entries.length === 0) return null;
+  const classFiles = indexClasses(src);
+  const found = { MessageEvent: new Set(), MessageComposer: new Set() };
+  let directions = 0;
+  for (const table of new Set(entries.map((e) => e.table))) {
+    const direction = directionOf(table, entries, classFiles);
+    if (!direction) continue;
+    directions++;
+    for (const entry of entries.filter((e) => e.table === table)) found[direction].add(entry.id);
   }
+  // Both directions or nothing: a half-read registry would report every composer as unreachable.
+  if (directions >= 2 && found.MessageEvent.size > 0 && found.MessageComposer.size > 0) return found;
+  return null;
+}
+
+const known = trees.length > 0 ? readKnown(trees[0].src) : null;
+
+// The other Habbo builds sitting beside this repository.
+//
+// A feature can be newer than the build this revision targets: Variable FX is in the AIR client and
+// in no WIN63 at all. An id read out of one of those registries is still an id a real Habbo build
+// binds, which is the whole guarantee this check exists to give -- it is there to catch an id
+// somebody invented, not an id that arrived in a later client.
+//
+// So those are reported and named rather than failed. Naming the build is the point: "it exists
+// somewhere else" with no source would be indistinguishable from a guess, and the next reader could
+// not tell which they were looking at.
+const later = new Map();
+
+for (const tree of trees.slice(1)) {
+  const found = readKnown(tree.src);
+  if (!found) continue;
+  for (const section of ['MessageEvent', 'MessageComposer'])
+    for (const id of found[section])
+      if (!later.has(`${section}/${id}`)) later.set(`${section}/${id}`, tree.build);
 }
 
 // ---- fallback: the ceiling, when there is no client to ask ----------------------------------------
@@ -175,10 +196,30 @@ if (!known) {
 }
 
 // ---- compare -------------------------------------------------------------------------------------
-const unreachable = ours
-  .filter((name) => !isExtension(name) && !known[headers[name].section].has(headers[name].id))
-  .map((name) => `${headers[name].section}/${name}=${headers[name].id}`)
-  .sort();
+const missing = ours.filter(
+  (name) => !isExtension(name) && !known[headers[name].section].has(headers[name].id)
+);
+
+const unreachable = [];
+const fromLaterBuild = [];
+
+for (const name of missing) {
+  const header = headers[name];
+  const build = later.get(`${header.section}/${header.id}`);
+  const entry = `${header.section}/${name}=${header.id}`;
+  if (build) fromLaterBuild.push(`${entry} (${build})`);
+  else unreachable.push(entry);
+}
+
+unreachable.sort();
+fromLaterBuild.sort();
+
+if (fromLaterBuild.length) {
+  console.error(
+    `check-header-registry: ${fromLaterBuild.length} id(s) absent from ${trees[0].build} but bound by a later build:`
+  );
+  for (const entry of fromLaterBuild) console.error(`  - ${entry}`);
+}
 
 if (update) {
   // Keep the file's `notes`: they say why an entry is tolerated, and regenerating the list is not a

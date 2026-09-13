@@ -180,6 +180,24 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             )
         );
         builder.MapSerializer(
+            typeof(VariableFxConfigUpdateMessageComposer),
+            new VariableFxConfigUpdateMessageComposerSerializer(
+                MessageComposer.VariableFxConfigUpdateMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(VariableFxStatusUpdateMessageComposer),
+            new VariableFxStatusUpdateMessageComposerSerializer(
+                MessageComposer.VariableFxStatusUpdateMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(VariableFxStatusRemoveMessageComposer),
+            new VariableFxStatusRemoveMessageComposerSerializer(
+                MessageComposer.VariableFxStatusRemoveMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(WiredClickUserResponseMessageComposer),
             new WiredClickUserResponseMessageComposerSerializer(
                 MessageComposer.WiredClickUserResponseMessageComposer
