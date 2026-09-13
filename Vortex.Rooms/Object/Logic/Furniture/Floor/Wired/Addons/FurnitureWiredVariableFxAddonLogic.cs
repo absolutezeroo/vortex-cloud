@@ -89,6 +89,22 @@ public abstract class FurnitureWiredVariableFxAddonLogic(
             new WiredRangeParamRule(0, int.MaxValue, 0), // 20 segments
         ];
 
+    /// <summary>Three: the minimum override, the maximum override, and the audience.</summary>
+    /// <remarks>
+    /// The default is zero, which let exactly one of the three through -- <c>GetValidVariableIds</c>
+    /// adds before it tests, so the first non-empty id survived and the rest were dropped.
+    /// <para>
+    /// The three are positional on the client's side: it reads slot 0 as the minimum override, 1 as
+    /// the maximum, 2 as the audience, and sends an empty string for each one it does not use. The
+    /// shared pruning drops those empties, so a display that uses only its audience variable sends
+    /// <c>["", "", "X"]</c> and reads back <c>["X"]</c> -- the audience arriving as the minimum
+    /// override. Raising the limit is what makes all three survive at all; keeping them in their
+    /// slots needs the pruning to preserve position, which is a change to the shared base and is
+    /// not made here.
+    /// </para>
+    /// </remarks>
+    public override int GetMaxVariableIds() => 3;
+
     /// <summary>
     /// The display's identity, and the add-on's own object id is the only stable candidate.
     /// </summary>
