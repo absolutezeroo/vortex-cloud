@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Dashboard.API.Api.Catalogue.Contracts;
 using Vortex.Dashboard.API.Infrastructure;
@@ -18,7 +17,6 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
-using Vortex.Observability.Configuration;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
 using Vortex.Primitives.Catalog;
@@ -36,19 +34,17 @@ namespace Vortex.Dashboard.API.Api.Catalogue;
 /// What the catalogue pages, offers and products look like to an operator.
 /// </summary>
 /// <remarks>
-/// Three dependencies, which is what this subject actually uses: a context, the asset URL builder
-/// for icons, and the observability config for the icon template. It used to be part of a class
-/// that took ten for every subject — see <see cref="DashboardReads"/> for why the base carries only
-/// the context.
+/// Two dependencies, which is what this subject actually uses: a context and the asset URL builder,
+/// which owns the icon template as well as the icon URLs. It used to be part of a class that took
+/// ten for every subject — see <see cref="DashboardReads"/> for why the base carries only the
+/// context.
 /// </remarks>
 internal sealed class CatalogReads(
     IDbContextFactory<VortexDbContext> dbContextFactory,
-    DashboardAssetUrls assetUrls,
-    IOptions<ObservabilityConfig> options
+    DashboardAssetUrls assetUrls
 ) : DashboardReads(dbContextFactory)
 {
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
-    private readonly ObservabilityConfig _config = options.Value;
 
     /// <summary>Pages at one level of one catalog tree. <c>parentId</c> omitted/blank means the root
     /// level (pages with no parent) of the given <c>catalogType</c> (0=Normal, 1=BuildersClub).</summary>
@@ -347,17 +343,12 @@ internal sealed class CatalogReads(
         );
 
     /// <summary>
-    /// Exposes the raw <c>{id}</c> URL template so the icon picker can build candidate URLs
+    /// Exposes the resolved <c>{id}</c> URL template so the icon picker can build candidate URLs
     /// client-side and probe them via normal &lt;img&gt; load/error events -- there is no manifest
     /// of which icon ids actually exist on the asset host, so "does this id have a real icon" can
     /// only be answered by letting the browser try to load it.
     /// </summary>
-    public CatalogIconTemplate CatalogIconTemplate() =>
-        new(
-            string.IsNullOrWhiteSpace(_config.CatalogIconUrlTemplate)
-                ? null
-                : _config.CatalogIconUrlTemplate
-        );
+    public CatalogIconTemplate CatalogIconTemplate() => new(_assetUrls.CatalogIconTemplate);
 
     private string? BuildCatalogIconUrl(int iconId) => _assetUrls.CatalogIcon(iconId);
 }

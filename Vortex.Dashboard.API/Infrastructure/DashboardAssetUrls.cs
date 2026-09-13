@@ -86,19 +86,28 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
     public string? EffectImageTemplate =>
         string.IsNullOrWhiteSpace(_config.AvatarEffectImageUrlTemplate)
             ? null
-            : SubstituteFigure(_config.AvatarEffectImageUrlTemplate, null);
+            : SubstituteFigure(Template(_config.AvatarEffectImageUrlTemplate)!, null);
 
     /// <summary>Same, for a hand item id that has no row yet.</summary>
     public string? HandItemImageTemplate =>
         string.IsNullOrWhiteSpace(_config.HandItemImageUrlTemplate)
             ? null
-            : SubstituteFigure(_config.HandItemImageUrlTemplate, null);
+            : SubstituteFigure(Template(_config.HandItemImageUrlTemplate)!, null);
+
+    /// <summary>
+    /// The catalog icon template, for the icon picker that probes candidate ids with <c>&lt;img&gt;</c>
+    /// load/error events because no manifest says which icons exist.
+    /// </summary>
+    public string? CatalogIconTemplate =>
+        string.IsNullOrWhiteSpace(_config.CatalogIconUrlTemplate)
+            ? null
+            : Template(_config.CatalogIconUrlTemplate);
 
     /// <summary>The badge template, so a code typed before it is granted still previews.</summary>
     public string? BadgeImageTemplate =>
         string.IsNullOrWhiteSpace(_config.BadgeImageUrlTemplate)
             ? null
-            : _config.BadgeImageUrlTemplate;
+            : Template(_config.BadgeImageUrlTemplate);
 
     /// <summary>Fills in <c>{figure}</c>, lending the neutral model when the caller has none.</summary>
     private static string SubstituteFigure(string url, string? figure) =>
@@ -144,7 +153,7 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
     public string? TargetedOfferImageTemplate =>
         string.IsNullOrWhiteSpace(_config.TargetedOfferImageUrlTemplate)
             ? null
-            : _config.TargetedOfferImageUrlTemplate;
+            : Template(_config.TargetedOfferImageUrlTemplate);
 
     /// <summary>
     /// Where the hotel's asset pack sits on this machine, for the routes that serve it. Empty when
@@ -177,6 +186,12 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
     /// Distinct http(s) host origins of every configured template, for the dashboard CSP
     /// <c>img-src</c>. Without this the browser would block cross-origin asset images.
     /// </summary>
+    /// <remarks>
+    /// Resolved through <see cref="Template"/> first, for the reason the whole class exists: with a
+    /// base configured the origin is the base's, and the raw templates would contribute nothing —
+    /// a CSP that allows only the dashboard's own origin and blocks every picture it just built.
+    /// A template still relative after resolution yields no origin, and needs none: it is same-origin.
+    /// </remarks>
     public IReadOnlyList<string> ImgSrcOrigins =>
         new[]
         {
@@ -190,13 +205,32 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             _config.QuestImageUrlTemplate,
             _config.AvatarEffectImageUrlTemplate,
         }
+            .Select(Template)
             .Select(OriginOf)
             .Where(origin => origin is not null)
             .Select(origin => origin!)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
 
-    private static string? Build(string? template, string placeholder, string? value)
+    /// <summary>
+    /// A configured template with <see cref="ObservabilityConfig.AssetBaseUrl"/> applied: the single
+    /// place a relative template becomes the URL a browser can actually fetch. Every read of a
+    /// template goes through here — a raw <c>_config.*UrlTemplate</c> anywhere else is a picture that
+    /// resolves against the dashboard's own origin and 404s.
+    /// </summary>
+    /// <remarks>
+    /// Only templates starting with <c>/</c> are prefixed. An absolute one is already a complete URL,
+    /// and an empty base leaves everything relative, which is the local-development case: the
+    /// dashboard serves the asset pack itself from <see cref="LocalRoot"/> on this same origin.
+    /// </remarks>
+    private string? Template(string? template) =>
+        string.IsNullOrWhiteSpace(_config.AssetBaseUrl)
+        || string.IsNullOrWhiteSpace(template)
+        || !template.StartsWith('/')
+            ? template
+            : _config.AssetBaseUrl.TrimEnd('/') + template;
+
+    private string? Build(string? template, string placeholder, string? value)
     {
         if (string.IsNullOrWhiteSpace(template) || string.IsNullOrWhiteSpace(value))
         {
@@ -206,7 +240,8 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
         // Escape the substituted value: placeholders sit in both path segments (icon name) and query
         // values (avatar figure), and a raw '&'/space would break the URL. Figure/badge/name chars
         // (alphanumeric, '.', '-', '_') are unreserved so this is a no-op for the common case.
-        return template.Replace(placeholder, Uri.EscapeDataString(value), StringComparison.Ordinal);
+        return Template(template)!
+            .Replace(placeholder, Uri.EscapeDataString(value), StringComparison.Ordinal);
     }
 
     /// <summary>Host origin of a template, found by substituting a benign probe for every known

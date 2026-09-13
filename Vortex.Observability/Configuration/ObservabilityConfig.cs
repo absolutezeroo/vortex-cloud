@@ -182,11 +182,26 @@ public sealed class ObservabilityConfig
     }
 
     /// <summary>
+    /// Origin every <c>*UrlTemplate</c> below that starts with <c>/</c> is resolved against — the one
+    /// place a deployment says where the hotel's pictures live. Empty leaves those templates relative,
+    /// so they resolve against whatever origin the dashboard itself is reached on.
+    /// </summary>
+    /// <remarks>
+    /// One key rather than a host repeated in nine templates, and one origin rather than two: the
+    /// front proxies the asset tree (<c>/c_images</c>, <c>/dcr</c>, <c>/gamedata</c>) and the imaging
+    /// server (<c>/habbo-imaging</c>) on the same host, so a single value covers every template.
+    /// A template that is already an absolute URL is left alone, which is what keeps a deployment
+    /// free to point one picture somewhere else.
+    /// </remarks>
+    public string AssetBaseUrl { get; init; } = string.Empty;
+
+    /// <summary>
     /// Optional URL template for furniture icons shown in the operations picker. Use <c>{name}</c>
     /// as the definition-name placeholder, for example
-    /// <c>http://your-host/dcr/hof_furni/icons/{name}_icon.png</c>. Empty hides icons (a sprite-id
-    /// tile is shown instead). When set, the icon host origin is added to the dashboard CSP
-    /// <c>img-src</c> so the images are allowed to load.
+    /// <c>/dcr/hof_furni/icons/{name}_icon.png</c> resolved against <see cref="AssetBaseUrl"/>, or an
+    /// absolute <c>http://your-host/dcr/...</c>. Empty hides icons (a sprite-id tile is shown
+    /// instead). When set, the icon host origin is added to the dashboard CSP <c>img-src</c> so the
+    /// images are allowed to load.
     /// </summary>
     public string FurniIconUrlTemplate { get; init; } = string.Empty;
 
