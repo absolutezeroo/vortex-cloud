@@ -71,6 +71,25 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
 
     private IWiredDiagnostics Diagnostics => _host.Diagnostics;
 
+    /// <summary>
+    /// The chain being executed right now, or null when none is.
+    /// </summary>
+    /// <remarks>
+    /// The context variables — <c>@selector_furni_count</c>, <c>@signal_user_count</c> and the rest
+    /// of that tab — describe the run, not the room: how many furni the selectors picked, who the
+    /// signal carried. They are read through <see cref="IWiredVariable.TryGetValue"/>, which is
+    /// handed a key and nothing else, so without somewhere to look the whole tab could only ever
+    /// answer zero, and did.
+    /// <para>
+    /// An ambient field rather than a parameter threaded through <c>IWiredVariable</c>: that
+    /// interface is implemented by every variable in the hotel, and all but four of them have no
+    /// use for a context. It is safe here because a grain activation is single-threaded — no two
+    /// chains in this room run at once — and it is cleared in a finally, so a throwing action
+    /// cannot leave a stale context standing for the next read.
+    /// </para>
+    /// </remarks>
+    public IWiredContext? CurrentContext { get; private set; }
+
     // Which trigger boxes are in the room and what they listen for, and how a tile's pile is
     // resolved. Both read the room through the host, so both can be exercised without one.
     private readonly WiredTriggerIndex _triggers;
@@ -610,7 +629,18 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                         "Failed to flash activation state for action."
                     );
 
-                await action.ExecuteAsync(ctx, ct);
+                // Published for the duration of the action so the context variables have something
+                // to read, and taken down again whatever happens — see CurrentContext.
+                CurrentContext = ctx;
+
+                try
+                {
+                    await action.ExecuteAsync(ctx, ct);
+                }
+                finally
+                {
+                    CurrentContext = null;
+                }
 
                 FlushWiredContextAsync(ctx)
                     .LogAndForget(Diagnostics.Logger, "Failed to flush wired execution context.");
