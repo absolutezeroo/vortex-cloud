@@ -54,17 +54,62 @@ public class WiredAddonVariableLevelUp(
     /// one, and <c>VariableLevelUp.readIntParamsFromForm</c> sends only the mask — so what the
     /// server creates is always the default name, and that is the client's behaviour, not a
     /// shortcut. Renaming is a client-side label until the form starts sending it.
+    /// <para>
+    /// <c>Write</c> is the reading's inverse: what the experience has to become for the reading to
+    /// answer the number asked for, given what it is now. Five of the eight have one, and the other
+    /// three stay read-only because they have none — <c>xp_required</c> and <c>max_level</c> are
+    /// statements about the curve rather than about the player, and "un-max someone" names no
+    /// particular level.
+    /// </para>
+    /// <para>
+    /// Every inverse ends in <see cref="WiredLevelUpCurve.BoundedValue"/>, which is what the reads
+    /// already do, so a number past either end of the curve settles at the end instead of being
+    /// refused. That is the curve's own convention, not a decision taken here.
+    /// </para>
     /// </remarks>
-    private static readonly (string Name, Func<WiredLevelUpCurve, int, int> Read)[] Readings =
+    internal static readonly (
+        string Name,
+        Func<WiredLevelUpCurve, int, int> Read,
+        Func<WiredLevelUpCurve, int, int, int>? Write
+    )[] Readings =
     [
-        ("current_level", static (curve, xp) => curve.CurrentLevel(xp)),
-        ("current_xp", static (curve, xp) => curve.BoundedValue(xp)),
-        ("progress", static (curve, xp) => curve.Progress(xp)),
-        ("progress_percentage", static (curve, xp) => curve.ProgressPercentage(xp)),
-        ("xp_required", static (curve, xp) => curve.TotalXpRequired(xp)),
-        ("xp_remaining", static (curve, xp) => curve.XpRemaining(xp)),
-        ("is_maxed", static (curve, xp) => curve.IsMaxed(xp) ? 1 : 0),
-        ("max_level", static (curve, _) => curve.MaxLevel),
+        (
+            "current_level",
+            static (curve, xp) => curve.CurrentLevel(xp),
+            // The start of that level: the least experience that reads back as the level asked for.
+            static (curve, _, level) => curve.XpForLevel(Math.Clamp(level, 1, curve.MaxLevel))
+        ),
+        (
+            "current_xp",
+            static (curve, xp) => curve.BoundedValue(xp),
+            static (curve, _, xp) => curve.BoundedValue(xp)
+        ),
+        (
+            "progress",
+            static (curve, xp) => curve.Progress(xp),
+            // Keeps the level and moves within it, so writing past what the level costs levels up.
+            static (curve, xp, progress) =>
+                curve.BoundedValue(curve.XpForLevel(curve.CurrentLevel(xp)) + progress)
+        ),
+        (
+            "progress_percentage",
+            static (curve, xp) => curve.ProgressPercentage(xp),
+            static (curve, xp, percent) =>
+                curve.BoundedValue(
+                    curve.XpForLevel(curve.CurrentLevel(xp))
+                        + (curve.TotalXpRequired(xp) * Math.Clamp(percent, 0, 100) / 100)
+                )
+        ),
+        ("xp_required", static (curve, xp) => curve.TotalXpRequired(xp), null),
+        (
+            "xp_remaining",
+            static (curve, xp) => curve.XpRemaining(xp),
+            // Measured back from where the next level begins, which is what "still owed" means.
+            static (curve, xp, remaining) =>
+                curve.BoundedValue(curve.XpForLevel(curve.CurrentLevel(xp) + 1) - remaining)
+        ),
+        ("is_maxed", static (curve, xp) => curve.IsMaxed(xp) ? 1 : 0, null),
+        ("max_level", static (curve, _) => curve.MaxLevel, null),
     ];
 
     private WiredLevelUpCurve? _curve;
@@ -114,7 +159,11 @@ public class WiredAddonVariableLevelUp(
                 continue;
             }
 
-            (string name, Func<WiredLevelUpCurve, int, int> read) = Readings[slot];
+            (
+                string name,
+                Func<WiredLevelUpCurve, int, int> read,
+                Func<WiredLevelUpCurve, int, int, int>? write
+            ) = Readings[slot];
 
             derived.Add(
                 new WiredLevelUpSubVariable(
@@ -122,7 +171,8 @@ public class WiredAddonVariableLevelUp(
                     WiredVariableIdBuilder.CreateFromBoxSubId(_ctx.ObjectId.Value, slot),
                     $"{parentName}.{name}",
                     _curve,
-                    read
+                    read,
+                    write
                 )
             );
         }
