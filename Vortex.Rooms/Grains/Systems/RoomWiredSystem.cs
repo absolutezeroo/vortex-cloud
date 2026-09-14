@@ -629,6 +629,11 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                         "Failed to flash activation state for action."
                     );
 
+                // What the event that started this chain says, under the names the @event.…
+                // variables read. Done here rather than in each trigger: the pending execution kept
+                // the firing context, which kept the event.
+                WiredEventReadings.Populate(ctx, pending.ProcessingContext.Event);
+
                 // Published for the duration of the action so the context variables have something
                 // to read, and taken down again whatever happens — see CurrentContext.
                 CurrentContext = ctx;
