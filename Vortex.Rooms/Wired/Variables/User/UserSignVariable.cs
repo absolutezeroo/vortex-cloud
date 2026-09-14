@@ -1,7 +1,10 @@
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Grains;
 
@@ -19,7 +22,9 @@ public sealed class UserSignVariable(RoomGrain roomGrain) : UserVariable<IRoomAv
         WiredVariableGroupSubBandType.Base;
     protected override ushort Order => 160;
     protected override WiredVariableFlags Flags =>
-        WiredVariableFlags.HasValue | WiredVariableFlags.AlwaysAvailable;
+        WiredVariableFlags.HasValue
+        | WiredVariableFlags.CanWriteValue
+        | WiredVariableFlags.AlwaysAvailable;
 
     protected override bool TryGetValueForAvatar(IRoomAvatar avatar, out WiredVariableValue value)
     {
@@ -31,4 +36,10 @@ public sealed class UserSignVariable(RoomGrain roomGrain) : UserVariable<IRoomAv
 
         return true;
     }
+
+    protected override Task<bool> SetValueForAvatarAsync(
+        IWiredExecutionContext ctx,
+        IRoomAvatar avatar,
+        WiredVariableValue value
+    ) => _roomGrain.AvatarModule.SetAvatarSignAsync(avatar.ObjectId, value, CancellationToken.None);
 }

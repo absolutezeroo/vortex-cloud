@@ -17,7 +17,7 @@ namespace Vortex.Rooms.Tests.Wired;
 /// </summary>
 /// <remarks>
 /// The readings themselves are one field access each and are not worth a test apiece. What is not
-/// trivial is the layout around them, and it fails silently in both directions:
+/// trivial is the layout around them, and it fails silently in three directions:
 /// <para>
 /// An id is built from (band, sub-band, order) with only a 16-bit hash of the NAME as the tiebreak,
 /// so two variables sharing a sub-band and an order are two adjacent numbers whose relative position
@@ -25,10 +25,15 @@ namespace Vortex.Rooms.Tests.Wired;
 /// the moment either is renamed. Nothing throws.
 /// </para>
 /// <para>
-/// And a boolean reading is spelled by NOT declaring <see cref="WiredVariableFlags.HasValue"/> and
+/// A boolean reading is spelled by NOT declaring <see cref="WiredVariableFlags.HasValue"/> and
 /// answering with the return of <c>TryGetValue</c>, where a numeric one declares the flag and always
 /// returns true. A leaf that declares the flag but means the boolean reads as a permanent 1; one
 /// that omits it but means a number loses the number. Both compile.
+/// </para>
+/// <para>
+/// And <see cref="WiredVariableFlags.CanWriteValue"/> is the single thing the "change variable value"
+/// box filters its picker on, so declaring it without a write puts the reading in front of a builder
+/// and then ignores them. <c>@type</c> and <c>@position.x</c> both shipped that way.
 /// </para>
 /// </remarks>
 public sealed class WiredUserVariableBandTests
@@ -70,6 +75,55 @@ public sealed class WiredUserVariableBandTests
     }
 
     [Fact]
+    public void NothingClaimsToBeWritableWithoutAWriteBehindIt()
+    {
+        List<string> liars =
+        [
+            .. Leaves()
+                .Where(leaf =>
+                    Snapshot(leaf).Flags.Has(WiredVariableFlags.CanWriteValue) && !Writes(leaf)
+                )
+                .Select(leaf => Snapshot(leaf).VariableName),
+        ];
+
+        liars
+            .Should()
+            .BeEmpty(
+                "the change-value box filters its picker on exactly this flag, so each of these "
+                    + "would be offered to a builder and then silently ignore them: {0}",
+                string.Join(", ", liars)
+            );
+    }
+
+    /// <summary>
+    /// What a builder is offered in the "change variable value" box, pinned by name. It is a golden
+    /// list on purpose: this set IS the box's contents, so growing or shrinking it is a visible change
+    /// to the room editor and should be a deliberate line in a diff rather than a surprise.
+    /// <para>
+    /// It also keeps the assertion above honest — a <c>Writes</c> that answered true for everything
+    /// would satisfy an empty-liars check and fail this one.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void TheWritableReadingsAreTheOnesWithARoomOperationBehindThem()
+    {
+        Band()
+            .Where(v => v.Flags.Has(WiredVariableFlags.CanWriteValue))
+            .Select(v => v.VariableName)
+            .Should()
+            .BeEquivalentTo([
+                "@effect",
+                "@handitem",
+                "@dance",
+                "@sign",
+                "@direction",
+                "@position.x",
+                "@position.y",
+                "@team",
+            ]);
+    }
+
+    [Fact]
     public void TheWholeBandTargetsUsers()
     {
         Band()
@@ -82,11 +136,40 @@ public sealed class WiredUserVariableBandTests
     }
 
     /// <summary>
-    /// Every leaf of the band, built with no room. Only <c>GetVarSnapshot()</c> is read, and that is
-    /// derived from the leaf's own declarations — the grain is not touched until something asks for
-    /// a value.
+    /// Whether this leaf really overrides the write, stopping short of <c>UserVariable&lt;&gt;</c>
+    /// itself — that is where the refusing default lives, and counting it would make every leaf look
+    /// like it writes.
+    /// <para>
+    /// The walk matters in the other direction too: <c>@position.x</c> and <c>@position.y</c> declare
+    /// nothing of their own and inherit a real write from <c>UserPositionVariable</c>.
+    /// </para>
     /// </summary>
-    private static List<WiredVariableSnapshot> Band() =>
+    private static bool Writes(Type leaf)
+    {
+        for (Type? type = leaf; type is not null; type = type.BaseType)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UserVariable<>))
+            {
+                return false;
+            }
+
+            if (
+                type.GetMethod(
+                    "SetValueForAvatarAsync",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly
+                )
+                is not null
+            )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Every concrete leaf of the band.</summary>
+    private static List<Type> Leaves() =>
         [
             .. typeof(UserVariable<>)
                 .Assembly.GetTypes()
@@ -94,9 +177,16 @@ public sealed class WiredUserVariableBandTests
                     !t.IsAbstract
                     && t.Namespace == typeof(UserIndexVariable).Namespace
                     && typeof(IWiredInternalVariable).IsAssignableFrom(t)
-                )
-                .Select(t =>
-                    ((WiredInternalVariable)Activator.CreateInstance(t, [null])!).GetVarSnapshot()
                 ),
         ];
+
+    /// <summary>
+    /// One leaf's declarations, built with no room. Only <c>GetVarSnapshot()</c> is read, and that is
+    /// derived from what the leaf declares — the grain is not touched until something asks for a
+    /// value.
+    /// </summary>
+    private static WiredVariableSnapshot Snapshot(Type leaf) =>
+        ((WiredInternalVariable)Activator.CreateInstance(leaf, [null])!).GetVarSnapshot();
+
+    private static List<WiredVariableSnapshot> Band() => [.. Leaves().Select(Snapshot)];
 }
