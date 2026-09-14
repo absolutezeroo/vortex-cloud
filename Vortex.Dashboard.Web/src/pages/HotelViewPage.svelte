@@ -376,16 +376,22 @@
 {#if !canManage}
   <AccessDeniedNotice />
 {:else}
-  <PageHeader title={$t('hotelView.title')} description={$t('hotelView.subtitle')}>
-    {#snippet icon()}<Home size={20} />{/snippet}
-    {#snippet actions()}
-      {#if dirty}<Chip label={$t('hotelView.unsaved', { count: changes.length })} tone="warning" />{/if}
-      <Button disabled={!dirty || $ops.busy} onclick={save}>{$t('hotelView.save')}</Button>
-      <Button variant="ghost" disabled={!dirty} onclick={() => (draft = structuredClone(baseline))}>
-        {$t('hotelView.discard')}
-      </Button>
-    {/snippet}
-  </PageHeader>
+  <!-- In a panel, like the other 49 pages: the header framed the same way everywhere is how an
+       operator stops re-reading it to work out which page they are on. -->
+  <section class="panel">
+    <PageHeader title={$t('hotelView.title')} description={$t('hotelView.subtitle')}>
+      {#snippet icon()}<Home size={20} />{/snippet}
+      {#snippet actions()}
+        {#if dirty}
+          <Chip label={$t('hotelView.unsaved', { count: changes.length })} tone="warning" />
+        {/if}
+        <Button disabled={!dirty || $ops.busy} onclick={save}>{$t('hotelView.save')}</Button>
+        <Button variant="ghost" disabled={!dirty} onclick={() => (draft = structuredClone(baseline))}>
+          {$t('hotelView.discard')}
+        </Button>
+      {/snippet}
+    </PageHeader>
+  </section>
 
   {#if $ops.results['']}<OpResult result={$ops.results['']} />{/if}
 
@@ -394,7 +400,12 @@
   {:else if !draft || !vocabulary}
     <EmptyState kind="error" message={$t('hotelView.unreadable')} />
   {:else if !draft.available}
-    <EmptyState kind="error" message={$t('hotelView.noAssetRoot')} />
+    <!-- Two causes, two fixes. A container ships an empty /app/assets and a configured
+         `./assets`, so "not configured" was the one message that could never be right there. -->
+    <EmptyState
+      kind="error"
+      message={$t(draft.error === 'no_asset_root' ? 'hotelView.noAssetRoot' : 'hotelView.unreadable')}
+    />
   {:else}
     <Tabs
       tabs={TABS.map((tab) => ({ ...tab, label: $t(`hotelView.tab_${tab.id}`) }))}

@@ -1574,8 +1574,10 @@ export default {
     title: 'Hotel view',
     subtitle:
       'The first screen a player sees, configured from the client keys that drive it. Every list here is the client’s own: a value outside one renders nothing and logs nothing.',
-    unreadable: 'external_variables.json could not be read. The client cannot read it either.',
-    noAssetRoot: 'No asset root is configured, so external_variables.json cannot be found.',
+    unreadable:
+      'The asset root is configured, but gamedata/external_variables.json is not in it, or does not parse. A container ships that directory empty: the asset pack has to be mounted into it.',
+    noAssetRoot:
+      'No asset root is configured. Set Vortex:Observability:AssetsLocalRoot to the directory holding gamedata/.',
     tab_layout: 'Layout',
     tab_campaigns: 'Campaigns',
     tab_scenery: 'Scenery',

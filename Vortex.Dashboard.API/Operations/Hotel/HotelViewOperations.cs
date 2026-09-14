@@ -51,6 +51,7 @@ internal sealed class HotelViewOperations(OperationRunner runner, GamedataDocume
             {
                 HotelViewConfig config = new(
                     true,
+                    null,
                     request.ExpectedModifiedUtc,
                     request.ExpectedTextsModifiedUtc,
                     request.Common,

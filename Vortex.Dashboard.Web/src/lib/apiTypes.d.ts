@@ -1669,6 +1669,7 @@ export interface HotelViewCommon {
 
 export interface HotelViewConfig {
   available: boolean;
+  error: string | null;
   modifiedUtc: string | null;
   textsModifiedUtc: string | null;
   common: HotelViewCommon;

@@ -22,8 +22,15 @@ namespace Vortex.Dashboard.API.Api.Hotel.Contracts;
 /// but never the picture they picked.
 /// </para>
 /// </remarks>
+/// <param name="Error">
+/// Why there is nothing to show, or <see langword="null"/>. <c>no_asset_root</c> means no asset root
+/// is configured at all; <c>unreadable</c> means one is, and external_variables.json is not there or
+/// does not parse. Two different problems with two different fixes, and telling an operator the
+/// wrong one sends them to edit a setting that was already correct.
+/// </param>
 public sealed record HotelViewConfig(
     bool Available,
+    string? Error,
     DateTime? ModifiedUtc,
     DateTime? TextsModifiedUtc,
     HotelViewCommon Common,

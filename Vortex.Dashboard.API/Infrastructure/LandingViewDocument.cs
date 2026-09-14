@@ -136,6 +136,7 @@ internal static class LandingViewDocument
 
         return new HotelViewConfig(
             true,
+            null,
             modifiedUtc == default ? null : modifiedUtc,
             textsModifiedUtc == default ? null : textsModifiedUtc,
             common,

@@ -40,14 +40,18 @@ internal sealed class HotelViewReads(
     {
         if (!_gamedata.Available)
         {
-            return Unavailable();
+            return Unavailable("no_asset_root");
         }
 
         JsonNode? variables = _gamedata.Read("variables", null, out DateTime modified);
 
         if (variables is not JsonObject map)
         {
-            return Unavailable();
+            // A root IS configured and the file still did not come back: it is absent, or it does not
+            // parse. Reported apart from the missing-root case because the fix is a different one --
+            // and because a hotel run outside the Development profile has a root of `./assets`, which
+            // is configured, wrong, and would otherwise be reported as unconfigured.
+            return Unavailable("unreadable");
         }
 
         JsonNode? texts = _gamedata.Read("texts", null, out DateTime textsModified);
@@ -90,9 +94,10 @@ internal sealed class HotelViewReads(
     /// The vocabulary travels even here. The page's whole value is explaining what the keys mean, and
     /// an operator who cannot reach the file is exactly the one who wants to read that.
     /// </remarks>
-    private static HotelViewConfig Unavailable() =>
+    private static HotelViewConfig Unavailable(string error) =>
         new(
             false,
+            error,
             null,
             null,
             new HotelViewCommon(

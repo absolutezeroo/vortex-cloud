@@ -1577,8 +1577,10 @@ export default {
     title: "Vue de l'hôtel",
     subtitle:
       "Le premier écran que voit un joueur, configuré depuis les clés client qui le pilotent. Chaque liste ici est celle du client : une valeur hors liste n'affiche rien et ne journalise rien.",
-    unreadable: "external_variables.json est illisible. Le client ne le lit pas non plus.",
-    noAssetRoot: "Aucune racine d'assets configurée : external_variables.json est introuvable.",
+    unreadable:
+      "La racine d'assets est configurée, mais gamedata/external_variables.json ne s'y trouve pas, ou ne se parse pas. Un conteneur livre ce dossier vide : il faut y monter le pack d'assets.",
+    noAssetRoot:
+      "Aucune racine d'assets configurée. Renseignez Vortex:Observability:AssetsLocalRoot avec le dossier qui contient gamedata/.",
     tab_layout: 'Disposition',
     tab_campaigns: 'Campagnes',
     tab_scenery: 'Décor',
