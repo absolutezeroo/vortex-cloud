@@ -21,6 +21,8 @@ public enum WiredAddonType
     FURNI_NAME_PLACEHOLDER = 19,
     CUSTOM_CONTRACT = 20,
     VARIABLE_TEXT_CONVERTER = 1000,
+    VARIABLE_LEVEL_UP = 1001,
+    VARIABLE_TIME_UTIL = 1002,
 
     // The six Variable FX displays, from the AIR 1.0.31 client's AddonCodes. They are absent from
     // WIN63-202607011411 entirely -- the feature is newer than the revision's target build.

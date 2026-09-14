@@ -360,6 +360,7 @@ export const LOGIC_GROUPS = [
       { value: 'wf_xtra_text_output_username', label: 'wf_xtra_text_output_username' },
       { value: 'wf_xtra_text_output_variable', label: 'wf_xtra_text_output_variable' },
       { value: 'wf_xtra_unseen', label: 'wf_xtra_unseen' },
+      { value: 'wf_xtra_var_lvlup_system', label: 'wf_xtra_var_lvlup_system' },
     ],
   },
   {

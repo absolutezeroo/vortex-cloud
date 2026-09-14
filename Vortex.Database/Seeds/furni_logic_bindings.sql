@@ -31,6 +31,12 @@
 -- which behaviour is missing. That warning is the to-do list.
 --
 -- Statements are name-scoped and idempotent; a trimmed furnidata just matches fewer rows.
+--
+-- ONE HAND EDIT, and it has to survive a regenerate: 'wf_xtra_var_lvlup_system' was in the
+-- 'furniture_multistate' list, because when this was generated no Vortex logic was registered under
+-- that name and the asset's own value won. WiredAddonVariableLevelUp now registers it, so rule 1
+-- applies and the name was removed from that list. If scan_asset_logic.py puts it back, the scan is
+-- reading a registration list that predates the add-on -- re-run it, do not re-add the name.
 
 -- 31967 definitions
 UPDATE `furniture_definitions`
@@ -7688,7 +7694,7 @@ UPDATE `furniture_definitions`
     'wf_vu', 'wf_wire1', 'wf_wire2', 'wf_wire3',
     'wf_wire4', 'wf_xtra_custom_contract', 'wf_xtra_filter_furni_by_var', 'wf_xtra_filter_users_by_var',
     'wf_xtra_scan_chest_furni_by_type', 'wf_xtra_text_output_furni_name', 'wf_xtra_text_output_username', 'wf_xtra_text_output_variable',
-    'wf_xtra_var_lvlup_system', 'wf_xtra_var_text_connector', 'wf_xtra_var_time_util', 'wgard_div_2',
+    'wf_xtra_var_text_connector', 'wf_xtra_var_time_util', 'wgard_div_2',
     'wgardn_bench', 'wheel_of_fortune', 'white', 'white_arm_leather_chair_angel',
     'white_custom', 'white_flower_stool_marion', 'white_kitchen_oven_angel', 'white_love_bear',
     'white_pouf_marion', 'white_rose', 'whiteeggs_Machi_original21', 'whiteeggs_Machi_original21',

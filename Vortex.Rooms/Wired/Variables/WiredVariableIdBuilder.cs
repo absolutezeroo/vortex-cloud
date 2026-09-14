@@ -14,6 +14,22 @@ public static class WiredVariableIdBuilder
             ((ulong)((int)WiredVariableIdSourceType.Database & 0b1_1111) << 48) | HashBoxId48(boxId)
         );
 
+    /// <summary>
+    /// The id of a variable an add-on derives from the box's own — distinct per slot, stable across
+    /// restarts, and in the same band as the parent so the two sort together.
+    /// </summary>
+    /// <remarks>
+    /// Stability is the whole requirement. The client keys a room's variables by id and a wired box
+    /// names the ones it reads by id, so a derived variable that came back under a new number after
+    /// a restart would silently unbind every box pointing at it. Hashing the slot alongside the box
+    /// gives that; a counter would not.
+    /// </remarks>
+    public static WiredVariableId CreateFromBoxSubId(int boxId, int slot) =>
+        new(
+            ((ulong)((int)WiredVariableIdSourceType.Database & 0b1_1111) << 48)
+                | HashBoxSubId48(boxId, slot)
+        );
+
     public static WiredVariableId CreateInternalOrdered(
         WiredVariableTargetType targetType,
         string name,
@@ -67,6 +83,16 @@ public static class WiredVariableIdBuilder
         WriteString(ref hasher, name);
 
         return (ushort)(hasher.GetCurrentHashAsUInt64() & 0xFFFF);
+    }
+
+    private static ulong HashBoxSubId48(int boxId, int slot)
+    {
+        XxHash64 hasher = new XxHash64();
+
+        WriteInt32BE(ref hasher, boxId);
+        WriteInt32BE(ref hasher, slot);
+
+        return hasher.GetCurrentHashAsUInt64() & 0x0000_FFFF_FFFF_FFFFUL;
     }
 
     private static ulong HashBoxId48(int boxId)
