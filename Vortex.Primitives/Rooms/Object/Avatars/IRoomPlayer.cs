@@ -12,6 +12,13 @@ public interface IRoomPlayer : IRoomAvatar<IRoomPlayer, IRoomPlayerLogic, IRoomP
     public AvatarGenderType Gender { get; }
     public AvatarDanceType DanceType { get; }
 
+    /// <summary>
+    /// The achievement score the room was told at entry — the same number it broadcasts as
+    /// <c>AchievementScore</c> on every user-change, kept here under the name the avatar block gives
+    /// it. A snapshot of entry, not a live account read.
+    /// </summary>
+    public int ActivityPoints { get; }
+
     /// <summary>Guild whose badge the avatar displays, or -1 for none.</summary>
     public int GroupId { get; }
     public string GroupName { get; }

@@ -19,12 +19,15 @@ public abstract class UserVariable<TAvatar>(RoomGrain roomGrain) : WiredInternal
             return false;
         }
 
-        value = GetValueForAvatar(avatar);
-
-        return true;
+        return TryGetValueForAvatar(avatar, out value);
     }
 
-    protected abstract WiredVariableValue GetValueForAvatar(TAvatar avatar);
+    /// <summary>
+    /// The one reading this variable takes of the avatar. Returning false is how a boolean reading is
+    /// spelled on this band — the same shape <c>FurnitureVariable</c> uses, where a flagless variable
+    /// answers "true" by resolving at all and "false" by not resolving.
+    /// </summary>
+    protected abstract bool TryGetValueForAvatar(TAvatar avatar, out WiredVariableValue value);
 
     protected virtual bool TryGetAvatarForKey(in WiredVariableKey key, out TAvatar? avatar)
     {

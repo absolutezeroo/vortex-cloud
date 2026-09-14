@@ -5,21 +5,19 @@ using Vortex.Rooms.Grains;
 
 namespace Vortex.Rooms.Wired.Variables.User;
 
-public sealed class UserPositionXVariable(RoomGrain roomGrain)
-    : UserVariable<IRoomAvatar>(roomGrain)
+/// <summary>The effect the avatar is wearing, 0 when none.</summary>
+public sealed class UserEffectVariable(RoomGrain roomGrain) : UserVariable<IRoomAvatar>(roomGrain)
 {
-    protected override string VariableName => "@position.x";
+    protected override string VariableName => "@effect";
     protected override WiredVariableGroupSubBandType SubBandType =>
-        WiredVariableGroupSubBandType.Position;
-    protected override ushort Order => 20;
+        WiredVariableGroupSubBandType.Base;
+    protected override ushort Order => 100;
     protected override WiredVariableFlags Flags =>
-        WiredVariableFlags.HasValue
-        | WiredVariableFlags.CanWriteValue
-        | WiredVariableFlags.AlwaysAvailable;
+        WiredVariableFlags.HasValue | WiredVariableFlags.AlwaysAvailable;
 
     protected override bool TryGetValueForAvatar(IRoomAvatar avatar, out WiredVariableValue value)
     {
-        value = WiredVariableValue.Parse(avatar.X);
+        value = WiredVariableValue.Parse(avatar.CurrentEffectId);
 
         return true;
     }

@@ -9,27 +9,24 @@ using Vortex.Rooms.Grains;
 
 namespace Vortex.Rooms.Wired.Variables.User;
 
-public sealed class UserTypeVariable(RoomGrain roomGrain) : UserVariable<IRoomAvatar>(roomGrain)
+public sealed class UserGenderVariable(RoomGrain roomGrain) : UserPlayerVariable(roomGrain)
 {
-    protected override string VariableName => "@type";
+    protected override string VariableName => "@gender";
     protected override WiredVariableGroupSubBandType SubBandType =>
         WiredVariableGroupSubBandType.Base;
-    protected override ushort Order => 10;
+    protected override ushort Order => 30;
     protected override WiredVariableFlags Flags =>
         WiredVariableFlags.HasValue
-        | WiredVariableFlags.CanWriteValue
+        | WiredVariableFlags.AlwaysAvailable
         | WiredVariableFlags.HasTextConnector;
 
     protected override Dictionary<WiredVariableValue, string> GetTextConnectors() =>
-        Enum.GetValues<RoomObjectType>()
-            .ToDictionary(
-                v => WiredVariableValue.Parse((int)v),
-                v => RoomObjectTypeExtensions.GetString(v)
-            );
+        Enum.GetValues<AvatarGenderType>()
+            .ToDictionary(v => WiredVariableValue.Parse((int)v), v => v.ToString());
 
-    protected override bool TryGetValueForAvatar(IRoomAvatar avatar, out WiredVariableValue value)
+    protected override bool TryGetValueForAvatar(IRoomPlayer avatar, out WiredVariableValue value)
     {
-        value = WiredVariableValue.Parse((int)avatar.AvatarType);
+        value = WiredVariableValue.Parse((int)avatar.Gender);
 
         return true;
     }
