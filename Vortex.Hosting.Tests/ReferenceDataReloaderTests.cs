@@ -154,4 +154,62 @@ public sealed class ReferenceDataReloaderTests
             .Providers.Should()
             .ContainInOrder(nameof(BrokenProvider), nameof(FakeProvider));
     }
+
+    /// <summary>
+    /// Two closed generics of one open type are two separate caches and must answer to two names.
+    /// </summary>
+    /// <remarks>
+    /// This is the catalogue bug. <c>Type.Name</c> renders both
+    /// <c>GenericProvider&lt;NormalTag&gt;</c> and <c>GenericProvider&lt;OtherTag&gt;</c> as
+    /// <c>GenericProvider`1</c>, they collided in the name table, and the second replaced the
+    /// first — so the normal catalogue, which every player reads, could not be reloaded by any
+    /// name while `reload` still listed something that looked like it.
+    /// </remarks>
+    [Fact]
+    public async Task Two_closed_generics_of_one_type_get_one_name_each()
+    {
+        GenericProvider<NormalTag> normal = new();
+        GenericProvider<OtherTag> other = new();
+
+        ReferenceDataReloader reloader = Reloader([normal, other]);
+
+        reloader
+            .Providers.Should()
+            .BeEquivalentTo(["GenericProvider<NormalTag>", "GenericProvider<OtherTag>"]);
+
+        // And each name reaches its own cache, rather than both landing on whichever won.
+        ReloadOutcome outcome = await reloader.ReloadAsync(
+            "GenericProvider<NormalTag>",
+            CancellationToken.None
+        );
+
+        outcome.Reloaded.Should().BeTrue();
+        normal.Reloads.Should().Be(1);
+        other.Reloads.Should().Be(0);
+    }
+
+    [Fact]
+    public void A_non_generic_provider_keeps_its_plain_type_name()
+    {
+        // The other twenty-eight. Nobody should have to type angle brackets for those.
+        Reloader([new FakeProvider()]).Providers.Should().Equal(nameof(FakeProvider));
+    }
+
+    private sealed class NormalTag;
+
+    private sealed class OtherTag;
+
+    private sealed class GenericProvider<TTag> : IReferenceDataProvider
+    {
+        public int Reloads { get; private set; }
+
+        public int LoadStage => 0;
+
+        public Task ReloadAsync(CancellationToken ct)
+        {
+            Reloads += 1;
+
+            return Task.CompletedTask;
+        }
+    }
 }

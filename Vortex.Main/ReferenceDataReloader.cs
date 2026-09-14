@@ -37,7 +37,8 @@ public sealed class ReferenceDataReloader(
     // time an operator asks what there is.
     private readonly ImmutableDictionary<string, Func<CancellationToken, Task>> _byName = Build(
         providers,
-        extra
+        extra,
+        logger
     );
 
     public IReadOnlyList<string> Providers =>
@@ -91,6 +92,30 @@ public sealed class ReferenceDataReloader(
     }
 
     /// <summary>
+    /// The name one cache answers to: its type's, with the generic arguments kept.
+    /// </summary>
+    /// <remarks>
+    /// <c>Type.Name</c> alone renders every closed generic as its open form —
+    /// <c>CatalogSnapshotProvider&lt;NormalCatalog&gt;</c> and
+    /// <c>CatalogSnapshotProvider&lt;BuildersClubCatalog&gt;</c> both come back as
+    /// <c>CatalogSnapshotProvider`1</c>. They then collided in the table below and the second
+    /// silently replaced the first, which left the normal catalogue — the one every player reads —
+    /// reachable by no name at all, while `reload` looked like it had covered it.
+    /// </remarks>
+    private static string NameOf(Type type)
+    {
+        if (!type.IsGenericType)
+        {
+            return type.Name;
+        }
+
+        string bare = type.Name[..type.Name.IndexOf('`')];
+        string args = string.Join(",", type.GetGenericArguments().Select(a => a.Name));
+
+        return $"{bare}<{args}>";
+    }
+
+    /// <summary>
     /// Names every cache, using the provider's type name.
     /// </summary>
     /// <remarks>
@@ -100,7 +125,8 @@ public sealed class ReferenceDataReloader(
     /// </remarks>
     private static ImmutableDictionary<string, Func<CancellationToken, Task>> Build(
         IEnumerable<IReferenceDataProvider> providers,
-        IReadOnlyDictionary<string, Func<CancellationToken, Task>>? extra
+        IReadOnlyDictionary<string, Func<CancellationToken, Task>>? extra,
+        ILogger<ReferenceDataReloader> logger
     )
     {
         ImmutableDictionary<string, Func<CancellationToken, Task>>.Builder builder =
@@ -110,7 +136,24 @@ public sealed class ReferenceDataReloader(
 
         foreach (IReferenceDataProvider provider in providers)
         {
-            builder[provider.GetType().Name] = provider.ReloadAsync;
+            string name = NameOf(provider.GetType());
+
+            // Two different caches under one name is how the catalogue became unreachable, and
+            // nothing said so: the table just kept the last one. Naming both is the only way an
+            // operator can tell the list is lying to them.
+            if (builder.ContainsKey(name))
+            {
+                logger.LogError(
+                    "Two reference caches answer to the name {Provider}; only the first is "
+                        + "reloadable and the rest can only be picked up by a restart. Give the "
+                        + "type a distinct name.",
+                    name
+                );
+
+                continue;
+            }
+
+            builder[name] = provider.ReloadAsync;
         }
 
         foreach (
