@@ -118,6 +118,9 @@ export const ROUTE_PERMISSIONS = {
   articles: [CAPABILITIES.articlesRead, CAPABILITIES.opsArticlesManage],
   // One capability, not a read/write pair: the page shows nothing but the raw client values.
   gamedata: [CAPABILITIES.opsGamedataManage],
+  // The same capability, deliberately: this page edits the same file with the same blast radius,
+  // and a second grant would protect nothing the first one does not already give away.
+  hotelView: [CAPABILITIES.opsGamedataManage],
   benchmark: [CAPABILITIES.benchmarkRead],
   console: [CAPABILITIES.serverConsoleRead, CAPABILITIES.opsServerConsole],
   playerRewards: [CAPABILITIES.playersRead],

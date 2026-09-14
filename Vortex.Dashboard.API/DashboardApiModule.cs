@@ -152,6 +152,8 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<RewardTrackReads>();
         services.TryAddSingleton<GamedataReads>();
         services.TryAddSingleton<GamedataOperations>();
+        services.TryAddSingleton<HotelViewReads>();
+        services.TryAddSingleton<HotelViewOperations>();
         services.TryAddSingleton<BenchmarkReads>();
         services.TryAddSingleton<BenchmarkOperations>();
         services.TryAddSingleton<BackupOperations>();

@@ -74,6 +74,7 @@ GET /api/v1/habbicons -> dashboard.habbicons.read
 GET /api/v1/habbicons/players/{playerId:int} -> dashboard.habbicons.read
 GET /api/v1/habbicons/sources -> dashboard.habbicons.read
 GET /api/v1/hand-items -> dashboard.bots.read
+GET /api/v1/hotelview -> dashboard.ops.gamedata.manage
 GET /api/v1/meta/endpoints -> dashboard.overview.read
 GET /api/v1/monitoring/incidents -> dashboard.overview.read
 GET /api/v1/monitoring/infrastructure -> dashboard.overview.read
@@ -224,6 +225,7 @@ POST /api/v1/operations/habbicons/delete -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/grant -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/revoke -> dashboard.ops.habbicons.manage
 POST /api/v1/operations/habbicons/update -> dashboard.ops.habbicons.manage
+POST /api/v1/operations/hotelview -> dashboard.ops.gamedata.manage
 POST /api/v1/operations/items/grant -> dashboard.ops.item.grant
 POST /api/v1/operations/items/pickup -> dashboard.ops.item.grant
 POST /api/v1/operations/items/refund -> dashboard.ops.currency.grant
