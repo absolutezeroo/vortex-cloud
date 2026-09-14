@@ -138,6 +138,43 @@ public abstract class FurnitureWiredLogic(
         return null;
     }
 
+    /// <summary>
+    /// The rule for every int param the box actually carries, tail included.
+    /// </summary>
+    /// <remarks>
+    /// A box with a variable parameter count declares a handful of fixed rules and one
+    /// <see cref="GetIntParamTailRule"/> standing for all the rest — the level-up add-on sends two
+    /// ints for a manual curve, four for a linear one and five for an exponential one, so a fixed
+    /// list cannot express it.
+    /// <para>
+    /// Normalisation and repair both honour that tail (<see cref="TryNormalizeIntParams"/>,
+    /// <see cref="RepairIntParams"/>); attaching did not, and handed <see cref="WiredData"/> the
+    /// fixed rules alone. `GetIntParam` looks the rule up *before* the value, so reading param 2 of
+    /// a five-param box indexed a two-entry list and threw ArgumentOutOfRange on every hydration —
+    /// which is once per room load, per box. The add-on's own `Param(index, fallback)` guard could
+    /// not catch it: it checks the params, and it was the rules that were short.
+    /// </para>
+    /// </remarks>
+    private IReadOnlyList<IWiredParamRule> BuildIntParamRules(int count)
+    {
+        List<IWiredParamRule> rules = GetIntParamRules();
+        IWiredParamRule? tail = GetIntParamTailRule();
+
+        if (tail is null || count <= rules.Count)
+        {
+            return rules;
+        }
+
+        rules.Capacity = count;
+
+        while (rules.Count < count)
+        {
+            rules.Add(tail);
+        }
+
+        return rules;
+    }
+
     public virtual List<WiredFurniSourceType[]> GetAllowedFurniSources()
     {
         return [];
@@ -802,7 +839,7 @@ public abstract class FurnitureWiredLogic(
             _wiredData = new WiredData();
         }
 
-        _wiredData.AttatchRules(GetIntParamRules());
+        _wiredData.AttatchRules(BuildIntParamRules(_wiredData.IntParams.Count));
 
         // Register persistence before the normalization below, so any repair it makes (pruned stale
         // ids, resized slots, rematerialized specifics) is written back instead of re-derived on
@@ -823,6 +860,11 @@ public abstract class FurnitureWiredLogic(
         {
             _wiredData.IntParams = repairedIntParams;
             _wiredData.MarkDirty();
+
+            // The repair resizes the list, so the rules have to be resized with it — a box that
+            // came back one param short and was padded would otherwise keep rules for the length
+            // it had before.
+            _wiredData.AttatchRules(BuildIntParamRules(_wiredData.IntParams.Count));
         }
 
         if (GetValidStuffIds(_wiredData.StuffIds, out List<int> stuffIds))
