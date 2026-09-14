@@ -83,10 +83,29 @@ internal sealed class WiredLevelUpSubVariable(
 
     private WiredVariableSnapshot ParentSnapshot => parent.GetVarSnapshot();
 
+    /// <summary>
+    /// Readable, and watchable — but never writable.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="WiredVariableFlags.CanInterceptChanges"/> is what lets the "variable changed"
+    /// trigger accept a reading: its picker filters on exactly that flag
+    /// (<c>VariableUpdate.variableSelectionFilter</c> returns <c>variable.canInterceptChanges</c>),
+    /// and without it all eight readings came up greyed out in the dialog, with no way to build the
+    /// one chain the add-on exists for — fire something when the level goes up. The flag says the
+    /// value can be watched, not that it can be assigned; writing is refused separately, by
+    /// <see cref="GiveValueAsync"/> and friends returning false.
+    /// <para>
+    /// Not <see cref="WiredVariableFlags.CanWriteValue"/>, and not
+    /// <see cref="WiredVariableFlags.CanCreateAndDelete"/>: a reading is an opinion about the
+    /// parent's value and the way to change it is to change the parent.
+    /// </para>
+    /// </remarks>
     private WiredVariableSnapshot BuildSnapshot()
     {
         WiredVariableSnapshot parentSnapshot = ParentSnapshot;
         Dictionary<WiredVariableValue, string> textConnectors = [];
+        const WiredVariableFlags flags =
+            WiredVariableFlags.HasValue | WiredVariableFlags.CanInterceptChanges;
 
         return new()
         {
@@ -97,12 +116,12 @@ internal sealed class WiredLevelUpSubVariable(
                 variableName,
                 parentSnapshot.AvailabilityType,
                 parentSnapshot.TargetType,
-                WiredVariableFlags.HasValue,
+                flags,
                 textConnectors
             ),
             AvailabilityType = parentSnapshot.AvailabilityType,
             TargetType = parentSnapshot.TargetType,
-            Flags = WiredVariableFlags.HasValue,
+            Flags = flags,
             TextConnectors = textConnectors,
         };
     }
