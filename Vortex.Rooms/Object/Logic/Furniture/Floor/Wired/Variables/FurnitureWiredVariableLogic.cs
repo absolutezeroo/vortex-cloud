@@ -105,18 +105,30 @@ public abstract class FurnitureWiredVariableLogic
         WiredVariableValue value
     )
     {
-        if (
-            !TryGetStore(key, out IWiredKeyValueStore? store)
-            || store is null
-            || !store.ContainsKey(key)
-        )
+        if (!TryGetStore(key, out IWiredKeyValueStore? store) || store is null)
         {
             return false;
         }
 
-        store.TryGetValue(key, out WiredVariableValue previous);
+        bool existed = store.TryGetValue(key, out WiredVariableValue previous);
 
-        if (!await store.SetValueAsync(ctx, key, value))
+        // An always-available variable has no creation step -- the client greys out its Created and
+        // Deleted options precisely because it is always there -- so the first write has to make the
+        // entry rather than be refused for not finding one. Without this a room variable could never
+        // be written at all: Set found no key, and the Give the callers fall back to refuses a box
+        // that cannot create. Nothing stored meant nothing announced, so every box reading a room
+        // variable, and the "variable changed" trigger watching one, answered on a value that was
+        // never there.
+        if (!existed && !GetVarSnapshot().Flags.Has(WiredVariableFlags.AlwaysAvailable))
+        {
+            return false;
+        }
+
+        if (
+            !await (
+                existed ? store.SetValueAsync(ctx, key, value) : store.GiveValueAsync(key, value)
+            )
+        )
         {
             return false;
         }
@@ -124,7 +136,7 @@ public abstract class FurnitureWiredVariableLogic
         await PublishChangeAsync(
             key,
             WiredVariableChangeKind.ValueChanged,
-            previous.Value,
+            existed ? previous.Value : 0,
             value.Value
         );
 

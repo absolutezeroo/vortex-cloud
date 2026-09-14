@@ -94,11 +94,15 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
 
     public WiredVariableHash AllVariablesHash => default;
 
+    /// <summary>The room's live store for variables that are not persisted onto their own box. Null
+    /// unless a test supplies one, which is right for every box that writes nothing.</summary>
+    public IWiredKeyValueStore? VariableStore { get; set; }
+
     public bool TryGetVariableStore(WiredVariableKey key, out IWiredKeyValueStore? store)
     {
-        store = null;
+        store = VariableStore;
 
-        return false;
+        return store is not null;
     }
 
     /// <summary>Lines a wired box wrote into the room log.</summary>

@@ -7,6 +7,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -51,6 +52,8 @@ internal static class WiredTestBoxes
     /// finds nothing, which is right for every box that reads no furni.</param>
     /// <param name="furniAccess">The room the box resolves configured variable ids against. The
     /// default answers nothing, which is right for every box that reads no variable.</param>
+    /// <param name="published">Called with every room event the box publishes, for the boxes whose
+    /// whole job is to announce one.</param>
     public static IRoomFloorItemContext Context(
         int objectId = 0,
         int tileIdx = 0,
@@ -58,7 +61,8 @@ internal static class WiredTestBoxes
         IRoomChestAccess? chests = null,
         IRoomLookup? lookup = null,
         IRoomFurniAccess? furniAccess = null,
-        IRoomMapAccess? map = null
+        IRoomMapAccess? map = null,
+        Action<RoomEvent>? published = null
     )
     {
         // RoomObject is typed as the floor item itself on a floor context, not as the plain
@@ -86,9 +90,23 @@ internal static class WiredTestBoxes
                 "get_Lookup" => lookup,
                 "get_Map" => map,
                 "get_WiredLimits" => Limits,
+                nameof(IRoomFloorItemContext.PublishRoomEventAsync) => PublishAsync(
+                    published,
+                    call
+                ),
                 _ => call.Method.ReturnType == typeof(Task) ? Task.CompletedTask : null,
             }
         );
+    }
+
+    private static Task PublishAsync(Action<RoomEvent>? published, ProxyCall call)
+    {
+        if (call.Args?.Length > 0 && call.Args[0] is RoomEvent evt)
+        {
+            published?.Invoke(evt);
+        }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
