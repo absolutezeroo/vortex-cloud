@@ -135,8 +135,10 @@ const codeConsts = new Map(); // "AddonCodes.MOVE_PHYSICS" -> 7
 
 for (const file of walkTs(join(client, WIRED_SETUP))) {
   const rel = relative(join(client, WIRED_SETUP), file);
-  const family = FAMILY_BY_DIR[rel.split(sep)[0]];
-  if (family === undefined) continue;
+  // A file at the root of wired_setup/ belongs to no family, but DefaultElement lives there and is
+  // the base of every box: skipping it broke chain resolution, so a box that inherits its
+  // `readIntParamsFromForm` (which returns []) was reported as "variable" instead of as zero.
+  const family = FAMILY_BY_DIR[rel.split(sep)[0]] ?? null;
   const src = stripComments(readFileSync(file, 'utf8'));
   const decl =
     /export\s+(?:abstract\s+)?class\s+([A-Za-z0-9_]+)(?:<[^>]*>)?(?:\s+extends\s+([A-Za-z0-9_]+))?/.exec(
@@ -271,7 +273,7 @@ for (const [name, cls] of clientClasses) {
   const ref = /return\s+([A-Za-z0-9_]+\.[A-Za-z0-9_]+)\s*;/.exec(codeBody[1]);
   if (!ref) continue;
   const code = codeConsts.get(ref[1]);
-  if (code === undefined) continue;
+  if (code === undefined || cls.family === null) continue;
   clientBoxes.set(`${cls.family}:${code}`, {
     klass: name,
     rel: cls.rel,
