@@ -246,9 +246,20 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         await PetSystem.EnsurePetsLoadedAsync(ct);
     }
 
+    /// <summary>
+    /// Population is stamped 0 when the snapshot is built from the entity and is never written
+    /// back, so the stored value would report an empty room forever - the guest-room card, which
+    /// serialises this snapshot straight to the wire, showed "0 users" for every room. The live
+    /// count sits on this same grain, so it costs nothing to stamp it on the way out.
+    /// </summary>
     public Task<RoomSnapshot> GetSnapshotAsync()
     {
-        return Task.FromResult(_state.RoomSnapshot);
+        return Task.FromResult(
+            _state.RoomSnapshot with
+            {
+                Population = _state.AvatarsByPlayerId.Count,
+            }
+        );
     }
 
     public async Task<RoomSummarySnapshot> GetSummaryAsync()
